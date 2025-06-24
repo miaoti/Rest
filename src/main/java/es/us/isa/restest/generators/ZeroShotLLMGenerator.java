@@ -146,7 +146,7 @@ public class ZeroShotLLMGenerator {
 
 
     private String callLLM(String prompt) {
-        final String GEMINI_API_KEY = System.getenv("GEMINI_API_KEY");
+        final String GEMINI_API_KEY = "AIzaSyANJa0k_Ap8JROFtAh7BbxQo3XrVGHLR-c";
         if (GEMINI_API_KEY == null || GEMINI_API_KEY.isEmpty()) {
             System.err.println("[Gemini] GEMINI_API_KEY environment variable not set");
             return "";
