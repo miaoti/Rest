@@ -84,20 +84,22 @@ public class ZeroShotLLMGenerator {
 
 
     /**
+     * This method is currently a stub. In a real system,
+     * you'd do an API call to ChatGPT / local LLM / etc.
+     */
+    /**
      * This method calls the OpenAI ChatGPT API (model "gpt-3.5-turbo")
      * to produce multiple line-separated answers.
      *
-     * Requires OPENAI_API_KEY environment variable to be set.
-     * Get your key from https://platform.openai.com/account/api-keys
+     * Replace "YOUR_OPENAI_API_KEY" with your real key from
+     * https://platform.openai.com/account/api-keys
+     *
+     * If you don't have an API key, you'll need to sign up for
+     * an OpenAI account, which includes a free trial with credits.
      */
     private String callLLMGPT(String prompt) {
-        final String OPENAI_API_KEY = System.getenv("OPENAI_API_KEY");
+        final String OPENAI_API_KEY = "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";
         final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-        
-        if (OPENAI_API_KEY == null || OPENAI_API_KEY.isEmpty()) {
-            System.err.println("[ChatGPT] OPENAI_API_KEY environment variable not set");
-            return "";
-        }
 
         String systemContent =
                 "You are an AI system that generates only the final lines of values " +
@@ -147,10 +149,6 @@ public class ZeroShotLLMGenerator {
 
     private String callLLM(String prompt) {
         final String GEMINI_API_KEY = "AIzaSyANJa0k_Ap8JROFtAh7BbxQo3XrVGHLR-c";
-        if (GEMINI_API_KEY == null || GEMINI_API_KEY.isEmpty()) {
-            System.err.println("[Gemini] GEMINI_API_KEY environment variable not set");
-            return "";
-        }
         final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
 
         // Explicit instruction to return ONLY line-separated values
