@@ -1,0 +1,98 @@
+[
+  {
+    "traceId": "T1",
+    "spanId": "S1",
+    "parentSpanId": "",
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1715000001000,
+    "endTime": 1715000001500,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.request.body": "{\"name\":\"Alice\",\"email\":\"alice@example.com\"}",
+      "http.response.body": "{\"userId\":\"U1\"}",
+      "http.status_code": 201
+    }
+  },
+  {
+    "traceId": "T1",
+    "spanId": "S2",
+    "parentSpanId": "S1",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1715000001600,
+    "endTime": 1715000002100,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.request.body": "{\"userId\":\"U1\",\"itemId\":\"ITEM‑42\",\"qty\":2}",
+      "http.response.body": "{\"orderId\":\"ORD1\"}",
+      "http.status_code": 201
+    }
+  },
+  {
+    "traceId": "T1",
+    "spanId": "S3",
+    "parentSpanId": "S2",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1715000002200,
+    "endTime": 1715000002600,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.request.body": "{\"orderId\":\"ORD1\",\"amount\":199.99}",
+      "http.response.body": "{\"paymentId\":\"PAY1\"}",
+      "http.status_code": 200
+    }
+  },
+  {
+    "traceId": "T2",
+    "spanId": "S10",
+    "parentSpanId": "",
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1715000011000,
+    "endTime": 1715000011500,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.request.body": "{\"name\":\"Bob\",\"email\":\"bob@example.com\"}",
+      "http.response.body": "{\"userId\":\"U2\"}",
+      "http.status_code": 201
+    }
+  },
+  {
+    "traceId": "T2",
+    "spanId": "S11",
+    "parentSpanId": "S10",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1715000011600,
+    "endTime": 1715000012100,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.request.body": "{\"userId\":\"U2\",\"itemId\":\"ITEM‑99\",\"qty\":1}",
+      "http.response.body": "{\"orderId\":\"ORD2\"}",
+      "http.status_code": 201
+    }
+  },
+  {
+    "traceId": "T2",
+    "spanId": "S12",
+    "parentSpanId": "S11",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1715000012200,
+    "endTime": 1715000012500,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.request.body": "{\"orderId\":\"ORD2\",\"amount\":79.99}",
+      "http.response.body": "{\"error\":\"card‑declined\"}",
+      "http.status_code": 402
+    }
+  }
+]

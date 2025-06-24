@@ -1,0 +1,174 @@
+testConfiguration:
+  services:
+    ts-wait-order-service:
+    - expectedResponse: 200
+      method: get
+      operationId: linksUsingGET
+      testPath: /actuator
+      testParameters: null
+    - expectedResponse: 200
+      method: get
+      operationId: handleUsingGET_1
+      testPath: /actuator/health
+      testParameters: null
+    - expectedResponse: 200
+      method: get
+      operationId: handleUsingGET
+      testPath: /actuator/health/**
+      testParameters: null
+    - expectedResponse: 200
+      method: get
+      operationId: handleUsingGET_2
+      testPath: /actuator/info
+      testParameters: null
+    - expectedResponse: 200
+      method: post
+      operationId: createNewOrderUsingPOST
+      testPath: /api/v1/waitorderservice/order
+      testParameters:
+      - name: accountId
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: contactsId
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: date
+        in: formData
+        weight: null
+        description: null
+        type: string
+        format: date-time
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: from
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: price
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: seatType
+        in: formData
+        weight: null
+        description: null
+        type: integer
+        format: int32
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: type
+            values:
+            - integer
+          - name: min
+            values:
+            - '1'
+          - name: max
+            values:
+            - '100'
+      - name: to
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: tripId
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+    - expectedResponse: 200
+      method: get
+      operationId: getAllOrdersUsingGET
+      testPath: /api/v1/waitorderservice/orders
+      testParameters: null
+    - expectedResponse: 200
+      method: get
+      operationId: getWaitListOrdersUsingGET
+      testPath: /api/v1/waitorderservice/waitlistorders
+      testParameters: null
+    - expectedResponse: 200
+      method: get
+      operationId: homeUsingGET
+      testPath: /api/v1/waitorderservice/welcome
+      testParameters: null
+    - expectedResponse: 200
+      method: get
+      operationId: errorUsingGET
+      testPath: /error
+      testParameters: null
+    - expectedResponse: 200
+      method: put
+      operationId: errorUsingPUT
+      testPath: /error
+      testParameters: null
+    - expectedResponse: 200
+      method: post
+      operationId: errorUsingPOST
+      testPath: /error
+      testParameters: null
+    - expectedResponse: 200
+      method: delete
+      operationId: errorUsingDELETE
+      testPath: /error
+      testParameters: null
+    - expectedResponse: 200
+      method: patch
+      operationId: errorUsingPATCH
+      testPath: /error
+      testParameters: null
+    - expectedResponse: 200
+      method: head
+      operationId: errorUsingHEAD
+      testPath: /error
+      testParameters: null
+    - expectedResponse: 200
+      method: options
+      operationId: errorUsingOPTIONS
+      testPath: /error
+      testParameters: null

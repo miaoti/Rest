@@ -1,0 +1,1282 @@
+[
+  {
+    "traceId": "0b7b69e16be542ee9a396be26df53add",
+    "spanId": "4f9cfef8dcb5411e",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959661748,
+    "endTime": 1745959661868,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "0b7b69e16be542ee9a396be26df53add",
+    "spanId": "3def2fde25dc490a",
+    "parentSpanId": "4f9cfef8dcb5411e",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959661878,
+    "endTime": 1745959662028,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "0b7b69e16be542ee9a396be26df53add",
+    "spanId": "cd2256a8a9444953",
+    "parentSpanId": "3def2fde25dc490a",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959662033,
+    "endTime": 1745959662133,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "0b7b69e16be542ee9a396be26df53add",
+    "spanId": "bcb39f419ec14079",
+    "parentSpanId": "3def2fde25dc490a",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959661898,
+    "endTime": 1745959661978,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "8835dd399bc9471696f2ce243566caf5",
+    "spanId": "61aa52673c814b8c",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959658537,
+    "endTime": 1745959658657,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "8835dd399bc9471696f2ce243566caf5",
+    "spanId": "2c2a1d23775341df",
+    "parentSpanId": "61aa52673c814b8c",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959658667,
+    "endTime": 1745959658817,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "8835dd399bc9471696f2ce243566caf5",
+    "spanId": "f004bdae186a4759",
+    "parentSpanId": "2c2a1d23775341df",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959658822,
+    "endTime": 1745959658922,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "8835dd399bc9471696f2ce243566caf5",
+    "spanId": "279206fcd11c4c73",
+    "parentSpanId": "2c2a1d23775341df",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959658687,
+    "endTime": 1745959658767,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "421e4ca6c12348018f4fe5cef5852112",
+    "spanId": "b97968efb92f466f",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959663498,
+    "endTime": 1745959663618,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "421e4ca6c12348018f4fe5cef5852112",
+    "spanId": "eb5ab2d24726430b",
+    "parentSpanId": "b97968efb92f466f",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959663628,
+    "endTime": 1745959663778,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "421e4ca6c12348018f4fe5cef5852112",
+    "spanId": "8e11111eda4a4ae7",
+    "parentSpanId": "eb5ab2d24726430b",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959663783,
+    "endTime": 1745959663883,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "421e4ca6c12348018f4fe5cef5852112",
+    "spanId": "435fdfd81d71462a",
+    "parentSpanId": "eb5ab2d24726430b",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959663648,
+    "endTime": 1745959663728,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "d9c0eccd18fb4075bf538242fe7cf9e0",
+    "spanId": "08c4129b3ef84a35",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959662676,
+    "endTime": 1745959662796,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "d9c0eccd18fb4075bf538242fe7cf9e0",
+    "spanId": "6d3f9b02958f41a7",
+    "parentSpanId": "08c4129b3ef84a35",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959662806,
+    "endTime": 1745959662956,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "d9c0eccd18fb4075bf538242fe7cf9e0",
+    "spanId": "0461c720426344d1",
+    "parentSpanId": "6d3f9b02958f41a7",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959662961,
+    "endTime": 1745959663061,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "d9c0eccd18fb4075bf538242fe7cf9e0",
+    "spanId": "0c808e0dfc7a43e3",
+    "parentSpanId": "6d3f9b02958f41a7",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959662826,
+    "endTime": 1745959662906,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "50429dfad08d49c38aa322272a478294",
+    "spanId": "9c5fc3eeae1649f8",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959660318,
+    "endTime": 1745959660438,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "50429dfad08d49c38aa322272a478294",
+    "spanId": "709837adb6874195",
+    "parentSpanId": "9c5fc3eeae1649f8",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959660448,
+    "endTime": 1745959660598,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "50429dfad08d49c38aa322272a478294",
+    "spanId": "5519998ad4064594",
+    "parentSpanId": "709837adb6874195",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959660603,
+    "endTime": 1745959660703,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "50429dfad08d49c38aa322272a478294",
+    "spanId": "62356b867f834f59",
+    "parentSpanId": "709837adb6874195",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959660468,
+    "endTime": 1745959660548,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "2acb9b0e67d44ff19774ec5d81803dbd",
+    "spanId": "b487b7c0edd84fe2",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959663444,
+    "endTime": 1745959663564,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "2acb9b0e67d44ff19774ec5d81803dbd",
+    "spanId": "92aa55b133ce45a4",
+    "parentSpanId": "b487b7c0edd84fe2",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959663574,
+    "endTime": 1745959663724,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "2acb9b0e67d44ff19774ec5d81803dbd",
+    "spanId": "8c7c579d707149b2",
+    "parentSpanId": "92aa55b133ce45a4",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959663729,
+    "endTime": 1745959663829,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "2acb9b0e67d44ff19774ec5d81803dbd",
+    "spanId": "4a496d923a434d39",
+    "parentSpanId": "92aa55b133ce45a4",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959663594,
+    "endTime": 1745959663674,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "8d0155432f594a069d72b24d2b315bd3",
+    "spanId": "15352341a02745d9",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959662949,
+    "endTime": 1745959663069,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "8d0155432f594a069d72b24d2b315bd3",
+    "spanId": "81f40cafafcb481e",
+    "parentSpanId": "15352341a02745d9",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959663079,
+    "endTime": 1745959663229,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "8d0155432f594a069d72b24d2b315bd3",
+    "spanId": "620b7522c9ce4043",
+    "parentSpanId": "81f40cafafcb481e",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959663234,
+    "endTime": 1745959663334,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "8d0155432f594a069d72b24d2b315bd3",
+    "spanId": "0c73a7cc58424a62",
+    "parentSpanId": "81f40cafafcb481e",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959663099,
+    "endTime": 1745959663179,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "07c716a04d5b4e05a16362aaa8af046f",
+    "spanId": "af107dacac3d4183",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959661492,
+    "endTime": 1745959661612,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "07c716a04d5b4e05a16362aaa8af046f",
+    "spanId": "756cec3d13274096",
+    "parentSpanId": "af107dacac3d4183",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959661622,
+    "endTime": 1745959661772,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "07c716a04d5b4e05a16362aaa8af046f",
+    "spanId": "d13b6a8270cf4404",
+    "parentSpanId": "756cec3d13274096",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959661777,
+    "endTime": 1745959661877,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "07c716a04d5b4e05a16362aaa8af046f",
+    "spanId": "0d57ed7c6a40470c",
+    "parentSpanId": "756cec3d13274096",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959661642,
+    "endTime": 1745959661722,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "35cd4fc07c4a40719a74bfd478689cc1",
+    "spanId": "19f9e2134e714708",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959661994,
+    "endTime": 1745959662114,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "35cd4fc07c4a40719a74bfd478689cc1",
+    "spanId": "7b8dd2d7a25f4355",
+    "parentSpanId": "19f9e2134e714708",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959662124,
+    "endTime": 1745959662274,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "35cd4fc07c4a40719a74bfd478689cc1",
+    "spanId": "41ca2b16bfb2412e",
+    "parentSpanId": "7b8dd2d7a25f4355",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959662279,
+    "endTime": 1745959662379,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "35cd4fc07c4a40719a74bfd478689cc1",
+    "spanId": "44f1ae18c4bc4dde",
+    "parentSpanId": "7b8dd2d7a25f4355",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959662144,
+    "endTime": 1745959662224,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "32152acf099645b08f797d7c4b4176d5",
+    "spanId": "2f4464fed3e949f8",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959659443,
+    "endTime": 1745959659563,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "32152acf099645b08f797d7c4b4176d5",
+    "spanId": "3a09a544f68f44d6",
+    "parentSpanId": "2f4464fed3e949f8",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959659573,
+    "endTime": 1745959659723,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "32152acf099645b08f797d7c4b4176d5",
+    "spanId": "51bb85252e86422a",
+    "parentSpanId": "3a09a544f68f44d6",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959659728,
+    "endTime": 1745959659828,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "32152acf099645b08f797d7c4b4176d5",
+    "spanId": "8149592c18a441e3",
+    "parentSpanId": "3a09a544f68f44d6",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959659593,
+    "endTime": 1745959659673,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "ff24f2c913ab4d92b6e65364ee3e1913",
+    "spanId": "27abdc81fc8749b5",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959662582,
+    "endTime": 1745959662702,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "ff24f2c913ab4d92b6e65364ee3e1913",
+    "spanId": "02cf4dea51e84b83",
+    "parentSpanId": "27abdc81fc8749b5",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959662712,
+    "endTime": 1745959662862,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "ff24f2c913ab4d92b6e65364ee3e1913",
+    "spanId": "ee80fe7b730340f5",
+    "parentSpanId": "02cf4dea51e84b83",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959662867,
+    "endTime": 1745959662967,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "ff24f2c913ab4d92b6e65364ee3e1913",
+    "spanId": "a291448be31b48b2",
+    "parentSpanId": "02cf4dea51e84b83",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959662732,
+    "endTime": 1745959662812,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "c3d75f24e33641dba332cb357dd1f6b7",
+    "spanId": "9e45fe8886714017",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959660471,
+    "endTime": 1745959660591,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "c3d75f24e33641dba332cb357dd1f6b7",
+    "spanId": "4644278b733a44ef",
+    "parentSpanId": "9e45fe8886714017",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959660601,
+    "endTime": 1745959660751,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "c3d75f24e33641dba332cb357dd1f6b7",
+    "spanId": "6084faed38634289",
+    "parentSpanId": "4644278b733a44ef",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959660756,
+    "endTime": 1745959660856,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "c3d75f24e33641dba332cb357dd1f6b7",
+    "spanId": "6b424e12bf254aec",
+    "parentSpanId": "4644278b733a44ef",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959660621,
+    "endTime": 1745959660701,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "a2e10f95fd3e44bb89bc728209465554",
+    "spanId": "2ce37c78bd3643d3",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959659474,
+    "endTime": 1745959659594,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "a2e10f95fd3e44bb89bc728209465554",
+    "spanId": "f3ba1b9dc32340a6",
+    "parentSpanId": "2ce37c78bd3643d3",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959659604,
+    "endTime": 1745959659754,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "a2e10f95fd3e44bb89bc728209465554",
+    "spanId": "ac192b3918e64253",
+    "parentSpanId": "f3ba1b9dc32340a6",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959659759,
+    "endTime": 1745959659859,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "a2e10f95fd3e44bb89bc728209465554",
+    "spanId": "ac58257529ff43e5",
+    "parentSpanId": "f3ba1b9dc32340a6",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959659624,
+    "endTime": 1745959659704,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "09b5255f3f684989b8e682089e26c242",
+    "spanId": "092ffd862b5e48bc",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959660339,
+    "endTime": 1745959660459,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "09b5255f3f684989b8e682089e26c242",
+    "spanId": "93178444ea254baa",
+    "parentSpanId": "092ffd862b5e48bc",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959660469,
+    "endTime": 1745959660619,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "09b5255f3f684989b8e682089e26c242",
+    "spanId": "8600468732a44ba6",
+    "parentSpanId": "93178444ea254baa",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959660624,
+    "endTime": 1745959660724,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "09b5255f3f684989b8e682089e26c242",
+    "spanId": "63b079caf88c421c",
+    "parentSpanId": "93178444ea254baa",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959660489,
+    "endTime": 1745959660569,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "697d526a9faf4966b5244e29482eed5c",
+    "spanId": "43ede74b8b3b4ed0",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959659501,
+    "endTime": 1745959659621,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "697d526a9faf4966b5244e29482eed5c",
+    "spanId": "efe0242c8f4a4c22",
+    "parentSpanId": "43ede74b8b3b4ed0",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959659631,
+    "endTime": 1745959659781,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "697d526a9faf4966b5244e29482eed5c",
+    "spanId": "ecb92dcaae094c8b",
+    "parentSpanId": "efe0242c8f4a4c22",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959659786,
+    "endTime": 1745959659886,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "697d526a9faf4966b5244e29482eed5c",
+    "spanId": "f717ad28605b4b51",
+    "parentSpanId": "efe0242c8f4a4c22",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959659651,
+    "endTime": 1745959659731,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "03f99768a9ce40fc98f980d2db2ebf05",
+    "spanId": "ab0672c745814a3f",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959661028,
+    "endTime": 1745959661148,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "03f99768a9ce40fc98f980d2db2ebf05",
+    "spanId": "e08e9134530c457c",
+    "parentSpanId": "ab0672c745814a3f",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959661158,
+    "endTime": 1745959661308,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "03f99768a9ce40fc98f980d2db2ebf05",
+    "spanId": "0d89dce52262434b",
+    "parentSpanId": "e08e9134530c457c",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959661313,
+    "endTime": 1745959661413,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "03f99768a9ce40fc98f980d2db2ebf05",
+    "spanId": "58c6badfb5854c49",
+    "parentSpanId": "e08e9134530c457c",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959661178,
+    "endTime": 1745959661258,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "d6036b54b6e548288872ceefef1ff739",
+    "spanId": "49f070a2342a4c37",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959662101,
+    "endTime": 1745959662221,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "d6036b54b6e548288872ceefef1ff739",
+    "spanId": "ae7c6119968b4006",
+    "parentSpanId": "49f070a2342a4c37",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959662231,
+    "endTime": 1745959662381,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "d6036b54b6e548288872ceefef1ff739",
+    "spanId": "738814ee42f547ef",
+    "parentSpanId": "ae7c6119968b4006",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959662386,
+    "endTime": 1745959662486,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "d6036b54b6e548288872ceefef1ff739",
+    "spanId": "35622d00845a4131",
+    "parentSpanId": "ae7c6119968b4006",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959662251,
+    "endTime": 1745959662331,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "0804bdcf5f404159afda9efc8c0c441b",
+    "spanId": "2f560a28b0224d21",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959661393,
+    "endTime": 1745959661513,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "0804bdcf5f404159afda9efc8c0c441b",
+    "spanId": "2a78ce1056b0416f",
+    "parentSpanId": "2f560a28b0224d21",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959661523,
+    "endTime": 1745959661673,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "0804bdcf5f404159afda9efc8c0c441b",
+    "spanId": "b25b140cbd584371",
+    "parentSpanId": "2a78ce1056b0416f",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959661678,
+    "endTime": 1745959661778,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "0804bdcf5f404159afda9efc8c0c441b",
+    "spanId": "a062e4caac304d74",
+    "parentSpanId": "2a78ce1056b0416f",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959661543,
+    "endTime": 1745959661623,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "f5730f270dd645e2bf49ff7352f56622",
+    "spanId": "e4c6b337dd084000",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959658572,
+    "endTime": 1745959658692,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "f5730f270dd645e2bf49ff7352f56622",
+    "spanId": "62b3fe55c142439a",
+    "parentSpanId": "e4c6b337dd084000",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959658702,
+    "endTime": 1745959658852,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "f5730f270dd645e2bf49ff7352f56622",
+    "spanId": "4256ec5a5e40462e",
+    "parentSpanId": "62b3fe55c142439a",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959658857,
+    "endTime": 1745959658957,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "f5730f270dd645e2bf49ff7352f56622",
+    "spanId": "7e6bc3420ec84271",
+    "parentSpanId": "62b3fe55c142439a",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959658722,
+    "endTime": 1745959658802,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  },
+  {
+    "traceId": "eb20ff640f424cdfb44e5cf2e1176568",
+    "spanId": "aa89c84a1dab4e1b",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "getUser",
+    "startTime": 1745959663188,
+    "endTime": 1745959663308,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://user-service.internal/api/getuser",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\"}",
+      "http.response.body": "{\"userId\": \"user123\", \"email\": \"john@example.com\"}"
+    }
+  },
+  {
+    "traceId": "eb20ff640f424cdfb44e5cf2e1176568",
+    "spanId": "a7627bd086d7451b",
+    "parentSpanId": "aa89c84a1dab4e1b",
+    "serviceName": "order-service",
+    "operationName": "createOrder",
+    "startTime": 1745959663318,
+    "endTime": 1745959663468,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://order-service.internal/api/createorder",
+      "http.status_code": "200",
+      "http.request.body": "{\"userId\": \"user123\", \"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"orderId\": \"order567\", \"status\": \"pending\"}"
+    }
+  },
+  {
+    "traceId": "eb20ff640f424cdfb44e5cf2e1176568",
+    "spanId": "3834064cf9d24520",
+    "parentSpanId": "a7627bd086d7451b",
+    "serviceName": "payment-service",
+    "operationName": "initPayment",
+    "startTime": 1745959663473,
+    "endTime": 1745959663573,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://payment-service.internal/api/initpayment",
+      "http.status_code": "200",
+      "http.request.body": "{\"orderId\": \"order567\", \"amount\": 199.99}",
+      "http.response.body": "{\"paymentId\": \"pay123\", \"status\": \"success\"}"
+    }
+  },
+  {
+    "traceId": "eb20ff640f424cdfb44e5cf2e1176568",
+    "spanId": "f3916d1485df4e4f",
+    "parentSpanId": "a7627bd086d7451b",
+    "serviceName": "inventory-service",
+    "operationName": "checkStock",
+    "startTime": 1745959663338,
+    "endTime": 1745959663418,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "http://inventory-service.internal/api/checkstock",
+      "http.status_code": "200",
+      "http.request.body": "{\"items\": [\"item1\", \"item2\"]}",
+      "http.response.body": "{\"available\": true}"
+    }
+  }
+]

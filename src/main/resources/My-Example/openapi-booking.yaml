@@ -1,0 +1,111 @@
+openapi: 3.0.3
+info:
+  title: Simple Booking System
+  version: 1.0.0
+servers:
+  - url: http://localhost
+tags:
+  - name: user-service
+    description: Operations that manage users
+  - name: order-service
+    description: Operations that create or query orders
+  - name: payment-service
+    description: Payment capture operations
+paths:
+  /users:
+    post:
+      summary: Register a new user
+      description: Creates a user account and returns its id.
+      tags: [user-service]
+      x-service-name: user-service
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email]
+              properties:
+                name:
+                  type: string
+                  example: Alice
+                email:
+                  type: string
+                  format: email
+                  example: alice@example.com
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    example: 12345
+  /orders:
+    post:
+      summary: Create a booking / order
+      tags: [order-service]
+      x-service-name: order-service
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId, itemId, qty]
+              properties:
+                userId:
+                  type: string
+                itemId:
+                  type: string
+                qty:
+                  type: integer
+                  minimum: 1
+                  example: 2
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    example: ORD‑abc123
+  /payments:
+    post:
+      summary: Capture payment for an order
+      tags: [payment-service]
+      x-service-name: payment-service
+      operationId: payOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [orderId, amount]
+              properties:
+                orderId:
+                  type: string
+                amount:
+                  type: number
+                  format: float
+                  example: 199.99
+      responses:
+        '200':
+          description: Payment successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  paymentId:
+                    type: string
+                    example: PAY‑999

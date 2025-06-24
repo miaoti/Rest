@@ -1,0 +1,1282 @@
+[
+  {
+    "traceId": "ea29aa5ff9104a32a1fc298494daa4ce",
+    "spanId": "2ae9e9bfe3484479",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531871,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ea29aa5ff9104a32a1fc298494daa4ce\"}"
+    }
+  },
+  {
+    "traceId": "ea29aa5ff9104a32a1fc298494daa4ce",
+    "spanId": "bf168fb7029743cb",
+    "parentSpanId": "2ae9e9bfe3484479",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532871,
+    "endTime": 1745959533098,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ea29aa5ff9104a32a1fc298494daa4ce\"}"
+    }
+  },
+  {
+    "traceId": "ea29aa5ff9104a32a1fc298494daa4ce",
+    "spanId": "5cbbff4af43547f1",
+    "parentSpanId": "bf168fb7029743cb",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534098,
+    "endTime": 1745959534291,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ea29aa5ff9104a32a1fc298494daa4ce\"}"
+    }
+  },
+  {
+    "traceId": "ea29aa5ff9104a32a1fc298494daa4ce",
+    "spanId": "659d625cb9374033",
+    "parentSpanId": "5cbbff4af43547f1",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535291,
+    "endTime": 1745959535574,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ea29aa5ff9104a32a1fc298494daa4ce\"}"
+    }
+  },
+  {
+    "traceId": "ce7564096f4341ed8a0d497b613d0dff",
+    "spanId": "393094dee8cf4c76",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531879,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ce7564096f4341ed8a0d497b613d0dff\"}"
+    }
+  },
+  {
+    "traceId": "ce7564096f4341ed8a0d497b613d0dff",
+    "spanId": "016bfcf306cd4131",
+    "parentSpanId": "393094dee8cf4c76",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959532879,
+    "endTime": 1745959533102,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ce7564096f4341ed8a0d497b613d0dff\"}"
+    }
+  },
+  {
+    "traceId": "ce7564096f4341ed8a0d497b613d0dff",
+    "spanId": "dbf271211f0842a7",
+    "parentSpanId": "016bfcf306cd4131",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534102,
+    "endTime": 1745959534207,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ce7564096f4341ed8a0d497b613d0dff\"}"
+    }
+  },
+  {
+    "traceId": "ce7564096f4341ed8a0d497b613d0dff",
+    "spanId": "24322edcd3134cb9",
+    "parentSpanId": "dbf271211f0842a7",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535207,
+    "endTime": 1745959535682,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ce7564096f4341ed8a0d497b613d0dff\"}"
+    }
+  },
+  {
+    "traceId": "d268b925075043e38641d35925be421f",
+    "spanId": "f216c280b0fa4c53",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959532009,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"d268b925075043e38641d35925be421f\"}"
+    }
+  },
+  {
+    "traceId": "d268b925075043e38641d35925be421f",
+    "spanId": "caf392fc302d4dcc",
+    "parentSpanId": "f216c280b0fa4c53",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959533009,
+    "endTime": 1745959533334,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"d268b925075043e38641d35925be421f\"}"
+    }
+  },
+  {
+    "traceId": "d268b925075043e38641d35925be421f",
+    "spanId": "d00f6e7055434ada",
+    "parentSpanId": "caf392fc302d4dcc",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534334,
+    "endTime": 1745959534807,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"d268b925075043e38641d35925be421f\"}"
+    }
+  },
+  {
+    "traceId": "d268b925075043e38641d35925be421f",
+    "spanId": "c1ad2e8c94554237",
+    "parentSpanId": "d00f6e7055434ada",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535807,
+    "endTime": 1745959536272,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"d268b925075043e38641d35925be421f\"}"
+    }
+  },
+  {
+    "traceId": "2e2e262fb10144e7a37b5b6172a32791",
+    "spanId": "e409a6c139314901",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959531942,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"2e2e262fb10144e7a37b5b6172a32791\"}"
+    }
+  },
+  {
+    "traceId": "2e2e262fb10144e7a37b5b6172a32791",
+    "spanId": "867d307e6e8f458b",
+    "parentSpanId": "e409a6c139314901",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532942,
+    "endTime": 1745959533393,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"2e2e262fb10144e7a37b5b6172a32791\"}"
+    }
+  },
+  {
+    "traceId": "2e2e262fb10144e7a37b5b6172a32791",
+    "spanId": "d99edc1830464b5e",
+    "parentSpanId": "867d307e6e8f458b",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534393,
+    "endTime": 1745959534671,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"2e2e262fb10144e7a37b5b6172a32791\"}"
+    }
+  },
+  {
+    "traceId": "2e2e262fb10144e7a37b5b6172a32791",
+    "spanId": "efc98f2befa1436b",
+    "parentSpanId": "d99edc1830464b5e",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535671,
+    "endTime": 1745959535840,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"2e2e262fb10144e7a37b5b6172a32791\"}"
+    }
+  },
+  {
+    "traceId": "63ea1907d990415bbbf07e8c282ed9e5",
+    "spanId": "1638d1ebe03f400b",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531875,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"63ea1907d990415bbbf07e8c282ed9e5\"}"
+    }
+  },
+  {
+    "traceId": "63ea1907d990415bbbf07e8c282ed9e5",
+    "spanId": "d57a006d6c224ba8",
+    "parentSpanId": "1638d1ebe03f400b",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959532875,
+    "endTime": 1745959533233,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"63ea1907d990415bbbf07e8c282ed9e5\"}"
+    }
+  },
+  {
+    "traceId": "63ea1907d990415bbbf07e8c282ed9e5",
+    "spanId": "d1c3bc6e47b146f0",
+    "parentSpanId": "d57a006d6c224ba8",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534233,
+    "endTime": 1745959534473,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"63ea1907d990415bbbf07e8c282ed9e5\"}"
+    }
+  },
+  {
+    "traceId": "63ea1907d990415bbbf07e8c282ed9e5",
+    "spanId": "53a6bfeb3cd24f17",
+    "parentSpanId": "d1c3bc6e47b146f0",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535473,
+    "endTime": 1745959535853,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"63ea1907d990415bbbf07e8c282ed9e5\"}"
+    }
+  },
+  {
+    "traceId": "474c317dbb51447bbe811de355580d82",
+    "spanId": "b09af947e6aa41b0",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959531717,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"474c317dbb51447bbe811de355580d82\"}"
+    }
+  },
+  {
+    "traceId": "474c317dbb51447bbe811de355580d82",
+    "spanId": "84bda667ad8a40fa",
+    "parentSpanId": "b09af947e6aa41b0",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959532717,
+    "endTime": 1745959533196,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"474c317dbb51447bbe811de355580d82\"}"
+    }
+  },
+  {
+    "traceId": "474c317dbb51447bbe811de355580d82",
+    "spanId": "39a61576fc2f49eb",
+    "parentSpanId": "84bda667ad8a40fa",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534196,
+    "endTime": 1745959534338,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"474c317dbb51447bbe811de355580d82\"}"
+    }
+  },
+  {
+    "traceId": "474c317dbb51447bbe811de355580d82",
+    "spanId": "52346b6144d34845",
+    "parentSpanId": "39a61576fc2f49eb",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535338,
+    "endTime": 1745959535762,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"474c317dbb51447bbe811de355580d82\"}"
+    }
+  },
+  {
+    "traceId": "41f2303c4f5046149cac08a028a4085e",
+    "spanId": "b4426f95dd5e4e65",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959532107,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"41f2303c4f5046149cac08a028a4085e\"}"
+    }
+  },
+  {
+    "traceId": "41f2303c4f5046149cac08a028a4085e",
+    "spanId": "3048b57748d3476e",
+    "parentSpanId": "b4426f95dd5e4e65",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959533107,
+    "endTime": 1745959533525,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"41f2303c4f5046149cac08a028a4085e\"}"
+    }
+  },
+  {
+    "traceId": "41f2303c4f5046149cac08a028a4085e",
+    "spanId": "515ee34cfa51421f",
+    "parentSpanId": "3048b57748d3476e",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534525,
+    "endTime": 1745959534901,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"41f2303c4f5046149cac08a028a4085e\"}"
+    }
+  },
+  {
+    "traceId": "41f2303c4f5046149cac08a028a4085e",
+    "spanId": "5aa2af2798fd4e48",
+    "parentSpanId": "515ee34cfa51421f",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535901,
+    "endTime": 1745959536285,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"41f2303c4f5046149cac08a028a4085e\"}"
+    }
+  },
+  {
+    "traceId": "e1521b7fe16d4b9dbf8e06834f6cc8a9",
+    "spanId": "13af764261574bde",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959532058,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"e1521b7fe16d4b9dbf8e06834f6cc8a9\"}"
+    }
+  },
+  {
+    "traceId": "e1521b7fe16d4b9dbf8e06834f6cc8a9",
+    "spanId": "678319d6a6394530",
+    "parentSpanId": "13af764261574bde",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959533058,
+    "endTime": 1745959533183,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"e1521b7fe16d4b9dbf8e06834f6cc8a9\"}"
+    }
+  },
+  {
+    "traceId": "e1521b7fe16d4b9dbf8e06834f6cc8a9",
+    "spanId": "bc4a2c3a029e4a3d",
+    "parentSpanId": "678319d6a6394530",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534183,
+    "endTime": 1745959534334,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"e1521b7fe16d4b9dbf8e06834f6cc8a9\"}"
+    }
+  },
+  {
+    "traceId": "e1521b7fe16d4b9dbf8e06834f6cc8a9",
+    "spanId": "8710b6d6ed0f471f",
+    "parentSpanId": "bc4a2c3a029e4a3d",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535334,
+    "endTime": 1745959535776,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"e1521b7fe16d4b9dbf8e06834f6cc8a9\"}"
+    }
+  },
+  {
+    "traceId": "a31704f491984a56b2cd64f8960d0722",
+    "spanId": "b842713b4a4149f6",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959532082,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"a31704f491984a56b2cd64f8960d0722\"}"
+    }
+  },
+  {
+    "traceId": "a31704f491984a56b2cd64f8960d0722",
+    "spanId": "4b392a2157e44b85",
+    "parentSpanId": "b842713b4a4149f6",
+    "serviceName": "order-service",
+    "operationName": "POST /orders",
+    "startTime": 1745959533082,
+    "endTime": 1745959533494,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/orders",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"a31704f491984a56b2cd64f8960d0722\"}"
+    }
+  },
+  {
+    "traceId": "a31704f491984a56b2cd64f8960d0722",
+    "spanId": "dcac897aef1c4704",
+    "parentSpanId": "4b392a2157e44b85",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534494,
+    "endTime": 1745959534930,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"a31704f491984a56b2cd64f8960d0722\"}"
+    }
+  },
+  {
+    "traceId": "a31704f491984a56b2cd64f8960d0722",
+    "spanId": "e8f2e15b653c482f",
+    "parentSpanId": "dcac897aef1c4704",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535930,
+    "endTime": 1745959536202,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"a31704f491984a56b2cd64f8960d0722\"}"
+    }
+  },
+  {
+    "traceId": "f2b7f04375c24310a75efa8341152cdc",
+    "spanId": "3c314068eda649ad",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959531802,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"f2b7f04375c24310a75efa8341152cdc\"}"
+    }
+  },
+  {
+    "traceId": "f2b7f04375c24310a75efa8341152cdc",
+    "spanId": "8ba1600f0de24b17",
+    "parentSpanId": "3c314068eda649ad",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532802,
+    "endTime": 1745959533252,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"f2b7f04375c24310a75efa8341152cdc\"}"
+    }
+  },
+  {
+    "traceId": "f2b7f04375c24310a75efa8341152cdc",
+    "spanId": "2d1ae39e4d234f87",
+    "parentSpanId": "8ba1600f0de24b17",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534252,
+    "endTime": 1745959534465,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"f2b7f04375c24310a75efa8341152cdc\"}"
+    }
+  },
+  {
+    "traceId": "f2b7f04375c24310a75efa8341152cdc",
+    "spanId": "93112325d48a4227",
+    "parentSpanId": "2d1ae39e4d234f87",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535465,
+    "endTime": 1745959535710,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"f2b7f04375c24310a75efa8341152cdc\"}"
+    }
+  },
+  {
+    "traceId": "4f2954be389c4e608b4821448debebac",
+    "spanId": "acba2c6e4ef3423f",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531763,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4f2954be389c4e608b4821448debebac\"}"
+    }
+  },
+  {
+    "traceId": "4f2954be389c4e608b4821448debebac",
+    "spanId": "ce24e4c3a4df4f58",
+    "parentSpanId": "acba2c6e4ef3423f",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532763,
+    "endTime": 1745959533135,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4f2954be389c4e608b4821448debebac\"}"
+    }
+  },
+  {
+    "traceId": "4f2954be389c4e608b4821448debebac",
+    "spanId": "c27e387f2b354ef6",
+    "parentSpanId": "ce24e4c3a4df4f58",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534135,
+    "endTime": 1745959534355,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4f2954be389c4e608b4821448debebac\"}"
+    }
+  },
+  {
+    "traceId": "4f2954be389c4e608b4821448debebac",
+    "spanId": "7d7878b7c32a428a",
+    "parentSpanId": "c27e387f2b354ef6",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535355,
+    "endTime": 1745959535622,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4f2954be389c4e608b4821448debebac\"}"
+    }
+  },
+  {
+    "traceId": "b48fab0511ee46b2bb4008e221631435",
+    "spanId": "2500c289c07e46db",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531756,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b48fab0511ee46b2bb4008e221631435\"}"
+    }
+  },
+  {
+    "traceId": "b48fab0511ee46b2bb4008e221631435",
+    "spanId": "0e4506fb59404e52",
+    "parentSpanId": "2500c289c07e46db",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532756,
+    "endTime": 1745959532929,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b48fab0511ee46b2bb4008e221631435\"}"
+    }
+  },
+  {
+    "traceId": "b48fab0511ee46b2bb4008e221631435",
+    "spanId": "1848b52b50504daf",
+    "parentSpanId": "0e4506fb59404e52",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959533929,
+    "endTime": 1745959534370,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b48fab0511ee46b2bb4008e221631435\"}"
+    }
+  },
+  {
+    "traceId": "b48fab0511ee46b2bb4008e221631435",
+    "spanId": "03b9bc567c294860",
+    "parentSpanId": "1848b52b50504daf",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535370,
+    "endTime": 1745959535600,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b48fab0511ee46b2bb4008e221631435\"}"
+    }
+  },
+  {
+    "traceId": "16f447525cb346218671a8dc84c24b19",
+    "spanId": "fb2fa85385f44706",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959532001,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"16f447525cb346218671a8dc84c24b19\"}"
+    }
+  },
+  {
+    "traceId": "16f447525cb346218671a8dc84c24b19",
+    "spanId": "4ed634045cb64c6e",
+    "parentSpanId": "fb2fa85385f44706",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959533001,
+    "endTime": 1745959533308,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"16f447525cb346218671a8dc84c24b19\"}"
+    }
+  },
+  {
+    "traceId": "16f447525cb346218671a8dc84c24b19",
+    "spanId": "77c1a390e52d4d58",
+    "parentSpanId": "4ed634045cb64c6e",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534308,
+    "endTime": 1745959534657,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"16f447525cb346218671a8dc84c24b19\"}"
+    }
+  },
+  {
+    "traceId": "16f447525cb346218671a8dc84c24b19",
+    "spanId": "0c941d43905844ae",
+    "parentSpanId": "77c1a390e52d4d58",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535657,
+    "endTime": 1745959535908,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"16f447525cb346218671a8dc84c24b19\"}"
+    }
+  },
+  {
+    "traceId": "ada6ac1f6aeb4445ba7908818c154904",
+    "spanId": "6152bba91f444c27",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531845,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ada6ac1f6aeb4445ba7908818c154904\"}"
+    }
+  },
+  {
+    "traceId": "ada6ac1f6aeb4445ba7908818c154904",
+    "spanId": "0d3a88d192384e25",
+    "parentSpanId": "6152bba91f444c27",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532845,
+    "endTime": 1745959533052,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ada6ac1f6aeb4445ba7908818c154904\"}"
+    }
+  },
+  {
+    "traceId": "ada6ac1f6aeb4445ba7908818c154904",
+    "spanId": "af031df473a14aff",
+    "parentSpanId": "0d3a88d192384e25",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534052,
+    "endTime": 1745959534346,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ada6ac1f6aeb4445ba7908818c154904\"}"
+    }
+  },
+  {
+    "traceId": "ada6ac1f6aeb4445ba7908818c154904",
+    "spanId": "5f77b8b1f8f84e85",
+    "parentSpanId": "af031df473a14aff",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535346,
+    "endTime": 1745959535578,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"ada6ac1f6aeb4445ba7908818c154904\"}"
+    }
+  },
+  {
+    "traceId": "b7c38493de1e471e89fc71861a58fe35",
+    "spanId": "765a3f818d114e4b",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959532072,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b7c38493de1e471e89fc71861a58fe35\"}"
+    }
+  },
+  {
+    "traceId": "b7c38493de1e471e89fc71861a58fe35",
+    "spanId": "8766b97e252a4661",
+    "parentSpanId": "765a3f818d114e4b",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959533072,
+    "endTime": 1745959533421,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b7c38493de1e471e89fc71861a58fe35\"}"
+    }
+  },
+  {
+    "traceId": "b7c38493de1e471e89fc71861a58fe35",
+    "spanId": "5e2e921e3f204c63",
+    "parentSpanId": "8766b97e252a4661",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534421,
+    "endTime": 1745959534781,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b7c38493de1e471e89fc71861a58fe35\"}"
+    }
+  },
+  {
+    "traceId": "b7c38493de1e471e89fc71861a58fe35",
+    "spanId": "06bcbf1b1946452f",
+    "parentSpanId": "5e2e921e3f204c63",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535781,
+    "endTime": 1745959536229,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"b7c38493de1e471e89fc71861a58fe35\"}"
+    }
+  },
+  {
+    "traceId": "5f6acde738aa43429f1886869a21d920",
+    "spanId": "6d5f5fc2b3ea4ef7",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531753,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"5f6acde738aa43429f1886869a21d920\"}"
+    }
+  },
+  {
+    "traceId": "5f6acde738aa43429f1886869a21d920",
+    "spanId": "76ef4811daca4d95",
+    "parentSpanId": "6d5f5fc2b3ea4ef7",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532753,
+    "endTime": 1745959532899,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"5f6acde738aa43429f1886869a21d920\"}"
+    }
+  },
+  {
+    "traceId": "5f6acde738aa43429f1886869a21d920",
+    "spanId": "78623ea64fe34921",
+    "parentSpanId": "76ef4811daca4d95",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959533899,
+    "endTime": 1745959534218,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"5f6acde738aa43429f1886869a21d920\"}"
+    }
+  },
+  {
+    "traceId": "5f6acde738aa43429f1886869a21d920",
+    "spanId": "8e2f70882b7c4fb1",
+    "parentSpanId": "78623ea64fe34921",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535218,
+    "endTime": 1745959535501,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"5f6acde738aa43429f1886869a21d920\"}"
+    }
+  },
+  {
+    "traceId": "9645a107d6284e3d9fa3237c7501feed",
+    "spanId": "d8cb1f604d3e44e2",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959531833,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"9645a107d6284e3d9fa3237c7501feed\"}"
+    }
+  },
+  {
+    "traceId": "9645a107d6284e3d9fa3237c7501feed",
+    "spanId": "564cceca20c84748",
+    "parentSpanId": "d8cb1f604d3e44e2",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532833,
+    "endTime": 1745959533030,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"9645a107d6284e3d9fa3237c7501feed\"}"
+    }
+  },
+  {
+    "traceId": "9645a107d6284e3d9fa3237c7501feed",
+    "spanId": "1a01c964e87b46ed",
+    "parentSpanId": "564cceca20c84748",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534030,
+    "endTime": 1745959534255,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"9645a107d6284e3d9fa3237c7501feed\"}"
+    }
+  },
+  {
+    "traceId": "9645a107d6284e3d9fa3237c7501feed",
+    "spanId": "6b98dd4f45f04e76",
+    "parentSpanId": "1a01c964e87b46ed",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535255,
+    "endTime": 1745959535466,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"9645a107d6284e3d9fa3237c7501feed\"}"
+    }
+  },
+  {
+    "traceId": "4900bae1f03c44469caa97d35be713b5",
+    "spanId": "403c537a0df642f5",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959531838,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4900bae1f03c44469caa97d35be713b5\"}"
+    }
+  },
+  {
+    "traceId": "4900bae1f03c44469caa97d35be713b5",
+    "spanId": "69a639a547fa4e45",
+    "parentSpanId": "403c537a0df642f5",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532838,
+    "endTime": 1745959533281,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4900bae1f03c44469caa97d35be713b5\"}"
+    }
+  },
+  {
+    "traceId": "4900bae1f03c44469caa97d35be713b5",
+    "spanId": "3cb16a51b09c4465",
+    "parentSpanId": "69a639a547fa4e45",
+    "serviceName": "payment-service",
+    "operationName": "POST /payments",
+    "startTime": 1745959534281,
+    "endTime": 1745959534575,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/payments",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4900bae1f03c44469caa97d35be713b5\"}"
+    }
+  },
+  {
+    "traceId": "4900bae1f03c44469caa97d35be713b5",
+    "spanId": "8a8ca2bd14744a8f",
+    "parentSpanId": "3cb16a51b09c4465",
+    "serviceName": "inventory-service",
+    "operationName": "GET /inventory/{itemId}",
+    "startTime": 1745959535575,
+    "endTime": 1745959535721,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"4900bae1f03c44469caa97d35be713b5\"}"
+    }
+  },
+  {
+    "traceId": "3c38b692c2c24e9db0822f4e38a00ef8",
+    "spanId": "016cd27206c64c2e",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "POST /users",
+    "startTime": 1745959531608,
+    "endTime": 1745959531845,
+    "attributes": {
+      "http.method": "POST",
+      "http.url": "/users",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"3c38b692c2c24e9db0822f4e38a00ef8\"}"
+    }
+  },
+  {
+    "traceId": "3c38b692c2c24e9db0822f4e38a00ef8",
+    "spanId": "e517b81c958942f5",
+    "parentSpanId": "016cd27206c64c2e",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959532845,
+    "endTime": 1745959533108,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"3c38b692c2c24e9db0822f4e38a00ef8\"}"
+    }
+  },
+  {
+    "traceId": "3c38b692c2c24e9db0822f4e38a00ef8",
+    "spanId": "5bcc6469e1504968",
+    "parentSpanId": "e517b81c958942f5",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534108,
+    "endTime": 1745959534449,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"3c38b692c2c24e9db0822f4e38a00ef8\"}"
+    }
+  },
+  {
+    "traceId": "3c38b692c2c24e9db0822f4e38a00ef8",
+    "spanId": "5f3e48bb6d27401b",
+    "parentSpanId": "5bcc6469e1504968",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535449,
+    "endTime": 1745959535728,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"3c38b692c2c24e9db0822f4e38a00ef8\"}"
+    }
+  },
+  {
+    "traceId": "cc8501d3e84341e6b6bc49b6ae1c3a65",
+    "spanId": "88863f9e4f8a495c",
+    "parentSpanId": null,
+    "serviceName": "user-service",
+    "operationName": "GET /users/{id}",
+    "startTime": 1745959531608,
+    "endTime": 1745959532099,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/users/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"cc8501d3e84341e6b6bc49b6ae1c3a65\"}"
+    }
+  },
+  {
+    "traceId": "cc8501d3e84341e6b6bc49b6ae1c3a65",
+    "spanId": "a3d6a80d88ac4e75",
+    "parentSpanId": "88863f9e4f8a495c",
+    "serviceName": "order-service",
+    "operationName": "GET /orders/{id}",
+    "startTime": 1745959533099,
+    "endTime": 1745959533447,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/orders/{id}",
+      "http.status_code": 201,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"cc8501d3e84341e6b6bc49b6ae1c3a65\"}"
+    }
+  },
+  {
+    "traceId": "cc8501d3e84341e6b6bc49b6ae1c3a65",
+    "spanId": "04a4ed27ef184e72",
+    "parentSpanId": "a3d6a80d88ac4e75",
+    "serviceName": "payment-service",
+    "operationName": "GET /payments/{id}",
+    "startTime": 1745959534447,
+    "endTime": 1745959534558,
+    "attributes": {
+      "http.method": "GET",
+      "http.url": "/payments/{id}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"cc8501d3e84341e6b6bc49b6ae1c3a65\"}"
+    }
+  },
+  {
+    "traceId": "cc8501d3e84341e6b6bc49b6ae1c3a65",
+    "spanId": "ab83874cd7294933",
+    "parentSpanId": "04a4ed27ef184e72",
+    "serviceName": "inventory-service",
+    "operationName": "PUT /inventory/{itemId}",
+    "startTime": 1745959535558,
+    "endTime": 1745959535826,
+    "attributes": {
+      "http.method": "PUT",
+      "http.url": "/inventory/{itemId}",
+      "http.status_code": 200,
+      "http.request.body": "{\"exampleField\": \"value\"}",
+      "http.response.body": "{\"result\": \"ok\", \"traceId\": \"cc8501d3e84341e6b6bc49b6ae1c3a65\"}"
+    }
+  }
+]

@@ -1,0 +1,227 @@
+---
+auth:
+  required: true
+  queryParams: {}
+  headerParams: {}
+  apiKeysPath: null
+  headersPath: null
+  oauthPath: null
+testConfiguration:
+  operations:
+  - testPath: /api
+    operationId: getRoot
+    method: get
+    testParameters: null
+    expectedResponse: 200
+  - testPath: /api/books
+    operationId: getBooks
+    method: get
+    testParameters:
+    - name: name
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: fromReleaseDate
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: toReleaseDate
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: page
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: pageSize
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    expectedResponse: 200
+  - testPath: "/api/books/{book-id}"
+    operationId: findBookById
+    method: get
+    testParameters:
+    - name: book-id
+      in: path
+      weight: null
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    expectedResponse: 200
+  - testPath: /api/characters
+    operationId: getCharacters
+    method: get
+    testParameters:
+    - name: name
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: gender
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: culture
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: born
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: died
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: isAlive
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: page
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: pageSize
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    expectedResponse: 200
+  - testPath: "/api/characters/{character-id}"
+    operationId: findCharacterById
+    method: get
+    testParameters:
+    - name: character-id
+      in: path
+      weight: null
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    expectedResponse: 200
+  - testPath: /api/houses
+    operationId: getHouses
+    method: get
+    testParameters:
+    - name: name
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: region
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: words
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: hasWords
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: hasTitles
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: hasSeats
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: hasDiedOut
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: hasAncestralWeapons
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: page
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    - name: pageSize
+      in: query
+      weight: 0.5
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    expectedResponse: 200
+  - testPath: "/api/houses/{house-id}"
+    operationId: findHouseById
+    method: get
+    testParameters:
+    - name: house-id
+      in: path
+      weight: null
+      generators:
+      - type: LLMParameterGenerator
+        genParameters: []
+        valid: true
+    expectedResponse: 200

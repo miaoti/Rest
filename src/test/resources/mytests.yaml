@@ -1,0 +1,71 @@
+testConfiguration: !!es.us.isa.restest.configuration.multiservice.MultiServiceTestConfiguration
+  services:
+    user-service:
+    - !!es.us.isa.restest.configuration.multiservice.OperationConfig
+      expectedResponse: 200
+      method: get
+      operationId: getUsers
+      testParameters: null
+      testPath: /users
+    - !!es.us.isa.restest.configuration.multiservice.OperationConfig
+      expectedResponse: 200
+      method: get
+      operationId: getUserById
+      testParameters:
+      - generators:
+        - genParameters:
+          - name: length
+            values:
+            - '10'
+          type: RandomString
+        in: path
+        name: userId
+        valid: true
+        weight: null
+      testPath: /users/{userId}
+    order-service:
+    - !!es.us.isa.restest.configuration.multiservice.OperationConfig
+      expectedResponse: 201
+      method: post
+      operationId: createOrder
+      testParameters: null
+      testPath: /orders
+    - !!es.us.isa.restest.configuration.multiservice.OperationConfig
+      expectedResponse: 200
+      method: get
+      operationId: getOrderById
+      testParameters:
+      - generators:
+        - genParameters:
+          - name: length
+            values:
+            - '10'
+          type: RandomString
+        in: path
+        name: orderId
+        valid: true
+        weight: null
+      testPath: /orders/{orderId}
+    payment-service:
+    - !!es.us.isa.restest.configuration.multiservice.OperationConfig
+      expectedResponse: 200
+      method: post
+      operationId: makePayment
+      testParameters: null
+      testPath: /payments
+    - !!es.us.isa.restest.configuration.multiservice.OperationConfig
+      expectedResponse: 200
+      method: get
+      operationId: getPaymentStatus
+      testParameters:
+      - generators:
+        - genParameters:
+          - name: length
+            values:
+            - '10'
+          type: RandomString
+        in: path
+        name: paymentId
+        valid: true
+        weight: null
+      testPath: /payments/{paymentId}

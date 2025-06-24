@@ -1,0 +1,116 @@
+testConfiguration:
+  services:
+    user-service:
+    - expectedResponse: 201
+      method: post
+      operationId: createUser
+      testPath: /users
+      testParameters:
+      - name: name
+        in: formData
+        weight: null
+        description: null
+        type: string
+        example: Alice
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: email
+        in: formData
+        weight: null
+        description: null
+        type: string
+        format: email
+        example: alice@example.com
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+    order-service:
+    - expectedResponse: 201
+      method: post
+      operationId: createOrder
+      testPath: /orders
+      testParameters:
+      - name: userId
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: itemId
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: qty
+        in: formData
+        weight: null
+        description: null
+        type: integer
+        minimum: !!float '1'
+        example: 2
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: type
+            values:
+            - integer
+          - name: min
+            values:
+            - '1'
+          - name: max
+            values:
+            - '100'
+    payment-service:
+    - expectedResponse: 200
+      method: post
+      operationId: payOrder
+      testPath: /payments
+      testParameters:
+      - name: orderId
+        in: formData
+        weight: null
+        description: null
+        type: string
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
+      - name: amount
+        in: formData
+        weight: null
+        description: null
+        type: number
+        format: float
+        example: 199.99
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: type
+            values:
+            - integer
+          - name: min
+            values:
+            - '1'
+          - name: max
+            values:
+            - '100'
