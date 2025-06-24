@@ -34,6 +34,7 @@ src/test/resources/restest-test-resources/test_collection.postman_collection.jso
 src/test/resources/restest-test-resources/test_collection_urlencoded.postman_collection.json
 src/main/resources/GoogleNews-vectors-negative300.bin
 src/main/resources/GoogleNews-vectors-negative300.zip
+src/main/resources/ml/model.onnx
 
 stateful_data.json
 /src/main/resources/TestData/Generated/
