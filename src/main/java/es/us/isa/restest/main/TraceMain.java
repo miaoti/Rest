@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class TraceMain {
     public static void main(String[] args) throws Exception {
-        String traceFilePath = "src/main/resources/My-Example/user_order_get.json";
+        String traceFilePath = "C:\\Users\\Tingshuo_Miao2\\Rest\\src\\main\\resources\\My-Example\\trainticket\\traces\\admin_price_create.json";
         List<WorkflowScenario> scenarios = TraceWorkflowExtractor.extractScenarios(traceFilePath);
         for (WorkflowScenario scenario : scenarios) {
             System.out.println(scenario);

@@ -36,8 +36,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                          boolean useLLMforParams,
                                          @SuppressWarnings("unused") boolean ignoreFlowsFlag) {
 
-        /* we never call the AbstractTestCaseGenerator’s generation loop,
-           but super‑ctor still needs something sane */
+        /* we never call the AbstractTestCaseGenerator's generation loop,
+           but super-ctor still needs something sane */
         super(primarySpec, dummyPrimaryConf, scenarios.size());
 
         this.serviceSpecs     = serviceSpecs;
@@ -48,7 +48,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
     /*  PUBLIC API – called by RESTest                              */
 
-    /** Produce one test‑case per recorded scenario. */
+    /** Produce one test-case per recorded scenario. */
     @Override
     public Collection<TestCase> generate() {
         List<TestCase> out = new ArrayList<>();
@@ -58,9 +58,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             MultiServiceTestCase tc = new MultiServiceTestCase("Scenario_" + counter++);
             tc.setScenarioName(tc.getOperationId());        // for Allure etc.
 
-            Map<String,String> context = new HashMap<>();   // output‑values so far
+            Map<String,String> context = new HashMap<>();   // output-values so far
+            int stepCounter = 1;
             for (WorkflowStep root : sc.getRootSteps()) {
-                traverse(root, tc, context);
+                traverse(root, tc, context, String.valueOf(stepCounter));
+                stepCounter++;
             }
             out.add(tc);
         }
@@ -80,17 +82,71 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     /* ============================================================ */
 
     /**
-     * Depth‑first traversal – parent before children.
+     * Determines if a WorkflowStep represents an API operation that should be included in the test.
+     * Filters out internal operations like database transactions, web handlers, etc.
+     */
+    private boolean isApiOperation(WorkflowStep step) {
+        String opName = step.getOperationName();
+        String serviceName = step.getServiceName();
+        
+        // Skip internal operations that are not API calls
+        if (opName.contains("FilteringWebHandler") || 
+            opName.contains("Transaction.commit") ||
+            opName.contains("Session.merge") ||
+            opName.contains("Repository.save") ||
+            opName.contains("Controller.") ||
+            opName.contains("INSERT ") ||
+            opName.contains("SELECT ") ||
+            opName.contains("UPDATE ") ||
+            opName.contains("DELETE ") ||
+            opName.equals("POST") ||  // bare POST without path
+            opName.equals("GET") ||   // bare GET without path
+            opName.contains("/*")) {  // generic route patterns
+            return false;
+        }
+        
+        // Include operations that look like HTTP API calls with specific paths
+        if (opName.matches("^(GET|POST|PUT|DELETE|PATCH)\\s+/api/v\\d+/.*")) {
+            return true;
+        }
+        
+        // Include other API paths
+        if (opName.matches("^(GET|POST|PUT|DELETE|PATCH)\\s+/.*") && 
+            !opName.contains("/*") && 
+            opName.split("\\s+").length == 2) {
+            String[] parts = opName.split("\\s+");
+            String path = parts[1];
+            // Include paths that look like API endpoints (not just "/" or "/*")
+            if (path.length() > 1 && !path.equals("/*")) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Depth-first traversal – parent before children.
+     * Now with API filtering and hierarchical step numbering.
      *
      * @param span      current WorkflowStep
-     * @param tc        test‑case under construction
+     * @param tc        test-case under construction
      * @param context   key→value outputs collected so far
+     * @param stepNumber hierarchical step number (e.g., "1", "1.1", "1.2.1")
      */
     private void traverse(WorkflowStep span,
                           MultiServiceTestCase tc,
-                          Map<String,String> context) {
+                          Map<String,String> context,
+                          String stepNumber) {
 
-        /* 1. Basic routing data ---------------------------------------------------- */
+        /* 1. Check if this is an API operation that should be included --------- */
+        if (!isApiOperation(span)) {
+            log.debug("Skipping non-API operation: {} - {}", span.getServiceName(), span.getOperationName());
+            gotoChildren(span, tc, context, stepNumber);
+            return;
+        }
+
+        /* 2. Basic routing data ---------------------------------------------------- */
         final String service = span.getServiceName();
         final String opName  = span.getOperationName();
 
@@ -99,51 +155,43 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             String[] parts = opName.split(" ", 2);
             if (parts.length != 2) {
                 log.warn("Skipping span – unparseable opName: {}", opName);
-                gotoChildren(span, tc, context);
+                gotoChildren(span, tc, context, stepNumber);
                 return;
             }
             verb  = parts[0].toLowerCase(Locale.ROOT);
             route = parts[1];
         }
 
-        /* 2. Load service‑specific test‑configuration ------------------------------ */
+        /* 3. Load service-specific test-configuration ------------------------------ */
         TestConfigurationObject cfg = serviceConfigs.get(service);
         if (cfg == null) {
-            log.warn("No test‑configuration for service '{}'", service);
-            gotoChildren(span, tc, context);
+            log.warn("No test-configuration for service '{}'", service);
+            gotoChildren(span, tc, context, stepNumber);
             return;
         }
 
         Operation opCfg = findOperation(cfg, verb, route);
         if (opCfg == null) {
             log.warn("No Operation config {} {} in service '{}'", verb, route, service);
-            gotoChildren(span, tc, context);
+            gotoChildren(span, tc, context, stepNumber);
             return;
         }
 
-        /* 3. Build parameter maps --------------------------------------------------- */
+        /* 4. Build parameter maps --------------------------------------------------- */
         Map<String,String> pathParams   = new LinkedHashMap<>();
         Map<String,String> queryParams  = new LinkedHashMap<>();
         Map<String,String> headerParams = new LinkedHashMap<>();
         Map<String,String> bodyFields   = new LinkedHashMap<>();
-
-//        boolean isLoginRoute = route.equals("/login");
-//        if (isLoginRoute) {
-//            // override any LLM or captured values with your real credentials
-//            bodyFields.clear();
-//            bodyFields.put("username", "YOUR_USERNAME");
-//            bodyFields.put("password", "YOUR_PASSWORD");
-//        }
 
         String resolvedPath = route;
 
         if (opCfg.getTestParameters() != null) {
             for (TestParameter p : opCfg.getTestParameters()) {
 
-                /* 3a. prefer previously captured value ----------------------------- */
+                /* 4a. prefer previously captured value ----------------------------- */
                 String val = context.get(p.getName());
 
-                /* 3b. otherwise call the LLM (if enabled) -------------------------- */
+                /* 4b. otherwise call the LLM (if enabled) -------------------------- */
                 if (val == null && useLLM) {
                     ParameterInfo info = new ParameterInfo();
                     info.setName(p.getName());
@@ -157,13 +205,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
                     List<String> vals = llmGen.generateParameterValues(info);
                     val = vals.isEmpty() ? "LLM_EMPTY" : vals.get(0);
-                    log.info("LLM → {} {} = {}", service, p.getName(), val);
+                    log.info("LLM → {} {} = {}", service, p.getName(), val);
                 }
 
-                /* 3c. ultimate fallback ------------------------------------------- */
+                /* 4c. ultimate fallback ------------------------------------------- */
                 if (val == null) val = "VAL_" + p.getName();
 
-                /* 3d. store in correct container ----------------------------------- */
+                /* 4d. store in correct container ----------------------------------- */
                 switch (p.getIn().toLowerCase(Locale.ROOT)) {
                     case "path":
                         pathParams.put(p.getName(), val);
@@ -190,16 +238,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 ? rawBody
                 : (bodyFields.isEmpty() ? null : toJson(bodyFields));
 
-
-
-        /* 4. Expected status -------------------------------------------------------- */
+        /* 5. Expected status -------------------------------------------------------- */
         int expectedStatus = 200;
         try {
             if (opCfg.getExpectedResponse() != null)
                 expectedStatus = Integer.parseInt(opCfg.getExpectedResponse());
         } catch (NumberFormatException ignore) { /* keep default */ }
 
-// override with the *actual* HTTP code recorded in the trace, if present
+        // override with the *actual* HTTP code recorded in the trace, if present
         Object recorded = span.getOutputFields().get("http.status_code");
         if (recorded != null) {
             try {
@@ -207,11 +253,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             } catch (NumberFormatException ignore) { /* fallback to configured/default */ }
         }
 
-
-        /* 5. Create the StepCall ---------------------------------------------------- */
+        /* 6. Create the StepCall ---------------------------------------------------- */
         MultiServiceTestCase.StepCall call = new MultiServiceTestCase.StepCall(
                 service,                      // serviceName
-                opCfg,                        // Operation cfg (acts as “method” field)
+                opCfg,                        // Operation cfg (acts as "method" field)
                 resolvedPath,                 // resolved URI
                 pathParams,
                 queryParams,
@@ -221,7 +266,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 bodyFields
         );
 
-        System.out.println(">> StepCall = " + span.getServiceName() + " "
+        System.out.println(">> Step " + stepNumber + ": " + span.getServiceName() + " "
                 + span.getOperationName()
                 + " body=" + call.getBody()
                 + " expected=" + call.getExpectedStatus()
@@ -236,20 +281,25 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
         tc.addStepCall(call);
 
-        /* 6. expose outputs for downstream dependency resolution ------------------- */
+        /* 7. expose outputs for downstream dependency resolution ------------------- */
         context.putAll(span.getOutputFields());
 
-        /* 7. recurse --------------------------------------------------------------- */
-        gotoChildren(span, tc, context);
+        /* 8. recurse with child step numbering ------------------------------------- */
+        gotoChildren(span, tc, context, stepNumber);
     }
 
     /* ----------------------------------------------------------------------------- */
 
     private void gotoChildren(WorkflowStep parent,
                               MultiServiceTestCase tc,
-                              Map<String,String> ctx) {
-        for (WorkflowStep child : parent.getChildren()) {
-            traverse(child, tc, ctx);
+                              Map<String,String> ctx,
+                              String parentStepNumber) {
+        List<WorkflowStep> children = parent.getChildren();
+        int childIndex = 1;
+        for (WorkflowStep child : children) {
+            String childStepNumber = parentStepNumber + "." + childIndex;
+            traverse(child, tc, ctx, childStepNumber);
+            childIndex++;
         }
     }
 
@@ -267,7 +317,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 .findFirst().orElse(null);
     }
 
-    /** super‑simple JSON builder – sufficient for synthetic test bodies. */
+    /** super-simple JSON builder – sufficient for synthetic test bodies. */
     private static String toJson(Map<String,String> map) {
         StringBuilder sb = new StringBuilder("{");
         boolean first = true;
