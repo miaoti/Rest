@@ -127,7 +127,16 @@ public class SchemaManager {
     public static Schema<?> resolveSchema(Schema<?> schema, OpenAPI spec) {
         Schema resolvedSchema = schema;
         while (resolvedSchema.get$ref() != null) {
-            resolvedSchema = spec.getComponents().getSchemas().get(resolvedSchema.get$ref().replace("#/components/schemas/", ""));
+            String schemaName = resolvedSchema.get$ref().replace("#/components/schemas/", "");
+            Schema foundSchema = spec.getComponents().getSchemas().get(schemaName);
+            if (foundSchema == null) {
+                // Schema reference not found, return a basic object schema to avoid NPE
+                Schema<?> fallbackSchema = new Schema<>();
+                fallbackSchema.setType("object");
+                fallbackSchema.setProperties(new HashMap<>());
+                return fallbackSchema;
+            }
+            resolvedSchema = foundSchema;
         }
         return resolvedSchema;
     }
@@ -139,7 +148,15 @@ public class SchemaManager {
             schemaSubRef = resolvedSchema.get$ref().replace("#/components/schemas/", "");
             if (!Pattern.compile("/" + schemaSubRef + "/|/" + schemaSubRef + "$").matcher(currentRefPath).find()) {
                 currentRefPath += "/" + schemaSubRef;
-                resolvedSchema = spec.getComponents().getSchemas().get(schemaSubRef);
+                Schema foundSchema = spec.getComponents().getSchemas().get(schemaSubRef);
+                if (foundSchema == null) {
+                    // Schema reference not found, create a basic object schema
+                    resolvedSchema = new Schema<>();
+                    resolvedSchema.setType("object");
+                    resolvedSchema.setProperties(new HashMap<>());
+                    break;
+                }
+                resolvedSchema = foundSchema;
             } else {
                 resolvedSchema.set$ref(null);
                 resolvedSchema.setType("object");

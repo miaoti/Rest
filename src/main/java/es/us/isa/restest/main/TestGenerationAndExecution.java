@@ -46,8 +46,8 @@ import static io.restassured.RestAssured.baseURI;
 public class TestGenerationAndExecution {
 
 	// Properties file with configuration settings
-	private static String propertiesFilePath = "src/main/resources/My-Example/demo.properties";
-	private static String TraceFile = "src/main/resources/My-Example/booking‑traces.json";
+	private static String propertiesFilePath = "src/main/resources/My-Example/trainticket-demo.properties";
+	private static String TraceFile = "src\\main\\resources\\My-Example\\trainticket\\traces\\admin_price_create.json";
 
 	private static List<String> argsList;								// List containing args
 
@@ -278,10 +278,17 @@ public class TestGenerationAndExecution {
 
 	// Create a writer for RESTAssured
 	private static IWriter createWriter() {
+		// Get base URL from properties or default
+		String baseUrl = readParameterValue("base.url");
+		if (baseUrl == null) {
+			// Fallback to spec if no base.url property is set
+			baseUrl = spec.getSpecification().getServers().get(0).getUrl();
+		}
+
 		if ("MST".equals(generator)) {
 				// Multi‑service mode: hand off to the specialized writer
 						MultiServiceRESTAssuredWriter msWriter = new MultiServiceRESTAssuredWriter(
-								OAISpecPath, confPath, targetDirJava, testClassName, packageName, baseURI, logToFile
+								OAISpecPath, confPath, targetDirJava, testClassName, packageName, baseUrl, logToFile
 						);
 				// exactly mirror single‑service feature‑toggles:
 						msWriter.setLogging(true);
@@ -299,7 +306,7 @@ public class TestGenerationAndExecution {
 					targetDirJava,
 					testClassName,
 					packageName,
-					spec.getSpecification().getServers().get(0).getUrl(),
+					baseUrl,
 					logToFile
 			);
 			writer.setLogging(true);
@@ -329,7 +336,11 @@ public class TestGenerationAndExecution {
 			//Find auth property names (if any)
 			List<String> authProperties = Collections.emptyList();
 			if (!"MST".equals(generator) && confPath != null) {
+				// Only load auth properties for non-MST modes
 				authProperties = AllureAuthManager.findAuthProperties(spec, confPath);
+			} else if ("MST".equals(generator)) {
+				// For MST mode, we'll use default empty auth properties
+				logger.info("Using default auth properties for MST mode");
 			}
 			arm = new AllureReportManager(allureResultsDir, allureReportDir, authProperties);
 			arm.setEnvironmentProperties(propertiesFilePath);
@@ -353,7 +364,15 @@ public class TestGenerationAndExecution {
 			createDir(coverageDataDir);
 		}
 
-		CoverageMeter coverageMeter = enableInputCoverage || enableOutputCoverage ? new CoverageMeter(new CoverageGatherer(spec)) : null;
+		CoverageMeter coverageMeter = null;
+		
+		// Only create CoverageMeter for non-MST modes since MST has different config structure
+		if ((enableInputCoverage || enableOutputCoverage) && !"MST".equals(generator)) {
+			coverageMeter = new CoverageMeter(new CoverageGatherer(spec));
+		} else if ("MST".equals(generator)) {
+			// For MST mode, we skip coverage measurement due to multi-service configuration structure
+			logger.info("Coverage measurement disabled for MST mode due to multi-service configuration structure");
+		}
 
 		return new StatsReportManager(testDataDir, coverageDataDir, enableCSVStats, enableInputCoverage,
 					enableOutputCoverage, coverageMeter);
