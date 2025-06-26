@@ -33,7 +33,8 @@ public class WorkflowStep {
 
     /** Reference to the parent step in the workflow (null if this step has no parent in the scenario). */
     private WorkflowStep parent;
-    private String parentSpanId;
+    /** Temporary storage for parent span ID during construction phase. */
+    private String parentSpanIdTemp;
     /** List of child steps directly triggered by this step in the workflow. */
     private final List<WorkflowStep> children = new ArrayList<>();
 
@@ -167,11 +168,11 @@ public class WorkflowStep {
     }
 
     public void setParentSpanIdTemp(String parentSpanId) {
-        this.parentSpanId = parentSpanId;
+        this.parentSpanIdTemp = parentSpanId;
     }
 
     public String getParentSpanIdTemp() {
-        return  parentSpanId;
+        return  parentSpanIdTemp;
     }
 
     public void setStartTime(long l) {

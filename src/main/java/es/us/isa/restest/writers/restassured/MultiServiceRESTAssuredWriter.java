@@ -64,7 +64,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
         try {
             writeTestSuite(testCases);
         } catch (RESTestException e) {
-            // wrap in an unchecked exception so we don’t break the interface
+            // wrap in an unchecked exception so we don't break the interface
             throw new RuntimeException("Error writing multi‑service test suite", e);
         }
     }
@@ -144,14 +144,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     }
                     pw.println("                Response loginRes = RestAssured.given()");
                     pw.println("                    .contentType(\"application/json\")");
-                    pw.println("                    .body(\"{\\\"username\\\":\\\"YOUR_USERNAME\\\"," +
-                            "\\\"password\\\":\\\"YOUR_PASSWORD\\\"}\")");
-                    pw.println("                .when().post(\"/login\")");
+                    pw.println("                    .body(\"{\\\"username\\\":\\\"admin\\\"," +
+                            "\\\"password\\\":\\\"222222\\\"}\")");
+                    pw.println("                .when().post(\"/api/v1/users/login\")");
                     pw.println("                    .then().log().ifValidationFails()");
                     pw.println("                    .statusCode(200)");
                     pw.println("                    .extract().response();");
-                    pw.println("                _jwt[0]     = loginRes.jsonPath().getString(\"id\");");
-                    pw.println("                _jwtType[0] = loginRes.jsonPath().getString(\"type\");");
+                    pw.println("                _jwt[0]     = loginRes.jsonPath().getString(\"data.token\");");
+                    pw.println("                _jwtType[0] = \"Bearer\";");
                     if (allureReport) {
                         pw.println("            });");                     // close Allure.step
                         pw.println("        } catch (Throwable __t) {");   // login failed

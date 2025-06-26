@@ -148,26 +148,25 @@ public class ZeroShotLLMGenerator {
 
 
     private String callLLM(String prompt) {
-        final String GEMINI_API_KEY = "AIzaSyANJa0k_Ap8JROFtAh7BbxQo3XrVGHLR-c";
-        final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
+        // Use local gpt4all API instead of external services
+        final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
 
-        // Explicit instruction to return ONLY line-separated values
-        String strictPrompt = "You are a generator that returns only example values separated by newlines (\\n). " +
-                "Return exactly N values, no commentary, no bullets, no JSON, no formatting — just:\n\n" +
-                prompt;
-        //System.out.println("This is the prompt:" + strictPrompt);
+        String systemContent =
+                "You are an AI system that generates only the final lines of values " +
+                        "with no extra commentary or numbering. " +
+                        "If asked to produce N lines, return exactly N lines.";
 
-        // Build the JSON payload
+        // Build the request body compatible with OpenAI API format (which gpt4all supports)
+        JSONArray messages = new JSONArray()
+                .put(new JSONObject().put("role", "system").put("content", systemContent))
+                .put(new JSONObject().put("role", "user").put("content", prompt));
+
         JSONObject requestBody = new JSONObject()
-                .put("contents", new JSONArray()
-                        .put(new JSONObject()
-                                .put("parts", new JSONArray()
-                                        .put(new JSONObject()
-                                                .put("text", strictPrompt)
-                                        )
-                                )
-                        )
-                );
+                .put("model", "llama-3-8b-instruct")  // Use the local Llama 3 8B Instruct model
+                .put("messages", messages)
+                .put("max_tokens", 200)
+                .put("temperature", 0.7)
+                .put("stream", false);
 
         okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient();
         okhttp3.RequestBody body = okhttp3.RequestBody.create(
@@ -176,23 +175,24 @@ public class ZeroShotLLMGenerator {
         );
 
         okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(GEMINI_API_URL)
+                .url(LOCAL_LLM_API_URL)
                 .header("Content-Type", "application/json")
                 .post(body)
                 .build();
 
         try (okhttp3.Response response = httpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                System.err.println("[Gemini] API call failed with code " + response.code());
+                System.err.println("[Local LLM] API call failed with code " + response.code());
                 String err = response.body() != null ? response.body().string() : "";
-                System.err.println("[Gemini] Response body: " + err);
+                System.err.println("[Local LLM] Response body: " + err);
                 return "";
             }
 
             String responseBody = response.body() != null ? response.body().string() : "";
-            //System.out.println("Gemini raw response: " + responseBody);
-            return extractFromGeminiResponse(responseBody);
+            System.out.println("[Local LLM] Raw response: " + responseBody);
+            return extractContentFromResponse(responseBody);
         } catch (Exception e) {
+            System.err.println("[Local LLM] Error calling local LLM API: " + e.getMessage());
             e.printStackTrace();
             return "";
         }

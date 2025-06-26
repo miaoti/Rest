@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.io.File;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,15 +37,51 @@ public class TraceWorkflowExtractor {
     private static final Logger log = LogManager.getLogger(TraceWorkflowExtractor.class);
 
     /**
-     * Reads OpenTelemetry spans from a JSON or JSONL file and extracts logical workflow scenarios.
+     * Reads OpenTelemetry spans from a JSON/JSONL file or directory and extracts logical workflow scenarios.
      * Each scenario is a sequence of steps (potentially across multiple services) representing an end-to-end workflow.
      *
-     * @param filePath the path to the JSON or JSONL file containing span data
+     * @param fileOrDirPath the path to the JSON/JSONL file or directory containing trace files
      * @return a list of {@link WorkflowScenario} objects reconstructed from the trace data
-     * @throws IOException if an I/O error occurs reading the file
+     * @throws IOException if an I/O error occurs reading the file(s)
      * @throws IllegalArgumentException if the file content is not valid JSON/span format
      */
-    public static List<WorkflowScenario> extractScenarios(String filePath) throws IOException {
+    public static List<WorkflowScenario> extractScenarios(String fileOrDirPath) throws IOException {
+        File path = new File(fileOrDirPath);
+        List<WorkflowScenario> allScenarios = new ArrayList<>();
+        
+        if (path.isDirectory()) {
+            // Process all JSON files in the directory
+            File[] jsonFiles = path.listFiles((dir, name) -> 
+                name.toLowerCase().endsWith(".json") || name.toLowerCase().endsWith(".jsonl"));
+            
+            if (jsonFiles == null || jsonFiles.length == 0) {
+                log.warn("No JSON/JSONL files found in directory: " + fileOrDirPath);
+                return allScenarios;
+            }
+            
+            log.info("Processing {} trace files from directory: {}", jsonFiles.length, fileOrDirPath);
+            for (File jsonFile : jsonFiles) {
+                log.info("Processing trace file: {}", jsonFile.getName());
+                try {
+                    List<WorkflowScenario> fileScenarios = extractScenariosFromFile(jsonFile.getPath());
+                    allScenarios.addAll(fileScenarios);
+                } catch (Exception e) {
+                    log.error("Error processing trace file {}: {}", jsonFile.getName(), e.getMessage());
+                    // Continue processing other files
+                }
+            }
+        } else {
+            // Single file processing
+            allScenarios = extractScenariosFromFile(fileOrDirPath);
+        }
+        
+        return allScenarios;
+    }
+    
+    /**
+     * Internal method to extract scenarios from a single file.
+     */
+    private static List<WorkflowScenario> extractScenariosFromFile(String filePath) throws IOException {
         List<JSONObject> spanObjects = new ArrayList<>();
 
 
