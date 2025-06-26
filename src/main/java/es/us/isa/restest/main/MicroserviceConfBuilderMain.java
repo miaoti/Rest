@@ -16,10 +16,10 @@ public class MicroserviceConfBuilderMain {
     public static void main(String[] args) throws Exception {
 
         // Path to your real system OpenAPI specification
-        String openApiPath = "src/main/resources/My-Example/ts-wait-order-service.yaml";
+        String openApiPath = "src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml";
 
         // Path where the generated configuration will be saved
-        String outputConfPath = "src/main/resources/My-Example/real-system-conf.yaml";
+        String outputConfPath = "src/main/resources/My-Example/trainticket/real-system-conf.yaml";
 
         // Load OpenAPI Specification
         OpenAPISpecification spec = new OpenAPISpecification(openApiPath);
