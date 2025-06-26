@@ -13,6 +13,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -67,10 +68,16 @@ public class MicroserviceTestConfigurationGenerator {
                 RequestBody resolvedRb = rb;
                 if (rb.get$ref() != null) {
                     String refName = rb.get$ref().replace("#/components/requestBodies/", "");
+                    
+                    // Handle service-specific prefix mapping
+                    // e.g., api_PriceInfo -> ts-admin-basic-info-service_PriceInfo
+                    String actualRefName = resolveServiceSpecificReference(refName, serviceName, 
+                            openApiSpec.getSpecification().getComponents().getRequestBodies().keySet());
+                    
                     if (openApiSpec.getSpecification().getComponents() != null && 
                         openApiSpec.getSpecification().getComponents().getRequestBodies() != null &&
-                        openApiSpec.getSpecification().getComponents().getRequestBodies().containsKey(refName)) {
-                        resolvedRb = openApiSpec.getSpecification().getComponents().getRequestBodies().get(refName);
+                        openApiSpec.getSpecification().getComponents().getRequestBodies().containsKey(actualRefName)) {
+                        resolvedRb = openApiSpec.getSpecification().getComponents().getRequestBodies().get(actualRefName);
                     }
                 }
                 
@@ -78,9 +85,9 @@ public class MicroserviceTestConfigurationGenerator {
                     MediaType mt = resolvedRb.getContent().get("application/json");
                     Schema<?> schema = mt.getSchema();
                     
-                    // Resolve the schema if it has $ref
+                    // Resolve the schema if it has $ref with service-specific mapping
                     if (schema != null) {
-                        Schema<?> resolvedSchema = SchemaManager.resolveSchema(schema, openApiSpec.getSpecification());
+                        Schema<?> resolvedSchema = resolveSchemaWithServiceMapping(schema, serviceName, openApiSpec.getSpecification());
                         
                         if (resolvedSchema != null && resolvedSchema.getProperties() != null) {
                             List<String> requiredProps = resolvedSchema.getRequired() != null
@@ -388,5 +395,51 @@ public class MicroserviceTestConfigurationGenerator {
         return node.toString();
     }
 
+    /**
+     * Resolves service-specific reference names.
+     * Maps generic references like "api_PriceInfo" to actual service-specific names like "ts-admin-basic-info-service_PriceInfo"
+     */
+    private String resolveServiceSpecificReference(String genericRefName, String serviceName, Set<String> availableRefs) {
+        // First try direct match
+        if (availableRefs.contains(genericRefName)) {
+            return genericRefName;
+        }
+        
+        // Try with service prefix
+        String serviceSpecificRef = serviceName + "_" + genericRefName.replace("api_", "");
+        if (availableRefs.contains(serviceSpecificRef)) {
+            return serviceSpecificRef;
+        }
+        
+        // Try to find any reference that ends with the generic name (without api_ prefix)
+        String withoutApiPrefix = genericRefName.replace("api_", "");
+        for (String ref : availableRefs) {
+            if (ref.endsWith("_" + withoutApiPrefix)) {
+                return ref;
+            }
+        }
+        
+        // Fallback to original name
+        return genericRefName;
+    }
+    
+    /**
+     * Resolves schema references with service-specific mapping.
+     */
+    private Schema<?> resolveSchemaWithServiceMapping(Schema<?> schema, String serviceName, OpenAPI spec) {
+        if (schema.get$ref() == null) {
+            return SchemaManager.resolveSchema(schema, spec);
+        }
+        
+        String refName = schema.get$ref().replace("#/components/schemas/", "");
+        String actualRefName = resolveServiceSpecificReference(refName, serviceName, 
+                spec.getComponents().getSchemas().keySet());
+        
+        // Create a temporary schema with the corrected reference
+        Schema<?> correctedSchema = new Schema<>();
+        correctedSchema.set$ref("#/components/schemas/" + actualRefName);
+        
+        return SchemaManager.resolveSchema(correctedSchema, spec);
+    }
 
 }

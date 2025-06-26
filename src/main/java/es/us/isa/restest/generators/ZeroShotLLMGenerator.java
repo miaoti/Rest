@@ -2,10 +2,16 @@ package es.us.isa.restest.generators;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * A "zero-shot" style generator that queries a Large Language Model (LLM)
@@ -23,8 +29,11 @@ public class ZeroShotLLMGenerator {
      * If "city", it might produce city names, etc.
      */
     public List<String> generateParameterValues(ParameterInfo param, int howMany) {
+        System.out.println("*** ZeroShotLLMGenerator.generateParameterValues called for: " + param.getName() + " (howMany=" + howMany + ")");
+        
         // 1) check cache
         if (cache.containsKey(param.getName())) {
+            System.out.println("*** Found cached value for: " + param.getName());
             return cache.get(param.getName());
         }
 
@@ -33,7 +42,7 @@ public class ZeroShotLLMGenerator {
 
         // 3) call the LLM
         String rawOutput = callLLM(prompt);
-        System.out.println(rawOutput);
+        System.out.println("*** LLM Raw output: " + rawOutput);
 
         // 4) parse the lines
         List<String> values = parseLines(rawOutput);
@@ -162,42 +171,74 @@ public class ZeroShotLLMGenerator {
                 .put(new JSONObject().put("role", "user").put("content", prompt));
 
         JSONObject requestBody = new JSONObject()
-                .put("model", "llama-3-8b-instruct")  // Use the local Llama 3 8B Instruct model
+                .put("model", "llama-3.2-3b-instruct")
                 .put("messages", messages)
                 .put("max_tokens", 200)
-                .put("temperature", 0.7)
-                .put("stream", false);
+                .put("temperature", 0.7);
 
-        okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient();
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(
-                requestBody.toString(),
-                okhttp3.MediaType.parse("application/json")
-        );
+        System.out.println("[Local LLM] Sending request to: " + LOCAL_LLM_API_URL);
+        System.out.println("[Local LLM] Request body: " + requestBody.toString());
 
-        okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(LOCAL_LLM_API_URL)
-                .header("Content-Type", "application/json")
-                .post(body)
-                .build();
+        try {
+            // Build HTTP client with longer timeout
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(90, TimeUnit.SECONDS)  // Increased to 90 seconds
+                    .build();
 
-        try (okhttp3.Response response = httpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.err.println("[Local LLM] API call failed with code " + response.code());
-                String err = response.body() != null ? response.body().string() : "";
-                System.err.println("[Local LLM] Response body: " + err);
-                return "";
+            RequestBody body = RequestBody.create(
+                    requestBody.toString(),
+                    MediaType.parse("application/json")
+            );
+
+            Request request = new Request.Builder()
+                    .url(LOCAL_LLM_API_URL)
+                    .post(body)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
+
+            try (Response response = client.newCall(request).execute()) {
+                System.out.println("[Local LLM] Response code: " + response.code());
+                String responseBody = response.body().string();
+                System.out.println("[Local LLM] Response body: " + responseBody);
+                
+                if (!response.isSuccessful()) {
+                    System.out.println("[Local LLM] HTTP error: " + response.code() + " - " + response.message());
+                    return generateFallbackValue();
+                }
+
+                JSONObject jsonResponse = new JSONObject(responseBody);
+
+                if (jsonResponse.has("choices")) {
+                    JSONArray choices = jsonResponse.getJSONArray("choices");
+                    if (choices.length() > 0) {
+                        JSONObject choice = choices.getJSONObject(0);
+                        JSONObject message = choice.getJSONObject("message");
+                        String content = message.getString("content").trim();
+                        
+                        System.out.println("[Local LLM] Successfully extracted content: " + content);
+                        return content;
+                    }
+                }
+                
+                System.out.println("[Local LLM] No choices in response, using fallback");
+                return generateFallbackValue();
             }
 
-            String responseBody = response.body() != null ? response.body().string() : "";
-            System.out.println("[Local LLM] Raw response: " + responseBody);
-            return extractContentFromResponse(responseBody);
         } catch (Exception e) {
-            System.err.println("[Local LLM] Error calling local LLM API: " + e.getMessage());
+            System.out.println("[Local LLM] Error calling local LLM API: " + e.getMessage());
             e.printStackTrace();
-            return "";
+            return generateFallbackValue();
         }
     }
 
+    private String generateFallbackValue() {
+        // Generate simple fallback values when LLM is unavailable
+        String fallback = "test" + System.currentTimeMillis() % 1000;
+        System.out.println("*** FALLBACK VALUE GENERATED: " + fallback);
+        return fallback;
+    }
 
     private String extractFromGeminiResponse(String responseJson) {
         try {
