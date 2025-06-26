@@ -190,6 +190,29 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                if (loginSucceeded.get()) {");
                         pw.println("                    req = req.header(\"Authorization\", jwtType + \" \" + jwt);");
                         pw.println("                }");
+                        
+                        // Add path parameters
+                        for (Map.Entry<String, String> pathParam : step.getPathParams().entrySet()) {
+                            pw.println("                req = req.pathParam(\"" + escape(pathParam.getKey()) + "\", \"" + escape(pathParam.getValue()) + "\");");
+                        }
+                        
+                        // Add query parameters
+                        for (Map.Entry<String, String> queryParam : step.getQueryParams().entrySet()) {
+                            pw.println("                req = req.queryParam(\"" + escape(queryParam.getKey()) + "\", \"" + escape(queryParam.getValue()) + "\");");
+                        }
+                        
+                        // Add headers
+                        for (Map.Entry<String, String> header : step.getHeaders().entrySet()) {
+                            pw.println("                req = req.header(\"" + escape(header.getKey()) + "\", \"" + escape(header.getValue()) + "\");");
+                        }
+                        
+                        // Add body for POST/PUT/PATCH requests
+                        if (step.getBody() != null && !step.getBody().trim().isEmpty() && 
+                            (verb.equals("post") || verb.equals("put") || verb.equals("patch"))) {
+                            pw.println("                req = req.contentType(\"application/json\");");
+                            pw.println("                req = req.body(\"" + escape(step.getBody()) + "\");");
+                        }
+                        
                         // → keep console logging only when we are **not** using the Allure filter
                         if (loggingEnabled && !allureReport)
                             pw.println("                req = req.log().all();");
