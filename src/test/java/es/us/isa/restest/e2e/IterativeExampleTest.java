@@ -32,7 +32,7 @@ public class IterativeExampleTest {
     }
 
     @Test
-    public void testIterativeExampleRandomTestCaseGenerator() throws RESTestException {
+    public void testIterativeExampleRandomTestCaseGenerator() throws RESTestException, IOException {
         String propertiesFilePath = "src/test/resources/AnApiOfIceAndFire/iceandfire_e2e.properties";
 
         String[] args = {propertiesFilePath};
@@ -48,7 +48,7 @@ public class IterativeExampleTest {
     }
 
     @Test
-    public void testIterativeExampleARTestCaseGeneration() throws RESTestException {
+    public void testIterativeExampleARTestCaseGeneration() throws RESTestException, IOException {
         String propertiesFilePath = "src/test/resources/AnApiOfIceAndFire/iceandfire_art.properties";
 
         String[] args = {propertiesFilePath};
@@ -64,7 +64,7 @@ public class IterativeExampleTest {
     }
 
     @Test
-    public void testIterativeExampleFuzzingTestCaseGeneration() throws RESTestException {
+    public void testIterativeExampleFuzzingTestCaseGeneration() throws RESTestException, IOException {
         String propertiesFilePath = "src/test/resources/Comments/comments_betty.properties";
 
         String[] args = {propertiesFilePath};

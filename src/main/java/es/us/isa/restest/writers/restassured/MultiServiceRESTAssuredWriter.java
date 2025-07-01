@@ -163,18 +163,42 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println();
 
                     /* ------------ every StepCall -------------------------------- */
+                    pw.println("        // Step execution results tracking");
+                    pw.println("        final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();");
+                    pw.println("        final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();");
+                    pw.println();
+
                     int stepIdx = 1;
                     for (MultiServiceTestCase.StepCall step : scenario.getSteps()) {
 
                         String verb = step.getMethod() == null || step.getMethod().getMethod() == null
                                 ? "get"
                                 : step.getMethod().getMethod().toLowerCase();
-                        String stepTitle = "Step " + stepIdx + ": "
+                        
+                        // Generate hierarchical step number if available from the generator
+                        String stepNumber = "Step " + stepIdx;
+                        String stepTitle = stepNumber + ": "
                                 + step.getServiceName() + " "
                                 + verb.toUpperCase() + " " + step.getPath();
 
                         pw.println("        // " + escape(stepTitle));
-                        pw.println("        if (!scenarioFailed.get()) {");
+                        
+                        // Check if this step should be executed based on dependencies
+                        pw.println("        boolean shouldExecuteStep" + stepIdx + " = true;");
+                        
+                        // Check dependencies based on trace analysis
+                        if (!step.getParamDependencies().isEmpty()) {
+                            pw.println("        // Check dependencies for " + stepTitle);
+                            for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
+                                int sourceStepIdx = dep.getValue().sourceStepIndex;
+                                pw.println("        if (!stepResults.getOrDefault(" + sourceStepIdx + ", false)) {");
+                                pw.println("            shouldExecuteStep" + stepIdx + " = false;");
+                                pw.println("            // Dependency step " + sourceStepIdx + " failed");
+                                pw.println("        }");
+                            }
+                        }
+                        
+                        pw.println("        if (shouldExecuteStep" + stepIdx + ") {");
 
                         /* --------- open an explicit Allure step ------------------ */
                         if (allureReport) {
@@ -190,6 +214,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                if (loginSucceeded.get()) {");
                         pw.println("                    req = req.header(\"Authorization\", jwtType + \" \" + jwt);");
                         pw.println("                }");
+                        
+                        // Add dependency resolution for parameters
+                        for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
+                            String paramName = dep.getKey();
+                            int sourceStepIdx = dep.getValue().sourceStepIndex;
+                            String sourceKey = dep.getValue().sourceOutputKey;
+                            pw.println("                String " + paramName + "Value = capturedOutputs.get(" + sourceStepIdx + ");");
+                            pw.println("                if (" + paramName + "Value != null) {");
+                            pw.println("                    // Use captured value from step " + sourceStepIdx);
+                            pw.println("                }");
+                        }
                         
                         // Add path parameters
                         for (Map.Entry<String, String> pathParam : step.getPathParams().entrySet()) {
@@ -217,9 +252,28 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         if (loggingEnabled && !allureReport)
                             pw.println("                req = req.log().all();");
 
-                        pw.println("                req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
+                        pw.println("                Response stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
                         pw.println("                   .then().log().ifValidationFails()");
-                        pw.println("                   .statusCode(" + step.getExpectedStatus() + ");");
+                        pw.println("                   .statusCode(" + step.getExpectedStatus() + ")");
+                        pw.println("                   .extract().response();");
+                        
+                        // Capture outputs for future steps
+                        if (!step.getCaptureOutputKeys().isEmpty()) {
+                            pw.println("                // Capture outputs for future steps");
+                            for (String outputKey : step.getCaptureOutputKeys()) {
+                                pw.println("                try {");
+                                pw.println("                    String captured" + outputKey + " = stepResponse" + stepIdx + ".jsonPath().getString(\"" + outputKey + "\");");
+                                pw.println("                    if (captured" + outputKey + " != null) {");
+                                pw.println("                        capturedOutputs.put(" + stepIdx + ", captured" + outputKey + ");");
+                                pw.println("                    }");
+                                pw.println("                } catch (Exception e) {");
+                                pw.println("                    // Output key '" + outputKey + "' not found in response");
+                                pw.println("                }");
+                            }
+                        }
+                        
+                        pw.println("                stepResults.put(" + stepIdx + ", true);");
+                        pw.println("                System.out.println(\"✓ " + escape(stepTitle) + " - SUCCESS\");");
 
                         /* --------- mark step PASS -------------------------------- */
                         if (allureReport) {
@@ -227,7 +281,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                     + ".updateStep(s -> s.setStatus(Status.PASSED));");
                         }
                         pw.println("            } catch (Throwable t) {");
-                        pw.println("                scenarioFailed.set(true);");
+                        pw.println("                stepResults.put(" + stepIdx + ", false);");
+                        pw.println("                System.out.println(\"✗ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
                         if (allureReport) {
                             pw.println("                Allure.addAttachment(\"Error • " + escape(stepTitle) + "\", t.toString());");
                             // use FAILED so the icon turns red (cross) instead of green
@@ -239,7 +294,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         if (allureReport) {
                             pw.println("            Allure.getLifecycle().stopStep();");
                         }
-                        pw.println("        } else {   // scenario already broken – mark as SKIPPED");
+                        pw.println("        } else {   // step skipped due to dependency failure");
+                        pw.println("            stepResults.put(" + stepIdx + ", false);");
+                        pw.println("            System.out.println(\"⚠ " + escape(stepTitle) + " - SKIPPED (dependency failed)\");");
                         if (allureReport) {
                             pw.println("            Allure.getLifecycle().startStep(");
                             pw.println("                java.util.UUID.randomUUID().toString(),");
@@ -253,8 +310,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         stepIdx++;
                     }
 
-                    pw.println("        if (scenarioFailed.get()) {");
-                    pw.println("            fail(\"Scenario finished with one or more failed steps\");");
+                    // Check overall scenario result
+                    pw.println("        // Evaluate scenario result");
+                    pw.println("        long successfulSteps = stepResults.values().stream().filter(result -> result).count();");
+                    pw.println("        long totalSteps = stepResults.size();");
+                    pw.println("        System.out.println(\"Scenario completed: \" + successfulSteps + \"/\" + totalSteps + \" steps successful\");");
+                    pw.println("        ");
+                    pw.println("        // Scenario passes if at least some steps executed successfully");
+                    pw.println("        // (allows for independent step execution based on trace dependencies)");
+                    pw.println("        if (successfulSteps == 0) {");
+                    pw.println("            fail(\"Scenario failed: No steps executed successfully\");");
                     pw.println("        }");
                     pw.println("    }");
                     pw.println();

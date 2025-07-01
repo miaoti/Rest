@@ -29,8 +29,11 @@ public class ZeroShotLLMGenerator {
      * If "city", it might produce city names, etc.
      */
     public List<String> generateParameterValues(ParameterInfo param, int howMany) {
+        System.out.println("*** ZeroShotLLMGenerator.generateParameterValues called for: " + param.getName() + " (howMany=" + howMany + ")");
+        
         // 1) check cache
         if (cache.containsKey(param.getName())) {
+            System.out.println("*** Found cached value for: " + param.getName());
             return cache.get(param.getName());
         }
 
@@ -39,6 +42,7 @@ public class ZeroShotLLMGenerator {
 
         // 3) call the LLM
         String rawOutput = callLLM(prompt);
+        System.out.println("*** LLM Raw output: " + rawOutput);
 
         // 4) parse the lines
         List<String> values = parseLines(rawOutput);
@@ -231,7 +235,9 @@ public class ZeroShotLLMGenerator {
 
     private String generateFallbackValue() {
         // Generate simple fallback values when LLM is unavailable
-        return "test" + System.currentTimeMillis() % 1000;
+        String fallback = "test" + System.currentTimeMillis() % 1000;
+        System.out.println("*** FALLBACK VALUE GENERATED: " + fallback);
+        return fallback;
     }
 
     private String extractFromGeminiResponse(String responseJson) {
