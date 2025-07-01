@@ -301,12 +301,14 @@ public class TraceWorkflowExtractor {
                 if (attributes == null) attributes = spanObj.optJSONObject("tags");
                 String httpMethod = null;
                 String httpUrl = null;
+                String httpTarget = null;
                 String requestBody = null;
                 String responseBody = null;
                 String statusCode = null;
                 if (attributes != null) {
                     httpMethod = attributes.optString("http.method", null);
                     httpUrl = attributes.optString("http.url", null);
+                    httpTarget = attributes.optString("http.target", null);
                     requestBody = attributes.optString("http.request.body", null);
                     responseBody = attributes.optString("http.response.body", null);
                     // status code might be numeric or string in JSON; handle both
@@ -319,8 +321,21 @@ public class TraceWorkflowExtractor {
                 // Prepare maps for input and output fields
                 Map<String, String> inputFields = new HashMap<>();
                 Map<String, String> outputFields = new HashMap<>();
+                
+                // Include HTTP method and URL information in input fields for generator access
+                if (httpMethod != null && !httpMethod.isEmpty()) {
+                    inputFields.put("http.method", httpMethod);
+                }
+                if (httpUrl != null && !httpUrl.isEmpty()) {
+                    inputFields.put("http.url", httpUrl);
+                }
+                if (httpTarget != null && !httpTarget.isEmpty()) {
+                    inputFields.put("http.target", httpTarget);
+                }
+                
                 // Parse request inputs (body and query params)
                 if (requestBody != null && !requestBody.isEmpty()) {
+                    inputFields.put("http.request.body", requestBody);
                     extractFieldsFromContent(requestBody, inputFields);
                 }
                 if (httpUrl != null && !httpUrl.isEmpty()) {
@@ -331,16 +346,26 @@ public class TraceWorkflowExtractor {
                         extractFieldsFromContent(queryString, inputFields);
                     }
                 }
-                // (We do not explicitly include httpMethod or full URL in inputFields for linking,
-                // since they are usually not needed for data dependencies. The operationName stores them for context.)
 
                 // Parse response outputs (body)
                 if (responseBody != null && !responseBody.isEmpty()) {
+                    outputFields.put("http.response.body", responseBody);
                     extractFieldsFromContent(responseBody, outputFields);
                 }
                 if (statusCode != null && !statusCode.isEmpty()) {
                     // Include status code in output fields (could be useful in scenario verification, though not for linking)
                     outputFields.put("http.status_code", statusCode);
+                }
+                
+                // Include HTTP method and URL in output fields as well for generator access
+                if (httpMethod != null && !httpMethod.isEmpty()) {
+                    outputFields.put("http.method", httpMethod);
+                }
+                if (httpUrl != null && !httpUrl.isEmpty()) {
+                    outputFields.put("http.url", httpUrl);
+                }
+                if (httpTarget != null && !httpTarget.isEmpty()) {
+                    outputFields.put("http.target", httpTarget);
                 }
 
                 // Create the WorkflowStep object for this span
