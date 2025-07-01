@@ -47,7 +47,7 @@ public class TestGenerationAndExecution {
 
 	// Properties file with configuration settings
 	private static String propertiesFilePath = "src/main/resources/My-Example/trainticket-demo.properties";
-	private static String TraceFile = "src\\main\\resources\\My-Example\\trainticket\\traces\\admin_price_create.json";
+	private static String TraceFile = "src\\main\\resources\\My-Example\\trainticket\\traces";
 
 	private static List<String> argsList;								// List containing args
 

@@ -15,6 +15,9 @@ public class TraceMain {
         List<WorkflowScenario> scenarios = TraceWorkflowExtractor.extractScenarios(traceFilePath);
         for (WorkflowScenario scenario : scenarios) {
             System.out.println(scenario);
+
+
+
         }
     }
 }
