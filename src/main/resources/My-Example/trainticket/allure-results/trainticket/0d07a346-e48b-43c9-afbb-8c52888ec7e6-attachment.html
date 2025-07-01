@@ -1,0 +1,40 @@
+<div>POST to http://129.62.148.112:32677/api/v1/adminrouteservice/adminroute</div>
+
+<h4>Body</h4>
+<div>
+    <pre class="preformated-text">
+    {
+    &quot;distanceList&quot;: &quot;distanceList&quot;,
+    &quot;distances&quot;: &quot;[12, 5]&quot;,
+    &quot;endStation&quot;: &quot;Cincinnati&quot;,
+    &quot;id&quot;: &quot;id&quot;,
+    &quot;loginId&quot;: &quot;loginId&quot;,
+    &quot;startStation&quot;: &quot;Main Street&quot;,
+    &quot;stationList&quot;: &quot;stationList&quot;,
+    &quot;stations&quot;: &quot;[\&quot;Hudson Station\&quot;, \&quot;Southwest Airlines Terminal\&quot;, \&quot;North Central Train Depot\&quot;, \&quot;East Coast Highway Stop\&quot;, \&quot;Westside Bus Station\&quot;]&quot;
+}
+    </pre>
+</div>
+
+<h4>Headers</h4>
+<div>
+        <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiJkZThlMDJiOS01ZDkyLTQ5MjgtYTJjOC1iMjVlNDM5NGJkZDciLCJpYXQiOjE3NTEzNDgzMzAsImV4cCI6MTc1MTM1MTkzMH0.cU91suK0hfCG3HeHb2fxQI_6FzDb9mGwBgdzzS4eDds</div>
+        <div>Accept: */*</div>
+        <div>Content-Type: application/json; charset=UTF-8</div>
+</div>
+
+
+
+<h4>Curl</h4>
+<div>
+curl -v -X POST &#39;http://129.62.148.112:32677/api/v1/adminrouteservice/adminroute&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiJkZThlMDJiOS01ZDkyLTQ5MjgtYTJjOC1iMjVlNDM5NGJkZDciLCJpYXQiOjE3NTEzNDgzMzAsImV4cCI6MTc1MTM1MTkzMH0.cU91suK0hfCG3HeHb2fxQI_6FzDb9mGwBgdzzS4eDds&#39; -H &#39;Accept: */*&#39; -H &#39;Content-Type: application/json; charset=UTF-8&#39; -d &#39;{
+    &quot;distanceList&quot;: &quot;distanceList&quot;,
+    &quot;distances&quot;: &quot;[12, 5]&quot;,
+    &quot;endStation&quot;: &quot;Cincinnati&quot;,
+    &quot;id&quot;: &quot;id&quot;,
+    &quot;loginId&quot;: &quot;loginId&quot;,
+    &quot;startStation&quot;: &quot;Main Street&quot;,
+    &quot;stationList&quot;: &quot;stationList&quot;,
+    &quot;stations&quot;: &quot;[\&quot;Hudson Station\&quot;, \&quot;Southwest Airlines Terminal\&quot;, \&quot;North Central Train Depot\&quot;, \&quot;East Coast Highway Stop\&quot;, \&quot;Westside Bus Station\&quot;]&quot;
+}&#39;
+</div>

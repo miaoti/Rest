@@ -1,0 +1,50 @@
+{
+  "6f2dbe0656069a674543337e30faa059" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 1,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "2805567d1097e66d",
+      "status" : "passed",
+      "time" : {
+        "start" : 1751347401847,
+        "stop" : 1751347403120,
+        "duration" : 1273
+      }
+    } ]
+  },
+  "2bd3e3609bfd56025432c4a7e5596810" : {
+    "statistic" : {
+      "failed" : 2,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 0,
+      "unknown" : 0,
+      "total" : 2
+    },
+    "items" : [ {
+      "uid" : "77dbdc420542c9f3",
+      "status" : "failed",
+      "statusDetails" : "Scenario finished with one or more failed steps",
+      "time" : {
+        "start" : 1750979719251,
+        "stop" : 1750979720445,
+        "duration" : 1194
+      }
+    }, {
+      "uid" : "4ecc65fa604407b9",
+      "status" : "failed",
+      "statusDetails" : "Scenario finished with one or more failed steps",
+      "time" : {
+        "start" : 1750979719251,
+        "stop" : 1750979720445,
+        "duration" : 1194
+      }
+    } ]
+  }
+}
