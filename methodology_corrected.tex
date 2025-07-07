@@ -1,0 +1,461 @@
+\section{Background}
+\subsection{Microservice Testing Challenges}\label{sec:bg-challenges}
+Industry surveys and secondary studies consistently highlight that
+\emph{testing is among the most costly and error–prone activities once
+a system adopts microservice architecture}~\cite{waseem2020testing, miao2025sms}.  
+Three dimensions are recurrent across the literature:
+
+\begin{enumerate}[leftmargin=*,label=\roman*)]
+  \item \textbf{API correctness} — Each service exposes a RESTful (or
+        gRPC/GraphQL) contract whose input domain must be exercised
+        thoroughly; malformed requests or forgotten edge cases may
+        propagate faults to upstream clients.
+  \item \textbf{Workflow integrity} — Real business transactions
+        traverse \emph{multiple} services.  
+        Integration‐relevant faults such as data-flow mismatches,
+        missing authentication tokens, or out-of-order requests represent
+        a significant proportion of production incidents in recent
+        studies~\cite{zhou2018microservice}.
+  \item \textbf{Resilience under partial failure} — Network partitions,
+        container restarts, and eventual-consistency delays make fault
+        injection (a.k.a.\ chaos testing) indispensable.  Mapping
+        studies report that fewer than one-third of automated tools
+        provide built-in support for resilience
+        validation~\cite{li2020testing}.
+\end{enumerate}
+
+The \emph{Systematic Mapping Study of Test Generation for
+Microservices}~\cite{miao2025sms} further classifies existing work
+into \textit{consumer-driven contract}, \textit{search-based input
+generation}, and \textit{resilience testing}; yet it concludes that
+no current tool unifies these approaches into a single, end-to-end
+workflow-aware framework.
+
+\subsection{The \textsc{RESTest} Framework}\label{sec:restest}
+\textsc{RESTest} is an open-source, \emph{model-based}, black-box
+testing framework that derives executable test cases directly from an
+OpenAPI specification~\cite{martin2019restest}.  
+Its core pipeline (Figure 1 in~\cite{martin2019restest}) comprises:
+
+\begin{enumerate}[leftmargin=*,label=\arabic*)]
+  \item \textbf{Test-model generation} — Converts the OpenAPI document
+        into an internal YAML test model enriched with
+        constraints (e.g.\ regular expressions, numeric ranges).
+  \item \textbf{Test-case generation} — Applies a portfolio of
+        techniques such as fuzzing, adaptive random testing, and
+        constraint solving to maximise branch and HTTP-state coverage.
+  \item \textbf{Test writing} — Instantiates the abstract tests into
+        concrete clients (e.g.\ \textit{REST-assured}, Postman).
+  \item \textbf{Execution \& reporting} — Runs the tests online or
+        offline and produces Allure reports.
+\end{enumerate}
+
+\textbf{Extensibility.}  
+\textsc{RESTest} exposes \emph{plug-in interfaces} for custom data
+generators and writers, enabling researchers to prototype new
+strategies without modifying the core engine.  
+Prior extensions include grammar-based generators, OAuth2
+authenticators, and domain-specific value providers, but \emph{none}
+addresses cross-endpoint data flow or multi-service orchestration
+out-of-the-box.
+
+\textbf{Positioning of our work.}  
+The generators referenced throughout this paper—
+\textit{AiDrivenLLMGenerator}, \textit{SmartSemanticTestCaseGenerator},
+and \textit{SchemaGuidedDependencyMutator}—\emph{are new plug-ins we
+developed} to extend \textsc{RESTest}.  
+They complement, rather than replace, the original
+constraint-based and fuzzing engines reported by
+Martin-López \emph{et al.}~\cite{martin2019restest}.  
+Our contribution is therefore orthogonal: we retain the proven
+single-endpoint capabilities of \textsc{RESTest} while adding a
+trace-driven layer for \emph{workflow-level} generation and execution.
+
+
+%====================================================================
+%====================================================================
+\section{Methodology}\label{sec:method}
+This section presents, at an architectural and algorithmic level, how the proposed multi-service extension for \textbf{RESTest} transforms distributed traces into dependency-aware, executable \emph{workflow test cases}.  The design preserves RESTest’s proven \textit{generate → write → execute → report} pipeline while adding trace-driven scenario extraction and cross-service dependency management.
+
+%====================================================================
+\subsection{Architecture Overview}\label{ssec:arch}
+The extended pipeline introduces four dedicated subsystems, orchestrated by
+the core RESTest workflow engine:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Trace Workflow Extractor}  
+        \hfill(\S\ref{ssec:extract})\\
+        Parses OpenTelemetry/Jaeger span logs and reconstructs hierarchical
+        \textsc{WorkflowScenario}s (Algorithm~\ref{alg:extract}).
+  \item \textbf{Multi-Service Test Generator}  
+        \hfill(\S\ref{ssec:gen})\\
+        Converts scenarios into concrete \textsc{MultiServiceTestCase}s, combining
+        LLM-driven parameter synthesis with trace-based dependency resolution
+        (Algorithm~\ref{alg:generate}).
+  \item \textbf{Multi-Service Test Writer}\\
+        Emits dependency-chained JUnit/REST-assured classes ready for
+        compilation and execution.
+  \item \textbf{RESTest Execution Engine}\\
+        Re-uses RESTest’s compilation, JUnit execution and Allure/CSV reporting
+        stack, extended with step-level dependency orchestration.
+\end{enumerate}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figs/mst-architecture.png}
+  \caption{End-to-end data-flow across the extended RESTest pipeline for
+           multi-service testing.  Inputs (\textit{blue}) feed the processing
+           stage (\textit{orange}), which in turn produces executable artefacts
+           consumed by the execution and reporting stage (\textit{green}).  The
+           black arrows denote feedback loops used for dependency injection
+           and result aggregation.}
+  \label{fig:dataflow}
+\end{figure}
+
+\noindent%
+Figure~\ref{fig:dataflow} replaces the earlier text-based graph and should be
+exported (e.g., as \texttt{mst-architecture.png} or PDF) at publication
+quality.  The descriptive caption ensures accessibility for print media and
+screen readers.
+
+\subsubsection*{Scalability and Fault Isolation}
+\begin{itemize}[leftmargin=*]
+  \item \emph{Parallelism:} trace parsing, scenario generation, and JUnit runs
+        execute in parallel—bounded by CPU cores—via RESTest’s existing
+        executor pool.
+  \item \emph{Graceful Degradation:} failures in one stage propagate as
+        structured Allure events without aborting the entire pipeline, enabling
+        incremental debugging of complex workflows.
+\end{itemize}
+
+%--------------------------------------------------------------------
+\subsection{Trace-Driven Workflow Extraction}
+\label{ssec:extract}
+\begin{algorithm}[tb]
+\caption{TRACE\_WORKFLOW\_EXTRACTOR}\label{alg:extract}
+\footnotesize
+\begin{algorithmic}[1]
+\Require\;{Path(s) to span log(s)}
+\Ensure\;{List of \textsc{WorkflowScenario}s}
+\State Parse span JSON/JSONL into objects
+\State Group spans by \texttt{traceId} $\rightarrow$ map $G$
+\ForAll{trace $t \in G$}
+    \State Sort $G[t]$ by \texttt{startTime}
+    \State Initialise empty scenario $w$
+    \ForAll{span $s \in G[t]$}
+        \State $\sigma \leftarrow$ \textproc{SpanToStep}$(s)$
+        \State Insert $\sigma$ into $w$ respecting parent–child links
+    \EndFor
+    \State $w.dep\_map \leftarrow$ \textproc{InferDependencies}$(w)$
+    \State Append $w$ to scenario list
+\EndFor
+\State Scenario list $\gets$ \textproc{MergeCrossTraceDeps}(list)
+\State \Return scenario list
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Span Processing.}
+Each span is mapped to a \textsc{WorkflowStep} containing service metadata,
+HTTP method/path, request/response bodies, status, and timing.  Parent–child
+links reconstruct the call hierarchy within a trace.
+
+\paragraph{Cross-Trace Merging.}
+\textproc{MergeCrossTraceDeps} joins scenarios whose output values (e.g.,
+\texttt{orderId}) appear as inputs in subsequent traces, producing unified
+end-to-end workflows.
+
+%--------------------------------------------------------------------
+\subsection{Multi-Service Test Generation}
+\label{ssec:gen}
+
+The generator transforms abstract \textsc{WorkflowScenario}s into concrete
+\textsc{MultiServiceTestCase}s through a three-phase process: parameter
+synthesis, dependency resolution, and variant generation.  This approach
+balances trace fidelity with test diversity while maintaining workflow
+consistency.
+
+\begin{algorithm}[tb]
+\caption{MULTI\_SERVICE\_TEST\_GENERATOR}\label{alg:generate}
+\footnotesize
+\begin{algorithmic}[1]
+\Require\;{Scenario $w$, budget $B$, service configs $\mathcal{C}$}
+\Ensure\;{Set of \textsc{MultiServiceTestCase}s}
+\State $T \gets \{$baseline copy of $w$$\}$
+\For{$i \gets 1$ to $|w.steps|$}
+    \For{each parameter $p$ in $w.steps_i$}
+        \State $S_{\textsc{llm}} \gets$ \textproc{LLMSynthesis}$(p, \mathcal{C}, 5)$ \Comment{Generate 5 seed values}
+        \State $V_{\textsc{w2v}} \gets$ \textproc{Word2VecExpansion}$(S_{\textsc{llm}})$
+        \State $V_{\textsc{bert}} \gets$ \textproc{BERTExpansion}$(S_{\textsc{llm}})$
+        \State $V_{\textsc{mut}} \gets$ \textproc{SchemaGuidedMutation}$(S_{\textsc{llm}})$
+        \State $V_p \gets S_{\textsc{llm}} \cup V_{\textsc{w2v}} \cup V_{\textsc{bert}} \cup V_{\textsc{mut}}$
+    \EndFor
+    \State $V \gets$ \textproc{SelectVariants}$(\text{Cartesian product of all } V_p, B-|T|)$
+    \ForAll{variant combination $v \in V$}
+        \State $w' \gets$ deep copy of $w$; substitute $v$ in step $i$
+        \State \textproc{PropagateDeps}$(w', i, \mathcal{C})$
+        \State \textproc{ValidateWorkflow}$(w')$
+        \State $T \gets T \cup \{w'\}$
+    \EndFor
+\EndFor
+\State \Return $T$
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Parameter Synthesis Strategy.}
+The generator employs a two-stage approach that maximizes test diversity
+while minimizing computational overhead from expensive LLM calls:
+
+\textbf{Stage 1: LLM-Driven Initial Synthesis} uses the
+\emph{AiDrivenLLMGenerator} to generate an initial set of realistic
+parameter values (typically 5) based on OpenAPI schema metadata.  The LLM
+receives a structured prompt containing:
+\begin{itemize}[leftmargin=*]
+  \item Parameter metadata (name, type, format, constraints, examples)
+  \item OpenAPI schema information (pattern, enum values, descriptions)
+  \item Context information (HTTP method, service name, operation)
+  \item Generation instructions (number of values, format requirements)
+\end{itemize}
+
+\textbf{Stage 2: Semantic Expansion} takes the LLM-generated seed values
+and expands them using computationally efficient semantic models to
+generate additional test variants:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Word2Vec Expansion:} For each LLM-generated value,
+        queries the Word2Vec model to find semantically similar terms,
+        creating variants that maintain contextual relevance
+  \item \textbf{BERT-Based Token Replacement:} Applies masked language
+        modeling to substitute tokens within the LLM-generated values,
+        producing context-aware variations
+  \item \textbf{Schema-Guided Mutation:} Uses the
+        \emph{SchemaGuidedDependencyMutator} to apply systematic
+        transformations including boundary values, type-specific
+        mutations, and constraint violations
+\end{enumerate}
+
+This two-stage approach addresses the resource limitation of running LLMs
+locally by generating high-quality initial values once, then leveraging
+cheaper semantic models to achieve the desired test case volume.
+
+\paragraph{Dependency Resolution and Propagation.}
+The \textproc{PropagateDeps} procedure ensures workflow consistency by
+tracking data dependencies across service boundaries:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Dependency Graph Construction:} Analyzes each step's
+        input/output fields to build a directed acyclic graph (DAG)
+        representing data flow dependencies
+  \item \textbf{Context Map Maintenance:} Maintains a runtime context
+        mapping output field names to their current values, updated
+        after each step execution
+  \item \textbf{Parameter Injection:} For each step $i$, scans its
+        parameters for placeholders (e.g., \texttt{\$\{orderId\}}) and
+        substitutes them with values from the context map
+  \item \textbf{Cross-Service Validation:} Verifies that injected
+        values conform to the target service's schema constraints
+\end{enumerate}
+
+\paragraph{Variant Selection and Budget Management.}
+The \textproc{SelectVariants} function implements a multi-objective
+optimization strategy that balances:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Diversity:} Maximizes parameter space coverage using
+        distance metrics between variant sets
+  \item \textbf{Validity:} Prioritizes variants that pass schema
+        validation and business logic checks
+  \item \textbf{Relevance:} Favors variants that maintain semantic
+        coherence with the original workflow
+  \item \textbf{Complexity:} Distributes test complexity across
+        different failure modes and edge cases
+\end{itemize}
+
+The selection algorithm uses a weighted scoring function that considers
+variant quality, execution cost, and coverage contribution to the overall
+test suite.
+
+%--------------------------------------------------------------------
+\subsection{Test Execution and Validation}
+\label{ssec:exec}
+
+The execution engine orchestrates multi-service test cases through a
+sophisticated pipeline that handles dependency resolution, fault isolation,
+and comprehensive result validation.  Unlike traditional single-service
+testing, the executor must maintain workflow state across multiple service
+boundaries while providing detailed failure diagnostics.
+
+\begin{algorithm}[tb]
+\caption{MULTI\_SERVICE\_TEST\_EXECUTION}\label{alg:execute}
+\footnotesize
+\begin{algorithmic}[1]
+\Require\;{Set of test cases $\mathcal{T}$, service configs $\mathcal{C}$}
+\Ensure\;{Execution results with failure diagnostics}
+\ForAll{$tc \in \mathcal{T}$}
+    \State Compile $tc$ to Java class; register with JUnit framework
+    \State Initialize execution context: $\text{ctx} \gets \{\}$
+    \ForAll{step $s \in tc.steps$}
+        \State $\text{params} \gets$ \textproc{ResolveParameters}$(s, \text{ctx}, \mathcal{C})$
+        \State $\text{headers} \gets$ \textproc{BuildHeaders}$(s, \text{ctx})$
+        \State $(code, body, \text{traceId}) \gets$ \textproc{HTTP\_CALL}$(s, \text{params}, \text{headers})$
+        \If{$\textproc{ValidateResponse}(code, body, s.expected)$}
+            \State $\text{ctx} \gets$ \textproc{ExtractOutputs}$(body, s.output\_schema)$
+            \State \textproc{UpdateDependencyMap}$(\text{ctx}, s)$
+        \Else
+            \State \textproc{HandleFailure}$(s, code, body, \text{ctx})$
+            \State Mark dependent steps as skipped
+        \EndIf
+        \If{$\text{traceId} \neq \text{null}$}
+            \State \textproc{ValidateTrace}$(\text{traceId}, s.expected\_trace)$
+        \EndIf
+    \EndFor
+    \State \textproc{EmitResults}$(tc, \text{ctx})$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Parameter Resolution and Context Management.}
+The \textproc{ResolveParameters} function implements sophisticated
+dependency resolution that handles multiple data flow patterns:
+
+\textbf{Direct Field Mapping:} Maps output fields from previous steps
+to input parameters using exact name matching (e.g., \texttt{orderId}
+from step 1 to \texttt{orderId} in step 2).
+
+\textbf{Schema-Based Extraction:} For complex nested responses, uses
+JSONPath expressions to extract specific fields (e.g.,
+\texttt{\$.data.items[0].id}).
+
+\textbf{Transformation Functions:} Applies type conversions and
+formatting operations (e.g., converting timestamps, encoding URLs,
+formatting currency values).
+
+\textbf{Default Value Injection:} Provides fallback values for
+optional parameters that weren't produced by previous steps.
+
+The context management system maintains a hierarchical namespace that
+prevents naming conflicts between different services while enabling
+cross-service data sharing.
+
+\paragraph{Response Validation and Failure Handling.}
+The \textproc{ValidateResponse} function implements multi-level
+validation that goes beyond simple status code checking:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{HTTP-Level Validation:} Verifies status codes,
+        headers, and response timing against expected values
+  \item \textbf{Schema Validation:} Validates response body against
+        OpenAPI schema definitions using JSON Schema validation
+  \item \textbf{Business Logic Validation:} Applies domain-specific
+        rules (e.g., order totals must be positive, dates must be
+        in chronological order)
+  \item \textbf{Cross-Service Consistency:} Verifies that data
+        produced by one service is consistent with expectations
+        of downstream services
+\end{enumerate}
+
+When validation fails, the \textproc{HandleFailure} function provides
+detailed diagnostics including:
+\begin{itemize}[leftmargin=*]
+  \item Exact failure location (step, parameter, field)
+  \item Expected vs. actual values with diffs
+  \item Dependency chain analysis showing which previous steps
+        contributed to the failure
+  \item Suggested debugging actions and common failure patterns
+\end{itemize}
+
+\paragraph{Trace-Based Oracle Validation.}
+When services return trace identifiers, the executor performs
+comprehensive trace validation through \textproc{ValidateTrace}:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Call Graph Verification:} Ensures all expected
+        internal service calls occurred in the correct sequence
+  \item \textbf{Performance Analysis:} Validates response times
+        and identifies performance bottlenecks
+  \item \textbf{Error Propagation Tracking:} Maps error conditions
+        across service boundaries to identify root causes
+  \item \textbf{Data Flow Validation:} Verifies that data passed
+        between internal services matches expected patterns
+\end{itemize}
+
+This trace-based validation provides significantly stronger oracle
+capabilities than traditional HTTP-level testing, enabling detection
+of integration issues that would otherwise remain hidden.
+
+\paragraph{Result Aggregation and Reporting.}
+The \textproc{EmitResults} function produces comprehensive execution
+reports that integrate with RESTest's existing reporting infrastructure:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Allure Integration:} Generates structured XML reports
+        with step-by-step execution details, screenshots, and
+        failure diagnostics
+  \item \textbf{CSV Statistics:} Produces machine-readable summaries
+        for automated analysis and trend tracking
+  \item \textbf{Workflow Visualization:} Creates dependency graphs
+        showing successful and failed execution paths
+  \item \textbf{Performance Metrics:} Tracks execution times,
+        throughput, and resource utilization across services
+\end{itemize}
+
+The reporting system maintains backward compatibility with existing
+RESTest dashboards while adding multi-service specific visualizations
+and metrics.
+
+%--------------------------------------------------------------------
+\subsection{Integration Points with RESTest}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Configuration.}  YAML schema extended with multi-service
+        mappings; legacy single-service options remain untouched.
+  \item \textbf{Execution.}  Plug-in writer registers generated classes with
+        RESTest’s \texttt{WorkflowExecutor}; no changes to the core runner.
+  \item \textbf{Reporting.}  Existing Allure and statistics managers remain
+        unchanged, ensuring homogeneous result dashboards.
+\end{itemize}
+
+\subsection{Coverage Analysis Limitations}\label{sec:coverage-limitations}
+
+Traditional API testing coverage models, as implemented in RESTest's \textsc{CoverageMeter}, are designed for single-service scenarios and face fundamental challenges when applied to multi-service workflow testing. This section details why coverage analysis is currently disabled for MST mode and the research challenges involved.
+
+\paragraph{Single-Service Coverage Model Assumptions.}
+RESTest's coverage framework follows established API testing coverage criteria \cite{martin2019restest}, including:
+\begin{itemize}[leftmargin=*]
+    \item \textit{Parameter Coverage:} Ensuring all input parameters are exercised
+    \item \textit{Path Coverage:} Testing all API endpoints and URL templates  
+    \item \textit{Operation Coverage:} Exercising all HTTP methods (GET, POST, etc.)
+    \item \textit{Status Code Coverage:} Triggering different response codes
+    \item \textit{Response Body Coverage:} Validating output schema elements
+\end{itemize}
+
+These criteria assume a unified OpenAPI specification and coherent parameter space, which breaks down in multi-service environments where each service has independent schemas and operation sets.
+
+\paragraph{Multi-Service Coverage Challenges.}
+Extending coverage models to distributed workflows introduces several theoretical and practical challenges:
+
+\textbf{1. Cross-Service Dependency Coverage:} Traditional coverage metrics do not account for data flow between services. A parameter may be "covered" in one service but its downstream usage in dependent services remains unmeasured \cite{zhou2018microservice}.
+
+\textbf{2. Workflow Path Coverage:} While single-service path coverage considers URL endpoints, multi-service scenarios require modeling paths through \emph{service interaction graphs}, where the same logical workflow can traverse different service combinations based on system state \cite{li2020testing}.
+
+\textbf{3. Temporal Coverage Semantics:} Multi-service workflows involve asynchronous interactions and eventual consistency, making it unclear when coverage criteria are satisfied. A service call may succeed initially but fail in downstream processing, complicating coverage attribution \cite{fowler2014microservices}.
+
+\textbf{4. Configuration Space Explosion:} With $n$ services each having independent configuration parameters, the joint parameter space grows exponentially, making comprehensive coverage computationally intractable \cite{arcuri2019restful}.
+
+\paragraph{Implementation Challenges.}
+The current RESTest architecture expects a single \textsc{CoverageGatherer} instance built from one OpenAPI specification. Multi-service testing requires:
+\begin{itemize}[leftmargin=*]
+    \item Multiple service specifications with potentially conflicting schema definitions
+    \item Cross-service parameter dependency tracking
+    \item Workflow-level coverage criteria that span service boundaries
+    \item New coverage aggregation strategies for distributed test results
+\end{itemize}
+
+\paragraph{Future Research Directions.}
+Addressing multi-service coverage requires developing new theoretical frameworks that:
+\begin{enumerate}[leftmargin=*]
+    \item Define workflow-level coverage criteria that consider end-to-end user scenarios rather than individual API operations \cite{daniel2023testing}
+    \item Model coverage as graphs where nodes represent service operations and edges represent data dependencies
+    \item Incorporate temporal aspects of distributed system behavior into coverage semantics
+    \item Develop practical algorithms for coverage measurement that scale to realistic microservice deployments
+\end{enumerate}
+
+The current implementation prioritizes functional workflow testing over coverage measurement, acknowledging that meaningful multi-service coverage models remain an active area of research in the software testing community.
