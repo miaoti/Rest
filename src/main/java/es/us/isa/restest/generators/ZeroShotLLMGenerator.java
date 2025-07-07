@@ -66,29 +66,106 @@ public class ZeroShotLLMGenerator {
      * Build a textual prompt describing the parameter and how many examples we want.
      */
     private String buildPrompt(ParameterInfo param, int howMany) {
-        return String.format(Locale.ROOT,
-                "You are a knowledge model. The parameter has the following metadata:\n" +
-                        "- Name: %s\n" +
-                        "- Description: %s\n" +
-                        "- In: %s\n" +
-                        "- Type: %s\n" +
-                        "- Format: %s\n" +
-                        "- Schema Type: %s\n" +
-                        "- Schema Example: %s\n" +
-                        "- Regex Pattern: %s\n\n" +
-                        "Please generate %d realistic example values for this parameter in English.\n" +
-                        "The generated result should not based on any of your memory but only randomly generating based on parameter's metadata.\n" +
-                        "Return the values only, one per line,make sure only one item per line, there should not have multiple items in one line seperated by comma, do not do something like \" a,b,c\" but like \"a\nb\nc\n\", with no extra commentary or formatting.\n",
-                safeStr(param.getName()),
-                safeStr(param.getDescription()),
-                safeStr(param.getInLocation()),
-                safeStr(param.getType()),
-                safeStr(param.getFormat()),
-                safeStr(param.getSchemaType()),
-                safeStr(param.getSchemaExample()),
-                safeStr(param.getRegex()),
-                howMany
-        );
+        StringBuilder promptBuilder = new StringBuilder();
+        
+        // Clear introduction with context
+        promptBuilder.append("You are an API testing assistant that generates realistic parameter values.\n\n");
+        
+        // Parameter details
+        promptBuilder.append("Parameter Information:\n");
+        promptBuilder.append("- Name: ").append(safeStr(param.getName())).append("\n");
+        
+        String description = safeStr(param.getDescription());
+        if (!description.isEmpty()) {
+            promptBuilder.append("- Description: ").append(description).append("\n");
+        }
+        
+        promptBuilder.append("- Location: ").append(safeStr(param.getInLocation())).append("\n");
+        promptBuilder.append("- Data Type: ").append(safeStr(param.getType())).append("\n");
+        
+        String format = safeStr(param.getFormat());
+        if (!format.isEmpty()) {
+            promptBuilder.append("- Format: ").append(format).append("\n");
+        }
+        
+        String example = safeStr(param.getSchemaExample());
+        if (!example.isEmpty()) {
+            promptBuilder.append("- Example: ").append(example).append("\n");
+        }
+        
+        String regex = safeStr(param.getRegex());
+        if (!regex.isEmpty()) {
+            promptBuilder.append("- Pattern: ").append(regex).append("\n");
+        }
+        
+        // Clear task instructions with emphasis on formatting
+        promptBuilder.append("\nTask: Generate ").append(howMany).append(" realistic test values for this parameter.\n\n");
+        
+        promptBuilder.append("CRITICAL FORMATTING REQUIREMENT:\n");
+        promptBuilder.append("You MUST return exactly ").append(howMany).append(" separate lines.\n");
+        promptBuilder.append("Each line contains exactly ONE value.\n");
+        promptBuilder.append("Press ENTER after each value.\n");
+        promptBuilder.append("Do NOT put multiple values on the same line.\n\n");
+        
+        promptBuilder.append("Content Requirements:\n");
+        promptBuilder.append("- Values should be appropriate for the parameter type and context\n");
+        promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
+        promptBuilder.append("- Consider common use cases and edge cases\n\n");
+        
+        // Context-specific guidance based on parameter name/type
+        String guidance = getContextualGuidance(param);
+        if (!guidance.isEmpty()) {
+            promptBuilder.append("Domain Guidance: ").append(guidance).append("\n\n");
+        }
+        
+        promptBuilder.append("Example Format (for 3 values):\n");
+        promptBuilder.append("Value1\n");
+        promptBuilder.append("Value2\n");
+        promptBuilder.append("Value3\n\n");
+        
+        promptBuilder.append("Now generate your ").append(howMany).append(" values, one per line:");
+        
+        return promptBuilder.toString();
+    }
+    
+    /**
+     * Provide context-specific guidance based on parameter characteristics
+     */
+    private String getContextualGuidance(ParameterInfo param) {
+        String name = safeStr(param.getName()).toLowerCase();
+        String type = safeStr(param.getType()).toLowerCase();
+        
+        // Station/location related
+        if (name.contains("station") || name.contains("location") || name.contains("place")) {
+            return "Generate realistic station/location names like train stations, bus stops, or landmarks.";
+        }
+        
+        // ID related
+        if (name.contains("id") && (name.contains("login") || name.contains("user"))) {
+            return "Generate realistic user login IDs/usernames with mix of letters and numbers.";
+        }
+        
+        // Date/time related
+        if (name.contains("date") || name.contains("time") || type.contains("date")) {
+            return "Generate valid date/time values in appropriate format.";
+        }
+        
+        // List related
+        if (name.contains("list") || type.contains("array")) {
+            return "Generate single values that would be elements in a list, not the entire list.";
+        }
+        
+        // Password related
+        if (name.contains("password") || name.contains("pass")) {
+            return "Generate realistic password patterns with appropriate complexity.";
+        }
+        
+        // Number related
+        if (type.contains("int") || type.contains("number")) {
+            return "Generate realistic numeric values appropriate for the context.";
+        }
+        
+        return "";
     }
 
 
@@ -107,13 +184,15 @@ public class ZeroShotLLMGenerator {
      * an OpenAI account, which includes a free trial with credits.
      */
     private String callLLMGPT(String prompt) {
-        final String OPENAI_API_KEY = "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";
+        final String OPENAI_API_KEY = "sk-proj-13vRlyGryVRNXe3f6MHpGaJhSWoPtXlnIjFI0Y8zAdOt47t8GxLrlmFWSrRrEsTyoR3AN6SHXxT3BlbkFJTt6UwbBtBQsI_XObKpD6csvDBOUgjInkA";
         final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
         String systemContent =
-                "You are an AI system that generates only the final lines of values " +
-                        "with no extra commentary or numbering. " +
-                        "If asked to produce N lines, return exactly N lines.";
+                "You are an AI system that generates parameter values for API testing. " +
+                        "CRITICAL: When asked to generate N values, you MUST return exactly N lines. " +
+                        "Each line contains exactly one value. Use line breaks between values. " +
+                        "Do NOT put multiple values on the same line separated by spaces or commas. " +
+                        "Do NOT add explanations, numbering, or extra formatting.";
 
         // ✅ Use org.json to build the request safely
         JSONArray messages = new JSONArray()
@@ -161,9 +240,11 @@ public class ZeroShotLLMGenerator {
         final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
 
         String systemContent =
-                "You are an AI system that generates only the final lines of values " +
-                        "with no extra commentary or numbering. " +
-                        "If asked to produce N lines, return exactly N lines.";
+                "You are an AI system that generates parameter values for API testing. " +
+                        "CRITICAL: When asked to generate N values, you MUST return exactly N lines. " +
+                        "Each line contains exactly one value. Use line breaks between values. " +
+                        "Do NOT put multiple values on the same line separated by spaces or commas. " +
+                        "Do NOT add explanations, numbering, or extra formatting.";
 
         // Build the request body compatible with OpenAI API format (which gpt4all supports)
         JSONArray messages = new JSONArray()
@@ -171,7 +252,7 @@ public class ZeroShotLLMGenerator {
                 .put(new JSONObject().put("role", "user").put("content", prompt));
 
         JSONObject requestBody = new JSONObject()
-                .put("model", "llama-3.2-3b-instruct")
+                .put("model", "llama-3-8b-instruct")
                 .put("messages", messages)
                 .put("max_tokens", 200)
                 .put("temperature", 0.7);

@@ -29,6 +29,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private final List<WorkflowScenario>                     scenarios;
     private final boolean                                    useLLM;
     private final AiDrivenLLMGenerator                       llmGen = new AiDrivenLLMGenerator();
+    private final SemanticParameterExpander                 expander = new SemanticParameterExpander();
 
     // Pattern to match HTTP operations in operation names
     private static final Pattern HTTP_OPERATION_PATTERN = 
@@ -54,25 +55,57 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
     /*  PUBLIC API – called by RESTest                              */
 
-    /** Produce one test‑case per recorded scenario. */
+    /** Produce test cases using two-stage LLM + semantic expansion approach. */
     @Override
     public Collection<TestCase> generate() {
         List<TestCase> out = new ArrayList<>();
         int counter = 1;
 
         for (WorkflowScenario sc : scenarios) {
-            MultiServiceTestCase tc = new MultiServiceTestCase("Scenario_" + counter++);
-            tc.setScenarioName(tc.getOperationId());        // for Allure etc.
-
-            Map<String,String> context = new HashMap<>();   // output‑values so far
-            
-            // Process workflow steps with hierarchical numbering
-            for (WorkflowStep root : sc.getRootSteps()) {
-                traverse(root, tc, context, "1");
-            }
-            out.add(tc);
+            // Generate multiple variants per scenario using expanded parameter sets
+            List<MultiServiceTestCase> variants = generateScenarioVariants(sc, counter);
+            out.addAll(variants);
+            counter += variants.size();
         }
         return out;
+    }
+    
+    /**
+     * Generate multiple test case variants for a single scenario using the two-stage approach:
+     * 1. LLM generates initial seed values (5 per parameter)
+     * 2. Semantic expansion generates additional variants using Word2Vec/BERT
+     */
+    private List<MultiServiceTestCase> generateScenarioVariants(WorkflowScenario sc, int baseCounter) {
+        List<MultiServiceTestCase> variants = new ArrayList<>();
+        
+        // For now, generate baseline + 3 additional variants
+        // In practice, this could be configurable
+        int variantCount = useLLM ? 4 : 1;
+        
+        log.info("=== TWO-STAGE PARAMETER GENERATION TEST ===");
+        log.info("Generating {} test case variants for scenario {}", variantCount, baseCounter);
+        log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
+        
+        for (int v = 0; v < variantCount; v++) {
+            String suffix = v == 0 ? "" : "_variant" + v;
+            MultiServiceTestCase tc = new MultiServiceTestCase("Scenario_" + baseCounter + suffix);
+            tc.setScenarioName(tc.getOperationId());
+            
+            log.info("--- Generating variant {} ({}) ---", v, tc.getOperationId());
+            
+            Map<String,String> context = new HashMap<>();
+            
+            // Process workflow steps with variant-specific parameter generation
+            for (WorkflowStep root : sc.getRootSteps()) {
+                traverse(root, tc, context, "1", v);
+            }
+            variants.add(tc);
+            
+            log.info("--- Completed variant {} with {} steps ---", v, tc.getSteps().size());
+        }
+        
+        log.info("=== Generated {} total test case variants ===", variants.size());
+        return variants;
     }
 
     @Override
@@ -85,17 +118,19 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     /* ============================================================ */
 
     /**
-     * Depth‑first traversal with hierarchical step numbering.
+     * Depth‑first traversal with hierarchical step numbering and variant-specific parameter generation.
      *
      * @param span      current WorkflowStep
      * @param tc        test‑case under construction
      * @param context   key→value outputs collected so far
      * @param stepNumber hierarchical step number (e.g., "1", "1.1", "1.2.1")
+     * @param variantIndex index of current test variant for parameter selection
      */
     private void traverse(WorkflowStep span,
                           MultiServiceTestCase tc,
                           Map<String,String> context,
-                          String stepNumber) {
+                          String stepNumber,
+                          int variantIndex) {
 
         /* 1. Extract HTTP operation info from span ---------------------------------- */
         final String service = span.getServiceName();
@@ -120,16 +155,16 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 verb = httpMethod.toLowerCase(Locale.ROOT);
                 route = httpTarget != null ? httpTarget : extractPathFromUrl(httpUrl);
             } else {
-                // Skip non-HTTP operations (internal spans, database calls, etc.)
-                log.debug("Skipping non-HTTP span: {} - {}", service, opName);
-                gotoChildren(span, tc, context, stepNumber);
-                return;
+                            // Skip non-HTTP operations (internal spans, database calls, etc.)
+            log.debug("Skipping non-HTTP span: {} - {}", service, opName);
+            gotoChildren(span, tc, context, stepNumber, variantIndex);
+            return;
             }
         }
 
         if (verb == null || route == null) {
             log.debug("Could not extract HTTP method/path from span: {} - {}", service, opName);
-            gotoChildren(span, tc, context, stepNumber);
+            gotoChildren(span, tc, context, stepNumber, variantIndex);
             return;
         }
 
@@ -137,14 +172,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         TestConfigurationObject cfg = serviceConfigs.get(service);
         if (cfg == null) {
             log.warn("No test‑configuration for service '{}' (step {})", service, stepNumber);
-            gotoChildren(span, tc, context, stepNumber);
+            gotoChildren(span, tc, context, stepNumber, variantIndex);
             return;
         }
 
         Operation opCfg = findOperation(cfg, verb, route);
         if (opCfg == null) {
             log.warn("No Operation config {} {} in service '{}' (step {})", verb, route, service, stepNumber);
-            gotoChildren(span, tc, context, stepNumber);
+            gotoChildren(span, tc, context, stepNumber, variantIndex);
             return;
         }
 
@@ -169,7 +204,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 String val = null;
 
                 if (isFirstStep) {
-                    /* For the first step, always use LLM to generate initial parameters */
+                    /* For the first step, use two-stage approach: LLM + semantic expansion */
                     if (useLLM) {
                         ParameterInfo info = new ParameterInfo();
                         info.setName(p.getName());
@@ -181,12 +216,31 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
                         info.setRegex(p.getPattern());
 
-                        List<String> vals = llmGen.generateParameterValues(info);
-                        val = vals.isEmpty() ? "LLM_EMPTY" : vals.get(0);
-                        log.info("LLM (First Step) → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                        // Stage 1: Get 5 seed values from LLM
+                        List<String> llmSeedValues = llmGen.generateParameterValues(info);
+                        
+                        if (!llmSeedValues.isEmpty()) {
+                            // Stage 2: Expand using semantic models to get more variants
+                            List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
+                            
+                            // Select value based on variant index
+                            if (variantIndex < expandedValues.size()) {
+                                val = expandedValues.get(variantIndex);
+                                log.info("Two-Stage (LLM+Semantic) → {} {} = {} (variant {}, step {})", 
+                                        service, p.getName(), val, variantIndex, stepNumber);
+                            } else {
+                                // Fallback to cycling through available values
+                                val = expandedValues.get(variantIndex % expandedValues.size());
+                                log.info("Two-Stage (Cycled) → {} {} = {} (variant {}, step {})", 
+                                        service, p.getName(), val, variantIndex, stepNumber);
+                            }
+                        } else {
+                            val = "LLM_EMPTY";
+                            log.warn("LLM returned no values for {} {}", service, p.getName());
+                        }
                     } else {
                         /* Fallback if LLM is disabled */
-                        val = "INIT_" + p.getName();
+                        val = "INIT_" + p.getName() + "_v" + variantIndex;
                     }
                 } else {
                     /* For subsequent steps, use the dependency-based logic */
@@ -304,7 +358,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         context.putAll(span.getOutputFields());
 
         /* 7. Process children with hierarchical numbering -------------------------- */
-        gotoChildren(span, tc, context, stepNumber);
+        gotoChildren(span, tc, context, stepNumber, variantIndex);
     }
 
     /**
@@ -418,11 +472,12 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private void gotoChildren(WorkflowStep parent,
                               MultiServiceTestCase tc,
                               Map<String,String> ctx,
-                              String parentStepNumber) {
+                              String parentStepNumber,
+                              int variantIndex) {
         List<WorkflowStep> children = parent.getChildren();
         for (int i = 0; i < children.size(); i++) {
             String childStepNumber = parentStepNumber + "." + (i + 1);
-            traverse(children.get(i), tc, ctx, childStepNumber);
+            traverse(children.get(i), tc, ctx, childStepNumber, variantIndex);
         }
     }
 
