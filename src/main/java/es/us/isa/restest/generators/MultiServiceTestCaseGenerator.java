@@ -86,8 +86,28 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
         
         for (int v = 0; v < variantCount; v++) {
-            String suffix = v == 0 ? "" : "_variant" + v;
-            MultiServiceTestCase tc = new MultiServiceTestCase("Scenario_" + baseCounter + suffix);
+            // Create meaningful test name using first API call's operation name
+            String firstApiName = getFirstApiOperationName(sc);
+            String testName;
+            if (firstApiName != null && !firstApiName.isEmpty()) {
+                // Convert operation name to valid test method name
+                String cleanApiName = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
+                                                 .replaceAll("_+", "_")
+                                                 .replaceAll("^_|_$", "");
+                testName = "test_" + cleanApiName + "_" + (v + 1);
+            } else {
+                // Fallback: use trace file name if no API name found
+                String sourceFileName = sc.getSourceFileName();
+                if (sourceFileName != null && !sourceFileName.isEmpty()) {
+                    testName = "test_" + sourceFileName + "_" + (v + 1);
+                } else {
+                    // Ultimate fallback to old naming
+                    String suffix = v == 0 ? "" : "_variant" + v;
+                    testName = "Scenario_" + baseCounter + suffix;
+                }
+            }
+            
+            MultiServiceTestCase tc = new MultiServiceTestCase(testName);
             tc.setScenarioName(tc.getOperationId());
             
             log.info("--- Generating variant {} ({}) ---", v, tc.getOperationId());
@@ -308,19 +328,37 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     : (bodyFields.isEmpty() ? null : toJson(bodyFields));
         }
 
-        /* 4. Expected status from trace -------------------------------------------- */
-        int expectedStatus = 200;
+        /* 4. Expected status from configuration (no hardcoding) ------------------- */
+        int expectedStatus = 200; // Default fallback only
+        
+        // Priority 1: Read expected status from configuration file
         try {
-            if (opCfg.getExpectedResponse() != null)
-                expectedStatus = Integer.parseInt(opCfg.getExpectedResponse());
-        } catch (NumberFormatException ignore) { /* keep default */ }
+            if (opCfg.getExpectedResponse() != null && !opCfg.getExpectedResponse().trim().isEmpty()) {
+                expectedStatus = Integer.parseInt(opCfg.getExpectedResponse().trim());
+                log.debug("Using configured expected status {} for {} {}", expectedStatus, verb, route);
+            } else {
+                log.warn("No expected status configured for {} {} - using default 200", verb, route);
+            }
+        } catch (NumberFormatException e) {
+            log.warn("Invalid expected status '{}' in config for {} {} - using default 200", 
+                    opCfg.getExpectedResponse(), verb, route);
+        }
 
-        // Override with actual HTTP code from trace
+        // Priority 2: If configured status is still 200, check trace for actual successful status
+        // Only use trace status if config doesn't specify a different expected value
         Object recorded = span.getOutputFields().get("http.status_code");
-        if (recorded != null) {
+        if (recorded != null && expectedStatus == 200) {
             try {
-                expectedStatus = Integer.parseInt(recorded.toString());
-            } catch (NumberFormatException ignore) { /* fallback to configured/default */ }
+                int traceStatus = Integer.parseInt(recorded.toString());
+                if (traceStatus >= 200 && traceStatus < 300) {
+                    expectedStatus = traceStatus;
+                    log.debug("Using successful trace status {} for {} {}", traceStatus, verb, route);
+                } else {
+                    log.debug("Trace shows error status {}, keeping configured expected status {}", traceStatus, expectedStatus);
+                }
+            } catch (NumberFormatException e) {
+                log.warn("Invalid status code in trace: {}", recorded);
+            }
         }
 
         /* 5. Create the StepCall with hierarchical naming -------------------------- */
@@ -508,6 +546,57 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     .append('"');
         }
         return sb.append('}').toString();
+    }
+
+    /**
+     * Get the first API operation name from the scenario (excluding login/pre-calls)
+     * This is used for meaningful test naming based on the actual business API being tested
+     */
+    private String getFirstApiOperationName(WorkflowScenario scenario) {
+        // Traverse through root steps to find the first non-login API operation
+        for (WorkflowStep rootStep : scenario.getRootSteps()) {
+            String apiName = findFirstBusinessApiOperation(rootStep);
+            if (apiName != null) {
+                return apiName;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Recursively search for the first business API operation (not login/auth related)
+     */
+    private String findFirstBusinessApiOperation(WorkflowStep step) {
+        String opName = step.getOperationName();
+        String serviceName = step.getServiceName();
+        
+        // Skip login/auth related operations (case-insensitive)
+        if (opName != null && serviceName != null) {
+            String opLower = opName.toLowerCase();
+            String serviceLower = serviceName.toLowerCase();
+            
+            // Skip common login/auth patterns
+            if (opLower.contains("login") || opLower.contains("auth") || 
+                serviceLower.contains("login") || serviceLower.contains("auth") ||
+                opLower.contains("signin") || opLower.contains("token")) {
+                // This is likely a login/auth operation, skip it
+                log.debug("Skipping login/auth operation: {} in service {}", opName, serviceName);
+            } else {
+                // This looks like a business API operation
+                log.debug("Found first business API operation: {} in service {}", opName, serviceName);
+                return opName;
+            }
+        }
+        
+        // Check children recursively
+        for (WorkflowStep child : step.getChildren()) {
+            String apiName = findFirstBusinessApiOperation(child);
+            if (apiName != null) {
+                return apiName;
+            }
+        }
+        
+        return null;
     }
 
     /**
