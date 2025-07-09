@@ -21,6 +21,8 @@ public class WorkflowScenario {
     private final Set<String> traceIds = new LinkedHashSet<>();
     /** The list of root steps (steps with no parent in this scenario). */
     private final List<WorkflowStep> rootSteps = new ArrayList<>();
+    /** The source file name (without extension) for this scenario - used for test naming */
+    private String sourceFileName;
 
     /** Creates an empty WorkflowScenario. */
     public WorkflowScenario() {
@@ -42,6 +44,22 @@ public class WorkflowScenario {
      */
     public List<WorkflowStep> getRootSteps() {
         return Collections.unmodifiableList(rootSteps);
+    }
+
+    /**
+     * Returns the source file name (without extension) for this scenario.
+     * This is used for generating meaningful test method names.
+     */
+    public String getSourceFileName() {
+        return sourceFileName;
+    }
+
+    /**
+     * Sets the source file name (without extension) for this scenario.
+     * This should be called when the scenario is created from a trace file.
+     */
+    public void setSourceFileName(String sourceFileName) {
+        this.sourceFileName = sourceFileName;
     }
 
     /**

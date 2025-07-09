@@ -63,7 +63,12 @@ public class TraceWorkflowExtractor {
             for (File jsonFile : jsonFiles) {
                 log.info("Processing trace file: {}", jsonFile.getName());
                 try {
-                    List<WorkflowScenario> fileScenarios = extractScenariosFromFile(jsonFile.getPath());
+                    // Extract file name without extension for scenario naming
+                    String fileName = jsonFile.getName();
+                    String fileNameWithoutExt = fileName.lastIndexOf('.') != -1 ? 
+                        fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
+                    
+                    List<WorkflowScenario> fileScenarios = extractScenariosFromFile(jsonFile.getPath(), fileNameWithoutExt);
                     allScenarios.addAll(fileScenarios);
                 } catch (Exception e) {
                     log.error("Error processing trace file {}: {}", jsonFile.getName(), e.getMessage());
@@ -72,7 +77,11 @@ public class TraceWorkflowExtractor {
             }
         } else {
             // Single file processing
-            allScenarios = extractScenariosFromFile(fileOrDirPath);
+            File singleFile = new File(fileOrDirPath);
+            String fileName = singleFile.getName();
+            String fileNameWithoutExt = fileName.lastIndexOf('.') != -1 ? 
+                fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
+            allScenarios = extractScenariosFromFile(fileOrDirPath, fileNameWithoutExt);
         }
         
         return allScenarios;
@@ -81,7 +90,7 @@ public class TraceWorkflowExtractor {
     /**
      * Internal method to extract scenarios from a single file.
      */
-    private static List<WorkflowScenario> extractScenariosFromFile(String filePath) throws IOException {
+    private static List<WorkflowScenario> extractScenariosFromFile(String filePath, String sourceFileName) throws IOException {
         List<JSONObject> spanObjects = new ArrayList<>();
 
 
@@ -206,6 +215,8 @@ public class TraceWorkflowExtractor {
 
             // Create a new scenario for this trace
             WorkflowScenario scenario = new WorkflowScenario();
+            // Set the source file name for meaningful test naming
+            scenario.setSourceFileName(sourceFileName);
             // Temporary map to hold spanId -> WorkflowStep for linking parent/child
             Map<String, WorkflowStep> stepIndex = new HashMap<>();
 

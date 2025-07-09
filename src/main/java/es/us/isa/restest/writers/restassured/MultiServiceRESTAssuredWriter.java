@@ -148,7 +148,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             "\\\"password\\\":\\\"222222\\\"}\")");
                     pw.println("                .when().post(\"/api/v1/users/login\")");
                     pw.println("                    .then().log().ifValidationFails()");
-                    pw.println("                    .statusCode(200)");
+                    pw.println("                    .statusCode(200)  // Login expects 200 - could be configurable in future");
                     pw.println("                    .extract().response();");
                     pw.println("                _jwt[0]     = loginRes.jsonPath().getString(\"data.token\");");
                     pw.println("                _jwtType[0] = \"Bearer\";");

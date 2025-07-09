@@ -11,7 +11,7 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.qameta.allure.model.Status;
 
-public class TrainTicketTwoStageTest_1752099561271 {
+public class TrainTicketTwoStageTest_1752103259061 {
 
     @BeforeClass
     public static void setupRestAssured() {
@@ -32,7 +32,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -64,8 +64,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"5.2\",\"distances\":\"400\",\"endStation\":\"Grand Central Terminal\",\"id\":\"hi\",\"loginId\":\"guest_abc\",\"startStation\":\"Boston Logan International Airport\",\"stationList\":\"san francisco transbay terminal\",\"stations\":\"Los Angeles County Administration Building\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5.2\",\"distances\":\"400\",\"endStation\":\"Grand Central Terminal\",\"id\":\"hi\",\"loginId\":\"guest_abc\",\"startStation\":\"Boston Logan International Airport\",\"stationList\":\"san francisco transbay terminal\",\"stations\":\"Los Angeles County Administration Building\"}");
+                req = req.body("{\"distanceList\":\"6\",\"distances\":\"25.5\",\"endStation\":\"central station\",\"id\":\"unique_id_2023\",\"loginId\":\"admin456\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Los angeles union station\",\"stations\":\"grand central terminal\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"6\",\"distances\":\"25.5\",\"endStation\":\"central station\",\"id\":\"unique_id_2023\",\"loginId\":\"admin456\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Los angeles union station\",\"stations\":\"grand central terminal\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -245,8 +245,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"endStation\":\"Union Square\",\"id\":\"hello-world\",\"startStation\":\"Atlanta hartsfield-jackson international airport\",\"stationList\":\"los angeles union station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"endStation\":\"Union Square\",\"id\":\"hello-world\",\"startStation\":\"Atlanta hartsfield-jackson international airport\",\"stationList\":\"los angeles union station\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"Central Station\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"San francisco international airport\",\"stationList\":\"Chicago Union Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"Central Station\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"San francisco international airport\",\"stationList\":\"Chicago Union Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -359,12 +359,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1");
+        Allure.label("story", "test_POST_1");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1");
+        System.out.println("Scenario: test_POST_1");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -396,7 +396,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -428,8 +428,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"distances\":\"25.7\",\"endStation\":\"Union square\",\"id\":\"User123\",\"loginId\":\"Admins\",\"startStation\":\"los angeles union station\",\"stationList\":\"Los Angeles Union Station\",\"stations\":\"San Francisco International Airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"distances\":\"25.7\",\"endStation\":\"Union square\",\"id\":\"User123\",\"loginId\":\"Admins\",\"startStation\":\"los angeles union station\",\"stationList\":\"Los Angeles Union Station\",\"stations\":\"San Francisco International Airport\"}");
+                req = req.body("{\"distanceList\":\"8\",\"distances\":\"4.7\",\"endStation\":\"train depot\",\"id\":\"abc-def-ghi\",\"loginId\":\"jane.smith012\",\"startStation\":\"Houston Hobby Airport\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"Westfield Town Centre\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"distances\":\"4.7\",\"endStation\":\"train depot\",\"id\":\"abc-def-ghi\",\"loginId\":\"jane.smith012\",\"startStation\":\"Houston Hobby Airport\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"Westfield Town Centre\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -609,8 +609,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"endStation\":\"Central Station\",\"id\":\"User123\",\"startStation\":\"Atlanta Hartsfield-Jackson International Airport\",\"stationList\":\"San Francisco Transbay Terminal\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"endStation\":\"Central Station\",\"id\":\"User123\",\"startStation\":\"Atlanta Hartsfield-Jackson International Airport\",\"stationList\":\"San Francisco Transbay Terminal\"}");
+                req = req.body("{\"distanceList\":\"5\",\"endStation\":\"west end bus stop\",\"id\":\"uniquely\",\"startStation\":\"los angeles union station\",\"stationList\":\"los angeles union station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5\",\"endStation\":\"west end bus stop\",\"id\":\"uniquely\",\"startStation\":\"los angeles union station\",\"stationList\":\"los angeles union station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -723,12 +723,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant1");
+        Allure.label("story", "test_POST_2");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant1");
+        System.out.println("Scenario: test_POST_2");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -760,7 +760,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -792,8 +792,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"5.2\",\"distances\":\"25.7\",\"endStation\":\"Central station\",\"id\":\"user123\",\"loginId\":\"Admin456\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"New york city subway station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5.2\",\"distances\":\"25.7\",\"endStation\":\"Central station\",\"id\":\"user123\",\"loginId\":\"Admin456\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"New york city subway station\"}");
+                req = req.body("{\"distanceList\":\"7\",\"distances\":\"4.7\",\"endStation\":\"Central Station\",\"id\":\"abc-def-ghi\",\"loginId\":\"johnston\",\"startStation\":\"san francisco international airport\",\"stationList\":\"los angeles union station\",\"stations\":\"Central station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"7\",\"distances\":\"4.7\",\"endStation\":\"Central Station\",\"id\":\"abc-def-ghi\",\"loginId\":\"johnston\",\"startStation\":\"san francisco international airport\",\"stationList\":\"los angeles union station\",\"stations\":\"Central station\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -973,8 +973,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"endStation\":\"Union square\",\"id\":\"Abcdefg\",\"startStation\":\"Los angeles union station\",\"stationList\":\"new york penn station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"endStation\":\"Union square\",\"id\":\"Abcdefg\",\"startStation\":\"Los angeles union station\",\"stationList\":\"new york penn station\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"Central Station\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"New York Penn Station\",\"stationList\":\"San Francisco International Airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"Central Station\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"New York Penn Station\",\"stationList\":\"San Francisco International Airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -1087,12 +1087,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant2");
+        Allure.label("story", "test_POST_3");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant2");
+        System.out.println("Scenario: test_POST_3");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -1124,7 +1124,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -1156,8 +1156,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"5.2\",\"distances\":\"25.7\",\"endStation\":\"Grand Central Terminal\",\"id\":\"howdy\",\"loginId\":\"Sydney_measured_####kbps\",\"startStation\":\"los angeles union station\",\"stationList\":\"San Francisco Transbay Terminal\",\"stations\":\"los angeles county administration building\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5.2\",\"distances\":\"25.7\",\"endStation\":\"Grand Central Terminal\",\"id\":\"howdy\",\"loginId\":\"Sydney_measured_####kbps\",\"startStation\":\"los angeles union station\",\"stationList\":\"San Francisco Transbay Terminal\",\"stations\":\"los angeles county administration building\"}");
+                req = req.body("{\"distanceList\":\"7\",\"distances\":\"25.5\",\"endStation\":\"West end bus stop\",\"id\":\"cbs\",\"loginId\":\"user123\",\"startStation\":\"san francisco international airport\",\"stationList\":\"boston logan international airport\",\"stations\":\"Westfield Town Centre\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"7\",\"distances\":\"25.5\",\"endStation\":\"West end bus stop\",\"id\":\"cbs\",\"loginId\":\"user123\",\"startStation\":\"san francisco international airport\",\"stationList\":\"boston logan international airport\",\"stations\":\"Westfield Town Centre\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -1337,8 +1337,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"endStation\":\"beverly hills mall\",\"id\":\"12345\",\"startStation\":\"boston logan international airport\",\"stationList\":\"San Francisco Transbay Terminal\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"endStation\":\"beverly hills mall\",\"id\":\"12345\",\"startStation\":\"boston logan international airport\",\"stationList\":\"San Francisco Transbay Terminal\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"central station\",\"id\":\"uniqueness\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Los Angeles Union Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"central station\",\"id\":\"uniqueness\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Los Angeles Union Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -1451,12 +1451,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant3");
+        Allure.label("story", "test_POST_4");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant3");
+        System.out.println("Scenario: test_POST_4");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -1488,7 +1488,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -1520,8 +1520,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"distances\":\"25.7\",\"endStation\":\"Central Station\",\"id\":\"Abcdefg\",\"loginId\":\"user123\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"New york penn station\",\"stations\":\"New York City Subway Station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"distances\":\"25.7\",\"endStation\":\"Central Station\",\"id\":\"Abcdefg\",\"loginId\":\"user123\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"New york penn station\",\"stations\":\"New York City Subway Station\"}");
+                req = req.body("{\"distanceList\":\"8\",\"distances\":\"300\",\"endStation\":\"Union square\",\"id\":\"Abc-def-ghi\",\"loginId\":\"user123\",\"startStation\":\"San francisco international airport\",\"stationList\":\"New york penn station\",\"stations\":\"Central Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"distances\":\"300\",\"endStation\":\"Union square\",\"id\":\"Abc-def-ghi\",\"loginId\":\"user123\",\"startStation\":\"San francisco international airport\",\"stationList\":\"New york penn station\",\"stations\":\"Central Station\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -1701,8 +1701,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"endStation\":\"Union Square\",\"id\":\"howdy\",\"startStation\":\"los angeles union station\",\"stationList\":\"new york penn station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"endStation\":\"Union Square\",\"id\":\"howdy\",\"startStation\":\"los angeles union station\",\"stationList\":\"new york penn station\"}");
+                req = req.body("{\"distanceList\":\"450\",\"endStation\":\"West end bus stop\",\"id\":\"distinctive\",\"startStation\":\"new york penn station\",\"stationList\":\"New York Penn Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"450\",\"endStation\":\"West end bus stop\",\"id\":\"distinctive\",\"startStation\":\"new york penn station\",\"stationList\":\"New York Penn Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -1815,12 +1815,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant4");
+        Allure.label("story", "test_POST_5");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant4");
+        System.out.println("Scenario: test_POST_5");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -1852,7 +1852,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -1884,8 +1884,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"distances\":\"98\",\"endStation\":\"Downtown Crossing\",\"id\":\"howdy\",\"loginId\":\"bennett\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Houston Hobby Airport\",\"stations\":\"San Francisco International Airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"distances\":\"98\",\"endStation\":\"Downtown Crossing\",\"id\":\"howdy\",\"loginId\":\"bennett\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Houston Hobby Airport\",\"stations\":\"San Francisco International Airport\"}");
+                req = req.body("{\"distanceList\":\"7\",\"distances\":\"89\",\"endStation\":\"union square\",\"id\":\"unique_id_2023\",\"loginId\":\"test.user345\",\"startStation\":\"New york penn station\",\"stationList\":\"Boston Logan International Airport\",\"stations\":\"Times square\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"7\",\"distances\":\"89\",\"endStation\":\"union square\",\"id\":\"unique_id_2023\",\"loginId\":\"test.user345\",\"startStation\":\"New york penn station\",\"stationList\":\"Boston Logan International Airport\",\"stations\":\"Times square\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -2065,8 +2065,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"endStation\":\"Union square\",\"id\":\"users\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"chicago o'hare international airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"endStation\":\"Union square\",\"id\":\"users\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"chicago o'hare international airport\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"Downtown metro\",\"id\":\"uniqueness\",\"startStation\":\"houston hobby airport\",\"stationList\":\"Chicago Union Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"Downtown metro\",\"id\":\"uniqueness\",\"startStation\":\"houston hobby airport\",\"stationList\":\"Chicago Union Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -2179,12 +2179,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant5");
+        Allure.label("story", "test_POST_6");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant5");
+        System.out.println("Scenario: test_POST_6");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -2216,7 +2216,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -2248,8 +2248,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"distances\":\"98\",\"endStation\":\"Grand Central Terminal\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"Admin456\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"San francisco transbay terminal\",\"stations\":\"San Francisco International Airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"distances\":\"98\",\"endStation\":\"Grand Central Terminal\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"Admin456\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"San francisco transbay terminal\",\"stations\":\"San Francisco International Airport\"}");
+                req = req.body("{\"distanceList\":\"450\",\"distances\":\"10\",\"endStation\":\"west end bus stop\",\"id\":\"abc-def-ghi\",\"loginId\":\"john_doe789\",\"startStation\":\"New York Penn Station\",\"stationList\":\"Chicago Union Station\",\"stations\":\"Union Square\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"450\",\"distances\":\"10\",\"endStation\":\"west end bus stop\",\"id\":\"abc-def-ghi\",\"loginId\":\"john_doe789\",\"startStation\":\"New York Penn Station\",\"stationList\":\"Chicago Union Station\",\"stations\":\"Union Square\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -2429,8 +2429,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"endStation\":\"union square\",\"id\":\"user123\",\"startStation\":\"Boston Logan International Airport\",\"stationList\":\"Houston Hobby Airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"endStation\":\"union square\",\"id\":\"user123\",\"startStation\":\"Boston Logan International Airport\",\"stationList\":\"Houston Hobby Airport\"}");
+                req = req.body("{\"distanceList\":\"450\",\"endStation\":\"train depot\",\"id\":\"Xyz.123\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"chicago union station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"450\",\"endStation\":\"train depot\",\"id\":\"Xyz.123\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"chicago union station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -2543,12 +2543,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant6");
+        Allure.label("story", "test_POST_7");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant6");
+        System.out.println("Scenario: test_POST_7");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -2580,7 +2580,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -2612,8 +2612,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"distances\":\"10\",\"endStation\":\"downtown crossing\",\"id\":\"987654321\",\"loginId\":\"Sydney_measured_####kbps\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"Los angeles county administration building\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"distances\":\"10\",\"endStation\":\"downtown crossing\",\"id\":\"987654321\",\"loginId\":\"Sydney_measured_####kbps\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"Los angeles county administration building\"}");
+                req = req.body("{\"distanceList\":\"23\",\"distances\":\"25.5\",\"endStation\":\"union square\",\"id\":\"Unique_id_2023\",\"loginId\":\"bennett\",\"startStation\":\"houston hobby airport\",\"stationList\":\"Boston logan international airport\",\"stations\":\"Grand central terminal\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"23\",\"distances\":\"25.5\",\"endStation\":\"union square\",\"id\":\"Unique_id_2023\",\"loginId\":\"bennett\",\"startStation\":\"houston hobby airport\",\"stationList\":\"Boston logan international airport\",\"stations\":\"Grand central terminal\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -2793,8 +2793,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"endStation\":\"Central station\",\"id\":\"goodbye\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"Los Angeles Union Station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"endStation\":\"Central station\",\"id\":\"goodbye\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"Los Angeles Union Station\"}");
+                req = req.body("{\"distanceList\":\"23\",\"endStation\":\"Union square\",\"id\":\"users\",\"startStation\":\"Chicago Union Station\",\"stationList\":\"boston logan international airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"23\",\"endStation\":\"Union square\",\"id\":\"users\",\"startStation\":\"Chicago Union Station\",\"stationList\":\"boston logan international airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -2907,12 +2907,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant7");
+        Allure.label("story", "test_POST_8");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant7");
+        System.out.println("Scenario: test_POST_8");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -2944,7 +2944,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -2976,8 +2976,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"distances\":\"400\",\"endStation\":\"Grand central terminal\",\"id\":\"12345\",\"loginId\":\"john_doe789\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"houston space center\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"distances\":\"400\",\"endStation\":\"Grand central terminal\",\"id\":\"12345\",\"loginId\":\"john_doe789\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"houston space center\"}");
+                req = req.body("{\"distanceList\":\"10.5\",\"distances\":\"10\",\"endStation\":\"Downtown metro\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"admins\",\"startStation\":\"Chicago union station\",\"stationList\":\"los angeles union station\",\"stations\":\"Times square\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10.5\",\"distances\":\"10\",\"endStation\":\"Downtown metro\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"admins\",\"startStation\":\"Chicago union station\",\"stationList\":\"los angeles union station\",\"stations\":\"Times square\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -3157,8 +3157,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"endStation\":\"Downtown crossing\",\"id\":\"users\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"Chicago o'hare international airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"endStation\":\"Downtown crossing\",\"id\":\"users\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"Chicago o'hare international airport\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"west end bus stop\",\"id\":\"xyz.123\",\"startStation\":\"new york penn station\",\"stationList\":\"Boston Logan International Airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"west end bus stop\",\"id\":\"xyz.123\",\"startStation\":\"new york penn station\",\"stationList\":\"Boston Logan International Airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -3271,12 +3271,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant8");
+        Allure.label("story", "test_POST_9");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant8");
+        System.out.println("Scenario: test_POST_9");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -3308,7 +3308,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -3340,8 +3340,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"distances\":\"98\",\"endStation\":\"Grand Central Terminal\",\"id\":\"Hello-world\",\"loginId\":\"johnston\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"New York Penn Station\",\"stations\":\"new york city subway station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"distances\":\"98\",\"endStation\":\"Grand Central Terminal\",\"id\":\"Hello-world\",\"loginId\":\"johnston\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"New York Penn Station\",\"stations\":\"new york city subway station\"}");
+                req = req.body("{\"distanceList\":\"6\",\"distances\":\"10\",\"endStation\":\"downtown metro\",\"id\":\"Abc-def-ghi\",\"loginId\":\"admins\",\"startStation\":\"New york penn station\",\"stationList\":\"Boston logan international airport\",\"stations\":\"grand central terminal\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"6\",\"distances\":\"10\",\"endStation\":\"downtown metro\",\"id\":\"Abc-def-ghi\",\"loginId\":\"admins\",\"startStation\":\"New york penn station\",\"stationList\":\"Boston logan international airport\",\"stations\":\"grand central terminal\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -3521,8 +3521,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"endStation\":\"Grand central terminal\",\"id\":\"987654321\",\"startStation\":\"Atlanta hartsfield-jackson international airport\",\"stationList\":\"New york penn station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"endStation\":\"Grand central terminal\",\"id\":\"987654321\",\"startStation\":\"Atlanta hartsfield-jackson international airport\",\"stationList\":\"New york penn station\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"union square\",\"id\":\"Unique_id_2023\",\"startStation\":\"Chicago Union Station\",\"stationList\":\"Los Angeles Union Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"union square\",\"id\":\"Unique_id_2023\",\"startStation\":\"Chicago Union Station\",\"stationList\":\"Los Angeles Union Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -3635,12 +3635,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_1_variant9");
+        Allure.label("story", "test_POST_10");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_1_variant9");
+        System.out.println("Scenario: test_POST_10");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -3672,7 +3672,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -3704,8 +3704,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"distances\":\"10\",\"endStation\":\"central station\",\"id\":\"987654321\",\"loginId\":\"guest_abc\",\"startStation\":\"Los angeles union station\",\"stationList\":\"San francisco transbay terminal\",\"stations\":\"new york city subway station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"distances\":\"10\",\"endStation\":\"central station\",\"id\":\"987654321\",\"loginId\":\"guest_abc\",\"startStation\":\"Los angeles union station\",\"stationList\":\"San francisco transbay terminal\",\"stations\":\"new york city subway station\"}");
+                req = req.body("{\"distanceList\":\"450\",\"distances\":\"300\",\"endStation\":\"Downtown metro\",\"id\":\"Xyz.123\",\"loginId\":\"admins\",\"startStation\":\"Houston hobby airport\",\"stationList\":\"Chicago Union Station\",\"stations\":\"Westfield town centre\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"450\",\"distances\":\"300\",\"endStation\":\"Downtown metro\",\"id\":\"Xyz.123\",\"loginId\":\"admins\",\"startStation\":\"Houston hobby airport\",\"stationList\":\"Chicago Union Station\",\"stations\":\"Westfield town centre\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -3885,8 +3885,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"endStation\":\"downtown crossing\",\"id\":\"Hello-world\",\"startStation\":\"boston logan international airport\",\"stationList\":\"Houston Hobby Airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"endStation\":\"downtown crossing\",\"id\":\"Hello-world\",\"startStation\":\"boston logan international airport\",\"stationList\":\"Houston Hobby Airport\"}");
+                req = req.body("{\"distanceList\":\"789.12\",\"endStation\":\"train depot\",\"id\":\"user123\",\"startStation\":\"new york penn station\",\"stationList\":\"chicago union station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"789.12\",\"endStation\":\"train depot\",\"id\":\"user123\",\"startStation\":\"new york penn station\",\"stationList\":\"chicago union station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -3999,12 +3999,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11");
+        Allure.label("story", "test_POST_1");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11");
+        System.out.println("Scenario: test_POST_1");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -4036,7 +4036,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -4068,8 +4068,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"distances\":\"400\",\"endStation\":\"Union Square\",\"id\":\"users\",\"loginId\":\"test_user001\",\"startStation\":\"New York Penn Station\",\"stationList\":\"san francisco transbay terminal\",\"stations\":\"San francisco international airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"distances\":\"400\",\"endStation\":\"Union Square\",\"id\":\"users\",\"loginId\":\"test_user001\",\"startStation\":\"New York Penn Station\",\"stationList\":\"san francisco transbay terminal\",\"stations\":\"San francisco international airport\"}");
+                req = req.body("{\"distanceList\":\"7\",\"distances\":\"300\",\"endStation\":\"West End Bus Stop\",\"id\":\"User123\",\"loginId\":\"Admin456\",\"startStation\":\"chicago union station\",\"stationList\":\"Los angeles union station\",\"stations\":\"grand central terminal\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"7\",\"distances\":\"300\",\"endStation\":\"West End Bus Stop\",\"id\":\"User123\",\"loginId\":\"Admin456\",\"startStation\":\"chicago union station\",\"stationList\":\"Los angeles union station\",\"stations\":\"grand central terminal\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -4249,8 +4249,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"endStation\":\"beverly hills mall\",\"id\":\"abcdefg\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"Chicago o'hare international airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"endStation\":\"beverly hills mall\",\"id\":\"abcdefg\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"Chicago o'hare international airport\"}");
+                req = req.body("{\"distanceList\":\"6\",\"endStation\":\"Union Square\",\"id\":\"nbc\",\"startStation\":\"Los angeles union station\",\"stationList\":\"chicago union station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"6\",\"endStation\":\"Union Square\",\"id\":\"nbc\",\"startStation\":\"Los angeles union station\",\"stationList\":\"chicago union station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -4363,12 +4363,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant1");
+        Allure.label("story", "test_POST_2");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant1");
+        System.out.println("Scenario: test_POST_2");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -4400,7 +4400,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -4432,8 +4432,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"distances\":\"3.14\",\"endStation\":\"Union square\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"admins\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"San francisco transbay terminal\",\"stations\":\"new york city subway station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"distances\":\"3.14\",\"endStation\":\"Union square\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"admins\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"San francisco transbay terminal\",\"stations\":\"new york city subway station\"}");
+                req = req.body("{\"distanceList\":\"450\",\"distances\":\"300\",\"endStation\":\"Central Station\",\"id\":\"Xyz.123\",\"loginId\":\"bennett\",\"startStation\":\"houston hobby airport\",\"stationList\":\"boston logan international airport\",\"stations\":\"Union Square\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"450\",\"distances\":\"300\",\"endStation\":\"Central Station\",\"id\":\"Xyz.123\",\"loginId\":\"bennett\",\"startStation\":\"houston hobby airport\",\"stationList\":\"boston logan international airport\",\"stations\":\"Union Square\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -4613,8 +4613,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"endStation\":\"union square\",\"id\":\"abcdefg\",\"startStation\":\"boston logan international airport\",\"stationList\":\"chicago o'hare international airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"endStation\":\"union square\",\"id\":\"abcdefg\",\"startStation\":\"boston logan international airport\",\"stationList\":\"chicago o'hare international airport\"}");
+                req = req.body("{\"distanceList\":\"23\",\"endStation\":\"West End Bus Stop\",\"id\":\"nbc\",\"startStation\":\"chicago union station\",\"stationList\":\"San francisco international airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"23\",\"endStation\":\"West End Bus Stop\",\"id\":\"nbc\",\"startStation\":\"chicago union station\",\"stationList\":\"San francisco international airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -4727,12 +4727,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant2");
+        Allure.label("story", "test_POST_3");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant2");
+        System.out.println("Scenario: test_POST_3");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -4764,7 +4764,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -4796,8 +4796,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"distances\":\"25.7\",\"endStation\":\"beverly hills mall\",\"id\":\"Abcdefg\",\"loginId\":\"John_doe789\",\"startStation\":\"Atlanta hartsfield-jackson international airport\",\"stationList\":\"Los angeles union station\",\"stations\":\"Chicago loop transportation hub\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"distances\":\"25.7\",\"endStation\":\"beverly hills mall\",\"id\":\"Abcdefg\",\"loginId\":\"John_doe789\",\"startStation\":\"Atlanta hartsfield-jackson international airport\",\"stationList\":\"Los angeles union station\",\"stations\":\"Chicago loop transportation hub\"}");
+                req = req.body("{\"distanceList\":\"789.12\",\"distances\":\"89\",\"endStation\":\"Union Square\",\"id\":\"Abc-def-ghi\",\"loginId\":\"John_doe789\",\"startStation\":\"Chicago union station\",\"stationList\":\"Los Angeles Union Station\",\"stations\":\"Westfield Town Centre\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"789.12\",\"distances\":\"89\",\"endStation\":\"Union Square\",\"id\":\"Abc-def-ghi\",\"loginId\":\"John_doe789\",\"startStation\":\"Chicago union station\",\"stationList\":\"Los Angeles Union Station\",\"stations\":\"Westfield Town Centre\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -4977,8 +4977,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"endStation\":\"Grand central terminal\",\"id\":\"Hello-world\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"los angeles union station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"endStation\":\"Grand central terminal\",\"id\":\"Hello-world\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"los angeles union station\"}");
+                req = req.body("{\"distanceList\":\"5\",\"endStation\":\"union square\",\"id\":\"cbs\",\"startStation\":\"Chicago union station\",\"stationList\":\"new york penn station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5\",\"endStation\":\"union square\",\"id\":\"cbs\",\"startStation\":\"Chicago union station\",\"stationList\":\"new york penn station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -5091,12 +5091,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant3");
+        Allure.label("story", "test_POST_4");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant3");
+        System.out.println("Scenario: test_POST_4");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -5128,7 +5128,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -5160,8 +5160,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"distances\":\"3.14\",\"endStation\":\"beverly hills mall\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"bennett\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"Chicago o'hare international airport\",\"stations\":\"Houston Space Center\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"distances\":\"3.14\",\"endStation\":\"beverly hills mall\",\"id\":\"Sydney_measured_####kbps\",\"loginId\":\"bennett\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"Chicago o'hare international airport\",\"stations\":\"Houston Space Center\"}");
+                req = req.body("{\"distanceList\":\"10.5\",\"distances\":\"10\",\"endStation\":\"west end bus stop\",\"id\":\"Unique_id_2023\",\"loginId\":\"jane.smith012\",\"startStation\":\"Los angeles union station\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"Grand central terminal\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10.5\",\"distances\":\"10\",\"endStation\":\"west end bus stop\",\"id\":\"Unique_id_2023\",\"loginId\":\"jane.smith012\",\"startStation\":\"Los angeles union station\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"Grand central terminal\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -5341,8 +5341,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"4.8\",\"endStation\":\"Union Square\",\"id\":\"howdy\",\"startStation\":\"Atlanta Hartsfield-Jackson International Airport\",\"stationList\":\"New York Penn Station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"4.8\",\"endStation\":\"Union Square\",\"id\":\"howdy\",\"startStation\":\"Atlanta Hartsfield-Jackson International Airport\",\"stationList\":\"New York Penn Station\"}");
+                req = req.body("{\"distanceList\":\"789.12\",\"endStation\":\"Central Station\",\"id\":\"users\",\"startStation\":\"San Francisco International Airport\",\"stationList\":\"Boston logan international airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"789.12\",\"endStation\":\"Central Station\",\"id\":\"users\",\"startStation\":\"San Francisco International Airport\",\"stationList\":\"Boston logan international airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -5455,12 +5455,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant4");
+        Allure.label("story", "test_POST_5");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant4");
+        System.out.println("Scenario: test_POST_5");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -5492,7 +5492,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -5524,8 +5524,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"5.2\",\"distances\":\"3.14\",\"endStation\":\"Grand Central Terminal\",\"id\":\"hello-world\",\"loginId\":\"guest_abc\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"Los Angeles Union Station\",\"stations\":\"chicago loop transportation hub\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5.2\",\"distances\":\"3.14\",\"endStation\":\"Grand Central Terminal\",\"id\":\"hello-world\",\"loginId\":\"guest_abc\",\"startStation\":\"Chicago o'hare airport\",\"stationList\":\"Los Angeles Union Station\",\"stations\":\"chicago loop transportation hub\"}");
+                req = req.body("{\"distanceList\":\"23\",\"distances\":\"25.5\",\"endStation\":\"Downtown metro\",\"id\":\"uniqueness\",\"loginId\":\"jane.smith012\",\"startStation\":\"New york penn station\",\"stationList\":\"New York Penn Station\",\"stations\":\"westfield town centre\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"23\",\"distances\":\"25.5\",\"endStation\":\"Downtown metro\",\"id\":\"uniqueness\",\"loginId\":\"jane.smith012\",\"startStation\":\"New york penn station\",\"stationList\":\"New York Penn Station\",\"stations\":\"westfield town centre\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -5705,8 +5705,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"endStation\":\"grand central terminal\",\"id\":\"12345\",\"startStation\":\"los angeles union station\",\"stationList\":\"chicago o'hare international airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"endStation\":\"grand central terminal\",\"id\":\"12345\",\"startStation\":\"los angeles union station\",\"stationList\":\"chicago o'hare international airport\"}");
+                req = req.body("{\"distanceList\":\"450\",\"endStation\":\"union square\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"San Francisco International Airport\",\"stationList\":\"Chicago Union Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"450\",\"endStation\":\"union square\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"San Francisco International Airport\",\"stationList\":\"Chicago Union Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -5819,12 +5819,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant5");
+        Allure.label("story", "test_POST_6");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant5");
+        System.out.println("Scenario: test_POST_6");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -5856,7 +5856,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -5888,8 +5888,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"distances\":\"25.7\",\"endStation\":\"grand central terminal\",\"id\":\"hello-world\",\"loginId\":\"dave\",\"startStation\":\"new york penn station\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"houston space center\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"distances\":\"25.7\",\"endStation\":\"grand central terminal\",\"id\":\"hello-world\",\"loginId\":\"dave\",\"startStation\":\"new york penn station\",\"stationList\":\"Chicago O'Hare International Airport\",\"stations\":\"houston space center\"}");
+                req = req.body("{\"distanceList\":\"23\",\"distances\":\"10\",\"endStation\":\"Downtown metro\",\"id\":\"unique_id_2023\",\"loginId\":\"user123\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Chicago union station\",\"stations\":\"Times Square\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"23\",\"distances\":\"10\",\"endStation\":\"Downtown metro\",\"id\":\"unique_id_2023\",\"loginId\":\"user123\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Chicago union station\",\"stations\":\"Times Square\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -6069,8 +6069,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"endStation\":\"union square\",\"id\":\"goodbye\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"houston hobby airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"endStation\":\"union square\",\"id\":\"goodbye\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"houston hobby airport\"}");
+                req = req.body("{\"distanceList\":\"23\",\"endStation\":\"Central station\",\"id\":\"Abc-def-ghi\",\"startStation\":\"Chicago union station\",\"stationList\":\"Boston Logan International Airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"23\",\"endStation\":\"Central station\",\"id\":\"Abc-def-ghi\",\"startStation\":\"Chicago union station\",\"stationList\":\"Boston Logan International Airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -6183,12 +6183,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant6");
+        Allure.label("story", "test_POST_7");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant6");
+        System.out.println("Scenario: test_POST_7");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -6220,7 +6220,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -6252,8 +6252,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"distances\":\"10\",\"endStation\":\"Beverly Hills Mall\",\"id\":\"Hello-world\",\"loginId\":\"bennett\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Houston hobby airport\",\"stations\":\"Houston space center\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"distances\":\"10\",\"endStation\":\"Beverly Hills Mall\",\"id\":\"Hello-world\",\"loginId\":\"bennett\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Houston hobby airport\",\"stations\":\"Houston space center\"}");
+                req = req.body("{\"distanceList\":\"789.12\",\"distances\":\"25.5\",\"endStation\":\"Union square\",\"id\":\"abc-def-ghi\",\"loginId\":\"User123\",\"startStation\":\"Houston Hobby Airport\",\"stationList\":\"San francisco international airport\",\"stations\":\"Central station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"789.12\",\"distances\":\"25.5\",\"endStation\":\"Union square\",\"id\":\"abc-def-ghi\",\"loginId\":\"User123\",\"startStation\":\"Houston Hobby Airport\",\"stationList\":\"San francisco international airport\",\"stations\":\"Central station\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -6433,8 +6433,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"5.2\",\"endStation\":\"beverly hills mall\",\"id\":\"Hello-world\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"new york penn station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5.2\",\"endStation\":\"beverly hills mall\",\"id\":\"Hello-world\",\"startStation\":\"Chicago O'Hare Airport\",\"stationList\":\"new york penn station\"}");
+                req = req.body("{\"distanceList\":\"7\",\"endStation\":\"Train depot\",\"id\":\"users\",\"startStation\":\"Los angeles union station\",\"stationList\":\"chicago union station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"7\",\"endStation\":\"Train depot\",\"id\":\"users\",\"startStation\":\"Los angeles union station\",\"stationList\":\"chicago union station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -6547,12 +6547,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant7");
+        Allure.label("story", "test_POST_8");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant7");
+        System.out.println("Scenario: test_POST_8");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -6584,7 +6584,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -6616,8 +6616,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"distances\":\"400\",\"endStation\":\"beverly hills mall\",\"id\":\"user123\",\"loginId\":\"johnston\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"san francisco transbay terminal\",\"stations\":\"Chicago Loop Transportation Hub\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"distances\":\"400\",\"endStation\":\"beverly hills mall\",\"id\":\"user123\",\"loginId\":\"johnston\",\"startStation\":\"atlanta hartsfield-jackson international airport\",\"stationList\":\"san francisco transbay terminal\",\"stations\":\"Chicago Loop Transportation Hub\"}");
+                req = req.body("{\"distanceList\":\"789.12\",\"distances\":\"25.5\",\"endStation\":\"Train depot\",\"id\":\"4567890\",\"loginId\":\"user123\",\"startStation\":\"San Francisco International Airport\",\"stationList\":\"New York Penn Station\",\"stations\":\"Times Square\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"789.12\",\"distances\":\"25.5\",\"endStation\":\"Train depot\",\"id\":\"4567890\",\"loginId\":\"user123\",\"startStation\":\"San Francisco International Airport\",\"stationList\":\"New York Penn Station\",\"stations\":\"Times Square\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -6797,8 +6797,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"300\",\"endStation\":\"Grand central terminal\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Houston hobby airport\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"300\",\"endStation\":\"Grand central terminal\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"Los angeles union station\",\"stationList\":\"Houston hobby airport\"}");
+                req = req.body("{\"distanceList\":\"7\",\"endStation\":\"central station\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"Houston Hobby Airport\",\"stationList\":\"Boston Logan International Airport\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"7\",\"endStation\":\"central station\",\"id\":\"Sydney_measured_####kbps\",\"startStation\":\"Houston Hobby Airport\",\"stationList\":\"Boston Logan International Airport\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -6911,12 +6911,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant8");
+        Allure.label("story", "test_POST_9");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant8");
+        System.out.println("Scenario: test_POST_9");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -6948,7 +6948,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -6980,8 +6980,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"75\",\"distances\":\"98\",\"endStation\":\"Central station\",\"id\":\"12345\",\"loginId\":\"admins\",\"startStation\":\"boston logan international airport\",\"stationList\":\"Chicago o'hare international airport\",\"stations\":\"New York City Subway Station\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"75\",\"distances\":\"98\",\"endStation\":\"Central station\",\"id\":\"12345\",\"loginId\":\"admins\",\"startStation\":\"boston logan international airport\",\"stationList\":\"Chicago o'hare international airport\",\"stations\":\"New York City Subway Station\"}");
+                req = req.body("{\"distanceList\":\"5\",\"distances\":\"300\",\"endStation\":\"Union square\",\"id\":\"Xyz.123\",\"loginId\":\"johnston\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Boston Logan International Airport\",\"stations\":\"Grand Central Terminal\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"5\",\"distances\":\"300\",\"endStation\":\"Union square\",\"id\":\"Xyz.123\",\"loginId\":\"johnston\",\"startStation\":\"Los Angeles Union Station\",\"stationList\":\"Boston Logan International Airport\",\"stations\":\"Grand Central Terminal\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7161,8 +7161,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"distanceList\":\"10\",\"endStation\":\"Central Station\",\"id\":\"abcdefg\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"san francisco transbay terminal\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"10\",\"endStation\":\"Central Station\",\"id\":\"abcdefg\",\"startStation\":\"chicago o'hare airport\",\"stationList\":\"san francisco transbay terminal\"}");
+                req = req.body("{\"distanceList\":\"8\",\"endStation\":\"train depot\",\"id\":\"Unique_id_2023\",\"startStation\":\"new york penn station\",\"stationList\":\"New York Penn Station\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"distanceList\":\"8\",\"endStation\":\"train depot\",\"id\":\"Unique_id_2023\",\"startStation\":\"new york penn station\",\"stationList\":\"New York Penn Station\"}");
                 Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7275,12 +7275,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_11_variant9");
+        Allure.label("story", "test_POST_10");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_11_variant9");
+        System.out.println("Scenario: test_POST_10");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -7312,7 +7312,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -7344,8 +7344,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"456.78\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"0987654321\",\"contactsName\":\"Charlie davis\",\"differenceMoney\":\"-50.75\",\"documentType\":\"BORDER_=\",\"from\":\"New york\",\"id\":\"Hello-world\",\"price\":\"89.99\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"A12\",\"status\":\"777\",\"to\":\"New york\",\"trainNumber\":\"XYZ789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2025-12-31T23:59\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"456.78\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"0987654321\",\"contactsName\":\"Charlie davis\",\"differenceMoney\":\"-50.75\",\"documentType\":\"BORDER_=\",\"from\":\"New york\",\"id\":\"Hello-world\",\"price\":\"89.99\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"A12\",\"status\":\"777\",\"to\":\"New york\",\"trainNumber\":\"XYZ789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2025-12-31T23:59\"}");
+                req = req.body("{\"accountId\":\"user12345\",\"boughtDate\":\"2021-11-18\",\"coachNumber\":\"4567890\",\"contactsDocumentNumber\":\"buf\",\"contactsName\":\"Jane Smith\",\"differenceMoney\":\"-0.99\",\"documentType\":\"102\",\"from\":\"new york\",\"id\":\"Unique_id_2023\",\"price\":\"25.49\",\"seatClass\":\"3\",\"seatNumber\":\"h3\",\"status\":\"500\",\"to\":\"admin@domain.org\",\"trainNumber\":\"TrainX\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"user12345\",\"boughtDate\":\"2021-11-18\",\"coachNumber\":\"4567890\",\"contactsDocumentNumber\":\"buf\",\"contactsName\":\"Jane Smith\",\"differenceMoney\":\"-0.99\",\"documentType\":\"102\",\"from\":\"new york\",\"id\":\"Unique_id_2023\",\"price\":\"25.49\",\"seatClass\":\"3\",\"seatNumber\":\"h3\",\"status\":\"500\",\"to\":\"admin@domain.org\",\"trainNumber\":\"TrainX\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7436,8 +7436,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"yyyy\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"jane smith\",\"documentType\":\"23\",\"from\":\"los angeles\",\"id\":\"987654321\",\"price\":\"0.99\",\"seatClass\":\"Luxury Class\",\"seatNumber\":\"b34\",\"status\":\"100\",\"to\":\"New york\",\"trainNumber\":\"Xyz789\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2026-07-01T00:00\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"yyyy\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"jane smith\",\"documentType\":\"23\",\"from\":\"los angeles\",\"id\":\"987654321\",\"price\":\"0.99\",\"seatClass\":\"Luxury Class\",\"seatNumber\":\"b34\",\"status\":\"100\",\"to\":\"New york\",\"trainNumber\":\"Xyz789\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2026-07-01T00:00\"}");
+                req = req.body("{\"accountId\":\"Sydney_measured_####kbps\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"BORDER_=\",\"contactsDocumentNumber\":\"printf\",\"contactsName\":\"bob brown\",\"documentType\":\"234\",\"from\":\"chicago\",\"id\":\"unique_id_2023\",\"price\":\"300.00\",\"seatClass\":\"8\",\"seatNumber\":\"c5\",\"status\":\"500\",\"to\":\"Admin@domain.org\",\"trainNumber\":\"trainx\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Sydney_measured_####kbps\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"BORDER_=\",\"contactsDocumentNumber\":\"printf\",\"contactsName\":\"bob brown\",\"documentType\":\"234\",\"from\":\"chicago\",\"id\":\"unique_id_2023\",\"price\":\"300.00\",\"seatClass\":\"8\",\"seatNumber\":\"c5\",\"status\":\"500\",\"to\":\"Admin@domain.org\",\"trainNumber\":\"trainx\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7550,12 +7550,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21");
+        Allure.label("story", "test_POST_1");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21");
+        System.out.println("Scenario: test_POST_1");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -7587,7 +7587,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -7619,8 +7619,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"abcde\",\"boughtDate\":\"2019-07-16t08:00:00.123z\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"A-123-b456-c789\",\"contactsName\":\"Jane Smith\",\"differenceMoney\":\"-50.75\",\"documentType\":\"0\",\"from\":\"Phoenix\",\"id\":\"Hello-world\",\"price\":\"0.99\",\"seatClass\":\"First Class\",\"seatNumber\":\"b34\",\"status\":\"503\",\"to\":\"Los angeles\",\"trainNumber\":\"Abc123\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2026-07-01T00:00\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcde\",\"boughtDate\":\"2019-07-16t08:00:00.123z\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"A-123-b456-c789\",\"contactsName\":\"Jane Smith\",\"differenceMoney\":\"-50.75\",\"documentType\":\"0\",\"from\":\"Phoenix\",\"id\":\"Hello-world\",\"price\":\"0.99\",\"seatClass\":\"First Class\",\"seatNumber\":\"b34\",\"status\":\"503\",\"to\":\"Los angeles\",\"trainNumber\":\"Abc123\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2026-07-01T00:00\"}");
+                req = req.body("{\"accountId\":\"Abcdef\",\"boughtDate\":\"2020-07-06\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"alice johnson\",\"differenceMoney\":\"3400.00\",\"documentType\":\"234\",\"from\":\"houston\",\"id\":\"4567890\",\"price\":\"10.99\",\"seatClass\":\"1\",\"seatNumber\":\"Qc1\",\"status\":\"500\",\"to\":\"testing\",\"trainNumber\":\"z88y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Abcdef\",\"boughtDate\":\"2020-07-06\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"alice johnson\",\"differenceMoney\":\"3400.00\",\"documentType\":\"234\",\"from\":\"houston\",\"id\":\"4567890\",\"price\":\"10.99\",\"seatClass\":\"1\",\"seatNumber\":\"Qc1\",\"status\":\"500\",\"to\":\"testing\",\"trainNumber\":\"z88y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7711,8 +7711,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"12345\",\"boughtDate\":\"2022-12-25t14:30:00z\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"abcdefg\",\"contactsName\":\"bob brown\",\"documentType\":\"-123\",\"from\":\"nyc\",\"id\":\"howdy\",\"price\":\"0.99\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"b34\",\"status\":\"200\",\"to\":\"Phoenix\",\"trainNumber\":\"cbs\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2025-12-31t23:59\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"12345\",\"boughtDate\":\"2022-12-25t14:30:00z\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"abcdefg\",\"contactsName\":\"bob brown\",\"documentType\":\"-123\",\"from\":\"nyc\",\"id\":\"howdy\",\"price\":\"0.99\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"b34\",\"status\":\"200\",\"to\":\"Phoenix\",\"trainNumber\":\"cbs\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2025-12-31t23:59\"}");
+                req = req.body("{\"accountId\":\"Xyzzy123\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"0\",\"contactsDocumentNumber\":\"ABCDEFg\",\"contactsName\":\"John doe\",\"documentType\":\"678\",\"from\":\"New york\",\"id\":\"uniquely\",\"price\":\"25.49\",\"seatClass\":\"5\",\"seatNumber\":\"b34\",\"status\":\"500\",\"to\":\"Admin@domain.org\",\"trainNumber\":\"Trainx\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Xyzzy123\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"0\",\"contactsDocumentNumber\":\"ABCDEFg\",\"contactsName\":\"John doe\",\"documentType\":\"678\",\"from\":\"New york\",\"id\":\"uniquely\",\"price\":\"25.49\",\"seatClass\":\"5\",\"seatNumber\":\"b34\",\"status\":\"500\",\"to\":\"Admin@domain.org\",\"trainNumber\":\"Trainx\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7825,12 +7825,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant1");
+        Allure.label("story", "test_POST_2");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant1");
+        System.out.println("Scenario: test_POST_2");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -7862,7 +7862,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -7894,8 +7894,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"Xyz-123\",\"boughtDate\":\"2023-01-05\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"a-123-b456-c789\",\"contactsName\":\"Jane smith\",\"differenceMoney\":\"86.4\",\"documentType\":\"-123\",\"from\":\"baltimore\",\"id\":\"user123\",\"price\":\"24.79\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"B34\",\"status\":\"503\",\"to\":\"chicago\",\"trainNumber\":\"Abc123\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-10-05t09:30\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Xyz-123\",\"boughtDate\":\"2023-01-05\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"a-123-b456-c789\",\"contactsName\":\"Jane smith\",\"differenceMoney\":\"86.4\",\"documentType\":\"-123\",\"from\":\"baltimore\",\"id\":\"user123\",\"price\":\"24.79\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"B34\",\"status\":\"503\",\"to\":\"chicago\",\"trainNumber\":\"Abc123\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-10-05t09:30\"}");
+                req = req.body("{\"accountId\":\"users\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"99\",\"contactsDocumentNumber\":\"987654321\",\"contactsName\":\"jane smith\",\"differenceMoney\":\"-0.99\",\"documentType\":\"678\",\"from\":\"New york\",\"id\":\"uniqueness\",\"price\":\"25.49\",\"seatClass\":\"4\",\"seatNumber\":\"A1\",\"status\":\"404\",\"to\":\"testing\",\"trainNumber\":\"G6h5\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"users\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"99\",\"contactsDocumentNumber\":\"987654321\",\"contactsName\":\"jane smith\",\"differenceMoney\":\"-0.99\",\"documentType\":\"678\",\"from\":\"New york\",\"id\":\"uniqueness\",\"price\":\"25.49\",\"seatClass\":\"4\",\"seatNumber\":\"A1\",\"status\":\"404\",\"to\":\"testing\",\"trainNumber\":\"G6h5\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -7986,8 +7986,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"buf\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"jane smith\",\"documentType\":\"456789\",\"from\":\"Houston\",\"id\":\"987654321\",\"price\":\"89.99\",\"seatClass\":\"First Class\",\"seatNumber\":\"D78\",\"status\":\"200\",\"to\":\"New york\",\"trainNumber\":\"buf\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2022-08-20t14:15\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"buf\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"jane smith\",\"documentType\":\"456789\",\"from\":\"Houston\",\"id\":\"987654321\",\"price\":\"89.99\",\"seatClass\":\"First Class\",\"seatNumber\":\"D78\",\"status\":\"200\",\"to\":\"New york\",\"trainNumber\":\"buf\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2022-08-20t14:15\"}");
+                req = req.body("{\"accountId\":\"abcdef\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"123\",\"contactsDocumentNumber\":\"a-bcd-1234\",\"contactsName\":\"alice johnson\",\"documentType\":\"678\",\"from\":\"denver\",\"id\":\"cbs\",\"price\":\"25.49\",\"seatClass\":\"2\",\"seatNumber\":\"c5\",\"status\":\"401\",\"to\":\"John.doe+test@gmail.co.uk\",\"trainNumber\":\"Z88y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2021-07-15t12:00:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcdef\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"123\",\"contactsDocumentNumber\":\"a-bcd-1234\",\"contactsName\":\"alice johnson\",\"documentType\":\"678\",\"from\":\"denver\",\"id\":\"cbs\",\"price\":\"25.49\",\"seatClass\":\"2\",\"seatNumber\":\"c5\",\"status\":\"401\",\"to\":\"John.doe+test@gmail.co.uk\",\"trainNumber\":\"Z88y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2021-07-15t12:00:00z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8100,12 +8100,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant2");
+        Allure.label("story", "test_POST_3");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant2");
+        System.out.println("Scenario: test_POST_3");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -8137,7 +8137,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -8169,8 +8169,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"67890fghij\",\"boughtDate\":\"2022-12-25t14:30:00z\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"-50.75\",\"documentType\":\"456789\",\"from\":\"denver\",\"id\":\"howdy\",\"price\":\"3.65\",\"seatClass\":\"Premium Economy\",\"seatNumber\":\"B34\",\"status\":\"777\",\"to\":\"denver\",\"trainNumber\":\"printf\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2023-10-05t09:30\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"67890fghij\",\"boughtDate\":\"2022-12-25t14:30:00z\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"-50.75\",\"documentType\":\"456789\",\"from\":\"denver\",\"id\":\"howdy\",\"price\":\"3.65\",\"seatClass\":\"Premium Economy\",\"seatNumber\":\"B34\",\"status\":\"777\",\"to\":\"denver\",\"trainNumber\":\"printf\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2023-10-05t09:30\"}");
+                req = req.body("{\"accountId\":\"987654321\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"123\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Bob Brown\",\"differenceMoney\":\"-200.75\",\"documentType\":\"901\",\"from\":\"Houston\",\"id\":\"xyz.123\",\"price\":\"25.49\",\"seatClass\":\"8\",\"seatNumber\":\"D99\",\"status\":\"500\",\"to\":\"test123@test.com\",\"trainNumber\":\"Z88Y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"987654321\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"123\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Bob Brown\",\"differenceMoney\":\"-200.75\",\"documentType\":\"901\",\"from\":\"Houston\",\"id\":\"xyz.123\",\"price\":\"25.49\",\"seatClass\":\"8\",\"seatNumber\":\"D99\",\"status\":\"500\",\"to\":\"test123@test.com\",\"trainNumber\":\"Z88Y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8261,8 +8261,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"67890fghij\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"Charlie davis\",\"documentType\":\"10\",\"from\":\"New York\",\"id\":\"abcdefg\",\"price\":\"3.65\",\"seatClass\":\"busines\",\"seatNumber\":\"b34\",\"status\":\"404\",\"to\":\"los angeles\",\"trainNumber\":\"XYZ789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2022-08-20T14:15\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"67890fghij\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"Charlie davis\",\"documentType\":\"10\",\"from\":\"New York\",\"id\":\"abcdefg\",\"price\":\"3.65\",\"seatClass\":\"busines\",\"seatNumber\":\"b34\",\"status\":\"404\",\"to\":\"los angeles\",\"trainNumber\":\"XYZ789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2022-08-20T14:15\"}");
+                req = req.body("{\"accountId\":\"xyzzy123\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Alice Johnson\",\"documentType\":\"234\",\"from\":\"Los angeles\",\"id\":\"distinctive\",\"price\":\"300.00\",\"seatClass\":\"1\",\"seatNumber\":\"d4\",\"status\":\"500\",\"to\":\"John.doe+test@gmail.co.uk\",\"trainNumber\":\"Z88Y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"xyzzy123\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Alice Johnson\",\"documentType\":\"234\",\"from\":\"Los angeles\",\"id\":\"distinctive\",\"price\":\"300.00\",\"seatClass\":\"1\",\"seatNumber\":\"d4\",\"status\":\"500\",\"to\":\"John.doe+test@gmail.co.uk\",\"trainNumber\":\"Z88Y\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8375,12 +8375,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant3");
+        Allure.label("story", "test_POST_4");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant3");
+        System.out.println("Scenario: test_POST_4");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -8412,7 +8412,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -8444,8 +8444,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"12345\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"X-y-z123-4567\",\"contactsName\":\"alice johnson\",\"differenceMoney\":\"-50.75\",\"documentType\":\"BORDER_=\",\"from\":\"baltimore\",\"id\":\"12345\",\"price\":\"24.79\",\"seatClass\":\"economies\",\"seatNumber\":\"E90\",\"status\":\"777\",\"to\":\"houston\",\"trainNumber\":\"DEF456\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2023-10-05T09:30\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"12345\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"X-y-z123-4567\",\"contactsName\":\"alice johnson\",\"differenceMoney\":\"-50.75\",\"documentType\":\"BORDER_=\",\"from\":\"baltimore\",\"id\":\"12345\",\"price\":\"24.79\",\"seatClass\":\"economies\",\"seatNumber\":\"E90\",\"status\":\"777\",\"to\":\"houston\",\"trainNumber\":\"DEF456\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2023-10-05T09:30\"}");
+                req = req.body("{\"accountId\":\"abcdefg\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"-1234\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Alice Johnson\",\"differenceMoney\":\"10.5\",\"documentType\":\"234\",\"from\":\"nyc\",\"id\":\"cbs\",\"price\":\"25.49\",\"seatClass\":\"4\",\"seatNumber\":\"c5\",\"status\":\"404\",\"to\":\"Test123@test.com\",\"trainNumber\":\"12345\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcdefg\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"-1234\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Alice Johnson\",\"differenceMoney\":\"10.5\",\"documentType\":\"234\",\"from\":\"nyc\",\"id\":\"cbs\",\"price\":\"25.49\",\"seatClass\":\"4\",\"seatNumber\":\"c5\",\"status\":\"404\",\"to\":\"Test123@test.com\",\"trainNumber\":\"12345\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8536,8 +8536,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"abcde\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"charlie davis\",\"documentType\":\"var_bd_=_getElementsByClass\",\"from\":\"Los angeles\",\"id\":\"User123\",\"price\":\"3.65\",\"seatClass\":\"First Class\",\"seatNumber\":\"A12\",\"status\":\"777\",\"to\":\"denver\",\"trainNumber\":\"ABC123\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2026-07-01t00:00\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcde\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"charlie davis\",\"documentType\":\"var_bd_=_getElementsByClass\",\"from\":\"Los angeles\",\"id\":\"User123\",\"price\":\"3.65\",\"seatClass\":\"First Class\",\"seatNumber\":\"A12\",\"status\":\"777\",\"to\":\"denver\",\"trainNumber\":\"ABC123\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2026-07-01t00:00\"}");
+                req = req.body("{\"accountId\":\"User12345\",\"boughtDate\":\"2022-05-15\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"John Doe\",\"documentType\":\"102\",\"from\":\"chicago\",\"id\":\"Sydney_measured_####kbps\",\"price\":\"5.00\",\"seatClass\":\"8\",\"seatNumber\":\"a1\",\"status\":\"401\",\"to\":\"admin@domain.org\",\"trainNumber\":\"Z88y\",\"travelDate\":\"2024-01-15\",\"travelTime\":\"2023-10-05T14:30:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"User12345\",\"boughtDate\":\"2022-05-15\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"John Doe\",\"documentType\":\"102\",\"from\":\"chicago\",\"id\":\"Sydney_measured_####kbps\",\"price\":\"5.00\",\"seatClass\":\"8\",\"seatNumber\":\"a1\",\"status\":\"401\",\"to\":\"admin@domain.org\",\"trainNumber\":\"Z88y\",\"travelDate\":\"2024-01-15\",\"travelTime\":\"2023-10-05T14:30:00Z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8650,12 +8650,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant4");
+        Allure.label("story", "test_POST_5");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant4");
+        System.out.println("Scenario: test_POST_5");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -8687,7 +8687,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -8719,8 +8719,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"456.78\",\"boughtDate\":\"2019-07-16t08:00:00.123z\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"Alice johnson\",\"differenceMoney\":\"234.99\",\"documentType\":\"0\",\"from\":\"miami\",\"id\":\"User123\",\"price\":\"3.65\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"B34\",\"status\":\"503\",\"to\":\"baltimore\",\"trainNumber\":\"xyz789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2023-10-05t09:30\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"456.78\",\"boughtDate\":\"2019-07-16t08:00:00.123z\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"1234567890\",\"contactsName\":\"Alice johnson\",\"differenceMoney\":\"234.99\",\"documentType\":\"0\",\"from\":\"miami\",\"id\":\"User123\",\"price\":\"3.65\",\"seatClass\":\"busi_ness\",\"seatNumber\":\"B34\",\"status\":\"503\",\"to\":\"baltimore\",\"trainNumber\":\"xyz789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2023-10-05t09:30\"}");
+                req = req.body("{\"accountId\":\"abcdef\",\"boughtDate\":\"2022-05-15\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"buf\",\"contactsName\":\"John doe\",\"differenceMoney\":\"-0.99\",\"documentType\":\"901\",\"from\":\"chicago\",\"id\":\"uniqueness\",\"price\":\"25.49\",\"seatClass\":\"3\",\"seatNumber\":\"e5\",\"status\":\"302\",\"to\":\"tests\",\"trainNumber\":\"z88y\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2024-06-29T08:45:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcdef\",\"boughtDate\":\"2022-05-15\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"buf\",\"contactsName\":\"John doe\",\"differenceMoney\":\"-0.99\",\"documentType\":\"901\",\"from\":\"chicago\",\"id\":\"uniqueness\",\"price\":\"25.49\",\"seatClass\":\"3\",\"seatNumber\":\"e5\",\"status\":\"302\",\"to\":\"tests\",\"trainNumber\":\"z88y\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2024-06-29T08:45:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8811,8 +8811,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"abcde\",\"boughtDate\":\"2023-01-05\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"0987654321\",\"contactsName\":\"John Doe\",\"documentType\":\"BORDER_=\",\"from\":\"atlanta\",\"id\":\"abcdefg\",\"price\":\"3.65\",\"seatClass\":\"economy\",\"seatNumber\":\"c56\",\"status\":\"200\",\"to\":\"New York\",\"trainNumber\":\"yyyy\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2026-07-01t00:00\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcde\",\"boughtDate\":\"2023-01-05\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"0987654321\",\"contactsName\":\"John Doe\",\"documentType\":\"BORDER_=\",\"from\":\"atlanta\",\"id\":\"abcdefg\",\"price\":\"3.65\",\"seatClass\":\"economy\",\"seatNumber\":\"c56\",\"status\":\"200\",\"to\":\"New York\",\"trainNumber\":\"yyyy\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2026-07-01t00:00\"}");
+                req = req.body("{\"accountId\":\"abcdef\",\"boughtDate\":\"2022-05-15\",\"coachNumber\":\"-1234\",\"contactsDocumentNumber\":\"Xyz-123\",\"contactsName\":\"jane smith\",\"documentType\":\"102\",\"from\":\"houston\",\"id\":\"abc-def-ghi\",\"price\":\"25.49\",\"seatClass\":\"8\",\"seatNumber\":\"b34\",\"status\":\"404\",\"to\":\"Jane.smith987654@mail.net\",\"trainNumber\":\"12345\",\"travelDate\":\"2024-01-15\",\"travelTime\":\"2022-12-25T19:30:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcdef\",\"boughtDate\":\"2022-05-15\",\"coachNumber\":\"-1234\",\"contactsDocumentNumber\":\"Xyz-123\",\"contactsName\":\"jane smith\",\"documentType\":\"102\",\"from\":\"houston\",\"id\":\"abc-def-ghi\",\"price\":\"25.49\",\"seatClass\":\"8\",\"seatNumber\":\"b34\",\"status\":\"404\",\"to\":\"Jane.smith987654@mail.net\",\"trainNumber\":\"12345\",\"travelDate\":\"2024-01-15\",\"travelTime\":\"2022-12-25T19:30:00Z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -8925,12 +8925,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant5");
+        Allure.label("story", "test_POST_6");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant5");
+        System.out.println("Scenario: test_POST_6");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -8962,7 +8962,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -8994,8 +8994,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"abcde\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"jane smith\",\"differenceMoney\":\"234.99\",\"documentType\":\"456789\",\"from\":\"Los angeles\",\"id\":\"Sydney_measured_####kbps\",\"price\":\"24.79\",\"seatClass\":\"econ_omy\",\"seatNumber\":\"e90\",\"status\":\"777\",\"to\":\"nyc\",\"trainNumber\":\"abc123\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2024-01-15T17:45\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcde\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"jane smith\",\"differenceMoney\":\"234.99\",\"documentType\":\"456789\",\"from\":\"Los angeles\",\"id\":\"Sydney_measured_####kbps\",\"price\":\"24.79\",\"seatClass\":\"econ_omy\",\"seatNumber\":\"e90\",\"status\":\"777\",\"to\":\"nyc\",\"trainNumber\":\"abc123\",\"travelDate\":\"2021-11-12\",\"travelTime\":\"2024-01-15T17:45\"}");
+                req = req.body("{\"accountId\":\"xyzzy123\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"5600.0\",\"documentType\":\"102\",\"from\":\"Chicago\",\"id\":\"unique_id_2023\",\"price\":\"25.49\",\"seatClass\":\"2\",\"seatNumber\":\"c5\",\"status\":\"401\",\"to\":\"test123@test.com\",\"trainNumber\":\"g6h5\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2021-07-15t12:00:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"xyzzy123\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"5600.0\",\"documentType\":\"102\",\"from\":\"Chicago\",\"id\":\"unique_id_2023\",\"price\":\"25.49\",\"seatClass\":\"2\",\"seatNumber\":\"c5\",\"status\":\"401\",\"to\":\"test123@test.com\",\"trainNumber\":\"g6h5\",\"travelDate\":\"2021-09-11\",\"travelTime\":\"2021-07-15t12:00:00z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9086,8 +9086,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"xyz-123\",\"boughtDate\":\"2025-03-14\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"Alice Johnson\",\"documentType\":\"bd_div_story\",\"from\":\"New york\",\"id\":\"user123\",\"price\":\"24.79\",\"seatClass\":\"econ_omy\",\"seatNumber\":\"A12\",\"status\":\"200\",\"to\":\"New York\",\"trainNumber\":\"printf\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2023-10-05t09:30\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"xyz-123\",\"boughtDate\":\"2025-03-14\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"Alice Johnson\",\"documentType\":\"bd_div_story\",\"from\":\"New york\",\"id\":\"user123\",\"price\":\"24.79\",\"seatClass\":\"econ_omy\",\"seatNumber\":\"A12\",\"status\":\"200\",\"to\":\"New York\",\"trainNumber\":\"printf\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2023-10-05t09:30\"}");
+                req = req.body("{\"accountId\":\"user12345\",\"boughtDate\":\"2021-11-18\",\"coachNumber\":\"4567890\",\"contactsDocumentNumber\":\"A-BCD-1234\",\"contactsName\":\"Bob Brown\",\"documentType\":\"901\",\"from\":\"atlanta\",\"id\":\"Abc-def-ghi\",\"price\":\"300.00\",\"seatClass\":\"1\",\"seatNumber\":\"b34\",\"status\":\"200\",\"to\":\"admin@domain.org\",\"trainNumber\":\"67890\",\"travelDate\":\"2024-01-15\",\"travelTime\":\"2022-12-25T19:30:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"user12345\",\"boughtDate\":\"2021-11-18\",\"coachNumber\":\"4567890\",\"contactsDocumentNumber\":\"A-BCD-1234\",\"contactsName\":\"Bob Brown\",\"documentType\":\"901\",\"from\":\"atlanta\",\"id\":\"Abc-def-ghi\",\"price\":\"300.00\",\"seatClass\":\"1\",\"seatNumber\":\"b34\",\"status\":\"200\",\"to\":\"admin@domain.org\",\"trainNumber\":\"67890\",\"travelDate\":\"2024-01-15\",\"travelTime\":\"2022-12-25T19:30:00Z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9200,12 +9200,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant6");
+        Allure.label("story", "test_POST_7");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant6");
+        System.out.println("Scenario: test_POST_7");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -9237,7 +9237,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -9269,8 +9269,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"Abcde\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"X-Y-Z123-4567\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"-100.0\",\"documentType\":\"23\",\"from\":\"dallas\",\"id\":\"987654321\",\"price\":\"0.99\",\"seatClass\":\"busines\",\"seatNumber\":\"a12\",\"status\":\"777\",\"to\":\"houston\",\"trainNumber\":\"cbs\",\"travelDate\":\"2024-06-18\",\"travelTime\":\"2026-07-01t00:00\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Abcde\",\"boughtDate\":\"2019-07-16T08:00:00.123Z\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"X-Y-Z123-4567\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"-100.0\",\"documentType\":\"23\",\"from\":\"dallas\",\"id\":\"987654321\",\"price\":\"0.99\",\"seatClass\":\"busines\",\"seatNumber\":\"a12\",\"status\":\"777\",\"to\":\"houston\",\"trainNumber\":\"cbs\",\"travelDate\":\"2024-06-18\",\"travelTime\":\"2026-07-01t00:00\"}");
+                req = req.body("{\"accountId\":\"abcdef\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"987654321\",\"contactsName\":\"Jane smith\",\"differenceMoney\":\"-0.99\",\"documentType\":\"234\",\"from\":\"denver\",\"id\":\"users\",\"price\":\"10.99\",\"seatClass\":\"2\",\"seatNumber\":\"c207\",\"status\":\"404\",\"to\":\"Test123@test.com\",\"trainNumber\":\"z88y\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcdef\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"bd_div_story\",\"contactsDocumentNumber\":\"987654321\",\"contactsName\":\"Jane smith\",\"differenceMoney\":\"-0.99\",\"documentType\":\"234\",\"from\":\"denver\",\"id\":\"users\",\"price\":\"10.99\",\"seatClass\":\"2\",\"seatNumber\":\"c207\",\"status\":\"404\",\"to\":\"Test123@test.com\",\"trainNumber\":\"z88y\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2023-03-08T00:15:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9361,8 +9361,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"12345\",\"boughtDate\":\"2023-01-05\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"Abcdefg\",\"contactsName\":\"Jane smith\",\"documentType\":\"-123\",\"from\":\"baltimore\",\"id\":\"Abcdefg\",\"price\":\"0.99\",\"seatClass\":\"busines\",\"seatNumber\":\"a12\",\"status\":\"200\",\"to\":\"Chicago\",\"trainNumber\":\"Xyz789\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2022-08-20t14:15\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"12345\",\"boughtDate\":\"2023-01-05\",\"coachNumber\":\"37\",\"contactsDocumentNumber\":\"Abcdefg\",\"contactsName\":\"Jane smith\",\"documentType\":\"-123\",\"from\":\"baltimore\",\"id\":\"Abcdefg\",\"price\":\"0.99\",\"seatClass\":\"busines\",\"seatNumber\":\"a12\",\"status\":\"200\",\"to\":\"Chicago\",\"trainNumber\":\"Xyz789\",\"travelDate\":\"2022-07-19\",\"travelTime\":\"2022-08-20t14:15\"}");
+                req = req.body("{\"accountId\":\"user12345\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"var_bd_=_getElementsByClass\",\"contactsDocumentNumber\":\"buf\",\"contactsName\":\"John Doe\",\"documentType\":\"102\",\"from\":\"new york\",\"id\":\"uniquely\",\"price\":\"5.00\",\"seatClass\":\"2\",\"seatNumber\":\"E5\",\"status\":\"401\",\"to\":\"jane.smith987654@mail.net\",\"trainNumber\":\"12345\",\"travelDate\":\"2022-12-25\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"user12345\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"var_bd_=_getElementsByClass\",\"contactsDocumentNumber\":\"buf\",\"contactsName\":\"John Doe\",\"documentType\":\"102\",\"from\":\"new york\",\"id\":\"uniquely\",\"price\":\"5.00\",\"seatClass\":\"2\",\"seatNumber\":\"E5\",\"status\":\"401\",\"to\":\"jane.smith987654@mail.net\",\"trainNumber\":\"12345\",\"travelDate\":\"2022-12-25\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9475,12 +9475,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant7");
+        Allure.label("story", "test_POST_8");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant7");
+        System.out.println("Scenario: test_POST_8");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -9512,7 +9512,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -9544,8 +9544,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"Abcde\",\"boughtDate\":\"2025-03-14\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"Alice johnson\",\"differenceMoney\":\"86.4\",\"documentType\":\"var_bd_=_getElementsByClass\",\"from\":\"los angeles\",\"id\":\"users\",\"price\":\"19.95\",\"seatClass\":\"Business\",\"seatNumber\":\"d78\",\"status\":\"777\",\"to\":\"Los angeles\",\"trainNumber\":\"yyyy\",\"travelDate\":\"2024-06-18\",\"travelTime\":\"2022-08-20T14:15\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Abcde\",\"boughtDate\":\"2025-03-14\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"Alice johnson\",\"differenceMoney\":\"86.4\",\"documentType\":\"var_bd_=_getElementsByClass\",\"from\":\"los angeles\",\"id\":\"users\",\"price\":\"19.95\",\"seatClass\":\"Business\",\"seatNumber\":\"d78\",\"status\":\"777\",\"to\":\"Los angeles\",\"trainNumber\":\"yyyy\",\"travelDate\":\"2024-06-18\",\"travelTime\":\"2022-08-20T14:15\"}");
+                req = req.body("{\"accountId\":\"987654321\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"-1234\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Bob brown\",\"differenceMoney\":\"-200.75\",\"documentType\":\"102\",\"from\":\"Los angeles\",\"id\":\"nbc\",\"price\":\"300.00\",\"seatClass\":\"3\",\"seatNumber\":\"Qc1\",\"status\":\"302\",\"to\":\"test123@test.com\",\"trainNumber\":\"12345\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2023-10-05T14:30:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"987654321\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"-1234\",\"contactsDocumentNumber\":\"A-bcd-1234\",\"contactsName\":\"Bob brown\",\"differenceMoney\":\"-200.75\",\"documentType\":\"102\",\"from\":\"Los angeles\",\"id\":\"nbc\",\"price\":\"300.00\",\"seatClass\":\"3\",\"seatNumber\":\"Qc1\",\"status\":\"302\",\"to\":\"test123@test.com\",\"trainNumber\":\"12345\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2023-10-05T14:30:00Z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9636,8 +9636,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"abcde\",\"boughtDate\":\"2022-12-25T14:30:00Z\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"jane smith\",\"documentType\":\"-123\",\"from\":\"los angeles\",\"id\":\"goodbye\",\"price\":\"89.99\",\"seatClass\":\"economic\",\"seatNumber\":\"B34\",\"status\":\"100\",\"to\":\"atlanta\",\"trainNumber\":\"buf\",\"travelDate\":\"2024-06-18\",\"travelTime\":\"2025-12-31t23:59\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"abcde\",\"boughtDate\":\"2022-12-25T14:30:00Z\",\"coachNumber\":\"10\",\"contactsDocumentNumber\":\"A-123-B456-C789\",\"contactsName\":\"jane smith\",\"documentType\":\"-123\",\"from\":\"los angeles\",\"id\":\"goodbye\",\"price\":\"89.99\",\"seatClass\":\"economic\",\"seatNumber\":\"B34\",\"status\":\"100\",\"to\":\"atlanta\",\"trainNumber\":\"buf\",\"travelDate\":\"2024-06-18\",\"travelTime\":\"2025-12-31t23:59\"}");
+                req = req.body("{\"accountId\":\"987654321\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"123\",\"contactsDocumentNumber\":\"A-BCD-1234\",\"contactsName\":\"Charlie davis\",\"documentType\":\"345\",\"from\":\"Phoenix\",\"id\":\"User123\",\"price\":\"25.49\",\"seatClass\":\"3\",\"seatNumber\":\"e7\",\"status\":\"302\",\"to\":\"admin@domain.org\",\"trainNumber\":\"Trainx\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"987654321\",\"boughtDate\":\"2024-03-29\",\"coachNumber\":\"123\",\"contactsDocumentNumber\":\"A-BCD-1234\",\"contactsName\":\"Charlie davis\",\"documentType\":\"345\",\"from\":\"Phoenix\",\"id\":\"User123\",\"price\":\"25.49\",\"seatClass\":\"3\",\"seatNumber\":\"e7\",\"status\":\"302\",\"to\":\"admin@domain.org\",\"trainNumber\":\"Trainx\",\"travelDate\":\"2023-10-05\",\"travelTime\":\"2024-06-29t08:45:00z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9750,12 +9750,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant8");
+        Allure.label("story", "test_POST_9");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant8");
+        System.out.println("Scenario: test_POST_9");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -9787,7 +9787,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -9819,8 +9819,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"xyz-123\",\"boughtDate\":\"2022-12-25T14:30:00Z\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"Abcdefg\",\"contactsName\":\"Alice johnson\",\"differenceMoney\":\"-50.75\",\"documentType\":\"10\",\"from\":\"chicago\",\"id\":\"user123\",\"price\":\"0.99\",\"seatClass\":\"First Class\",\"seatNumber\":\"A12\",\"status\":\"503\",\"to\":\"Houston\",\"trainNumber\":\"Abc123\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2026-07-01t00:00\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"xyz-123\",\"boughtDate\":\"2022-12-25T14:30:00Z\",\"coachNumber\":\"25\",\"contactsDocumentNumber\":\"Abcdefg\",\"contactsName\":\"Alice johnson\",\"differenceMoney\":\"-50.75\",\"documentType\":\"10\",\"from\":\"chicago\",\"id\":\"user123\",\"price\":\"0.99\",\"seatClass\":\"First Class\",\"seatNumber\":\"A12\",\"status\":\"503\",\"to\":\"Houston\",\"trainNumber\":\"Abc123\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2026-07-01t00:00\"}");
+                req = req.body("{\"accountId\":\"Xyzzy123\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"BORDER_=\",\"contactsDocumentNumber\":\"XYZ-123\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"3400.00\",\"documentType\":\"678\",\"from\":\"New york\",\"id\":\"unique_id_2023\",\"price\":\"10.99\",\"seatClass\":\"3\",\"seatNumber\":\"e7\",\"status\":\"200\",\"to\":\"john.doe+test@gmail.co.uk\",\"trainNumber\":\"Z88Y\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2023-03-08t00:15:00z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"Xyzzy123\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"BORDER_=\",\"contactsDocumentNumber\":\"XYZ-123\",\"contactsName\":\"charlie davis\",\"differenceMoney\":\"3400.00\",\"documentType\":\"678\",\"from\":\"New york\",\"id\":\"unique_id_2023\",\"price\":\"10.99\",\"seatClass\":\"3\",\"seatNumber\":\"e7\",\"status\":\"200\",\"to\":\"john.doe+test@gmail.co.uk\",\"trainNumber\":\"Z88Y\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2023-03-08t00:15:00z\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminorderservice/adminorder")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -9911,8 +9911,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"accountId\":\"67890fghij\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"charlie davis\",\"documentType\":\"-123\",\"from\":\"Chicago\",\"id\":\"goodbye\",\"price\":\"19.95\",\"seatClass\":\"economies\",\"seatNumber\":\"b34\",\"status\":\"404\",\"to\":\"Phoenix\",\"trainNumber\":\"Xyz789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2024-01-15T17:45\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"67890fghij\",\"boughtDate\":\"1999-12-01\",\"coachNumber\":\"49\",\"contactsDocumentNumber\":\"x-y-z123-4567\",\"contactsName\":\"charlie davis\",\"documentType\":\"-123\",\"from\":\"Chicago\",\"id\":\"goodbye\",\"price\":\"19.95\",\"seatClass\":\"economies\",\"seatNumber\":\"b34\",\"status\":\"404\",\"to\":\"Phoenix\",\"trainNumber\":\"Xyz789\",\"travelDate\":\"2025-03-05\",\"travelTime\":\"2024-01-15T17:45\"}");
+                req = req.body("{\"accountId\":\"ABCDEF\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"var_bd_=_getElementsByClass\",\"contactsDocumentNumber\":\"printf\",\"contactsName\":\"John doe\",\"documentType\":\"678\",\"from\":\"los angeles\",\"id\":\"User123\",\"price\":\"7.50\",\"seatClass\":\"6\",\"seatNumber\":\"a1\",\"status\":\"404\",\"to\":\"Jane.smith987654@mail.net\",\"trainNumber\":\"trainx\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2021-07-15T12:00:00Z\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"accountId\":\"ABCDEF\",\"boughtDate\":\"2023-10-01\",\"coachNumber\":\"var_bd_=_getElementsByClass\",\"contactsDocumentNumber\":\"printf\",\"contactsName\":\"John doe\",\"documentType\":\"678\",\"from\":\"los angeles\",\"id\":\"User123\",\"price\":\"7.50\",\"seatClass\":\"6\",\"seatNumber\":\"a1\",\"status\":\"404\",\"to\":\"Jane.smith987654@mail.net\",\"trainNumber\":\"trainx\",\"travelDate\":\"2026-07-28\",\"travelTime\":\"2021-07-15T12:00:00Z\"}");
                 Response stepResponse2 = req.when().post("/api/v1/orderOtherService/orderOther/admin")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10025,12 +10025,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_21_variant9");
+        Allure.label("story", "test_POST_10");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_21_variant9");
+        System.out.println("Scenario: test_POST_10");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -10062,7 +10062,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -10094,8 +10094,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"-2.99\",\"firstClassPriceRate\":\"120.75\",\"id\":\"Abcdefg\",\"routeId\":\"TRO_temporary_restraining\",\"trainType\":\"High-Speed Rail\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-2.99\",\"firstClassPriceRate\":\"120.75\",\"id\":\"Abcdefg\",\"routeId\":\"TRO_temporary_restraining\",\"trainType\":\"High-Speed Rail\"}");
+                req = req.body("{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"uniquely\",\"routeId\":\"testing\",\"trainType\":\"Passenger train\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"uniquely\",\"routeId\":\"testing\",\"trainType\":\"Passenger train\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10186,8 +10186,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"15.99\",\"id\":\"users\",\"routeId\":\"flights\",\"trainType\":\"Passenger train\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"15.99\",\"id\":\"users\",\"routeId\":\"flights\",\"trainType\":\"Passenger train\"}");
+                req = req.body("{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"unique_id_2023\",\"routeId\":\"Abcde\",\"trainType\":\"passenger train\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"unique_id_2023\",\"routeId\":\"Abcde\",\"trainType\":\"passenger train\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10300,12 +10300,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31");
+        Allure.label("story", "test_POST_1");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31");
+        System.out.println("Scenario: test_POST_1");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -10337,7 +10337,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -10369,8 +10369,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"800.0\",\"id\":\"hello-world\",\"routeId\":\"flights\",\"trainType\":\"low\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"800.0\",\"id\":\"hello-world\",\"routeId\":\"flights\",\"trainType\":\"low\"}");
+                req = req.body("{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"uniquely\",\"routeId\":\"testing\",\"trainType\":\"Diesel engine\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"uniquely\",\"routeId\":\"testing\",\"trainType\":\"Diesel engine\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10461,8 +10461,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"30.5\",\"id\":\"goodbye\",\"routeId\":\"Order456\",\"trainType\":\"low\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"30.5\",\"id\":\"goodbye\",\"routeId\":\"Order456\",\"trainType\":\"low\"}");
+                req = req.body("{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"abc-def-ghi\",\"routeId\":\"testing\",\"trainType\":\"Diesel Engine\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"abc-def-ghi\",\"routeId\":\"testing\",\"trainType\":\"Diesel Engine\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10575,12 +10575,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant1");
+        Allure.label("story", "test_POST_2");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant1");
+        System.out.println("Scenario: test_POST_2");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -10612,7 +10612,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -10644,8 +10644,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"120.75\",\"id\":\"987654321\",\"routeId\":\"plane\",\"trainType\":\"high-speed rail\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"120.75\",\"id\":\"987654321\",\"routeId\":\"plane\",\"trainType\":\"high-speed rail\"}");
+                req = req.body("{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"4567890\",\"routeId\":\"hello world\",\"trainType\":\"Diesel engine\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"4567890\",\"routeId\":\"hello world\",\"trainType\":\"Diesel engine\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10736,8 +10736,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"49.99\",\"id\":\"hi\",\"routeId\":\"Order456\",\"trainType\":\"electric locomotive\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"49.99\",\"id\":\"hi\",\"routeId\":\"Order456\",\"trainType\":\"electric locomotive\"}");
+                req = req.body("{\"basicPriceRate\":\"75.00\",\"firstClassPriceRate\":\"0.0\",\"id\":\"Abc-def-ghi\",\"routeId\":\"hello world\",\"trainType\":\"High Speed Rail\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"75.00\",\"firstClassPriceRate\":\"0.0\",\"id\":\"Abc-def-ghi\",\"routeId\":\"hello world\",\"trainType\":\"High Speed Rail\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -10850,12 +10850,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant2");
+        Allure.label("story", "test_POST_3");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant2");
+        System.out.println("Scenario: test_POST_3");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -10887,7 +10887,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -10919,8 +10919,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"49.99\",\"id\":\"users\",\"routeId\":\"Flight789\",\"trainType\":\"freight carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"49.99\",\"id\":\"users\",\"routeId\":\"Flight789\",\"trainType\":\"freight carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"10.5\",\"id\":\"Xyz.123\",\"routeId\":\"test123\",\"trainType\":\"Freight Carriage\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"10.5\",\"id\":\"Xyz.123\",\"routeId\":\"test123\",\"trainType\":\"Freight Carriage\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11011,8 +11011,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"49.99\",\"id\":\"hi\",\"routeId\":\"Flight789\",\"trainType\":\"higher\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"49.99\",\"id\":\"hi\",\"routeId\":\"Flight789\",\"trainType\":\"higher\"}");
+                req = req.body("{\"basicPriceRate\":\"1000.00\",\"firstClassPriceRate\":\"0.0\",\"id\":\"4567890\",\"routeId\":\"tests\",\"trainType\":\"Electric locomotive\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"1000.00\",\"firstClassPriceRate\":\"0.0\",\"id\":\"4567890\",\"routeId\":\"tests\",\"trainType\":\"Electric locomotive\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11125,12 +11125,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant3");
+        Allure.label("story", "test_POST_4");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant3");
+        System.out.println("Scenario: test_POST_4");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -11162,7 +11162,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -11194,8 +11194,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"30.5\",\"id\":\"users\",\"routeId\":\"flight789\",\"trainType\":\"Freight carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"30.5\",\"id\":\"users\",\"routeId\":\"flight789\",\"trainType\":\"Freight carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"4567890\",\"routeId\":\"testing\",\"trainType\":\"freight carriage\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"4567890\",\"routeId\":\"testing\",\"trainType\":\"freight carriage\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11286,8 +11286,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"120.75\",\"id\":\"Sydney_measured_####kbps\",\"routeId\":\"order456\",\"trainType\":\"Diesel Engine\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"120.75\",\"id\":\"Sydney_measured_####kbps\",\"routeId\":\"order456\",\"trainType\":\"Diesel Engine\"}");
+                req = req.body("{\"basicPriceRate\":\"1000.00\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"uniquely\",\"routeId\":\"testing\",\"trainType\":\"passenger train\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"1000.00\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"uniquely\",\"routeId\":\"testing\",\"trainType\":\"passenger train\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11400,12 +11400,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant4");
+        Allure.label("story", "test_POST_5");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant4");
+        System.out.println("Scenario: test_POST_5");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -11437,7 +11437,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -11469,8 +11469,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"-2.99\",\"firstClassPriceRate\":\"120.75\",\"id\":\"987654321\",\"routeId\":\"flights\",\"trainType\":\"Freight Carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-2.99\",\"firstClassPriceRate\":\"120.75\",\"id\":\"987654321\",\"routeId\":\"flights\",\"trainType\":\"Freight Carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"0.0\",\"id\":\"brennan\",\"routeId\":\"Test123\",\"trainType\":\"Freight carriage\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"0.0\",\"id\":\"brennan\",\"routeId\":\"Test123\",\"trainType\":\"Freight carriage\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11561,8 +11561,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"800.0\",\"id\":\"goodbye\",\"routeId\":\"routes\",\"trainType\":\"Freight carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"800.0\",\"id\":\"goodbye\",\"routeId\":\"routes\",\"trainType\":\"Freight carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"234.99\",\"id\":\"users\",\"routeId\":\"12345\",\"trainType\":\"Electric locomotive\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"234.99\",\"id\":\"users\",\"routeId\":\"12345\",\"trainType\":\"Electric locomotive\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11675,12 +11675,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant5");
+        Allure.label("story", "test_POST_6");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant5");
+        System.out.println("Scenario: test_POST_6");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -11712,7 +11712,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -11744,8 +11744,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"120.75\",\"id\":\"12345\",\"routeId\":\"shortest_route\",\"trainType\":\"Electric locomotive\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"120.75\",\"id\":\"12345\",\"routeId\":\"shortest_route\",\"trainType\":\"Electric locomotive\"}");
+                req = req.body("{\"basicPriceRate\":\"1000.00\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"User123\",\"routeId\":\"tests\",\"trainType\":\"Electric Locomotive\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"1000.00\",\"firstClassPriceRate\":\"5678.12\",\"id\":\"User123\",\"routeId\":\"tests\",\"trainType\":\"Electric Locomotive\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11836,8 +11836,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"800.0\",\"id\":\"Hello-world\",\"routeId\":\"flights\",\"trainType\":\"Freight carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"800.0\",\"id\":\"Hello-world\",\"routeId\":\"flights\",\"trainType\":\"Freight carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"234.99\",\"id\":\"uniqueness\",\"routeId\":\"testing\",\"trainType\":\"Electric Locomotive\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"12.99\",\"firstClassPriceRate\":\"234.99\",\"id\":\"uniqueness\",\"routeId\":\"testing\",\"trainType\":\"Electric Locomotive\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -11950,12 +11950,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant6");
+        Allure.label("story", "test_POST_7");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant6");
+        System.out.println("Scenario: test_POST_7");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -11987,7 +11987,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -12019,8 +12019,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"120.75\",\"id\":\"12345\",\"routeId\":\"orders\",\"trainType\":\"Freight carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"23.75\",\"firstClassPriceRate\":\"120.75\",\"id\":\"12345\",\"routeId\":\"orders\",\"trainType\":\"Freight carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"75.00\",\"firstClassPriceRate\":\"0.0\",\"id\":\"nbc\",\"routeId\":\"tested\",\"trainType\":\"Diesel Engine\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"75.00\",\"firstClassPriceRate\":\"0.0\",\"id\":\"nbc\",\"routeId\":\"tested\",\"trainType\":\"Diesel Engine\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -12111,8 +12111,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"100.0\",\"firstClassPriceRate\":\"800.0\",\"id\":\"howdy\",\"routeId\":\"customer012\",\"trainType\":\"Freight carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"100.0\",\"firstClassPriceRate\":\"800.0\",\"id\":\"howdy\",\"routeId\":\"customer012\",\"trainType\":\"Freight carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"0.0\",\"id\":\"user123\",\"routeId\":\"12345\",\"trainType\":\"Diesel Engine\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"0.0\",\"id\":\"user123\",\"routeId\":\"12345\",\"trainType\":\"Diesel Engine\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -12225,12 +12225,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant7");
+        Allure.label("story", "test_POST_8");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant7");
+        System.out.println("Scenario: test_POST_8");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -12262,7 +12262,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -12294,8 +12294,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"100.0\",\"firstClassPriceRate\":\"30.5\",\"id\":\"User123\",\"routeId\":\"route123\",\"trainType\":\"low\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"100.0\",\"firstClassPriceRate\":\"30.5\",\"id\":\"User123\",\"routeId\":\"route123\",\"trainType\":\"low\"}");
+                req = req.body("{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"brennan\",\"routeId\":\"Hello world\",\"trainType\":\"Passenger Train\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"brennan\",\"routeId\":\"Hello world\",\"trainType\":\"Passenger Train\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -12386,8 +12386,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"-2.99\",\"firstClassPriceRate\":\"120.75\",\"id\":\"Sydney_measured_####kbps\",\"routeId\":\"plane\",\"trainType\":\"Freight Carriage\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-2.99\",\"firstClassPriceRate\":\"120.75\",\"id\":\"Sydney_measured_####kbps\",\"routeId\":\"plane\",\"trainType\":\"Freight Carriage\"}");
+                req = req.body("{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"brennan\",\"routeId\":\"Abcde\",\"trainType\":\"Electric Locomotive\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"-4.32\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"brennan\",\"routeId\":\"Abcde\",\"trainType\":\"Electric Locomotive\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -12500,12 +12500,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant8");
+        Allure.label("story", "test_POST_9");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant8");
+        System.out.println("Scenario: test_POST_9");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -12537,7 +12537,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -12569,8 +12569,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"800.0\",\"id\":\"users\",\"routeId\":\"orders\",\"trainType\":\"Passenger train\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"10.5\",\"firstClassPriceRate\":\"800.0\",\"id\":\"users\",\"routeId\":\"orders\",\"trainType\":\"Passenger train\"}");
+                req = req.body("{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"234.99\",\"id\":\"unique_id_2023\",\"routeId\":\"test123\",\"trainType\":\"Passenger train\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"0.50\",\"firstClassPriceRate\":\"234.99\",\"id\":\"unique_id_2023\",\"routeId\":\"test123\",\"trainType\":\"Passenger train\"}");
                 Response stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -12661,8 +12661,8 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     req = req.header("Authorization", jwtType + " " + jwt);
                 }
                 req = req.contentType("application/json");
-                req = req.body("{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"800.0\",\"id\":\"hello-world\",\"routeId\":\"ordering\",\"trainType\":\"passenger train\"}");
-                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"456.8\",\"firstClassPriceRate\":\"800.0\",\"id\":\"hello-world\",\"routeId\":\"ordering\",\"trainType\":\"passenger train\"}");
+                req = req.body("{\"basicPriceRate\":\"75.00\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"xyz.123\",\"routeId\":\"12345\",\"trainType\":\"Electric locomotive\"}");
+                Allure.addAttachment("Request Body", "application/json", "{\"basicPriceRate\":\"75.00\",\"firstClassPriceRate\":\"-12.75\",\"id\":\"xyz.123\",\"routeId\":\"12345\",\"trainType\":\"Electric locomotive\"}");
                 Response stepResponse2 = req.when().post("/api/v1/priceservice/prices")
                    .then().log().ifValidationFails()
                    .statusCode(200)
@@ -12775,12 +12775,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_31_variant9");
+        Allure.label("story", "test_POST_10");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_31_variant9");
+        System.out.println("Scenario: test_POST_10");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -12812,7 +12812,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -13133,12 +13133,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41");
+        Allure.label("story", "test_GET_1");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41");
+        System.out.println("Scenario: test_GET_1");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -13170,7 +13170,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -13491,12 +13491,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant1");
+        Allure.label("story", "test_GET_2");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant1");
+        System.out.println("Scenario: test_GET_2");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -13528,7 +13528,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -13849,12 +13849,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant2");
+        Allure.label("story", "test_GET_3");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant2");
+        System.out.println("Scenario: test_GET_3");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -13886,7 +13886,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -14207,12 +14207,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant3");
+        Allure.label("story", "test_GET_4");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant3");
+        System.out.println("Scenario: test_GET_4");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -14244,7 +14244,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -14565,12 +14565,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant4");
+        Allure.label("story", "test_GET_5");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant4");
+        System.out.println("Scenario: test_GET_5");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -14602,7 +14602,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -14923,12 +14923,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant5");
+        Allure.label("story", "test_GET_6");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant5");
+        System.out.println("Scenario: test_GET_6");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -14960,7 +14960,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -15281,12 +15281,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant6");
+        Allure.label("story", "test_GET_7");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant6");
+        System.out.println("Scenario: test_GET_7");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -15318,7 +15318,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -15639,12 +15639,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant7");
+        Allure.label("story", "test_GET_8");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant7");
+        System.out.println("Scenario: test_GET_8");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -15676,7 +15676,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -15997,12 +15997,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant8");
+        Allure.label("story", "test_GET_9");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant8");
+        System.out.println("Scenario: test_GET_9");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -16034,7 +16034,7 @@ public class TrainTicketTwoStageTest_1752099561271 {
                     .body("{\"username\":\"admin\",\"password\":\"222222\"}")
                 .when().post("/api/v1/users/login")
                     .then().log().ifValidationFails()
-                    .statusCode(200)
+                    .statusCode(200)  // Login expects 200 - could be configurable in future
                     .extract().response();
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
@@ -16355,12 +16355,12 @@ public class TrainTicketTwoStageTest_1752099561271 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "Scenario_41_variant9");
+        Allure.label("story", "test_GET_10");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: Scenario_41_variant9");
+        System.out.println("Scenario: test_GET_10");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
