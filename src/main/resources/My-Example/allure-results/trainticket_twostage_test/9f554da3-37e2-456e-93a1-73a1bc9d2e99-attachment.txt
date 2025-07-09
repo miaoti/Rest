@@ -1,0 +1,1 @@
+{"accountId":"12345","boughtDate":"2023-01-05","coachNumber":"37","contactsDocumentNumber":"Abcdefg","contactsName":"Jane smith","documentType":"-123","from":"baltimore","id":"Abcdefg","price":"0.99","seatClass":"busines","seatNumber":"a12","status":"200","to":"Chicago","trainNumber":"Xyz789","travelDate":"2022-07-19","travelTime":"2022-08-20t14:15"}

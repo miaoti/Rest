@@ -200,13 +200,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         
                         pw.println("        if (shouldExecuteStep" + stepIdx + ") {");
 
-                        /* --------- open an explicit Allure step ------------------ */
+                        /* --------- open an explicit Allure step with enhanced metadata ------------------ */
                         if (allureReport) {
                             pw.println("            String __uuid = java.util.UUID.randomUUID().toString();");
                             pw.println("            io.qameta.allure.model.StepResult __sr = "
                                     + "new io.qameta.allure.model.StepResult()"
-                                    + ".setName(\"" + escape(stepTitle) + "\");");
+                                    + ".setName(\"" + escape(stepTitle) + "\")");
+                            pw.println("                    .setDescription(\"Service: " + escape(step.getServiceName()) + " | Method: " + verb.toUpperCase() 
+                                    + " | Path: " + escape(step.getPath()) + " | Expected Status: " + step.getExpectedStatus() + "\");");
                             pw.println("            Allure.getLifecycle().startStep(__uuid, __sr);");
+                            
+                            // Add step metadata as parameters
+                            pw.println("            Allure.parameter(\"Service\", \"" + escape(step.getServiceName()) + "\");");
+                            pw.println("            Allure.parameter(\"HTTP Method\", \"" + verb.toUpperCase() + "\");");
+                            pw.println("            Allure.parameter(\"Endpoint\", \"" + escape(step.getPath()) + "\");");
+                            pw.println("            Allure.parameter(\"Expected Status\", " + step.getExpectedStatus() + ");");
                         }
 
                         pw.println("            try {");
@@ -246,6 +254,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             (verb.equals("post") || verb.equals("put") || verb.equals("patch"))) {
                             pw.println("                req = req.contentType(\"application/json\");");
                             pw.println("                req = req.body(\"" + escape(step.getBody()) + "\");");
+                            if (allureReport) {
+                                pw.println("                Allure.addAttachment(\"Request Body\", \"application/json\", \"" + escape(step.getBody()) + "\");");
+                            }
                         }
                         
                         // → keep console logging only when we are **not** using the Allure filter
@@ -275,8 +286,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                stepResults.put(" + stepIdx + ", true);");
                         pw.println("                System.out.println(\"✓ " + escape(stepTitle) + " - SUCCESS\");");
 
-                        /* --------- mark step PASS -------------------------------- */
+                        /* --------- mark step PASS with response details -------------------------------- */
                         if (allureReport) {
+                            pw.println("                // Capture response details for successful steps");
+                            pw.println("                try {");
+                            pw.println("                    String responseBody = stepResponse" + stepIdx + ".getBody().asString();");
+                            pw.println("                    int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
+                            pw.println("                    Allure.addAttachment(\"Response Body (Status: \" + actualStatus + \")\", \"application/json\", responseBody);");
+                            pw.println("                    Allure.parameter(\"Actual Status Code\", actualStatus);");
+                            pw.println("                    ");
+                            pw.println("                    // Add timing information if available");
+                            pw.println("                    long responseTime = stepResponse" + stepIdx + ".getTime();");
+                            pw.println("                    Allure.parameter(\"Response Time (ms)\", responseTime);");
+                            pw.println("                } catch (Exception e) {");
+                            pw.println("                    Allure.addAttachment(\"Response Capture Error\", e.getMessage());");
+                            pw.println("                }");
                             pw.println("                Allure.getLifecycle()"
                                     + ".updateStep(s -> s.setStatus(Status.PASSED));");
                         }
@@ -284,7 +308,42 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                stepResults.put(" + stepIdx + ", false);");
                         pw.println("                System.out.println(\"✗ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
                         if (allureReport) {
-                            pw.println("                Allure.addAttachment(\"Error • " + escape(stepTitle) + "\", t.toString());");
+                            pw.println("                // Enhanced error reporting with detailed debugging information");
+                            pw.println("                StringBuilder errorDetails = new StringBuilder();");
+                            pw.println("                errorDetails.append(\"ERROR DETAILS:\\n\");");
+                            pw.println("                errorDetails.append(\"Exception Type: \").append(t.getClass().getSimpleName()).append(\"\\n\");");
+                            pw.println("                errorDetails.append(\"Error Message: \").append(t.getMessage()).append(\"\\n\\n\");");
+                            pw.println("                errorDetails.append(\"STEP DETAILS:\\n\");");
+                            pw.println("                errorDetails.append(\"Service: " + escape(step.getServiceName()) + "\\n\");");
+                            pw.println("                errorDetails.append(\"Method: " + verb.toUpperCase() + "\\n\");");
+                            pw.println("                errorDetails.append(\"Path: " + escape(step.getPath()) + "\\n\");");
+                            pw.println("                errorDetails.append(\"Expected Status: " + step.getExpectedStatus() + "\\n\");");
+                            pw.println("                ");
+                            pw.println("                // Try to capture response information even on failure");
+                            pw.println("                try {");
+                            pw.println("                    if (t instanceof AssertionError && t.getMessage().contains(\"Expected status code\")) {");
+                            pw.println("                        // This is likely a status code mismatch - try to get actual response");
+                            pw.println("                        errorDetails.append(\"\\nThis appears to be a status code mismatch.\\n\");");
+                            pw.println("                        errorDetails.append(\"Check if the service is running and the endpoint is correct.\\n\");");
+                            pw.println("                    }");
+                            pw.println("                } catch (Exception responseError) {");
+                            pw.println("                    errorDetails.append(\"\\nCould not capture response details: \").append(responseError.getMessage());");
+                            pw.println("                }");
+                            pw.println("                ");
+                            pw.println("                errorDetails.append(\"\\n\\nFull Stack Trace:\\n\").append(t.toString());");
+                            pw.println("                ");
+                            pw.println("                Allure.addAttachment(\"Detailed Error Report • " + escape(stepTitle) + "\", \"text/plain\", errorDetails.toString());");
+                            pw.println("                ");
+                            pw.println("                // Add failure categorization");
+                            pw.println("                if (t instanceof java.net.ConnectException) {");
+                            pw.println("                    Allure.parameter(\"Error Category\", \"Connection Failed - Service Unreachable\");");
+                            pw.println("                } else if (t instanceof AssertionError) {");
+                            pw.println("                    Allure.parameter(\"Error Category\", \"Assertion Failed - Unexpected Response\");");
+                            pw.println("                } else if (t instanceof java.net.SocketTimeoutException) {");
+                            pw.println("                    Allure.parameter(\"Error Category\", \"Timeout - Service Too Slow\");");
+                            pw.println("                } else {");
+                            pw.println("                    Allure.parameter(\"Error Category\", \"Unknown - \" + t.getClass().getSimpleName());");
+                            pw.println("                }");
                             // use FAILED so the icon turns red (cross) instead of green
                             pw.println("                Allure.getLifecycle()"
                                     + ".updateStep(s -> s.setStatus(Status.FAILED));");
@@ -310,16 +369,76 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         stepIdx++;
                     }
 
-                    // Check overall scenario result
-                    pw.println("        // Evaluate scenario result");
+                    // Check overall scenario result with detailed reporting
+                    pw.println("        // Evaluate scenario result with comprehensive reporting");
                     pw.println("        long successfulSteps = stepResults.values().stream().filter(result -> result).count();");
+                    pw.println("        long failedSteps = stepResults.values().stream().filter(result -> !result).count();");
                     pw.println("        long totalSteps = stepResults.size();");
-                    pw.println("        System.out.println(\"Scenario completed: \" + successfulSteps + \"/\" + totalSteps + \" steps successful\");");
                     pw.println("        ");
-                    pw.println("        // Scenario passes if at least some steps executed successfully");
-                    pw.println("        // (allows for independent step execution based on trace dependencies)");
-                    pw.println("        if (successfulSteps == 0) {");
-                    pw.println("            fail(\"Scenario failed: No steps executed successfully\");");
+                    
+                    // Add detailed test summary
+                    if (allureReport) {
+                        pw.println("        // Add comprehensive test summary to Allure report");
+                        pw.println("        StringBuilder summary = new StringBuilder();");
+                        pw.println("        summary.append(\"Test Scenario Summary:\\n\");");
+                        pw.println("        summary.append(\"Total Steps: \").append(totalSteps).append(\"\\n\");");
+                        pw.println("        summary.append(\"Successful Steps: \").append(successfulSteps).append(\"\\n\");");
+                        pw.println("        summary.append(\"Failed Steps: \").append(failedSteps).append(\"\\n\");");
+                        pw.println("        summary.append(\"Login Status: \").append(loginSucceeded.get() ? \"SUCCESS\" : \"FAILED\").append(\"\\n\\n\");");
+                        pw.println("        ");
+                                        pw.println("        // Add step-by-step breakdown");
+                pw.println("        summary.append(\"Step Breakdown:\\n\");");
+                pw.println("        for (java.util.Map.Entry<Integer, Boolean> step : stepResults.entrySet()) {");
+                        pw.println("            String status = step.getValue() ? \"✓ PASS\" : \"✗ FAIL\";");
+                        pw.println("            summary.append(\"  Step \").append(step.getKey()).append(\": \").append(status).append(\"\\n\");");
+                        pw.println("        }");
+                        pw.println("        ");
+                        pw.println("        Allure.addAttachment(\"Test Execution Summary\", \"text/plain\", summary.toString());");
+                        pw.println("        ");
+                        
+                        // Add test categorization
+                        pw.println("        // Categorize test result for better reporting");
+                        pw.println("        if (!loginSucceeded.get()) {");
+                        pw.println("            Allure.label(\"testType\", \"Authentication Failure\");");
+                        pw.println("            Allure.label(\"severity\", \"critical\");");
+                        pw.println("        } else if (failedSteps == 0) {");
+                        pw.println("            Allure.label(\"testType\", \"Complete Success\");");
+                        pw.println("            Allure.label(\"severity\", \"normal\");");
+                        pw.println("        } else if (successfulSteps > 0) {");
+                        pw.println("            Allure.label(\"testType\", \"Partial Failure\");");
+                        pw.println("            Allure.label(\"severity\", \"major\");");
+                        pw.println("        } else {");
+                        pw.println("            Allure.label(\"testType\", \"Complete Failure\");");
+                        pw.println("            Allure.label(\"severity\", \"critical\");");
+                        pw.println("        }");
+                        pw.println("        ");
+                        pw.println("        // Add scenario metadata");
+                        pw.println("        Allure.label(\"feature\", \"Microservice Workflow\");");
+                        pw.println("        Allure.label(\"story\", \"" + escape(scenario.getOperationId()) + "\");");
+                        pw.println("        Allure.description(\"Microservice test scenario with \" + totalSteps + \" steps. \" +");
+                        pw.println("                           \"Generated using two-stage LLM + semantic expansion approach.\");");
+                        pw.println("        ");
+                    }
+                    
+                    pw.println("        System.out.println(\"=== SCENARIO RESULT ===\");");
+                    pw.println("        System.out.println(\"Scenario: " + escape(scenario.getOperationId()) + "\");");
+                    pw.println("        System.out.println(\"Total Steps: \" + totalSteps);");
+                    pw.println("        System.out.println(\"Successful: \" + successfulSteps);");
+                    pw.println("        System.out.println(\"Failed: \" + failedSteps);");
+                    pw.println("        System.out.println(\"Login Status: \" + (loginSucceeded.get() ? \"SUCCESS\" : \"FAILED\"));");
+                    pw.println("        ");
+                    
+                    // Enhanced failure logic - fail if ANY step fails OR login fails
+                    pw.println("        // IMPROVED: Test fails if ANY step fails or login fails (not just when ALL fail)");
+                    pw.println("        if (!loginSucceeded.get()) {");
+                    pw.println("            fail(\"Scenario FAILED: Authentication failed - cannot proceed with API calls\");");
+                    pw.println("        } else if (failedSteps > 0) {");
+                    pw.println("            fail(\"Scenario FAILED: \" + failedSteps + \" out of \" + totalSteps + \" steps failed. \" +");
+                    pw.println("                 \"In microservice testing, all workflow steps must succeed for end-to-end validation.\");");
+                    pw.println("        } else if (successfulSteps == 0) {");
+                    pw.println("            fail(\"Scenario FAILED: No steps executed successfully - check service availability\");");
+                    pw.println("        } else {");
+                    pw.println("            System.out.println(\"✓ Scenario PASSED: All \" + totalSteps + \" steps completed successfully\");");
                     pw.println("        }");
                     pw.println("    }");
                     pw.println();

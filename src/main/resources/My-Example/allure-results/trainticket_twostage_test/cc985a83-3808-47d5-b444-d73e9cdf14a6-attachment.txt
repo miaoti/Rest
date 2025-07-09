@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.5","firstClassPriceRate":"49.99","id":"hi","routeId":"Flight789","trainType":"higher"}

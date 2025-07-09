@@ -1,0 +1,1 @@
+{"distanceList":"300","distances":"400","endStation":"Union Square","id":"users","loginId":"test_user001","startStation":"New York Penn Station","stationList":"san francisco transbay terminal","stations":"San francisco international airport"}

@@ -126,7 +126,15 @@ public class TestGenerationAndExecution {
 
 		// Main loop
 		int iteration = 1;
-		while (totalNumTestCases == -1 || runner.getNumTestCases() < totalNumTestCases) {
+		int maxIterations = -1;
+		String maxIterProperty = readParameterValue("max.iterations");
+		if (maxIterProperty != null) {
+			maxIterations = Integer.parseInt(maxIterProperty);
+			logger.info("Maximum iterations set to: {}", maxIterations);
+		}
+		
+		while ((totalNumTestCases == -1 || runner.getNumTestCases() < totalNumTestCases) && 
+		       (maxIterations == -1 || iteration <= maxIterations)) {
 
 			// Introduce optional delay
 			if (iteration != 1 && timeDelay != -1)
@@ -146,10 +154,19 @@ public class TestGenerationAndExecution {
 			logger.info("Iteration {}. {} test cases generated.", iteration, runner.getNumTestCases());
 			iteration++;
 		}
+		
+		if (maxIterations != -1 && iteration > maxIterations) {
+			logger.info("Stopped after {} iterations (max.iterations limit reached)", maxIterations);
+		}
 
 		Timer.stopCounting(ALL);
 
 		generateTimeReport(iteration-1);
+		
+		logger.info("Test generation and execution completed successfully. Exiting.");
+		
+		// Force exit to prevent hanging on background threads
+		System.exit(0);
 	}
 
 	// Create a test case generator
@@ -251,6 +268,15 @@ public class TestGenerationAndExecution {
 				List<WorkflowScenario> scenarios =
 						TraceWorkflowExtractor.extractScenarios(TraceFile);
 
+
+				// Pass configuration parameters as system properties for the generator
+				String variantsPerScenario = readParameterValue("test.variants.per.scenario");
+				if (variantsPerScenario != null) {
+					System.setProperty("test.variants.per.scenario", variantsPerScenario);
+				}
+				if (numTestCases != null) {
+					System.setProperty("testsperoperation", numTestCases.toString());
+				}
 
 				// 7. Instantiate the generator
 				gen = new MultiServiceTestCaseGenerator(

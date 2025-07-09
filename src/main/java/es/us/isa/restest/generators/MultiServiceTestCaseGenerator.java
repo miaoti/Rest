@@ -78,9 +78,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private List<MultiServiceTestCase> generateScenarioVariants(WorkflowScenario sc, int baseCounter) {
         List<MultiServiceTestCase> variants = new ArrayList<>();
         
-        // For now, generate baseline + 3 additional variants
-        // In practice, this could be configurable
-        int variantCount = useLLM ? 4 : 1;
+        // Read variant count from properties file or use default
+        int variantCount = getVariantCountFromProperties();
         
         log.info("=== TWO-STAGE PARAMETER GENERATION TEST ===");
         log.info("Generating {} test case variants for scenario {}", variantCount, baseCounter);
@@ -509,5 +508,42 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     .append('"');
         }
         return sb.append('}').toString();
+    }
+
+    /**
+     * Read variant count from properties file with fallback to defaults
+     */
+    private int getVariantCountFromProperties() {
+        try {
+            // Debug: Print all system properties related to test generation
+            log.info("DEBUG: Checking variant count properties...");
+            log.info("DEBUG: System property 'test.variants.per.scenario' = {}", System.getProperty("test.variants.per.scenario"));
+            log.info("DEBUG: System property 'testsperoperation' = {}", System.getProperty("testsperoperation"));
+            
+            // Try to read from system properties first (set by TestGenerationAndExecution)
+            String variantsProp = System.getProperty("test.variants.per.scenario");
+            if (variantsProp != null) {
+                int count = Integer.parseInt(variantsProp);
+                log.info("✅ Using test.variants.per.scenario from properties: {}", count);
+                return count;
+            }
+            
+            // Try testsperoperation as fallback
+            String testsProp = System.getProperty("testsperoperation");
+            if (testsProp != null) {
+                int count = Integer.parseInt(testsProp);
+                log.info("✅ Using testsperoperation from properties: {}", count);
+                return count;
+            }
+            
+            // Default behavior - FIXED to generate 10 variants as requested
+            int defaultCount = useLLM ? 10 : 1; // Changed from 4 to 10 to match user requirement
+            log.warn("❌ No variant count found in properties, using default: {} (useLLM={})", defaultCount, useLLM);
+            return defaultCount;
+        } catch (NumberFormatException e) {
+            int defaultCount = useLLM ? 10 : 1; // Changed from 4 to 10 to match user requirement
+            log.warn("❌ Invalid variant count in properties, using default: {} (error: {})", defaultCount, e.getMessage());
+            return defaultCount;
+        }
     }
 }

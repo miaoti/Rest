@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"3f7f5f3c-7b91-47a7-af1c-dbc535764f86","trainType":"high-speed rail","routeId":"plane","basicPriceRate":10.5,"firstClassPriceRate":120.75}}

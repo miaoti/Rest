@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"795cd127-ca17-4d03-9796-32789fb9f9e3","trainType":"High-Speed Rail","routeId":"TRO_temporary_restraining","basicPriceRate":-2.99,"firstClassPriceRate":120.75}}

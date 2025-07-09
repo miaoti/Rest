@@ -1,0 +1,1 @@
+{"distanceList":"75","distances":"10","endStation":"central station","id":"987654321","loginId":"guest_abc","startStation":"Los angeles union station","stationList":"San francisco transbay terminal","stations":"new york city subway station"}

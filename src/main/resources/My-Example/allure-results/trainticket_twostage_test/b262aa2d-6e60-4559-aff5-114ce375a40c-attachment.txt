@@ -1,0 +1,1 @@
+{"distanceList":"75","distances":"25.7","endStation":"Union square","id":"User123","loginId":"Admins","startStation":"los angeles union station","stationList":"Los Angeles Union Station","stations":"San Francisco International Airport"}

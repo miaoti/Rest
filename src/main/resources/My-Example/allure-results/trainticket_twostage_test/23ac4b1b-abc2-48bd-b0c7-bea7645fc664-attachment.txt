@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"400","endStation":"beverly hills mall","id":"user123","loginId":"johnston","startStation":"atlanta hartsfield-jackson international airport","stationList":"san francisco transbay terminal","stations":"Chicago Loop Transportation Hub"}

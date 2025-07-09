@@ -1,0 +1,1 @@
+{"accountId":"12345","boughtDate":"2022-12-25t14:30:00z","coachNumber":"37","contactsDocumentNumber":"abcdefg","contactsName":"bob brown","documentType":"-123","from":"nyc","id":"howdy","price":"0.99","seatClass":"busi_ness","seatNumber":"b34","status":"200","to":"Phoenix","trainNumber":"cbs","travelDate":"2022-07-19","travelTime":"2025-12-31t23:59"}
