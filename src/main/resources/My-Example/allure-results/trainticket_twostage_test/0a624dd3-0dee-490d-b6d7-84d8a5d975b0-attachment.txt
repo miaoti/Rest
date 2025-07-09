@@ -1,0 +1,1 @@
+{"accountId":"abcde","boughtDate":"2022-12-25T14:30:00Z","coachNumber":"10","contactsDocumentNumber":"A-123-B456-C789","contactsName":"jane smith","documentType":"-123","from":"los angeles","id":"goodbye","price":"89.99","seatClass":"economic","seatNumber":"B34","status":"100","to":"atlanta","trainNumber":"buf","travelDate":"2024-06-18","travelTime":"2025-12-31t23:59"}

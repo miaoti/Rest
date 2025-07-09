@@ -1,0 +1,1 @@
+{"distanceList":"10","endStation":"Central Station","id":"User123","startStation":"Atlanta Hartsfield-Jackson International Airport","stationList":"San Francisco Transbay Terminal"}

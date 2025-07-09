@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"hello-world","trainType":"low","routeId":"flights","basicPriceRate":10.5,"firstClassPriceRate":800.0}}

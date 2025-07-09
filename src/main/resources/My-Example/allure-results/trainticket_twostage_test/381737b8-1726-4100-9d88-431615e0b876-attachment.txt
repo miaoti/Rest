@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"27249376-8f7b-4615-83f4-df4391c1e14b","trainType":"Electric locomotive","routeId":"shortest_route","basicPriceRate":10.5,"firstClassPriceRate":120.75}}

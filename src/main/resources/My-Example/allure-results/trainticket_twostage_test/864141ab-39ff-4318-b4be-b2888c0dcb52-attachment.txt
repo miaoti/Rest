@@ -1,0 +1,1 @@
+{"accountId":"buf","boughtDate":"2019-07-16T08:00:00.123Z","coachNumber":"49","contactsDocumentNumber":"1234567890","contactsName":"jane smith","documentType":"456789","from":"Houston","id":"987654321","price":"89.99","seatClass":"First Class","seatNumber":"D78","status":"200","to":"New york","trainNumber":"buf","travelDate":"2025-03-05","travelTime":"2022-08-20t14:15"}

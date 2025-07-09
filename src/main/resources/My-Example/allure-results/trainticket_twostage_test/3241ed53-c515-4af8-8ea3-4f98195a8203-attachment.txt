@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.5","firstClassPriceRate":"800.0","id":"hello-world","routeId":"flights","trainType":"low"}

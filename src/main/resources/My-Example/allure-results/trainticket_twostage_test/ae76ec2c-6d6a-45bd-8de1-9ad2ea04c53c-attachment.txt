@@ -1,0 +1,1 @@
+{"accountId":"yyyy","boughtDate":"2019-07-16T08:00:00.123Z","coachNumber":"49","contactsDocumentNumber":"A-123-B456-C789","contactsName":"jane smith","documentType":"23","from":"los angeles","id":"987654321","price":"0.99","seatClass":"Luxury Class","seatNumber":"b34","status":"100","to":"New york","trainNumber":"Xyz789","travelDate":"2022-07-19","travelTime":"2026-07-01T00:00"}

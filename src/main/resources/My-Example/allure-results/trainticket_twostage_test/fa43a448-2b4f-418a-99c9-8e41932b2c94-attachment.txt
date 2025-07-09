@@ -1,0 +1,1 @@
+{"distanceList":"4.8","distances":"3.14","endStation":"Union square","id":"Sydney_measured_####kbps","loginId":"admins","startStation":"Chicago o'hare airport","stationList":"San francisco transbay terminal","stations":"new york city subway station"}

@@ -1,0 +1,1 @@
+{"distanceList":"4.8","distances":"98","endStation":"Grand Central Terminal","id":"Sydney_measured_####kbps","loginId":"Admin456","startStation":"chicago o'hare airport","stationList":"San francisco transbay terminal","stations":"San Francisco International Airport"}

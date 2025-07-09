@@ -1,0 +1,1 @@
+{"basicPriceRate":"23.75","firstClassPriceRate":"800.0","id":"goodbye","routeId":"routes","trainType":"Freight carriage"}

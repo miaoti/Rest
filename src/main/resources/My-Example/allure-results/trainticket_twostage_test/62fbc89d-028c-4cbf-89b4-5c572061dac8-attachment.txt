@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"d568e28e-9850-4695-90f8-524f1c890b6b","trainType":"Freight Carriage","routeId":"flights","basicPriceRate":-2.99,"firstClassPriceRate":120.75}}

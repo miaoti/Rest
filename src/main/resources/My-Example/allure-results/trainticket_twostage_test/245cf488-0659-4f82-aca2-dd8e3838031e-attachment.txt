@@ -1,0 +1,1 @@
+{"distanceList":"300","distances":"25.7","endStation":"Central Station","id":"Abcdefg","loginId":"user123","startStation":"Los Angeles Union Station","stationList":"New york penn station","stations":"New York City Subway Station"}
