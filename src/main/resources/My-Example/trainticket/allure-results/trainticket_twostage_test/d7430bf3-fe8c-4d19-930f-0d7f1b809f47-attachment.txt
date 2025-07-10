@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"30dd03ad-5c60-43ea-807c-ba0b0f248a32","trainType":"freight wagon","routeId":"Xyzzy","basicPriceRate":0.01,"firstClassPriceRate":199.99}}

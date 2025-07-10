@@ -1,0 +1,1 @@
+{"distanceList":"25.6","distances":"3456","endStation":"san francisco transbay terminals","id":"67890","loginId":"johnston","startStation":"Phoenix sky harbor international","stationList":"New york penn station","stations":"chicago illinois terminal"}

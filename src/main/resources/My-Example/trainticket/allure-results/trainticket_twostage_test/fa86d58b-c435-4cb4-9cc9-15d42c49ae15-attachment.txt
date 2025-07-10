@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"c8acb4e9-fcd5-4451-942c-37704bafa378","stations":["los angeles union station"],"distances":[10],"startStation":"Chicago o'hare airport","endStation":"Grand central terminal"}}

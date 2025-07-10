@@ -1,1 +1,0 @@
-{"distanceList":"5.2","distances":"25.7","endStation":"Grand Central Terminal","id":"howdy","loginId":"Sydney_measured_####kbps","startStation":"los angeles union station","stationList":"San Francisco Transbay Terminal","stations":"los angeles county administration building"}

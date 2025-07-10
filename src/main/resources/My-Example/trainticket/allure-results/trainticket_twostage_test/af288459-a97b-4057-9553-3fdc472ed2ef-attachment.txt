@@ -1,0 +1,1 @@
+{"distanceList":"-1","distances":"50.2","endStation":"New York Penn Station","id":"Sampledata","loginId":"Admins","startStation":"Chicago ogden terminal","stationList":"Boston logan international airport","stations":"New york penn station"}

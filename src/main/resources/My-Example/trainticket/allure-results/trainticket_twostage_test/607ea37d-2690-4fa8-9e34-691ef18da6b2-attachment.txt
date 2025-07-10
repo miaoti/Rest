@@ -1,1 +1,0 @@
-{"accountId":"abcde","boughtDate":"2023-01-05","coachNumber":"25","contactsDocumentNumber":"0987654321","contactsName":"John Doe","documentType":"BORDER_=","from":"atlanta","id":"abcdefg","price":"3.65","seatClass":"economy","seatNumber":"c56","status":"200","to":"New York","trainNumber":"yyyy","travelDate":"2021-11-12","travelTime":"2026-07-01t00:00"}

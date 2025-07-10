@@ -1,1 +1,0 @@
-{"distanceList":"5.2","endStation":"beverly hills mall","id":"Hello-world","startStation":"Chicago O'Hare Airport","stationList":"new york penn station"}

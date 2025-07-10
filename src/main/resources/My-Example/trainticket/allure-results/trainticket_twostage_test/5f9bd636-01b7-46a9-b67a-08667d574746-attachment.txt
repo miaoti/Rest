@@ -1,0 +1,1 @@
+{"accountId":"xyzzy","boughtDate":"2021-07-10T13:00:00Z","coachNumber":"2","contactsDocumentNumber":"098765432","contactsName":"joshua","differenceMoney":"0.01","documentType":"-42","from":"John","id":"Testcase","price":"$100.00","seatClass":"50","seatNumber":"eee_pc","status":"200","to":"New York","trainNumber":"102","travelDate":"2022-12-25","travelTime":"2024-07-29t15:30:00"}

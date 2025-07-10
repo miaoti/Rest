@@ -1,1 +1,0 @@
-{"distanceList":"4.8","endStation":"union square","id":"user123","startStation":"Boston Logan International Airport","stationList":"Houston Hobby Airport"}

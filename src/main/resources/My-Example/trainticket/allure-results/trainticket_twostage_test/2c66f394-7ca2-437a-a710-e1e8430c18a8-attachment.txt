@@ -1,1 +1,0 @@
-{"basicPriceRate":"-2.99","firstClassPriceRate":"120.75","id":"Abcdefg","routeId":"TRO_temporary_restraining","trainType":"High-Speed Rail"}

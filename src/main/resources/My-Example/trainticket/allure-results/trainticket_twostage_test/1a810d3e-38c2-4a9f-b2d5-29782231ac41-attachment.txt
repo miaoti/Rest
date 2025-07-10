@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"59d607fd-5035-4bc7-b333-438b545d8eef","trainType":"higher","routeId":"bd_div_story","basicPriceRate":99.99,"firstClassPriceRate":38.99}}

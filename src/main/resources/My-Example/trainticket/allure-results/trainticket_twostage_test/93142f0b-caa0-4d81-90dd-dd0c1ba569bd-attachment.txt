@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.99","firstClassPriceRate":"250.75","id":"Abcde","routeId":"Xyzzy","trainType":"Passenger Train"}

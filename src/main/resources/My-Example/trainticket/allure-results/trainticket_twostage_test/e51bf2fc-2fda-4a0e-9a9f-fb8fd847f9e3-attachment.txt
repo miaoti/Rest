@@ -1,1 +1,0 @@
-{"basicPriceRate":"100.0","firstClassPriceRate":"800.0","id":"howdy","routeId":"customer012","trainType":"Freight carriage"}

@@ -1,1 +1,0 @@
-{"distanceList":"5.2","distances":"400","endStation":"Grand Central Terminal","id":"hi","loginId":"guest_abc","startStation":"Boston Logan International Airport","stationList":"san francisco transbay terminal","stations":"Los Angeles County Administration Building"}

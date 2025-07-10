@@ -1,0 +1,1 @@
+{"distanceList":"-4","distances":"789","endStation":"Chicago union passenger terminal","id":"12345","loginId":"John_doe789","startStation":"New york penn station","stationList":"Chicago Union Station","stations":"Los Angeles Union Station"}

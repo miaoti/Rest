@@ -1,0 +1,1 @@
+{"distanceList":"-3","distances":"100","endStation":"New York Penn Station","id":"Abcde","loginId":"bennett","startStation":"New York Penn Station","stationList":"Chicago Union Station","stations":"New York Penn Station"}
