@@ -85,30 +85,27 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("Generating {} test case variants for scenario {}", variantCount, baseCounter);
         log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
         
-        for (int v = 0; v < variantCount; v++) {
-            // Create meaningful test name using first API call's operation name
-            String firstApiName = getFirstApiOperationName(sc);
-            String testName;
-            if (firstApiName != null && !firstApiName.isEmpty()) {
-                // Convert operation name to valid test method name
-                String cleanApiName = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
-                                                 .replaceAll("_+", "_")
-                                                 .replaceAll("^_|_$", "");
-                testName = "test_" + cleanApiName + "_" + (v + 1);
+        // Determine scenario identifier based on first API call
+        String firstApiName = getFirstApiOperationName(sc);
+        String scenarioId;
+        if (firstApiName != null && !firstApiName.isEmpty()) {
+            scenarioId = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
+                                       .replaceAll("_+", "_")
+                                       .replaceAll("^_|_$", "");
+        } else {
+            String sourceFileName = sc.getSourceFileName();
+            if (sourceFileName != null && !sourceFileName.isEmpty()) {
+                scenarioId = sourceFileName.replaceAll("[^a-zA-Z0-9_]", "_");
             } else {
-                // Fallback: use trace file name if no API name found
-                String sourceFileName = sc.getSourceFileName();
-                if (sourceFileName != null && !sourceFileName.isEmpty()) {
-                    testName = "test_" + sourceFileName + "_" + (v + 1);
-                } else {
-                    // Ultimate fallback to old naming
-                    String suffix = v == 0 ? "" : "_variant" + v;
-                    testName = "Scenario_" + baseCounter + suffix;
-                }
+                scenarioId = "Scenario_" + baseCounter;
             }
-            
+        }
+
+        for (int v = 0; v < variantCount; v++) {
+            String testName = "test_" + scenarioId + "_" + (v + 1);
+
             MultiServiceTestCase tc = new MultiServiceTestCase(testName);
-            tc.setScenarioName(tc.getOperationId());
+            tc.setScenarioName(scenarioId);
             
             log.info("--- Generating variant {} ({}) ---", v, tc.getOperationId());
             
