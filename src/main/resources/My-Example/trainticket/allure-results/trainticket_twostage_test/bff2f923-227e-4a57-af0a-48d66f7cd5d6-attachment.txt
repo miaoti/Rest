@@ -1,1 +1,0 @@
-{"basicPriceRate":"456.8","firstClassPriceRate":"800.0","id":"Hello-world","routeId":"flights","trainType":"Freight carriage"}

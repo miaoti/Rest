@@ -1,1 +1,0 @@
-{"accountId":"67890fghij","boughtDate":"1999-12-01","coachNumber":"49","contactsDocumentNumber":"x-y-z123-4567","contactsName":"charlie davis","documentType":"-123","from":"Chicago","id":"goodbye","price":"19.95","seatClass":"economies","seatNumber":"b34","status":"404","to":"Phoenix","trainNumber":"Xyz789","travelDate":"2025-03-05","travelTime":"2024-01-15T17:45"}

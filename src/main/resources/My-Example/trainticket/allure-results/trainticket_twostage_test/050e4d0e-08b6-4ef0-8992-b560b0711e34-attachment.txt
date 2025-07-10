@@ -1,1 +1,0 @@
-{"basicPriceRate":"456.8","firstClassPriceRate":"30.5","id":"goodbye","routeId":"Order456","trainType":"low"}

@@ -1,0 +1,1 @@
+{"basicPriceRate":"99.99","firstClassPriceRate":"38.99","id":"testcase","routeId":"var_bd_=_getElementsByClass","trainType":"higher"}

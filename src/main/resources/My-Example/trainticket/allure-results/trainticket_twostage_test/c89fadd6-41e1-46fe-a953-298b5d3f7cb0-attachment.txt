@@ -1,1 +1,0 @@
-{"distanceList":"5.2","distances":"25.7","endStation":"Central station","id":"user123","loginId":"Admin456","startStation":"Los Angeles Union Station","stationList":"Chicago O'Hare International Airport","stations":"New york city subway station"}

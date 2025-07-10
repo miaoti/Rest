@@ -1,0 +1,19 @@
+ERROR DETAILS:
+Exception Type: AssertionError
+Error Message: 1 expectation failed.
+Expected status code <200> but was <500>.
+
+
+STEP DETAILS:
+Service: ts-admin-basic-info-service
+Method: POST
+Path: /api/v1/adminbasicservice/adminbasic/prices
+Expected Status: 200
+
+This appears to be a status code mismatch.
+Check if the service is running and the endpoint is correct.
+
+
+Full Stack Trace:
+java.lang.AssertionError: 1 expectation failed.
+Expected status code <200> but was <500>.

@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"1aef48bd-eadb-4c2a-b451-5508549578b3","trainType":"Passenger Train","routeId":"Xyzzy","basicPriceRate":10.99,"firstClassPriceRate":250.75}}

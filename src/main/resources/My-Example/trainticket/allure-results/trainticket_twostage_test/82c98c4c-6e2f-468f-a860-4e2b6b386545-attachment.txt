@@ -1,0 +1,1 @@
+{"basicPriceRate":"0.01","firstClassPriceRate":"199.99","id":"abcde","routeId":"Xyzzy","trainType":"freight wagon"}

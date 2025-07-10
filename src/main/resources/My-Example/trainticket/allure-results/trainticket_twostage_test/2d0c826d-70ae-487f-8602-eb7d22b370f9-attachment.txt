@@ -1,0 +1,1 @@
+{"distanceList":"-1","distances":"BORDER_=","endStation":"Chicago union passenger terminal","id":"Sampledata","loginId":"user123","startStation":"Los angeles union station","stationList":"chicago union station","stations":"New york penn station"}

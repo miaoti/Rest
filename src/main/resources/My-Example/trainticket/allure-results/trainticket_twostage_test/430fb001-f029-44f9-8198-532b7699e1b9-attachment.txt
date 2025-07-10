@@ -1,1 +1,0 @@
-{"basicPriceRate":"-2.99","firstClassPriceRate":"120.75","id":"987654321","routeId":"flights","trainType":"Freight Carriage"}

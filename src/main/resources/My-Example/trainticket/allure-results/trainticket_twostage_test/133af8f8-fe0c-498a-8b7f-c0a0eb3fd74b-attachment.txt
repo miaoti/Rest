@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"25.7","endStation":"beverly hills mall","id":"Abcdefg","loginId":"John_doe789","startStation":"Atlanta hartsfield-jackson international airport","stationList":"Los angeles union station","stations":"Chicago loop transportation hub"}

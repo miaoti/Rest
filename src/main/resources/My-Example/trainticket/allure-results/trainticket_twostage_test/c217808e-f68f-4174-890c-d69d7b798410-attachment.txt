@@ -1,1 +1,0 @@
-{"basicPriceRate":"-2.99","firstClassPriceRate":"120.75","id":"Sydney_measured_####kbps","routeId":"plane","trainType":"Freight Carriage"}

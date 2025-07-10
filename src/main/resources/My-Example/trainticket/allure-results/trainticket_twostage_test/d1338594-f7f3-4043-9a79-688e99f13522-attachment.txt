@@ -1,1 +1,0 @@
-{"distanceList":"10","endStation":"Union square","id":"users","startStation":"Chicago O'Hare Airport","stationList":"chicago o'hare international airport"}

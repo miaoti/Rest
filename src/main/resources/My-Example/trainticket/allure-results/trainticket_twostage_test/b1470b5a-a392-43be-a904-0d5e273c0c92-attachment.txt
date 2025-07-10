@@ -1,1 +1,0 @@
-{"distanceList":"10","endStation":"Central Station","id":"abcdefg","startStation":"chicago o'hare airport","stationList":"san francisco transbay terminal"}

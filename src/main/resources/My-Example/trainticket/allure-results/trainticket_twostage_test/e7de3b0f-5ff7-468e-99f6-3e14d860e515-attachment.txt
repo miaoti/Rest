@@ -1,1 +1,0 @@
-{"basicPriceRate":"10.5","firstClassPriceRate":"15.99","id":"users","routeId":"flights","trainType":"Passenger train"}

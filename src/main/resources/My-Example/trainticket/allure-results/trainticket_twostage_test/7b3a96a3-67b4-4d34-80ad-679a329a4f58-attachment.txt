@@ -1,0 +1,1 @@
+{"distanceList":"-1","endStation":"chicago union passenger terminal","id":"67890","startStation":"new york penn station","stationList":"New york penn station"}
