@@ -129,8 +129,15 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     if (!(raw instanceof MultiServiceTestCase)) continue;
                     MultiServiceTestCase scenario = (MultiServiceTestCase) raw;
 
+                    // Use the meaningful test name from the generator instead of generic counter
+                    String testMethodName = scenario.getOperationId();
+                    if (testMethodName == null || testMethodName.isEmpty() || testMethodName.equals("workflow")) {
+                        // Fallback to counter-based naming if no meaningful name is set
+                        testMethodName = "testScenario" + scenarioIdx;
+                    }
+
                     pw.println("    @Test");
-                    pw.println("    public void testScenario" + scenarioIdx + "() throws Exception {");
+                    pw.println("    public void " + testMethodName + "() throws Exception {");
 
                     /* ------------ login (own Allure step) ---------------------- */
                     pw.println("        final String[] _jwt     = new String[1];");
