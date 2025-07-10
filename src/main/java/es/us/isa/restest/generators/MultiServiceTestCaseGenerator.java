@@ -583,8 +583,49 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 log.debug("Skipping login/auth operation: {} in service {}", opName, serviceName);
             } else {
                 // This looks like a business API operation
-                log.debug("Found first business API operation: {} in service {}", opName, serviceName);
-                return opName;
+                // Try to extract HTTP method and path for better naming
+                String verb = null, route = null;
+                
+                // Check if it's an HTTP operation pattern (e.g., "POST /api/v1/path")
+                Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
+                if (httpMatcher.matches()) {
+                    verb = httpMatcher.group(1).toLowerCase(Locale.ROOT);
+                    route = httpMatcher.group(2);
+                } else {
+                    // Try to extract from service-prefixed format (e.g., "ts-service POST /api/v1/path")
+                    Pattern servicePattern = Pattern.compile(".*?\\s+(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+(.+)$", Pattern.CASE_INSENSITIVE);
+                    Matcher serviceMatcher = servicePattern.matcher(opName);
+                    if (serviceMatcher.matches()) {
+                        verb = serviceMatcher.group(1).toLowerCase(Locale.ROOT);
+                        route = serviceMatcher.group(2);
+                    } else {
+                        // Check if we can extract from attributes/tags
+                        Map<String, String> outputs = step.getOutputFields();
+                        String httpMethod = outputs.get("http.method");
+                        String httpTarget = outputs.get("http.target");
+                        String httpUrl = outputs.get("http.url");
+                        
+                        if (httpMethod != null && (httpTarget != null || httpUrl != null)) {
+                            verb = httpMethod.toLowerCase(Locale.ROOT);
+                            route = httpTarget != null ? httpTarget : extractPathFromUrl(httpUrl);
+                        } else if (httpMethod != null) {
+                            // If we only have the method, try to construct a meaningful name
+                            verb = httpMethod.toLowerCase(Locale.ROOT);
+                            route = serviceName.replaceAll("[^a-zA-Z0-9_]", "_"); // Use service name as route
+                        }
+                    }
+                }
+                
+                // Return a descriptive name if we can extract method and path
+                if (verb != null && route != null) {
+                    String descriptiveName = verb.toUpperCase() + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
+                    log.debug("Found first business API operation: {} {} -> {}", verb, route, descriptiveName);
+                    return descriptiveName;
+                } else {
+                    // Fallback to original operation name
+                    log.debug("Found first business API operation: {} in service {}", opName, serviceName);
+                    return opName;
+                }
             }
         }
         
