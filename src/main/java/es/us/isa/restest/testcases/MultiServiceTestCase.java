@@ -42,6 +42,9 @@ public class MultiServiceTestCase extends TestCase {
 
     private final List<StepCall> steps = new ArrayList<>();
 
+    /* name of the logical scenario this test case belongs to */
+    private String scenarioName;
+
     /** Add a step (request/response) to the workflow. */
     public void addStepCall(StepCall step) {
         steps.add(step);
@@ -53,7 +56,10 @@ public class MultiServiceTestCase extends TestCase {
     }
 
     public void setScenarioName(String s) {
+        this.scenarioName = s;
     }
+
+    public String getScenarioName() { return scenarioName; }
 
 
     /**
