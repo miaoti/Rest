@@ -19,7 +19,6 @@ import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.util.Timer;
 import es.us.isa.restest.workflow.TraceWorkflowExtractor;
 import es.us.isa.restest.workflow.WorkflowScenario;
-import es.us.isa.restest.workflow.WorkflowScenarioUtils;
 import es.us.isa.restest.writers.IWriter;
 import es.us.isa.restest.writers.restassured.MultiServiceRESTAssuredWriter;
 import es.us.isa.restest.writers.restassured.RESTAssuredWriter;
@@ -268,7 +267,6 @@ public class TestGenerationAndExecution {
 				// 5. Get the recorded workflows from the trace file
                                 List<WorkflowScenario> scenarios =
                                                 TraceWorkflowExtractor.extractScenarios(TraceFile);
-                                scenarios = WorkflowScenarioUtils.deduplicateBySteps(scenarios);
 
 
 				// Pass configuration parameters as system properties for the generator

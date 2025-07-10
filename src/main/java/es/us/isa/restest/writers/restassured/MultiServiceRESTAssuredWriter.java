@@ -62,7 +62,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     public void write(Collection<TestCase> testCases) {
         if (testCases == null || testCases.isEmpty()) return;
 
-        // Group test cases by scenario name
+        // Group test cases by scenario name (unique per trace)
         Map<String, List<TestCase>> byScenario = new LinkedHashMap<>();
         for (TestCase tc : testCases) {
             if (tc instanceof MultiServiceTestCase) {
@@ -72,9 +72,25 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
             }
         }
 
-        for (Map.Entry<String, List<TestCase>> entry : byScenario.entrySet()) {
+        // Track file name counts to avoid duplicates
+        Map<String, Integer> fileCounts = new HashMap<>();
+
+        for (List<TestCase> scenarioTests : byScenario.values()) {
             try {
-                writeTestSuite(entry.getValue(), sanitize(entry.getKey()));
+                MultiServiceTestCase first = (MultiServiceTestCase) scenarioTests.get(0);
+                String baseName = first.getScenarioBaseName();
+                if (baseName == null || baseName.isEmpty()) baseName = "Scenario";
+                String sanitizedBase = sanitize(baseName);
+
+                int count = fileCounts.getOrDefault(sanitizedBase, 0) + 1;
+                fileCounts.put(sanitizedBase, count);
+
+                String finalName = sanitizedBase;
+                if (count > 1) {
+                    finalName = sanitizedBase + "_test" + count;
+                }
+
+                writeTestSuite(scenarioTests, finalName);
             } catch (RESTestException e) {
                 throw new RuntimeException("Error writing multi‑service test suite", e);
             }

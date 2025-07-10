@@ -45,6 +45,9 @@ public class MultiServiceTestCase extends TestCase {
     /* name of the logical scenario this test case belongs to */
     private String scenarioName;
 
+    /* base name (without numeric suffix) used for file naming */
+    private String scenarioBaseName;
+
     /** Add a step (request/response) to the workflow. */
     public void addStepCall(StepCall step) {
         steps.add(step);
@@ -60,6 +63,10 @@ public class MultiServiceTestCase extends TestCase {
     }
 
     public String getScenarioName() { return scenarioName; }
+
+    public void setScenarioBaseName(String s) { this.scenarioBaseName = s; }
+
+    public String getScenarioBaseName() { return scenarioBaseName; }
 
 
     /**
