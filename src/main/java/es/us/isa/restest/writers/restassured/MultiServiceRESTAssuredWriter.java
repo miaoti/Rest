@@ -11,8 +11,7 @@ import io.restassured.specification.RequestSpecification;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 
 
@@ -61,25 +60,52 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     /*  WRITE JAVA SOURCE                                           */
     @Override
     public void write(Collection<TestCase> testCases) {
-        try {
-            writeTestSuite(testCases);
-        } catch (RESTestException e) {
-            // wrap in an unchecked exception so we don't break the interface
-            throw new RuntimeException("Error writing multi‑service test suite", e);
+        if (testCases == null || testCases.isEmpty()) return;
+
+        // Group test cases by scenario name (unique per trace)
+        Map<String, List<TestCase>> byScenario = new LinkedHashMap<>();
+        for (TestCase tc : testCases) {
+            if (tc instanceof MultiServiceTestCase) {
+                String sc = ((MultiServiceTestCase) tc).getScenarioName();
+                if (sc == null || sc.isEmpty()) sc = "Scenario";
+                byScenario.computeIfAbsent(sc, k -> new ArrayList<>()).add(tc);
+            }
+        }
+
+        // Track file name counts to avoid duplicates
+        Map<String, Integer> fileCounts = new HashMap<>();
+
+        for (List<TestCase> scenarioTests : byScenario.values()) {
+            try {
+                MultiServiceTestCase first = (MultiServiceTestCase) scenarioTests.get(0);
+                String baseName = first.getScenarioBaseName();
+                if (baseName == null || baseName.isEmpty()) baseName = "Scenario";
+                String sanitizedBase = sanitize(baseName);
+
+                int count = fileCounts.getOrDefault(sanitizedBase, 0) + 1;
+                fileCounts.put(sanitizedBase, count);
+
+                String finalName = sanitizedBase;
+                if (count > 1) {
+                    finalName = sanitizedBase + "_test" + count;
+                }
+
+                writeTestSuite(scenarioTests, finalName);
+            } catch (RESTestException e) {
+                throw new RuntimeException("Error writing multi‑service test suite", e);
+            }
         }
     }
 
-    public void writeTestSuite(Collection<TestCase> testCases) throws RESTestException {
+    private void writeTestSuite(Collection<TestCase> testCases, String className) throws RESTestException {
 
         if (testCases == null || testCases.isEmpty()) return;
 
-        String className = this.testClassName;
-
         try {
-            File dir = new File(outputDir);
+            File dir = new File(outputDir, this.testClassName);
             if (!dir.exists()) dir.mkdirs();
 
-            File javaFile = new File(outputDir, className + ".java");
+            File javaFile = new File(dir, className + ".java");
 
             try (PrintWriter pw = new PrintWriter(new FileWriter(javaFile))) {
 
@@ -469,6 +495,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     }
     private static String escape(String s) {
         return s == null ? "" : s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private static String sanitize(String s) {
+        if (s == null) return "Scenario";
+        return s.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("_+", "_").replaceAll("^_|_$", "");
     }
 
     @Override

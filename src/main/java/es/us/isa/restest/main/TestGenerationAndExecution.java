@@ -265,8 +265,8 @@ public class TestGenerationAndExecution {
 				}
 
 				// 5. Get the recorded workflows from the trace file
-				List<WorkflowScenario> scenarios =
-						TraceWorkflowExtractor.extractScenarios(TraceFile);
+                                List<WorkflowScenario> scenarios =
+                                                TraceWorkflowExtractor.extractScenarios(TraceFile);
 
 
 				// Pass configuration parameters as system properties for the generator

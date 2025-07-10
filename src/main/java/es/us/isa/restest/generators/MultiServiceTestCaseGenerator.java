@@ -59,13 +59,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     @Override
     public Collection<TestCase> generate() {
         List<TestCase> out = new ArrayList<>();
-        int counter = 1;
+        int scenarioIndex = 1;
 
         for (WorkflowScenario sc : scenarios) {
             // Generate multiple variants per scenario using expanded parameter sets
-            List<MultiServiceTestCase> variants = generateScenarioVariants(sc, counter);
+            List<MultiServiceTestCase> variants = generateScenarioVariants(sc, scenarioIndex);
             out.addAll(variants);
-            counter += variants.size();
+            scenarioIndex++;
         }
         return out;
     }
@@ -75,40 +75,41 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * 1. LLM generates initial seed values (5 per parameter)
      * 2. Semantic expansion generates additional variants using Word2Vec/BERT
      */
-    private List<MultiServiceTestCase> generateScenarioVariants(WorkflowScenario sc, int baseCounter) {
+    private List<MultiServiceTestCase> generateScenarioVariants(WorkflowScenario sc, int scenarioIndex) {
         List<MultiServiceTestCase> variants = new ArrayList<>();
         
         // Read variant count from properties file or use default
         int variantCount = getVariantCountFromProperties();
         
         log.info("=== TWO-STAGE PARAMETER GENERATION TEST ===");
-        log.info("Generating {} test case variants for scenario {}", variantCount, baseCounter);
+        log.info("Generating {} test case variants for scenario {}", variantCount, scenarioIndex);
         log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
         
-        for (int v = 0; v < variantCount; v++) {
-            // Create meaningful test name using first API call's operation name
-            String firstApiName = getFirstApiOperationName(sc);
-            String testName;
-            if (firstApiName != null && !firstApiName.isEmpty()) {
-                // Convert operation name to valid test method name
-                String cleanApiName = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
-                                                 .replaceAll("_+", "_")
-                                                 .replaceAll("^_|_$", "");
-                testName = "test_" + cleanApiName + "_" + (v + 1);
+        // Determine scenario identifier based on first API call
+        String firstApiName = getFirstApiOperationName(sc);
+        String scenarioBase;
+        if (firstApiName != null && !firstApiName.isEmpty()) {
+            scenarioBase = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
+                                         .replaceAll("_+", "_")
+                                         .replaceAll("^_|_$", "");
+        } else {
+            String sourceFileName = sc.getSourceFileName();
+            if (sourceFileName != null && !sourceFileName.isEmpty()) {
+                scenarioBase = sourceFileName.replaceAll("[^a-zA-Z0-9_]", "_");
             } else {
-                // Fallback: use trace file name if no API name found
-                String sourceFileName = sc.getSourceFileName();
-                if (sourceFileName != null && !sourceFileName.isEmpty()) {
-                    testName = "test_" + sourceFileName + "_" + (v + 1);
-                } else {
-                    // Ultimate fallback to old naming
-                    String suffix = v == 0 ? "" : "_variant" + v;
-                    testName = "Scenario_" + baseCounter + suffix;
-                }
+                scenarioBase = "Scenario";
             }
-            
+        }
+
+        // Unique scenario name (base plus index) to keep traces separate
+        String scenarioUnique = scenarioBase + "_" + scenarioIndex;
+
+        for (int v = 0; v < variantCount; v++) {
+            String testName = "test_" + scenarioBase + "_" + (v + 1);
+
             MultiServiceTestCase tc = new MultiServiceTestCase(testName);
-            tc.setScenarioName(tc.getOperationId());
+            tc.setScenarioName(scenarioUnique);
+            tc.setScenarioBaseName(scenarioBase);
             
             log.info("--- Generating variant {} ({}) ---", v, tc.getOperationId());
             
@@ -616,19 +617,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     }
                 }
                 
-                // Return a descriptive name if we can extract method and path
+                // Return a descriptive name only if we have both method and path
                 if (verb != null && route != null) {
                     String descriptiveName = verb.toUpperCase() + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
                     log.debug("Found first business API operation: {} {} -> {}", verb, route, descriptiveName);
                     return descriptiveName;
-                } else {
-                    // Fallback to original operation name
-                    log.debug("Found first business API operation: {} in service {}", opName, serviceName);
-                    return opName;
                 }
             }
         }
-        
+
         // Check children recursively
         for (WorkflowStep child : step.getChildren()) {
             String apiName = findFirstBusinessApiOperation(child);
