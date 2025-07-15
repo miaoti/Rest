@@ -1,1 +1,0 @@
-{"accountId":"Klmno","boughtDate":"2022-07-18t09:15:00z","coachNumber":"-6","contactsDocumentNumber":"A-bcd-efgh","contactsName":"Alice johnson","documentType":"6","from":"now","id":"buf","price":"75.00","seatClass":"First","seatNumber":"e89","status":"200","to":"atlanta","trainNumber":"ABCDEF","travelDate":"2022-07-29","travelTime":"2024-01-15T16:30Z"}

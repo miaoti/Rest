@@ -1,0 +1,1 @@
+{"basicPriceRate":"79.50","firstClassPriceRate":"0","id":"jkl-mnop-qrs","routeId":"Abcde","trainType":"higher"}

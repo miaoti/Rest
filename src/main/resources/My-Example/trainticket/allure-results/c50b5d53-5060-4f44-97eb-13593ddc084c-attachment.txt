@@ -1,1 +1,0 @@
-{"accountId":"67890","boughtDate":"2021-06-15T12:45:30Z","coachNumber":"37","contactsDocumentNumber":"Xyz-zzz-000","contactsName":"bob brown","documentType":"8","from":"already","id":"Test123","price":"75.00","seatClass":"economic","seatNumber":"h6","status":"200","to":"nyc","trainNumber":"Mnopqr","travelDate":"2024-01-15","travelTime":"2022-07-20t18:45z"}

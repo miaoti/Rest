@@ -1,0 +1,1 @@
+{"basicPriceRate":"63.80","firstClassPriceRate":"var_bd_=_getElementsByClass","id":"Abc-def-ghi","routeId":"qwerty","trainType":"Standard"}

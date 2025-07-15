@@ -1,0 +1,1 @@
+{"distanceList":"-3","distances":"10.5","endStation":"Los Angeles Union Station","id":"brennan","loginId":"dave","startStation":"New york city station","stationList":"chicago dearborn street station","stations":"philadelphia 300 square"}

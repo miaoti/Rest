@@ -1,0 +1,1 @@
+{"basicPriceRate":"63.80","firstClassPriceRate":"10.99","id":"User123","routeId":"Qwerty_keypad","trainType":"Standard"}

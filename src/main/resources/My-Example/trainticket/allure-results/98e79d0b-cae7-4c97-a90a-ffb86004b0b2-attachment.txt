@@ -1,1 +1,0 @@
-{"distanceList":"-10","endStation":"Hollywood Sign","id":"Xyz789","startStation":"Houston intermodal center","stationList":"Boston logan international airport"}

@@ -1,1 +1,0 @@
-{"distanceList":"789.65","distances":"BORDER_=","endStation":"Hollywood sign","id":"buf","loginId":"guest2022","startStation":"Los Angeles Terminal","stationList":"new york penn station","stations":"san francisco powell street"}

@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"3314ec53-30d4-4625-94ef-00c30ee82cd9","trainType":"high-speed","routeId":"Xyzzy","basicPriceRate":349.79,"firstClassPriceRate":10.5}}

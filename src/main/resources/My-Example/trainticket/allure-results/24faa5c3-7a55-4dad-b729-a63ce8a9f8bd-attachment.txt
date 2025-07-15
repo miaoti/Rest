@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.01","firstClassPriceRate":"50.75","id":"tested","routeId":"Qwert","trainType":"high-speed"}

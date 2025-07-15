@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"jkl-mnop-qrs","trainType":"higher","routeId":"Abcde","basicPriceRate":79.5,"firstClassPriceRate":0.0}}

@@ -1,0 +1,1 @@
+{"distanceList":"-3","distances":"10.5","endStation":"Chicago Union Passenger Terminal","id":"nbc","loginId":"admin456","startStation":"Philadelphia convention hall","stationList":"Houston Hobby Airport Bus Terminal","stations":"Los angeles union station"}

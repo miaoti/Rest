@@ -1,1 +1,0 @@
-{"distanceList":"100","distances":"bd_div_story","endStation":"Hollywood Sign","id":"buf","loginId":"guest2022","startStation":"Chicago loop","stationList":"chicago o'hare international airport","stations":"Chicago Loop"}

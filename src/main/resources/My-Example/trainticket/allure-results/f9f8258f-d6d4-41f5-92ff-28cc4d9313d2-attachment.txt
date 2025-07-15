@@ -1,1 +1,0 @@
-{"distanceList":"789.65","endStation":"central station","id":"tested","startStation":"chicago loop","stationList":"Chicago o'hare international airport"}

@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"2b997fe2-1843-4065-b5ba-670a219c9e78","trainType":"higher","routeId":"qwert","basicPriceRate":349.79,"firstClassPriceRate":1.99}}
