@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"e27018a6-4e64-4f75-beab-53d225eff2fc","trainType":"high-speed","routeId":"Qwert","basicPriceRate":0.01,"firstClassPriceRate":50.75}}

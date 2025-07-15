@@ -1,0 +1,1 @@
+{"basicPriceRate":"-8.25","firstClassPriceRate":"1.99","id":"Xyz789","routeId":"QWERT","trainType":"expresses"}

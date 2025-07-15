@@ -1,0 +1,1 @@
+{"basicPriceRate":"0.01","firstClassPriceRate":"1.99","id":"abcde","routeId":"QWERT","trainType":"Standard"}

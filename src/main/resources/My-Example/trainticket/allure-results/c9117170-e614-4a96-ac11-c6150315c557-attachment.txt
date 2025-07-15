@@ -1,0 +1,1 @@
+{"distanceList":"789.65","distances":"25.3","endStation":"central station","id":"tested","loginId":"john_doe_987654321","startStation":"chicago loop","stationList":"Chicago o'hare international airport","stations":"Los Angeles Metro Center"}

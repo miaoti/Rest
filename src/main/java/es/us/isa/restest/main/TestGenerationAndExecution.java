@@ -26,8 +26,12 @@ import es.us.isa.restest.writers.IWriter;
 import es.us.isa.restest.writers.restassured.MultiServiceRESTAssuredWriter;
 import es.us.isa.restest.writers.restassured.RESTAssuredWriter;
 import es.us.isa.restest.util.*;
+import io.qameta.allure.AllureLifecycle;
+import io.qameta.allure.junit4.AllureJunit4;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
@@ -172,7 +176,15 @@ public class TestGenerationAndExecution {
 			// Execute tests if enabled
 			if (executeTestCases) {
 				logger.info("Executing generated test cases");
-				executeGeneratedTestsWithMaven(className);
+				// For MST mode, find the actual generated test classes and execute them individually
+				String actualPackageName = packageName + "." + className;
+				executeGeneratedTestsWithJUnit(actualPackageName, className);
+				
+				// Generate Allure report using the existing AllureReportManager
+				if (allureReports && reportManager != null) {
+					logger.info("Generating Allure report using AllureReportManager");
+					reportManager.generateReport();
+				}
 			}
 			
 			// Generate reports
@@ -405,9 +417,18 @@ public class TestGenerationAndExecution {
 	private static AllureReportManager createAllureReportManager() {
 		AllureReportManager arm = null;
 		if(executeTestCases) {
-			String allureResultsDir = readParameterValue("allure.results.dir") + "/" + experimentName;
-			String allureReportDir = readParameterValue("allure.report.dir") + "/" + experimentName;
-
+			String allureResultsDir;
+			String allureReportDir;
+			
+			if ("MST".equals(generator)) {
+				// For MST mode, use base directories directly since Maven generates results in target/allure-results
+				allureResultsDir = readParameterValue("allure.results.dir");
+				allureReportDir = readParameterValue("allure.report.dir");
+			} else {
+				// For classic modes, use subdirectories by experiment name
+				allureResultsDir = readParameterValue("allure.results.dir") + "/" + experimentName;
+				allureReportDir = readParameterValue("allure.report.dir") + "/" + experimentName;
+			}
 
 			if (deletePreviousResults) {
 				deleteDir(allureResultsDir);
@@ -614,85 +635,67 @@ public class TestGenerationAndExecution {
 	public static String getExperimentName(){ return experimentName; }
 
 	/**
-	 * Execute generated test files using Maven with better error handling
+	 * Execute generated test classes using JUnit directly (like the original RESTest)
 	 */
-	private static void executeGeneratedTestsWithMaven(String className) {
+	private static void executeGeneratedTestsWithJUnit(String fullPackageName, String className) {
+		logger.info("Executing generated tests for package: {} and class: {}", fullPackageName, className);
+		
 		try {
-			logger.info("Executing generated test cases for class pattern: {}", className);
+			// Find the test class directory
+			String baseDir = System.getProperty("user.dir");
+			String packagePath = fullPackageName.replace('.', '/');
+			File testClassDir = new File(baseDir + "/src/test/java/" + packagePath);
 			
-			// Create target/allure-results directory if it doesn't exist
-			File allureResultsDir = new File("target/allure-results");
-			if (!allureResultsDir.exists()) {
-				allureResultsDir.mkdirs();
-				logger.info("Created directory: {}", allureResultsDir.getAbsolutePath());
-			}
+			List<String> testClassNames = new ArrayList<>();
 			
-			// Try different Maven commands based on what's available
-			String[] mavenCommands = {
-				"mvn.cmd",  // Windows
-				"mvn.bat",  // Windows alternative
-				"mvn"       // Unix/Linux/MacOS
-			};
-			
-			boolean executionSuccessful = false;
-			
-			for (String mavenCmd : mavenCommands) {
-				try {
-					logger.info("Trying Maven command: {}", mavenCmd);
-					
-					ProcessBuilder pb = new ProcessBuilder(
-						mavenCmd, "test", 
-						"-Dtest=" + packageName + "." + className + ".*",
-						"-DfailIfNoTests=false"
-					);
-					pb.directory(new File("."));
-					pb.redirectErrorStream(true);
-					
-					Process process = pb.start();
-					
-					// Read the output
-					try (java.io.BufferedReader reader = new java.io.BufferedReader(
-							new java.io.InputStreamReader(process.getInputStream()))) {
-						String line;
-						while ((line = reader.readLine()) != null) {
-							System.out.println(line);
-						}
+			if (testClassDir.exists() && testClassDir.isDirectory()) {
+				File[] javaFiles = testClassDir.listFiles((dir, name) -> name.endsWith(".java"));
+				if (javaFiles != null) {
+					for (File javaFile : javaFiles) {
+						String testClassName = javaFile.getName().replace(".java", "");
+						String fullTestClassName = fullPackageName + "." + testClassName;
+						testClassNames.add(fullTestClassName);
+						logger.info("Found generated test class: {}", fullTestClassName);
 					}
-					
-					int exitCode = process.waitFor();
-					if (exitCode == 0) {
-						logger.info("Test execution completed successfully with {}", mavenCmd);
-						executionSuccessful = true;
-						break;
-					} else {
-						logger.warn("Test execution with {} completed with exit code: {}", mavenCmd, exitCode);
-						// Continue to try next command
-					}
-					
-				} catch (Exception e) {
-					logger.debug("Failed to execute with {}: {}", mavenCmd, e.getMessage());
-					// Continue to try next command
 				}
 			}
 			
-			if (!executionSuccessful) {
-				logger.warn("Could not execute tests with Maven. Maven may not be available in PATH.");
-				logger.warn("To manually execute tests and generate Allure reports:");
-				logger.warn("1. Run: mvn test -Dtest={}*", className);
-				logger.warn("2. Run: allure generate target/allure-results --clean -o target/allure-report");
+			if (testClassNames.isEmpty()) {
+				logger.warn("No test classes found in directory: {}", testClassDir.getAbsolutePath());
 				return;
 			}
 			
-			// Check if allure results were generated
-			File[] allureFiles = allureResultsDir.listFiles((dir, name) -> name.endsWith(".json"));
-			if (allureFiles != null && allureFiles.length > 0) {
-				logger.info("Successfully generated {} Allure result files in target/allure-results", allureFiles.length);
+			// Set Allure results directory (same as original RESTest pattern)
+			// Use the same path structure as the original RESTest
+			String allureResultsDirectory = "target/allure-results";
+			System.setProperty("allure.results.directory", allureResultsDirectory);
+			logger.info("Allure results directory set to: {}", allureResultsDirectory);
+			
+			// Execute each test class using JUnit directly (like original RESTest)
+			for (String testClassName : testClassNames) {
+				logger.info("Executing test class: {}", testClassName);
 				
-				// Generate Allure report if results exist
-				generateAllureReport();
-				
-			} else {
-				logger.warn("No Allure result files were generated in target/allure-results");
+				try {
+					// Load and compile the test class
+					String filePath = testClassDir.getAbsolutePath() + "/" + testClassName.substring(testClassName.lastIndexOf('.') + 1) + ".java";
+					Class<?> testClass = es.us.isa.restest.util.ClassLoader.loadClass(filePath, testClassName);
+					
+					// Execute the test class using JUnit
+					JUnitCore junit = new JUnitCore();
+					AllureLifecycle allureLifecycle = new AllureLifecycle();
+					junit.addListener(new AllureJunit4(allureLifecycle));
+					
+					Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
+					Result result = junit.run(testClass);
+					Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
+					
+					int successfulTests = result.getRunCount() - result.getFailureCount() - result.getIgnoreCount();
+					logger.info("{} tests run in {} seconds. Successful: {}, Failures: {}, Ignored: {}", 
+						result.getRunCount(), result.getRunTime()/1000, successfulTests, result.getFailureCount(), result.getIgnoreCount());
+					
+				} catch (Exception e) {
+					logger.warn("Could not execute test class {}: {}", testClassName, e.getMessage());
+				}
 			}
 			
 		} catch (Exception e) {
@@ -701,65 +704,7 @@ public class TestGenerationAndExecution {
 		}
 	}
 	
-	/**
-	 * Generate Allure report from existing results
-	 */
-	private static void generateAllureReport() {
-		try {
-			logger.info("Generating Allure report from results");
-			
-			// Try different allure commands
-			String[] allureCommands = {
-				"allure.bat",
-				"allure.cmd", 
-				"allure"
-			};
-			
-			for (String allureCmd : allureCommands) {
-				try {
-					ProcessBuilder pb = new ProcessBuilder(
-						allureCmd, "generate", 
-						"target/allure-results", 
-						"--clean", 
-						"-o", "target/allure-report"
-					);
-					pb.directory(new File("."));
-					pb.redirectErrorStream(true);
-					
-					Process process = pb.start();
-					
-					// Read the output
-					try (java.io.BufferedReader reader = new java.io.BufferedReader(
-							new java.io.InputStreamReader(process.getInputStream()))) {
-						String line;
-						while ((line = reader.readLine()) != null) {
-							System.out.println(line);
-						}
-					}
-					
-					int exitCode = process.waitFor();
-					if (exitCode == 0) {
-						logger.info("Allure report generated successfully in target/allure-report");
-						File reportIndex = new File("target/allure-report/index.html");
-						if (reportIndex.exists()) {
-							logger.info("Open the report: file://{}", reportIndex.getAbsolutePath());
-						}
-						return;
-					}
-					
-				} catch (Exception e) {
-					logger.debug("Failed to generate report with {}: {}", allureCmd, e.getMessage());
-				}
-			}
-			
-			logger.warn("Could not generate Allure report automatically. Allure may not be available in PATH.");
-			logger.warn("To manually generate the report:");
-			logger.warn("Run: allure generate target/allure-results --clean -o target/allure-report");
-			
-		} catch (Exception e) {
-			logger.error("Error generating Allure report: {}", e.getMessage());
-		}
-	}
+
 
 
 

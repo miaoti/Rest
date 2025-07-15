@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"71dc25b2-d4f7-49b4-983f-95f8e7de3c5e","trainType":"expresses","routeId":"QWERT","basicPriceRate":-8.25,"firstClassPriceRate":1.99}}

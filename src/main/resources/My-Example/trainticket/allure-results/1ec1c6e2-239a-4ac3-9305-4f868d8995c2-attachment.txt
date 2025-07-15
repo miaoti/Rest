@@ -1,0 +1,1 @@
+{"distanceList":"-10","endStation":"Union square","id":"12345","startStation":"Philadelphia Convention Center","stationList":"los angeles union square bus terminal"}

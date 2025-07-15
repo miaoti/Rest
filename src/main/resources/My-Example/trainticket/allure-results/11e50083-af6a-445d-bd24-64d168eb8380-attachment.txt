@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"1752d730-4814-4e42-881c-c8180d8241cb","trainType":"Freight","routeId":"Qwert","basicPriceRate":-8.25,"firstClassPriceRate":23.99}}
