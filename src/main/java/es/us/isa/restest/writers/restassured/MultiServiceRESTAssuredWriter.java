@@ -169,13 +169,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                     if (allureReport) {
                         pw.println("        // 🔐 STEP 0: Authentication - Always show in Allure report");
-                        pw.println("        Allure.step(\"🔐 Step 0: Authentication (Login)\", () -> {");
+                        pw.println("        // Create dynamic authentication title with status - will be updated based on result");
+                        pw.println("        final String[] authStepTitle = {\"⏳ Step 0: Authentication (Login)\"};");
+                        pw.println("        Allure.step(() -> authStepTitle[0], () -> {");
                         pw.println("            try {");
                         pw.println("                Allure.parameter(\"🏢 Service\", \"Authentication Service\");");
                         pw.println("                Allure.parameter(\"📡 HTTP Method\", \"POST\");");
                         pw.println("                Allure.parameter(\"🔗 Endpoint\", \"/api/v1/users/login\");");
-                        pw.println("                Allure.parameter(\"✅ Expected Status\", 200);");
+                        pw.println("                Allure.parameter(\"🎯 Expected Status\", 200);");
                         pw.println("                Allure.parameter(\"👤 Username\", \"admin\");");
+                        pw.println("                Allure.parameter(\"🚦 Execution Decision\", \"▶️ EXECUTE - Authentication required\");");
                         pw.println("                Allure.description(\"🔐 **Authentication Step**\\n\" +");
                         pw.println("                                 \"This step authenticates the user to obtain JWT token for subsequent API calls.\\n\" +");
                         pw.println("                                 \"All other steps depend on successful authentication.\");");
@@ -193,17 +196,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                _jwtType[0] = \"Bearer\";");
                     if (allureReport) {
                         pw.println("                ");
-                        pw.println("                // ✅ Login successful - capture token details");
+                        pw.println("                // ✅ SUCCESS: Update authentication title and add success symbols");
+                        pw.println("                authStepTitle[0] = \"✅ Step 0: Authentication (Login)\";");
                         pw.println("                Allure.parameter(\"✅ Login Status\", \"SUCCESS\");");
                         pw.println("                Allure.parameter(\"🔑 Token Obtained\", _jwt[0] != null ? \"Yes\" : \"No\");");
+                        pw.println("                Allure.parameter(\"📊 Final Result\", \"✅ SUCCESS\");");
                         pw.println("                Allure.addAttachment(\"🔐 Login Response\", \"application/json\", loginRes.getBody().asString());");
                         pw.println("            } catch (Throwable loginError) {");
                         pw.println("                loginSucceeded.set(false);");
                         pw.println("                ");
-                        pw.println("                // ❌ Login failed - capture error details");
+                        pw.println("                // ❌ FAILURE: Update authentication title and add failure symbols");
+                        pw.println("                authStepTitle[0] = \"❌ Step 0: Authentication (Login)\";");
                         pw.println("                Allure.parameter(\"❌ Login Status\", \"FAILED\");");
                         pw.println("                Allure.parameter(\"💥 Error Type\", loginError.getClass().getSimpleName());");
                         pw.println("                Allure.parameter(\"💬 Error Message\", loginError.getMessage());");
+                        pw.println("                Allure.parameter(\"📊 Final Result\", \"❌ FAILED\");");
                         pw.println("                ");
                         pw.println("                StringBuilder loginErrorDetails = new StringBuilder();");
                         pw.println("                loginErrorDetails.append(\"🚨 LOGIN FAILURE REPORT\\n\\n\");");
@@ -259,13 +266,15 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         if (allureReport) {
                             pw.println("        // 🔥 ALWAYS create Allure step - execution decision happens INSIDE");
                             pw.println("        try {");
-                            pw.println("            Allure.step(\"" + escape(stepTitle) + "\", () -> {");
+                            pw.println("            // Create dynamic step title with status - will be updated based on result");
+                            pw.println("            final String[] dynamicStepTitle = {\"⏳ \" + \"" + escape(stepTitle) + "\"};");
+                            pw.println("            Allure.step(() -> dynamicStepTitle[0], () -> {");
                             
                             // Add step metadata as parameters that will be prominently displayed
                             pw.println("                Allure.parameter(\"🏢 Service\", \"" + escape(step.getServiceName()) + "\");");
                             pw.println("                Allure.parameter(\"📡 HTTP Method\", \"" + verb.toUpperCase() + "\");");
                             pw.println("                Allure.parameter(\"🔗 Endpoint\", \"" + escape(step.getPath()) + "\");");
-                            pw.println("                Allure.parameter(\"✅ Expected Status\", " + step.getExpectedStatus() + ");");
+                            pw.println("                Allure.parameter(\"🎯 Expected Status\", " + step.getExpectedStatus() + ");");
                             
                             // Add dependency analysis information
                             String stepDepType = getDependencyTypeString(step);
@@ -275,7 +284,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                Allure.description(\"🎯 **Testing**: " + escape(step.getServiceName()) + "\\n\" +");
                             pw.println("                                 \"📡 **Method**: " + verb.toUpperCase() + "\\n\" +");
                             pw.println("                                 \"🔗 **Path**: " + escape(step.getPath()) + "\\n\" +");
-                            pw.println("                                 \"✅ **Expected**: " + step.getExpectedStatus() + "\\n\" +");
+                            pw.println("                                 \"🎯 **Expected**: " + step.getExpectedStatus() + "\\n\" +");
                             pw.println("                                 \"🔗 **Dependencies**: " + stepDepType + "\");");
                             pw.println("                ");
                             
@@ -325,16 +334,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                ");
                             pw.println("                // Add execution decision as parameter");
                             pw.println("                if (shouldSkip) {");
-                            pw.println("                    Allure.parameter(\"📊 Execution Decision\", \"SKIP - \" + skipCategory);");
+                            pw.println("                    Allure.parameter(\"🚦 Execution Decision\", \"⏭️ SKIP - \" + skipCategory);");
                             pw.println("                    Allure.parameter(\"⏭️ Skip Reason\", skipReason);");
                             pw.println("                } else {");
-                            pw.println("                    Allure.parameter(\"📊 Execution Decision\", \"EXECUTE - All dependencies satisfied\");");
+                            pw.println("                    Allure.parameter(\"🚦 Execution Decision\", \"▶️ EXECUTE - All dependencies satisfied\");");
                             pw.println("                }");
                             pw.println("                ");
                             
                             // NOW the actual execution or skip logic
                             pw.println("                if (!shouldSkip) {");
-                            pw.println("                    System.out.println(\"✅ EXECUTING: " + escape(stepTitle) + " (dependency analysis passed)\");");
+                            pw.println("                    System.out.println(\"▶️ EXECUTING: " + escape(stepTitle) + " (dependency analysis passed)\");");
                             
                             // Execute the step
                             pw.println("                    try {");
@@ -371,8 +380,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        stepResults.put(" + stepIdx + ", true);");
                             pw.println("                        System.out.println(\"✅ " + escape(stepTitle) + " - SUCCESS\");");
                             
-                            // Success handling
-                            pw.println("                        // ✅ Step completed successfully - capture response details");
+                            // SUCCESS: Update step title and add success symbols
+                            pw.println("                        // ✅ SUCCESS: Update step title and add success parameters");
+                            pw.println("                        dynamicStepTitle[0] = \"✅ \" + \"" + escape(stepTitle) + "\";");
                             pw.println("                        try {");
                             pw.println("                            String responseBody = stepResponse" + stepIdx + ".getBody().asString();");
                             pw.println("                            int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
@@ -381,19 +391,22 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            // Add response as prominently visible attachment");
                             pw.println("                            Allure.addAttachment(\"📄 Response (Status: \" + actualStatus + \")\", \"application/json\", responseBody);");
                             pw.println("                            ");
-                            pw.println("                            // Add key metrics as visible parameters");
+                            pw.println("                            // Add SUCCESS metrics with green symbols");
                             pw.println("                            Allure.parameter(\"✅ Actual Status\", actualStatus + \" (SUCCESS)\");");
                             pw.println("                            Allure.parameter(\"⏱️ Response Time\", responseTime + \" ms\");");
-                            pw.println("                            Allure.parameter(\"📊 Result\", \"SUCCESS\");");
+                            pw.println("                            Allure.parameter(\"📊 Final Result\", \"✅ SUCCESS\");");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.addAttachment(\"⚠️ Response Capture Error\", \"text/plain\", e.getMessage());");
                             pw.println("                        }");
                             
-                            // Error handling
+                            // FAILURE: Error handling with red symbols
                             pw.println("                    } catch (Throwable t) {");
                             pw.println("                        stepResults.put(" + stepIdx + ", false);");
                             pw.println("                        System.out.println(\"❌ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
-                            pw.println("                        // ❌ Step failed - capture detailed error information");
+                            pw.println("                        ");
+                            pw.println("                        // ❌ FAILURE: Update step title and add failure symbols");
+                            pw.println("                        dynamicStepTitle[0] = \"❌ \" + \"" + escape(stepTitle) + "\";");
+                            pw.println("                        ");
                             pw.println("                        String errorCategory = \"Unknown\";");
                             pw.println("                        if (t instanceof java.net.ConnectException) {");
                             pw.println("                            errorCategory = \"🔌 Connection Failed - Service Unreachable\";");
@@ -405,11 +418,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            errorCategory = \"❓ \" + t.getClass().getSimpleName();");
                             pw.println("                        }");
                             pw.println("                        ");
-                            pw.println("                        // Add error details as visible parameters");
+                            pw.println("                        // Add FAILURE details with red symbols");
                             pw.println("                        Allure.parameter(\"❌ Error Category\", errorCategory);");
                             pw.println("                        Allure.parameter(\"💥 Error Message\", t.getMessage());");
                             pw.println("                        Allure.parameter(\"🔍 Exception Type\", t.getClass().getSimpleName());");
-                            pw.println("                        Allure.parameter(\"📊 Result\", \"FAILED\");");
+                            pw.println("                        Allure.parameter(\"📊 Final Result\", \"❌ FAILED\");");
                             pw.println("                        ");
                             pw.println("                        // Create detailed error report");
                             pw.println("                        StringBuilder errorDetails = new StringBuilder();");
@@ -430,16 +443,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        // Instead, mark step as failed but continue");
                             pw.println("                    }");
                             
-                            // ELSE - step is skipped
+                            // SKIP: Step is skipped with yellow symbols
                             pw.println("                } else {");
-                            pw.println("                    // Step is being skipped - show comprehensive skip information");
+                            pw.println("                    // ⏭️ SKIP: Update step title and add skip symbols");
+                            pw.println("                    dynamicStepTitle[0] = \"⏭️ \" + \"" + escape(stepTitle) + "\";");
                             pw.println("                    System.out.println(\"⏭️ SKIPPING: " + escape(stepTitle) + " - \" + skipReason);");
                             pw.println("                    stepResults.put(" + stepIdx + ", false);");
                             pw.println("                    ");
-                            pw.println("                    // Add comprehensive skip information as parameters");
+                            pw.println("                    // Add comprehensive SKIP information with yellow symbols");
                             pw.println("                    Allure.parameter(\"⏭️ Skip Category\", skipCategory);");
                             pw.println("                    Allure.parameter(\"💬 Skip Details\", skipReason);");
-                            pw.println("                    Allure.parameter(\"📊 Result\", \"SKIPPED\");");
+                            pw.println("                    Allure.parameter(\"📊 Final Result\", \"⏭️ SKIPPED\");");
                             pw.println("                    ");
                             
                             // Generate detailed dependency analysis report
@@ -459,7 +473,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             // Add dependency analysis
                             pw.println("                    // Add dependency analysis");
                             pw.println("                    if (!loginSucceeded.get()) {");
-                            pw.println("                        dependencyReport.append(\"🔐 AUTHENTICATION STATUS: FAILED\\n\");");
+                            pw.println("                        dependencyReport.append(\"🔐 AUTHENTICATION STATUS: ❌ FAILED\\n\");");
                             pw.println("                        dependencyReport.append(\"Authentication is required for all API calls.\\n\\n\");");
                             pw.println("                    }");
                             
@@ -482,23 +496,15 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                    dependencyReport.append(\"\\n\");");
                             }
                             
-                            pw.println("                    dependencyReport.append(\"💡 IMPACT:\\n\");");
-                            pw.println("                    dependencyReport.append(\"This step was skipped to prevent cascading failures.\\n\");");
-                            pw.println("                    dependencyReport.append(\"Fix the dependency issues above to enable this step.\\n\");");
-                            pw.println("                    ");
-                            pw.println("                    Allure.addAttachment(\"⏭️ Skip Analysis Report\", \"text/plain\", dependencyReport.toString());");
-                            pw.println("                    ");
-                            pw.println("                    // DON'T throw exception - let other steps execute");
+                            pw.println("                    Allure.addAttachment(\"⏭️ Dependency Analysis Report\", \"text/plain\", dependencyReport.toString());");
                             pw.println("                }");
                             
-                            pw.println("            }); // End of Allure.step()");
+                            pw.println("            });");
                             pw.println("        } catch (Exception stepException) {");
-                            pw.println("            // Step execution failed, but don't stop other steps");
+                            pw.println("            // Step wrapper failed, but don't stop other steps");
                             pw.println("            System.out.println(\"⚠️ Step wrapper failed for " + escape(stepTitle) + ": \" + stepException.getMessage());");
                             pw.println("            stepResults.put(" + stepIdx + ", false);");
                             pw.println("        }");
-                            pw.println("        ");
-                            
                         } else {
                             // Non-Allure version - simplified (fallback for when Allure is disabled)
                             pw.println("        // Non-Allure version - simplified execution");
