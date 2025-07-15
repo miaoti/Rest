@@ -1,0 +1,157 @@
+[ {
+  "values" : [ "TrainTicket" ],
+  "name" : "api"
+}, {
+  "values" : [ "MST" ],
+  "name" : "generator"
+}, {
+  "values" : [ "10" ],
+  "name" : "testsperoperation"
+}, {
+  "values" : [ "src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml" ],
+  "name" : "oas.path"
+}, {
+  "values" : [ "src/main/resources/My-Example/trainticket/real-system-conf.yaml" ],
+  "name" : "conf.path"
+}, {
+  "values" : [ "src/test/java" ],
+  "name" : "test.target.dir"
+}, {
+  "values" : [ "trainticket" ],
+  "name" : "test.target.package"
+}, {
+  "values" : [ "trainticket_twostage_test" ],
+  "name" : "experiment.name"
+}, {
+  "values" : [ "TrainTicketTwoStageTest" ],
+  "name" : "testclass.name"
+}, {
+  "values" : [ "true" ],
+  "name" : "experiment.execute"
+}, {
+  "values" : [ "true" ],
+  "name" : "allure.report"
+}, {
+  "values" : [ "false" ],
+  "name" : "testcases.check"
+}, {
+  "values" : [ "false" ],
+  "name" : "coverage.input"
+}, {
+  "values" : [ "false" ],
+  "name" : "coverage.output"
+}, {
+  "values" : [ "true" ],
+  "name" : "stats.csv"
+}, {
+  "values" : [ "true" ],
+  "name" : "deletepreviousresults"
+}, {
+  "values" : [ "-1" ],
+  "name" : "numtotaltestcases"
+}, {
+  "values" : [ "1" ],
+  "name" : "max.iterations"
+}, {
+  "values" : [ "-1" ],
+  "name" : "delay"
+}, {
+  "values" : [ "0.1" ],
+  "name" : "faulty.ratio"
+}, {
+  "values" : [ "0.05" ],
+  "name" : "faulty.dependency.ratio"
+}, {
+  "values" : [ "50" ],
+  "name" : "reloadinputdataevery"
+}, {
+  "values" : [ "500" ],
+  "name" : "inputdatamaxvalues"
+}, {
+  "values" : [ "http://129.62.148.112:32677" ],
+  "name" : "base.url"
+}, {
+  "values" : [ "admin" ],
+  "name" : "auth.admin.username"
+}, {
+  "values" : [ "222222" ],
+  "name" : "auth.admin.password"
+}, {
+  "values" : [ "fdse_microservice" ],
+  "name" : "auth.user.username"
+}, {
+  "values" : [ "111111" ],
+  "name" : "auth.user.password"
+}, {
+  "values" : [ "true" ],
+  "name" : "llm.enabled"
+}, {
+  "values" : [ "true" ],
+  "name" : "llm.local.enabled"
+}, {
+  "values" : [ "http://localhost:4891/v1/chat/completions" ],
+  "name" : "llm.local.url"
+}, {
+  "values" : [ "llama-3-8b-instruct" ],
+  "name" : "llm.local.model"
+}, {
+  "values" : [ "5" ],
+  "name" : "llm.seed.count"
+}, {
+  "values" : [ "15" ],
+  "name" : "semantic.expansion.target"
+}, {
+  "values" : [ "true" ],
+  "name" : "semantic.word2vec.enabled"
+}, {
+  "values" : [ "true" ],
+  "name" : "semantic.bert.enabled"
+}, {
+  "values" : [ "true" ],
+  "name" : "executeTestCases"
+}, {
+  "values" : [ "INFO" ],
+  "name" : "logging.level.root"
+}, {
+  "values" : [ "DEBUG" ],
+  "name" : "logging.level.es.us.isa.restest.generators.MultiServiceTestCaseGenerator"
+}, {
+  "values" : [ "DEBUG" ],
+  "name" : "logging.level.es.us.isa.restest.generators.SemanticParameterExpander"
+}, {
+  "values" : [ "DEBUG" ],
+  "name" : "logging.level.es.us.isa.restest.generators.AiDrivenLLMGenerator"
+}, {
+  "values" : [ "DEBUG" ],
+  "name" : "logging.level.es.us.isa.restest.workflow.TraceWorkflowExtractor"
+}, {
+  "values" : [ "src/main/resources/My-Example/trainticket/traces/" ],
+  "name" : "trace.file.path"
+}, {
+  "values" : [ "10" ],
+  "name" : "test.variants.per.scenario"
+}, {
+  "values" : [ "src/main/resources/GoogleNews-vectors-negative300.bin" ],
+  "name" : "word2vec.model.path"
+}, {
+  "values" : [ "false" ],
+  "name" : "bert.model.enabled"
+}, {
+  "values" : [ "" ],
+  "name" : "bert.model.path"
+}, {
+  "values" : [ "true" ],
+  "name" : "focus.on.parameter.generation"
+}, {
+  "values" : [ "true" ],
+  "name" : "focus.on.semantic.expansion"
+}, {
+  "values" : [ "true" ],
+  "name" : "verbose.parameter.generation"
+}, {
+  "values" : [ "true" ],
+  "name" : "verbose.semantic.expansion"
+}, {
+  "values" : [ "true " ],
+  "name" : "verbose.test.case.creation"
+} ]
