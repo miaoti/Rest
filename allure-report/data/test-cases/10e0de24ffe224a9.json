@@ -1,0 +1,282 @@
+{
+  "uid" : "10e0de24ffe224a9",
+  "name" : "test_GET_41_4",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41.test_GET_41_4",
+  "historyId" : "d93edf34303950a4b2213d342723f65",
+  "time" : {
+    "start" : 1752571161290,
+    "stop" : 1752571161493,
+    "duration" : 203
+  },
+  "description" : "Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach.",
+  "descriptionHtml" : "<p>Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication (Login)",
+      "time" : {
+        "start" : 1752571161290,
+        "stop" : 1752571161398,
+        "duration" : 108
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "1799bd9b53a7c707",
+        "name" : "Request",
+        "source" : "1799bd9b53a7c707.html",
+        "type" : "text/html",
+        "size" : 659
+      }, {
+        "uid" : "df94e29dfd24ddfb",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "df94e29dfd24ddfb.html",
+        "type" : "text/html",
+        "size" : 1221
+      }, {
+        "uid" : "7874e35cc9c1edd0",
+        "name" : "\uD83D\uDD10 Login Response",
+        "source" : "7874e35cc9c1edd0.txt",
+        "type" : "application/json",
+        "size" : 341
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 3,
+      "shouldDisplayMessage" : false
+    }, {
+      "name" : "Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)",
+      "time" : {
+        "start" : 1752571161398,
+        "stop" : 1752571161442,
+        "duration" : 44
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "642bd8bbb7a6afca",
+        "name" : "Request",
+        "source" : "642bd8bbb7a6afca.html",
+        "type" : "text/html",
+        "size" : 807
+      }, {
+        "uid" : "d7bb34d1530cc9df",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "d7bb34d1530cc9df.html",
+        "type" : "text/html",
+        "size" : 38791
+      }, {
+        "uid" : "67bce6650b3904cd",
+        "name" : "\uD83D\uDCC4 Response (Status: 200)",
+        "source" : "67bce6650b3904cd.txt",
+        "type" : "application/json",
+        "size" : 16295
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 3,
+      "shouldDisplayMessage" : false
+    }, {
+      "name" : "Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)",
+      "time" : {
+        "start" : 1752571161442,
+        "stop" : 1752571161465,
+        "duration" : 23
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "b09da50c938cc43b",
+        "name" : "Request",
+        "source" : "b09da50c938cc43b.html",
+        "type" : "text/html",
+        "size" : 787
+      }, {
+        "uid" : "336fcba79284114",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "336fcba79284114.html",
+        "type" : "text/html",
+        "size" : 3693
+      }, {
+        "uid" : "7ddad723a555e096",
+        "name" : "\uD83D\uDCC4 Response (Status: 200)",
+        "source" : "7ddad723a555e096.txt",
+        "type" : "application/json",
+        "size" : 1337
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 3,
+      "shouldDisplayMessage" : false
+    }, {
+      "name" : "Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)",
+      "time" : {
+        "start" : 1752571161465,
+        "stop" : 1752571161492,
+        "duration" : 27
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "606e9e16a4068640",
+        "name" : "Request",
+        "source" : "606e9e16a4068640.html",
+        "type" : "text/html",
+        "size" : 807
+      }, {
+        "uid" : "7372a530a019d55e",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "7372a530a019d55e.html",
+        "type" : "text/html",
+        "size" : 33643
+      }, {
+        "uid" : "896d72620e6938c8",
+        "name" : "\uD83D\uDCC4 Response (Status: 200)",
+        "source" : "896d72620e6938c8.txt",
+        "type" : "application/json",
+        "size" : 14039
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 3,
+      "shouldDisplayMessage" : false
+    } ],
+    "attachments" : [ {
+      "uid" : "da93b892f839ba38",
+      "name" : "Test Execution Summary",
+      "source" : "da93b892f839ba38.txt",
+      "type" : "text/plain",
+      "size" : 170
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 4,
+    "hasContent" : true,
+    "attachmentsCount" : 13,
+    "shouldDisplayMessage" : false
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_GET_41_4"
+  }, {
+    "name" : "suite",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41"
+  }, {
+    "name" : "host",
+    "value" : "CSGRAD08"
+  }, {
+    "name" : "thread",
+    "value" : "58540@CSGRAD08.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "testType",
+    "value" : "Complete Success"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "feature",
+    "value" : "Microservice Workflow"
+  }, {
+    "name" : "story",
+    "value" : "test_GET_41_4"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "⏱️ Response Time",
+    "value" : "18 ms"
+  }, {
+    "name" : "⏱️ Response Time",
+    "value" : "19 ms"
+  }, {
+    "name" : "⏱️ Response Time",
+    "value" : "35 ms"
+  }, {
+    "name" : "✅ Actual Status",
+    "value" : "200 (SUCCESS)"
+  }, {
+    "name" : "✅ Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "✅ Login Status",
+    "value" : "SUCCESS"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "Authentication Service"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-admin-order-service"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-order-other-service"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-order-service"
+  }, {
+    "name" : "\uD83D\uDC64 Username",
+    "value" : "admin"
+  }, {
+    "name" : "\uD83D\uDCCA Execution Decision",
+    "value" : "EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDCCA Result",
+    "value" : "SUCCESS"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "GET"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD11 Token Obtained",
+    "value" : "Yes"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/adminorderservice/adminorder"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/orderOtherService/orderOther"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/orderservice/order"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/users/login"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "10e0de24ffe224a9.json",
+  "parameterValues" : [ "18 ms", "19 ms", "35 ms", "200 (SUCCESS)", "200", "SUCCESS", "Authentication Service", "ts-admin-order-service", "ts-order-other-service", "ts-order-service", "admin", "EXECUTE - All dependencies satisfied", "SUCCESS", "GET", "POST", "Yes", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/adminorderservice/adminorder", "/api/v1/orderOtherService/orderOther", "/api/v1/orderservice/order", "/api/v1/users/login" ]
+}

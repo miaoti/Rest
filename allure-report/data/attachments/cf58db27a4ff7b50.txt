@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"unique_id789","trainType":"standard-coach","routeId":"route_2023","basicPriceRate":25.75,"firstClassPriceRate":25.99}}
