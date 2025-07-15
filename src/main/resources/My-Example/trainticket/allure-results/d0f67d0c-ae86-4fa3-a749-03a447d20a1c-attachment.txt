@@ -1,0 +1,1 @@
+{"distanceList":"2.5 yards","distances":"12.4","endStation":"New york penn station","id":"new york city","loginId":"guests","startStation":"San francisco international airport","stationList":"Grand Central Terminal","stations":"Chicago union train terminal"}

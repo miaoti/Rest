@@ -1,0 +1,1 @@
+{"distanceList":"7 feet","distances":"12.4","endStation":"San Francisco Market Street Station","id":"abc-def-ghi","loginId":"guests","startStation":"New York Penn Station","stationList":"Union square","stations":"chicago union train terminal"}

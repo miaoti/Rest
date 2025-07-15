@@ -1,0 +1,1 @@
+{"basicPriceRate":"49.99","firstClassPriceRate":"9999.99","id":"nbc","routeId":"Xyz789","trainType":"Passenger列车"}

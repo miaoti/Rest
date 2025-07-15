@@ -1,0 +1,1 @@
+{"distanceList":"7 feet","distances":"25.3","endStation":"New York Penn Station","id":"abc-def-ghi","loginId":"Guest789","startStation":"new york penn station","stationList":"bayside mall","stations":"New York Penn Station"}

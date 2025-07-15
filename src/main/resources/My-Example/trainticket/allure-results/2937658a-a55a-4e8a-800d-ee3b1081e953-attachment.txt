@@ -1,0 +1,1 @@
+{"distanceList":"10 kilometers","distances":"25.3","endStation":"los angeles times square bus stop","id":"user123","loginId":"guests","startStation":"New York Penn Station","stationList":"Central station","stations":"chicago union train terminal"}
