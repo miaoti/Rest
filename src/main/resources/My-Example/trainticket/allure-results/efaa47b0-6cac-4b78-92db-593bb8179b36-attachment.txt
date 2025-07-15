@@ -1,1 +1,0 @@
-{"accountId":"abcdefghij","boughtDate":"2023-07-30t00:00:00+08:00","coachNumber":"73","contactsDocumentNumber":"67890","contactsName":"bob brown","documentType":"3","from":"Boston","id":"Abc-def-ghi","price":"150.00","seatClass":"8","seatNumber":"h6","status":"204","to":"conact","trainNumber":"XYZ-789","travelDate":"2024-06-12","travelTime":"2024-01-20t12:00:00z"}

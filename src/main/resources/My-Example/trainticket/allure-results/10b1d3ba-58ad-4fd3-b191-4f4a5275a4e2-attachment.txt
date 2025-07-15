@@ -1,1 +1,0 @@
-{"basicPriceRate":"49.99","firstClassPriceRate":"25.49","id":"Jkl-mnop-qrs","routeId":"Qwerty","trainType":"express"}

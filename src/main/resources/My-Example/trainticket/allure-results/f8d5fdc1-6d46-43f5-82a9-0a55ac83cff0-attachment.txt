@@ -1,1 +1,0 @@
-{"accountId":"!@#$%^&*()","boughtDate":"2021-01-31T23:59:59Z","coachNumber":"48","contactsDocumentNumber":"67890","contactsName":"Jane smith","documentType":"-4","from":"New York","id":"cbs","price":"79.99","seatClass":"8","seatNumber":"b6","status":"200","to":"info+support@website.info","trainNumber":"12345","travelDate":"2023-10-05","travelTime":"2023-10-05t08:30:00z"}

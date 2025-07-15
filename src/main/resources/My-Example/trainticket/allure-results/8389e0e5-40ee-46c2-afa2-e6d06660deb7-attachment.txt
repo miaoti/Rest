@@ -1,1 +1,0 @@
-{"distanceList":"-4","distances":"10.5","endStation":"Boston South Station","id":"nbc","loginId":"John_doe_001","startStation":"Chicago Union Depot","stationList":"los angeles union station","stations":"New York Penn Station"}

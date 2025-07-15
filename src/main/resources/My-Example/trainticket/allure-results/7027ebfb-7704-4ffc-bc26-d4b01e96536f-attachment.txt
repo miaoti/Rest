@@ -1,1 +1,0 @@
-{"accountId":"abcdefghij","boughtDate":"2023-07-30T00:00:00+08:00","coachNumber":"96","contactsDocumentNumber":"helloworld","contactsName":"Charlie davis","documentType":"-7","from":"New york","id":"cbs","price":"79.99","seatClass":"2","seatNumber":"h6","status":"301","to":"tested","trainNumber":"xyz-789","travelDate":"1987-08-11","travelTime":"2023-07-01t16:00:00z"}

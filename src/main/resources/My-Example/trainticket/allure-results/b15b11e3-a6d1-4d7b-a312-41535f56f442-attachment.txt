@@ -1,1 +1,0 @@
-{"distanceList":"BORDER_=","distances":"10.5","endStation":"boston south station","id":"faj_slm","loginId":"Admins","startStation":"Philadelphia convention hall","stationList":"New york penn station","stations":"philadelphia 300 square"}

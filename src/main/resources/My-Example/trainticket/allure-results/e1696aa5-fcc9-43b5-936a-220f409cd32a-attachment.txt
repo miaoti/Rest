@@ -1,1 +1,0 @@
-{"basicPriceRate":"10.99","firstClassPriceRate":"10.99","id":"Sydney_measured_####kbps","routeId":"qwerty_keyboard","trainType":"standard"}
