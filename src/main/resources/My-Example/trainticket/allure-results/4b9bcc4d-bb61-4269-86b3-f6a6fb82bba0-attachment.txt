@@ -1,0 +1,1 @@
+{"distanceList":"50","distances":"10","endStation":"Chicago - Union Square","id":"Abcde","loginId":"user123","startStation":"New york penn station","stationList":"los angeles terminal","stations":"San francisco international airport"}

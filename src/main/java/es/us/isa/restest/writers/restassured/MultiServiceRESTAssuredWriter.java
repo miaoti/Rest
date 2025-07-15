@@ -169,9 +169,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                     if (allureReport) {
                         pw.println("        // 🔐 STEP 0: Authentication - Always show in Allure report");
-                        pw.println("        // Create dynamic authentication title with status - will be updated based on result");
-                        pw.println("        final String[] authStepTitle = {\"⏳ Step 0: Authentication (Login)\"};");
-                        pw.println("        Allure.step(() -> authStepTitle[0], () -> {");
+                        pw.println("        Allure.step(\"🔐 Step 0: Authentication (Login)\", () -> {");
                         pw.println("            try {");
                         pw.println("                Allure.parameter(\"🏢 Service\", \"Authentication Service\");");
                         pw.println("                Allure.parameter(\"📡 HTTP Method\", \"POST\");");
@@ -196,8 +194,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                _jwtType[0] = \"Bearer\";");
                     if (allureReport) {
                         pw.println("                ");
-                        pw.println("                // ✅ SUCCESS: Update authentication title and add success symbols");
-                        pw.println("                authStepTitle[0] = \"✅ Step 0: Authentication (Login)\";");
+                        pw.println("                // ✅ SUCCESS: Add success symbols and status");
                         pw.println("                Allure.parameter(\"✅ Login Status\", \"SUCCESS\");");
                         pw.println("                Allure.parameter(\"🔑 Token Obtained\", _jwt[0] != null ? \"Yes\" : \"No\");");
                         pw.println("                Allure.parameter(\"📊 Final Result\", \"✅ SUCCESS\");");
@@ -205,8 +202,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("            } catch (Throwable loginError) {");
                         pw.println("                loginSucceeded.set(false);");
                         pw.println("                ");
-                        pw.println("                // ❌ FAILURE: Update authentication title and add failure symbols");
-                        pw.println("                authStepTitle[0] = \"❌ Step 0: Authentication (Login)\";");
+                        pw.println("                // ❌ FAILURE: Add failure symbols and error details");
                         pw.println("                Allure.parameter(\"❌ Login Status\", \"FAILED\");");
                         pw.println("                Allure.parameter(\"💥 Error Type\", loginError.getClass().getSimpleName());");
                         pw.println("                Allure.parameter(\"💬 Error Message\", loginError.getMessage());");
@@ -266,9 +262,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         if (allureReport) {
                             pw.println("        // 🔥 ALWAYS create Allure step - execution decision happens INSIDE");
                             pw.println("        try {");
-                            pw.println("            // Create dynamic step title with status - will be updated based on result");
-                            pw.println("            final String[] dynamicStepTitle = {\"⏳ \" + \"" + escape(stepTitle) + "\"};");
-                            pw.println("            Allure.step(() -> dynamicStepTitle[0], () -> {");
+                            pw.println("            Allure.step(\"" + escape(stepTitle) + "\", () -> {");
                             
                             // Add step metadata as parameters that will be prominently displayed
                             pw.println("                Allure.parameter(\"🏢 Service\", \"" + escape(step.getServiceName()) + "\");");
@@ -380,9 +374,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        stepResults.put(" + stepIdx + ", true);");
                             pw.println("                        System.out.println(\"✅ " + escape(stepTitle) + " - SUCCESS\");");
                             
-                            // SUCCESS: Update step title and add success symbols
-                            pw.println("                        // ✅ SUCCESS: Update step title and add success parameters");
-                            pw.println("                        dynamicStepTitle[0] = \"✅ \" + \"" + escape(stepTitle) + "\";");
+                            // SUCCESS: Add success symbols and parameters
+                            pw.println("                        // ✅ SUCCESS: Add success parameters and metrics");
                             pw.println("                        try {");
                             pw.println("                            String responseBody = stepResponse" + stepIdx + ".getBody().asString();");
                             pw.println("                            int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
@@ -404,8 +397,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        stepResults.put(" + stepIdx + ", false);");
                             pw.println("                        System.out.println(\"❌ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
                             pw.println("                        ");
-                            pw.println("                        // ❌ FAILURE: Update step title and add failure symbols");
-                            pw.println("                        dynamicStepTitle[0] = \"❌ \" + \"" + escape(stepTitle) + "\";");
+                            pw.println("                        // ❌ FAILURE: Add failure symbols and error details");
                             pw.println("                        ");
                             pw.println("                        String errorCategory = \"Unknown\";");
                             pw.println("                        if (t instanceof java.net.ConnectException) {");
@@ -445,8 +437,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             
                             // SKIP: Step is skipped with yellow symbols
                             pw.println("                } else {");
-                            pw.println("                    // ⏭️ SKIP: Update step title and add skip symbols");
-                            pw.println("                    dynamicStepTitle[0] = \"⏭️ \" + \"" + escape(stepTitle) + "\";");
+                            pw.println("                    // ⏭️ SKIP: Add skip symbols and comprehensive information");
                             pw.println("                    System.out.println(\"⏭️ SKIPPING: " + escape(stepTitle) + " - \" + skipReason);");
                             pw.println("                    stepResults.put(" + stepIdx + ", false);");
                             pw.println("                    ");

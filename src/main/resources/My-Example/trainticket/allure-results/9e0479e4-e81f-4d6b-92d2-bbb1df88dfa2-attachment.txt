@@ -1,0 +1,1 @@
+{"basicPriceRate":"23.47","firstClassPriceRate":"1.75","id":"users","routeId":"examples","trainType":"expresstrain"}
