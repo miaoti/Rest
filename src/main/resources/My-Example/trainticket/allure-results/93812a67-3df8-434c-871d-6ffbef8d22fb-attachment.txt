@@ -1,1 +1,0 @@
-{"distanceList":"NaN","distances":"45","endStation":"safeway","id":"yyyy","loginId":"admin456","startStation":"Boston Logan International Airport","stationList":"Monument E","stations":"Los Angeles Union Station"}

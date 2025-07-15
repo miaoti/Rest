@@ -1,1 +1,0 @@
-{"distanceList":"50","distances":"45","endStation":"chinatown","id":"yyyy","loginId":"user123","startStation":"New York Penn Station","stationList":"bus stop b","stations":"chicago o'hare international airport"}

@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.99","firstClassPriceRate":"9.99","id":"Order_2023","routeId":"route_with_special_characters!@#","trainType":"Express Train"}

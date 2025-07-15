@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"5c9cb1d9-51b4-49f4-b38a-ef662fa72894","trainType":"Freight Train","routeId":"xyz789","basicPriceRate":10.99,"firstClassPriceRate":23.98}}

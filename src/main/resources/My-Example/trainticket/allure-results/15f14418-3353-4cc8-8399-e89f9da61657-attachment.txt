@@ -1,0 +1,1 @@
+{"basicPriceRate":"25.75","firstClassPriceRate":"68.75","id":"Sydney_measured_####kbps","routeId":"routes","trainType":"High-speed"}

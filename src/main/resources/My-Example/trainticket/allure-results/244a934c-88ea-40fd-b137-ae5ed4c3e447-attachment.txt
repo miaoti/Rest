@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.99","firstClassPriceRate":"10.99","id":"12345","routeId":"Route_With_Special_Characters!@#","trainType":"Freight train"}

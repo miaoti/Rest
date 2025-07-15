@@ -1,0 +1,1 @@
+{"distanceList":"800","distances":"9.9","endStation":"springfield train station","id":"uniqueness","loginId":"john_doe2023","startStation":"Los Angeles Union Station","stationList":"sydney central railway station","stations":"Times Square"}

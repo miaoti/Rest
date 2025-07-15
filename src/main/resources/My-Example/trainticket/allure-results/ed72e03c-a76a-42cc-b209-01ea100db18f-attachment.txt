@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"2103c89a-0b30-48d1-93cc-21c47753dec1","trainType":"express train","routeId":"Abcde","basicPriceRate":78.32,"firstClassPriceRate":60.5}}

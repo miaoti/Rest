@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.99","firstClassPriceRate":"60.50","id":"Sydney_measured_####kbps","routeId":"buf","trainType":"locomotive"}
