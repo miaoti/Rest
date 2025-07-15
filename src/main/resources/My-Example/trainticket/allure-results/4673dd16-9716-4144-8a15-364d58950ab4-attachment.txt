@@ -1,0 +1,1 @@
+{"basicPriceRate":"1000.00","firstClassPriceRate":"9.99","id":"buf","routeId":"shortest_route","trainType":"locomotive"}

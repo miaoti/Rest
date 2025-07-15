@@ -1,0 +1,1 @@
+{"distanceList":"gran","distances":"300","endStation":"Union square","id":"user_01","loginId":"users","startStation":"San francisco international terminal","stationList":"Subway D","stations":"new york penn station"}

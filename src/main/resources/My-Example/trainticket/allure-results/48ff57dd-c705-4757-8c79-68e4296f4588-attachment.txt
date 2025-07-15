@@ -1,0 +1,1 @@
+{"distanceList":"-10","distances":"25.6","endStation":"ralph","id":"buf","loginId":"user123","startStation":"san francisco international terminal","stationList":"Landmark C","stations":"Los Angeles Union Station"}

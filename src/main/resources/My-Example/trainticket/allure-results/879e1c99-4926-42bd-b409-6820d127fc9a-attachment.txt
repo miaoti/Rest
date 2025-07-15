@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"f1246b2a-a954-4d39-b704-e49180055d97","trainType":"diesel_locomotive","routeId":"printf","basicPriceRate":78.32,"firstClassPriceRate":10.99}}

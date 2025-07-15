@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"85913252-5695-4dff-b44b-fc8b7543bba5","trainType":"freight train","routeId":"printf","basicPriceRate":1000.0,"firstClassPriceRate":10.99}}
