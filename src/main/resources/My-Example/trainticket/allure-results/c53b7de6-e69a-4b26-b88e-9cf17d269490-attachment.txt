@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"-500","endStation":"los angeles union station","id":"abc-def-ghi","loginId":"users","startStation":"Philadelphia convention hall","stationList":"Chicago dearborn street station","stations":"los angeles union station"}

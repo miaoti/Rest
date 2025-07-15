@@ -1,1 +1,0 @@
-{"distanceList":"100","distances":"var_bd_=_getElementsByClass","endStation":"West end bus stop","id":"Xyz789","loginId":"admin2023","startStation":"New york city station","stationList":"New York Penn Station","stations":"New york station"}

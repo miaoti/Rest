@@ -1,1 +1,0 @@
-{"distanceList":"25.34","endStation":"Union Square","id":"Abcde","startStation":"New York City Station","stationList":"Boston logan international airport"}

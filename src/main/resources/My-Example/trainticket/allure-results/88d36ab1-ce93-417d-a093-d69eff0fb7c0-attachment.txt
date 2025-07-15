@@ -1,1 +1,0 @@
-{"distanceList":"100","endStation":"Central station","id":"tests","startStation":"chicago loop","stationList":"Boston logan international airport"}

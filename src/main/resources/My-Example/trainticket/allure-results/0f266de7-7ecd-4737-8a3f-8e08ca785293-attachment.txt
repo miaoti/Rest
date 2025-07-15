@@ -1,1 +1,0 @@
-{"distanceList":"-10","distances":"BORDER_=","endStation":"Union square","id":"12345","loginId":"Admin2023","startStation":"Philadelphia Convention Center","stationList":"los angeles union square bus terminal","stations":"chicago loop"}

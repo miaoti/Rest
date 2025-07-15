@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"3a1711cd-9d99-4069-a5b3-0366e38adbaf","stations":["san francisco fisherman's wharf"],"distances":[100],"startStation":"Houston intermodal center","endStation":"Central station"}}

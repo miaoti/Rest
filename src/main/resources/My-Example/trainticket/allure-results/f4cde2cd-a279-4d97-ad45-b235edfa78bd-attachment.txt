@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"68988d51-ec38-4398-8dbb-5542e25f92d2","stations":["New York Penn Station"],"distances":[100],"startStation":"New york city station","endStation":"West end bus stop"}}

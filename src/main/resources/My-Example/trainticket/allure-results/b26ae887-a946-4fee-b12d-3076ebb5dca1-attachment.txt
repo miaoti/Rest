@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"061fa663-89d1-45ab-b8d5-ec95a7626b9f","stations":["Boston logan international airport"],"distances":[-10],"startStation":"new york city station","endStation":"west end bus stop"}}

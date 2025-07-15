@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"Sydney_measured_####kbps","trainType":"standard","routeId":"qwerty_keyboard","basicPriceRate":10.99,"firstClassPriceRate":10.99}}

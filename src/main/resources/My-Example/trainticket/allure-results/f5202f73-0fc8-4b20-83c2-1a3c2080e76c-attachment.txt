@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.99","firstClassPriceRate":"3.99","id":"xyz.123","routeId":"Abcde","trainType":"low"}

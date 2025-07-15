@@ -1,1 +1,0 @@
-{"distanceList":"25.34","distances":"25.3","endStation":"hollywood sign","id":"printf","loginId":"John_doe_987654321","startStation":"Philadelphia Convention Center","stationList":"Los Angeles Union Square Bus Terminal","stations":"New york station"}

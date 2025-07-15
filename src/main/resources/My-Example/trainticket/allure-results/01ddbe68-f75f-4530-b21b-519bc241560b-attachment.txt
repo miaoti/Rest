@@ -1,1 +1,0 @@
-{"accountId":"67890","boughtDate":"2022-07-18t09:15:00z","coachNumber":"-3","contactsDocumentNumber":"a-bcd-efgh","contactsName":"Charlie davis","documentType":"5","from":"Now","id":"abcde","price":"99.99","seatClass":"economies","seatNumber":"B7","status":"200","to":"Houston","trainNumber":"GHIJKL","travelDate":"2025-06-18","travelTime":"2021-12-31t23:59z"}

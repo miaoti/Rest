@@ -1,1 +1,0 @@
-{"accountId":"fghij","boughtDate":"2021-06-15T12:45:30Z","coachNumber":"69","contactsDocumentNumber":"123456789","contactsName":"Charlie Davis","documentType":"6","from":"Today","id":"xyz789","price":"2.50","seatClass":"luxury","seatNumber":"h6","status":"204","to":"los angeles","trainNumber":"67890","travelDate":"2024-01-15","travelTime":"2022-07-20t18:45z"}

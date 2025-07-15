@@ -1,0 +1,1 @@
+{"distanceList":"-7","distances":"1e+20","endStation":"San francisco 4th street bart station","id":"user123","loginId":"McIntyre_fondly_remembered","startStation":"Philadelphia convention hall","stationList":"Los angeles union station","stations":"Los Angeles Union Station"}

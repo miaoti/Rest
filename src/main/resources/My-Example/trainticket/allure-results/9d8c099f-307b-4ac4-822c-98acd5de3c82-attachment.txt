@@ -1,1 +1,0 @@
-{"distanceList":"100","distances":"-42","endStation":"Central station","id":"tests","loginId":"john_doe_987654321","startStation":"chicago loop","stationList":"Boston logan international airport","stations":"houston galleria"}

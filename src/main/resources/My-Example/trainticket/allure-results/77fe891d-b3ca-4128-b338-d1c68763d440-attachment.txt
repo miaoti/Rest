@@ -1,1 +1,0 @@
-{"distanceList":"100","endStation":"West end bus stop","id":"Xyz789","startStation":"New york city station","stationList":"New York Penn Station"}

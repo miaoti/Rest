@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"f6e849a9-ffee-483c-b205-6aa8e777ea25","trainType":"speeds","routeId":"67890","basicPriceRate":5000.0,"firstClassPriceRate":10.5}}

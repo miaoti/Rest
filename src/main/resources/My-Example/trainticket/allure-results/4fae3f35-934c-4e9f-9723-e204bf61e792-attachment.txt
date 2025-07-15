@@ -1,1 +1,0 @@
-{"basicPriceRate":"349.79","firstClassPriceRate":"10.5","id":"Xyz789","routeId":"Xyzzy","trainType":"high-speed"}

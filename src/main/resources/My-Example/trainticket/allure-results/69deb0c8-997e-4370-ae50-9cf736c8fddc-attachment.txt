@@ -1,1 +1,0 @@
-{"distanceList":"25.34","distances":"var_bd_=_getElementsByClass","endStation":"West End Bus Stop","id":"abcde","loginId":"john_doe_987654321","startStation":"los angeles terminal","stationList":"Boston Logan International Airport","stations":"Los angeles metro center"}

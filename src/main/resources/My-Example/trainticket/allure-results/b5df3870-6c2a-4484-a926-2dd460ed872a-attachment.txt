@@ -1,1 +1,0 @@
-{"distanceList":"789.65","endStation":"Hollywood sign","id":"buf","startStation":"Los Angeles Terminal","stationList":"new york penn station"}

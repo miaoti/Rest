@@ -1,0 +1,1 @@
+{"distanceList":"var_bd_=_getElementsByClass","distances":"-500","endStation":"boston south station","id":"xyz.123","loginId":"bennett","startStation":"chicago union depot","stationList":"New York Penn Station","stations":"Los Angeles Union Station"}
