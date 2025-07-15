@@ -1,0 +1,1 @@
+{"distanceList":"7 feet","distances":"12.4","endStation":"San Francisco Market Street Station","id":"user123","loginId":"Admin456","startStation":"San Francisco International Airport","stationList":"Bayside mall","stations":"boston south station"}

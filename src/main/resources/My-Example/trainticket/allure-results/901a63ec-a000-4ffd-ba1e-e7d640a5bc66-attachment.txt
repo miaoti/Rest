@@ -1,0 +1,1 @@
+{"distanceList":"2.5 yards","distances":"10","endStation":"Chicago Union Station","id":"Sydney_measured_####kbps","loginId":"testuser","startStation":"Chicago union terminal","stationList":"Bayside Mall","stations":"San Francisco 4th Street BART"}

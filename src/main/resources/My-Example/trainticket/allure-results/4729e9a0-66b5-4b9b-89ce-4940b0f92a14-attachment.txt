@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"New york city","trainType":"Passenger列车","routeId":"Abcde","basicPriceRate":89.99,"firstClassPriceRate":0.95}}

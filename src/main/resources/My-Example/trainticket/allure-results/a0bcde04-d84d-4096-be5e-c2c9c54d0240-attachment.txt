@@ -1,0 +1,1 @@
+{"distanceList":"2.5 yards","distances":"12.4","endStation":"Los Angeles Times Square Bus Stop","id":"users","loginId":"admins","startStation":"New York Penn Station","stationList":"Central station","stations":"San francisco 4th street bart"}

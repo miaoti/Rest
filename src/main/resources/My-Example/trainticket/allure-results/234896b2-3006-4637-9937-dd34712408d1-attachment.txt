@@ -1,0 +1,1 @@
+{"distanceList":"7 feet","distances":"25.3","endStation":"Chicago union station","id":"4567890","loginId":"Guest789","startStation":"San Francisco International Airport","stationList":"Bayside mall","stations":"san francisco 4th street bart"}

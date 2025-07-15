@@ -1,0 +1,1 @@
+{"basicPriceRate":"25.75","firstClassPriceRate":"1234.56","id":"1a2b3c","routeId":"printf","trainType":"Maglev磁悬浮"}
