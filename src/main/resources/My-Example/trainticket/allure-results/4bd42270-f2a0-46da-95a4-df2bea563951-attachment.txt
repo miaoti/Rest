@@ -1,1 +1,0 @@
-{"basicPriceRate":"79.50","firstClassPriceRate":"BORDER_=","id":"faj_slm","routeId":"abcde","trainType":"Standard"}

@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"c08e3459-f62a-4b27-b98e-04730bd486e2","trainType":"Standard","routeId":"Qwerty_keypad","basicPriceRate":63.8,"firstClassPriceRate":10.99}}

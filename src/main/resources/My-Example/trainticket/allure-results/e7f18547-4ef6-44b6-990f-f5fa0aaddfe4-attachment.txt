@@ -1,1 +1,0 @@
-{"distanceList":"bd_div_story","distances":"-500","endStation":"new york penn station","id":"lce","loginId":"users","startStation":"New York City Station","stationList":"San francisco embarcadero transit center","stations":"Los angeles union station"}

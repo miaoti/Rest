@@ -1,1 +1,0 @@
-{"accountId":"qwertyuiop","boughtDate":"2023-06-02T12:45:30.123Z","coachNumber":"48","contactsDocumentNumber":"12345","contactsName":"Bob brown","documentType":"3","from":"San Francisco","id":"abc-def-ghi","price":"10.99","seatClass":"1","seatNumber":"B7","status":"200","to":"conact","trainNumber":"printf","travelDate":"2022-12-31","travelTime":"2023-11-30T23:59:00Z"}

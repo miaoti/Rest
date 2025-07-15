@@ -1,1 +1,0 @@
-{"distanceList":"bd_div_story","distances":"10.5","endStation":"Boston south station","id":"xyz.123","loginId":"user123","startStation":"philadelphia convention hall","stationList":"san francisco embarcadero transit center","stations":"New york penn station"}

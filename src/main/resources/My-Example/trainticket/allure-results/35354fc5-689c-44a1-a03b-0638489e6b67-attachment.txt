@@ -1,1 +1,0 @@
-{"distanceList":"34","distances":"10.5","endStation":"Los Angeles Union Station","id":"Jkl-mnop-qrs","loginId":"johnston","startStation":"chicago union depot","stationList":"San francisco embarcadero transit center","stations":"los angeles union station"}

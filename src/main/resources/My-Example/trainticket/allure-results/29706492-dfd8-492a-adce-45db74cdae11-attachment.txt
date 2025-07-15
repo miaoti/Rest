@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"e709cf70-865d-4d31-bae7-08b9864ddfcc","trainType":"low","routeId":"Abcde","basicPriceRate":10.99,"firstClassPriceRate":3.99}}

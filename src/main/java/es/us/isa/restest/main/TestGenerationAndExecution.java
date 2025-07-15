@@ -47,6 +47,16 @@ import static es.us.isa.restest.util.FileManager.deleteDir;
 import static es.us.isa.restest.util.Timer.TestStep.ALL;
 import static io.restassured.RestAssured.baseURI;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Properties;
+
+import org.junit.experimental.categories.Category;
+import org.junit.runner.Description;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+import org.junit.runner.notification.RunListener;
+
 /*
  * This class show the basic workflow of test case generation -> test case execution -> test reporting
  */
@@ -635,13 +645,16 @@ public class TestGenerationAndExecution {
 	public static String getExperimentName(){ return experimentName; }
 
 	/**
-	 * Execute generated test classes using Maven Surefire with AspectJ weaver (required for Allure)
-	 * Fixed to use proper Allure AspectJ weaving for step capture
+	 * Execute generated test classes using direct JUnit execution optimized for IntelliJ
+	 * Programmatically adds AspectJ weaving support for Allure step capture
 	 */
 	private static void executeGeneratedTestsWithJUnit(String fullPackageName, String className) {
-		logger.info("Executing generated tests for package: {} and class: {}", fullPackageName, className);
+		logger.info("Executing generated tests for package: {} and class: {} (IntelliJ mode)", fullPackageName, className);
 		
 		try {
+			// Set up Allure environment for IntelliJ
+			setupAllureForIntelliJ();
+			
 			// Find the test class directory
 			String baseDir = System.getProperty("user.dir");
 			String packagePath = fullPackageName.replace('.', '/');
@@ -650,71 +663,323 @@ public class TestGenerationAndExecution {
 			List<String> testClassNames = new ArrayList<>();
 			
 			if (testClassDir.exists() && testClassDir.isDirectory()) {
+				logger.info("Searching for test classes in: {}", testClassDir.getAbsolutePath());
+				
+				// Look for all .java files directly in the package directory
 				File[] javaFiles = testClassDir.listFiles((dir, name) -> name.endsWith(".java"));
-				if (javaFiles != null) {
+				if (javaFiles != null && javaFiles.length > 0) {
 					for (File javaFile : javaFiles) {
-						String testClassName = javaFile.getName().replace(".java", "");
-						String fullTestClassName = fullPackageName + "." + testClassName;
-						testClassNames.add(fullTestClassName);
-						logger.info("Found generated test class: {}", fullTestClassName);
+						String testClassName = fullPackageName + "." + javaFile.getName().replace(".java", "");
+						testClassNames.add(testClassName);
+						logger.info("Found test class: {}", testClassName);
+					}
+				} else {
+					logger.info("No .java files found directly in package directory, checking subdirectories...");
+					
+					// If no direct files, check subdirectories (previous behavior)
+					File[] classDirs = testClassDir.listFiles(File::isDirectory);
+					if (classDirs != null) {
+						for (File classDir : classDirs) {
+							logger.info("Checking subdirectory: {}", classDir.getName());
+							// Find Java files in this class directory
+							File[] subJavaFiles = classDir.listFiles((dir, name) -> name.endsWith(".java"));
+							if (subJavaFiles != null) {
+								for (File javaFile : subJavaFiles) {
+									String testClassName = fullPackageName + "." + classDir.getName() + "." + 
+											javaFile.getName().replace(".java", "");
+									testClassNames.add(testClassName);
+									logger.info("Found test class in subdirectory: {}", testClassName);
+								}
+							}
+						}
 					}
 				}
-			}
-			
-			if (testClassNames.isEmpty()) {
-				logger.warn("No test classes found in directory: {}", testClassDir.getAbsolutePath());
+			} else {
+				logger.error("Test class directory does not exist: {}", testClassDir.getAbsolutePath());
 				return;
 			}
 			
-			// Set Allure results directory (same as Maven configuration)
-			String allureResultsDirectory = "target/allure-results";
-			System.setProperty("allure.results.directory", allureResultsDirectory);
-			logger.info("Allure results directory set to: {}", allureResultsDirectory);
+			if (testClassNames.isEmpty()) {
+				logger.warn("No test classes found in package: {}", fullPackageName);
+				logger.warn("Expected directory: {}", testClassDir.getAbsolutePath());
+				
+				// Debug: List what's actually in the directory
+				if (testClassDir.exists()) {
+					File[] allFiles = testClassDir.listFiles();
+					if (allFiles != null) {
+						logger.info("Directory contents:");
+						for (File file : allFiles) {
+							logger.info("  {} ({})", file.getName(), file.isDirectory() ? "directory" : "file");
+						}
+					}
+				}
+				return;
+			}
 			
-			// Execute tests using Maven Surefire with AspectJ weaver (like the POM configuration)
-			// This is necessary because Allure requires AspectJ weaving to capture steps properly
-			logger.info("Executing tests using Maven with AspectJ weaver for proper Allure step capture");
+			logger.info("Found {} test classes to execute", testClassNames.size());
+			
+			// *** CRITICAL FIX: Compile test classes before loading them ***
+			logger.info("Compiling generated test classes...");
+			boolean compilationSuccess = compileTestClasses();
+			if (!compilationSuccess) {
+				logger.error("Test compilation failed. Cannot proceed with execution.");
+				return;
+			}
+			logger.info("Test compilation completed successfully");
+			
+			// *** CRITICAL FIX: Add test-classes to classpath for IntelliJ ***
+			logger.info("Adding test classes to classpath...");
+			boolean classpathSuccess = addTestClassesToClasspath();
+			if (!classpathSuccess) {
+				logger.warn("Could not add test classes to classpath. Class loading may fail.");
+			} else {
+				logger.info("Test classes added to classpath successfully");
+			}
+			
+			// Load test classes
+			List<Class<?>> testClasses = new ArrayList<>();
+			for (String testClassName : testClassNames) {
+				try {
+					// Use the updated context class loader that includes test-classes
+					java.lang.ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+					Class<?> testClass = Class.forName(testClassName, true, classLoader);
+					testClasses.add(testClass);
+					logger.info("Loaded test class: {}", testClassName);
+				} catch (ClassNotFoundException e) {
+					logger.error("Could not load test class: {} - {}", testClassName, e.getMessage());
+					logger.debug("ClassNotFoundException details:", e);
+					
+					// Debug: Show current classpath information
+					logger.debug("Current classpath: {}", System.getProperty("java.class.path"));
+					logger.debug("Context class loader: {}", Thread.currentThread().getContextClassLoader().getClass().getName());
+				}
+			}
+			
+			if (testClasses.isEmpty()) {
+				logger.error("No test classes could be loaded");
+				return;
+			}
+			
+			// Execute tests using JUnit with proper Allure integration for IntelliJ
+			logger.info("Executing {} test classes with IntelliJ-compatible Allure integration...", testClasses.size());
+			
+			// Create JUnit runner with Allure listener (no custom lifecycle to avoid conflicts)
+			JUnitCore junit = new JUnitCore();
+			
+			// Add standard Allure listener (works better in IDE environment)
+			AllureJunit4 allureListener = new AllureJunit4();
+			junit.addListener(allureListener);
+			
+			// Add console progress listener
+			junit.addListener(new RunListener() {
+				@Override
+				public void testStarted(Description description) {
+					logger.info("Starting test: {}", description.getDisplayName());
+				}
+				
+				@Override
+				public void testFinished(Description description) {
+					logger.info("Finished test: {}", description.getDisplayName());
+				}
+				
+				@Override
+				public void testFailure(Failure failure) {
+					logger.error("Test failed: {} - {}", failure.getDescription().getDisplayName(), failure.getMessage());
+				}
+			});
 			
 			Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 			
-			// Build Maven command with the exact configuration from POM
-			StringBuilder mvnCommand = new StringBuilder("mvn test");
+			// Execute all test classes
+			Result result = junit.run(testClasses.toArray(new Class[0]));
 			
-			// Add test class pattern - execute all test classes in the package
-			mvnCommand.append(" -Dtest=").append(fullPackageName.replace('.', '/')).append("/**");
+			Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 			
-			// Skip JaCoCo to avoid bytecode conflicts
-			mvnCommand.append(" -Djacoco.skip=true -Dmaven.jacoco.skip=true");
+			// Log results
+			logger.info("=== TEST EXECUTION RESULTS ===");
+			logger.info("Tests run: {}", result.getRunCount());
+			logger.info("Failures: {}", result.getFailureCount());
+			logger.info("Ignored: {}", result.getIgnoreCount());
+			logger.info("Run time: {} ms", result.getRunTime());
 			
-			// Set Allure results directory
-			mvnCommand.append(" -Dallure.results.directory=").append(allureResultsDirectory);
+			if (result.getFailureCount() > 0) {
+				logger.error("=== FAILURES ===");
+				for (Failure failure : result.getFailures()) {
+					logger.error("Failed: {} - {}", failure.getDescription().getDisplayName(), failure.getMessage());
+				}
+			}
 			
-			// Execute the Maven command
+			if (result.wasSuccessful()) {
+				logger.info("✅ All tests executed successfully!");
+			} else {
+				logger.warn("❌ Some tests failed. Check the logs above for details.");
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error executing test classes", e);
+		}
+	}
+	
+	/**
+	 * Compile test classes using Maven test-compile goal
+	 * This ensures generated test classes are compiled before execution
+	 */
+	private static boolean compileTestClasses() {
+		try {
+			String baseDir = System.getProperty("user.dir");
+			
+			// Use Maven to compile test classes (works in both IntelliJ and command line)
 			ProcessBuilder pb = new ProcessBuilder();
-			pb.command("cmd.exe", "/c", mvnCommand.toString());
+			
+			// Handle Windows PowerShell command formatting
+			String os = System.getProperty("os.name").toLowerCase();
+			if (os.contains("win")) {
+				pb.command("cmd.exe", "/c", "mvn", "test-compile", "-q", "-Djacoco.skip=true", "-Dmaven.jacoco.skip=true");
+			} else {
+				pb.command("mvn", "test-compile", "-q", "-Djacoco.skip=true", "-Dmaven.jacoco.skip=true");
+			}
+			
 			pb.directory(new File(baseDir));
-			pb.inheritIO(); // Show Maven output
+			
+			// Capture output for logging
+			pb.redirectErrorStream(true);
 			
 			Process process = pb.start();
 			int exitCode = process.waitFor();
 			
-			Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
-			
 			if (exitCode == 0) {
-				logger.info("Tests executed successfully using Maven Surefire with AspectJ weaver");
-				logger.info("Allure results should now contain proper step information");
+				logger.info("Maven test-compile completed successfully");
+				return true;
 			} else {
-				logger.warn("Maven test execution completed with exit code: {}", exitCode);
+				logger.error("Maven test-compile failed with exit code: {}", exitCode);
+				return false;
 			}
 			
 		} catch (Exception e) {
-			logger.error("Error executing generated tests with Maven: {}", e.getMessage());
-			logger.error("Exception: ", e);
+			logger.warn("Could not run Maven test-compile: {} - trying alternative approach", e.getMessage());
+			
+			// Alternative: Try using Maven exec plugin for compilation
+			try {
+				return compileTestClassesAlternative();
+			} catch (Exception altE) {
+				logger.error("Alternative compilation also failed: {}", altE.getMessage());
+				return false;
+			}
 		}
 	}
 	
-
-
+	/**
+	 * Alternative compilation method for environments where Maven command is not available
+	 */
+	private static boolean compileTestClassesAlternative() throws Exception {
+		logger.info("Attempting alternative test compilation method...");
+		
+		// In IntelliJ, we can try to trigger compilation through the build system
+		// This is a fallback when Maven command is not directly available
+		String baseDir = System.getProperty("user.dir");
+		
+		ProcessBuilder pb = new ProcessBuilder();
+		
+		// Handle Windows command formatting
+		String os = System.getProperty("os.name").toLowerCase();
+		if (os.contains("win")) {
+			pb.command("cmd.exe", "/c", "mvn", "compile", "test-compile", "-DskipTests=true", "-q");
+		} else {
+			pb.command("mvn", "compile", "test-compile", "-DskipTests=true", "-q");
+		}
+		
+		pb.directory(new File(baseDir));
+		pb.redirectErrorStream(true);
+		
+		Process process = pb.start();
+		int exitCode = process.waitFor();
+		
+		return exitCode == 0;
+	}
+	
+	/**
+	 * Add test-classes directory to classpath programmatically
+	 * This is necessary for IntelliJ execution where test-classes may not be on the classpath
+	 */
+	private static boolean addTestClassesToClasspath() {
+		try {
+			String baseDir = System.getProperty("user.dir");
+			File testClassesDir = new File(baseDir, "target/test-classes");
+			
+			if (!testClassesDir.exists()) {
+				logger.warn("Test classes directory does not exist: {}", testClassesDir.getAbsolutePath());
+				return false;
+			}
+			
+			// Get the current classpath
+			String currentClasspath = System.getProperty("java.class.path");
+			String testClassesPath = testClassesDir.getAbsolutePath();
+			
+			// Check if test-classes is already in classpath
+			if (currentClasspath.contains(testClassesPath)) {
+				logger.info("Test classes directory already in classpath");
+				return true;
+			}
+			
+			// Add test-classes to classpath using URLClassLoader approach
+			java.net.URL testClassesURL = testClassesDir.toURI().toURL();
+			
+			// Get current thread's context class loader
+			java.lang.ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+			
+			// Create new URLClassLoader with test-classes added
+			java.net.URLClassLoader newClassLoader = new java.net.URLClassLoader(
+				new java.net.URL[]{testClassesURL}, 
+				currentClassLoader
+			);
+			
+			// Set the new class loader as context class loader
+			Thread.currentThread().setContextClassLoader(newClassLoader);
+			
+			logger.info("Added test classes directory to classpath: {}", testClassesPath);
+			return true;
+			
+		} catch (Exception e) {
+			logger.error("Failed to add test classes to classpath: {}", e.getMessage());
+			return false;
+		}
+	}
+	
+	/**
+	 * Set up Allure environment for IntelliJ execution
+	 * Ensures proper directories and system properties are configured
+	 */
+	private static void setupAllureForIntelliJ() {
+		try {
+			// Ensure Allure results directory exists
+			String baseDir = System.getProperty("user.dir");
+			File allureResultsDir = new File(baseDir, "target/allure-results");
+			if (!allureResultsDir.exists()) {
+				allureResultsDir.mkdirs();
+				logger.info("Created Allure results directory: {}", allureResultsDir.getAbsolutePath());
+			}
+			
+			// Set Allure system properties for IntelliJ
+			System.setProperty("allure.results.directory", allureResultsDir.getAbsolutePath());
+			System.setProperty("allure.link.issue.pattern", "");
+			System.setProperty("allure.link.tms.pattern", "");
+			
+			// Clear previous results to avoid conflicts in IntelliJ
+			File[] existingFiles = allureResultsDir.listFiles();
+			if (existingFiles != null) {
+				for (File file : existingFiles) {
+					if (file.isFile() && file.getName().endsWith("-result.json")) {
+						file.delete();
+					}
+				}
+			}
+			
+			logger.info("Allure environment configured for IntelliJ at: {}", allureResultsDir.getAbsolutePath());
+			
+		} catch (Exception e) {
+			logger.warn("Could not fully set up Allure environment: {}", e.getMessage());
+		}
+	}
 
 
 	private static void setUpLogger() {

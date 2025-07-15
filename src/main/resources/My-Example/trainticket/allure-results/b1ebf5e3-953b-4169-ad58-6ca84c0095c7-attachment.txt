@@ -1,1 +1,0 @@
-{"distanceList":"-7","distances":"234.6789","endStation":"Boston South Station","id":"Jkl-mnop-qrs","loginId":"admin456","startStation":"Los angeles terminal","stationList":"New York Penn Station","stations":"Los angeles union station"}

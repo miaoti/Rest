@@ -1,1 +1,0 @@
-{"distanceList":"BORDER_=","distances":"10.5","endStation":"Chicago union passenger terminal","id":"Abc-def-ghi","loginId":"guest789","startStation":"los angeles terminal","stationList":"New york penn station","stations":"New York Penn Station"}

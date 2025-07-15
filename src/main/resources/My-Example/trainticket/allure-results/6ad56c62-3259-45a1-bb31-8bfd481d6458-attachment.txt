@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"Jkl-mnop-qrs","trainType":"express","routeId":"Qwerty","basicPriceRate":49.99,"firstClassPriceRate":25.49}}

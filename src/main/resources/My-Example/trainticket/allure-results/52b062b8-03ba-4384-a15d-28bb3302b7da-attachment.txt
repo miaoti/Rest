@@ -1,1 +1,0 @@
-{"distanceList":"-7","distances":"234.6789","endStation":"New york penn station","id":"jkl-mnop-qrs","loginId":"Admins","startStation":"philadelphia convention hall","stationList":"new york penn station","stations":"Chicago union passenger terminal"}

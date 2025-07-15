@@ -1,1 +1,0 @@
-{"distanceList":"-4","distances":"1e+20","endStation":"new york penn station","id":"456789","loginId":"Guest789","startStation":"New york city station","stationList":"san francisco embarcadero transit center","stations":"chicago union passenger terminal"}

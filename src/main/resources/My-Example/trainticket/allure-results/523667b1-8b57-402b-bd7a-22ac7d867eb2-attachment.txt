@@ -1,1 +1,0 @@
-{"basicPriceRate":"25.75","firstClassPriceRate":"var_bd_=_getElementsByClass","id":"user123","routeId":"Abcde","trainType":"standard"}

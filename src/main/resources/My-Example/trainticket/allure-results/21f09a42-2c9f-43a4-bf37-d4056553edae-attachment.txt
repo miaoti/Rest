@@ -1,1 +1,0 @@
-{"distanceList":"BORDER_=","distances":"1e+20","endStation":"Los Angeles Union Station","id":"faj_slm","loginId":"john_doe_001","startStation":"chicago union depot","stationList":"san francisco embarcadero transit center","stations":"New york penn station"}
