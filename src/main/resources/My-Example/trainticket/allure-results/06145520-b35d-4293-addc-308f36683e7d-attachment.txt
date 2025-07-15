@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"distinctive","trainType":"Tourist-Special","routeId":"Abcde","basicPriceRate":3.99,"firstClassPriceRate":32.85}}

@@ -1,0 +1,1 @@
+{"distanceList":"100.234","distances":"34  # edge case: contains a space (though not typical)","endStation":"Boston Logan International Airport","id":"Abcde","loginId":"bennett","startStation":"los angeles union square bus terminal","stationList":"New York Central Station","stations":"Downtown Crossing"}

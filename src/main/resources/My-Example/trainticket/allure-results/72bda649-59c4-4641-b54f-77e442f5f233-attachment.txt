@@ -1,0 +1,1 @@
+{"distanceList":"100.234","endStation":"Boston Logan International Airport","id":"Abcde","startStation":"chicago loop train station","stationList":"new york central station"}

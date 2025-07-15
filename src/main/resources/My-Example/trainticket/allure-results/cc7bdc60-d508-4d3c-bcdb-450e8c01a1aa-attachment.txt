@@ -1,1 +1,0 @@
-{"basicPriceRate":"3.99","firstClassPriceRate":"32.85","id":"distinctive","routeId":"Abcde","trainType":"Tourist-Special"}

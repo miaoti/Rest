@@ -1,1 +1,0 @@
-{"distanceList":"25.6","distances":"45.3","endStation":"Union square","id":"distinctive","loginId":"Sydney_measured_####kbps","startStation":"chicago o'hare international airport","stationList":"Sydney central railway station","stations":"Downtown Crossing"}

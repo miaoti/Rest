@@ -1,0 +1,1 @@
+{"basicPriceRate":"0.01","firstClassPriceRate":"234.99","id":"Zxcvbnm","routeId":"uniquely","trainType":"passanger"}

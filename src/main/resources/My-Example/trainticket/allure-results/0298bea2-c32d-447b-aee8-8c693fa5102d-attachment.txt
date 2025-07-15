@@ -1,0 +1,1 @@
+{"distanceList":"100.234","distances":"789","endStation":"new york penn station","id":"zxcvbnm","loginId":"user123","startStation":"San francisco chinatown market","stationList":"Washington d.c. union station","stations":"Union Square"}

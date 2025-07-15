@@ -1,1 +1,0 @@
-{"distanceList":"10","distances":"25.6","endStation":"Grand central terminal","id":"Abcdef123","loginId":"user123","startStation":"Los Angeles Union Station","stationList":"London Victoria Station","stations":"Central Station"}

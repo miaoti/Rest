@@ -1,0 +1,1 @@
+{"distanceList":"-10","distances":"34  # Edge case: contains a space (though not typical)","endStation":"Boston Logan International Airport","id":"7890","loginId":"Sydney_measured_####kbps","startStation":"San francisco chinatown market","stationList":"New York Central Station","stations":"Downtown Crossing"}

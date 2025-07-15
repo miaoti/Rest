@@ -1,1 +1,0 @@
-{"distanceList":"800","distances":"45.3","endStation":"Springfield Train Station","id":"Xyz7890","loginId":"McIntyre_fondly_remembered","startStation":"Chicago o'hare international airport","stationList":"London victoria station","stations":"Downtown Crossing"}

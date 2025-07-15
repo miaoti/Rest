@@ -1,0 +1,1 @@
+{"distanceList":"100.234","distances":"-5    # Edge case: negative value","endStation":"Los angeles union station","id":"zxcvbnm","loginId":"admin456","startStation":"Boston Logan International Airport","stationList":"Chicago Union Passenger Terminal","stations":"Grand Central Terminal"}

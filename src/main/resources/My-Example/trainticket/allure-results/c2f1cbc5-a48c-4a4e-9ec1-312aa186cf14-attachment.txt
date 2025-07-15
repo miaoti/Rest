@@ -1,0 +1,1 @@
+{"basicPriceRate":"0.01","firstClassPriceRate":"75.6","id":"qwerty_keyboard","routeId":"distinctive","trainType":"HighSpeed"}
