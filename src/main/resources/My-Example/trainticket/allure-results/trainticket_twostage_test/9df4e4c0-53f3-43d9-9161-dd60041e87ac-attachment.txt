@@ -1,1 +1,0 @@
-{"distanceList":"-2","distances":"100","endStation":"Los angeles union station","id":"Sampledata","loginId":"Admins","startStation":"Chicago ogden terminal","stationList":"boston logan international airport","stations":"San Francisco Oakland International Airport"}

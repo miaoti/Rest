@@ -310,12 +310,30 @@ public class TraceWorkflowExtractor {
                 // Parse attributes for input/output data
                 JSONObject attributes = spanObj.optJSONObject("attributes");
                 if (attributes == null) attributes = spanObj.optJSONObject("tags");
+                
+                // Also handle tags as an array (OpenTelemetry format)
+                JSONArray tagsArray = spanObj.optJSONArray("tags");
+                Map<String, String> tagMap = new HashMap<>();
+                if (tagsArray != null) {
+                    for (int i = 0; i < tagsArray.length(); i++) {
+                        JSONObject tag = tagsArray.optJSONObject(i);
+                        if (tag != null) {
+                            String key = tag.optString("key", null);
+                            String value = tag.optString("value", null);
+                            if (key != null && value != null) {
+                                tagMap.put(key, value);
+                            }
+                        }
+                    }
+                }
+                
                 String httpMethod = null;
                 String httpUrl = null;
                 String httpTarget = null;
                 String requestBody = null;
                 String responseBody = null;
                 String statusCode = null;
+                
                 if (attributes != null) {
                     httpMethod = attributes.optString("http.method", null);
                     httpUrl = attributes.optString("http.url", null);
@@ -328,6 +346,14 @@ public class TraceWorkflowExtractor {
                         statusCode = statusObj.toString();
                     }
                 }
+                
+                // Override with tag array values if available
+                if (tagMap.containsKey("http.method")) httpMethod = tagMap.get("http.method");
+                if (tagMap.containsKey("http.url")) httpUrl = tagMap.get("http.url");
+                if (tagMap.containsKey("http.target")) httpTarget = tagMap.get("http.target");
+                if (tagMap.containsKey("http.request.body")) requestBody = tagMap.get("http.request.body");
+                if (tagMap.containsKey("http.response.body")) responseBody = tagMap.get("http.response.body");
+                if (tagMap.containsKey("http.status_code")) statusCode = tagMap.get("http.status_code");
 
                 // Prepare maps for input and output fields
                 Map<String, String> inputFields = new HashMap<>();

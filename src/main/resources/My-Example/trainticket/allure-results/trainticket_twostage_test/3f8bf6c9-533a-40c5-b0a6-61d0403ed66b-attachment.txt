@@ -1,1 +1,0 @@
-{"accountId":"0","boughtDate":"2023-10-05t14:30:00z","coachNumber":"25","contactsDocumentNumber":"a-1234-b5c6-d7e8-f9g0","contactsName":"Bob Smith","documentType":"256","from":"admin789","id":"67890","price":"$19.99","seatClass":"50","seatNumber":"b7","status":"200","to":"houston","trainNumber":"789","travelDate":"2023-10-05","travelTime":"2024-07-29t15:30:00"}

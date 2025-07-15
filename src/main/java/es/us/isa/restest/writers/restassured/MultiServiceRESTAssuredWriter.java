@@ -86,16 +86,22 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
         if (testCases == null || testCases.isEmpty()) return;
 
         try {
-            File dir = new File(outputDir, this.testClassName);
-            if (!dir.exists()) dir.mkdirs();
+            // Create directory structure that matches package structure
+            // Package: packageName.testClassName -> Directory: packageName/testClassName
+            String packagePath = packageName.replace('.', '/');
+            File packageDir = new File(outputDir, packagePath);
+            File testClassDir = new File(packageDir, this.testClassName);
+            if (!testClassDir.exists()) testClassDir.mkdirs();
 
-            File javaFile = new File(dir, className + ".java");
+            File javaFile = new File(testClassDir, className + ".java");
 
             try (PrintWriter pw = new PrintWriter(new FileWriter(javaFile))) {
 
                 /* ---------- package & imports ------------------------------------ */
                 if (packageName != null && !packageName.isEmpty()) {
-                    pw.println("package " + packageName + ";");
+                    // Use unique package name to avoid duplicate class issues across test runs
+                    String uniquePackageName = packageName + "." + this.testClassName;
+                    pw.println("package " + uniquePackageName + ";");
                     pw.println();
                 }
 
@@ -128,7 +134,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     String[] p = proxyHostPort.split(":", 2);
                     pw.println("        RestAssured.proxy = RestAssured.proxy(\"" + p[0] + "\"," + p[1] + ");");
                 }
-                if (allureReport) pw.println("        RestAssured.filters(new AllureRestAssured());");
+                if (allureReport) {
+                    pw.println("        // Configure Allure results directory");
+                    pw.println("        System.setProperty(\"allure.results.directory\", \"target/allure-results\");");
+                    pw.println("        RestAssured.filters(new AllureRestAssured());");
+                }
                 pw.println("    }");
                 pw.println();
 

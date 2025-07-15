@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"0084f5b9-852e-4a1e-968b-6432f6d761a6","trainType":"higher","routeId":"12345","basicPriceRate":5.49,"firstClassPriceRate":38.99}}

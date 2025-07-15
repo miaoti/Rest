@@ -1,1 +1,0 @@
-{"distanceList":"10","distances":"789","endStation":"los angeles union station","id":"Testcase","loginId":"dave","startStation":"Phoenix sky harbor international","stationList":"Chicago Union Station","stations":"Chicago Illinois Terminal"}

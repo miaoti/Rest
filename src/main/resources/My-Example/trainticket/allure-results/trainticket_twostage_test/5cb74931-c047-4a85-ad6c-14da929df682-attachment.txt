@@ -1,1 +1,0 @@
-{"distanceList":"7890.1","endStation":"Boston south station","id":"67890","startStation":"Phoenix Sky Harbor International","stationList":"Boston Logan International Airport"}

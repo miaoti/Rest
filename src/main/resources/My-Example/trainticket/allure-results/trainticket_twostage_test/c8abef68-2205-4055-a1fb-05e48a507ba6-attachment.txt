@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"d68d5931-ce16-44ea-b7b0-38d4b9fde89f","stations":["los angeles union station"],"distances":[-2],"startStation":"Los angeles union station","endStation":"chicago union passenger terminal"}}

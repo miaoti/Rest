@@ -1,1 +1,0 @@
-{"distanceList":"-4","distances":"0","endStation":"Chicago Union Passenger Terminal","id":"Abcde","loginId":"jane.smith012","startStation":"New York Penn Station","stationList":"Los Angeles Union Station","stations":"new york penn station"}

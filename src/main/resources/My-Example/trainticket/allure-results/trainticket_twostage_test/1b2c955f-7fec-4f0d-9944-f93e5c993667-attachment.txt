@@ -1,1 +1,0 @@
-{"distanceList":"7890.1","distances":"50.2","endStation":"new york penn station","id":"Sampledata","loginId":"User123","startStation":"Chicago Ogden Terminal","stationList":"New york penn station","stations":"new york penn station"}

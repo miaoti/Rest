@@ -1,1 +1,0 @@
-{"distanceList":"-2","endStation":"chicago union passenger terminal","id":"abcde","startStation":"Los angeles union station","stationList":"los angeles union station"}

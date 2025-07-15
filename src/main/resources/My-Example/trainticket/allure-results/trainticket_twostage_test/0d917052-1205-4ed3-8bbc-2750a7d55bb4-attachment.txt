@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"Sampledata","trainType":"freight wagon","routeId":"abcdefg","basicPriceRate":99.99,"firstClassPriceRate":199.99}}

@@ -10,12 +10,14 @@ import es.us.isa.restest.coverage.CoverageGatherer;
 import es.us.isa.restest.coverage.CoverageMeter;
 
 import java.util.*;
+import java.util.Collection;
 
 import es.us.isa.restest.generators.*;
 import es.us.isa.restest.reporting.AllureReportManager;
 import es.us.isa.restest.reporting.StatsReportManager;
 import es.us.isa.restest.runners.RESTestWorkflow;
 import es.us.isa.restest.specification.OpenAPISpecification;
+import es.us.isa.restest.testcases.TestCase;
 import es.us.isa.restest.util.Timer;
 import es.us.isa.restest.workflow.TraceWorkflowExtractor;
 import es.us.isa.restest.workflow.WorkflowScenario;
@@ -117,11 +119,15 @@ public class TestGenerationAndExecution {
 		StatsReportManager statsReportManager = createStatsReportManager(); // Stats reporter
 		AllureReportManager reportManager = createAllureReportManager(); // Allure test case reporter
 
-		RESTestWorkflow runner = new RESTestWorkflow(testClassName, targetDirJava, packageName, spec, confPath, generator, writer,
-				reportManager, statsReportManager);
-
-		runner.setExecuteTestCases(executeTestCases);
-		runner.setAllureReport(allureReports);
+		RESTestWorkflow runner = null;
+		
+		// For MST mode, we handle the workflow differently since it generates multiple files
+		if (!"MST".equals(TestGenerationAndExecution.generator)) {
+			runner = new RESTestWorkflow(testClassName, targetDirJava, packageName, spec, confPath, generator, writer,
+					reportManager, statsReportManager);
+			runner.setExecuteTestCases(executeTestCases);
+			runner.setAllureReport(allureReports);
+		}
 
 
 
@@ -134,30 +140,77 @@ public class TestGenerationAndExecution {
 			logger.info("Maximum iterations set to: {}", maxIterations);
 		}
 		
-		while ((totalNumTestCases == -1 || runner.getNumTestCases() < totalNumTestCases) && 
-		       (maxIterations == -1 || iteration <= maxIterations)) {
-
-			// Introduce optional delay
-			if (iteration != 1 && timeDelay != -1)
-				delay(timeDelay);
-
-			// Generate unique test class name to avoid the same class being loaded everytime
+		if ("MST".equals(TestGenerationAndExecution.generator)) {
+			// MST mode: generate once and write multiple files
+			logger.info("Running MST mode - generating multi-service test files");
+			
+			// Generate unique test class name
 			String id = IDGenerator.generateTimeId();
 			String className = testClassName + "_" + id;
-			((RESTAssuredWriter) writer).setClassName(className);
-			((RESTAssuredWriter) writer).setTestId(id);
-			runner.setTestClassName(className);
-			runner.setTestId(id);
+			
+			// Set up writer
+			if (writer instanceof MultiServiceRESTAssuredWriter) {
+				((MultiServiceRESTAssuredWriter) writer).setClassName(className);
+				((MultiServiceRESTAssuredWriter) writer).setTestId(id);
+			}
+			
+			// Generate test cases
+			logger.info("Generating tests");
+			Timer.startCounting(Timer.TestStep.TEST_SUITE_GENERATION);
+			Collection<TestCase> testCases = generator.generate();
+			Timer.stopCounting(Timer.TestStep.TEST_SUITE_GENERATION);
+			
+			// Pass test cases to the statistic report manager (CSV writing, coverage)
+			if (statsReportManager != null) {
+				statsReportManager.setTestCases(testCases);
+			}
+			
+			// Write test cases using MultiServiceRESTAssuredWriter (creates multiple files)
+			logger.info("Writing {} test cases to multiple files in folder structure", testCases.size());
+			writer.write(testCases);
+			
+			// Execute tests if enabled
+			if (executeTestCases) {
+				logger.info("Executing generated test cases");
+				executeGeneratedTestsWithMaven(className);
+			}
+			
+			// Generate reports
+			if (statsReportManager != null) {
+				logger.info("Generating CSV data");
+				statsReportManager.generateReport(id, executeTestCases);
+			}
+			
+			logger.info("Iteration 1. {} test cases generated.", testCases.size());
+			logger.info("Stopped after 1 iterations (max.iterations limit reached)");
+			
+		} else {
+			// Classic mode: use RESTestWorkflow
+			while ((totalNumTestCases == -1 || runner.getNumTestCases() < totalNumTestCases) && 
+			       (maxIterations == -1 || iteration <= maxIterations)) {
 
-			// Test case generation + execution + test report generation
-			runner.run();
+				// Introduce optional delay
+				if (iteration != 1 && timeDelay != -1)
+					delay(timeDelay);
 
-			logger.info("Iteration {}. {} test cases generated.", iteration, runner.getNumTestCases());
-			iteration++;
-		}
-		
-		if (maxIterations != -1 && iteration > maxIterations) {
-			logger.info("Stopped after {} iterations (max.iterations limit reached)", maxIterations);
+				// Generate unique test class name to avoid the same class being loaded everytime
+				String id = IDGenerator.generateTimeId();
+				String className = testClassName + "_" + id;
+				((RESTAssuredWriter) writer).setClassName(className);
+				((RESTAssuredWriter) writer).setTestId(id);
+				runner.setTestClassName(className);
+				runner.setTestId(id);
+
+				// Test case generation + execution + test report generation
+				runner.run();
+
+				logger.info("Iteration {}. {} test cases generated.", iteration, runner.getNumTestCases());
+				iteration++;
+			}
+			
+			if (maxIterations != -1 && iteration > maxIterations) {
+				logger.info("Stopped after {} iterations (max.iterations limit reached)", maxIterations);
+			}
 		}
 
 		Timer.stopCounting(ALL);
@@ -559,6 +612,156 @@ public class TestGenerationAndExecution {
 	}
 
 	public static String getExperimentName(){ return experimentName; }
+
+	/**
+	 * Execute generated test files using Maven with better error handling
+	 */
+	private static void executeGeneratedTestsWithMaven(String className) {
+		try {
+			logger.info("Executing generated test cases for class pattern: {}", className);
+			
+			// Create target/allure-results directory if it doesn't exist
+			File allureResultsDir = new File("target/allure-results");
+			if (!allureResultsDir.exists()) {
+				allureResultsDir.mkdirs();
+				logger.info("Created directory: {}", allureResultsDir.getAbsolutePath());
+			}
+			
+			// Try different Maven commands based on what's available
+			String[] mavenCommands = {
+				"mvn.cmd",  // Windows
+				"mvn.bat",  // Windows alternative
+				"mvn"       // Unix/Linux/MacOS
+			};
+			
+			boolean executionSuccessful = false;
+			
+			for (String mavenCmd : mavenCommands) {
+				try {
+					logger.info("Trying Maven command: {}", mavenCmd);
+					
+					ProcessBuilder pb = new ProcessBuilder(
+						mavenCmd, "test", 
+						"-Dtest=" + packageName + "." + className + ".*",
+						"-DfailIfNoTests=false"
+					);
+					pb.directory(new File("."));
+					pb.redirectErrorStream(true);
+					
+					Process process = pb.start();
+					
+					// Read the output
+					try (java.io.BufferedReader reader = new java.io.BufferedReader(
+							new java.io.InputStreamReader(process.getInputStream()))) {
+						String line;
+						while ((line = reader.readLine()) != null) {
+							System.out.println(line);
+						}
+					}
+					
+					int exitCode = process.waitFor();
+					if (exitCode == 0) {
+						logger.info("Test execution completed successfully with {}", mavenCmd);
+						executionSuccessful = true;
+						break;
+					} else {
+						logger.warn("Test execution with {} completed with exit code: {}", mavenCmd, exitCode);
+						// Continue to try next command
+					}
+					
+				} catch (Exception e) {
+					logger.debug("Failed to execute with {}: {}", mavenCmd, e.getMessage());
+					// Continue to try next command
+				}
+			}
+			
+			if (!executionSuccessful) {
+				logger.warn("Could not execute tests with Maven. Maven may not be available in PATH.");
+				logger.warn("To manually execute tests and generate Allure reports:");
+				logger.warn("1. Run: mvn test -Dtest={}*", className);
+				logger.warn("2. Run: allure generate target/allure-results --clean -o target/allure-report");
+				return;
+			}
+			
+			// Check if allure results were generated
+			File[] allureFiles = allureResultsDir.listFiles((dir, name) -> name.endsWith(".json"));
+			if (allureFiles != null && allureFiles.length > 0) {
+				logger.info("Successfully generated {} Allure result files in target/allure-results", allureFiles.length);
+				
+				// Generate Allure report if results exist
+				generateAllureReport();
+				
+			} else {
+				logger.warn("No Allure result files were generated in target/allure-results");
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error executing generated tests: {}", e.getMessage());
+			logger.error("Exception: ", e);
+		}
+	}
+	
+	/**
+	 * Generate Allure report from existing results
+	 */
+	private static void generateAllureReport() {
+		try {
+			logger.info("Generating Allure report from results");
+			
+			// Try different allure commands
+			String[] allureCommands = {
+				"allure.bat",
+				"allure.cmd", 
+				"allure"
+			};
+			
+			for (String allureCmd : allureCommands) {
+				try {
+					ProcessBuilder pb = new ProcessBuilder(
+						allureCmd, "generate", 
+						"target/allure-results", 
+						"--clean", 
+						"-o", "target/allure-report"
+					);
+					pb.directory(new File("."));
+					pb.redirectErrorStream(true);
+					
+					Process process = pb.start();
+					
+					// Read the output
+					try (java.io.BufferedReader reader = new java.io.BufferedReader(
+							new java.io.InputStreamReader(process.getInputStream()))) {
+						String line;
+						while ((line = reader.readLine()) != null) {
+							System.out.println(line);
+						}
+					}
+					
+					int exitCode = process.waitFor();
+					if (exitCode == 0) {
+						logger.info("Allure report generated successfully in target/allure-report");
+						File reportIndex = new File("target/allure-report/index.html");
+						if (reportIndex.exists()) {
+							logger.info("Open the report: file://{}", reportIndex.getAbsolutePath());
+						}
+						return;
+					}
+					
+				} catch (Exception e) {
+					logger.debug("Failed to generate report with {}: {}", allureCmd, e.getMessage());
+				}
+			}
+			
+			logger.warn("Could not generate Allure report automatically. Allure may not be available in PATH.");
+			logger.warn("To manually generate the report:");
+			logger.warn("Run: allure generate target/allure-results --clean -o target/allure-report");
+			
+		} catch (Exception e) {
+			logger.error("Error generating Allure report: {}", e.getMessage());
+		}
+	}
+
+
 
 	private static void setUpLogger() {
 		// Recreate log directory if necessary

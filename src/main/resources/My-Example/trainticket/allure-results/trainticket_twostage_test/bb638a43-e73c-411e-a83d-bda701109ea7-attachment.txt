@@ -1,1 +1,0 @@
-{"distanceList":"-4","endStation":"Chicago Union Passenger Terminal","id":"12345","startStation":"Houston hobby airport","stationList":"boston logan international airport"}

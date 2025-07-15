@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"1b36ff10-6b5a-4b6a-aeb0-677a973888c0","stations":["chicago union station"],"distances":[-2],"startStation":"Chicago ogden terminal","endStation":"Boston south station"}}

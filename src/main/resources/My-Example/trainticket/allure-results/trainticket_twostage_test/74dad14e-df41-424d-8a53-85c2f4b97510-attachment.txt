@@ -1,1 +1,0 @@
-{"distanceList":"25.6","endStation":"Boston south station","id":"abcde","startStation":"Houston hobby airport","stationList":"Los angeles union station"}
