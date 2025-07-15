@@ -1,4 +1,4 @@
-package trainticket_twostage_test.TrainTicketTwoStageTest_1752572160127;
+package trainticket_twostage_test.TrainTicketTwoStageTest_1752573941785;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -13,7 +13,7 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.qameta.allure.model.Status;
 
-public class GET_api_v1_adminorderservice_adminorder_41 {
+public class POST_api_v1_adminrouteservice_adminroute_1 {
 
     @BeforeClass
     public static void setupRestAssured() {
@@ -24,19 +24,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_1() throws Exception {
+    public void test_POST_1_1() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -51,17 +54,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -88,19 +95,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -117,26 +126,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"9999\",\"distances\":\"10\",\"endStation\":\"Seattle king county convention center\",\"id\":\"67890\",\"loginId\":\"JaneDoe#123\",\"startStation\":\"Chicago Loop\",\"stationList\":\"New York Penn Station\",\"stations\":\"North End\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -145,17 +158,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -167,19 +183,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -192,22 +208,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -215,38 +232,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -263,26 +275,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -291,17 +304,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -313,19 +329,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -338,22 +354,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -361,38 +378,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -409,26 +421,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"9999\",\"endStation\":\"Seattle king county convention center\",\"id\":\"67890\",\"startStation\":\"Chicago Loop\",\"stationList\":\"New York Penn Station\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -437,17 +453,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -459,19 +478,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -484,22 +503,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -507,24 +527,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -565,12 +578,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_1");
+        Allure.label("story", "test_POST_1_1");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_1");
+        System.out.println("Scenario: test_POST_1_1");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -590,19 +603,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_2() throws Exception {
+    public void test_POST_1_2() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -617,17 +633,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -654,19 +674,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -683,26 +705,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"3.14\",\"distances\":\"25.3\",\"endStation\":\"Seattle King County Convention Center\",\"id\":\"12345\",\"loginId\":\"JaneDoe#123\",\"startStation\":\"los angeles central terminal\",\"stationList\":\"new york penn station\",\"stations\":\"downtown crossing\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -711,17 +737,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -733,19 +762,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -758,22 +787,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -781,38 +811,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -829,26 +854,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -857,17 +883,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -879,19 +908,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -904,22 +933,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -927,38 +957,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -975,26 +1000,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"3.14\",\"endStation\":\"Seattle King County Convention Center\",\"id\":\"12345\",\"startStation\":\"los angeles central terminal\",\"stationList\":\"new york penn station\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -1003,17 +1032,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -1025,19 +1057,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -1050,22 +1082,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -1073,24 +1106,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -1131,12 +1157,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_2");
+        Allure.label("story", "test_POST_1_2");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_2");
+        System.out.println("Scenario: test_POST_1_2");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -1156,19 +1182,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_3() throws Exception {
+    public void test_POST_1_3() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -1183,17 +1212,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -1220,19 +1253,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -1249,26 +1284,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"100.5\",\"distances\":\"10\",\"endStation\":\"Boston logan international airport\",\"id\":\"67890\",\"loginId\":\"alice.smith.90\",\"startStation\":\"Los Angeles Central Terminal\",\"stationList\":\"chicago union station\",\"stations\":\"North End\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -1277,17 +1316,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -1299,19 +1341,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -1324,22 +1366,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -1347,38 +1390,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -1395,26 +1433,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -1423,17 +1462,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -1445,19 +1487,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -1470,22 +1512,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -1493,38 +1536,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -1541,26 +1579,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"100.5\",\"endStation\":\"Boston logan international airport\",\"id\":\"67890\",\"startStation\":\"Los Angeles Central Terminal\",\"stationList\":\"chicago union station\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -1569,17 +1611,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -1591,19 +1636,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -1616,22 +1661,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -1639,24 +1685,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -1697,12 +1736,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_3");
+        Allure.label("story", "test_POST_1_3");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_3");
+        System.out.println("Scenario: test_POST_1_3");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -1722,19 +1761,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_4() throws Exception {
+    public void test_POST_1_4() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -1749,17 +1791,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -1786,19 +1832,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -1815,26 +1863,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"100.5\",\"distances\":\"10\",\"endStation\":\"New York Penn Station\",\"id\":\"12345\",\"loginId\":\"alice.smith.90\",\"startStation\":\"miami amtrak station\",\"stationList\":\"boston common\",\"stations\":\"central station\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -1843,17 +1895,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -1865,19 +1920,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -1890,22 +1945,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -1913,38 +1969,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -1961,26 +2012,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -1989,17 +2041,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -2011,19 +2066,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -2036,22 +2091,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -2059,38 +2115,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -2107,26 +2158,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"100.5\",\"endStation\":\"New York Penn Station\",\"id\":\"12345\",\"startStation\":\"miami amtrak station\",\"stationList\":\"boston common\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -2135,17 +2190,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -2157,19 +2215,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -2182,22 +2240,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -2205,24 +2264,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -2263,12 +2315,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_4");
+        Allure.label("story", "test_POST_1_4");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_4");
+        System.out.println("Scenario: test_POST_1_4");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -2288,19 +2340,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_5() throws Exception {
+    public void test_POST_1_5() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -2315,17 +2370,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -2352,19 +2411,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -2381,26 +2442,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"3.14\",\"distances\":\"98.6\",\"endStation\":\"Seattle king county convention center\",\"id\":\"12345\",\"loginId\":\"JohnDoe_007\",\"startStation\":\"Los angeles central terminal\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"union square\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -2409,17 +2474,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -2431,19 +2499,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -2456,22 +2524,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -2479,38 +2548,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -2527,26 +2591,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -2555,17 +2620,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -2577,19 +2645,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -2602,22 +2670,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -2625,38 +2694,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -2673,26 +2737,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"3.14\",\"endStation\":\"Seattle king county convention center\",\"id\":\"12345\",\"startStation\":\"Los angeles central terminal\",\"stationList\":\"San Francisco International Airport\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -2701,17 +2769,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -2723,19 +2794,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -2748,22 +2819,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -2771,24 +2843,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -2829,12 +2894,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_5");
+        Allure.label("story", "test_POST_1_5");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_5");
+        System.out.println("Scenario: test_POST_1_5");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -2854,19 +2919,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_6() throws Exception {
+    public void test_POST_1_6() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -2881,17 +2949,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -2918,19 +2990,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -2947,26 +3021,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"50\",\"distances\":\"98.6\",\"endStation\":\"los angeles union station\",\"id\":\"12345\",\"loginId\":\"Johndoe_007\",\"startStation\":\"Chicago loop\",\"stationList\":\"Los Angeles County Administration Building\",\"stations\":\"North end\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -2975,17 +3053,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -2997,19 +3078,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -3022,22 +3103,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -3045,38 +3127,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -3093,26 +3170,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -3121,17 +3199,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -3143,19 +3224,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -3168,22 +3249,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -3191,38 +3273,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -3239,26 +3316,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"50\",\"endStation\":\"los angeles union station\",\"id\":\"12345\",\"startStation\":\"Chicago loop\",\"stationList\":\"Los Angeles County Administration Building\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -3267,17 +3348,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -3289,19 +3373,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -3314,22 +3398,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -3337,24 +3422,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -3395,12 +3473,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_6");
+        Allure.label("story", "test_POST_1_6");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_6");
+        System.out.println("Scenario: test_POST_1_6");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -3420,19 +3498,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_7() throws Exception {
+    public void test_POST_1_7() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -3447,17 +3528,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -3484,19 +3569,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -3513,26 +3600,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"50\",\"distances\":\"42\",\"endStation\":\"Chicago o'hare international airport\",\"id\":\"Hijklmn\",\"loginId\":\"users\",\"startStation\":\"Miami amtrak station\",\"stationList\":\"los angeles county administration building\",\"stations\":\"north end\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -3541,17 +3632,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -3563,19 +3657,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -3588,22 +3682,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -3611,38 +3706,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -3659,26 +3749,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -3687,17 +3778,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -3709,19 +3803,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -3734,22 +3828,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -3757,38 +3852,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -3805,26 +3895,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"50\",\"endStation\":\"Chicago o'hare international airport\",\"id\":\"Hijklmn\",\"startStation\":\"Miami amtrak station\",\"stationList\":\"los angeles county administration building\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -3833,17 +3927,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -3855,19 +3952,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -3880,22 +3977,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -3903,24 +4001,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -3961,12 +4052,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_7");
+        Allure.label("story", "test_POST_1_7");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_7");
+        System.out.println("Scenario: test_POST_1_7");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -3986,19 +4077,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_8() throws Exception {
+    public void test_POST_1_8() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -4013,17 +4107,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -4050,19 +4148,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -4079,26 +4179,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"3.14\",\"distances\":\"42\",\"endStation\":\"Seattle King County Convention Center\",\"id\":\"hijklmn\",\"loginId\":\"johndoe_007\",\"startStation\":\"Los angeles central terminal\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"central station\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -4107,17 +4211,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -4129,19 +4236,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -4154,22 +4261,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -4177,38 +4285,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -4225,26 +4328,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -4253,17 +4357,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -4275,19 +4382,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -4300,22 +4407,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -4323,38 +4431,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -4371,26 +4474,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"3.14\",\"endStation\":\"Seattle King County Convention Center\",\"id\":\"hijklmn\",\"startStation\":\"Los angeles central terminal\",\"stationList\":\"San Francisco International Airport\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -4399,17 +4506,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -4421,19 +4531,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -4446,22 +4556,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -4469,24 +4580,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -4527,12 +4631,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_8");
+        Allure.label("story", "test_POST_1_8");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_8");
+        System.out.println("Scenario: test_POST_1_8");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -4552,19 +4656,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_9() throws Exception {
+    public void test_POST_1_9() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -4579,17 +4686,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -4616,19 +4727,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -4645,26 +4758,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"50\",\"distances\":\"42\",\"endStation\":\"Boston Logan International Airport\",\"id\":\"12345\",\"loginId\":\"Sydney_measured_####kbps\",\"startStation\":\"Los Angeles Central Terminal\",\"stationList\":\"los angeles county administration building\",\"stations\":\"North end\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -4673,17 +4790,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -4695,19 +4815,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -4720,22 +4840,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -4743,38 +4864,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -4791,26 +4907,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -4819,17 +4936,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -4841,19 +4961,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -4866,22 +4986,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -4889,38 +5010,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -4937,26 +5053,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"50\",\"endStation\":\"Boston Logan International Airport\",\"id\":\"12345\",\"startStation\":\"Los Angeles Central Terminal\",\"stationList\":\"los angeles county administration building\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -4965,17 +5085,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -4987,19 +5110,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -5012,22 +5135,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -5035,24 +5159,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -5093,12 +5210,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_9");
+        Allure.label("story", "test_POST_1_9");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_9");
+        System.out.println("Scenario: test_POST_1_9");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
@@ -5118,19 +5235,22 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
     }
 
     @Test
-    public void test_GET_41_10() throws Exception {
+    public void test_POST_1_10() throws Exception {
         final String[] _jwt     = new String[1];
         final String[] _jwtType = new String[1];
         final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);
         final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);
         // 🔐 STEP 0: Authentication - Always show in Allure report
-        Allure.step("🔐 Step 0: Authentication (Login)", () -> {
+        // Create dynamic authentication title with status - will be updated based on result
+        final String[] authStepTitle = {"⏳ Step 0: Authentication (Login)"};
+        Allure.step(() -> authStepTitle[0], () -> {
             try {
                 Allure.parameter("🏢 Service", "Authentication Service");
                 Allure.parameter("📡 HTTP Method", "POST");
                 Allure.parameter("🔗 Endpoint", "/api/v1/users/login");
-                Allure.parameter("✅ Expected Status", 200);
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("👤 Username", "admin");
+                Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - Authentication required");
                 Allure.description("🔐 **Authentication Step**\n" +
                                  "This step authenticates the user to obtain JWT token for subsequent API calls.\n" +
                                  "All other steps depend on successful authentication.");
@@ -5145,17 +5265,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 _jwt[0]     = loginRes.jsonPath().getString("data.token");
                 _jwtType[0] = "Bearer";
                 
-                // ✅ Login successful - capture token details
+                // ✅ SUCCESS: Update authentication title and add success symbols
+                authStepTitle[0] = "✅ Step 0: Authentication (Login)";
                 Allure.parameter("✅ Login Status", "SUCCESS");
                 Allure.parameter("🔑 Token Obtained", _jwt[0] != null ? "Yes" : "No");
+                Allure.parameter("📊 Final Result", "✅ SUCCESS");
                 Allure.addAttachment("🔐 Login Response", "application/json", loginRes.getBody().asString());
             } catch (Throwable loginError) {
                 loginSucceeded.set(false);
                 
-                // ❌ Login failed - capture error details
+                // ❌ FAILURE: Update authentication title and add failure symbols
+                authStepTitle[0] = "❌ Step 0: Authentication (Login)";
                 Allure.parameter("❌ Login Status", "FAILED");
                 Allure.parameter("💥 Error Type", loginError.getClass().getSimpleName());
                 Allure.parameter("💬 Error Message", loginError.getMessage());
+                Allure.parameter("📊 Final Result", "❌ FAILED");
                 
                 StringBuilder loginErrorDetails = new StringBuilder();
                 loginErrorDetails.append("🚨 LOGIN FAILURE REPORT\n\n");
@@ -5182,19 +5306,21 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
 
-        // Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)
+        // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-admin-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/adminorderservice/adminorder");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-admin-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/adminrouteservice/adminroute");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-admin-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/adminorderservice/adminorder\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-admin-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/adminrouteservice/adminroute\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -5211,26 +5337,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse1 = req.when().get("/api/v1/adminorderservice/adminorder")
+                        String requestBody1 = "{\"distanceList\":\"3.14\",\"distances\":\"10\",\"endStation\":\"los angeles union station\",\"id\":\"12345\",\"loginId\":\"users\",\"startStation\":\"Miami amtrak station\",\"stationList\":\"San Francisco International Airport\",\"stations\":\"Central Station\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody1);
+                        req = req.body(requestBody1);
+                        Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(1, true);
-                        System.out.println("✅ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
                         try {
                             String responseBody = stepResponse1.getBody().asString();
                             int actualStatus = stepResponse1.getStatusCode();
@@ -5239,17 +5369,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(1, false);
-                        System.out.println("❌ Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -5261,19 +5394,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-admin-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/adminorderservice/adminorder\n");
+                        errorDetails.append("Service: ts-admin-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/adminrouteservice/adminroute\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -5286,22 +5419,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) - " + skipReason);
                     stepResults.put(1, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-admin-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/adminorderservice/adminorder\n");
+                    dependencyReport.append("Service: ts-admin-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/adminrouteservice/adminroute\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -5309,38 +5443,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-order-service GET /api/v1/adminorderservice/adminorder (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200): " + stepException.getMessage());
             stepResults.put(1, false);
         }
-        
 
-        // Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)
+        // Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderservice/order");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-station-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/stationservice/stations/idlist");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderservice/order\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-station-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/stationservice/stations/idlist\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -5357,26 +5486,27 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse2 = req.when().get("/api/v1/orderservice/order")
+                        Response stepResponse2 = req.when().post("/api/v1/stationservice/stations/idlist")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(2, true);
-                        System.out.println("✅ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
                         try {
                             String responseBody = stepResponse2.getBody().asString();
                             int actualStatus = stepResponse2.getStatusCode();
@@ -5385,17 +5515,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(2, false);
-                        System.out.println("❌ Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -5407,19 +5540,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderservice/order\n");
+                        errorDetails.append("Service: ts-station-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/stationservice/stations/idlist\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -5432,22 +5565,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200) - " + skipReason);
                     stepResults.put(2, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderservice/order\n");
+                    dependencyReport.append("Service: ts-station-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/stationservice/stations/idlist\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -5455,38 +5589,33 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 2: ts-order-service GET /api/v1/orderservice/order (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 2: ts-station-service POST /api/v1/stationservice/stations/idlist (expect 200): " + stepException.getMessage());
             stepResults.put(2, false);
         }
-        
 
-        // Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)
+        // Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
         try {
-            Allure.step("Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200)", () -> {
-                Allure.parameter("🏢 Service", "ts-order-other-service");
-                Allure.parameter("📡 HTTP Method", "GET");
-                Allure.parameter("🔗 Endpoint", "/api/v1/orderOtherService/orderOther");
-                Allure.parameter("✅ Expected Status", 200);
+            // Create dynamic step title with status - will be updated based on result
+            final String[] dynamicStepTitle = {"⏳ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)"};
+            Allure.step(() -> dynamicStepTitle[0], () -> {
+                Allure.parameter("🏢 Service", "ts-route-service");
+                Allure.parameter("📡 HTTP Method", "POST");
+                Allure.parameter("🔗 Endpoint", "/api/v1/routeservice/routes");
+                Allure.parameter("🎯 Expected Status", 200);
                 Allure.parameter("🔗 Dependency Type", "INDEPENDENT (can execute regardless of other step results)");
-                Allure.description("🎯 **Testing**: ts-order-other-service\n" +
-                                 "📡 **Method**: GET\n" +
-                                 "🔗 **Path**: /api/v1/orderOtherService/orderOther\n" +
-                                 "✅ **Expected**: 200\n" +
+                Allure.description("🎯 **Testing**: ts-route-service\n" +
+                                 "📡 **Method**: POST\n" +
+                                 "🔗 **Path**: /api/v1/routeservice/routes\n" +
+                                 "🎯 **Expected**: 200\n" +
                                  "🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)");
                 
                 // Execution decision analysis - determine if step should execute
@@ -5503,26 +5632,30 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                 
                 // Add execution decision as parameter
                 if (shouldSkip) {
-                    Allure.parameter("📊 Execution Decision", "SKIP - " + skipCategory);
+                    Allure.parameter("🚦 Execution Decision", "⏭️ SKIP - " + skipCategory);
                     Allure.parameter("⏭️ Skip Reason", skipReason);
                 } else {
-                    Allure.parameter("📊 Execution Decision", "EXECUTE - All dependencies satisfied");
+                    Allure.parameter("🚦 Execution Decision", "▶️ EXECUTE - All dependencies satisfied");
                 }
                 
                 if (!shouldSkip) {
-                    System.out.println("✅ EXECUTING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) (dependency analysis passed)");
+                    System.out.println("▶️ EXECUTING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) (dependency analysis passed)");
                     try {
                         RequestSpecification req = RestAssured.given();
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        Response stepResponse3 = req.when().get("/api/v1/orderOtherService/orderOther")
+                        String requestBody3 = "{\"distanceList\":\"3.14\",\"endStation\":\"los angeles union station\",\"id\":\"12345\",\"startStation\":\"Miami amtrak station\",\"stationList\":\"San Francisco International Airport\"}";
+                        Allure.addAttachment("📋 Request Body", "application/json", requestBody3);
+                        req = req.body(requestBody3);
+                        Response stepResponse3 = req.when().post("/api/v1/routeservice/routes")
                                .then().log().ifValidationFails()
                                .statusCode(200)
                                .extract().response();
                         stepResults.put(3, true);
-                        System.out.println("✅ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - SUCCESS");
-                        // ✅ Step completed successfully - capture response details
+                        System.out.println("✅ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - SUCCESS");
+                        // ✅ SUCCESS: Update step title and add success parameters
+                        dynamicStepTitle[0] = "✅ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
                         try {
                             String responseBody = stepResponse3.getBody().asString();
                             int actualStatus = stepResponse3.getStatusCode();
@@ -5531,17 +5664,20 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             // Add response as prominently visible attachment
                             Allure.addAttachment("📄 Response (Status: " + actualStatus + ")", "application/json", responseBody);
                             
-                            // Add key metrics as visible parameters
+                            // Add SUCCESS metrics with green symbols
                             Allure.parameter("✅ Actual Status", actualStatus + " (SUCCESS)");
                             Allure.parameter("⏱️ Response Time", responseTime + " ms");
-                            Allure.parameter("📊 Result", "SUCCESS");
+                            Allure.parameter("📊 Final Result", "✅ SUCCESS");
                         } catch (Exception e) {
                             Allure.addAttachment("⚠️ Response Capture Error", "text/plain", e.getMessage());
                         }
                     } catch (Throwable t) {
                         stepResults.put(3, false);
-                        System.out.println("❌ Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - FAILED: " + t.getMessage());
-                        // ❌ Step failed - capture detailed error information
+                        System.out.println("❌ Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - FAILED: " + t.getMessage());
+                        
+                        // ❌ FAILURE: Update step title and add failure symbols
+                        dynamicStepTitle[0] = "❌ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                        
                         String errorCategory = "Unknown";
                         if (t instanceof java.net.ConnectException) {
                             errorCategory = "🔌 Connection Failed - Service Unreachable";
@@ -5553,19 +5689,19 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                             errorCategory = "❓ " + t.getClass().getSimpleName();
                         }
                         
-                        // Add error details as visible parameters
+                        // Add FAILURE details with red symbols
                         Allure.parameter("❌ Error Category", errorCategory);
                         Allure.parameter("💥 Error Message", t.getMessage());
                         Allure.parameter("🔍 Exception Type", t.getClass().getSimpleName());
-                        Allure.parameter("📊 Result", "FAILED");
+                        Allure.parameter("📊 Final Result", "❌ FAILED");
                         
                         // Create detailed error report
                         StringBuilder errorDetails = new StringBuilder();
                         errorDetails.append("🚨 STEP FAILURE REPORT\n\n");
                         errorDetails.append("📋 STEP INFO:\n");
-                        errorDetails.append("Service: ts-order-other-service\n");
-                        errorDetails.append("Method: GET\n");
-                        errorDetails.append("Path: /api/v1/orderOtherService/orderOther\n");
+                        errorDetails.append("Service: ts-route-service\n");
+                        errorDetails.append("Method: POST\n");
+                        errorDetails.append("Path: /api/v1/routeservice/routes\n");
                         errorDetails.append("Expected Status: 200\n\n");
                         errorDetails.append("💥 ERROR INFO:\n");
                         errorDetails.append("Type: ").append(t.getClass().getSimpleName()).append("\n");
@@ -5578,22 +5714,23 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                         // Instead, mark step as failed but continue
                     }
                 } else {
-                    // Step is being skipped - show comprehensive skip information
-                    System.out.println("⏭️ SKIPPING: Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200) - " + skipReason);
+                    // ⏭️ SKIP: Update step title and add skip symbols
+                    dynamicStepTitle[0] = "⏭️ " + "Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200)";
+                    System.out.println("⏭️ SKIPPING: Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200) - " + skipReason);
                     stepResults.put(3, false);
                     
-                    // Add comprehensive skip information as parameters
+                    // Add comprehensive SKIP information with yellow symbols
                     Allure.parameter("⏭️ Skip Category", skipCategory);
                     Allure.parameter("💬 Skip Details", skipReason);
-                    Allure.parameter("📊 Result", "SKIPPED");
+                    Allure.parameter("📊 Final Result", "⏭️ SKIPPED");
                     
                     // Generate detailed dependency analysis report
                     StringBuilder dependencyReport = new StringBuilder();
                     dependencyReport.append("⏭️ STEP SKIP ANALYSIS\n\n");
                     dependencyReport.append("📋 STEP INFO:\n");
-                    dependencyReport.append("Service: ts-order-other-service\n");
-                    dependencyReport.append("Method: GET\n");
-                    dependencyReport.append("Path: /api/v1/orderOtherService/orderOther\n");
+                    dependencyReport.append("Service: ts-route-service\n");
+                    dependencyReport.append("Method: POST\n");
+                    dependencyReport.append("Path: /api/v1/routeservice/routes\n");
                     dependencyReport.append("Expected Status: 200\n\n");
                     dependencyReport.append("⏭️ SKIP REASON:\n");
                     dependencyReport.append("Category: ").append(skipCategory).append("\n");
@@ -5601,24 +5738,17 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
                     
                     // Add dependency analysis
                     if (!loginSucceeded.get()) {
-                        dependencyReport.append("🔐 AUTHENTICATION STATUS: FAILED\n");
+                        dependencyReport.append("🔐 AUTHENTICATION STATUS: ❌ FAILED\n");
                         dependencyReport.append("Authentication is required for all API calls.\n\n");
                     }
-                    dependencyReport.append("💡 IMPACT:\n");
-                    dependencyReport.append("This step was skipped to prevent cascading failures.\n");
-                    dependencyReport.append("Fix the dependency issues above to enable this step.\n");
-                    
-                    Allure.addAttachment("⏭️ Skip Analysis Report", "text/plain", dependencyReport.toString());
-                    
-                    // DON'T throw exception - let other steps execute
+                    Allure.addAttachment("⏭️ Dependency Analysis Report", "text/plain", dependencyReport.toString());
                 }
-            }); // End of Allure.step()
+            });
         } catch (Exception stepException) {
-            // Step execution failed, but don't stop other steps
-            System.out.println("⚠️ Step wrapper failed for Step 3: ts-order-other-service GET /api/v1/orderOtherService/orderOther (expect 200): " + stepException.getMessage());
+            // Step wrapper failed, but don't stop other steps
+            System.out.println("⚠️ Step wrapper failed for Step 3: ts-route-service POST /api/v1/routeservice/routes (expect 200): " + stepException.getMessage());
             stepResults.put(3, false);
         }
-        
 
         // Evaluate scenario result with comprehensive reporting
         long successfulSteps = stepResults.values().stream().filter(result -> result).count();
@@ -5659,12 +5789,12 @@ public class GET_api_v1_adminorderservice_adminorder_41 {
         
         // Add scenario metadata
         Allure.label("feature", "Microservice Workflow");
-        Allure.label("story", "test_GET_41_10");
+        Allure.label("story", "test_POST_1_10");
         Allure.description("Microservice test scenario with " + totalSteps + " steps. " +
                            "Generated using two-stage LLM + semantic expansion approach.");
         
         System.out.println("=== SCENARIO RESULT ===");
-        System.out.println("Scenario: test_GET_41_10");
+        System.out.println("Scenario: test_POST_1_10");
         System.out.println("Total Steps: " + totalSteps);
         System.out.println("Successful: " + successfulSteps);
         System.out.println("Failed: " + failedSteps);
