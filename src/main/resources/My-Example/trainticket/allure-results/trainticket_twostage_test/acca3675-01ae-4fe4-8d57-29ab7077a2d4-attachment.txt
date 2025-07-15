@@ -1,1 +1,0 @@
-{"distanceList":"10","distances":"bd_div_story","endStation":"los angeles union station","id":"abcde","loginId":"users","startStation":"Los Angeles Union Station","stationList":"Boston logan international airport","stations":"Boston logan international airport"}

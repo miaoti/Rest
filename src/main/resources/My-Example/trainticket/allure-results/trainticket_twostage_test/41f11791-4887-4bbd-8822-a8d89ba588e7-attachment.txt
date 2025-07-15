@@ -1,1 +1,0 @@
-{"distanceList":"-4","endStation":"new york penn station","id":"abcde","startStation":"Phoenix sky harbor international","stationList":"los angeles union station"}

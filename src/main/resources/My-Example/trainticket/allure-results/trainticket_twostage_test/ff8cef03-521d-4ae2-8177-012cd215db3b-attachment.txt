@@ -1,9 +1,0 @@
-Test Scenario Summary:
-Total Steps: 2
-Successful Steps: 1
-Failed Steps: 1
-Login Status: SUCCESS
-
-Step Breakdown:
-  Step 1: ✓ PASS
-  Step 2: ✗ FAIL

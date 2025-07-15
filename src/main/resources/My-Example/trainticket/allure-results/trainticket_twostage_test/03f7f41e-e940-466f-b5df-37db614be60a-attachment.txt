@@ -1,1 +1,0 @@
-{"accountId":"0","boughtDate":"2023-11-30T16:15:00Z","coachNumber":"63","contactsDocumentNumber":"098765432","contactsName":"alice","differenceMoney":"12.45","documentType":"7890","from":"user_456","id":"testcase","price":"$23.99","seatClass":"2","seatNumber":"f9","status":"403","to":"atlanta","trainNumber":"102","travelDate":"2023-10-05","travelTime":"2023-10-05t08:00:00"}

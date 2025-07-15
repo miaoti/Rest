@@ -1,1 +1,0 @@
-{"accountId":"Abcde","boughtDate":"2024-03-12t07:45:00z","coachNumber":"49","contactsDocumentNumber":"printf","contactsName":"Bob smith","differenceMoney":"0.01","documentType":"-42","from":"Admins","id":"67890","price":"$45.00","seatClass":"100","seatNumber":"b7","status":"500","to":"Los Angeles","trainNumber":"102","travelDate":"2022-12-25","travelTime":"2025-06-18t14:00:00"}

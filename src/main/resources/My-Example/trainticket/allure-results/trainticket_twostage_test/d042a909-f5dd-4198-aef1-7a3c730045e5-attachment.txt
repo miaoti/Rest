@@ -1,1 +1,0 @@
-{"basicPriceRate":"99.99","firstClassPriceRate":"38.99","id":"Abcde","routeId":"bd_div_story","trainType":"higher"}

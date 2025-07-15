@@ -1,1 +1,0 @@
-{"distanceList":"25.6","distances":"789","endStation":"Chicago union passenger terminal","id":"67890","loginId":"root321","startStation":"Los angeles union station","stationList":"Los Angeles Union Station","stations":"los angeles union station"}

@@ -1,1 +1,0 @@
-{"distanceList":"34","distances":"50.2","endStation":"new york penn station","id":"12345","loginId":"bennett","startStation":"los angeles union station","stationList":"Boston logan international airport","stations":"Boston logan international airport"}

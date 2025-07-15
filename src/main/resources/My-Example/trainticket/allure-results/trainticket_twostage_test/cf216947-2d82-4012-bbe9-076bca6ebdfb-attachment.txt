@@ -1,1 +1,0 @@
-{"distanceList":"-2","distances":"100","endStation":"Boston south station","id":"abcde","loginId":"admins","startStation":"New york penn station","stationList":"New york penn station","stations":"chicago illinois terminal"}

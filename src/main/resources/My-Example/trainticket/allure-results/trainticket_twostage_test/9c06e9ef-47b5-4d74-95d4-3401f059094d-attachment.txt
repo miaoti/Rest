@@ -1,1 +1,0 @@
-{"distanceList":"10","distances":"bd_div_story","endStation":"Boston South Station","id":"Testcase","loginId":"Sydney_measured_####kbps","startStation":"New York Penn Station","stationList":"Chicago union station","stations":"Boston logan international airport"}

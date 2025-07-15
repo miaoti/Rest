@@ -1,1 +1,0 @@
-{"accountId":"abcde","boughtDate":"2022-06-28T09:15:00Z","coachNumber":"1","contactsDocumentNumber":"Xyz-789-ZYx-Wvu-Tsr","contactsName":"alice","documentType":"bd_div_story","from":"John","id":"12345","price":"$78.50","seatClass":"50","seatNumber":"B7","status":"200","to":"Phoenix","trainNumber":"789","travelDate":"2021-09-22","travelTime":"2024-07-29T15:30:00"}

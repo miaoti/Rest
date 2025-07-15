@@ -1,1 +1,0 @@
-{"basicPriceRate":"5.49","firstClassPriceRate":"650.50","id":"67890","routeId":"Xyzzy","trainType":"Diesel Locomotive"}

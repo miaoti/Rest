@@ -1,1 +1,0 @@
-{"distanceList":"7890.1","distances":"var_bd_=_getElementsByClass","endStation":"new york penn station","id":"sampledata","loginId":"User123","startStation":"Los angeles union station","stationList":"los angeles union station","stations":"los angeles union station"}

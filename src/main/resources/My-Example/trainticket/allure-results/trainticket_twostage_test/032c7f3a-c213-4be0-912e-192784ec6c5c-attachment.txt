@@ -1,1 +1,0 @@
-{"basicPriceRate":"200.75","firstClassPriceRate":"650.50","id":"Sampledata","routeId":"0","trainType":"High-Speed Bullet Train"}

@@ -55,14 +55,25 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
     /*  PUBLIC API – called by RESTest                              */
 
+    // Shared parameter pools grouped by root API to avoid redundant LLM/semantic generation
+    private Map<String, Map<String, List<String>>> sharedParameterPools = new HashMap<>();
+
     /** Produce test cases using two-stage LLM + semantic expansion approach. */
     @Override
     public Collection<TestCase> generate() {
         List<TestCase> out = new ArrayList<>();
         int counter = 1;
 
+        // Pre-process: Group scenarios by root API and generate shared parameter pools
+        log.info("=== PRE-PROCESSING: Grouping scenarios by root API ===");
+        Map<String, List<WorkflowScenario>> groupedScenarios = groupScenariosByRootApi();
+        
+        // Generate shared parameter pools for each root API group
+        generateSharedParameterPools(groupedScenarios);
+
+        // Generate test cases using shared pools
         for (WorkflowScenario sc : scenarios) {
-            // Generate multiple variants per scenario using expanded parameter sets
+            // Generate multiple variants per scenario using shared parameter pools
             List<MultiServiceTestCase> variants = generateScenarioVariants(sc, counter);
             out.addAll(variants);
             counter += variants.size();
@@ -88,14 +99,16 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         // Determine scenario identifier based on first API call
         String firstApiName = getFirstApiOperationName(sc);
         String scenarioId;
+        
         if (firstApiName != null && !firstApiName.isEmpty()) {
+            // Make scenario ID unique by adding counter even when we have API name
             scenarioId = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
                                        .replaceAll("_+", "_")
-                                       .replaceAll("^_|_$", "");
+                                       .replaceAll("^_|_$", "") + "_" + baseCounter;
         } else {
             String sourceFileName = sc.getSourceFileName();
             if (sourceFileName != null && !sourceFileName.isEmpty()) {
-                scenarioId = sourceFileName.replaceAll("[^a-zA-Z0-9_]", "_");
+                scenarioId = sourceFileName.replaceAll("[^a-zA-Z0-9_]", "_") + "_" + baseCounter;
             } else {
                 scenarioId = "Scenario_" + baseCounter;
             }
@@ -115,6 +128,17 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             for (WorkflowStep root : sc.getRootSteps()) {
                 traverse(root, tc, context, "1", v);
             }
+            
+            // After processing, update scenario name based on actual first business step
+            if (!tc.getSteps().isEmpty()) {
+                MultiServiceTestCase.StepCall firstStep = tc.getSteps().get(0);
+                String actualApiName = extractApiNameFromStep(firstStep);
+                                 if (actualApiName != null && !actualApiName.isEmpty()) {
+                     String improvedScenarioId = actualApiName + "_" + baseCounter;
+                     tc.setScenarioName(improvedScenarioId);
+                 }
+            }
+            
             variants.add(tc);
             
             log.info("--- Completed variant {} with {} steps ---", v, tc.getSteps().size());
@@ -220,39 +244,56 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 String val = null;
 
                 if (isFirstStep) {
-                    /* For the first step, use two-stage approach: LLM + semantic expansion */
+                    /* For the first step, use shared parameter pools */
                     if (useLLM) {
-                        ParameterInfo info = new ParameterInfo();
-                        info.setName(p.getName());
-                        info.setDescription(p.getDescription());
-                        info.setInLocation(p.getIn());
-                        info.setType(p.getType());
-                        info.setFormat(p.getFormat());
-                        info.setSchemaType(p.getType());
-                        info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
-                        info.setRegex(p.getPattern());
-
-                        // Stage 1: Get 5 seed values from LLM
-                        List<String> llmSeedValues = llmGen.generateParameterValues(info);
+                        // Determine the root API key for this step
+                        String currentRootApiKey = verb.toUpperCase() + "_" + route;
                         
-                        if (!llmSeedValues.isEmpty()) {
-                            // Stage 2: Expand using semantic models to get more variants
-                            List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
+                        // Get shared parameter pool for this root API
+                        Map<String, List<String>> parameterPool = sharedParameterPools.get(currentRootApiKey);
+                        
+                        if (parameterPool != null && parameterPool.containsKey(p.getName())) {
+                            List<String> sharedValues = parameterPool.get(p.getName());
                             
-                            // Select value based on variant index
-                            if (variantIndex < expandedValues.size()) {
-                                val = expandedValues.get(variantIndex);
-                                log.info("Two-Stage (LLM+Semantic) → {} {} = {} (variant {}, step {})", 
-                                        service, p.getName(), val, variantIndex, stepNumber);
+                            // Select value based on variant index from shared pool
+                            if (variantIndex < sharedValues.size()) {
+                                val = sharedValues.get(variantIndex);
+                                log.info("Shared Pool → {} {} = {} (variant {}, step {}, pool: {})", 
+                                        service, p.getName(), val, variantIndex, stepNumber, currentRootApiKey);
                             } else {
                                 // Fallback to cycling through available values
-                                val = expandedValues.get(variantIndex % expandedValues.size());
-                                log.info("Two-Stage (Cycled) → {} {} = {} (variant {}, step {})", 
-                                        service, p.getName(), val, variantIndex, stepNumber);
+                                val = sharedValues.get(variantIndex % sharedValues.size());
+                                log.info("Shared Pool (Cycled) → {} {} = {} (variant {}, step {}, pool: {})", 
+                                        service, p.getName(), val, variantIndex, stepNumber, currentRootApiKey);
                             }
                         } else {
-                            val = "LLM_EMPTY";
-                            log.warn("LLM returned no values for {} {}", service, p.getName());
+                            // Fallback: generate new values if no shared pool found (shouldn't happen)
+                            log.warn("No shared pool found for {} {} in root API {}, generating fallback", 
+                                    service, p.getName(), currentRootApiKey);
+                            
+                            ParameterInfo info = new ParameterInfo();
+                            info.setName(p.getName());
+                            info.setDescription(p.getDescription());
+                            info.setInLocation(p.getIn());
+                            info.setType(p.getType());
+                            info.setFormat(p.getFormat());
+                            info.setSchemaType(p.getType());
+                            info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
+                            info.setRegex(p.getPattern());
+
+                            List<String> llmSeedValues = llmGen.generateParameterValues(info);
+                            
+                            if (!llmSeedValues.isEmpty()) {
+                                List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
+                                val = variantIndex < expandedValues.size() 
+                                        ? expandedValues.get(variantIndex) 
+                                        : expandedValues.get(variantIndex % expandedValues.size());
+                                log.info("Fallback Two-Stage → {} {} = {} (variant {}, step {})", 
+                                        service, p.getName(), val, variantIndex, stepNumber);
+                            } else {
+                                val = "LLM_EMPTY_" + variantIndex;
+                                log.warn("Fallback: LLM returned no values for {} {}", service, p.getName());
+                            }
                         }
                     } else {
                         /* Fallback if LLM is disabled */
@@ -261,15 +302,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 } else {
                     /* For subsequent steps, use the dependency-based logic */
 
-                    /* 3a. Use previously captured value from context (dependency) ------ */
+                    /* 3a. Use previously captured OUTPUT value from context (dependency) ------ */
                     val = context.get(p.getName());
 
-                    /* 3b. Use trace data if available and no context value ------------- */
+                    /* 3b. Use previously captured INPUT value for consistency --------------- */
+                    if (val == null) {
+                        val = context.get("input." + p.getName());
+                        if (val != null) {
+                            log.info("Input Consistency → {} {} = {} (reusing from previous API input, step {})", 
+                                    service, p.getName(), val, stepNumber);
+                        }
+                    }
+
+                    /* 3c. Use trace data if available and no context value ------------- */
                     if (val == null) {
                         val = getTraceParameterValue(span, p.getName());
                     }
 
-                    /* 3c. Call LLM if enabled and no trace/context value --------------- */
+                    /* 3d. Call LLM if enabled and no trace/context value --------------- */
                     if (val == null && useLLM) {
                         ParameterInfo info = new ParameterInfo();
                         info.setName(p.getName());
@@ -286,7 +336,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         log.info("LLM (Fallback) → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
                     }
 
-                    /* 3d. Ultimate fallback ---------------------------------------- */
+                    /* 3e. Ultimate fallback ---------------------------------------- */
                     if (val == null) val = "VAL_" + p.getName();
                 }
 
@@ -390,6 +440,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
         /* 6. Update context with outputs ------------------------------------------- */
         context.putAll(span.getOutputFields());
+        
+        /* 6b. Update context with inputs for consistency across subsequent steps --- */
+        // Store all input parameters used in this step for consistency in future steps
+        storeUsedInputsInContext(context, pathParams, queryParams, headerParams, bodyFields);
+        
+        log.debug("Step {}: Stored {} input parameters and {} output fields in context for consistency", 
+                stepNumber, 
+                pathParams.size() + queryParams.size() + headerParams.size() + bodyFields.size(),
+                span.getOutputFields().size());
 
         /* 7. Process children with hierarchical numbering -------------------------- */
         gotoChildren(span, tc, context, stepNumber, variantIndex);
@@ -476,6 +535,37 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         // but uses trace data dependencies
         
         // TODO: Implement sophisticated dependency analysis based on trace field matching
+    }
+
+    /**
+     * Store all input parameters used in this step in the context for consistency in subsequent steps.
+     * This ensures that if the same parameter is needed again (e.g., loginId), we reuse the same value
+     * instead of generating a new one, maintaining consistency across the test case.
+     */
+    private void storeUsedInputsInContext(Map<String, String> context, 
+                                         Map<String, String> pathParams,
+                                         Map<String, String> queryParams, 
+                                         Map<String, String> headerParams,
+                                         Map<String, String> bodyFields) {
+        // Store path parameters with "input." prefix for consistency tracking
+        for (Map.Entry<String, String> entry : pathParams.entrySet()) {
+            context.put("input." + entry.getKey(), entry.getValue());
+        }
+        
+        // Store query parameters with "input." prefix for consistency tracking  
+        for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+            context.put("input." + entry.getKey(), entry.getValue());
+        }
+        
+        // Store header parameters with "input." prefix for consistency tracking
+        for (Map.Entry<String, String> entry : headerParams.entrySet()) {
+            context.put("input." + entry.getKey(), entry.getValue());
+        }
+        
+        // Store body fields with "input." prefix for consistency tracking
+        for (Map.Entry<String, String> entry : bodyFields.entrySet()) {
+            context.put("input." + entry.getKey(), entry.getValue());
+        }
     }
 
     /**
@@ -567,6 +657,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         String opName = step.getOperationName();
         String serviceName = step.getServiceName();
         
+
+        
         // Skip login/auth related operations (case-insensitive)
         if (opName != null && serviceName != null) {
             String opLower = opName.toLowerCase();
@@ -577,7 +669,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 serviceLower.contains("login") || serviceLower.contains("auth") ||
                 opLower.contains("signin") || opLower.contains("token")) {
                 // This is likely a login/auth operation, skip it
-                log.debug("Skipping login/auth operation: {} in service {}", opName, serviceName);
             } else {
                 // This looks like a business API operation
                 // Try to extract HTTP method and path for better naming
@@ -596,19 +687,52 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         verb = serviceMatcher.group(1).toLowerCase(Locale.ROOT);
                         route = serviceMatcher.group(2);
                     } else {
-                        // Check if we can extract from attributes/tags
-                        Map<String, String> outputs = step.getOutputFields();
-                        String httpMethod = outputs.get("http.method");
-                        String httpTarget = outputs.get("http.target");
-                        String httpUrl = outputs.get("http.url");
-                        
-                        if (httpMethod != null && (httpTarget != null || httpUrl != null)) {
-                            verb = httpMethod.toLowerCase(Locale.ROOT);
-                            route = httpTarget != null ? httpTarget : extractPathFromUrl(httpUrl);
-                        } else if (httpMethod != null) {
-                            // If we only have the method, try to construct a meaningful name
-                            verb = httpMethod.toLowerCase(Locale.ROOT);
-                            route = serviceName.replaceAll("[^a-zA-Z0-9_]", "_"); // Use service name as route
+                        // For simple HTTP method operations, use the operation name as method
+                        // and try to extract the path from the service context
+                        if (opName.matches("^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)$")) {
+                            verb = opName.toLowerCase(Locale.ROOT);
+                            
+                            // Try to get HTTP target from trace data
+                            Map<String, String> outputs = step.getOutputFields();
+                            Map<String, String> inputs = step.getInputFields();
+                            
+                            String httpTarget = outputs.get("http.target");
+                            String httpUrl = outputs.get("http.url");
+                            
+                            // Also check input fields as fallback
+                            if (httpTarget == null) httpTarget = inputs.get("http.target");
+                            if (httpUrl == null) httpUrl = inputs.get("http.url");
+                            
+                            if (httpTarget != null) {
+                                route = httpTarget;
+                            } else if (httpUrl != null) {
+                                route = extractPathFromUrl(httpUrl);
+                            } else {
+                                // Use service name as fallback to create a meaningful route
+                                route = "/api/v1/" + serviceName.replace("ts-", "").replace("-service", "");
+                            }
+                        } else {
+                            // Check if we can extract from attributes/tags for other formats
+                            Map<String, String> outputs = step.getOutputFields();
+                            Map<String, String> inputs = step.getInputFields();
+                            
+                            String httpMethod = outputs.get("http.method");
+                            String httpTarget = outputs.get("http.target");
+                            String httpUrl = outputs.get("http.url");
+                            
+                            // Also check input fields as fallback
+                            if (httpMethod == null) httpMethod = inputs.get("http.method");
+                            if (httpTarget == null) httpTarget = inputs.get("http.target");
+                            if (httpUrl == null) httpUrl = inputs.get("http.url");
+                            
+                            if (httpMethod != null && (httpTarget != null || httpUrl != null)) {
+                                verb = httpMethod.toLowerCase(Locale.ROOT);
+                                route = httpTarget != null ? httpTarget : extractPathFromUrl(httpUrl);
+                            } else if (httpMethod != null) {
+                                // If we only have the method, try to construct a meaningful name
+                                verb = httpMethod.toLowerCase(Locale.ROOT);
+                                route = "/api/v1/" + serviceName.replace("ts-", "").replace("-service", "");
+                            }
                         }
                     }
                 }
@@ -616,11 +740,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 // Return a descriptive name if we can extract method and path
                 if (verb != null && route != null) {
                     String descriptiveName = verb.toUpperCase() + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
-                    log.debug("Found first business API operation: {} {} -> {}", verb, route, descriptiveName);
                     return descriptiveName;
                 } else {
                     // Fallback to original operation name
-                    log.debug("Found first business API operation: {} in service {}", opName, serviceName);
                     return opName;
                 }
             }
@@ -638,24 +760,296 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
+     * Group scenarios by their root API (method + path) to enable parameter sharing
+     */
+    private Map<String, List<WorkflowScenario>> groupScenariosByRootApi() {
+        Map<String, List<WorkflowScenario>> groups = new LinkedHashMap<>();
+        
+        for (WorkflowScenario sc : scenarios) {
+            String rootApiKey = getRootApiKey(sc);
+            if (rootApiKey != null) {
+                groups.computeIfAbsent(rootApiKey, k -> new ArrayList<>()).add(sc);
+                log.info("Grouped scenario {} under root API: {}", sc.getSourceFileName(), rootApiKey);
+            } else {
+                // Fallback: use scenario-specific key for scenarios without clear root API
+                String fallbackKey = "scenario_" + sc.getSourceFileName();
+                groups.computeIfAbsent(fallbackKey, k -> new ArrayList<>()).add(sc);
+                log.warn("Using fallback key for scenario {}: {}", sc.getSourceFileName(), fallbackKey);
+            }
+        }
+        
+        log.info("=== GROUPED {} scenarios into {} root API groups ===", scenarios.size(), groups.size());
+        for (Map.Entry<String, List<WorkflowScenario>> entry : groups.entrySet()) {
+            log.info("Root API '{}' has {} scenarios", entry.getKey(), entry.getValue().size());
+        }
+        
+        return groups;
+    }
+
+    /**
+     * Extract root API key (method_path) from a scenario's first business operation
+     */
+    private String getRootApiKey(WorkflowScenario scenario) {
+        for (WorkflowStep rootStep : scenario.getRootSteps()) {
+            String apiKey = extractRootApiFromStep(rootStep);
+            if (apiKey != null) {
+                return apiKey;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Recursively find the first business API operation and return method_path key
+     */
+    private String extractRootApiFromStep(WorkflowStep step) {
+        String opName = step.getOperationName();
+        String serviceName = step.getServiceName();
+        
+        // Skip login/auth related operations
+        if (opName != null && serviceName != null) {
+            String opLower = opName.toLowerCase();
+            String serviceLower = serviceName.toLowerCase();
+            
+            if (opLower.contains("login") || opLower.contains("auth") || 
+                serviceLower.contains("login") || serviceLower.contains("auth") ||
+                opLower.contains("signin") || opLower.contains("token")) {
+                // Skip login/auth operations
+            } else {
+                // Try to extract HTTP method and path
+                String verb = null, route = null;
+                
+                // Check various operation name formats
+                Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
+                if (httpMatcher.matches()) {
+                    verb = httpMatcher.group(1).toLowerCase();
+                    route = httpMatcher.group(2);
+                } else {
+                    // Try service-prefixed format
+                    Pattern servicePattern = Pattern.compile(".*?\\s+(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+(.+)$", Pattern.CASE_INSENSITIVE);
+                    Matcher serviceMatcher = servicePattern.matcher(opName);
+                    if (serviceMatcher.matches()) {
+                        verb = serviceMatcher.group(1).toLowerCase();
+                        route = serviceMatcher.group(2);
+                    } else {
+                        // Try extracting from trace data
+                        Map<String, String> outputs = step.getOutputFields();
+                        String httpMethod = outputs.get("http.method");
+                        String httpTarget = outputs.get("http.target");
+                        String httpUrl = outputs.get("http.url");
+                        
+                        if (httpMethod != null && (httpTarget != null || httpUrl != null)) {
+                            verb = httpMethod.toLowerCase();
+                            route = httpTarget != null ? httpTarget : extractPathFromUrl(httpUrl);
+                        }
+                    }
+                }
+                
+                if (verb != null && route != null) {
+                    return verb.toUpperCase() + "_" + route;
+                }
+            }
+        }
+        
+        // Check children recursively
+        for (WorkflowStep child : step.getChildren()) {
+            String apiKey = extractRootApiFromStep(child);
+            if (apiKey != null) {
+                return apiKey;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Generate shared parameter pools for each root API group
+     */
+    private void generateSharedParameterPools(Map<String, List<WorkflowScenario>> groupedScenarios) {
+        log.info("=== GENERATING SHARED PARAMETER POOLS ===");
+        
+        for (Map.Entry<String, List<WorkflowScenario>> entry : groupedScenarios.entrySet()) {
+            String rootApiKey = entry.getKey();
+            List<WorkflowScenario> scenariosInGroup = entry.getValue();
+            
+            log.info("Generating shared parameters for root API: {} (scenarios: {})", 
+                    rootApiKey, scenariosInGroup.size());
+            
+            // Use the first scenario in the group to extract parameter structure
+            WorkflowScenario representativeScenario = scenariosInGroup.get(0);
+            Map<String, List<String>> parameterPool = generateParameterPoolForRootApi(representativeScenario, rootApiKey);
+            
+            sharedParameterPools.put(rootApiKey, parameterPool);
+            
+            log.info("Generated parameter pool for '{}' with {} parameters", 
+                    rootApiKey, parameterPool.size());
+        }
+        
+        log.info("=== COMPLETED: {} shared parameter pools generated ===", sharedParameterPools.size());
+    }
+
+    /**
+     * Generate a parameter pool for a specific root API using the first scenario as reference
+     */
+    private Map<String, List<String>> generateParameterPoolForRootApi(WorkflowScenario scenario, String rootApiKey) {
+        Map<String, List<String>> parameterPool = new HashMap<>();
+        
+        // Find the first business API step to extract its parameters
+        WorkflowStep firstBusinessStep = findFirstBusinessStep(scenario);
+        if (firstBusinessStep == null) {
+            log.warn("No business step found for root API: {}", rootApiKey);
+            return parameterPool;
+        }
+        
+        // Extract HTTP operation info
+        String service = firstBusinessStep.getServiceName();
+        String opName = firstBusinessStep.getOperationName();
+        
+        String verb = null, route = null;
+        Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
+        if (httpMatcher.matches()) {
+            verb = httpMatcher.group(1).toLowerCase();
+            route = httpMatcher.group(2);
+        } else {
+            // Try extracting from trace data
+            Map<String, String> outputs = firstBusinessStep.getOutputFields();
+            String httpMethod = outputs.get("http.method");
+            String httpTarget = outputs.get("http.target");
+            
+            if (httpMethod != null && httpTarget != null) {
+                verb = httpMethod.toLowerCase();
+                route = httpTarget;
+            }
+        }
+        
+        if (verb == null || route == null) {
+            log.warn("Could not extract HTTP method/path for root API: {}", rootApiKey);
+            return parameterPool;
+        }
+        
+        // Get service configuration
+        TestConfigurationObject cfg = serviceConfigs.get(service);
+        if (cfg == null) {
+            log.warn("No configuration for service '{}' for root API: {}", service, rootApiKey);
+            return parameterPool;
+        }
+        
+        Operation opCfg = findOperation(cfg, verb, route);
+        if (opCfg == null) {
+            log.warn("No operation config for {} {} in service '{}' for root API: {}", verb, route, service, rootApiKey);
+            return parameterPool;
+        }
+        
+        // Generate parameter values for all parameters in this operation
+        if (opCfg.getTestParameters() != null && useLLM) {
+            for (TestParameter p : opCfg.getTestParameters()) {
+                ParameterInfo info = new ParameterInfo();
+                info.setName(p.getName());
+                info.setDescription(p.getDescription());
+                info.setInLocation(p.getIn());
+                info.setType(p.getType());
+                info.setFormat(p.getFormat());
+                info.setSchemaType(p.getType());
+                info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
+                info.setRegex(p.getPattern());
+
+                // Stage 1: Get 5 seed values from LLM
+                List<String> llmSeedValues = llmGen.generateParameterValues(info);
+                
+                if (!llmSeedValues.isEmpty()) {
+                    // Stage 2: Expand using semantic models to get more variants
+                    List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
+                    parameterPool.put(p.getName(), expandedValues);
+                    
+                    log.info("Generated shared pool for parameter '{}': {} values", 
+                            p.getName(), expandedValues.size());
+                } else {
+                    // Fallback values
+                    List<String> fallbackValues = new ArrayList<>();
+                    for (int i = 0; i < 15; i++) {
+                        fallbackValues.add("LLM_EMPTY_" + i);
+                    }
+                    parameterPool.put(p.getName(), fallbackValues);
+                    log.warn("LLM returned no values for parameter '{}', using fallback", p.getName());
+                }
+            }
+        }
+        
+        return parameterPool;
+    }
+
+    /**
+     * Find the first business step (non-login) in a scenario
+     */
+    private WorkflowStep findFirstBusinessStep(WorkflowScenario scenario) {
+        for (WorkflowStep rootStep : scenario.getRootSteps()) {
+            WorkflowStep businessStep = findFirstBusinessStepRecursive(rootStep);
+            if (businessStep != null) {
+                return businessStep;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Recursively find the first business step
+     */
+    private WorkflowStep findFirstBusinessStepRecursive(WorkflowStep step) {
+        String opName = step.getOperationName();
+        String serviceName = step.getServiceName();
+        
+        // Skip login/auth operations
+        if (opName != null && serviceName != null) {
+            String opLower = opName.toLowerCase();
+            String serviceLower = serviceName.toLowerCase();
+            
+            if (!(opLower.contains("login") || opLower.contains("auth") || 
+                  serviceLower.contains("login") || serviceLower.contains("auth") ||
+                  opLower.contains("signin") || opLower.contains("token"))) {
+                return step; // This is a business step
+            }
+        }
+        
+        // Check children
+        for (WorkflowStep child : step.getChildren()) {
+            WorkflowStep businessStep = findFirstBusinessStepRecursive(child);
+            if (businessStep != null) {
+                return businessStep;
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Extract API name from a processed step call (guaranteed to have valid HTTP method/path)
+     */
+    private String extractApiNameFromStep(MultiServiceTestCase.StepCall step) {
+        if (step == null) return null;
+        
+        String method = step.getMethod() != null && step.getMethod().getMethod() != null 
+                        ? step.getMethod().getMethod().toUpperCase() 
+                        : "GET";
+        String path = step.getPath();
+        
+        if (path != null && !path.isEmpty()) {
+            // Create a clean file-safe name from method and path
+            String apiName = method + "_" + path.replaceAll("[^a-zA-Z0-9_]", "_")
+                                              .replaceAll("_+", "_")
+                                              .replaceAll("^_|_$", "");
+            
+            return apiName;
+        }
+        
+        return null;
+    }
+
+    /**
      * Read variant count from properties file with fallback to defaults
      */
     private int getVariantCountFromProperties() {
         try {
-            // Debug: Print all system properties related to test generation
-            log.info("DEBUG: Checking variant count properties...");
-            log.info("DEBUG: System property 'test.variants.per.scenario' = {}", System.getProperty("test.variants.per.scenario"));
-            log.info("DEBUG: System property 'testsperoperation' = {}", System.getProperty("testsperoperation"));
-            
-            // Try to read from system properties first (set by TestGenerationAndExecution)
-            String variantsProp = System.getProperty("test.variants.per.scenario");
-            if (variantsProp != null) {
-                int count = Integer.parseInt(variantsProp);
-                log.info("✅ Using test.variants.per.scenario from properties: {}", count);
-                return count;
-            }
-            
-            // Try testsperoperation as fallback
+            // Try testsperoperation first (this is the main property for test count)
             String testsProp = System.getProperty("testsperoperation");
             if (testsProp != null) {
                 int count = Integer.parseInt(testsProp);
@@ -663,12 +1057,20 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 return count;
             }
             
-            // Default behavior - FIXED to generate 10 variants as requested
-            int defaultCount = useLLM ? 10 : 1; // Changed from 4 to 10 to match user requirement
-            log.warn("❌ No variant count found in properties, using default: {} (useLLM={})", defaultCount, useLLM);
+            // Try test.variants.per.scenario as fallback
+            String variantsProp = System.getProperty("test.variants.per.scenario");
+            if (variantsProp != null) {
+                int count = Integer.parseInt(variantsProp);
+                log.info("✅ Using test.variants.per.scenario from properties: {}", count);
+                return count;
+            }
+            
+            // Default behavior
+            int defaultCount = 1;
+            log.warn("❌ No variant count found in properties, using default: {}", defaultCount);
             return defaultCount;
         } catch (NumberFormatException e) {
-            int defaultCount = useLLM ? 10 : 1; // Changed from 4 to 10 to match user requirement
+            int defaultCount = 1;
             log.warn("❌ Invalid variant count in properties, using default: {} (error: {})", defaultCount, e.getMessage());
             return defaultCount;
         }

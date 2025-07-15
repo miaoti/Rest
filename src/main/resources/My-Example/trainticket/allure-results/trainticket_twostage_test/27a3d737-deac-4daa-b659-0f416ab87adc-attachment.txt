@@ -1,1 +1,0 @@
-{"basicPriceRate":"10.99","firstClassPriceRate":"650.50","id":"12345","routeId":"Xyzzy","trainType":"freight wagon"}

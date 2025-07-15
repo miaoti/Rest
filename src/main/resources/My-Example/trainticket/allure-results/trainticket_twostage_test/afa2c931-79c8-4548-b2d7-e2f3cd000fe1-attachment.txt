@@ -1,1 +1,0 @@
-{"distanceList":"-2","distances":"100","endStation":"Boston south station","id":"abcde","loginId":"jane.smith012","startStation":"Los Angeles Union Station","stationList":"Chicago union station","stations":"Boston logan international airport"}
