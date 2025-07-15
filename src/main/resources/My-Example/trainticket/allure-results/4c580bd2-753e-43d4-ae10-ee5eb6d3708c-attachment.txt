@@ -1,0 +1,1 @@
+{"distanceList":"0.01","distances":"789","endStation":"west end bus stop","id":"xyz789","loginId":"John_doe_987654321","startStation":"Los Angeles Terminal","stationList":"Boston logan international airport","stations":"Chicago Loop"}

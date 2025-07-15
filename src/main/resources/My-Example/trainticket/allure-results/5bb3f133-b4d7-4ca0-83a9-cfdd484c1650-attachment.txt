@@ -1,0 +1,1 @@
+{"distanceList":"25.34","distances":"0","endStation":"union square","id":"Test123","loginId":"guest2022","startStation":"Los Angeles Terminal","stationList":"Chicago O'Hare International Airport","stations":"New york station"}

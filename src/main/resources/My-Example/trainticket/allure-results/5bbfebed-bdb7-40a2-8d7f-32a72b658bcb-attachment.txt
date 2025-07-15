@@ -1,0 +1,1 @@
+{"distanceList":"0.01","endStation":"union square","id":"Xyz789","startStation":"los angeles terminal","stationList":"Los Angeles Union Square Bus Terminal"}

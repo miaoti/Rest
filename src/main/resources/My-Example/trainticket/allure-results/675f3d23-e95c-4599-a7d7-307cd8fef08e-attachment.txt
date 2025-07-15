@@ -1,0 +1,1 @@
+{"distanceList":"25.34","endStation":"West end bus stop","id":"buf","startStation":"chicago loop","stationList":"Boston Logan International Airport"}

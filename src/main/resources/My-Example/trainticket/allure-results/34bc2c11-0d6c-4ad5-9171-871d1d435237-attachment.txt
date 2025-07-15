@@ -1,0 +1,1 @@
+{"distanceList":"25.34","distances":"0","endStation":"Central Station","id":"Test123","loginId":"john_doe_987654321","startStation":"Los angeles terminal","stationList":"Chicago O'Hare International Airport","stations":"San francisco powell street"}

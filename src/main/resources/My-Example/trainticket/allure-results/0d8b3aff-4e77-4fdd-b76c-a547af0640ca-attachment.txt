@@ -1,0 +1,1 @@
+{"accountId":"Klmno","boughtDate":"2022-07-18t09:15:00z","coachNumber":"37","contactsDocumentNumber":"A-bcd-efgh","contactsName":"Jane smith","documentType":"2","from":"last month","id":"xyz789","price":"10.99","seatClass":"luxury","seatNumber":"b6","status":"204","to":"Phoenix","trainNumber":"mnopqr","travelDate":"2025-06-18","travelTime":"2025-03-10T12:00Z"}

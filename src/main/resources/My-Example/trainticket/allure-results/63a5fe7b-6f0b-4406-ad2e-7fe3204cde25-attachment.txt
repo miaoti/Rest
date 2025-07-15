@@ -1,0 +1,1 @@
+{"distanceList":"789.65","distances":"10","endStation":"union square","id":"xyz789","loginId":"user1","startStation":"Chicago Loop","stationList":"San Francisco Fisherman's Wharf","stations":"New York Station"}

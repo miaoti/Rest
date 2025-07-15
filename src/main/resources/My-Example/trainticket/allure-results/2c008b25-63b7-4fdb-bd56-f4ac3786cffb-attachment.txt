@@ -1,0 +1,1 @@
+{"basicPriceRate":"349.79","firstClassPriceRate":"1.99","id":"abcde","routeId":"qwert","trainType":"higher"}

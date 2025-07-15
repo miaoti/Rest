@@ -1,0 +1,1 @@
+{"distanceList":"-10","distances":"BORDER_=","endStation":"west end bus stop","id":"0987654321","loginId":"test_user_123","startStation":"new york city station","stationList":"Boston logan international airport","stations":"Los Angeles Metro Center"}

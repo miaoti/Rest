@@ -1,0 +1,1 @@
+{"basicPriceRate":"-8.25","firstClassPriceRate":"23.99","id":"Xyz789","routeId":"Qwert","trainType":"Freight"}
