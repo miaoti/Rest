@@ -1,0 +1,1 @@
+{"distanceList":"nan","distances":"45","endStation":"times square","id":"12345","loginId":"users","startStation":"New york penn station","stationList":"Station A","stations":"Los angeles union station"}

@@ -1,0 +1,1 @@
+{"distanceList":"mam","distances":"10","endStation":"union square","id":"Sydney_measured_####kbps","loginId":"users","startStation":"San Francisco International Terminal","stationList":"Landmark C","stations":"Chicago O'Hare International Airport"}

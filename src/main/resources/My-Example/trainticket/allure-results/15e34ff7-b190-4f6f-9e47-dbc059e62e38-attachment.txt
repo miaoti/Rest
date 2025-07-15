@@ -1,0 +1,1 @@
+{"basicPriceRate":"78.32","firstClassPriceRate":"10.99","id":"Abcde","routeId":"printf","trainType":"diesel_locomotive"}

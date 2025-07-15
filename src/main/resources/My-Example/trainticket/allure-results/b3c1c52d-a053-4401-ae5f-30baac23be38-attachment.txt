@@ -1,0 +1,1 @@
+{"basicPriceRate":"1000.00","firstClassPriceRate":"10.99","id":"User_01","routeId":"printf","trainType":"freight train"}

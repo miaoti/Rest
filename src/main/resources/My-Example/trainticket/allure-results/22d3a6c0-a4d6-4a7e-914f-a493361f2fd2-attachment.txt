@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"Sydney_measured_####kbps","trainType":"locomotive","routeId":"buf","basicPriceRate":0.99,"firstClassPriceRate":60.5}}

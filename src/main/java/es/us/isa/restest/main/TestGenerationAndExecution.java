@@ -160,10 +160,12 @@ public class TestGenerationAndExecution {
 		if ("MST".equals(TestGenerationAndExecution.generator)) {
 			// MST mode: generate once and write multiple files
 			logger.info("Running MST mode - generating multi-service test files");
+			logger.info("ISOLATION MODE: Each run will generate and execute only newly generated tests");
 			
 			// Generate unique test class name
 			String id = IDGenerator.generateTimeId();
 			String className = testClassName + "_" + id;
+			logger.info("Generated unique test identifier: {}", className);
 			
 			// Set up writer
 			if (writer instanceof MultiServiceRESTAssuredWriter) {
@@ -184,11 +186,13 @@ public class TestGenerationAndExecution {
 			
 			// Write test cases using MultiServiceRESTAssuredWriter (creates multiple files)
 			logger.info("Writing {} test cases to multiple files in folder structure", testCases.size());
+			logger.info("TARGET: All test files will be in timestamped package: {}.{}", packageName, className);
 			writer.write(testCases);
 			
 			// Execute tests if enabled
 			if (executeTestCases) {
 				logger.info("Executing generated test cases");
+				logger.info("ISOLATION: Only executing tests from current run (timestamp: {})", id);
 				// For MST mode, find the actual generated test classes and execute them individually
 				String actualPackageName = packageName + "." + className;
 				executeGeneratedTestsWithJUnit(actualPackageName, className);
@@ -196,6 +200,8 @@ public class TestGenerationAndExecution {
 				// Generate Allure report using the existing AllureReportManager
 				if (allureReports && reportManager != null) {
 					logger.info("Generating Allure report using AllureReportManager");
+					logger.info("ALLURE REPORT: Will contain only results from current run");
+					logger.info("NOTE: Multiple test classes from this run will appear as separate test suites in one report");
 					reportManager.generateReport();
 				}
 			}
@@ -207,6 +213,7 @@ public class TestGenerationAndExecution {
 			}
 			
 			logger.info("Iteration 1. {} test cases generated.", testCases.size());
+			logger.info("SUMMARY: Generated and executed only newly created tests from timestamp: {}", id);
 			logger.info("Stopped after 1 iterations (max.iterations limit reached)");
 			
 		} else {
@@ -650,11 +657,15 @@ public class TestGenerationAndExecution {
 	/**
 	 * Execute generated test classes using direct JUnit execution optimized for IntelliJ
 	 * Programmatically adds AspectJ weaving support for Allure step capture
+	 * ENHANCED: Better isolation to ensure only newly generated tests are executed
 	 */
 	private static void executeGeneratedTestsWithJUnit(String fullPackageName, String className) {
 		logger.info("Executing generated tests for package: {} and class: {} (IntelliJ mode)", fullPackageName, className);
 		
 		try {
+			// ENHANCED: Clean old compiled test classes to avoid conflicts
+			cleanOldCompiledTestClasses(fullPackageName);
+			
 			// Set up Allure environment for IntelliJ
 			setupAllureForIntelliJ();
 			
@@ -667,6 +678,7 @@ public class TestGenerationAndExecution {
 			
 			if (testClassDir.exists() && testClassDir.isDirectory()) {
 				logger.info("Searching for test classes in: {}", testClassDir.getAbsolutePath());
+				logger.info("ISOLATION: Only looking in the specific timestamped directory to avoid old tests");
 				
 				// Look for all .java files directly in the package directory
 				File[] javaFiles = testClassDir.listFiles((dir, name) -> name.endsWith(".java"));
@@ -719,7 +731,7 @@ public class TestGenerationAndExecution {
 				return;
 			}
 			
-			logger.info("Found {} test classes to execute", testClassNames.size());
+			logger.info("Found {} test classes to execute (NEWLY GENERATED ONLY)", testClassNames.size());
 			
 			// *** CRITICAL FIX: Ensure Java 11 environment for IntelliJ ***
 			logger.info("Setting up Java 11 environment for IntelliJ execution...");
@@ -769,6 +781,7 @@ public class TestGenerationAndExecution {
 			
 			// Execute tests using JUnit with proper Allure integration for IntelliJ
 			logger.info("Executing {} test classes with IntelliJ-compatible Allure integration...", testClasses.size());
+			logger.info("ISOLATION: Executing only newly generated tests from timestamp: {}", className);
 			
 			// Create JUnit runner with Allure listener (no custom lifecycle to avoid conflicts)
 			JUnitCore junit = new JUnitCore();
@@ -803,7 +816,7 @@ public class TestGenerationAndExecution {
 			Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 			
 			// Log results
-			logger.info("=== TEST EXECUTION RESULTS ===");
+			logger.info("=== TEST EXECUTION RESULTS (NEWLY GENERATED TESTS ONLY) ===");
 			logger.info("Tests run: {}", result.getRunCount());
 			logger.info("Failures: {}", result.getFailureCount());
 			logger.info("Ignored: {}", result.getIgnoreCount());
@@ -817,9 +830,9 @@ public class TestGenerationAndExecution {
 			}
 			
 			if (result.wasSuccessful()) {
-				logger.info("✅ All tests executed successfully!");
+				logger.info("✅ All newly generated tests executed successfully!");
 			} else {
-				logger.warn("❌ Some tests failed. Check the logs above for details.");
+				logger.warn("❌ Some newly generated tests failed. Check the logs above for details.");
 			}
 			
 		} catch (Exception e) {
@@ -828,8 +841,74 @@ public class TestGenerationAndExecution {
 	}
 	
 	/**
+	 * ENHANCED: Clean old compiled test classes that might interfere with execution
+	 * This ensures only newly compiled classes are available for loading
+	 */
+	private static void cleanOldCompiledTestClasses(String fullPackageName) {
+		try {
+			String baseDir = System.getProperty("user.dir");
+			File testClassesDir = new File(baseDir, "target/test-classes");
+			
+			if (!testClassesDir.exists()) {
+				return; // Nothing to clean
+			}
+			
+			// Clean all .class files except those from the current package
+			String packagePath = fullPackageName.replace('.', '/');
+			File currentPackageDir = new File(testClassesDir, packagePath);
+			
+			// Only clean if we're dealing with a timestamped package (contains underscore and numbers)
+			if (fullPackageName.matches(".*_\\d+")) {
+				logger.info("Cleaning old compiled test classes to ensure isolation...");
+				
+				// Get the base package (e.g., "trainticket_twostage_test")
+				String basePackage = fullPackageName.substring(0, fullPackageName.lastIndexOf('.'));
+				File basePackageDir = new File(testClassesDir, basePackage.replace('.', '/'));
+				
+				if (basePackageDir.exists()) {
+					File[] oldPackageDirs = basePackageDir.listFiles(File::isDirectory);
+					if (oldPackageDirs != null) {
+						int cleanedCount = 0;
+						for (File oldDir : oldPackageDirs) {
+							// Only clean directories that look like old timestamped packages
+							if (!oldDir.equals(currentPackageDir) && oldDir.getName().matches(".*_\\d+")) {
+								if (deleteDirectory(oldDir)) {
+									cleanedCount++;
+									logger.debug("Cleaned old package directory: {}", oldDir.getName());
+								}
+							}
+						}
+						if (cleanedCount > 0) {
+							logger.info("Cleaned {} old compiled test package directories", cleanedCount);
+						}
+					}
+				}
+			}
+			
+		} catch (Exception e) {
+			logger.warn("Could not clean old compiled test classes: {}", e.getMessage());
+		}
+	}
+	
+	/**
+	 * Recursively delete a directory and all its contents
+	 */
+	private static boolean deleteDirectory(File dir) {
+		if (dir.isDirectory()) {
+			File[] files = dir.listFiles();
+			if (files != null) {
+				for (File file : files) {
+					deleteDirectory(file);
+				}
+			}
+		}
+		return dir.delete();
+	}
+	
+	/**
 	 * Fast compilation using built-in Java compiler API
 	 * This is much faster than Maven and ensures Java 11 compatibility
+	 * ENHANCED: Only compiles newly generated test classes to avoid including old tests
 	 */
 	private static boolean compileTestClasses() {
 		try {
@@ -843,15 +922,15 @@ public class TestGenerationAndExecution {
 				testClassesDir.mkdirs();
 			}
 			
-			// Find all Java files to compile
-			List<File> javaFiles = findJavaFiles(testSourceDir);
+			// ENHANCED: Only find Java files in the newly generated test directories
+			List<File> javaFiles = findNewlyGeneratedJavaFiles(testSourceDir);
 			if (javaFiles.isEmpty()) {
-				logger.warn("No Java files found to compile in: {}", testSourceDir);
+				logger.info("No newly generated Java files found to compile in: {}", testSourceDir);
 				return true; // Nothing to compile is not an error
 			}
 			
 			long startTime = System.currentTimeMillis();
-			logger.info("Fast-compiling {} test classes using built-in Java compiler...", javaFiles.size());
+			logger.info("Fast-compiling {} newly generated test classes using built-in Java compiler...", javaFiles.size());
 			
 			// Verify we're using Java 11
 			String javaVersion = System.getProperty("java.version");
@@ -894,7 +973,7 @@ public class TestGenerationAndExecution {
 			
 			if (result == 0) {
 				long duration = System.currentTimeMillis() - startTime;
-				logger.info("✅ Fast compilation completed successfully in {} ms", duration);
+				logger.info("✅ Fast compilation of newly generated tests completed successfully in {} ms", duration);
 				return true;
 			} else {
 				logger.error("❌ Fast compilation failed with exit code: {}", result);
@@ -905,6 +984,48 @@ public class TestGenerationAndExecution {
 		} catch (Exception e) {
 			logger.warn("Fast compilation failed: {} - falling back to Maven", e.getMessage());
 			return fallbackMavenCompilation();
+		}
+	}
+	
+	/**
+	 * ENHANCED: Find only newly generated Java files based on recent modification time
+	 * This prevents old test files from being included in compilation
+	 */
+	private static List<File> findNewlyGeneratedJavaFiles(File dir) {
+		List<File> javaFiles = new ArrayList<>();
+		if (!dir.exists() || !dir.isDirectory()) {
+			return javaFiles;
+		}
+		
+		// Only look for files modified in the last 5 minutes (indicating recent generation)
+		long cutoffTime = System.currentTimeMillis() - (5 * 60 * 1000); // 5 minutes ago
+		
+		findRecentJavaFiles(dir, javaFiles, cutoffTime);
+		
+		// Log what files we found
+		if (!javaFiles.isEmpty()) {
+			logger.info("Found {} recently generated Java files:", javaFiles.size());
+			for (File file : javaFiles) {
+				logger.info("  - {}", file.getAbsolutePath());
+			}
+		}
+		
+		return javaFiles;
+	}
+	
+	/**
+	 * Recursively find Java files modified after the cutoff time
+	 */
+	private static void findRecentJavaFiles(File dir, List<File> javaFiles, long cutoffTime) {
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					findRecentJavaFiles(file, javaFiles, cutoffTime);
+				} else if (file.getName().endsWith(".java") && file.lastModified() > cutoffTime) {
+					javaFiles.add(file);
+				}
+			}
 		}
 	}
 	
@@ -1112,6 +1233,7 @@ public class TestGenerationAndExecution {
 	/**
 	 * Set up Allure environment for IntelliJ execution
 	 * Ensures proper directories and system properties are configured
+	 * ENHANCED: More thorough cleanup to ensure only current run results are included
 	 */
 	private static void setupAllureForIntelliJ() {
 		try {
@@ -1128,14 +1250,28 @@ public class TestGenerationAndExecution {
 			System.setProperty("allure.link.issue.pattern", "");
 			System.setProperty("allure.link.tms.pattern", "");
 			
-			// Clear previous results to avoid conflicts in IntelliJ
+			// ENHANCED: Complete cleanup of previous results to ensure only current run is included
+			logger.info("Cleaning previous Allure results to ensure fresh report generation...");
 			File[] existingFiles = allureResultsDir.listFiles();
 			if (existingFiles != null) {
+				int deletedCount = 0;
 				for (File file : existingFiles) {
-					if (file.isFile() && file.getName().endsWith("-result.json")) {
-						file.delete();
+					if (file.isFile()) {
+						// Delete all Allure result files (not just -result.json)
+						if (file.getName().endsWith("-result.json") || 
+						    file.getName().endsWith("-container.json") || 
+						    file.getName().endsWith("-attachment.txt") ||
+						    file.getName().endsWith("-attachment.json") ||
+						    file.getName().startsWith("environment.") ||
+						    file.getName().equals("categories.json") ||
+						    file.getName().equals("executor.json")) {
+							if (file.delete()) {
+								deletedCount++;
+							}
+						}
 					}
 				}
+				logger.info("Cleaned {} previous Allure result files", deletedCount);
 			}
 			
 			logger.info("Allure environment configured for IntelliJ at: {}", allureResultsDir.getAbsolutePath());
