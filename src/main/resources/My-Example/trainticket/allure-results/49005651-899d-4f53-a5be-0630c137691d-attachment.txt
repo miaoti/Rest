@@ -1,0 +1,1 @@
+{"distanceList":"800","distances":"45.3","endStation":"springfield train station","id":"distinctive","loginId":"User123","startStation":"San francisco international airport","stationList":"tokyo shinjuku station","stations":"downtown crossing"}

@@ -1,1 +1,0 @@
-{"distanceList":"gran","distances":"89.7","endStation":"times square","id":"Sydney_measured_####kbps","loginId":"Admin456","startStation":"San francisco international terminal","stationList":"Monument e","stations":"chicago o'hare international airport"}

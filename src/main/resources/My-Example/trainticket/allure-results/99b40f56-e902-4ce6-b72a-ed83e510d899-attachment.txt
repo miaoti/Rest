@@ -1,1 +1,0 @@
-{"distanceList":"123.45","distances":"10","endStation":"Central station","id":"Abcde","loginId":"users","startStation":"new york penn station","stationList":"Landmark c","stations":"Chicago o'hare international airport"}

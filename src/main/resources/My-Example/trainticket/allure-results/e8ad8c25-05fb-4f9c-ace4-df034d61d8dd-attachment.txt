@@ -1,1 +1,0 @@
-{"distanceList":"50","distances":"25.6","endStation":"chinatown","id":"TRO_temporary_restraining","loginId":"JohnDoe789","startStation":"New york penn station","stationList":"Bus Stop B","stations":"Phoenix Sky Harbor International Airport"}

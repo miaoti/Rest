@@ -1,1 +1,0 @@
-{"distanceList":"123.45","distances":"45","endStation":"Central station","id":"Xyz789","loginId":"users","startStation":"Boston logan international airport","stationList":"Bus Stop B","stations":"new york penn station"}

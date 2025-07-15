@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"8f491b6b-5d96-48a4-80a2-73c40fee6c8a","trainType":"Express Train","routeId":"Route_with_special_characters!@#","basicPriceRate":10.99,"firstClassPriceRate":10.99}}

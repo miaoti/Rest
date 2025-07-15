@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"1de8aa80-0c5f-4c89-a22c-84b0e49c255e","trainType":"locomotive","routeId":"shortest_route","basicPriceRate":1000.0,"firstClassPriceRate":9.99}}

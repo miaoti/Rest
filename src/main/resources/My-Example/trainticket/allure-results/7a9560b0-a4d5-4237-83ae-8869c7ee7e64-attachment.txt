@@ -1,0 +1,1 @@
+{"accountId":"User_123","boughtDate":"1999-06-23T07:15:30Z","coachNumber":"2","contactsDocumentNumber":"A-00123-B4CD","contactsName":"Bob Brown","differenceMoney":"78.34","documentType":"2","from":"Houston","id":"buf","price":"$42.00","seatClass":"2","seatNumber":"c56","status":"301","to":"miami","trainNumber":"Xyz","travelDate":"2029-07-31","travelTime":"2025-08-01T08:00:00"}

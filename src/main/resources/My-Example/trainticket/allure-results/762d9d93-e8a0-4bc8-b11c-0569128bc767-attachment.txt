@@ -1,1 +1,0 @@
-{"distanceList":"nan","distances":"300","endStation":"central station","id":"Abcde","loginId":"Admins","startStation":"new york penn station","stationList":"station a","stations":"chicago o'hare international airport"}

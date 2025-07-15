@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"Sydney_measured_####kbps","trainType":"High-speed","routeId":"routes","basicPriceRate":25.75,"firstClassPriceRate":68.75}}

@@ -1,0 +1,1 @@
+{"distanceList":"450.75","distances":"25.6","endStation":"Borough Hall","id":"buf","loginId":"admin456","startStation":"los angeles union station","stationList":"san francisco union square","stations":"Central station"}
