@@ -75,8 +75,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
         for (Map.Entry<String, List<TestCase>> entry : byScenario.entrySet()) {
             try {
                 writeTestSuite(entry.getValue(), sanitize(entry.getKey()));
-            } catch (RESTestException e) {
-                throw new RuntimeException("Error writing multi‑service test suite", e);
+        } catch (RESTestException e) {
+            throw new RuntimeException("Error writing multi‑service test suite", e);
             }
         }
     }

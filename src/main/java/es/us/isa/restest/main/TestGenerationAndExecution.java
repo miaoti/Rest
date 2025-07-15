@@ -128,9 +128,9 @@ public class TestGenerationAndExecution {
 		// For MST mode, we handle the workflow differently since it generates multiple files
 		if (!"MST".equals(TestGenerationAndExecution.generator)) {
 			runner = new RESTestWorkflow(testClassName, targetDirJava, packageName, spec, confPath, generator, writer,
-					reportManager, statsReportManager);
-			runner.setExecuteTestCases(executeTestCases);
-			runner.setAllureReport(allureReports);
+				reportManager, statsReportManager);
+		runner.setExecuteTestCases(executeTestCases);
+		runner.setAllureReport(allureReports);
 		}
 
 
@@ -198,30 +198,30 @@ public class TestGenerationAndExecution {
 			
 		} else {
 			// Classic mode: use RESTestWorkflow
-			while ((totalNumTestCases == -1 || runner.getNumTestCases() < totalNumTestCases) && 
-			       (maxIterations == -1 || iteration <= maxIterations)) {
+		while ((totalNumTestCases == -1 || runner.getNumTestCases() < totalNumTestCases) && 
+		       (maxIterations == -1 || iteration <= maxIterations)) {
 
-				// Introduce optional delay
-				if (iteration != 1 && timeDelay != -1)
-					delay(timeDelay);
+			// Introduce optional delay
+			if (iteration != 1 && timeDelay != -1)
+				delay(timeDelay);
 
-				// Generate unique test class name to avoid the same class being loaded everytime
-				String id = IDGenerator.generateTimeId();
-				String className = testClassName + "_" + id;
-				((RESTAssuredWriter) writer).setClassName(className);
-				((RESTAssuredWriter) writer).setTestId(id);
-				runner.setTestClassName(className);
-				runner.setTestId(id);
+			// Generate unique test class name to avoid the same class being loaded everytime
+			String id = IDGenerator.generateTimeId();
+			String className = testClassName + "_" + id;
+			((RESTAssuredWriter) writer).setClassName(className);
+			((RESTAssuredWriter) writer).setTestId(id);
+			runner.setTestClassName(className);
+			runner.setTestId(id);
 
-				// Test case generation + execution + test report generation
-				runner.run();
+			// Test case generation + execution + test report generation
+			runner.run();
 
-				logger.info("Iteration {}. {} test cases generated.", iteration, runner.getNumTestCases());
-				iteration++;
-			}
-			
-			if (maxIterations != -1 && iteration > maxIterations) {
-				logger.info("Stopped after {} iterations (max.iterations limit reached)", maxIterations);
+			logger.info("Iteration {}. {} test cases generated.", iteration, runner.getNumTestCases());
+			iteration++;
+		}
+		
+		if (maxIterations != -1 && iteration > maxIterations) {
+			logger.info("Stopped after {} iterations (max.iterations limit reached)", maxIterations);
 			}
 		}
 
@@ -635,7 +635,8 @@ public class TestGenerationAndExecution {
 	public static String getExperimentName(){ return experimentName; }
 
 	/**
-	 * Execute generated test classes using JUnit directly (like the original RESTest)
+	 * Execute generated test classes using Maven Surefire with AspectJ weaver (required for Allure)
+	 * Fixed to use proper Allure AspectJ weaving for step capture
 	 */
 	private static void executeGeneratedTestsWithJUnit(String fullPackageName, String className) {
 		logger.info("Executing generated tests for package: {} and class: {}", fullPackageName, className);
@@ -665,41 +666,49 @@ public class TestGenerationAndExecution {
 				return;
 			}
 			
-			// Set Allure results directory (same as original RESTest pattern)
-			// Use the same path structure as the original RESTest
+			// Set Allure results directory (same as Maven configuration)
 			String allureResultsDirectory = "target/allure-results";
 			System.setProperty("allure.results.directory", allureResultsDirectory);
 			logger.info("Allure results directory set to: {}", allureResultsDirectory);
 			
-			// Execute each test class using JUnit directly (like original RESTest)
-			for (String testClassName : testClassNames) {
-				logger.info("Executing test class: {}", testClassName);
-				
-				try {
-					// Load and compile the test class
-					String filePath = testClassDir.getAbsolutePath() + "/" + testClassName.substring(testClassName.lastIndexOf('.') + 1) + ".java";
-					Class<?> testClass = es.us.isa.restest.util.ClassLoader.loadClass(filePath, testClassName);
-					
-					// Execute the test class using JUnit
-					JUnitCore junit = new JUnitCore();
-					AllureLifecycle allureLifecycle = new AllureLifecycle();
-					junit.addListener(new AllureJunit4(allureLifecycle));
-					
-					Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
-					Result result = junit.run(testClass);
-					Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
-					
-					int successfulTests = result.getRunCount() - result.getFailureCount() - result.getIgnoreCount();
-					logger.info("{} tests run in {} seconds. Successful: {}, Failures: {}, Ignored: {}", 
-						result.getRunCount(), result.getRunTime()/1000, successfulTests, result.getFailureCount(), result.getIgnoreCount());
-					
-				} catch (Exception e) {
-					logger.warn("Could not execute test class {}: {}", testClassName, e.getMessage());
-				}
+			// Execute tests using Maven Surefire with AspectJ weaver (like the POM configuration)
+			// This is necessary because Allure requires AspectJ weaving to capture steps properly
+			logger.info("Executing tests using Maven with AspectJ weaver for proper Allure step capture");
+			
+			Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
+			
+			// Build Maven command with the exact configuration from POM
+			StringBuilder mvnCommand = new StringBuilder("mvn test");
+			
+			// Add test class pattern - execute all test classes in the package
+			mvnCommand.append(" -Dtest=").append(fullPackageName.replace('.', '/')).append("/**");
+			
+			// Skip JaCoCo to avoid bytecode conflicts
+			mvnCommand.append(" -Djacoco.skip=true -Dmaven.jacoco.skip=true");
+			
+			// Set Allure results directory
+			mvnCommand.append(" -Dallure.results.directory=").append(allureResultsDirectory);
+			
+			// Execute the Maven command
+			ProcessBuilder pb = new ProcessBuilder();
+			pb.command("cmd.exe", "/c", mvnCommand.toString());
+			pb.directory(new File(baseDir));
+			pb.inheritIO(); // Show Maven output
+			
+			Process process = pb.start();
+			int exitCode = process.waitFor();
+			
+			Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
+			
+			if (exitCode == 0) {
+				logger.info("Tests executed successfully using Maven Surefire with AspectJ weaver");
+				logger.info("Allure results should now contain proper step information");
+			} else {
+				logger.warn("Maven test execution completed with exit code: {}", exitCode);
 			}
 			
 		} catch (Exception e) {
-			logger.error("Error executing generated tests: {}", e.getMessage());
+			logger.error("Error executing generated tests with Maven: {}", e.getMessage());
 			logger.error("Exception: ", e);
 		}
 	}

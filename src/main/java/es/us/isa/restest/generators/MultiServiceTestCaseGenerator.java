@@ -97,26 +97,26 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
         
         // Determine scenario identifier based on first API call
-        String firstApiName = getFirstApiOperationName(sc);
+            String firstApiName = getFirstApiOperationName(sc);
         String scenarioId;
         
-        if (firstApiName != null && !firstApiName.isEmpty()) {
+            if (firstApiName != null && !firstApiName.isEmpty()) {
             // Make scenario ID unique by adding counter even when we have API name
             scenarioId = firstApiName.replaceAll("[^a-zA-Z0-9_]", "_")
-                                       .replaceAll("_+", "_")
+                                                 .replaceAll("_+", "_")
                                        .replaceAll("^_|_$", "") + "_" + baseCounter;
-        } else {
-            String sourceFileName = sc.getSourceFileName();
-            if (sourceFileName != null && !sourceFileName.isEmpty()) {
-                scenarioId = sourceFileName.replaceAll("[^a-zA-Z0-9_]", "_") + "_" + baseCounter;
             } else {
+                String sourceFileName = sc.getSourceFileName();
+                if (sourceFileName != null && !sourceFileName.isEmpty()) {
+                scenarioId = sourceFileName.replaceAll("[^a-zA-Z0-9_]", "_") + "_" + baseCounter;
+                } else {
                 scenarioId = "Scenario_" + baseCounter;
+                }
             }
-        }
 
         for (int v = 0; v < variantCount; v++) {
             String testName = "test_" + scenarioId + "_" + (v + 1);
-
+            
             MultiServiceTestCase tc = new MultiServiceTestCase(testName);
             tc.setScenarioName(scenarioId);
             
@@ -271,20 +271,20 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             log.warn("No shared pool found for {} {} in root API {}, generating fallback", 
                                     service, p.getName(), currentRootApiKey);
                             
-                            ParameterInfo info = new ParameterInfo();
-                            info.setName(p.getName());
-                            info.setDescription(p.getDescription());
-                            info.setInLocation(p.getIn());
-                            info.setType(p.getType());
-                            info.setFormat(p.getFormat());
-                            info.setSchemaType(p.getType());
-                            info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
-                            info.setRegex(p.getPattern());
+                        ParameterInfo info = new ParameterInfo();
+                        info.setName(p.getName());
+                        info.setDescription(p.getDescription());
+                        info.setInLocation(p.getIn());
+                        info.setType(p.getType());
+                        info.setFormat(p.getFormat());
+                        info.setSchemaType(p.getType());
+                        info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
+                        info.setRegex(p.getPattern());
 
-                            List<String> llmSeedValues = llmGen.generateParameterValues(info);
-                            
-                            if (!llmSeedValues.isEmpty()) {
-                                List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
+                        List<String> llmSeedValues = llmGen.generateParameterValues(info);
+                        
+                        if (!llmSeedValues.isEmpty()) {
+                            List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
                                 val = variantIndex < expandedValues.size() 
                                         ? expandedValues.get(variantIndex) 
                                         : expandedValues.get(variantIndex % expandedValues.size());
@@ -743,7 +743,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     return descriptiveName;
                 } else {
                     // Fallback to original operation name
-                    return opName;
+                return opName;
                 }
             }
         }
