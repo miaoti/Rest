@@ -1,0 +1,1 @@
+{"basicPriceRate":"25.75","firstClassPriceRate":"25.99","id":"unique_id789","routeId":"route_2023","trainType":"standard-coach"}

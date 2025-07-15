@@ -258,315 +258,288 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         // This ensures ALL steps appear in the Allure report regardless of dependencies
                         if (allureReport) {
                             pw.println("        // 🔥 ALWAYS create Allure step - execution decision happens INSIDE");
-                            pw.println("        Allure.step(\"" + escape(stepTitle) + "\", () -> {");
+                            pw.println("        try {");
+                            pw.println("            Allure.step(\"" + escape(stepTitle) + "\", () -> {");
                             
                             // Add step metadata as parameters that will be prominently displayed
-                            pw.println("            Allure.parameter(\"🏢 Service\", \"" + escape(step.getServiceName()) + "\");");
-                            pw.println("            Allure.parameter(\"📡 HTTP Method\", \"" + verb.toUpperCase() + "\");");
-                            pw.println("            Allure.parameter(\"🔗 Endpoint\", \"" + escape(step.getPath()) + "\");");
-                            pw.println("            Allure.parameter(\"✅ Expected Status\", " + step.getExpectedStatus() + ");");
+                            pw.println("                Allure.parameter(\"🏢 Service\", \"" + escape(step.getServiceName()) + "\");");
+                            pw.println("                Allure.parameter(\"📡 HTTP Method\", \"" + verb.toUpperCase() + "\");");
+                            pw.println("                Allure.parameter(\"🔗 Endpoint\", \"" + escape(step.getPath()) + "\");");
+                            pw.println("                Allure.parameter(\"✅ Expected Status\", " + step.getExpectedStatus() + ");");
                             
                             // Add dependency analysis information
                             String stepDepType = getDependencyTypeString(step);
-                            pw.println("            Allure.parameter(\"🔗 Dependency Type\", \"" + stepDepType + "\");");
+                            pw.println("                Allure.parameter(\"🔗 Dependency Type\", \"" + stepDepType + "\");");
                             
                             // Add comprehensive description
-                            pw.println("            Allure.description(\"🎯 **Testing**: " + escape(step.getServiceName()) + "\\n\" +");
-                            pw.println("                             \"📡 **Method**: " + verb.toUpperCase() + "\\n\" +");
-                            pw.println("                             \"🔗 **Path**: " + escape(step.getPath()) + "\\n\" +");
-                            pw.println("                             \"✅ **Expected**: " + step.getExpectedStatus() + "\\n\" +");
-                            pw.println("                             \"🔗 **Dependencies**: " + stepDepType + "\");");
-                            pw.println("            ");
+                            pw.println("                Allure.description(\"🎯 **Testing**: " + escape(step.getServiceName()) + "\\n\" +");
+                            pw.println("                                 \"📡 **Method**: " + verb.toUpperCase() + "\\n\" +");
+                            pw.println("                                 \"🔗 **Path**: " + escape(step.getPath()) + "\\n\" +");
+                            pw.println("                                 \"✅ **Expected**: " + step.getExpectedStatus() + "\\n\" +");
+                            pw.println("                                 \"🔗 **Dependencies**: " + stepDepType + "\");");
+                            pw.println("                ");
                             
                             // 🔥 EXECUTION DECISION INSIDE THE STEP - so it's always shown
-                            pw.println("            // Execution decision analysis - determine if step should execute");
-                            pw.println("            boolean shouldSkip = false;");
-                            pw.println("            String skipReason = \"\";");
-                            pw.println("            String skipCategory = \"\";");
-                            pw.println("            ");
+                            pw.println("                // Execution decision analysis - determine if step should execute");
+                            pw.println("                boolean shouldSkip = false;");
+                            pw.println("                String skipReason = \"\";");
+                            pw.println("                String skipCategory = \"\";");
+                            pw.println("                ");
                             
                             // Check authentication dependency first
-                            pw.println("            // Check authentication dependency");
-                            pw.println("            if (!loginSucceeded.get()) {");
-                            pw.println("                shouldSkip = true;");
-                            pw.println("                skipReason = \"Authentication failed - cannot proceed with authenticated API calls\";");
-                            pw.println("                skipCategory = \"🔐 AUTH_FAILED\";");
-                            pw.println("            }");
+                            pw.println("                // Check authentication dependency");
+                            pw.println("                if (!loginSucceeded.get()) {");
+                            pw.println("                    shouldSkip = true;");
+                            pw.println("                    skipReason = \"Authentication failed - cannot proceed with authenticated API calls\";");
+                            pw.println("                    skipCategory = \"🔐 AUTH_FAILED\";");
+                            pw.println("                }");
                             
                             // Check other dependencies
                             if (!step.getParamDependencies().isEmpty()) {
-                                pw.println("            // Check data dependencies");
-                                pw.println("            else if (false"); // Start with false, then OR the conditions
+                                pw.println("                // Check data dependencies");
+                                pw.println("                else if (false"); // Start with false, then OR the conditions
                                 for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
                                     int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                    pw.println("                || !stepResults.getOrDefault(" + sourceStepIdx + ", false)");
+                                    pw.println("                    || !stepResults.getOrDefault(" + sourceStepIdx + ", false)");
                                 }
-                                pw.println("            ) {");
-                                pw.println("                shouldSkip = true;");
-                                pw.println("                skipReason = \"Required data from previous step(s) is not available\";");
-                                pw.println("                skipCategory = \"📊 DATA_DEPENDENCY\";");
-                                pw.println("            }");
+                                pw.println("                ) {");
+                                pw.println("                    shouldSkip = true;");
+                                pw.println("                    skipReason = \"Required data from previous step(s) is not available\";");
+                                pw.println("                    skipCategory = \"📊 DATA_DEPENDENCY\";");
+                                pw.println("                }");
                             }
                             
                             if (!step.getWorkflowDependencies().isEmpty()) {
-                                pw.println("            // Check workflow dependencies");
-                                pw.println("            else if (false"); // Start with false, then OR the conditions
+                                pw.println("                // Check workflow dependencies");
+                                pw.println("                else if (false"); // Start with false, then OR the conditions
                                 for (Integer workflowDep : step.getWorkflowDependencies()) {
-                                    pw.println("                || !stepResults.getOrDefault(" + workflowDep + ", false)");
+                                    pw.println("                    || !stepResults.getOrDefault(" + workflowDep + ", false)");
                                 }
-                                pw.println("            ) {");
-                                pw.println("                shouldSkip = true;");
-                                pw.println("                skipReason = \"Workflow predecessor step(s) failed\";");
-                                pw.println("                skipCategory = \"🔄 WORKFLOW_DEPENDENCY\";");
-                                pw.println("            }");
+                                pw.println("                ) {");
+                                pw.println("                    shouldSkip = true;");
+                                pw.println("                    skipReason = \"Workflow predecessor step(s) failed\";");
+                                pw.println("                    skipCategory = \"🔄 WORKFLOW_DEPENDENCY\";");
+                                pw.println("                }");
                             }
                             
-                            pw.println("            ");
-                            pw.println("            // Add execution decision as parameter");
-                            pw.println("            if (shouldSkip) {");
-                            pw.println("                Allure.parameter(\"📊 Execution Decision\", \"SKIP - \" + skipCategory);");
-                            pw.println("                Allure.parameter(\"⏭️ Skip Reason\", skipReason);");
-                            pw.println("            } else {");
-                            pw.println("                Allure.parameter(\"📊 Execution Decision\", \"EXECUTE - All dependencies satisfied\");");
-                            pw.println("            }");
-                            pw.println("            ");
+                            pw.println("                ");
+                            pw.println("                // Add execution decision as parameter");
+                            pw.println("                if (shouldSkip) {");
+                            pw.println("                    Allure.parameter(\"📊 Execution Decision\", \"SKIP - \" + skipCategory);");
+                            pw.println("                    Allure.parameter(\"⏭️ Skip Reason\", skipReason);");
+                            pw.println("                } else {");
+                            pw.println("                    Allure.parameter(\"📊 Execution Decision\", \"EXECUTE - All dependencies satisfied\");");
+                            pw.println("                }");
+                            pw.println("                ");
                             
                             // NOW the actual execution or skip logic
-                            pw.println("            if (!shouldSkip) {");
-                            pw.println("                System.out.println(\"✅ EXECUTING: " + escape(stepTitle) + " (dependency analysis passed)\");");
+                            pw.println("                if (!shouldSkip) {");
+                            pw.println("                    System.out.println(\"✅ EXECUTING: " + escape(stepTitle) + " (dependency analysis passed)\");");
                             
                             // Execute the step
-                            pw.println("                try {");
-                            pw.println("                    RequestSpecification req = RestAssured.given();");
-                            pw.println("                    if (loginSucceeded.get()) {");
-                            pw.println("                        req = req.header(\"Authorization\", jwtType + \" \" + jwt);");
-                            pw.println("                    }");
+                            pw.println("                    try {");
+                            pw.println("                        RequestSpecification req = RestAssured.given();");
+                            pw.println("                        if (loginSucceeded.get()) {");
+                            pw.println("                            req = req.header(\"Authorization\", jwtType + \" \" + jwt);");
+                            pw.println("                        }");
                             
                             // Add dependency resolution for parameters
                             for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
                                 String paramName = dep.getKey();
                                 int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                pw.println("                    String " + paramName + "Value = capturedOutputs.get(" + sourceStepIdx + ");");
-                                pw.println("                    if (" + paramName + "Value != null) {");
-                                pw.println("                        // Use captured value from step " + sourceStepIdx);
-                                pw.println("                    }");
-                            }
-                            
-                            // Add path parameters
-                            for (Map.Entry<String, String> pathParam : step.getPathParams().entrySet()) {
-                                pw.println("                    req = req.pathParam(\"" + escape(pathParam.getKey()) + "\", \"" + escape(pathParam.getValue()) + "\");");
-                            }
-                            
-                            // Add query parameters
-                            for (Map.Entry<String, String> queryParam : step.getQueryParams().entrySet()) {
-                                pw.println("                    req = req.queryParam(\"" + escape(queryParam.getKey()) + "\", \"" + escape(queryParam.getValue()) + "\");");
-                            }
-                            
-                            // Add headers
-                            for (Map.Entry<String, String> header : step.getHeaders().entrySet()) {
-                                pw.println("                    req = req.header(\"" + escape(header.getKey()) + "\", \"" + escape(header.getValue()) + "\");");
-                            }
-                            
-                            // Add body for POST/PUT/PATCH requests
-                            if (step.getBody() != null && !step.getBody().trim().isEmpty() && 
-                                (verb.equals("post") || verb.equals("put") || verb.equals("patch"))) {
-                                pw.println("                    req = req.contentType(\"application/json\");");
-                                pw.println("                    req = req.body(\"" + escape(step.getBody()) + "\");");
-                                pw.println("                    Allure.addAttachment(\"📋 Request Body\", \"application/json\", \"" + escape(step.getBody()) + "\");");
-                            }
-                            
-                            // → keep console logging only when we are **not** using the Allure filter
-                            if (loggingEnabled && !allureReport)
-                                pw.println("                    req = req.log().all();");
-
-                            pw.println("                    Response stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
-                            pw.println("                           .then().log().ifValidationFails()");
-                            pw.println("                           .statusCode(" + step.getExpectedStatus() + ")");
-                            pw.println("                           .extract().response();");
-                            
-                            // Capture outputs for future steps
-                            if (!step.getCaptureOutputKeys().isEmpty()) {
-                                pw.println("                    // Capture outputs for future steps");
-                                for (String outputKey : step.getCaptureOutputKeys()) {
-                                    pw.println("                    try {");
-                                    pw.println("                        String captured" + outputKey + " = stepResponse" + stepIdx + ".jsonPath().getString(\"" + outputKey + "\");");
-                                    pw.println("                        if (captured" + outputKey + " != null) {");
-                                    pw.println("                            capturedOutputs.put(" + stepIdx + ", captured" + outputKey + ");");
-                                    pw.println("                        }");
-                                    pw.println("                    } catch (Exception e) {");
-                                    pw.println("                        // Output key '" + outputKey + "' not found in response");
-                                    pw.println("                    }");
+                                pw.println("                        String " + paramName + "Value = capturedOutputs.get(" + sourceStepIdx + ");");
+                                pw.println("                        if (" + paramName + "Value != null) {");
+                                if (step.getMethod().getMethod().equalsIgnoreCase("GET")) {
+                                    pw.println("                            req = req.queryParam(\"" + paramName + "\", " + paramName + "Value);");
+                                } else {
+                                    pw.println("                            // Add to body if needed");
                                 }
+                                pw.println("                        }");
                             }
                             
-                            pw.println("                    stepResults.put(" + stepIdx + ", true);");
-                            pw.println("                    System.out.println(\"✅ " + escape(stepTitle) + " - SUCCESS\");");
-
-                            // ✅ Step completed successfully - capture response details
-                            pw.println("                    // ✅ Step completed successfully - capture response details");
-                            pw.println("                    try {");
-                            pw.println("                        String responseBody = stepResponse" + stepIdx + ".getBody().asString();");
-                            pw.println("                        int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
-                            pw.println("                        long responseTime = stepResponse" + stepIdx + ".getTime();");
-                            pw.println("                        ");
-                            pw.println("                        // Add response as prominently visible attachment");
-                            pw.println("                        Allure.addAttachment(\"📄 Response (Status: \" + actualStatus + \")\", \"application/json\", responseBody);");
-                            pw.println("                        ");
-                            pw.println("                        // Add key metrics as visible parameters");
-                            pw.println("                        Allure.parameter(\"✅ Actual Status\", actualStatus + \" (SUCCESS)\");");
-                            pw.println("                        Allure.parameter(\"⏱️ Response Time\", responseTime + \" ms\");");
-                            pw.println("                        Allure.parameter(\"📊 Result\", \"SUCCESS\");");
-                            pw.println("                    } catch (Exception e) {");
-                            pw.println("                        Allure.addAttachment(\"⚠️ Response Capture Error\", \"text/plain\", e.getMessage());");
-                            pw.println("                    }");
+                            String requestBody = step.getBody() != null ? step.getBody() : "";
+                            if (!requestBody.isEmpty()) {
+                                pw.println("                        String requestBody" + stepIdx + " = \"" + escape(requestBody) + "\";");
+                                pw.println("                        Allure.addAttachment(\"📋 Request Body\", \"application/json\", requestBody" + stepIdx + ");");
+                                pw.println("                        req = req.body(requestBody" + stepIdx + ");");
+                            }
                             
-                            pw.println("                } catch (Throwable t) {");
-                            pw.println("                    stepResults.put(" + stepIdx + ", false);");
-                            pw.println("                    System.out.println(\"❌ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
+                            pw.println("                        Response stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
+                            pw.println("                               .then().log().ifValidationFails()");
+                            pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
+                            pw.println("                               .extract().response();");
+                            pw.println("                        stepResults.put(" + stepIdx + ", true);");
+                            pw.println("                        System.out.println(\"✅ " + escape(stepTitle) + " - SUCCESS\");");
                             
-                            // ❌ Step failed - capture detailed error information
-                            pw.println("                    // ❌ Step failed - capture detailed error information");
-                            pw.println("                    String errorCategory = \"Unknown\";");
-                            pw.println("                    if (t instanceof java.net.ConnectException) {");
-                            pw.println("                        errorCategory = \"🔌 Connection Failed - Service Unreachable\";");
-                            pw.println("                    } else if (t instanceof AssertionError) {");
-                            pw.println("                        errorCategory = \"❗ Assertion Failed - Unexpected Response\";");
-                            pw.println("                    } else if (t instanceof java.net.SocketTimeoutException) {");
-                            pw.println("                        errorCategory = \"⏰ Timeout - Service Too Slow\";");
-                            pw.println("                    } else {");
-                            pw.println("                        errorCategory = \"❓ \" + t.getClass().getSimpleName();");
+                            // Success handling
+                            pw.println("                        // ✅ Step completed successfully - capture response details");
+                            pw.println("                        try {");
+                            pw.println("                            String responseBody = stepResponse" + stepIdx + ".getBody().asString();");
+                            pw.println("                            int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
+                            pw.println("                            long responseTime = stepResponse" + stepIdx + ".getTime();");
+                            pw.println("                            ");
+                            pw.println("                            // Add response as prominently visible attachment");
+                            pw.println("                            Allure.addAttachment(\"📄 Response (Status: \" + actualStatus + \")\", \"application/json\", responseBody);");
+                            pw.println("                            ");
+                            pw.println("                            // Add key metrics as visible parameters");
+                            pw.println("                            Allure.parameter(\"✅ Actual Status\", actualStatus + \" (SUCCESS)\");");
+                            pw.println("                            Allure.parameter(\"⏱️ Response Time\", responseTime + \" ms\");");
+                            pw.println("                            Allure.parameter(\"📊 Result\", \"SUCCESS\");");
+                            pw.println("                        } catch (Exception e) {");
+                            pw.println("                            Allure.addAttachment(\"⚠️ Response Capture Error\", \"text/plain\", e.getMessage());");
+                            pw.println("                        }");
+                            
+                            // Error handling
+                            pw.println("                    } catch (Throwable t) {");
+                            pw.println("                        stepResults.put(" + stepIdx + ", false);");
+                            pw.println("                        System.out.println(\"❌ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
+                            pw.println("                        // ❌ Step failed - capture detailed error information");
+                            pw.println("                        String errorCategory = \"Unknown\";");
+                            pw.println("                        if (t instanceof java.net.ConnectException) {");
+                            pw.println("                            errorCategory = \"🔌 Connection Failed - Service Unreachable\";");
+                            pw.println("                        } else if (t instanceof AssertionError) {");
+                            pw.println("                            errorCategory = \"❗ Assertion Failed - Unexpected Response\";");
+                            pw.println("                        } else if (t instanceof java.net.SocketTimeoutException) {");
+                            pw.println("                            errorCategory = \"⏰ Timeout - Service Too Slow\";");
+                            pw.println("                        } else {");
+                            pw.println("                            errorCategory = \"❓ \" + t.getClass().getSimpleName();");
+                            pw.println("                        }");
+                            pw.println("                        ");
+                            pw.println("                        // Add error details as visible parameters");
+                            pw.println("                        Allure.parameter(\"❌ Error Category\", errorCategory);");
+                            pw.println("                        Allure.parameter(\"💥 Error Message\", t.getMessage());");
+                            pw.println("                        Allure.parameter(\"🔍 Exception Type\", t.getClass().getSimpleName());");
+                            pw.println("                        Allure.parameter(\"📊 Result\", \"FAILED\");");
+                            pw.println("                        ");
+                            pw.println("                        // Create detailed error report");
+                            pw.println("                        StringBuilder errorDetails = new StringBuilder();");
+                            pw.println("                        errorDetails.append(\"🚨 STEP FAILURE REPORT\\n\\n\");");
+                            pw.println("                        errorDetails.append(\"📋 STEP INFO:\\n\");");
+                            pw.println("                        errorDetails.append(\"Service: " + escape(step.getServiceName()) + "\\n\");");
+                            pw.println("                        errorDetails.append(\"Method: " + verb.toUpperCase() + "\\n\");");
+                            pw.println("                        errorDetails.append(\"Path: " + escape(step.getPath()) + "\\n\");");
+                            pw.println("                        errorDetails.append(\"Expected Status: " + step.getExpectedStatus() + "\\n\\n\");");
+                            pw.println("                        errorDetails.append(\"💥 ERROR INFO:\\n\");");
+                            pw.println("                        errorDetails.append(\"Type: \").append(t.getClass().getSimpleName()).append(\"\\n\");");
+                            pw.println("                        errorDetails.append(\"Message: \").append(t.getMessage()).append(\"\\n\\n\");");
+                            pw.println("                        errorDetails.append(\"📚 FULL STACK TRACE:\\n\").append(t.toString());");
+                            pw.println("                        ");
+                            pw.println("                        Allure.addAttachment(\"🚨 Step Failure Details\", \"text/plain\", errorDetails.toString());");
+                            pw.println("                        ");
+                            pw.println("                        // DON'T throw - let other steps execute");
+                            pw.println("                        // Instead, mark step as failed but continue");
                             pw.println("                    }");
-                            pw.println("                    ");
-                            pw.println("                    // Add error details as visible parameters");
-                            pw.println("                    Allure.parameter(\"❌ Error Category\", errorCategory);");
-                            pw.println("                    Allure.parameter(\"💥 Error Message\", t.getMessage());");
-                            pw.println("                    Allure.parameter(\"🔍 Exception Type\", t.getClass().getSimpleName());");
-                            pw.println("                    Allure.parameter(\"📊 Result\", \"FAILED\");");
-                            pw.println("                    ");
-                            pw.println("                    // Create detailed error report");
-                            pw.println("                    StringBuilder errorDetails = new StringBuilder();");
-                            pw.println("                    errorDetails.append(\"🚨 STEP FAILURE REPORT\\n\\n\");");
-                            pw.println("                    errorDetails.append(\"📋 STEP INFO:\\n\");");
-                            pw.println("                    errorDetails.append(\"Service: " + escape(step.getServiceName()) + "\\n\");");
-                            pw.println("                    errorDetails.append(\"Method: " + verb.toUpperCase() + "\\n\");");
-                            pw.println("                    errorDetails.append(\"Path: " + escape(step.getPath()) + "\\n\");");
-                            pw.println("                    errorDetails.append(\"Expected Status: " + step.getExpectedStatus() + "\\n\\n\");");
-                            pw.println("                    errorDetails.append(\"💥 ERROR INFO:\\n\");");
-                            pw.println("                    errorDetails.append(\"Type: \").append(t.getClass().getSimpleName()).append(\"\\n\");");
-                            pw.println("                    errorDetails.append(\"Message: \").append(t.getMessage()).append(\"\\n\\n\");");
-                            pw.println("                    errorDetails.append(\"📚 FULL STACK TRACE:\\n\").append(t.toString());");
-                            pw.println("                    ");
-                            pw.println("                    Allure.addAttachment(\"🚨 Step Failure Details\", \"text/plain\", errorDetails.toString());");
-                            pw.println("                    ");
-                            pw.println("                    // Throw to mark step as failed in Allure");
-                            pw.println("                    throw new RuntimeException(\"Step failed: \" + t.getMessage(), t);");
-                            pw.println("                }");
                             
                             // ELSE - step is skipped
-                            pw.println("            } else {");
-                            pw.println("                // Step is being skipped - show comprehensive skip information");
-                            pw.println("                System.out.println(\"⏭️ SKIPPING: " + escape(stepTitle) + " - \" + skipReason);");
-                            pw.println("                stepResults.put(" + stepIdx + ", false);");
-                            pw.println("                ");
-                            pw.println("                // Add comprehensive skip information as parameters");
-                            pw.println("                Allure.parameter(\"⏭️ Skip Category\", skipCategory);");
-                            pw.println("                Allure.parameter(\"💬 Skip Details\", skipReason);");
-                            pw.println("                Allure.parameter(\"📊 Result\", \"SKIPPED\");");
-                            pw.println("                ");
+                            pw.println("                } else {");
+                            pw.println("                    // Step is being skipped - show comprehensive skip information");
+                            pw.println("                    System.out.println(\"⏭️ SKIPPING: " + escape(stepTitle) + " - \" + skipReason);");
+                            pw.println("                    stepResults.put(" + stepIdx + ", false);");
+                            pw.println("                    ");
+                            pw.println("                    // Add comprehensive skip information as parameters");
+                            pw.println("                    Allure.parameter(\"⏭️ Skip Category\", skipCategory);");
+                            pw.println("                    Allure.parameter(\"💬 Skip Details\", skipReason);");
+                            pw.println("                    Allure.parameter(\"📊 Result\", \"SKIPPED\");");
+                            pw.println("                    ");
                             
                             // Generate detailed dependency analysis report
-                            pw.println("                // Generate detailed dependency analysis report");
-                            pw.println("                StringBuilder dependencyReport = new StringBuilder();");
-                            pw.println("                dependencyReport.append(\"⏭️ STEP SKIP ANALYSIS\\n\\n\");");
-                            pw.println("                dependencyReport.append(\"📋 STEP INFO:\\n\");");
-                            pw.println("                dependencyReport.append(\"Service: " + escape(step.getServiceName()) + "\\n\");");
-                            pw.println("                dependencyReport.append(\"Method: " + verb.toUpperCase() + "\\n\");");
-                            pw.println("                dependencyReport.append(\"Path: " + escape(step.getPath()) + "\\n\");");
-                            pw.println("                dependencyReport.append(\"Expected Status: " + step.getExpectedStatus() + "\\n\\n\");");
-                            pw.println("                dependencyReport.append(\"⏭️ SKIP REASON:\\n\");");
-                            pw.println("                dependencyReport.append(\"Category: \").append(skipCategory).append(\"\\n\");");
-                            pw.println("                dependencyReport.append(\"Details: \").append(skipReason).append(\"\\n\\n\");");
-                            pw.println("                ");
+                            pw.println("                    // Generate detailed dependency analysis report");
+                            pw.println("                    StringBuilder dependencyReport = new StringBuilder();");
+                            pw.println("                    dependencyReport.append(\"⏭️ STEP SKIP ANALYSIS\\n\\n\");");
+                            pw.println("                    dependencyReport.append(\"📋 STEP INFO:\\n\");");
+                            pw.println("                    dependencyReport.append(\"Service: " + escape(step.getServiceName()) + "\\n\");");
+                            pw.println("                    dependencyReport.append(\"Method: " + verb.toUpperCase() + "\\n\");");
+                            pw.println("                    dependencyReport.append(\"Path: " + escape(step.getPath()) + "\\n\");");
+                            pw.println("                    dependencyReport.append(\"Expected Status: " + step.getExpectedStatus() + "\\n\\n\");");
+                            pw.println("                    dependencyReport.append(\"⏭️ SKIP REASON:\\n\");");
+                            pw.println("                    dependencyReport.append(\"Category: \").append(skipCategory).append(\"\\n\");");
+                            pw.println("                    dependencyReport.append(\"Details: \").append(skipReason).append(\"\\n\\n\");");
+                            pw.println("                    ");
                             
                             // Add dependency analysis
-                            pw.println("                // Add dependency analysis");
-                            pw.println("                if (!loginSucceeded.get()) {");
-                            pw.println("                    dependencyReport.append(\"🔐 AUTHENTICATION STATUS: FAILED\\n\");");
-                            pw.println("                    dependencyReport.append(\"Authentication is required for all API calls.\\n\\n\");");
-                            pw.println("                }");
+                            pw.println("                    // Add dependency analysis");
+                            pw.println("                    if (!loginSucceeded.get()) {");
+                            pw.println("                        dependencyReport.append(\"🔐 AUTHENTICATION STATUS: FAILED\\n\");");
+                            pw.println("                        dependencyReport.append(\"Authentication is required for all API calls.\\n\\n\");");
+                            pw.println("                    }");
                             
                             if (!step.getParamDependencies().isEmpty()) {
-                                pw.println("                dependencyReport.append(\"📊 DATA DEPENDENCIES:\\n\");");
+                                pw.println("                    dependencyReport.append(\"📊 DATA DEPENDENCIES:\\n\");");
                                 for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
                                     int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                    pw.println("                boolean dep" + sourceStepIdx + "Success = stepResults.getOrDefault(" + sourceStepIdx + ", false);");
-                                    pw.println("                dependencyReport.append(\"  - Step \" + " + sourceStepIdx + " + \": \" + (dep" + sourceStepIdx + "Success ? \"✅ SUCCESS\" : \"❌ FAILED\") + \"\\n\");");
+                                    pw.println("                    boolean dep" + sourceStepIdx + "Success = stepResults.getOrDefault(" + sourceStepIdx + ", false);");
+                                    pw.println("                    dependencyReport.append(\"  - Step \" + " + sourceStepIdx + " + \": \" + (dep" + sourceStepIdx + "Success ? \"✅ SUCCESS\" : \"❌ FAILED\") + \"\\n\");");
                                 }
-                                pw.println("                dependencyReport.append(\"\\n\");");
+                                pw.println("                    dependencyReport.append(\"\\n\");");
                             }
                             
                             if (!step.getWorkflowDependencies().isEmpty()) {
-                                pw.println("                dependencyReport.append(\"🔄 WORKFLOW DEPENDENCIES:\\n\");");
+                                pw.println("                    dependencyReport.append(\"🔄 WORKFLOW DEPENDENCIES:\\n\");");
                                 for (Integer workflowDep : step.getWorkflowDependencies()) {
-                                    pw.println("                boolean workflowDep" + workflowDep + "Success = stepResults.getOrDefault(" + workflowDep + ", false);");
-                                    pw.println("                dependencyReport.append(\"  - Step \" + " + workflowDep + " + \": \" + (workflowDep" + workflowDep + "Success ? \"✅ SUCCESS\" : \"❌ FAILED\") + \"\\n\");");
+                                    pw.println("                    boolean workflowDep" + workflowDep + "Success = stepResults.getOrDefault(" + workflowDep + ", false);");
+                                    pw.println("                    dependencyReport.append(\"  - Step \" + " + workflowDep + " + \": \" + (workflowDep" + workflowDep + "Success ? \"✅ SUCCESS\" : \"❌ FAILED\") + \"\\n\");");
                                 }
-                                pw.println("                dependencyReport.append(\"\\n\");");
+                                pw.println("                    dependencyReport.append(\"\\n\");");
                             }
                             
-                            pw.println("                dependencyReport.append(\"💡 IMPACT:\\n\");");
-                            pw.println("                dependencyReport.append(\"This step was skipped to prevent cascading failures.\\n\");");
-                            pw.println("                dependencyReport.append(\"Fix the dependency issues above to enable this step.\\n\");");
-                            pw.println("                ");
-                            pw.println("                Allure.addAttachment(\"⏭️ Skip Analysis Report\", \"text/plain\", dependencyReport.toString());");
-                            pw.println("                ");
-                            pw.println("                // Mark step as skipped in Allure using AssumptionViolatedException");
-                            pw.println("                throw new org.junit.AssumptionViolatedException(\"Step skipped: \" + skipReason);");
-                            pw.println("            }");
+                            pw.println("                    dependencyReport.append(\"💡 IMPACT:\\n\");");
+                            pw.println("                    dependencyReport.append(\"This step was skipped to prevent cascading failures.\\n\");");
+                            pw.println("                    dependencyReport.append(\"Fix the dependency issues above to enable this step.\\n\");");
+                            pw.println("                    ");
+                            pw.println("                    Allure.addAttachment(\"⏭️ Skip Analysis Report\", \"text/plain\", dependencyReport.toString());");
+                            pw.println("                    ");
+                            pw.println("                    // DON'T throw exception - let other steps execute");
+                            pw.println("                }");
                             
-                            pw.println("        }); // End of Allure.step()");
+                            pw.println("            }); // End of Allure.step()");
+                            pw.println("        } catch (Exception stepException) {");
+                            pw.println("            // Step execution failed, but don't stop other steps");
+                            pw.println("            System.out.println(\"⚠️ Step wrapper failed for " + escape(stepTitle) + ": \" + stepException.getMessage());");
+                            pw.println("            stepResults.put(" + stepIdx + ", false);");
+                            pw.println("        }");
+                            pw.println("        ");
                             
                         } else {
                             // Non-Allure version - simplified (fallback for when Allure is disabled)
                             pw.println("        // Non-Allure version - simplified execution");
-                            pw.println("        MultiServiceTestCase.ExecutionDecision decision" + stepIdx + ";");
-                            
-                            // Generate the actual decision logic based on step's dependency configuration
-                            if (!step.getParamDependencies().isEmpty()) {
-                                pw.println("        // This step has DATA dependencies");
-                                pw.println("        boolean hasFailedDataDependency = false;");
-                                for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
-                                    int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                    pw.println("        if (!stepResults.getOrDefault(" + sourceStepIdx + ", false)) {");
-                                    pw.println("            hasFailedDataDependency = true;");
-                                    pw.println("        }");
-                                }
-                                pw.println("        if (hasFailedDataDependency) {");
-                                pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
-                                pw.println("                MultiServiceTestCase.SkipReason.DATA_DEPENDENCY_FAILED, ");
-                                pw.println("                \"Required data from previous step(s) is not available\");");
-                                pw.println("        } else {");
-                                pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
+                        pw.println("        MultiServiceTestCase.ExecutionDecision decision" + stepIdx + ";");
+                        
+                        // Generate the actual decision logic based on step's dependency configuration
+                        if (!step.getParamDependencies().isEmpty()) {
+                            pw.println("        // This step has DATA dependencies");
+                            pw.println("        boolean hasFailedDataDependency = false;");
+                            for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
+                                int sourceStepIdx = dep.getValue().sourceStepIndex;
+                                pw.println("        if (!stepResults.getOrDefault(" + sourceStepIdx + ", false)) {");
+                                pw.println("            hasFailedDataDependency = true;");
                                 pw.println("        }");
-                            } else if (!step.getWorkflowDependencies().isEmpty()) {
-                                pw.println("        // This step has WORKFLOW dependencies");
-                                pw.println("        boolean hasFailedWorkflowDependency = false;");
-                                for (Integer workflowDep : step.getWorkflowDependencies()) {
-                                    pw.println("        if (!stepResults.getOrDefault(" + workflowDep + ", false)) {");
-                                    pw.println("            hasFailedWorkflowDependency = true;");
-                                    pw.println("        }");
-                                }
-                                pw.println("        if (hasFailedWorkflowDependency) {");
-                                pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
-                                pw.println("                MultiServiceTestCase.SkipReason.WORKFLOW_DEPENDENCY_FAILED, ");
-                                pw.println("                \"Workflow predecessor step(s) failed\");");
-                                pw.println("        } else {");
-                                pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
-                                pw.println("        }");
-                            } else {
-                                pw.println("        // This step is INDEPENDENT - always execute");
-                                pw.println("        decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
                             }
+                            pw.println("        if (hasFailedDataDependency) {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
+                            pw.println("                MultiServiceTestCase.SkipReason.DATA_DEPENDENCY_FAILED, ");
+                            pw.println("                \"Required data from previous step(s) is not available\");");
+                            pw.println("        } else {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
+                            pw.println("        }");
+                        } else if (!step.getWorkflowDependencies().isEmpty()) {
+                            pw.println("        // This step has WORKFLOW dependencies");
+                            pw.println("        boolean hasFailedWorkflowDependency = false;");
+                            for (Integer workflowDep : step.getWorkflowDependencies()) {
+                                pw.println("        if (!stepResults.getOrDefault(" + workflowDep + ", false)) {");
+                                pw.println("            hasFailedWorkflowDependency = true;");
+                                pw.println("        }");
+                            }
+                            pw.println("        if (hasFailedWorkflowDependency) {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
+                            pw.println("                MultiServiceTestCase.SkipReason.WORKFLOW_DEPENDENCY_FAILED, ");
+                            pw.println("                \"Workflow predecessor step(s) failed\");");
+                            pw.println("        } else {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
+                            pw.println("        }");
+                        } else {
+                            pw.println("        // This step is INDEPENDENT - always execute");
+                            pw.println("        decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
+                        }
                             
                             pw.println("        if (decision" + stepIdx + ".shouldExecute && loginSucceeded.get()) {");
                             pw.println("            System.out.println(\"✅ EXECUTING: " + escape(stepTitle) + "\");");

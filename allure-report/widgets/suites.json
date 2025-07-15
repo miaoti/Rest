@@ -1,15 +1,59 @@
 {
-  "total" : 1,
+  "total" : 5,
   "items" : [ {
-    "uid" : "b18d561ed374bb4e8e7d2823fc28684d",
-    "name" : "DemoImprovedSteps",
+    "uid" : "e9a3238b586986a3310c772a6678ceeb",
+    "name" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1",
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 10,
+      "skipped" : 0,
+      "passed" : 0,
+      "unknown" : 0,
+      "total" : 10
+    }
+  }, {
+    "uid" : "a145f85aa4e0a0f82d75fe8977047c53",
+    "name" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11",
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 10,
+      "skipped" : 0,
+      "passed" : 0,
+      "unknown" : 0,
+      "total" : 10
+    }
+  }, {
+    "uid" : "3b699881f34ed433ac40accd4500497e",
+    "name" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31",
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 6,
+      "skipped" : 0,
+      "passed" : 4,
+      "unknown" : 0,
+      "total" : 10
+    }
+  }, {
+    "uid" : "997c691cb209ada974c00a7b2565e463",
+    "name" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41",
     "statistic" : {
       "failed" : 0,
       "broken" : 0,
-      "skipped" : 1,
-      "passed" : 0,
+      "skipped" : 0,
+      "passed" : 10,
       "unknown" : 0,
-      "total" : 1
+      "total" : 10
+    }
+  }, {
+    "uid" : "9ec17dafc7f1e0e9912e17b9241a2b47",
+    "name" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21",
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 0,
+      "passed" : 10,
+      "unknown" : 0,
+      "total" : 10
     }
   } ]
 }

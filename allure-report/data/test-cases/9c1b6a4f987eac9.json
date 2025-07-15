@@ -1,0 +1,291 @@
+{
+  "uid" : "9c1b6a4f987eac9",
+  "name" : "test_POST_31_9",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31.test_POST_31_9",
+  "historyId" : "bd5ff0277610c12dac0b3bb30b4af2b4",
+  "time" : {
+    "start" : 1752571164656,
+    "stop" : 1752571164845,
+    "duration" : 189
+  },
+  "description" : "Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach.",
+  "descriptionHtml" : "<p>Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication (Login)",
+      "time" : {
+        "start" : 1752571164656,
+        "stop" : 1752571164782,
+        "duration" : 126
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "e615eb0018d58157",
+        "name" : "Request",
+        "source" : "e615eb0018d58157.html",
+        "type" : "text/html",
+        "size" : 659
+      }, {
+        "uid" : "51a5792aa1396a17",
+        "name" : "Request",
+        "source" : "51a5792aa1396a17.html",
+        "type" : "text/html",
+        "size" : 659
+      }, {
+        "uid" : "b2b23485d3f3fb3b",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "b2b23485d3f3fb3b.html",
+        "type" : "text/html",
+        "size" : 1221
+      }, {
+        "uid" : "74579f5d0a6a5a85",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "74579f5d0a6a5a85.html",
+        "type" : "text/html",
+        "size" : 1221
+      }, {
+        "uid" : "51ecbf2319b8f997",
+        "name" : "\uD83D\uDD10 Login Response",
+        "source" : "51ecbf2319b8f997.txt",
+        "type" : "application/json",
+        "size" : 341
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 5,
+      "shouldDisplayMessage" : false
+    }, {
+      "name" : "Step 1: ts-admin-basic-info-service POST /api/v1/adminbasicservice/adminbasic/prices (expect 200)",
+      "time" : {
+        "start" : 1752571164782,
+        "stop" : 1752571164819,
+        "duration" : 37
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "1bfdfcd9af324c9",
+        "name" : "\uD83D\uDCCB Request Body",
+        "source" : "1bfdfcd9af324c9.txt",
+        "type" : "application/json",
+        "size" : 122
+      }, {
+        "uid" : "6b8f994121733cfa",
+        "name" : "Request",
+        "source" : "6b8f994121733cfa.html",
+        "type" : "text/html",
+        "size" : 1545
+      }, {
+        "uid" : "1d5125c83b3d23e5",
+        "name" : "Request",
+        "source" : "1d5125c83b3d23e5.html",
+        "type" : "text/html",
+        "size" : 1545
+      }, {
+        "uid" : "87b4e7c06fe359c8",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "87b4e7c06fe359c8.html",
+        "type" : "text/html",
+        "size" : 1081
+      }, {
+        "uid" : "1d76f1ab214ef93a",
+        "name" : "HTTP/1.1 200 ",
+        "source" : "1d76f1ab214ef93a.html",
+        "type" : "text/html",
+        "size" : 1081
+      }, {
+        "uid" : "778e2bd63e31af94",
+        "name" : "\uD83D\uDCC4 Response (Status: 200)",
+        "source" : "778e2bd63e31af94.txt",
+        "type" : "application/json",
+        "size" : 161
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false
+    }, {
+      "name" : "Step 2: ts-price-service POST /api/v1/priceservice/prices (expect 201)",
+      "time" : {
+        "start" : 1752571164819,
+        "stop" : 1752571164844,
+        "duration" : 25
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "b582345c6d91c15",
+        "name" : "\uD83D\uDCCB Request Body",
+        "source" : "b582345c6d91c15.txt",
+        "type" : "application/json",
+        "size" : 122
+      }, {
+        "uid" : "bbb879ac1ad6cc40",
+        "name" : "Request",
+        "source" : "bbb879ac1ad6cc40.html",
+        "type" : "text/html",
+        "size" : 1513
+      }, {
+        "uid" : "1a10083dbc0c2d8e",
+        "name" : "Request",
+        "source" : "1a10083dbc0c2d8e.html",
+        "type" : "text/html",
+        "size" : 1513
+      }, {
+        "uid" : "f51d6ab0540d0559",
+        "name" : "HTTP/1.1 201 ",
+        "source" : "f51d6ab0540d0559.html",
+        "type" : "text/html",
+        "size" : 1081
+      }, {
+        "uid" : "c02879915a574836",
+        "name" : "HTTP/1.1 201 ",
+        "source" : "c02879915a574836.html",
+        "type" : "text/html",
+        "size" : 1081
+      }, {
+        "uid" : "500dc8c2bba234f9",
+        "name" : "\uD83D\uDCC4 Response (Status: 201)",
+        "source" : "500dc8c2bba234f9.txt",
+        "type" : "application/json",
+        "size" : 161
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "hasContent" : true,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false
+    } ],
+    "attachments" : [ {
+      "uid" : "344d8796dffd528c",
+      "name" : "Test Execution Summary",
+      "source" : "344d8796dffd528c.txt",
+      "type" : "text/plain",
+      "size" : 151
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 3,
+    "hasContent" : true,
+    "attachmentsCount" : 18,
+    "shouldDisplayMessage" : false
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_POST_31_9"
+  }, {
+    "name" : "suite",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31"
+  }, {
+    "name" : "host",
+    "value" : "CSGRAD08"
+  }, {
+    "name" : "thread",
+    "value" : "58540@CSGRAD08.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "testType",
+    "value" : "Complete Success"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "feature",
+    "value" : "Microservice Workflow"
+  }, {
+    "name" : "story",
+    "value" : "test_POST_31_9"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "⏱️ Response Time",
+    "value" : "18 ms"
+  }, {
+    "name" : "⏱️ Response Time",
+    "value" : "28 ms"
+  }, {
+    "name" : "✅ Actual Status",
+    "value" : "200 (SUCCESS)"
+  }, {
+    "name" : "✅ Actual Status",
+    "value" : "201 (SUCCESS)"
+  }, {
+    "name" : "✅ Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "✅ Expected Status",
+    "value" : "201"
+  }, {
+    "name" : "✅ Login Status",
+    "value" : "SUCCESS"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "Authentication Service"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-price-service"
+  }, {
+    "name" : "\uD83D\uDC64 Username",
+    "value" : "admin"
+  }, {
+    "name" : "\uD83D\uDCCA Execution Decision",
+    "value" : "EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDCCA Result",
+    "value" : "SUCCESS"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD11 Token Obtained",
+    "value" : "Yes"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/adminbasicservice/adminbasic/prices"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/priceservice/prices"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/users/login"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "9c1b6a4f987eac9.json",
+  "parameterValues" : [ "18 ms", "28 ms", "200 (SUCCESS)", "201 (SUCCESS)", "200", "201", "SUCCESS", "Authentication Service", "ts-admin-basic-info-service", "ts-price-service", "admin", "EXECUTE - All dependencies satisfied", "SUCCESS", "POST", "Yes", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/adminbasicservice/adminbasic/prices", "/api/v1/priceservice/prices", "/api/v1/users/login" ]
+}

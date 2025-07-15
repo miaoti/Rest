@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.99","firstClassPriceRate":"32.85","id":"buf","routeId":"path","trainType":"High-speed"}

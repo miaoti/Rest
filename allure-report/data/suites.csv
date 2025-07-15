@@ -1,5 +1,155 @@
 "Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
-"skipped","Tue Jul 15 00:13:38 CDT 2025","Tue Jul 15 00:13:40 CDT 2025","1516","","DemoImprovedSteps","","DemoImprovedSteps","demonstrateEnhancedStepVisualization","demonstrateEnhancedStepVisualization","🎯 **Testing**: ts-order-service
-📡 **Method**: GET
-🔗 **Path**: /api/v1/orderservice/order/1
-✅ **Expected**: 200"
+"broken","Tue Jul 15 04:19:28 CDT 2025","Tue Jul 15 04:19:28 CDT 2025","199","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_9","test_POST_1_9","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:29 CDT 2025","Tue Jul 15 04:19:30 CDT 2025","194","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_6","test_POST_11_6","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:24 CDT 2025","Tue Jul 15 04:19:24 CDT 2025","189","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_9","test_POST_31_9","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:29 CDT 2025","Tue Jul 15 04:19:29 CDT 2025","184","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_2","test_POST_11_2","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:28 CDT 2025","Tue Jul 15 04:19:28 CDT 2025","188","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_10","test_POST_1_10","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:27 CDT 2025","Tue Jul 15 04:19:27 CDT 2025","192","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_4","test_POST_1_4","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:26 CDT 2025","Tue Jul 15 04:19:27 CDT 2025","234","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_10","test_POST_21_10","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:28 CDT 2025","Tue Jul 15 04:19:28 CDT 2025","184","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_7","test_POST_1_7","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:23 CDT 2025","Tue Jul 15 04:19:23 CDT 2025","265","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_3","test_POST_31_3","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:26 CDT 2025","Tue Jul 15 04:19:26 CDT 2025","195","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_9","test_POST_21_9","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:21 CDT 2025","Tue Jul 15 04:19:21 CDT 2025","296","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_5","test_GET_41_5","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:23 CDT 2025","Tue Jul 15 04:19:23 CDT 2025","256","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_4","test_POST_31_4","🎯 **Testing**: ts-price-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/priceservice/prices
+✅ **Expected**: 201
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:25 CDT 2025","Tue Jul 15 04:19:25 CDT 2025","208","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_1","test_POST_21_1","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:22 CDT 2025","Tue Jul 15 04:19:22 CDT 2025","233","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_7","test_GET_41_7","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:21 CDT 2025","Tue Jul 15 04:19:21 CDT 2025","203","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_4","test_GET_41_4","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:24 CDT 2025","Tue Jul 15 04:19:25 CDT 2025","192","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_10","test_POST_31_10","🎯 **Testing**: ts-price-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/priceservice/prices
+✅ **Expected**: 201
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:25 CDT 2025","Tue Jul 15 04:19:25 CDT 2025","200","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_3","test_POST_21_3","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:29 CDT 2025","Tue Jul 15 04:19:29 CDT 2025","145","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_3","test_POST_11_3","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:22 CDT 2025","Tue Jul 15 04:19:23 CDT 2025","231","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_1","test_POST_31_1","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:21 CDT 2025","Tue Jul 15 04:19:21 CDT 2025","211","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_3","test_GET_41_3","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:30 CDT 2025","Tue Jul 15 04:19:30 CDT 2025","199","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_7","test_POST_11_7","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:19 CDT 2025","Tue Jul 15 04:19:20 CDT 2025","1219","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_10","test_GET_41_10","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:28 CDT 2025","Tue Jul 15 04:19:29 CDT 2025","191","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_1","test_POST_11_1","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:24 CDT 2025","Tue Jul 15 04:19:24 CDT 2025","199","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_7","test_POST_31_7","🎯 **Testing**: ts-admin-basic-info-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminbasicservice/adminbasic/prices
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:29 CDT 2025","Tue Jul 15 04:19:29 CDT 2025","204","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_5","test_POST_11_5","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:24 CDT 2025","Tue Jul 15 04:19:24 CDT 2025","228","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_8","test_POST_31_8","🎯 **Testing**: ts-price-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/priceservice/prices
+✅ **Expected**: 201
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:26 CDT 2025","Tue Jul 15 04:19:26 CDT 2025","199","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_6","test_POST_21_6","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:30 CDT 2025","Tue Jul 15 04:19:30 CDT 2025","191","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_8","test_POST_11_8","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:20 CDT 2025","Tue Jul 15 04:19:20 CDT 2025","223","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_1","test_GET_41_1","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:27 CDT 2025","Tue Jul 15 04:19:27 CDT 2025","155","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_1","test_POST_1_1","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:22 CDT 2025","Tue Jul 15 04:19:22 CDT 2025","256","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_8","test_GET_41_8","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:22 CDT 2025","Tue Jul 15 04:19:22 CDT 2025","371","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_9","test_GET_41_9","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:25 CDT 2025","Tue Jul 15 04:19:25 CDT 2025","192","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_2","test_POST_21_2","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:26 CDT 2025","Tue Jul 15 04:19:26 CDT 2025","200","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_7","test_POST_21_7","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:27 CDT 2025","Tue Jul 15 04:19:28 CDT 2025","141","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_6","test_POST_1_6","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:30 CDT 2025","Tue Jul 15 04:19:30 CDT 2025","208","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_10","test_POST_11_10","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:24 CDT 2025","Tue Jul 15 04:19:24 CDT 2025","166","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_6","test_POST_31_6","🎯 **Testing**: ts-admin-basic-info-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminbasicservice/adminbasic/prices
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:23 CDT 2025","Tue Jul 15 04:19:24 CDT 2025","186","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_5","test_POST_31_5","🎯 **Testing**: ts-price-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/priceservice/prices
+✅ **Expected**: 201
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:27 CDT 2025","Tue Jul 15 04:19:27 CDT 2025","190","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_3","test_POST_1_3","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:21 CDT 2025","Tue Jul 15 04:19:22 CDT 2025","238","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_6","test_GET_41_6","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:25 CDT 2025","Tue Jul 15 04:19:25 CDT 2025","199","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_4","test_POST_21_4","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:30 CDT 2025","Tue Jul 15 04:19:30 CDT 2025","195","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_9","test_POST_11_9","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:26 CDT 2025","Tue Jul 15 04:19:26 CDT 2025","202","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_8","test_POST_21_8","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:27 CDT 2025","Tue Jul 15 04:19:27 CDT 2025","179","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_2","test_POST_1_2","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:29 CDT 2025","Tue Jul 15 04:19:29 CDT 2025","188","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_11","test_POST_11_4","test_POST_11_4","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:25 CDT 2025","Tue Jul 15 04:19:26 CDT 2025","197","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminorderservice_adminorder_21","test_POST_21_5","test_POST_21_5","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."
+"broken","Tue Jul 15 04:19:27 CDT 2025","Tue Jul 15 04:19:27 CDT 2025","180","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_5","test_POST_1_5","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"broken","Tue Jul 15 04:19:28 CDT 2025","Tue Jul 15 04:19:28 CDT 2025","201","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminrouteservice_adminroute_1","test_POST_1_8","test_POST_1_8","🎯 **Testing**: ts-admin-route-service
+📡 **Method**: POST
+🔗 **Path**: /api/v1/adminrouteservice/adminroute
+✅ **Expected**: 200
+🔗 **Dependencies**: INDEPENDENT (can execute regardless of other step results)"
+"passed","Tue Jul 15 04:19:20 CDT 2025","Tue Jul 15 04:19:21 CDT 2025","291","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.GET_api_v1_adminorderservice_adminorder_41","test_GET_41_2","test_GET_41_2","Microservice test scenario with 3 steps. Generated using two-stage LLM + semantic expansion approach."
+"passed","Tue Jul 15 04:19:23 CDT 2025","Tue Jul 15 04:19:23 CDT 2025","219","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","","trainticket_twostage_test.TrainTicketTwoStageTest_1752569887665.POST_api_v1_adminbasicservice_adminbasic_prices_31","test_POST_31_2","test_POST_31_2","Microservice test scenario with 2 steps. Generated using two-stage LLM + semantic expansion approach."

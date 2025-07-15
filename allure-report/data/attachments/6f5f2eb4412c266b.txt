@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"uniqueness","trainType":"high-speed","routeId":"12345","basicPriceRate":5.49,"firstClassPriceRate":19.95}}
