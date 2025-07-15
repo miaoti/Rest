@@ -1,1 +1,0 @@
-{"distanceList":"0.001","distances":"25.6","endStation":"New York Penn Station","id":"Qwerty_keyboard","loginId":"User123","startStation":"boston logan international airport","stationList":"Washington D.C. Union Station","stations":"grand central terminal"}

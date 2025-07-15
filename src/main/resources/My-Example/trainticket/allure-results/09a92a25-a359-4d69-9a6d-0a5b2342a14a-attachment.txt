@@ -1,1 +1,0 @@
-{"distanceList":"0.001","endStation":"Boston logan international airport","id":"Abcde","startStation":"boston logan international airport","stationList":"Boston logan international airport"}

@@ -1,1 +1,0 @@
-{"basicPriceRate":"3.49","firstClassPriceRate":"12345.67","id":"zxcvbnm","routeId":"printf","trainType":"intermodal"}

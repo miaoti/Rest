@@ -1,1 +1,0 @@
-{"distanceList":"100.234","distances":"789","endStation":"los angeles union station","id":"12345","loginId":"Admin456","startStation":"San Francisco Chinatown Market","stationList":"Boston logan international airport","stations":"Union square"}

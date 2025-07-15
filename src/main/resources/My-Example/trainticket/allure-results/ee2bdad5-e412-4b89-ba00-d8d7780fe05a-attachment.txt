@@ -1,1 +1,0 @@
-{"distanceList":"789","endStation":"Chicago o'hare international airport","id":"7890","startStation":"Boston logan international airport","stationList":"Chicago Union Passenger Terminal"}

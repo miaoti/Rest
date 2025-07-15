@@ -1,1 +1,0 @@
-{"distanceList":"0.001","distances":"-5    # edge case: negative value","endStation":"Los Angeles Union Station","id":"Qwerty","loginId":"Sydney_measured_####kbps","startStation":"chicago loop train station","stationList":"Boston Logan International Airport","stations":"Downtown Crossing"}

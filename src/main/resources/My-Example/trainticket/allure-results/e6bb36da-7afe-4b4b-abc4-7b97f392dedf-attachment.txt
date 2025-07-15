@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.01","firstClassPriceRate":"10.5","id":"abcde","routeId":"uniqueness","trainType":"crewmembers"}
