@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.95","firstClassPriceRate":"BORDER_=","id":"buf","routeId":"User_request_789","trainType":"HighSpeedRailway"}

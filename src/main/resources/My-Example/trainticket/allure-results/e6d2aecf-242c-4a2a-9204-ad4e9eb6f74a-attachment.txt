@@ -1,0 +1,1 @@
+{"basicPriceRate":"89.99","firstClassPriceRate":"10.5","id":"Abcde","routeId":"illustration","trainType":"expresstrain"}

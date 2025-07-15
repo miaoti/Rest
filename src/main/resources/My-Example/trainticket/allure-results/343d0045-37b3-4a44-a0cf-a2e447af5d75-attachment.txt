@@ -1,0 +1,1 @@
+{"distanceList":"-3.14","distances":"34","endStation":"New york - grand central","id":"abcde","loginId":"User123","startStation":"boston south station","stationList":"Chicago loop","stations":"san francisco international airport"}
