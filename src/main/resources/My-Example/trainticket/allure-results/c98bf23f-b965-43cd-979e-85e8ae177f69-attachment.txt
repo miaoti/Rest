@@ -1,1 +1,0 @@
-{"basicPriceRate":"3.49","firstClassPriceRate":"234.99","id":"Qwerty_keyboard","routeId":"distinctive","trainType":"Locomotive"}

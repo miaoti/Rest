@@ -1,1 +1,0 @@
-{"basicPriceRate":"12.95","firstClassPriceRate":"75.6","id":"abcde","routeId":"xyz7890","trainType":"Crew"}

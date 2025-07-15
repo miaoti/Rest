@@ -1,1 +1,0 @@
-{"accountId":"xyz789","boughtDate":"2021-06-19","coachNumber":"4","contactsDocumentNumber":"nbc","contactsName":"charlie davis","differenceMoney":"5. \"-$50\"","documentType":"256","from":"nyc","id":"qwerty","price":"25.45","seatClass":"450","seatNumber":"h6","status":"500","to":"denver","trainNumber":"ABC123","travelDate":"2023-10-05","travelTime":"2024-01-15t12:30:00z"}

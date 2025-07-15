@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.01","firstClassPriceRate":"234.99","id":"Abcde","routeId":"yyyy","trainType":"aimless_nobodies"}

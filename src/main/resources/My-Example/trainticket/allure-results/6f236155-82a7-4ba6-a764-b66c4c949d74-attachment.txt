@@ -1,1 +1,0 @@
-{"distanceList":"0.001","distances":"-5    # edge case: negative value","endStation":"boston logan international airport","id":"12345","loginId":"admins","startStation":"Boston logan international airport","stationList":"Boston logan international airport","stations":"Downtown crossing"}

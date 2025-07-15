@@ -1,1 +1,0 @@
-{"distanceList":"100.234","distances":"34  # Edge case: contains a space (though not typical)","endStation":"Los Angeles Union Station","id":"Qwerty_keyboard","loginId":"dave","startStation":"Los angeles union square bus terminal","stationList":"chicago union passenger terminal","stations":"Union Square"}

@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.75","firstClassPriceRate":"12345.67","id":"Qwerty_keypad","routeId":"xyz7890","trainType":"passenger"}

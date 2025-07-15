@@ -1,1 +1,0 @@
-{"basicPriceRate":"12.95","firstClassPriceRate":"12345.67","id":"qwerty_keyboard","routeId":"unique_route_123","trainType":"passengers"}

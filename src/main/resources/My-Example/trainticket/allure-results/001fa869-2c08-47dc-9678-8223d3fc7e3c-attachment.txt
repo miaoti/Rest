@@ -1,1 +1,0 @@
-{"distanceList":"100.234","distances":"25.6","endStation":"new york penn station","id":"Qwerty_keypad","loginId":"User123","startStation":"boston logan international airport","stationList":"Boston logan international airport","stations":"Union square"}
