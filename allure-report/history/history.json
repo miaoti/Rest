@@ -1,0 +1,22 @@
+{
+  "a53403b9dd55beca46c5ad939e95e5ae" : {
+    "statistic" : {
+      "failed" : 0,
+      "broken" : 0,
+      "skipped" : 1,
+      "passed" : 0,
+      "unknown" : 0,
+      "total" : 1
+    },
+    "items" : [ {
+      "uid" : "7022785dca2cc3f",
+      "status" : "skipped",
+      "statusDetails" : "Step skipped due to dependency failure",
+      "time" : {
+        "start" : 1752556418913,
+        "stop" : 1752556420429,
+        "duration" : 1516
+      }
+    } ]
+  }
+}
