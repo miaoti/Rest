@@ -1,1 +1,0 @@
-{"distanceList":"7 feet","distances":"25.3","endStation":"Boston Logan International Airport","id":"1A2B3C","loginId":"McIntyre_fondly_remembered","startStation":"Los angeles union station","stationList":"grand central terminal","stations":"san francisco 4th street bart"}

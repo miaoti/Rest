@@ -1,1 +1,0 @@
-{"basicPriceRate":"25.75","firstClassPriceRate":"9999.99","id":"brennan","routeId":"yyyy","trainType":"Monorail单轨车"}

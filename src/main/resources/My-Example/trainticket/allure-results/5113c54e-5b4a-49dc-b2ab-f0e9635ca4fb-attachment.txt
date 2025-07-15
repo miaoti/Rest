@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"b761d7c0-e81c-4430-8525-b2703627852f","trainType":"maglev磁悬浮","routeId":"XYZ789","basicPriceRate":49.99,"firstClassPriceRate":9999.99}}

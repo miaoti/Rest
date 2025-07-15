@@ -1,1 +1,0 @@
-{"distanceList":"3 inches","distances":"7.89","endStation":"Boston Logan International Airport","id":"New york city","loginId":"Guest789","startStation":"san francisco international airport","stationList":"Central Station","stations":"Boston south station"}

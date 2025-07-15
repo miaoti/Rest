@@ -1,1 +1,0 @@
-{"distanceList":"10 kilometers","distances":"25.3","endStation":"New york penn station","id":"1a2b3c","loginId":"User123","startStation":"Houston hobby airport","stationList":"Bayside Mall","stations":"Los angeles union station"}

@@ -84,6 +84,12 @@ public class MultiServiceTestCase extends TestCase {
 
         /* dependencies: paramName -> (stepIndex,keyInThatStep) */
         private final Map<String,Dependency> paramDependencies = new LinkedHashMap<>();
+        
+        /* NEW: workflow dependencies: list of step indices this step depends on for workflow flow */
+        private final List<Integer> workflowDependencies = new ArrayList<>();
+        
+        /* NEW: dependency type classification */
+        private DependencyType dependencyType = DependencyType.INDEPENDENT;
 
         public StepCall(String serviceName, Operation method, String path,
                         Map<String,String> pathParams,
@@ -116,6 +122,10 @@ public class MultiServiceTestCase extends TestCase {
         public Map<String,String> getBodyFields(){ return bodyFields; }
         public List<String> getCaptureOutputKeys(){ return captureOutputKeys; }
         public Map<String,Dependency> getParamDependencies(){ return paramDependencies; }
+        
+        /* NEW: getters for enhanced dependency management */
+        public List<Integer> getWorkflowDependencies() { return workflowDependencies; }
+        public DependencyType getDependencyType() { return dependencyType; }
 
         /* helpers for dependency wiring */
         public void addCaptureOutputKey(String key) {
@@ -125,6 +135,51 @@ public class MultiServiceTestCase extends TestCase {
                                        int sourceStepIdx,
                                        String sourceKey) {
             paramDependencies.put(param, new Dependency(sourceStepIdx, sourceKey));
+        }
+        
+        /* NEW: methods for enhanced dependency management */
+        public void addWorkflowDependency(int stepIndex) {
+            if (!workflowDependencies.contains(stepIndex)) {
+                workflowDependencies.add(stepIndex);
+            }
+        }
+        
+        public void setDependencyType(DependencyType type) {
+            this.dependencyType = type;
+        }
+        
+        /**
+         * Check if this step should execute based on the results of previous steps
+         * @param stepResults Map of step index -> success/failure
+         * @return ExecutionDecision indicating whether to execute, skip, or what type of skip
+         */
+        public ExecutionDecision shouldExecute(Map<Integer, Boolean> stepResults) {
+            switch (dependencyType) {
+                case DATA_DEPENDENCY:
+                    // Check if any data dependency failed
+                    for (Dependency dep : paramDependencies.values()) {
+                        if (!stepResults.getOrDefault(dep.sourceStepIndex, false)) {
+                            return new ExecutionDecision(false, SkipReason.DATA_DEPENDENCY_FAILED,
+                                    "Required data from step " + dep.sourceStepIndex + " is not available");
+                        }
+                    }
+                    return new ExecutionDecision(true, null, null);
+                    
+                case WORKFLOW_DEPENDENCY:
+                    // Check if any workflow dependency failed
+                    for (int workflowDep : workflowDependencies) {
+                        if (!stepResults.getOrDefault(workflowDep, false)) {
+                            return new ExecutionDecision(false, SkipReason.WORKFLOW_DEPENDENCY_FAILED,
+                                    "Workflow predecessor step " + workflowDep + " failed");
+                        }
+                    }
+                    return new ExecutionDecision(true, null, null);
+                    
+                case INDEPENDENT:
+                default:
+                    // Independent steps always execute
+                    return new ExecutionDecision(true, null, null);
+            }
         }
 
         public void addParameter(String key, String value) {
@@ -141,6 +196,60 @@ public class MultiServiceTestCase extends TestCase {
         public Dependency(int idx, String key) {
             this.sourceStepIndex = idx;
             this.sourceOutputKey = key;
+        }
+    }
+    
+    /**
+     * NEW: Enum to classify different types of step dependencies
+     */
+    public enum DependencyType {
+        /**
+         * Step needs data output from previous steps to function correctly.
+         * Should be skipped if data dependencies fail.
+         */
+        DATA_DEPENDENCY,
+        
+        /**
+         * Step is part of a workflow sequence and depends on workflow flow.
+         * Should be skipped if workflow predecessors fail.
+         */
+        WORKFLOW_DEPENDENCY,
+        
+        /**
+         * Step can execute independently of other step results.
+         * Should always execute regardless of other failures.
+         */
+        INDEPENDENT
+    }
+    
+    /**
+     * NEW: Result of execution decision for a step
+     */
+    public static class ExecutionDecision {
+        public final boolean shouldExecute;
+        public final SkipReason skipReason;
+        public final String skipMessage;
+        
+        public ExecutionDecision(boolean shouldExecute, SkipReason skipReason, String skipMessage) {
+            this.shouldExecute = shouldExecute;
+            this.skipReason = skipReason;
+            this.skipMessage = skipMessage;
+        }
+    }
+    
+    /**
+     * NEW: Reasons why a step might be skipped
+     */
+    public enum SkipReason {
+        DATA_DEPENDENCY_FAILED("Data dependency failed"),
+        WORKFLOW_DEPENDENCY_FAILED("Workflow dependency failed"),
+        SERVICE_UNAVAILABLE("Service unavailable"),
+        AUTH_FAILED("Authentication failed");
+        
+        public final String description;
+        
+        SkipReason(String description) {
+            this.description = description;
         }
     }
 }

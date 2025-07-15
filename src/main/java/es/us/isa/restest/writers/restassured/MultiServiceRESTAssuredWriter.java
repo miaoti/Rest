@@ -111,7 +111,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("import org.junit.BeforeClass;");
                 pw.println("import org.junit.Test;");
                 pw.println("import java.util.concurrent.atomic.AtomicBoolean;");
+                pw.println("import java.util.Map;");
                 pw.println("import static org.junit.Assert.*;");
+                pw.println("import es.us.isa.restest.testcases.MultiServiceTestCase;");
 
                 if (allureReport) {
                     pw.println("import io.qameta.allure.Allure;");
@@ -211,22 +213,52 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                         pw.println("        // " + escape(stepTitle));
                         
-                        // Check if this step should be executed based on dependencies
-                        pw.println("        boolean shouldExecuteStep" + stepIdx + " = true;");
+                        // NEW: Intelligent dependency-based execution decision
+                        pw.println("        // Intelligent dependency analysis - determine if step should execute");
+                        pw.println("        MultiServiceTestCase.ExecutionDecision decision" + stepIdx + ";");
                         
-                        // Check dependencies based on trace analysis
+                        // Generate the actual decision logic based on step's dependency configuration
+                        String stepDependencyType = getDependencyTypeString(step);
                         if (!step.getParamDependencies().isEmpty()) {
-                            pw.println("        // Check dependencies for " + stepTitle);
+                            pw.println("        // This step has DATA dependencies");
+                            pw.println("        boolean hasFailedDataDependency = false;");
                             for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
                                 int sourceStepIdx = dep.getValue().sourceStepIndex;
                                 pw.println("        if (!stepResults.getOrDefault(" + sourceStepIdx + ", false)) {");
-                                pw.println("            shouldExecuteStep" + stepIdx + " = false;");
-                                pw.println("            // Dependency step " + sourceStepIdx + " failed");
+                                pw.println("            hasFailedDataDependency = true;");
                                 pw.println("        }");
                             }
+                            pw.println("        if (hasFailedDataDependency) {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
+                            pw.println("                MultiServiceTestCase.SkipReason.DATA_DEPENDENCY_FAILED, ");
+                            pw.println("                \"Required data from previous step(s) is not available\");");
+                            pw.println("        } else {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
+                            pw.println("        }");
+                        } else if (!step.getWorkflowDependencies().isEmpty()) {
+                            pw.println("        // This step has WORKFLOW dependencies");
+                            pw.println("        boolean hasFailedWorkflowDependency = false;");
+                            for (Integer workflowDep : step.getWorkflowDependencies()) {
+                                pw.println("        if (!stepResults.getOrDefault(" + workflowDep + ", false)) {");
+                                pw.println("            hasFailedWorkflowDependency = true;");
+                                pw.println("        }");
+                            }
+                            pw.println("        if (hasFailedWorkflowDependency) {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
+                            pw.println("                MultiServiceTestCase.SkipReason.WORKFLOW_DEPENDENCY_FAILED, ");
+                            pw.println("                \"Workflow predecessor step(s) failed\");");
+                            pw.println("        } else {");
+                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
+                            pw.println("        }");
+                        } else {
+                            pw.println("        // This step is INDEPENDENT - always execute");
+                            pw.println("        decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
                         }
+                        pw.println();
                         
-                        pw.println("        if (shouldExecuteStep" + stepIdx + ") {");
+                        // Generate step decision logic with enhanced Allure reporting
+                        pw.println("        if (decision" + stepIdx + ".shouldExecute) {");
+                        pw.println("            System.out.println(\"✅ EXECUTING: " + escape(stepTitle) + " (dependency analysis passed)\");");
 
                         /* --------- Use high-level Allure.step() for prominent step visualization ------------------ */
                         if (allureReport) {
@@ -239,11 +271,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                Allure.parameter(\"🔗 Endpoint\", \"" + escape(step.getPath()) + "\");");
                             pw.println("                Allure.parameter(\"✅ Expected Status\", " + step.getExpectedStatus() + ");");
                             
+                            // Add dependency analysis information
+                            String stepDepType = getDependencyTypeString(step);
+                            pw.println("                Allure.parameter(\"🔗 Dependency Type\", \"" + stepDepType + "\");");
+                            pw.println("                Allure.parameter(\"📊 Execution Decision\", \"EXECUTE - Dependencies satisfied\");");
+                            
                             // Add a description that will be visible in the report
                             pw.println("                Allure.description(\"🎯 **Testing**: " + escape(step.getServiceName()) + "\\n\" +");
                             pw.println("                                 \"📡 **Method**: " + verb.toUpperCase() + "\\n\" +");
                             pw.println("                                 \"🔗 **Path**: " + escape(step.getPath()) + "\\n\" +");
-                            pw.println("                                 \"✅ **Expected**: " + step.getExpectedStatus() + "\");");
+                            pw.println("                                 \"✅ **Expected**: " + step.getExpectedStatus() + "\\n\" +");
+                            pw.println("                                 \"🔗 **Dependencies**: " + stepDepType + "\");");
                         }
 
                         String indent = allureReport ? "                " : "            ";
@@ -380,17 +418,36 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         if (allureReport) {
                             pw.println("            }); // End of Allure.step()");
                         }
-                        pw.println("        } else {   // step skipped due to dependency failure");
+                        pw.println("        } else {   // step skipped due to intelligent dependency analysis");
                         pw.println("            stepResults.put(" + stepIdx + ", false);");
-                        pw.println("            System.out.println(\"⏭️ " + escape(stepTitle) + " - SKIPPED (dependency failed)\");");
+                        pw.println("            System.out.println(\"⏭️ SKIPPING: " + escape(stepTitle) + " - \" + decision" + stepIdx + ".skipReason.description + \" (\" + decision" + stepIdx + ".skipMessage + \")\");");
                         if (allureReport) {
-                            pw.println("            // Create skipped step with visible reason");
+                            pw.println("            // Create detailed skip step with comprehensive reasoning");
                             pw.println("            Allure.step(\"⏭️ " + escape(stepTitle) + " (SKIPPED)\", () -> {");
                             pw.println("                Allure.parameter(\"🏢 Service\", \"" + escape(step.getServiceName()) + "\");");
                             pw.println("                Allure.parameter(\"📡 HTTP Method\", \"" + verb.toUpperCase() + "\");");
                             pw.println("                Allure.parameter(\"🔗 Endpoint\", \"" + escape(step.getPath()) + "\");");
-                            pw.println("                Allure.parameter(\"⏭️ Skip Reason\", \"Dependency failed - previous step(s) failed\");");
-                            pw.println("                throw new org.junit.AssumptionViolatedException(\"Step skipped due to dependency failure\");");
+                            pw.println("                Allure.parameter(\"✅ Expected Status\", " + step.getExpectedStatus() + ");");
+                            
+                            // Add detailed skip information
+                            String skipStepDepType = getDependencyTypeString(step);
+                            pw.println("                Allure.parameter(\"🔗 Dependency Type\", \"" + skipStepDepType + "\");");
+                            pw.println("                Allure.parameter(\"📊 Execution Decision\", \"SKIP\");");
+                            pw.println("                Allure.parameter(\"⏭️ Skip Reason\", decision" + stepIdx + ".skipReason.description);");
+                            pw.println("                Allure.parameter(\"💬 Skip Details\", decision" + stepIdx + ".skipMessage);");
+                            
+                            // Add comprehensive skip analysis description
+                            pw.println("                Allure.description(\"⏭️ **Step Skipped**: " + escape(step.getServiceName()) + "\\n\" +");
+                            pw.println("                                 \"📡 **Method**: " + verb.toUpperCase() + "\\n\" +");
+                            pw.println("                                 \"🔗 **Path**: " + escape(step.getPath()) + "\\n\" +");
+                            pw.println("                                 \"🔗 **Dependency Type**: " + skipStepDepType + "\\n\" +");
+                            pw.println("                                 \"⏭️ **Skip Reason**: \" + decision" + stepIdx + ".skipReason.description + \"\\n\" +");
+                            pw.println("                                 \"💬 **Details**: \" + decision" + stepIdx + ".skipMessage);");
+                            
+                            // Generate detailed dependency analysis report
+                            generateDependencyAnalysisReport(step, stepIdx, pw);
+                            
+                            pw.println("                throw new org.junit.AssumptionViolatedException(\"Step skipped: \" + decision" + stepIdx + ".skipMessage);");
                             pw.println("            });");
                         }
                         pw.println("        }");
@@ -489,6 +546,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
             default: return false;
         }
     }
+    
     private static String escape(String s) {
         return s == null ? "" : s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
@@ -496,6 +554,70 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     private static String sanitize(String s) {
         if (s == null) return "Scenario";
         return s.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("_+", "_").replaceAll("^_|_$", "");
+    }
+    
+    /**
+     * Get human-readable dependency type string for a step
+     */
+    private static String getDependencyTypeString(MultiServiceTestCase.StepCall step) {
+        if (step.getParamDependencies() != null && !step.getParamDependencies().isEmpty()) {
+            return "DATA_DEPENDENCY (needs data from previous steps)";
+        } else if (step.getWorkflowDependencies() != null && !step.getWorkflowDependencies().isEmpty()) {
+            return "WORKFLOW_DEPENDENCY (part of sequential workflow)";
+        } else {
+            return "INDEPENDENT (can execute regardless of other step results)";
+        }
+    }
+    
+    /**
+     * Generate detailed dependency analysis report for Allure
+     */
+    private static void generateDependencyAnalysisReport(MultiServiceTestCase.StepCall step, int stepIdx, PrintWriter pw) {
+        pw.println("                // Generate comprehensive dependency analysis attachment");
+        pw.println("                StringBuilder depAnalysis = new StringBuilder();");
+        pw.println("                depAnalysis.append(\"📋 DEPENDENCY ANALYSIS REPORT\\n\\n\");");
+        pw.println("                depAnalysis.append(\"🔍 Step: \" + " + stepIdx + " + \" - " + escape(step.getServiceName()) + "\\n\");");
+        pw.println("                depAnalysis.append(\"📡 Method: " + (step.getMethod() != null ? step.getMethod().getMethod() : "UNKNOWN") + "\\n\");");
+        pw.println("                depAnalysis.append(\"🔗 Path: " + escape(step.getPath()) + "\\n\\n\");");
+        
+        // Add parameter dependencies analysis
+        if (step.getParamDependencies() != null && !step.getParamDependencies().isEmpty()) {
+            pw.println("                depAnalysis.append(\"💾 DATA DEPENDENCIES:\\n\");");
+            for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
+                pw.println("                depAnalysis.append(\"  • Parameter '" + escape(dep.getKey()) + "' requires data from Step \" + " + dep.getValue().sourceStepIndex + " + \" (field: '" + escape(dep.getValue().sourceOutputKey) + "')\\n\");");
+            }
+            pw.println("                depAnalysis.append(\"\\n\");");
+        }
+        
+        // Add workflow dependencies analysis  
+        if (step.getWorkflowDependencies() != null && !step.getWorkflowDependencies().isEmpty()) {
+            pw.println("                depAnalysis.append(\"🔄 WORKFLOW DEPENDENCIES:\\n\");");
+            for (Integer workflowDep : step.getWorkflowDependencies()) {
+                pw.println("                depAnalysis.append(\"  • Must execute after Step \" + " + workflowDep + " + \" completes successfully\\n\");");
+            }
+            pw.println("                depAnalysis.append(\"\\n\");");
+        }
+        
+        // Add execution decision reasoning
+        pw.println("                depAnalysis.append(\"📊 EXECUTION DECISION LOGIC:\\n\");");
+        pw.println("                depAnalysis.append(\"  Reason: \" + decision" + stepIdx + ".skipReason.description + \"\\n\");");
+        pw.println("                depAnalysis.append(\"  Details: \" + decision" + stepIdx + ".skipMessage + \"\\n\\n\");");
+        
+        // Add step results context
+        pw.println("                depAnalysis.append(\"📈 PREVIOUS STEP RESULTS:\\n\");");
+        pw.println("                for (Map.Entry<Integer, Boolean> result : stepResults.entrySet()) {");
+        pw.println("                    String status = result.getValue() ? \"✅ PASSED\" : \"❌ FAILED\";");
+        pw.println("                    depAnalysis.append(\"  Step \" + result.getKey() + \": \" + status + \"\\n\");");
+        pw.println("                }");
+        pw.println("                depAnalysis.append(\"\\n\");");
+        
+        // Add impact analysis
+        pw.println("                depAnalysis.append(\"🎯 IMPACT ANALYSIS:\\n\");");
+        pw.println("                depAnalysis.append(\"  • This step was skipped to prevent cascading failures\\n\");");
+        pw.println("                depAnalysis.append(\"  • Dependent steps may also be skipped if they rely on this step\\n\");");
+        pw.println("                depAnalysis.append(\"  • Independent steps will continue to execute\\n\");");
+        
+        pw.println("                Allure.addAttachment(\"🔍 Dependency Analysis Report\", \"text/plain\", depAnalysis.toString());");
     }
 
     @Override

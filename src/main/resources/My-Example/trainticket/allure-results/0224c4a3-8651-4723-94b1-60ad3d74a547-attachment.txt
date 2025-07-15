@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"0ea07048-db0e-467a-80dc-d35cb35df9e6","trainType":"Monorail单轨车","routeId":"yyyy","basicPriceRate":25.75,"firstClassPriceRate":9999.99}}

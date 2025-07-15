@@ -1,1 +1,0 @@
-{"distanceList":"3 inches","distances":"25.3","endStation":"Chicago union station","id":"cbs","loginId":"Guest789","startStation":"houston hobby airport","stationList":"union square","stations":"Chicago Union Train Terminal"}

@@ -1,1 +1,0 @@
-{"basicPriceRate":"89.99","firstClassPriceRate":"9999.99","id":"new york city","routeId":"yyyy","trainType":"freight货车"}
