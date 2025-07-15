@@ -1,0 +1,1 @@
+{"distanceList":"100.234","distances":"-5    # edge case: negative value","endStation":"san francisco-oakland international airport","id":"7890","loginId":"Admins","startStation":"new york penn station","stationList":"Chicago Union Passenger Terminal","stations":"Downtown Crossing"}

@@ -1,1 +1,0 @@
-{"distanceList":"450.75","distances":"25.6","endStation":"borough hall","id":"User_456","loginId":"john_doe2023","startStation":"Los Angeles Union Station","stationList":"San Francisco Union Square","stations":"Times square"}

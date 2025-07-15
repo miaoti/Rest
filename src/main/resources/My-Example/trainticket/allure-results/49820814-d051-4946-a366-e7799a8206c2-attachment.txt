@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"25.6","endStation":"lancaster road","id":"distinctive","loginId":"john_doe2023","startStation":"New York Penn Station","stationList":"tokyo shinjuku station","stations":"Central station"}

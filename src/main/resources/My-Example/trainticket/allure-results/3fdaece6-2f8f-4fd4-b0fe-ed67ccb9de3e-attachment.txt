@@ -1,0 +1,1 @@
+{"distanceList":"-10","endStation":"Boston Logan International Airport","id":"7890","startStation":"San francisco chinatown market","stationList":"New York Central Station"}

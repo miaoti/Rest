@@ -1,1 +1,0 @@
-{"distanceList":"800","distances":"25.6","endStation":"Borough hall","id":"unique_id789","loginId":"john_doe2023","startStation":"Los angeles union station","stationList":"Tokyo shinjuku station","stations":"Baker Street"}

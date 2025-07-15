@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"e2ccc913-dfed-46cc-b056-31f26ccf1fb2","trainType":"Standard-coach","routeId":"buf","basicPriceRate":3.99,"firstClassPriceRate":25.99}}

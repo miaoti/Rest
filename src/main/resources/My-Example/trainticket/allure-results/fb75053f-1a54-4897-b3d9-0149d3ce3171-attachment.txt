@@ -1,1 +1,0 @@
-{"basicPriceRate":"3.99","firstClassPriceRate":"25.99","id":"buf","routeId":"buf","trainType":"Standard-coach"}

@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"80","endStation":"Grand central terminal","id":"User_456","loginId":"admins","startStation":"Boston logan international airport","stationList":"sydney central railway station","stations":"Downtown crossing"}

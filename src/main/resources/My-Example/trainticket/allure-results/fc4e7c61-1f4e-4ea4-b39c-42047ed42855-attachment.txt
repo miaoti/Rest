@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"7cf4e3aa-fa2f-4e3d-bf78-6687068a30b2","trainType":"High-speed","routeId":"path","basicPriceRate":10.99,"firstClassPriceRate":32.85}}

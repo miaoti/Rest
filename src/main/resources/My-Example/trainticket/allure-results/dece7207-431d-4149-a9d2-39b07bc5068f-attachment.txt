@@ -1,1 +1,0 @@
-{"distanceList":"800","distances":"9.9","endStation":"borough hall","id":"buf","loginId":"testuser001","startStation":"Chicago O'Hare International Airport","stationList":"london victoria station","stations":"times square"}

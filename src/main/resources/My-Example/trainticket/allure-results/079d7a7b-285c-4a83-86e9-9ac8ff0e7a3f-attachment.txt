@@ -1,0 +1,1 @@
+{"distanceList":"789","distances":"-5    # edge case: negative value","endStation":"los angeles union station","id":"7890","loginId":"bennett","startStation":"new york penn station","stationList":"los angeles union station","stations":"Downtown crossing"}

@@ -1,0 +1,1 @@
+{"distanceList":"0.001","distances":"34  # Edge case: contains a space (though not typical)","endStation":"Boston logan international airport","id":"Abcde","loginId":"johnston","startStation":"boston logan international airport","stationList":"Boston logan international airport","stations":"Times Square"}
