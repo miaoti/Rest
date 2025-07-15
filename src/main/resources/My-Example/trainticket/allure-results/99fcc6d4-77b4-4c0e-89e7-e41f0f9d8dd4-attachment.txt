@@ -1,1 +1,0 @@
-{"basicPriceRate":"6.50","firstClassPriceRate":"0.95","id":"New york city","routeId":"12345","trainType":"Passenger列车"}

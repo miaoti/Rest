@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"abc-def-ghi","trainType":"Freight货车","routeId":"abcde","basicPriceRate":6.5,"firstClassPriceRate":9999.99}}

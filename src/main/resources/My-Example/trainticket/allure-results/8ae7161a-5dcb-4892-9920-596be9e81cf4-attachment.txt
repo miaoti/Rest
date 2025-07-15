@@ -1,1 +1,0 @@
-{"distanceList":"10 kilometers","distances":"7.89","endStation":"New york penn station","id":"New york city","loginId":"member001","startStation":"Chicago Union Terminal","stationList":"Grand central terminal","stations":"San Francisco 4th Street BART"}

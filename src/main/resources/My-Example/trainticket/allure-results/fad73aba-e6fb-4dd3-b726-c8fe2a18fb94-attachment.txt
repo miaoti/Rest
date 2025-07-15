@@ -1,1 +1,0 @@
-{"basicPriceRate":"6.50","firstClassPriceRate":"78.90","id":"user123","routeId":"xyz789","trainType":"highway高速路 trains"}

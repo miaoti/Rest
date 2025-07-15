@@ -1,1 +1,0 @@
-{"distanceList":"10 kilometers","distances":"500","endStation":"New York Penn Station","id":"nbc","loginId":"Sydney_measured_####kbps","startStation":"Chicago Union Terminal","stationList":"Pier 13","stations":"Boston south station"}

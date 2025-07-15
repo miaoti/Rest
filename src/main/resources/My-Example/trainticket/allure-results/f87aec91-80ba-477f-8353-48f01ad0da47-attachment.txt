@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"a7e96008-8240-4578-b2cf-11b1f433407f","trainType":"Passenger列车","routeId":"Xyz789","basicPriceRate":49.99,"firstClassPriceRate":9999.99}}

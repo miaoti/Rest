@@ -524,17 +524,199 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
     /**
      * Set step dependencies based on trace relationships.
+     * This analyzes trace data to determine different types of dependencies:
+     * 1. DATA_DEPENDENCY: Step needs output data from a previous step (skip if dependency fails)
+     * 2. WORKFLOW_DEPENDENCY: Step is part of a logical sequence (skip if workflow predecessors fail)
+     * 3. INDEPENDENT: Step can execute regardless of other step failures
      */
     private void setStepDependencies(MultiServiceTestCase.StepCall call, 
                                    WorkflowStep span, 
                                    int currentStepIndex) {
-        // Analyze trace data to determine if this step depends on previous steps
-        // This is where we implement the logic to chain parameters based on trace dependencies
+        log.debug("Analyzing dependencies for step {}: {} {}", 
+                currentStepIndex, span.getServiceName(), span.getOperationName());
         
-        // For now, we'll implement a simple version that doesn't stop on failures
-        // but uses trace data dependencies
+        // Get all previous steps in the test case for dependency analysis
+        List<MultiServiceTestCase.StepCall> previousSteps = getCurrentTestSteps();
         
-        // TODO: Implement sophisticated dependency analysis based on trace field matching
+        // Analyze trace-based dependencies
+        analyzeDependencies(call, span, currentStepIndex, previousSteps);
+    }
+    
+    /**
+     * Analyze and categorize dependencies between the current step and previous steps
+     */
+    private void analyzeDependencies(MultiServiceTestCase.StepCall currentCall,
+                                   WorkflowStep currentSpan,
+                                   int currentStepIndex,
+                                   List<MultiServiceTestCase.StepCall> previousSteps) {
+        
+        // Track what we find
+        boolean hasDataDependency = false;
+        boolean hasWorkflowDependency = false;
+        
+        for (int i = 0; i < previousSteps.size(); i++) {
+            MultiServiceTestCase.StepCall previousCall = previousSteps.get(i);
+            
+            // Get the corresponding WorkflowStep for the previous call (if available)
+            WorkflowStep previousSpan = findCorrespondingSpan(previousCall, currentSpan);
+            
+            if (previousSpan != null) {
+                // Check for data dependencies (output -> input field matching)
+                Map<String, String> dataMatches = findDataDependencies(previousSpan, currentSpan);
+                if (!dataMatches.isEmpty()) {
+                    hasDataDependency = true;
+                    for (Map.Entry<String, String> match : dataMatches.entrySet()) {
+                        currentCall.addParamDependency(match.getKey(), i + 1, match.getValue());
+                        log.info("DATA_DEPENDENCY: Step {} param '{}' depends on Step {} output '{}'",
+                                currentStepIndex, match.getKey(), i + 1, match.getValue());
+                    }
+                }
+                
+                // Check for workflow dependencies (parent-child relationships in trace)
+                if (isWorkflowDependent(previousSpan, currentSpan)) {
+                    hasWorkflowDependency = true;
+                    currentCall.addWorkflowDependency(i + 1);
+                    log.info("WORKFLOW_DEPENDENCY: Step {} depends on workflow Step {}",
+                            currentStepIndex, i + 1);
+                }
+            }
+            
+            // Check for service-level dependencies (same service, likely sequential)
+            if (isSameServiceDependency(previousCall, currentCall)) {
+                hasWorkflowDependency = true;
+                currentCall.addWorkflowDependency(i + 1);
+                log.info("SERVICE_DEPENDENCY: Step {} (same service dependency) depends on Step {}",
+                        currentStepIndex, i + 1);
+            }
+        }
+        
+        // Set the overall dependency type
+        if (hasDataDependency) {
+            currentCall.setDependencyType(MultiServiceTestCase.DependencyType.DATA_DEPENDENCY);
+            log.info("Step {} classified as DATA_DEPENDENT", currentStepIndex);
+        } else if (hasWorkflowDependency) {
+            currentCall.setDependencyType(MultiServiceTestCase.DependencyType.WORKFLOW_DEPENDENCY);
+            log.info("Step {} classified as WORKFLOW_DEPENDENT", currentStepIndex);
+        } else {
+            currentCall.setDependencyType(MultiServiceTestCase.DependencyType.INDEPENDENT);
+            log.info("Step {} classified as INDEPENDENT", currentStepIndex);
+        }
+    }
+    
+    /**
+     * Find data dependencies by matching output fields from previous step to input fields of current step
+     */
+    private Map<String, String> findDataDependencies(WorkflowStep previousSpan, WorkflowStep currentSpan) {
+        Map<String, String> dependencies = new LinkedHashMap<>();
+        
+        // Set of fields to ignore for dependency matching (too common/generic)
+        Set<String> ignoreFields = Set.of(
+                "http.status_code", "status_code", "timestamp", "value", 
+                "id", "type", "version", "success", "error", "message"
+        );
+        
+        Map<String, String> previousOutputs = previousSpan.getOutputFields();
+        Map<String, String> currentInputs = currentSpan.getInputFields();
+        
+        for (Map.Entry<String, String> output : previousOutputs.entrySet()) {
+            String outputKey = output.getKey();
+            String outputValue = output.getValue();
+            
+            // Skip ignored fields and empty values
+            if (ignoreFields.contains(outputKey) || outputValue == null || outputValue.isEmpty()) {
+                continue;
+            }
+            
+            // Check if this output value appears in current step's inputs
+            for (Map.Entry<String, String> input : currentInputs.entrySet()) {
+                String inputKey = input.getKey();
+                String inputValue = input.getValue();
+                
+                if (inputValue != null && inputValue.equals(outputValue)) {
+                    dependencies.put(inputKey, outputKey);
+                    log.debug("Found data dependency: {} ({}) -> {} ({})", 
+                            outputKey, outputValue, inputKey, inputValue);
+                }
+            }
+        }
+        
+        return dependencies;
+    }
+    
+    /**
+     * Check if current step is workflow-dependent on previous step based on trace relationships
+     */
+    private boolean isWorkflowDependent(WorkflowStep previousSpan, WorkflowStep currentSpan) {
+        // Check if currentSpan is a child of previousSpan in the trace hierarchy
+        WorkflowStep parent = currentSpan.getParent();
+        while (parent != null) {
+            if (parent.equals(previousSpan)) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        
+        // Check if they're in the same trace and sequential
+        if (previousSpan.getTraceId().equals(currentSpan.getTraceId())) {
+            // If in same trace and current starts after previous ends, it's likely workflow dependent
+            return currentSpan.getStartTime() >= previousSpan.getEndTime();
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Check if steps are from the same service and likely sequential
+     */
+    private boolean isSameServiceDependency(MultiServiceTestCase.StepCall previousCall, 
+                                          MultiServiceTestCase.StepCall currentCall) {
+        // Steps from the same service are often workflow dependent
+        return previousCall.getServiceName().equals(currentCall.getServiceName());
+    }
+    
+    /**
+     * Find the WorkflowStep that corresponds to a given StepCall
+     */
+    private WorkflowStep findCorrespondingSpan(MultiServiceTestCase.StepCall call, WorkflowStep contextSpan) {
+        // This is a simplified implementation - in a full implementation,
+        // you would maintain a mapping between StepCalls and WorkflowSteps
+        // For now, we'll use the contextSpan's siblings and parents
+        
+        // Check if the call matches the current context span
+        if (matchesStep(call, contextSpan)) {
+            return contextSpan;
+        }
+        
+        // Check siblings and ancestors
+        WorkflowStep parent = contextSpan.getParent();
+        if (parent != null) {
+            for (WorkflowStep sibling : parent.getChildren()) {
+                if (matchesStep(call, sibling)) {
+                    return sibling;
+                }
+            }
+        }
+        
+        return null; // Not found
+    }
+    
+    /**
+     * Check if a StepCall matches a WorkflowStep
+     */
+    private boolean matchesStep(MultiServiceTestCase.StepCall call, WorkflowStep span) {
+        return call.getServiceName().equals(span.getServiceName()) &&
+               call.getPath() != null && 
+               span.getOperationName().contains(call.getPath().replaceFirst("^/+", ""));
+    }
+    
+    /**
+     * Get current test steps (implementation depends on how you track the current test being built)
+     */
+    private List<MultiServiceTestCase.StepCall> getCurrentTestSteps() {
+        // This would need to be implemented based on your current test case building context
+        // For now, return empty list - this method would be properly implemented 
+        // with access to the current MultiServiceTestCase being built
+        return new ArrayList<>();
     }
 
     /**

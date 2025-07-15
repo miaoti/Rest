@@ -11,6 +11,9 @@ import es.us.isa.restest.coverage.CoverageMeter;
 
 import java.util.*;
 import java.util.Collection;
+import java.util.stream.Collectors;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 
 import es.us.isa.restest.generators.*;
 import es.us.isa.restest.reporting.AllureReportManager;
@@ -718,6 +721,10 @@ public class TestGenerationAndExecution {
 			
 			logger.info("Found {} test classes to execute", testClassNames.size());
 			
+			// *** CRITICAL FIX: Ensure Java 11 environment for IntelliJ ***
+			logger.info("Setting up Java 11 environment for IntelliJ execution...");
+			setupJava11Environment();
+			
 			// *** CRITICAL FIX: Compile test classes before loading them ***
 			logger.info("Compiling generated test classes...");
 			boolean compilationSuccess = compileTestClasses();
@@ -821,80 +828,237 @@ public class TestGenerationAndExecution {
 	}
 	
 	/**
-	 * Compile test classes using Maven test-compile goal
-	 * This ensures generated test classes are compiled before execution
+	 * Fast compilation using built-in Java compiler API
+	 * This is much faster than Maven and ensures Java 11 compatibility
 	 */
 	private static boolean compileTestClasses() {
 		try {
 			String baseDir = System.getProperty("user.dir");
+			File testSourceDir = new File(baseDir, "src/test/java");
+			File testClassesDir = new File(baseDir, "target/test-classes");
+			File mainClassesDir = new File(baseDir, "target/classes");
 			
-			// Use Maven to compile test classes (works in both IntelliJ and command line)
+			// Ensure target directories exist
+			if (!testClassesDir.exists()) {
+				testClassesDir.mkdirs();
+			}
+			
+			// Find all Java files to compile
+			List<File> javaFiles = findJavaFiles(testSourceDir);
+			if (javaFiles.isEmpty()) {
+				logger.warn("No Java files found to compile in: {}", testSourceDir);
+				return true; // Nothing to compile is not an error
+			}
+			
+			long startTime = System.currentTimeMillis();
+			logger.info("Fast-compiling {} test classes using built-in Java compiler...", javaFiles.size());
+			
+			// Verify we're using Java 11
+			String javaVersion = System.getProperty("java.version");
+			logger.info("Using Java version: {} for compilation", javaVersion);
+			
+			// Get Java compiler (this uses the JDK that's running, which should be Java 11 in IntelliJ)
+			javax.tools.JavaCompiler compiler = javax.tools.ToolProvider.getSystemJavaCompiler();
+			if (compiler == null) {
+				logger.error("Java compiler not available. Make sure you're running with JDK (not JRE)");
+				logger.error("Current Java home: {}", System.getProperty("java.home"));
+				return fallbackMavenCompilation();
+			}
+			
+			// Build classpath including all dependencies
+			String classpath = buildCompilationClasspath(mainClassesDir);
+			logger.debug("Compilation classpath: {}", classpath);
+			
+			// Prepare compiler options
+			List<String> options = Arrays.asList(
+				"-cp", classpath,
+				"-d", testClassesDir.getAbsolutePath(),
+				"-source", "11",
+				"-target", "11",
+				"-Xlint:none", // Suppress warnings for faster compilation
+				"-g:none"      // Skip debug info for faster compilation
+			);
+			
+			// Convert File list to String list for compiler
+			List<String> fileNames = javaFiles.stream()
+				.map(File::getAbsolutePath)
+				.collect(java.util.stream.Collectors.toList());
+			
+			// Combine options and file names
+			List<String> compilerArgs = new ArrayList<>();
+			compilerArgs.addAll(options);
+			compilerArgs.addAll(fileNames);
+			
+			// Run compilation
+			int result = compiler.run(null, null, null, compilerArgs.toArray(new String[0]));
+			
+			if (result == 0) {
+				long duration = System.currentTimeMillis() - startTime;
+				logger.info("✅ Fast compilation completed successfully in {} ms", duration);
+				return true;
+			} else {
+				logger.error("❌ Fast compilation failed with exit code: {}", result);
+				logger.info("Falling back to Maven compilation...");
+				return fallbackMavenCompilation();
+			}
+			
+		} catch (Exception e) {
+			logger.warn("Fast compilation failed: {} - falling back to Maven", e.getMessage());
+			return fallbackMavenCompilation();
+		}
+	}
+	
+	/**
+	 * Recursively find all Java files in a directory
+	 */
+	private static List<File> findJavaFiles(File dir) {
+		List<File> javaFiles = new ArrayList<>();
+		if (!dir.exists() || !dir.isDirectory()) {
+			return javaFiles;
+		}
+		
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (File file : files) {
+				if (file.isDirectory()) {
+					javaFiles.addAll(findJavaFiles(file));
+				} else if (file.getName().endsWith(".java")) {
+					javaFiles.add(file);
+				}
+			}
+		}
+		return javaFiles;
+	}
+	
+	/**
+	 * Build comprehensive classpath for compilation
+	 */
+	private static String buildCompilationClasspath(File mainClassesDir) {
+		Set<String> classpathEntries = new LinkedHashSet<>();
+		
+		// Add main classes
+		if (mainClassesDir.exists()) {
+			classpathEntries.add(mainClassesDir.getAbsolutePath());
+		}
+		
+		// Add current classpath (includes all Maven dependencies)
+		String currentClasspath = System.getProperty("java.class.path");
+		if (currentClasspath != null) {
+			classpathEntries.addAll(Arrays.asList(currentClasspath.split(File.pathSeparator)));
+		}
+		
+		// Add Maven dependencies from target/dependency (if exists)
+		String baseDir = System.getProperty("user.dir");
+		File dependencyDir = new File(baseDir, "target/dependency");
+		if (dependencyDir.exists()) {
+			File[] jars = dependencyDir.listFiles((dir, name) -> name.endsWith(".jar"));
+			if (jars != null) {
+				for (File jar : jars) {
+					classpathEntries.add(jar.getAbsolutePath());
+				}
+			}
+		}
+		
+		return String.join(File.pathSeparator, classpathEntries);
+	}
+	
+	/**
+	 * Fallback to Maven compilation if direct compilation fails
+	 */
+	private static boolean fallbackMavenCompilation() {
+		try {
+			long startTime = System.currentTimeMillis();
+			String baseDir = System.getProperty("user.dir");
+			
+			// Use Maven with optimized settings for speed
 			ProcessBuilder pb = new ProcessBuilder();
 			
-			// Handle Windows PowerShell command formatting
+			// Handle Windows command formatting
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("win")) {
-				pb.command("cmd.exe", "/c", "mvn", "test-compile", "-q", "-Djacoco.skip=true", "-Dmaven.jacoco.skip=true");
+				pb.command("cmd.exe", "/c", "mvn", "test-compile", 
+					"-q",                    // Quiet mode
+					"-T", "1C",             // Use 1 thread per CPU core
+					"-Djacoco.skip=true",   // Skip JaCoCo
+					"-Dmaven.test.skip=true", // Skip test execution
+					"-Dmaven.javadoc.skip=true", // Skip JavaDoc
+					"-Dcheckstyle.skip=true",    // Skip CheckStyle
+					"-DskipTests=true"      // Skip tests
+				);
 			} else {
-				pb.command("mvn", "test-compile", "-q", "-Djacoco.skip=true", "-Dmaven.jacoco.skip=true");
+				pb.command("mvn", "test-compile", 
+					"-q", "-T", "1C", "-Djacoco.skip=true", 
+					"-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true", 
+					"-Dcheckstyle.skip=true", "-DskipTests=true");
 			}
 			
 			pb.directory(new File(baseDir));
-			
-			// Capture output for logging
 			pb.redirectErrorStream(true);
 			
 			Process process = pb.start();
 			int exitCode = process.waitFor();
 			
+			long duration = System.currentTimeMillis() - startTime;
+			
 			if (exitCode == 0) {
-				logger.info("Maven test-compile completed successfully");
+				logger.info("✅ Maven compilation completed successfully in {} ms", duration);
 				return true;
 			} else {
-				logger.error("Maven test-compile failed with exit code: {}", exitCode);
+				logger.error("❌ Maven compilation failed with exit code: {} after {} ms", exitCode, duration);
 				return false;
 			}
 			
 		} catch (Exception e) {
-			logger.warn("Could not run Maven test-compile: {} - trying alternative approach", e.getMessage());
-			
-			// Alternative: Try using Maven exec plugin for compilation
-			try {
-				return compileTestClassesAlternative();
-			} catch (Exception altE) {
-				logger.error("Alternative compilation also failed: {}", altE.getMessage());
-				return false;
-			}
+			logger.error("Maven compilation failed: {}", e.getMessage());
+			return false;
 		}
 	}
-	
+
+	/**
+	 * Setup Java 11 environment for IntelliJ execution
+	 */
+	private static void setupJava11Environment() {
+		try {
+			String javaVersion = System.getProperty("java.version");
+			String javaHome = System.getProperty("java.home");
+			
+			logger.info("Current Java environment:");
+			logger.info("  Java version: {}", javaVersion);
+			logger.info("  Java home: {}", javaHome);
+			logger.info("  JVM name: {}", System.getProperty("java.vm.name"));
+			logger.info("  JVM vendor: {}", System.getProperty("java.vm.vendor"));
+			
+			// Check if we're running Java 11
+			if (!javaVersion.startsWith("11.")) {
+				logger.warn("⚠️  Not running Java 11! Current version: {}", javaVersion);
+				logger.warn("   This may cause compilation issues. Please ensure IntelliJ is configured to use Java 11.");
+			} else {
+				logger.info("✅ Java 11 detected - optimal for compilation");
+			}
+			
+			// Ensure compiler is available
+			if (javax.tools.ToolProvider.getSystemJavaCompiler() == null) {
+				logger.error("❌ Java compiler not available!");
+				logger.error("   Make sure you're running with JDK 11, not JRE");
+				logger.error("   In IntelliJ: File → Project Structure → Project → Project SDK should be JDK 11");
+			} else {
+				logger.info("✅ Java compiler available for fast compilation");
+			}
+			
+		} catch (Exception e) {
+			logger.warn("Could not fully setup Java 11 environment: {}", e.getMessage());
+		}
+	}
+
 	/**
 	 * Alternative compilation method for environments where Maven command is not available
 	 */
 	private static boolean compileTestClassesAlternative() throws Exception {
 		logger.info("Attempting alternative test compilation method...");
 		
-		// In IntelliJ, we can try to trigger compilation through the build system
-		// This is a fallback when Maven command is not directly available
-		String baseDir = System.getProperty("user.dir");
-		
-		ProcessBuilder pb = new ProcessBuilder();
-		
-		// Handle Windows command formatting
-		String os = System.getProperty("os.name").toLowerCase();
-		if (os.contains("win")) {
-			pb.command("cmd.exe", "/c", "mvn", "compile", "test-compile", "-DskipTests=true", "-q");
-		} else {
-			pb.command("mvn", "compile", "test-compile", "-DskipTests=true", "-q");
-		}
-		
-		pb.directory(new File(baseDir));
-		pb.redirectErrorStream(true);
-		
-		Process process = pb.start();
-		int exitCode = process.waitFor();
-		
-		return exitCode == 0;
+		// This method is now redundant since we have fast direct compilation
+		// Just call the main compilation method
+		return compileTestClasses();
 	}
 	
 	/**

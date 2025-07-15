@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"new york city","trainType":"freight货车","routeId":"yyyy","basicPriceRate":89.99,"firstClassPriceRate":9999.99}}
