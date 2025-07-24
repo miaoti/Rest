@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.5","firstClassPriceRate":"0.49","id":"test_123","routeId":"Abcde","trainType":"High-Speed Bullet Train"}

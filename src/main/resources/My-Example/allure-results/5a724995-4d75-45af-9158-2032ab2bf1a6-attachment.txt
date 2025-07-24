@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"d5232432-1956-44a9-b9b6-c93fe3185c45","trainType":"tourist coach","routeId":"098765","basicPriceRate":10.5,"firstClassPriceRate":350.0}}

@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"a309a6b6-4822-4715-b36c-737ec8852b61","trainType":"freight wagon","routeId":"printf","basicPriceRate":89.95,"firstClassPriceRate":350.0}}
