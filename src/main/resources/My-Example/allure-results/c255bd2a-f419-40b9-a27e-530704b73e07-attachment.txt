@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"b083ffce-356c-4ff9-b213-d998d443703d","trainType":"High-Speed Bullet Train","routeId":"Abcde","basicPriceRate":10.5,"firstClassPriceRate":0.49}}

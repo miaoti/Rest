@@ -1,0 +1,1 @@
+{"basicPriceRate":"68.0","firstClassPriceRate":"0.49","id":"brennan","routeId":"printf","trainType":"low"}

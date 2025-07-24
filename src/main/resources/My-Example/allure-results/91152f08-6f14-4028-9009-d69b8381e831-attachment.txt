@@ -1,0 +1,1 @@
+{"accountId":"tested","boughtDate":"2021-07-20t08:15:00z","coachNumber":"-1000","contactsDocumentNumber":"xyzklmnopqr","contactsName":"John Doe","documentType":"250","from":"nyc","id":"buf","price":"$0.50","seatClass":"1","seatNumber":"b56","status":"200","to":"CharlieDavis","trainNumber":"XYZ789","travelDate":"2025-12-31","travelTime":"2023-10-05t09:45:00z"}

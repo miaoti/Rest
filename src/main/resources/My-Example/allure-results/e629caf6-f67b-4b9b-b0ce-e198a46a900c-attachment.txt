@@ -1,0 +1,1 @@
+{"accountId":"testing","boughtDate":"2024-01-15T23:45:00Z","coachNumber":"BORDER_=","contactsDocumentNumber":"A-BCDE-FGHIJ","contactsName":"bob brown","documentType":"4096","from":"Chicago","id":"Abc123","price":"$19.99","seatClass":"2","seatNumber":"E345","status":"401","to":"JaneSmith","trainNumber":"Abc123","travelDate":"2025-12-31","travelTime":"2027-04-30T06:00:00Z"}

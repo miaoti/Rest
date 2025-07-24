@@ -1,0 +1,1 @@
+{"basicPriceRate":"45.75","firstClassPriceRate":"0.49","id":"Sydney_measured_####kbps","routeId":"Qwerty_keyboard","trainType":"Tourist Coach"}

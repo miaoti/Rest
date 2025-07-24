@@ -1379,19 +1379,62 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         
         // Generate 2-4 array elements for more realistic testing
         int arraySize = 2 + (int)(Math.random() * 3); // Random between 2-4
+        List<String> arrayValues = new ArrayList<>();
         
-        for (int i = 0; i < arraySize; i++) {
-            if (i > 0) arrayJson.append(", ");
+        // Add the original value first
+        arrayValues.add(singleValue);
+        
+        // Generate additional values using smart fetch or LLM
+        for (int i = 1; i < arraySize; i++) {
+            String additionalValue = null;
             
-            // For station names or similar string arrays, generate variations
-            if (i == 0) {
-                arrayJson.append('"').append(escapeJsonString(singleValue)).append('"');
-            } else {
-                // Generate variations for realistic array content
-                String[] variations = {"Boston", "Chicago", "Los Angeles", "Miami", "Seattle"};
-                String variation = variations[i % variations.length];
-                arrayJson.append('"').append(escapeJsonString(variation)).append('"');
+            if (useLLM) {
+                ParameterInfo info = new ParameterInfo();
+                info.setName(arrayParam.getName());
+                info.setDescription(arrayParam.getDescription());
+                info.setInLocation(arrayParam.getIn());
+                info.setType(arrayParam.getType());
+                info.setFormat(arrayParam.getFormat());
+                info.setSchemaType(arrayParam.getType());
+                info.setSchemaExample(arrayParam.getExample() != null ? arrayParam.getExample().toString() : "");
+                info.setRegex(arrayParam.getPattern());
+                
+                // Try Smart Input Fetching first if available
+                if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
+                    try {
+                        additionalValue = smartFetcher.fetchSmartInput(info);
+                        if (additionalValue != null && !additionalValue.trim().isEmpty()) {
+                            log.debug("Smart Fetch (Array) → {} = {}", arrayParam.getName(), additionalValue);
+                        } else {
+                            additionalValue = null; // Ensure we fall back to LLM
+                        }
+                    } catch (Exception e) {
+                        log.debug("Smart fetching failed for array {}, falling back to LLM: {}", 
+                                 arrayParam.getName(), e.getMessage());
+                        additionalValue = null; // Ensure we fall back to LLM
+                    }
+                }
+                
+                // Fall back to traditional LLM generation if smart fetching didn't work
+                if (additionalValue == null) {
+                    List<String> vals = llmGen.generateParameterValues(info);
+                    additionalValue = vals.isEmpty() ? "LLM_EMPTY_" + i : vals.get(0);
+                    log.debug("LLM (Array Fallback) → {} = {}", arrayParam.getName(), additionalValue);
+                }
             }
+            
+            // Ultimate fallback
+            if (additionalValue == null || additionalValue.trim().isEmpty()) {
+                additionalValue = "VAL_" + arrayParam.getName() + "_" + i;
+            }
+            
+            arrayValues.add(additionalValue);
+        }
+        
+        // Build JSON array
+        for (int i = 0; i < arrayValues.size(); i++) {
+            if (i > 0) arrayJson.append(", ");
+            arrayJson.append('"').append(escapeJsonString(arrayValues.get(i))).append('"');
         }
         
         arrayJson.append("]");

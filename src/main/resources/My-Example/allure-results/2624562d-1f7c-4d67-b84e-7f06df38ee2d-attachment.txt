@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"3810ba3e-4421-4019-997b-066be9d9a287","trainType":"low","routeId":"qwerty_keyboard","basicPriceRate":10.5,"firstClassPriceRate":350.0}}
