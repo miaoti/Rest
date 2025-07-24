@@ -4,6 +4,8 @@ import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
+import es.us.isa.restest.inputs.smart.SmartInputFetcher;
+import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
@@ -30,6 +32,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private final boolean                                    useLLM;
     private final AiDrivenLLMGenerator                       llmGen = new AiDrivenLLMGenerator();
     private final SemanticParameterExpander                 expander = new SemanticParameterExpander();
+    
+    // Smart Input Fetching System
+    private SmartInputFetcher smartFetcher;
+    private SmartInputFetchConfig smartFetchConfig;
 
     // Pattern to match HTTP operations in operation names
     private static final Pattern HTTP_OPERATION_PATTERN = 
@@ -51,6 +57,69 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         this.serviceConfigs   = serviceConfigs;
         this.scenarios        = scenarios;
         this.useLLM           = useLLMforParams;
+        
+        // Initialize Smart Input Fetching System
+        initializeSmartInputFetching();
+    }
+
+    /**
+     * Initialize the Smart Input Fetching System
+     */
+    private void initializeSmartInputFetching() {
+        try {
+            log.info("🔧 Initializing Smart Input Fetching System for MultiServiceTestCaseGenerator...");
+            
+            // Load configuration from system properties
+            Map<String, String> properties = new HashMap<>();
+            System.getProperties().entrySet().stream()
+                    .filter(entry -> entry.getKey().toString().startsWith("smart.input.fetch"))
+                    .forEach(entry -> {
+                        properties.put(entry.getKey().toString(), entry.getValue().toString());
+                        log.debug("Found smart property: {} = {}", entry.getKey(), entry.getValue());
+                    });
+            
+            // Also load base.url
+            if (System.getProperty("base.url") != null) {
+                properties.put("base.url", System.getProperty("base.url"));
+                log.debug("Found base.url: {}", System.getProperty("base.url"));
+            }
+            
+            if (properties.isEmpty()) {
+                log.warn("❌ No smart input fetching properties found, using traditional LLM generation only");
+                log.warn("   Make sure properties like 'smart.input.fetch.enabled=true' are in your properties file");
+                return;
+            }
+            
+            log.info("✅ Found {} smart input fetching properties", properties.size());
+            for (String key : properties.keySet()) {
+                log.info("   - {}: {}", key, properties.get(key));
+            }
+            
+            smartFetchConfig = SmartInputFetchConfig.fromProperties(properties);
+            
+            if (smartFetchConfig.isEnabled()) {
+                String baseUrl = properties.getOrDefault("base.url", "http://localhost:8080");
+                smartFetcher = new SmartInputFetcher(smartFetchConfig, baseUrl);
+                log.info("🚀 SmartInputFetcher initialized successfully!");
+                log.info("   - Base URL: {}", baseUrl);
+                log.info("   - Registry: {}", smartFetchConfig.getRegistryPath());
+                log.info("   - Smart Fetch Percentage: {}%", 
+                         smartFetchConfig.getSmartFetchPercentage() * 100);
+                log.info("   - LLM Discovery: {}", smartFetchConfig.isLlmDiscoveryEnabled());
+                log.info("🎯 YOU SHOULD NOW SEE 'Smart Fetch →' LOGS DURING PARAMETER GENERATION!");
+            } else {
+                log.warn("❌ Smart input fetching is DISABLED (smart.input.fetch.enabled=false)");
+                log.warn("   Enable it by setting smart.input.fetch.enabled=true in your properties file");
+                smartFetcher = null;
+                smartFetchConfig = null;
+            }
+            
+        } catch (Exception e) {
+            log.error("❌ Failed to initialize Smart Input Fetching: {}", e.getMessage(), e);
+            log.warn("Falling back to traditional LLM generation");
+            smartFetcher = null;
+            smartFetchConfig = null;
+        }
     }
 
     /*  PUBLIC API – called by RESTest                              */
@@ -319,7 +388,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         val = getTraceParameterValue(span, p.getName());
                     }
 
-                    /* 3d. Call LLM if enabled and no trace/context value --------------- */
+                    /* 3d. Call Smart Input Fetching or LLM if enabled and no trace/context value */
                     if (val == null && useLLM) {
                         ParameterInfo info = new ParameterInfo();
                         info.setName(p.getName());
@@ -331,9 +400,28 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
                         info.setRegex(p.getPattern());
 
-                        List<String> vals = llmGen.generateParameterValues(info);
-                        val = vals.isEmpty() ? "LLM_EMPTY" : vals.get(0);
-                        log.info("LLM (Fallback) → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                        // Try Smart Input Fetching first if available
+                        if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
+                            try {
+                                val = smartFetcher.fetchSmartInput(info);
+                                if (val != null && !val.trim().isEmpty()) {
+                                    log.info("Smart Fetch → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                                } else {
+                                    val = null; // Ensure we fall back to LLM
+                                }
+                            } catch (Exception e) {
+                                log.debug("Smart fetching failed for {}.{}, falling back to LLM: {}", 
+                                         service, p.getName(), e.getMessage());
+                                val = null; // Ensure we fall back to LLM
+                            }
+                        }
+                        
+                        // Fall back to traditional LLM generation if smart fetching didn't work
+                        if (val == null) {
+                            List<String> vals = llmGen.generateParameterValues(info);
+                            val = vals.isEmpty() ? "LLM_EMPTY" : vals.get(0);
+                            log.info("LLM (Fallback) → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                        }
                     }
 
                     /* 3e. Ultimate fallback ---------------------------------------- */
@@ -366,13 +454,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         
         if (isFirstStep) {
             // For first step, always use LLM-generated bodyFields
-            bodyJson = bodyFields.isEmpty() ? null : toJson(bodyFields);
+            bodyJson = bodyFields.isEmpty() ? null : generateRequestBody(bodyFields, opCfg);
             log.info("Using LLM-generated body for first step {}: {}", stepNumber, bodyJson);
         } else {
             // For subsequent steps, prefer trace body, fallback to generated fields
             bodyJson = rawBody != null
                     ? rawBody
-                    : (bodyFields.isEmpty() ? null : toJson(bodyFields));
+                    : (bodyFields.isEmpty() ? null : generateRequestBody(bodyFields, opCfg));
         }
 
         /* 4. Expected status from configuration (no hardcoding) ------------------- */
@@ -1256,5 +1344,69 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             log.warn("❌ Invalid variant count in properties, using default: {} (error: {})", defaultCount, e.getMessage());
             return defaultCount;
         }
+    }
+
+    /**
+     * Generates the JSON body for a given set of body parameters.
+     * Handles special case: single array-type body parameter should generate entire body as array.
+     * Otherwise, generates standard JSON object.
+     */
+    private String generateRequestBody(Map<String, String> bodyFields, Operation opCfg) {
+        // 🔥 FIX: Check if we have a single body parameter with type "array"
+        if (bodyFields.size() == 1 && bodyFields.containsKey("body")) {
+            // Find the body parameter in the configuration to check its type
+            if (opCfg != null && opCfg.getTestParameters() != null) {
+                for (TestParameter p : opCfg.getTestParameters()) {
+                    if ("body".equals(p.getName()) && "body".equals(p.getIn()) && "array".equals(p.getType())) {
+                        // This is an array-type body parameter - generate entire body as array
+                        String singleValue = bodyFields.get("body");
+                        return generateJsonArray(singleValue, p);
+                    }
+                }
+            }
+        }
+        
+        // Default behavior: generate JSON object
+        return toJson(bodyFields);
+    }
+    
+    /**
+     * Generates a JSON array for array-type body parameters.
+     * Creates multiple array elements to provide realistic test data.
+     */
+    private String generateJsonArray(String singleValue, TestParameter arrayParam) {
+        StringBuilder arrayJson = new StringBuilder("[");
+        
+        // Generate 2-4 array elements for more realistic testing
+        int arraySize = 2 + (int)(Math.random() * 3); // Random between 2-4
+        
+        for (int i = 0; i < arraySize; i++) {
+            if (i > 0) arrayJson.append(", ");
+            
+            // For station names or similar string arrays, generate variations
+            if (i == 0) {
+                arrayJson.append('"').append(escapeJsonString(singleValue)).append('"');
+            } else {
+                // Generate variations for realistic array content
+                String[] variations = {"Boston", "Chicago", "Los Angeles", "Miami", "Seattle"};
+                String variation = variations[i % variations.length];
+                arrayJson.append('"').append(escapeJsonString(variation)).append('"');
+            }
+        }
+        
+        arrayJson.append("]");
+        return arrayJson.toString();
+    }
+    
+    /**
+     * Escape special characters in JSON string values.
+     */
+    private String escapeJsonString(String str) {
+        if (str == null) return "";
+        return str.replace("\\", "\\\\")
+                  .replace("\"", "\\\"")
+                  .replace("\n", "\\n")
+                  .replace("\r", "\\r")
+                  .replace("\t", "\\t");
     }
 }

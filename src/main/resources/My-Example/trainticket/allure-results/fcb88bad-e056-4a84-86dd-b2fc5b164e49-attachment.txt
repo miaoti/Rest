@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"Hello_world","trainType":"Freight","routeId":"printf","basicPriceRate":23.99,"firstClassPriceRate":15.75}}

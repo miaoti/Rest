@@ -1,0 +1,1 @@
+{"distanceList":"0","endStation":"new york penn station","id":"goodbye","startStation":"New York Penn Station","stationList":"San francisco 49ers stadium"}

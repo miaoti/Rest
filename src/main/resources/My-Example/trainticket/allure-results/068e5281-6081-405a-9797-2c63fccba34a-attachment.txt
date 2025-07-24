@@ -1,0 +1,1 @@
+{"basicPriceRate":"10.5","firstClassPriceRate":"89.99","id":"hello_world","routeId":"buf","trainType":"Express"}

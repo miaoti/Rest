@@ -1,0 +1,1 @@
+{"basicPriceRate":"45.0","firstClassPriceRate":"10.95","id":"456789","routeId":"api-123","trainType":"Special"}

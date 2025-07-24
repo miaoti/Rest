@@ -1,0 +1,1 @@
+{"distanceList":"0","distances":"[\"10\", \"25.5\", \"40.3\", \"65.7\", \"80\"]","endStation":"Boston South Station","id":"Test123","loginId":"bennett","startStation":"New york penn station","stationList":"san francisco 49ers stadium","stations":"Sydney Opera House"}

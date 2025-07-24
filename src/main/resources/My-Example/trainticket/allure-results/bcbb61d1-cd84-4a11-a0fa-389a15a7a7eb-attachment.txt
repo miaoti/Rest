@@ -1,0 +1,1 @@
+{"distanceList":"-5.5","distances":"[\"10\", \"25.5\", \"40.3\", \"65.7\", \"80\"]","endStation":"Los angeles union station","id":"users","loginId":"bennett","startStation":"los angeles union station","stationList":"new york penn station","stations":"Sydney opera house"}

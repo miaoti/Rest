@@ -89,20 +89,40 @@ public class MicroserviceTestConfigurationGenerator {
                     if (schema != null) {
                         Schema<?> resolvedSchema = resolveSchemaWithServiceMapping(schema, serviceName, openApiSpec.getSpecification());
                         
-                        if (resolvedSchema != null && resolvedSchema.getProperties() != null) {
-                            List<String> requiredProps = resolvedSchema.getRequired() != null
-                                    ? resolvedSchema.getRequired() : Collections.emptyList();
+                        if (resolvedSchema != null) {
+                            // 🔥 FIX: Handle OBJECT schemas with properties (existing logic)
+                            if (resolvedSchema.getProperties() != null) {
+                                List<String> requiredProps = resolvedSchema.getRequired() != null
+                                        ? resolvedSchema.getRequired() : Collections.emptyList();
 
-                            @SuppressWarnings("unchecked")
-                            Map<String, Schema<?>> props =
-                                    (Map<String, Schema<?>>)(Map) resolvedSchema.getProperties();
+                                @SuppressWarnings("unchecked")
+                                Map<String, Schema<?>> props =
+                                        (Map<String, Schema<?>>)(Map) resolvedSchema.getProperties();
 
-                            for (Map.Entry<String, Schema<?>> pe : props.entrySet()) {
-                                String propName = pe.getKey();
-                                Schema<?> propSchema = pe.getValue();
-                                // wrap into your OpenAPIParameter body‐param constructor
-                                OpenAPIParameter bodyParam = new OpenAPIParameter(propName, propSchema,
-                                        requiredProps.contains(propName));
+                                for (Map.Entry<String, Schema<?>> pe : props.entrySet()) {
+                                    String propName = pe.getKey();
+                                    Schema<?> propSchema = pe.getValue();
+                                    // wrap into your OpenAPIParameter body‐param constructor
+                                    OpenAPIParameter bodyParam = new OpenAPIParameter(propName, propSchema,
+                                            requiredProps.contains(propName));
+                                    paramConfigs.add(toTestParam(bodyParam));
+                                }
+                            }
+                            // 🔥 FIX: Handle NON-OBJECT schemas (arrays, primitives, etc.)
+                            else {
+                                // Create a single body parameter for the entire requestBody
+                                String bodyParamName = "body";  // Standard name for body parameter
+                                String description = resolvedRb.getDescription();
+                                if (description == null || description.isEmpty()) {
+                                    description = "Request body parameter";
+                                }
+                                boolean isRequired = resolvedRb.getRequired() != null ? resolvedRb.getRequired() : false;
+                                
+                                // Create OpenAPIParameter for the entire body
+                                OpenAPIParameter bodyParam = new OpenAPIParameter(bodyParamName, resolvedSchema, isRequired);
+                                bodyParam.setDescription(description);
+                                bodyParam.setIn("body");  // Mark as body parameter
+                                
                                 paramConfigs.add(toTestParam(bodyParam));
                             }
                         }

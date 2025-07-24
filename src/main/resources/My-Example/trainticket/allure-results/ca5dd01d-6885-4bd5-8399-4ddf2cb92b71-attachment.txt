@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"a22322d6-2aba-41d8-ad75-bc1400637c06","trainType":"rail_freight","routeId":"api-123","basicPriceRate":45.0,"firstClassPriceRate":89.99}}

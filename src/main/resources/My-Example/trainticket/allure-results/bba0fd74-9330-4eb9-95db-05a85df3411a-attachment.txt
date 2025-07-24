@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"6f626b57-7738-41f6-b529-32a139814392","trainType":"freights","routeId":"api-123","basicPriceRate":123.4,"firstClassPriceRate":23.49}}

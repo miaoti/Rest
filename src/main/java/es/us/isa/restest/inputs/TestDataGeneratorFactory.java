@@ -95,8 +95,22 @@ public class TestDataGeneratorFactory {
 	}
 
 	private static ITestDataGenerator createLLMParameterGenerator(Generator generator) {
-		// Typically, your LLMParameterGenerator has a no-args constructor
-		// If you need to pass anything from "genParameters" to it, do so here.
+		// Check if smart input fetching is enabled via system properties
+		boolean smartFetchEnabled = Boolean.parseBoolean(
+			System.getProperty("smart.input.fetch.enabled", "false"));
+		
+		if (smartFetchEnabled) {
+			// Use the enhanced SmartLLMParameterGenerator that includes intelligent fetching
+			try {
+				Class<?> smartGenClass = Class.forName("es.us.isa.restest.inputs.smart.SmartLLMParameterGenerator");
+				return (ITestDataGenerator) smartGenClass.getDeclaredConstructor().newInstance();
+			} catch (Exception e) {
+				// Fall back to regular LLM generator if smart generator is not available
+				System.err.println("Smart input fetching requested but SmartLLMParameterGenerator not available: " + e.getMessage());
+			}
+		}
+		
+		// Use traditional LLM parameter generator
 		LLMParameterGenerator llmGen = new LLMParameterGenerator();
 
 		// Optionally parse generator.getGenParameters() if you want

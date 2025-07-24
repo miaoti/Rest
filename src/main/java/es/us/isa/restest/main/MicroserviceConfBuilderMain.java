@@ -19,7 +19,7 @@ public class MicroserviceConfBuilderMain {
         String openApiPath = "src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml";
 
         // Path where the generated configuration will be saved
-        String outputConfPath = "src/main/resources/My-Example/trainticket/real-system-conf.yaml";
+        String outputConfPath = "src/main/resources/My-Example/trainticket/real-system-conf_2.yaml";
 
         // Load OpenAPI Specification
         OpenAPISpecification spec = new OpenAPISpecification(openApiPath);

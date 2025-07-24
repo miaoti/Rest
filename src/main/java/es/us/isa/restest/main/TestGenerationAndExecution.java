@@ -364,6 +364,9 @@ public class TestGenerationAndExecution {
 				if (numTestCases != null) {
 					System.setProperty("testsperoperation", numTestCases.toString());
 				}
+				
+				// CRITICAL: Pass Smart Input Fetching configuration to MST generator
+				passSmartInputFetchingProperties();
 
 				// 7. Instantiate the generator
 				gen = new MultiServiceTestCaseGenerator(
@@ -645,6 +648,65 @@ public class TestGenerationAndExecution {
 			value = PropertyManager.readProperty(propertyName);
 
 		return value;
+	}
+
+	/**
+	 * Pass Smart Input Fetching configuration properties to system properties
+	 * This ensures MST generator can access the smart fetching configuration
+	 */
+	private static void passSmartInputFetchingProperties() {
+		logger.info("🔧 Configuring Smart Input Fetching for MST mode...");
+		
+		// List of all smart input fetching properties
+		String[] smartProperties = {
+			"smart.input.fetch.enabled",
+			"smart.input.fetch.percentage", 
+			"smart.input.fetch.registry.path",
+			"smart.input.fetch.openapi.spec.path",
+			"smart.input.fetch.llm.discovery.enabled",
+			"smart.input.fetch.max.candidates",
+			"smart.input.fetch.dependency.resolution.enabled",
+			"smart.input.fetch.discovery.timeout.ms",
+			"smart.input.fetch.cache.enabled",
+			"smart.input.fetch.cache.ttl.seconds",
+			"oas.path",
+			"base.url"
+		};
+		
+		int configuredCount = 0;
+		for (String property : smartProperties) {
+			String value = readParameterValue(property);
+			if (value != null) {
+				System.setProperty(property, value);
+				logger.info("✅ Set system property: {} = {}", property, value);
+				configuredCount++;
+			} else {
+				logger.debug("⚠️  Property not found: {}", property);
+			}
+		}
+		
+		if (configuredCount > 0) {
+			logger.info("🚀 Smart Input Fetching configured with {} properties for MST mode", configuredCount);
+			
+			// Log the key settings
+			String enabled = System.getProperty("smart.input.fetch.enabled", "false");
+			String percentage = System.getProperty("smart.input.fetch.percentage", "0.0");
+			String registryPath = System.getProperty("smart.input.fetch.registry.path", "not set");
+			
+			logger.info("📊 Smart Fetching Settings:");
+			logger.info("   - Enabled: {}", enabled);
+			logger.info("   - Percentage: {}% smart fetching", 
+				Float.parseFloat(percentage) * 100);
+			logger.info("   - Registry: {}", registryPath);
+			
+			if ("true".equals(enabled)) {
+				logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");
+			} else {
+				logger.warn("❌ Smart Input Fetching is DISABLED - enable it by setting smart.input.fetch.enabled=true");
+			}
+		} else {
+			logger.warn("⚠️  No Smart Input Fetching properties found - make sure they're in your properties file");
+		}
 	}
 
 
@@ -1267,8 +1329,8 @@ public class TestGenerationAndExecution {
 						    file.getName().equals("executor.json")) {
 							if (file.delete()) {
 								deletedCount++;
-							}
-						}
+					}
+				}
 					}
 				}
 				logger.info("Cleaned {} previous Allure result files", deletedCount);
