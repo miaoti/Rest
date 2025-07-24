@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"hello_world","trainType":"Special","routeId":"gui","basicPriceRate":23.99,"firstClassPriceRate":45.6}}

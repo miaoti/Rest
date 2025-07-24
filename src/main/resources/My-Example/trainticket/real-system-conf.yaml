@@ -2179,7 +2179,18 @@ testConfiguration:
       method: post
       operationId: ts-basic-service_queryForTravelsUsingPOST
       testPath: /api/v1/basicservice/basic/travels
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: infos
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-basic-service_queryForStationIdUsingGET
@@ -3430,7 +3441,18 @@ testConfiguration:
       method: post
       operationId: ts-food-service_createFoodBatchesUsingPOST
       testPath: /api/v1/foodservice/createOrderBatch
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: foodOrderList
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-food-service_getAllFoodUsingGET
@@ -7912,7 +7934,18 @@ testConfiguration:
       method: post
       operationId: ts-price-service_queryUsingPOST
       testPath: /api/v1/priceservice/prices/byRouteIdsAndTrainTypes
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: ridsAndTts
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-price-service_homeUsingGET
@@ -8367,7 +8400,18 @@ testConfiguration:
       method: post
       operationId: ts-route-service_queryByIdsUsingPOST
       testPath: /api/v1/routeservice/routes/byIds
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: routeIds
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-route-service_queryByIdUsingGET
@@ -8781,7 +8825,18 @@ testConfiguration:
       method: post
       operationId: ts-station-food-service_getFoodStoresByStationNamesUsingPOST
       testPath: /api/v1/stationfoodservice/stationfoodstores
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: stationNameList
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-station-food-service_getFoodListByStationFoodStoreIdUsingGET
@@ -8935,7 +8990,18 @@ testConfiguration:
       method: post
       operationId: ts-station-service_queryForIdBatchUsingPOST
       testPath: /api/v1/stationservice/stations/idlist
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: stationNameList
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-station-service_queryByIdUsingGET
@@ -8956,7 +9022,18 @@ testConfiguration:
       method: post
       operationId: ts-station-service_queryForNameBatchUsingPOST
       testPath: /api/v1/stationservice/stations/namelist
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: stationIdList
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: delete
       operationId: ts-station-service_deleteUsingDELETE
@@ -9193,7 +9270,18 @@ testConfiguration:
       method: post
       operationId: ts-train-service_retrieveByNameUsingPOST
       testPath: /api/v1/trainservice/trains/byNames
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: names
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-train-service_homeUsingGET
@@ -9791,7 +9879,18 @@ testConfiguration:
       method: post
       operationId: ts-travel-service_getTripsByRouteIdUsingPOST
       testPath: /api/v1/travelservice/trips/routes
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: routeIds
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-travel-service_retrieveUsingGET
@@ -10171,7 +10270,18 @@ testConfiguration:
       method: post
       operationId: ts-travel2-service_getTripsByRouteIdUsingPOST
       testPath: /api/v1/travel2service/trips/routes
-      testParameters: null
+      testParameters:
+      - name: body
+        in: body
+        weight: null
+        description: routeIds
+        type: array
+        generators:
+        - type: LLMParameterGenerator
+          genParameters:
+          - name: length
+            values:
+            - '10'
     - expectedResponse: 200
       method: get
       operationId: ts-travel2-service_retrieveUsingGET

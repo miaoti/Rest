@@ -1,0 +1,106 @@
+---
+version: "1.0"
+lastUpdated:
+- 2025
+- 7
+- 23
+- 20
+- 44
+- 13
+- 137913500
+parameterMappings:
+  body:
+  - endpoint: "/api/v1/stationservice/stations"
+    method: "GET"
+    service: "ts-station-service"
+    extractPath: "$.data[*]"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 7
+    - 23
+    - 20
+    - 44
+    - 13
+    - 81766300
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travelplanservice/travelPlan/cheapest"
+    method: "GET"
+    service: "ts-travel-plan-service"
+    extractPath: "$.data[*]"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 7
+    - 23
+    - 20
+    - 44
+    - 13
+    - 136913700
+    successRate: 0.0
+    description: null
+servicePatterns:
+- pattern: ".*[Ss]tation.*"
+  services:
+  - "ts-station-service"
+  endpoints:
+  - "/api/v1/stationservice/stations"
+- pattern: ".*[Uu]ser.*"
+  services:
+  - "ts-user-service"
+  - "ts-contacts-service"
+  endpoints:
+  - "/api/v1/userservice/users"
+  - "/api/v1/contactservice/contacts"
+- pattern: ".*[Tt]rain.*"
+  services:
+  - "ts-train-service"
+  - "ts-travel-service"
+  endpoints:
+  - "/api/v1/trainservice/trains"
+  - "/api/v1/travelservice/trips"
+- pattern: ".*[Rr]oute.*"
+  services:
+  - "ts-route-service"
+  - "ts-route-plan-service"
+  endpoints:
+  - "/api/v1/routeservice/routes"
+  - "/api/v1/routeplanservice/routePlans"
+- pattern: ".*[Oo]rder.*"
+  services:
+  - "ts-order-service"
+  - "ts-order-other-service"
+  endpoints:
+  - "/api/v1/orderservice/orders"
+  - "/api/v1/orderOtherservice/orderOthers"
+llmPrompts:
+  apiDiscovery: "Given this input parameter information:\n- Parameter name: {parameterName}\n\
+    - Parameter type: {parameterType}\n- Parameter description: {parameterDescription}\n\
+    - Parameter location: {parameterLocation}\n\nAvailable microservices: {availableServices}\n\
+    \nWhich services would most likely provide realistic data for this parameter?\n\
+    Respond with a JSON array of service names in priority order.\nConsider semantic\
+    \ meaning, naming patterns, and likely data relationships.\n"
+  endpointDiscovery: "Given this microservice: {serviceName}\nAnd this input parameter:\
+    \ {parameterName} (type: {parameterType}, description: {parameterDescription})\n\
+    \nWhat would be the most likely REST API endpoint path within this service to\
+    \ fetch data for this parameter?\nConsider RESTful conventions, resource naming,\
+    \ and the parameter's semantic meaning.\n\nRespond with a JSON object containing:\n\
+    {\n  \"endpoint\": \"/api/v1/path/to/resource\",\n  \"method\": \"GET\",\n  \"\
+    confidence\": 0.85\n}\n"
+  dataExtraction: "Given this API response structure: {responseSchema}\nAnd this target\
+    \ parameter: {parameterName} (type: {parameterType})\n\nWhat is the best JSONPath\
+    \ expression to extract appropriate values?\nConsider that we need values suitable\
+    \ for the parameter type and semantic meaning.\nRespond with just the JSONPath\
+    \ expression.\n"
+  valueSelection: "Given this extracted data from an API: {extractedData}\nAnd this\
+    \ target parameter: {parameterName} (type: {parameterType}, description: {parameterDescription})\n\
+    \nWhich value from the extracted data would be most appropriate for this parameter?\n\
+    Consider the parameter's type, semantic meaning, and realistic test data requirements.\n\
+    \nIf the data is an array, select the most suitable element.\nIf the data is an\
+    \ object, select the most appropriate field value.\n\nRespond with just the selected\
+    \ value as a string.\n"
+cache:
+  enabled: true
+  maxEntries: 1000
+  ttlSeconds: 300

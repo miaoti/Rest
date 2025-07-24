@@ -44,8 +44,14 @@ public class ZeroShotLLMGenerator {
         String rawOutput = callLLM(prompt);
         System.out.println("*** LLM Raw output: " + rawOutput);
 
-        // 4) parse the lines
-        List<String> values = parseLines(rawOutput);
+        // 4) parse the response based on parameter type
+        List<String> values;
+        String paramType = safeStr(param.getType()).toLowerCase();
+        if ("array".equals(paramType)) {
+            values = parseJsonArray(rawOutput);
+        } else {
+            values = parseLines(rawOutput);
+        }
 
         // 5) filter by regex if present
         if (param.getRegex() != null && !param.getRegex().isEmpty()) {
@@ -101,29 +107,56 @@ public class ZeroShotLLMGenerator {
         // Clear task instructions with emphasis on formatting
         promptBuilder.append("\nTask: Generate ").append(howMany).append(" realistic test values for this parameter.\n\n");
         
-        promptBuilder.append("CRITICAL FORMATTING REQUIREMENT:\n");
-        promptBuilder.append("You MUST return exactly ").append(howMany).append(" separate lines.\n");
-        promptBuilder.append("Each line contains exactly ONE value.\n");
-        promptBuilder.append("Press ENTER after each value.\n");
-        promptBuilder.append("Do NOT put multiple values on the same line.\n\n");
+        String paramType = safeStr(param.getType()).toLowerCase();
         
-        promptBuilder.append("Content Requirements:\n");
-        promptBuilder.append("- Values should be appropriate for the parameter type and context\n");
-        promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
-        promptBuilder.append("- Consider common use cases and edge cases\n\n");
-        
-        // Context-specific guidance based on parameter name/type
-        String guidance = getContextualGuidance(param);
-        if (!guidance.isEmpty()) {
-            promptBuilder.append("Domain Guidance: ").append(guidance).append("\n\n");
+        if ("array".equals(paramType)) {
+            // For array parameters, generate JSON array format
+            promptBuilder.append("CRITICAL FORMATTING REQUIREMENT:\n");
+            promptBuilder.append("You MUST return a valid JSON array containing exactly ").append(howMany).append(" values.\n");
+            promptBuilder.append("Format: [\"value1\", \"value2\", \"value3\"]\n");
+            promptBuilder.append("Do NOT add explanations, numbering, or extra formatting.\n\n");
+            
+            promptBuilder.append("Content Requirements:\n");
+            promptBuilder.append("- Values should be appropriate for the parameter type and context\n");
+            promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
+            promptBuilder.append("- Consider common use cases and edge cases\n\n");
+            
+            // Context-specific guidance based on parameter name/type
+            String guidance = getContextualGuidance(param);
+            if (!guidance.isEmpty()) {
+                promptBuilder.append("Domain Guidance: ").append(guidance).append("\n\n");
+            }
+            
+            promptBuilder.append("Example Format (for 3 values):\n");
+            promptBuilder.append("[\"New York Penn Station\", \"Los Angeles Union Station\", \"Chicago Union Station\"]\n\n");
+            
+            promptBuilder.append("Now generate your JSON array with ").append(howMany).append(" values:");
+        } else {
+            // For non-array parameters, use line-separated format
+            promptBuilder.append("CRITICAL FORMATTING REQUIREMENT:\n");
+            promptBuilder.append("You MUST return exactly ").append(howMany).append(" separate lines.\n");
+            promptBuilder.append("Each line contains exactly ONE value.\n");
+            promptBuilder.append("Press ENTER after each value.\n");
+            promptBuilder.append("Do NOT put multiple values on the same line.\n\n");
+            
+            promptBuilder.append("Content Requirements:\n");
+            promptBuilder.append("- Values should be appropriate for the parameter type and context\n");
+            promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
+            promptBuilder.append("- Consider common use cases and edge cases\n\n");
+            
+            // Context-specific guidance based on parameter name/type
+            String guidance = getContextualGuidance(param);
+            if (!guidance.isEmpty()) {
+                promptBuilder.append("Domain Guidance: ").append(guidance).append("\n\n");
+            }
+            
+            promptBuilder.append("Example Format (for 3 values):\n");
+            promptBuilder.append("Value1\n");
+            promptBuilder.append("Value2\n");
+            promptBuilder.append("Value3\n\n");
+            
+            promptBuilder.append("Now generate your ").append(howMany).append(" values, one per line:");
         }
-        
-        promptBuilder.append("Example Format (for 3 values):\n");
-        promptBuilder.append("Value1\n");
-        promptBuilder.append("Value2\n");
-        promptBuilder.append("Value3\n\n");
-        
-        promptBuilder.append("Now generate your ").append(howMany).append(" values, one per line:");
         
         return promptBuilder.toString();
     }
@@ -418,6 +451,30 @@ public class ZeroShotLLMGenerator {
     }
 
 
+    private List<String> parseJsonArray(String raw) {
+        if (raw == null || raw.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
+        try {
+            // Try to parse as JSON array directly
+            String trimmed = raw.trim();
+            if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+                JSONArray jsonArray = new JSONArray(trimmed);
+                List<String> values = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    values.add(jsonArray.getString(i));
+                }
+                return values;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to parse as JSON array, falling back to line parsing: " + e.getMessage());
+        }
+        
+        // Fallback to line parsing if JSON parsing fails
+        return parseLines(raw);
+    }
+    
     private List<String> parseLines(String raw) {
         if (raw == null || raw.isEmpty()) {
             return Collections.emptyList();

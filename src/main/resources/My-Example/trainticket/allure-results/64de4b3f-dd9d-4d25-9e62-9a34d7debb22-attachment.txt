@@ -1,0 +1,1 @@
+{"distanceList":"0","distances":"[\"10\", \"25.5\", \"40.3\", \"65.7\", \"80\"]","endStation":"new york penn station","id":"goodbye","loginId":"admins","startStation":"New York Penn Station","stationList":"San francisco 49ers stadium","stations":"Sydney opera house"}

@@ -1,0 +1,1 @@
+{"basicPriceRate":"123.4","firstClassPriceRate":"23.49","id":"tests","routeId":"api-123","trainType":"freights"}
