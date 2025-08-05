@@ -454,24 +454,39 @@ public class SmartInputFetcher {
             // Parse JSON to understand structure
             Object parsed = objectMapper.readValue(jsonData, Object.class);
 
-            if (parsed instanceof List) {
-                List<?> list = (List<?>) parsed;
-                // Keep first few items that fit within limit
-                List<Object> truncatedList = new ArrayList<>();
-                for (Object item : list) {
-                    String itemJson = objectMapper.writeValueAsString(item);
-                    String currentJson = objectMapper.writeValueAsString(truncatedList);
-                    if (currentJson.length() + itemJson.length() + 10 < maxLength) { // +10 for array brackets
-                        truncatedList.add(item);
-                    } else {
-                        break;
+            if (parsed instanceof Map) {
+                Map<?, ?> map = (Map<?, ?>) parsed;
+                // For response objects, try to keep the data array with fewer items
+                if (map.containsKey("data") && map.get("data") instanceof List) {
+                    List<?> dataList = (List<?>) map.get("data");
+
+                    // Keep only first 1-2 items from data array to show structure
+                    List<Object> truncatedData = new ArrayList<>();
+                    for (int i = 0; i < Math.min(2, dataList.size()); i++) {
+                        truncatedData.add(dataList.get(i));
                     }
+
+                    // Rebuild response with truncated data
+                    Map<String, Object> truncatedResponse = new HashMap<>();
+                    truncatedResponse.put("status", map.get("status"));
+                    truncatedResponse.put("msg", "truncated");
+                    truncatedResponse.put("data", truncatedData);
+
+                    String result = objectMapper.writeValueAsString(truncatedResponse);
+                    if (result.length() <= maxLength) {
+                        return result;
+                    }
+
+                    // If still too long, keep only 1 item
+                    truncatedData = truncatedData.subList(0, Math.min(1, truncatedData.size()));
+                    truncatedResponse.put("data", truncatedData);
+                    return objectMapper.writeValueAsString(truncatedResponse);
                 }
-                return objectMapper.writeValueAsString(truncatedList);
-            } else {
-                // For objects, try to keep essential fields
-                return jsonData.substring(0, Math.min(maxLength - 3, jsonData.length())) + "...";
             }
+
+            // Fallback to simple truncation
+            return jsonData.substring(0, Math.min(maxLength - 3, jsonData.length())) + "...";
+
         } catch (Exception e) {
             // Fallback to simple truncation
             return jsonData.substring(0, Math.min(maxLength - 3, jsonData.length())) + "...";
@@ -681,28 +696,102 @@ public class SmartInputFetcher {
         try {
             // First, try to get the actual API response schema by making a sample request
             String responseSchema = getApiResponseSchema(endpoint);
-            
+
             if (responseSchema != null) {
-                // Use LLM to determine the best JSONPath for extraction
+                // Build prompt and check length before sending to LLM
                 String prompt = buildDataExtractionPrompt(parameterInfo, responseSchema);
-                String llmResponse = askLLMForExtractionPath(prompt);
-                
-                if (llmResponse != null && !llmResponse.trim().isEmpty()) {
-                    log.debug("LLM suggested JSONPath '{}' for parameter '{}'", llmResponse, parameterInfo.getName());
-                    return llmResponse.trim();
+
+                if (prompt.length() <= 2044) {
+                    // Use LLM to determine the best JSONPath for extraction
+                    String llmResponse = askLLMForExtractionPath(prompt);
+
+                    if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                        String cleanPath = llmResponse.trim();
+                        // Remove any markdown formatting
+                        cleanPath = cleanJsonFromMarkdown(cleanPath);
+                        log.info("LLM suggested JSONPath '{}' for parameter '{}'", cleanPath, parameterInfo.getName());
+                        return cleanPath;
+                    }
+                } else {
+                    log.warn("Prompt too long ({} chars) for LLM, using pattern-based fallback for parameter '{}'",
+                            prompt.length(), parameterInfo.getName());
                 }
             }
         } catch (Exception e) {
-            log.debug("LLM extraction path discovery failed for parameter '{}': {}", 
+            log.debug("LLM extraction path discovery failed for parameter '{}': {}",
                      parameterInfo.getName(), e.getMessage());
         }
-        
-        // Fallback: return a generic path
-        String fallbackPath = "$.data[*]";
-        log.debug("Using fallback JSONPath '{}' for parameter '{}'", fallbackPath, parameterInfo.getName());
+
+        // Fallback: use pattern-based guessing
+        String fallbackPath = guessPathByParameterName(parameterInfo.getName());
+        log.info("Using pattern-based JSONPath '{}' for parameter '{}'", fallbackPath, parameterInfo.getName());
         return fallbackPath;
     }
-    
+
+    /**
+     * Guess JSONPath based on parameter name patterns
+     */
+    private String guessPathByParameterName(String paramName) {
+        if (paramName == null) return "$.data[*]";
+
+        String lowerName = paramName.toLowerCase();
+
+        // Distance-related parameters
+        if (lowerName.contains("distance")) {
+            return "$.data[*].route.distances[*]";
+        }
+
+        // Station-related parameters
+        if (lowerName.contains("station")) {
+            if (lowerName.contains("start") || lowerName.contains("from")) {
+                return "$.data[*].route.startStation";
+            } else if (lowerName.contains("end") || lowerName.contains("to") || lowerName.contains("terminal")) {
+                return "$.data[*].route.endStation";
+            } else {
+                return "$.data[*].route.stations[*]";
+            }
+        }
+
+        // ID-related parameters
+        if (lowerName.contains("id")) {
+            if (lowerName.contains("trip")) {
+                return "$.data[*].trip.id";
+            } else if (lowerName.contains("route")) {
+                return "$.data[*].route.id";
+            } else {
+                return "$.data[*].id";
+            }
+        }
+
+        // Name-related parameters
+        if (lowerName.contains("name")) {
+            if (lowerName.contains("train")) {
+                return "$.data[*].trip.trainTypeName";
+            } else {
+                return "$.data[*].name";
+            }
+        }
+
+        // Time-related parameters
+        if (lowerName.contains("time")) {
+            if (lowerName.contains("start")) {
+                return "$.data[*].trip.startTime";
+            } else if (lowerName.contains("end")) {
+                return "$.data[*].trip.endTime";
+            } else {
+                return "$.data[*].time";
+            }
+        }
+
+        // Price-related parameters
+        if (lowerName.contains("price") || lowerName.contains("cost")) {
+            return "$.data[*].price";
+        }
+
+        // Default fallback
+        return "$.data[*]." + paramName;
+    }
+
     private String getApiResponseSchema(String endpoint) {
         try {
             // Make a sample request to get the response structure
@@ -729,10 +818,55 @@ public class SmartInputFetcher {
     
     private String buildDataExtractionPrompt(ParameterInfo parameterInfo, String responseSchema) {
         String template = registry.getLlmPrompts().get("dataExtraction");
+
+        // Handle message length limit for response schema
+        String truncatedSchema = truncateResponseSchemaForLLM(responseSchema, template, parameterInfo);
+
+        String paramName = parameterInfo.getName() != null ? parameterInfo.getName() : "";
+        String paramType = parameterInfo.getType() != null ? parameterInfo.getType() : "";
+
         return template
-                .replace("{responseSchema}", responseSchema != null ? responseSchema : "")
+                .replace("{responseSchema}", truncatedSchema != null ? truncatedSchema : "")
+                .replace("{parameterName}", paramName)
+                .replace("{parameterType}", paramType)
+                // Handle multiple parameter name references in the new template
+                .replaceAll("\\{parameterName\\}", paramName);
+    }
+
+    /**
+     * Truncate response schema to fit within LLM message length limits
+     */
+    private String truncateResponseSchemaForLLM(String responseSchema, String template, ParameterInfo parameterInfo) {
+        if (responseSchema == null) return "";
+
+        // Calculate space available for schema (leave 100 chars buffer)
+        String tempPrompt = template
+                .replace("{responseSchema}", "")
                 .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
                 .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "");
+
+        int maxSchemaLength = 1500 - tempPrompt.length(); // Much more aggressive limit
+
+        if (responseSchema.length() <= maxSchemaLength) {
+            return responseSchema;
+        }
+
+        log.info("Response schema too long ({} chars), truncating to {} chars for parameter '{}'",
+                responseSchema.length(), maxSchemaLength, parameterInfo.getName());
+
+        // Try to truncate intelligently
+        try {
+            // If it's JSON, try to keep complete objects/arrays
+            if (responseSchema.trim().startsWith("{") || responseSchema.trim().startsWith("[")) {
+                return truncateJsonIntelligently(responseSchema, maxSchemaLength);
+            } else {
+                // Simple truncation for non-JSON data
+                return responseSchema.substring(0, maxSchemaLength) + "...";
+            }
+        } catch (Exception e) {
+            // Fallback to simple truncation
+            return responseSchema.substring(0, Math.min(maxSchemaLength, responseSchema.length())) + "...";
+        }
     }
     
     private String askLLMForExtractionPath(String prompt) {
