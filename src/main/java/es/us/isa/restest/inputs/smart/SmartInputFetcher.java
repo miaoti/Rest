@@ -35,35 +35,35 @@ import org.json.JSONObject;
  * Intelligently fetches realistic test data from existing APIs instead of generating random values
  */
 public class SmartInputFetcher {
-    
+
     private static final Logger log = LogManager.getLogger(SmartInputFetcher.class);
-    
+
     private final SmartInputFetchConfig config;
     private final AiDrivenLLMGenerator llmGenerator;
     private final ObjectMapper objectMapper;
     private final Random random;
     private final OpenAPIEndpointDiscovery openAPIDiscovery;
-    
+
     // Runtime data
     private InputFetchRegistry registry;
     private Map<String, CachedValue> cache;
     private String baseUrl;
-    
+
     // Cache for fetched values
     private static class CachedValue {
         final String value;
         final LocalDateTime timestamp;
-        
+
         CachedValue(String value) {
             this.value = value;
             this.timestamp = LocalDateTime.now();
         }
-        
+
         boolean isExpired(int ttlSeconds) {
             return LocalDateTime.now().isAfter(timestamp.plusSeconds(ttlSeconds));
         }
     }
-    
+
     public SmartInputFetcher(SmartInputFetchConfig config, String baseUrl) {
         this.config = config;
         this.baseUrl = baseUrl;
@@ -72,13 +72,13 @@ public class SmartInputFetcher {
         this.random = new Random();
         this.cache = new ConcurrentHashMap<>();
         this.openAPIDiscovery = new OpenAPIEndpointDiscovery();
-        
+
         loadRegistry();
         loadOpenAPISpec();
-        
+
         log.info("SmartInputFetcher initialized with config: {}", config);
     }
-    
+
     /**
      * Main method to fetch a smart input value for a parameter
      */
@@ -87,7 +87,7 @@ public class SmartInputFetcher {
             log.debug("Smart fetching disabled, using LLM for parameter '{}'", parameterInfo.getName());
             return fallbackToLLM(parameterInfo);
         }
-        
+
         // FIXED: Decide whether to use smart fetching or LLM based on configured percentage
         double randomValue = random.nextDouble();
         if (randomValue < config.getSmartFetchPercentage()) {
@@ -114,13 +114,13 @@ public class SmartInputFetcher {
             return fallbackToLLM(parameterInfo);
         }
     }
-    
+
     /**
      * Fetch input from smart sources (existing APIs)
      */
     private String fetchFromSmartSource(ParameterInfo parameterInfo) throws Exception {
         String paramName = parameterInfo.getName();
-        
+
         // Check cache first
         if (config.isCacheEnabled()) {
             String cacheKey = buildCacheKey(parameterInfo);
@@ -130,7 +130,7 @@ public class SmartInputFetcher {
                 return cached.value;
             }
         }
-        
+
         // Look for existing mappings
         List<ApiMapping> mappings = registry.getMappingsForParameter(paramName);
         log.info("🔍 Parameter '{}' has {} existing mappings", paramName, mappings.size());
@@ -143,21 +143,21 @@ public class SmartInputFetcher {
         } else if (mappings.isEmpty()) {
             log.warn("❌ No mappings for '{}' and discovery is disabled", paramName);
         }
-        
+
         // Try each mapping in order of score
         for (ApiMapping mapping : mappings.stream()
                 .sorted((a, b) -> Double.compare(b.calculateScore(), a.calculateScore()))
                 .limit(config.getMaxCandidates())
                 .collect(Collectors.toList())) {
-            
+
             try {
                 String value = fetchFromApiMapping(mapping, parameterInfo);
                 if (value != null && !value.trim().isEmpty()) {
                     // Update success rate and cache
                     mapping.updateSuccessRate(true);
                     cacheValue(parameterInfo, value);
-                    
-                    log.debug("Successfully fetched value '{}' for parameter '{}' from {}", 
+
+                    log.debug("Successfully fetched value '{}' for parameter '{}' from {}",
                              value, paramName, mapping.getEndpoint());
                     return value;
                 }
@@ -166,11 +166,11 @@ public class SmartInputFetcher {
                 mapping.updateSuccessRate(false);
             }
         }
-        
+
         // If all smart sources failed, fall back to LLM
         throw new Exception("No smart sources available for parameter: " + paramName);
     }
-    
+
     /**
      * Discover new API mappings using LLM and pattern matching
      */
@@ -214,7 +214,7 @@ public class SmartInputFetcher {
 
         return discoveries;
     }
-    
+
     /**
      * Discover APIs using pattern matching
      */
@@ -250,38 +250,38 @@ public class SmartInputFetcher {
         log.info("📋 Pattern discovery for '{}' created {} mappings", paramName, mappings.size());
         return mappings;
     }
-    
+
     /**
      * Get all available services from both registry and OpenAPI specification
      */
     private List<String> getAllAvailableServices() {
         Set<String> allServices = new HashSet<>();
-        
+
         // Add services from registry
         allServices.addAll(registry.getAllServices());
-        
+
         // Add services from OpenAPI specification
         if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
             allServices.addAll(openAPIDiscovery.getAllServices());
         }
-        
+
         return new ArrayList<>(allServices);
     }
-    
+
     /**
      * Discover APIs using LLM analysis
      */
     private List<ApiMapping> discoverByLLM(ParameterInfo parameterInfo) {
         List<ApiMapping> mappings = new ArrayList<>();
-        
+
         try {
             // Get available services from both registry and OpenAPI spec
             List<String> availableServices = getAllAvailableServices();
-            
+
             // Ask LLM which services might provide data for this parameter
             String prompt = buildLLMDiscoveryPrompt(parameterInfo, availableServices);
             List<String> suggestedServices = askLLMForServices(prompt);
-            
+
             // Create mappings for suggested services with priority based on order
             if (suggestedServices.isEmpty()) {
                 log.info("LLM indicated no good service matches for parameter '{}', skipping LLM discovery",
@@ -305,20 +305,20 @@ public class SmartInputFetcher {
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             log.warn("LLM discovery failed: {}", e.getMessage());
         }
-        
+
         return mappings;
     }
-    
+
     /**
      * Fetch data from a specific API mapping
      */
     private String fetchFromApiMapping(ApiMapping mapping, ParameterInfo parameterInfo) throws Exception {
         String url = baseUrl + mapping.getEndpoint();
-        
+
         // Always use GET for data fetching
         String httpMethod = "GET";
         log.info("🌐 API Call: {} {} for parameter '{}'", httpMethod, url, parameterInfo.getName());
@@ -357,7 +357,7 @@ public class SmartInputFetcher {
                 log.warn("❌ No valid value extracted for parameter '{}'", parameterInfo.getName());
                 return null;
             }
-            
+
         } finally {
             conn.disconnect();
         }
@@ -592,14 +592,14 @@ public class SmartInputFetcher {
     private String extractValueFromResponse(String responseBody, String extractPath, ParameterInfo parameterInfo) {
         try {
             Object result = JsonPath.read(responseBody, extractPath);
-            
+
             if (result != null) {
                 // Use LLM to intelligently select the most appropriate value
                 String selectedValue = selectValueWithLLM(result, parameterInfo);
                 if (selectedValue != null) {
                     return selectedValue;
                 }
-                
+
                 // Fallback: use intelligent selection logic if LLM fails
                 return selectValueWithFallbackLogic(result, parameterInfo);
             }
@@ -671,16 +671,16 @@ public class SmartInputFetcher {
 
         return null;
     }
-    
+
     private String selectValueWithLLM(Object extractedData, ParameterInfo parameterInfo) {
         try {
             // Convert extracted data to a readable format for LLM
             String dataString = objectMapper.writeValueAsString(extractedData);
-            
+
             // Build prompt for value selection
             String prompt = buildValueSelectionPrompt(dataString, parameterInfo);
             String llmResponse = askLLMForValueSelection(prompt);
-            
+
             if (llmResponse != null && !llmResponse.trim().isEmpty()) {
                 String cleanResponse = llmResponse.trim();
 
@@ -694,12 +694,12 @@ public class SmartInputFetcher {
                 return cleanResponse;
             }
         } catch (Exception e) {
-            log.debug("LLM value selection failed for parameter '{}': {}", 
+            log.debug("LLM value selection failed for parameter '{}': {}",
                      parameterInfo.getName(), e.getMessage());
         }
         return null;
     }
-    
+
     private String buildValueSelectionPrompt(String extractedData, ParameterInfo parameterInfo) {
         String template = registry.getLlmPrompts().get("valueSelection");
 
@@ -795,12 +795,12 @@ public class SmartInputFetcher {
             return jsonData.substring(0, Math.min(maxLength - 3, jsonData.length())) + "...";
         }
     }
-    
+
     private String askLLMForValueSelection(String prompt) {
         try {
             // Call LLM directly for value selection, not parameter generation
             String rawResponse = callLLMForValueSelection(prompt);
-            
+
             if (rawResponse != null && !rawResponse.trim().isEmpty()) {
                 // Clean any markdown formatting
                 String cleaned = cleanJsonFromMarkdown(rawResponse);
@@ -816,62 +816,62 @@ public class SmartInputFetcher {
                 }
                 return cleaned.trim();
             }
-            
+
             return null;
-            
+
         } catch (Exception e) {
             log.warn("Failed to ask LLM for value selection: {}", e.getMessage());
             return null;
         }
     }
-    
+
     /**
      * Call LLM specifically for value selection (not parameter generation)
      */
     private String callLLMForValueSelection(String prompt) {
         try {
             final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-            
+
             OkHttpClient client = new OkHttpClient.Builder()
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(60, TimeUnit.SECONDS)
                     .build();
-            
+
             JSONObject requestBody = new JSONObject();
             requestBody.put("model", "gpt-3.5-turbo");
             requestBody.put("max_tokens", 100); // Short response for value selection
             requestBody.put("temperature", 0.1); // Low temperature for consistent selection
-            
+
             JSONArray messages = new JSONArray();
             JSONObject systemMessage = new JSONObject();
             systemMessage.put("role", "system");
             systemMessage.put("content", "You are an AI assistant that selects the most appropriate value from given data. Respond with only the selected value, no explanations.");
             messages.put(systemMessage);
-            
+
             JSONObject userMessage = new JSONObject();
             userMessage.put("role", "user");
             userMessage.put("content", prompt);
             messages.put(userMessage);
-            
+
             requestBody.put("messages", messages);
-            
+
             RequestBody body = RequestBody.create(
                     requestBody.toString(),
                     MediaType.parse("application/json")
             );
-            
+
             Request request = new Request.Builder()
                     .url(LOCAL_LLM_API_URL)
                     .post(body)
                     .addHeader("Content-Type", "application/json")
                     .build();
-            
+
             try (Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     JSONObject jsonResponse = new JSONObject(responseBody);
-                    
+
                     if (jsonResponse.has("choices")) {
                         JSONArray choices = jsonResponse.getJSONArray("choices");
                         if (choices.length() > 0) {
@@ -886,14 +886,14 @@ public class SmartInputFetcher {
                     }
                 }
             }
-            
+
         } catch (Exception e) {
             log.warn("Failed to call LLM for value selection: {}", e.getMessage());
         }
-        
+
         return null;
     }
-    
+
     /**
      * Fallback to traditional LLM generation
      */
@@ -921,11 +921,11 @@ public class SmartInputFetcher {
             return fallback;
         }
     }
-    
+
     /**
      * Helper methods
      */
-    
+
     private void loadRegistry() {
         try {
             File registryFile = new File(config.getRegistryPath());
@@ -941,7 +941,7 @@ public class SmartInputFetcher {
             registry = new InputFetchRegistry();
         }
     }
-    
+
     /**
      * Load OpenAPI specification for endpoint discovery
      */
@@ -950,7 +950,7 @@ public class SmartInputFetcher {
             String openApiPath = config.getOpenApiSpecPath();
             if (openApiPath != null && !openApiPath.trim().isEmpty()) {
                 File openApiFile = new File(openApiPath);
-                
+
                 if (openApiFile.exists()) {
                     openAPIDiscovery.loadFromFile(openApiPath);
                     log.info("Loaded OpenAPI specification from: {}", openApiPath);
@@ -967,7 +967,7 @@ public class SmartInputFetcher {
             log.info("Will fall back to LLM endpoint guessing");
         }
     }
-    
+
     private void saveRegistry() {
         try {
             File registryFile = new File(config.getRegistryPath());
@@ -978,18 +978,18 @@ public class SmartInputFetcher {
             log.warn("Failed to save registry: {}", e.getMessage());
         }
     }
-    
+
     private void cacheValue(ParameterInfo parameterInfo, String value) {
         if (config.isCacheEnabled()) {
             String cacheKey = buildCacheKey(parameterInfo);
             cache.put(cacheKey, new CachedValue(value));
         }
     }
-    
+
     private String buildCacheKey(ParameterInfo parameterInfo) {
         return parameterInfo.getName() + ":" + parameterInfo.getType() + ":" + parameterInfo.getInLocation();
     }
-    
+
     private String readResponse(HttpURLConnection conn) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
             StringBuilder response = new StringBuilder();
@@ -1000,7 +1000,7 @@ public class SmartInputFetcher {
             return response.toString();
         }
     }
-    
+
     private String guessExtractPath(ParameterInfo parameterInfo, String endpoint) {
         try {
             // First, try to get the actual API response schema by making a sample request
@@ -1158,7 +1158,7 @@ public class SmartInputFetcher {
             conn.setRequestProperty("Content-Type", config.getDefaultContentType());
             conn.setConnectTimeout((int) config.getSchemaDiscoveryTimeoutMs());
             conn.setReadTimeout((int) config.getSchemaDiscoveryTimeoutMs());
-            
+
             int responseCode = conn.getResponseCode();
             if (responseCode == config.getSuccessResponseCode()) {
                 String responseBody = readResponse(conn);
@@ -1172,7 +1172,7 @@ public class SmartInputFetcher {
         }
         return null;
     }
-    
+
     private String buildDataExtractionPrompt(ParameterInfo parameterInfo, String responseSchema) {
         String template = registry.getLlmPrompts().get("dataExtraction");
 
@@ -1228,7 +1228,7 @@ public class SmartInputFetcher {
             return responseSchema.substring(0, Math.min(maxSchemaLength, responseSchema.length())) + "...";
         }
     }
-    
+
     private String askLLMForExtractionPath(String prompt) {
         try {
             // Call LLM directly for extraction path discovery with appropriate system prompt
@@ -1251,36 +1251,36 @@ public class SmartInputFetcher {
             }
 
             return null;
-            
+
         } catch (Exception e) {
             log.warn("Failed to ask LLM for extraction path: {}", e.getMessage());
             return null;
         }
     }
-    
+
     private String buildLLMDiscoveryPrompt(ParameterInfo parameterInfo, List<String> availableServices) {
         String template = registry.getLlmPrompts().get("apiDiscovery");
-        
+
         // Limit services list to prevent message length issues (max 2044 chars)
         String servicesString = String.join(", ", availableServices);
-        
+
         // First replace all parameters except availableServices
         String basePrompt = template
                 .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
                 .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
                 .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "")
                 .replace("{parameterLocation}", parameterInfo.getInLocation() != null ? parameterInfo.getInLocation() : "");
-        
+
         // Calculate remaining space for services (leave 100 chars buffer)
         // Use a temporary replacement to calculate space needed
         String tempPrompt = basePrompt.replace("{availableServices}", "");
         int maxServicesLength = 1944 - tempPrompt.length();
-        
+
         if (servicesString.length() > maxServicesLength) {
             // Truncate services list to fit within limit
             List<String> truncatedServices = new ArrayList<>();
             int currentLength = 0;
-            
+
             for (String service : availableServices) {
                 int serviceLength = service.length() + 2; // +2 for ", "
                 if (currentLength + serviceLength > maxServicesLength) {
@@ -1289,27 +1289,27 @@ public class SmartInputFetcher {
                 truncatedServices.add(service);
                 currentLength += serviceLength;
             }
-            
+
             servicesString = String.join(", ", truncatedServices);
             if (truncatedServices.size() < availableServices.size()) {
                 servicesString += " (and " + (availableServices.size() - truncatedServices.size()) + " more)";
             }
         }
-        
+
         // Finally replace the availableServices placeholder
         return basePrompt.replace("{availableServices}", servicesString);
     }
-    
+
     private List<String> askLLMForServices(String prompt) {
         try {
             // Call LLM directly for service discovery with appropriate system prompt
             String rawResponse = callLLMForServiceDiscovery(prompt);
-            
+
             if (rawResponse != null && !rawResponse.trim().isEmpty()) {
                 try {
                     // FIXED: Clean markdown code blocks from LLM response
                     String cleanedResponse = cleanJsonFromMarkdown(rawResponse);
-                    
+
                     JsonNode jsonResponse = objectMapper.readTree(cleanedResponse);
                     // Check for NO_GOOD_MATCH response
                     if (cleanedResponse.trim().equals("NO_GOOD_MATCH")) {
@@ -1342,65 +1342,65 @@ public class SmartInputFetcher {
                     log.debug("Failed to parse LLM response as JSON: {} (raw: '{}')", e.getMessage(), rawResponse);
                 }
             }
-            
+
             return new ArrayList<>();
-            
+
         } catch (Exception e) {
             log.warn("Failed to ask LLM for services: {}", e.getMessage());
             return new ArrayList<>();
         }
     }
-    
+
     /**
      * Call LLM directly for service discovery with appropriate system prompt
      */
     private String callLLMForServiceDiscovery(String prompt) {
         final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-        
-        String systemContent = 
+
+        String systemContent =
                 "You are an API testing assistant that helps identify which microservices " +
                 "would most likely provide realistic data for given parameters. " +
                 "Respond with a JSON array of service names in priority order. " +
                 "Do NOT generate test values. Only return service names as a JSON array.";
-        
+
         try {
             // Build the request using the same HTTP client setup as ZeroShotLLMGenerator
             org.json.JSONArray messages = new org.json.JSONArray()
                     .put(new org.json.JSONObject().put("role", "system").put("content", systemContent))
                     .put(new org.json.JSONObject().put("role", "user").put("content", prompt));
-            
+
             org.json.JSONObject requestBody = new org.json.JSONObject()
                     .put("model", "llama-3-8b-instruct")
                     .put("messages", messages)
                     .put("max_tokens", 200)
                     .put("temperature", 0.7);
-            
+
             log.debug("[Service Discovery LLM] Sending request to: {}", LOCAL_LLM_API_URL);
             log.debug("[Service Discovery LLM] Request body: {}", requestBody.toString());
-            
+
             // Use the same HTTP client configuration as ZeroShotLLMGenerator
             okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
                     .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                     .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                     .readTimeout(90, java.util.concurrent.TimeUnit.SECONDS)
                     .build();
-            
+
             okhttp3.RequestBody body = okhttp3.RequestBody.create(
                     requestBody.toString(),
                     okhttp3.MediaType.parse("application/json")
             );
-            
+
             okhttp3.Request request = new okhttp3.Request.Builder()
                     .url(LOCAL_LLM_API_URL)
                     .post(body)
                     .addHeader("Content-Type", "application/json")
                     .build();
-            
+
             try (okhttp3.Response response = client.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     log.debug("[Service Discovery LLM] Response: {}", responseBody);
-                    
+
                     // Parse the response to extract the content
                     org.json.JSONObject jsonResponse = new org.json.JSONObject(responseBody);
                     if (jsonResponse.has("choices")) {
@@ -1422,60 +1422,60 @@ public class SmartInputFetcher {
         } catch (Exception e) {
             log.warn("[Service Discovery LLM] Failed to call LLM: {}", e.getMessage());
         }
-        
+
         return null;
     }
-    
+
     /**
       * Call LLM directly for endpoint discovery with appropriate system prompt
       */
      private String callLLMForEndpointDiscovery(String prompt) {
          final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-         
-         String systemContent = 
+
+         String systemContent =
                  "You are an API testing assistant that helps identify REST API endpoints " +
                  "within microservices that would provide data for given parameters. " +
                  "Respond with the most likely endpoint path (e.g., /api/v1/service/resource). " +
                  "Do NOT generate test values. Only return the endpoint path.";
-         
+
          try {
              // Build the request using the same HTTP client setup as ZeroShotLLMGenerator
              org.json.JSONArray messages = new org.json.JSONArray()
                      .put(new org.json.JSONObject().put("role", "system").put("content", systemContent))
                      .put(new org.json.JSONObject().put("role", "user").put("content", prompt));
-             
+
              org.json.JSONObject requestBody = new org.json.JSONObject()
                      .put("model", "llama-3-8b-instruct")
                      .put("messages", messages)
                      .put("max_tokens", 100)
                      .put("temperature", 0.3);
-             
+
              log.debug("[Endpoint Discovery LLM] Sending request to: {}", LOCAL_LLM_API_URL);
              log.debug("[Endpoint Discovery LLM] Request body: {}", requestBody.toString());
-             
+
              // Use the same HTTP client configuration as ZeroShotLLMGenerator
              okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
                      .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                      .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                      .readTimeout(90, java.util.concurrent.TimeUnit.SECONDS)
                      .build();
-             
+
              okhttp3.RequestBody body = okhttp3.RequestBody.create(
                      requestBody.toString(),
                      okhttp3.MediaType.parse("application/json")
              );
-             
+
              okhttp3.Request request = new okhttp3.Request.Builder()
                      .url(LOCAL_LLM_API_URL)
                      .post(body)
                      .addHeader("Content-Type", "application/json")
                      .build();
-             
+
              try (okhttp3.Response response = client.newCall(request).execute()) {
                  if (response.isSuccessful() && response.body() != null) {
                      String responseBody = response.body().string();
                      log.debug("[Endpoint Discovery LLM] Response: {}", responseBody);
-                     
+
                      // Parse the response to extract the content
                      org.json.JSONObject jsonResponse = new org.json.JSONObject(responseBody);
                      if (jsonResponse.has("choices")) {
@@ -1497,60 +1497,60 @@ public class SmartInputFetcher {
          } catch (Exception e) {
              log.warn("[Endpoint Discovery LLM] Failed to call LLM: {}", e.getMessage());
          }
-         
+
          return null;
      }
-     
+
      /**
        * Call LLM directly for extraction path discovery with appropriate system prompt
        */
       private String callLLMForExtractionPathDiscovery(String prompt) {
           final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-          
-          String systemContent = 
+
+          String systemContent =
                   "You are an API testing assistant that helps create JSONPath expressions " +
                   "to extract specific data from JSON API responses. " +
                   "Respond with a valid JSONPath expression (e.g., $.data[*].name or $.items[0].id). " +
                   "Do NOT generate test values. Only return the JSONPath expression.";
-          
+
           try {
               // Build the request using the same HTTP client setup as ZeroShotLLMGenerator
               org.json.JSONArray messages = new org.json.JSONArray()
                       .put(new org.json.JSONObject().put("role", "system").put("content", systemContent))
                       .put(new org.json.JSONObject().put("role", "user").put("content", prompt));
-              
+
               org.json.JSONObject requestBody = new org.json.JSONObject()
                       .put("model", "llama-3-8b-instruct")
                       .put("messages", messages)
                       .put("max_tokens", 100)
                       .put("temperature", 0.3);
-              
+
               log.debug("[Extraction Path Discovery LLM] Sending request to: {}", LOCAL_LLM_API_URL);
               log.debug("[Extraction Path Discovery LLM] Request body: {}", requestBody.toString());
-              
+
               // Use the same HTTP client configuration as ZeroShotLLMGenerator
               okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
                       .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                       .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
                       .readTimeout(90, java.util.concurrent.TimeUnit.SECONDS)
                       .build();
-              
+
               okhttp3.RequestBody body = okhttp3.RequestBody.create(
                       requestBody.toString(),
                       okhttp3.MediaType.parse("application/json")
               );
-              
+
               okhttp3.Request request = new okhttp3.Request.Builder()
                       .url(LOCAL_LLM_API_URL)
                       .post(body)
                       .addHeader("Content-Type", "application/json")
                       .build();
-              
+
               try (okhttp3.Response response = client.newCall(request).execute()) {
                   if (response.isSuccessful() && response.body() != null) {
                       String responseBody = response.body().string();
                       log.debug("[Extraction Path Discovery LLM] Response: {}", responseBody);
-                      
+
                       // Parse the response to extract the content
                       org.json.JSONObject jsonResponse = new org.json.JSONObject(responseBody);
                       if (jsonResponse.has("choices")) {
@@ -1572,10 +1572,10 @@ public class SmartInputFetcher {
           } catch (Exception e) {
               log.warn("[Extraction Path Discovery LLM] Failed to call LLM: {}", e.getMessage());
           }
-          
+
           return null;
       }
-      
+
       /**
        * Clean JSON response from markdown code blocks
        * Handles responses like: ```json\n["service1", "service2"]\n```
@@ -1584,25 +1584,25 @@ public class SmartInputFetcher {
         if (response == null) {
             return "";
         }
-        
+
         // Remove markdown code blocks
         String cleaned = response.trim();
-        
+
         // Remove ```json at the beginning
         if (cleaned.startsWith("```json")) {
             cleaned = cleaned.substring(7).trim();
         } else if (cleaned.startsWith("```")) {
             cleaned = cleaned.substring(3).trim();
         }
-        
+
         // Remove ``` at the end
         if (cleaned.endsWith("```")) {
             cleaned = cleaned.substring(0, cleaned.length() - 3).trim();
         }
-        
+
         return cleaned;
     }
-    
+
     private String inferEndpointForService(String service, ParameterInfo parameterInfo) {
         // Pure LLM-based endpoint selection (GET endpoints only)
         if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
@@ -1617,17 +1617,19 @@ public class SmartInputFetcher {
                 log.info("🔍 Found {} GET endpoints for service '{}' (filtered from {} total)",
                         getEndpoints.size(), service, allEndpoints.size());
 
-                // Use LLM to select the best GET endpoint
-                String selectedEndpoint = selectEndpointWithLLM(getEndpoints, parameterInfo, service);
-                if (selectedEndpoint != null && !selectedEndpoint.equals("NO_GOOD_MATCH")) {
+                // Use LLM to select the best GET endpoint (with retries for reliability)
+                String selectedEndpoint = selectEndpointWithLLMRetry(getEndpoints, parameterInfo, service);
+                if (selectedEndpoint != null) {
                     log.info("🧠 LLM selected GET endpoint '{}' for parameter '{}' in service '{}'",
                             selectedEndpoint, parameterInfo.getName(), service);
                     return selectedEndpoint;
                 }
 
-                // If LLM says NO_GOOD_MATCH, pick the first reasonable GET endpoint
+                // If LLM completely fails after retries, log error and use first reasonable endpoint
+                log.error("❌ LLM endpoint selection failed completely for parameter '{}' in service '{}', using first reasonable endpoint",
+                         parameterInfo.getName(), service);
                 String fallbackEndpoint = pickFirstReasonableEndpoint(getEndpoints);
-                log.info("🔧 LLM said NO_GOOD_MATCH, using fallback GET endpoint '{}' for parameter '{}'",
+                log.info("🔧 Emergency fallback: using GET endpoint '{}' for parameter '{}'",
                         fallbackEndpoint, parameterInfo.getName());
                 return fallbackEndpoint;
             } else {
@@ -1661,7 +1663,44 @@ public class SmartInputFetcher {
      }
 
      /**
-      * Use LLM to select the best endpoint for a parameter
+      * Use LLM to select the best endpoint for a parameter (with retries for reliability)
+      */
+     private String selectEndpointWithLLMRetry(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo, String serviceName) {
+         int maxRetries = 3;
+
+         for (int attempt = 1; attempt <= maxRetries; attempt++) {
+             log.debug("🔄 LLM endpoint selection attempt {} of {} for parameter '{}'",
+                      attempt, maxRetries, parameterInfo.getName());
+
+             String result = selectEndpointWithLLM(endpoints, parameterInfo, serviceName);
+
+             if (result != null && !result.equals("NO_GOOD_MATCH")) {
+                 log.info("✅ LLM endpoint selection succeeded on attempt {} for parameter '{}'",
+                         attempt, parameterInfo.getName());
+                 return result;
+             }
+
+             if (result != null && result.equals("NO_GOOD_MATCH")) {
+                 log.info("🤔 LLM said NO_GOOD_MATCH on attempt {} for parameter '{}' - forcing selection",
+                         attempt, parameterInfo.getName());
+                 // Force LLM to pick something by modifying the prompt
+                 String forcedResult = forceEndpointSelectionWithLLM(endpoints, parameterInfo, serviceName);
+                 if (forcedResult != null) {
+                     return forcedResult;
+                 }
+             }
+
+             log.warn("⚠️ LLM endpoint selection attempt {} failed for parameter '{}', retrying...",
+                     attempt, parameterInfo.getName());
+         }
+
+         log.error("❌ All {} LLM endpoint selection attempts failed for parameter '{}'",
+                  maxRetries, parameterInfo.getName());
+         return null;
+     }
+
+     /**
+      * Use LLM to select the best endpoint for a parameter (single attempt)
       */
      private String selectEndpointWithLLM(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo, String serviceName) {
          try {
@@ -1678,21 +1717,29 @@ public class SmartInputFetcher {
 
              if (llmResponse != null && !llmResponse.trim().isEmpty()) {
                  String cleanResponse = llmResponse.trim();
+                 log.info("🧠 LLM raw response for parameter '{}': '{}'", parameterInfo.getName(), cleanResponse);
 
                  // Check for NO_GOOD_MATCH
                  if (cleanResponse.equals("NO_GOOD_MATCH")) {
                      log.info("LLM indicated no good endpoint match for parameter '{}'", parameterInfo.getName());
-                     return null;
+                     return "NO_GOOD_MATCH";
                  }
 
-                 // Validate that the selected endpoint exists
-                 for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
-                     if (endpoint.getPath().equals(cleanResponse)) {
-                         return cleanResponse;
-                     }
+                 // Clean up the response (remove quotes, extra whitespace)
+                 if (cleanResponse.startsWith("\"") && cleanResponse.endsWith("\"")) {
+                     cleanResponse = cleanResponse.substring(1, cleanResponse.length() - 1);
                  }
 
-                 log.warn("LLM selected non-existent endpoint '{}', falling back to scoring", cleanResponse);
+                 // Validate that the selected endpoint exists (flexible matching)
+                 String selectedEndpoint = validateAndNormalizeEndpoint(cleanResponse, endpoints, parameterInfo.getName());
+                 if (selectedEndpoint != null) {
+                     log.info("✅ LLM endpoint validation successful: '{}' for parameter '{}'", selectedEndpoint, parameterInfo.getName());
+                     return selectedEndpoint;
+                 }
+
+                 log.warn("❌ LLM selected invalid endpoint '{}' for parameter '{}', available endpoints: {}",
+                         cleanResponse, parameterInfo.getName(),
+                         endpoints.stream().map(e -> e.getPath()).collect(Collectors.toList()));
              }
 
          } catch (Exception e) {
@@ -1700,6 +1747,147 @@ public class SmartInputFetcher {
          }
 
          return null; // Fallback to scoring
+     }
+
+     /**
+      * Validate and normalize the LLM's endpoint selection with flexible matching
+      */
+     private String validateAndNormalizeEndpoint(String llmResponse, List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, String parameterName) {
+         if (llmResponse == null || llmResponse.trim().isEmpty()) {
+             return null;
+         }
+
+         String cleanResponse = llmResponse.trim();
+         log.debug("🔍 Validating LLM endpoint selection '{}' against {} available endpoints", cleanResponse, endpoints.size());
+
+         // 1. Exact match (most common case)
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             if (endpoint.getPath().equals(cleanResponse)) {
+                 log.debug("✅ Exact match found: '{}'", cleanResponse);
+                 return cleanResponse;
+             }
+         }
+
+         // 2. Case-insensitive match
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             if (endpoint.getPath().equalsIgnoreCase(cleanResponse)) {
+                 log.debug("✅ Case-insensitive match found: '{}' -> '{}'", cleanResponse, endpoint.getPath());
+                 return endpoint.getPath();
+             }
+         }
+
+         // 3. Partial match - LLM might have returned just the endpoint name without full path
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             String fullPath = endpoint.getPath();
+             // Check if the LLM response is contained in the full path
+             if (fullPath.contains(cleanResponse)) {
+                 log.debug("✅ Partial match found: '{}' contained in '{}'", cleanResponse, fullPath);
+                 return fullPath;
+             }
+             // Check if the full path ends with the LLM response
+             if (fullPath.endsWith(cleanResponse)) {
+                 log.debug("✅ Suffix match found: '{}' is suffix of '{}'", cleanResponse, fullPath);
+                 return fullPath;
+             }
+         }
+
+         // 4. Reverse partial match - full path might be contained in LLM response
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             String fullPath = endpoint.getPath();
+             if (cleanResponse.contains(fullPath)) {
+                 log.debug("✅ Reverse partial match found: '{}' contains '{}'", cleanResponse, fullPath);
+                 return fullPath;
+             }
+         }
+
+         // 5. Fuzzy matching - remove common prefixes/suffixes and try again
+         String normalizedResponse = normalizeEndpointPath(cleanResponse);
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             String normalizedEndpoint = normalizeEndpointPath(endpoint.getPath());
+             if (normalizedEndpoint.equals(normalizedResponse)) {
+                 log.debug("✅ Fuzzy match found: '{}' -> '{}' (normalized: '{}' = '{}')",
+                          cleanResponse, endpoint.getPath(), normalizedResponse, normalizedEndpoint);
+                 return endpoint.getPath();
+             }
+         }
+
+         log.debug("❌ No match found for '{}' in available endpoints: {}",
+                  cleanResponse, endpoints.stream().map(e -> e.getPath()).collect(Collectors.toList()));
+         return null;
+     }
+
+     /**
+      * Normalize endpoint path for fuzzy matching
+      */
+     private String normalizeEndpointPath(String path) {
+         if (path == null) return "";
+
+         String normalized = path.toLowerCase().trim();
+
+         // Remove common prefixes
+         if (normalized.startsWith("/api/v1/")) {
+             normalized = normalized.substring(8);
+         } else if (normalized.startsWith("/api/")) {
+             normalized = normalized.substring(5);
+         } else if (normalized.startsWith("/")) {
+             normalized = normalized.substring(1);
+         }
+
+         // Remove common suffixes
+         if (normalized.endsWith("/")) {
+             normalized = normalized.substring(0, normalized.length() - 1);
+         }
+
+         return normalized;
+     }
+
+     /**
+      * Force LLM to select an endpoint when it initially says NO_GOOD_MATCH
+      */
+     private String forceEndpointSelectionWithLLM(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo, String serviceName) {
+         try {
+             // Build more aggressive prompt that forces selection
+             String prompt = buildForcedEndpointSelectionPrompt(endpoints, parameterInfo, serviceName);
+
+             if (prompt.length() > 2044) {
+                 log.warn("Forced endpoint selection prompt too long ({} chars), skipping", prompt.length());
+                 return null;
+             }
+
+             // Ask LLM with forced selection prompt
+             String llmResponse = askLLMForEndpointSelection(prompt);
+
+             if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                 String cleanResponse = llmResponse.trim();
+
+                 // Don't accept NO_GOOD_MATCH this time
+                 if (cleanResponse.equals("NO_GOOD_MATCH")) {
+                     log.warn("LLM still said NO_GOOD_MATCH even with forced prompt for parameter '{}'", parameterInfo.getName());
+                     return null;
+                 }
+
+                 // Clean up the response (remove quotes, extra whitespace)
+                 if (cleanResponse.startsWith("\"") && cleanResponse.endsWith("\"")) {
+                     cleanResponse = cleanResponse.substring(1, cleanResponse.length() - 1);
+                 }
+
+                 // Validate that the selected endpoint exists (flexible matching)
+                 String selectedEndpoint = validateAndNormalizeEndpoint(cleanResponse, endpoints, parameterInfo.getName());
+                 if (selectedEndpoint != null) {
+                     log.info("🎯 LLM forced selection successful: '{}' for parameter '{}'", selectedEndpoint, parameterInfo.getName());
+                     return selectedEndpoint;
+                 }
+
+                 log.warn("❌ LLM forced selection '{}' is invalid for parameter '{}', available endpoints: {}",
+                         cleanResponse, parameterInfo.getName(),
+                         endpoints.stream().map(e -> e.getPath()).collect(Collectors.toList()));
+             }
+
+         } catch (Exception e) {
+             log.debug("Forced LLM endpoint selection failed: {}", e.getMessage());
+         }
+
+         return null;
      }
 
      /**
@@ -1737,6 +1925,38 @@ public class SmartInputFetcher {
 
 
 
+
+     /**
+      * Build forced prompt that doesn't allow NO_GOOD_MATCH
+      */
+     private String buildForcedEndpointSelectionPrompt(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo, String serviceName) {
+         StringBuilder prompt = new StringBuilder();
+         prompt.append("Service: ").append(serviceName).append("\n");
+         prompt.append("Parameter: ").append(parameterInfo.getName()).append(" (type: ").append(parameterInfo.getType()).append(")\n");
+         prompt.append("Description: ").append(parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "").append("\n\n");
+
+         prompt.append("Available GET endpoints (for data fetching):\n");
+         for (int i = 0; i < Math.min(10, endpoints.size()); i++) {
+             OpenAPIEndpointDiscovery.EndpointInfo endpoint = endpoints.get(i);
+             // Only show GET endpoints (should already be filtered, but double-check)
+             if ("GET".equalsIgnoreCase(endpoint.getMethod())) {
+                 prompt.append("- GET ").append(endpoint.getPath()).append("\n");
+             }
+         }
+
+         prompt.append("\nTask: You MUST select one of the GET endpoints above for this parameter.\n");
+         prompt.append("Even if none seem perfect, choose the most reasonable one.\n");
+         prompt.append("We need to fetch some data for test generation.\n\n");
+         prompt.append("Guidelines:\n");
+         prompt.append("- For 'list' parameters: prefer endpoints returning collections (no path params)\n");
+         prompt.append("- For 'id' parameters: prefer endpoints that return lists (can extract IDs)\n");
+         prompt.append("- For 'name' parameters: prefer endpoints returning entity details\n");
+         prompt.append("- If unsure, pick the first non-utility endpoint\n\n");
+         prompt.append("Respond with ONLY the endpoint path (e.g., /api/v1/service/resource)\n");
+         prompt.append("DO NOT respond with NO_GOOD_MATCH - you must pick one endpoint.");
+
+         return prompt.toString();
+     }
      private String buildEndpointDiscoveryPrompt(String serviceName, ParameterInfo parameterInfo) {
          return buildEndpointDiscoveryPrompt(serviceName, parameterInfo, new ArrayList<>());
      }
@@ -1771,10 +1991,10 @@ public class SmartInputFetcher {
              log.warn("Endpoint discovery prompt too long ({}), truncating", prompt.length());
              prompt = prompt.substring(0, 1997) + "...";
          }
-         
+
          return prompt;
      }
-     
+
      private String askLLMForEndpoint(String prompt) {
          try {
              // Call LLM directly for endpoint discovery with appropriate system prompt
@@ -1792,13 +2012,13 @@ public class SmartInputFetcher {
              }
 
              return null;
-             
+
          } catch (Exception e) {
              log.warn("Failed to ask LLM for endpoint: {}", e.getMessage());
              return null;
          }
      }
-     
+
      private String parseEndpointFromLLMResponse(String llmResponse) {
          // Check for NO_GOOD_MATCH response first
          if (llmResponse != null && llmResponse.trim().equals("NO_GOOD_MATCH")) {
