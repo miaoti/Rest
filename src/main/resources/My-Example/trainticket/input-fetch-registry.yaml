@@ -2,42 +2,57 @@
 version: "1.0"
 lastUpdated:
 - 2025
-- 7
-- 23
-- 20
-- 44
-- 13
-- 137913500
+- 8
+- 5
+- 3
+- 42
+- 53
+- 729388900
 parameterMappings:
-  body:
-  - endpoint: "/api/v1/stationservice/stations"
+  distanceList:
+  - endpoint: "/api/v1/travelservice/routes/{tripId}"
     method: "GET"
-    service: "ts-station-service"
-    extractPath: "$.data[*]"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
     - 2025
-    - 7
-    - 23
-    - 20
-    - 44
-    - 13
-    - 81766300
+    - 8
+    - 5
+    - 3
+    - 42
+    - 18
+    - 310846100
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/travelplanservice/travelPlan/cheapest"
+  - endpoint: "/api/v1/routeservice/routes"
     method: "GET"
-    service: "ts-travel-plan-service"
-    extractPath: "$.data[*]"
-    priority: 7
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
     lastUsed:
     - 2025
-    - 7
-    - 23
-    - 20
-    - 44
-    - 13
-    - 136913700
+    - 8
+    - 5
+    - 3
+    - 42
+    - 53
+    - 728388800
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/distance2/query"
+    method: "GET"
+    service: "ts-distance2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 8
+    - 5
+    - 3
+    - 42
+    - 53
+    - 729388900
     successRate: 0.0
     description: null
 servicePatterns:
@@ -46,7 +61,7 @@ servicePatterns:
   - "ts-station-service"
   endpoints:
   - "/api/v1/stationservice/stations"
-- pattern: ".*[Uu]ser.*|.*[Ll]ogin.*"
+- pattern: ".*[Uu]ser.*"
   services:
   - "ts-user-service"
   - "ts-contacts-service"
@@ -60,15 +75,13 @@ servicePatterns:
   endpoints:
   - "/api/v1/trainservice/trains"
   - "/api/v1/travelservice/trips"
-- pattern: ".*[Rr]oute.*|.*[Ii]d.*"
+- pattern: ".*[Rr]oute.*"
   services:
   - "ts-route-service"
   - "ts-route-plan-service"
-  - "ts-admin-route-service"
   endpoints:
   - "/api/v1/routeservice/routes"
   - "/api/v1/routeplanservice/routePlans"
-  - "/api/v1/adminrouteservice/adminroute"
 - pattern: ".*[Oo]rder.*"
   services:
   - "ts-order-service"
@@ -76,56 +89,33 @@ servicePatterns:
   endpoints:
   - "/api/v1/orderservice/orders"
   - "/api/v1/orderOtherservice/orderOthers"
-- pattern: ".*[Dd]istance.*"
-  services:
-  - "ts-route-service"
-  - "ts-admin-route-service"
-  endpoints:
-  - "/api/v1/routeservice/routes"
-  - "/api/v1/adminrouteservice/adminroute"
-- pattern: ".*[Pp]rice.*|.*[Cc]ost.*"
-  services:
-  - "ts-price-service"
-  - "ts-travel-service"
-  endpoints:
-  - "/api/v1/priceservice/prices"
-  - "/api/v1/travelservice/trips"
 llmPrompts:
   apiDiscovery: "Parameter: {parameterName} (type: {parameterType}, location: {parameterLocation})\n\
-    Description: {parameterDescription}\n\nServices: {availableServices}\n\n\
-    Task: Select the TOP 3 services most likely to provide realistic data for this parameter.\n\
-    Consider semantic meaning and naming patterns.\n\n\
-    If you find good matches, respond with a JSON array of 1-3 service names in priority order:\n\
-    [\"service1\", \"service2\", \"service3\"]\n\n\
-    If NO services seem suitable for this parameter, respond with:\n\
-    NO_GOOD_MATCH\n\n\
-    Respond ONLY with the JSON array OR 'NO_GOOD_MATCH', no explanations."
-
-  directValueExtraction: "API Response: {responseSchema}\n\n\
-    Target Parameter: {parameterName} (type: {parameterType})\n\
-    Description: {parameterDescription}\n\n\
-    Task: Extract or derive a suitable value for this parameter from the API response above.\n\
-    You must use ONLY values that appear in the response - do not generate new values.\n\n\
-    Guidelines:\n\
-    - Look for exact field matches first\n\
-    - Consider semantically related fields\n\
-    - Use any reasonable value from the response\n\
-    - For list parameters: you can combine multiple values with commas\n\
-    - Ensure the returned value matches the parameter type\n\n\
-    Examples:\n\
-    - For 'stationName': use values from 'from', 'to', or similar fields\n\
-    - For 'price': use values from 'price' or cost-related fields\n\
-    - For 'id': use any ID field from the response\n\
-    - For 'distanceList': use numeric values or station names that could represent distances\n\n\
-    Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')\n\
-    If no suitable value exists in the response: NO_GOOD_MATCH"
+    Description: {parameterDescription}\n\nServices: {availableServices}\n\nTask:\
+    \ Select the TOP 3 services most likely to provide realistic data for this parameter.\n\
+    Consider semantic meaning and naming patterns.\n\nIf you find good matches, respond\
+    \ with a JSON array of 1-3 service names in priority order:\n[\"service1\", \"\
+    service2\", \"service3\"]\n\nIf NO services seem suitable for this parameter,\
+    \ respond with:\nNO_GOOD_MATCH\n\nRespond ONLY with the JSON array OR 'NO_GOOD_MATCH',\
+    \ no explanations."
+  directValueExtraction: "API Response: {responseSchema}\n\nTarget Parameter: {parameterName}\
+    \ (type: {parameterType})\nDescription: {parameterDescription}\n\nTask: Extract\
+    \ or derive a suitable value for this parameter from the API response above.\n\
+    You must use ONLY values that appear in the response - do not generate new values.\n\
+    \nGuidelines:\n- Look for exact field matches first\n- Consider semantically related\
+    \ fields\n- Use any reasonable value from the response\n- For list parameters:\
+    \ you can combine multiple values with commas\n- Ensure the returned value matches\
+    \ the parameter type\n\nExamples:\n- For 'stationName': use values from 'from',\
+    \ 'to', or similar fields\n- For 'price': use values from 'price' or cost-related\
+    \ fields\n- For 'id': use any ID field from the response\n- For 'distanceList':\
+    \ use numeric values or station names that could represent distances\n\nRespond\
+    \ with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')\nIf no\
+    \ suitable value exists in the response: NO_GOOD_MATCH"
   valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\
-    Description: {parameterDescription}\n\n\
-    Task: Select the most suitable value for this parameter based on its name, type, and description.\n\n\
-    If you find a suitable value, respond with just the value:\n\
-    selectedValue\n\n\
-    If NO value seems appropriate for this parameter, respond with:\n\
-    NO_GOOD_MATCH"
+    Description: {parameterDescription}\n\nTask: Select the most suitable value for\
+    \ this parameter based on its name, type, and description.\n\nIf you find a suitable\
+    \ value, respond with just the value:\nselectedValue\n\nIf NO value seems appropriate\
+    \ for this parameter, respond with:\nNO_GOOD_MATCH"
 cache:
   enabled: true
   maxEntries: 1000
