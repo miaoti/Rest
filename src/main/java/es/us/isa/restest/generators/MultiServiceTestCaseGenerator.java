@@ -512,7 +512,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 headerParams,
                 bodyJson,
                 expectedStatus,
-                bodyFields
+                convertObjectMapToStringMap(bodyFields)
         );
 
         // Set step dependencies based on trace relationships
@@ -565,6 +565,17 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
+     * Helper method to convert Map<String,Object> to Map<String,String>
+     */
+    private Map<String,String> convertObjectMapToStringMap(Map<String,Object> objectMap) {
+        Map<String,String> stringMap = new LinkedHashMap<>();
+        for (Map.Entry<String,Object> entry : objectMap.entrySet()) {
+            stringMap.put(entry.getKey(), entry.getValue().toString());
+        }
+        return stringMap;
+    }
+
+    /**
      * Extract parameter values from trace input/output fields.
      */
     private void extractParametersFromTrace(WorkflowStep span,
@@ -584,7 +595,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 }
             } catch (Exception e) {
                 // If not JSON, try form data parsing
-                parseFormData(requestBody, bodyFields);
+                parseFormDataToObjectMap(requestBody, bodyFields);
             }
         }
         
@@ -635,7 +646,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     /**
      * Parse form data or query string into key-value pairs (Object version).
      */
-    private void parseFormData(String data, Map<String,Object> target) {
+    private void parseFormDataToObjectMap(String data, Map<String,Object> target) {
         if (data == null || data.trim().isEmpty()) return;
 
         String[] pairs = data.split("&");
