@@ -30,6 +30,10 @@ public class LLMConfig {
     private String geminiApiKey;
     private String geminiModel;
     private String geminiApiUrl;
+
+    // Rate limiting settings
+    private int maxRetries;
+    private boolean rateLimitRetryEnabled;
     
     // Default constructor with sensible defaults
     public LLMConfig() {
@@ -42,6 +46,8 @@ public class LLMConfig {
         this.geminiApiKey = "";
         this.geminiModel = "gemini-2.0-flash-exp";
         this.geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models";
+        this.maxRetries = 3;
+        this.rateLimitRetryEnabled = true;
     }
     
     /**
@@ -73,9 +79,15 @@ public class LLMConfig {
             "llm.gemini.model", "gemini-2.0-flash-exp");
         config.geminiApiUrl = properties.getOrDefault(
             "llm.gemini.api.url", "https://generativelanguage.googleapis.com/v1beta/models");
-        
-        logger.info("LLMConfig initialized: enabled={}, modelType={}, localEnabled={}, geminiEnabled={}", 
-                   config.enabled, config.modelType, config.localEnabled, config.geminiEnabled);
+
+        // Rate limiting settings
+        config.maxRetries = Integer.parseInt(
+            properties.getOrDefault("llm.rate.limit.max.retries", "3"));
+        config.rateLimitRetryEnabled = Boolean.parseBoolean(
+            properties.getOrDefault("llm.rate.limit.retry.enabled", "true"));
+
+        logger.info("LLMConfig initialized: enabled={}, modelType={}, localEnabled={}, geminiEnabled={}, maxRetries={}, rateLimitRetryEnabled={}",
+                   config.enabled, config.modelType, config.localEnabled, config.geminiEnabled, config.maxRetries, config.rateLimitRetryEnabled);
         
         return config;
     }
@@ -128,14 +140,20 @@ public class LLMConfig {
     
     public String getGeminiApiUrl() { return geminiApiUrl; }
     public void setGeminiApiUrl(String geminiApiUrl) { this.geminiApiUrl = geminiApiUrl; }
+
+    public int getMaxRetries() { return maxRetries; }
+    public void setMaxRetries(int maxRetries) { this.maxRetries = maxRetries; }
+
+    public boolean isRateLimitRetryEnabled() { return rateLimitRetryEnabled; }
+    public void setRateLimitRetryEnabled(boolean rateLimitRetryEnabled) { this.rateLimitRetryEnabled = rateLimitRetryEnabled; }
     
     @Override
     public String toString() {
         return String.format(
             "LLMConfig{enabled=%s, modelType=%s, localEnabled=%s, localUrl='%s', localModel='%s', " +
-            "geminiEnabled=%s, geminiModel='%s', geminiApiUrl='%s'}",
-            enabled, modelType, localEnabled, localUrl, localModel, 
-            geminiEnabled, geminiModel, geminiApiUrl
+            "geminiEnabled=%s, geminiModel='%s', geminiApiUrl='%s', maxRetries=%d, rateLimitRetryEnabled=%s}",
+            enabled, modelType, localEnabled, localUrl, localModel,
+            geminiEnabled, geminiModel, geminiApiUrl, maxRetries, rateLimitRetryEnabled
         );
     }
 }

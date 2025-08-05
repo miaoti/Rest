@@ -20,11 +20,19 @@ public class GeminiApiClient {
     private final String model;
     private final String baseUrl;
     private final OkHttpClient httpClient;
+    private final int maxRetries;
+    private final boolean rateLimitRetryEnabled;
     
     public GeminiApiClient(String apiKey, String model, String baseUrl) {
+        this(apiKey, model, baseUrl, 3, true);
+    }
+
+    public GeminiApiClient(String apiKey, String model, String baseUrl, int maxRetries, boolean rateLimitRetryEnabled) {
         this.apiKey = apiKey;
         this.model = model;
         this.baseUrl = baseUrl;
+        this.maxRetries = maxRetries;
+        this.rateLimitRetryEnabled = rateLimitRetryEnabled;
         
         this.httpClient = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
@@ -32,11 +40,12 @@ public class GeminiApiClient {
                 .readTimeout(90, TimeUnit.SECONDS)
                 .build();
         
-        logger.info("GeminiApiClient initialized with model: {}", model);
+        logger.info("GeminiApiClient initialized with model: {}, maxRetries: {}, rateLimitRetryEnabled: {}",
+                   model, maxRetries, rateLimitRetryEnabled);
     }
     
     /**
-     * Generate content using Gemini API
+     * Generate content using Gemini API with automatic retry for rate limiting
      * @param systemPrompt System prompt for the model
      * @param userPrompt User prompt/question
      * @param maxTokens Maximum tokens to generate
@@ -44,12 +53,29 @@ public class GeminiApiClient {
      * @return Generated content or null if failed
      */
     public String generateContent(String systemPrompt, String userPrompt, int maxTokens, double temperature) {
-        try {
-            // Build the request URL
-            String url = String.format("%s/%s:generateContent?key=%s", baseUrl, model, apiKey);
-            
-            // Build the request body according to Gemini API format
-            JSONObject requestBody = new JSONObject();
+        if (!rateLimitRetryEnabled) {
+            return generateContentWithRetry(systemPrompt, userPrompt, maxTokens, temperature, 1);
+        }
+        return generateContentWithRetry(systemPrompt, userPrompt, maxTokens, temperature, maxRetries);
+    }
+
+    /**
+     * Generate content with retry mechanism for rate limiting
+     * @param systemPrompt System prompt for the model
+     * @param userPrompt User prompt/question
+     * @param maxTokens Maximum tokens to generate
+     * @param temperature Temperature for generation (0.0 to 1.0)
+     * @param maxRetries Maximum number of retries for rate limiting
+     * @return Generated content or null if failed
+     */
+    private String generateContentWithRetry(String systemPrompt, String userPrompt, int maxTokens, double temperature, int maxRetries) {
+        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                // Build the request URL
+                String url = String.format("%s/%s:generateContent?key=%s", baseUrl, model, apiKey);
+
+                // Build the request body according to Gemini API format
+                JSONObject requestBody = new JSONObject();
             
             // Add generation config
             JSONObject generationConfig = new JSONObject();
@@ -91,23 +117,107 @@ public class GeminiApiClient {
                 .addHeader("Content-Type", "application/json")
                 .build();
             
-            // Execute request
-            try (Response response = httpClient.newCall(request).execute()) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String responseBody = response.body().string();
-                    logger.debug("[Gemini API] Response: {}", responseBody);
-                    
-                    return parseGeminiResponse(responseBody);
+                // Execute request
+                try (Response response = httpClient.newCall(request).execute()) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        String responseBody = response.body().string();
+                        logger.debug("[Gemini API] Response: {}", responseBody);
+
+                        String result = parseGeminiResponse(responseBody);
+                        if (attempt > 1) {
+                            logger.info("✅ [Gemini API] Request succeeded on attempt {} after rate limiting", attempt);
+                        }
+                        return result;
+                    } else if (response.code() == 429) {
+                        // Rate limiting detected
+                        String errorBody = response.body() != null ? response.body().string() : "No error body";
+
+                        if (attempt < maxRetries) {
+                            int waitTimeSeconds = calculateWaitTime(attempt, errorBody);
+                            logger.warn("⏳ [Gemini API] Rate limit hit (429) on attempt {}/{}. Waiting {} seconds before retry...",
+                                       attempt, maxRetries, waitTimeSeconds);
+                            logger.warn("⏳ [Gemini API] This is normal for Gemini free tier - we'll automatically retry");
+                            logger.info("💤 [Gemini API] Sleeping for {} seconds to respect rate limits (attempt {} will start at {})",
+                                       waitTimeSeconds, attempt + 1, java.time.LocalTime.now().plusSeconds(waitTimeSeconds));
+
+                            Thread.sleep(waitTimeSeconds * 1000L);
+
+                            logger.info("🔄 [Gemini API] Retrying request (attempt {}/{}) after rate limit wait", attempt + 1, maxRetries);
+                            continue; // Retry the request
+                        } else {
+                            logger.error("❌ [Gemini API] Rate limit exceeded after {} attempts. Giving up.", maxRetries);
+                            logger.error("❌ [Gemini API] Error body: {}", errorBody);
+                            return null;
+                        }
+                    } else {
+                        // Other HTTP error
+                        String errorBody = response.body() != null ? response.body().string() : "No error body";
+                        logger.error("[Gemini API] Request failed with code {}: {}", response.code(), errorBody);
+                        return null;
+                    }
+                }
+            
+            } catch (InterruptedException e) {
+                logger.warn("[Gemini API] Thread interrupted during rate limit wait");
+                Thread.currentThread().interrupt();
+                return null;
+            } catch (Exception e) {
+                if (attempt < maxRetries) {
+                    logger.warn("[Gemini API] Request failed on attempt {}/{}: {}. Retrying...", attempt, maxRetries, e.getMessage());
+                    try {
+                        Thread.sleep(1000 * attempt); // Simple backoff
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        return null;
+                    }
+                    continue;
                 } else {
-                    String errorBody = response.body() != null ? response.body().string() : "No error body";
-                    logger.error("[Gemini API] Request failed with code {}: {}", response.code(), errorBody);
+                    logger.error("[Gemini API] Error calling Gemini API after {} attempts: {}", maxRetries, e.getMessage(), e);
                     return null;
                 }
             }
-            
+        }
+
+        logger.error("[Gemini API] All {} attempts failed", maxRetries);
+        return null;
+    }
+
+    /**
+     * Calculate wait time for rate limiting with exponential backoff
+     * @param attempt Current attempt number (1-based)
+     * @param errorBody Error response body that might contain retry-after info
+     * @return Wait time in seconds
+     */
+    private int calculateWaitTime(int attempt, String errorBody) {
+        // Try to extract retry-after from error response
+        try {
+            if (errorBody != null && errorBody.contains("Retry after")) {
+                // Parse retry-after if present in error message
+                // This is a simple heuristic - Gemini might include this info
+                String[] parts = errorBody.split("Retry after ");
+                if (parts.length > 1) {
+                    String timeStr = parts[1].split(" ")[0];
+                    int retryAfter = Integer.parseInt(timeStr.replaceAll("[^0-9]", ""));
+                    if (retryAfter > 0 && retryAfter <= 300) { // Max 5 minutes
+                        logger.info("📋 [Gemini API] Found retry-after hint: {} seconds", retryAfter);
+                        return retryAfter;
+                    }
+                }
+            }
         } catch (Exception e) {
-            logger.error("[Gemini API] Error calling Gemini API: {}", e.getMessage(), e);
-            return null;
+            // Ignore parsing errors, fall back to default
+        }
+
+        // Default exponential backoff for Gemini free tier
+        // Gemini free tier typically has per-minute limits
+        switch (attempt) {
+            case 1:
+                return 60; // Wait 1 minute for first retry
+            case 2:
+                return 90; // Wait 1.5 minutes for second retry
+            case 3:
+            default:
+                return 120; // Wait 2 minutes for subsequent retries
         }
     }
     
