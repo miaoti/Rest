@@ -27,7 +27,7 @@
 ## 🔧 Two-Stage Approach Verification
 
 ### Stage 1: LLM Seed Generation ✅
-- **LLM Model**: llama-3-8b-instruct (local)
+- **LLM Model**: Nous Hermes 2 Mistral DPO (local)
 - **Seeds per Parameter**: 5 values
 - **Examples Generated**: 
   - `loginId` → `[loginId, abc1234, xyz7890, mno5678, pqrs9012]`
