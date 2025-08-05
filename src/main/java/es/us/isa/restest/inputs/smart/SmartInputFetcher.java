@@ -483,10 +483,14 @@ public class SmartInputFetcher {
 
                 log.info("✅ LLM extracted ACTUAL VALUE '{}' for parameter '{}' (not JSONPath)", cleanResponse, parameterInfo.getName());
 
+                // Format the value according to OpenAPI schema
+                String formattedValue = formatValueForSchema(cleanResponse, parameterInfo);
+                log.info("🔧 Formatted value '{}' → '{}' for parameter '{}'", cleanResponse, formattedValue, parameterInfo.getName());
+
                 // Try to extract additional diverse values from the same response
                 extractAdditionalDiverseValues(responseBody, parameterInfo, cleanResponse);
 
-                return cleanResponse;
+                return formattedValue;
             }
 
             // Fallback if LLM fails
@@ -1012,11 +1016,14 @@ public class SmartInputFetcher {
 
     private void cacheValue(ParameterInfo parameterInfo, String value) {
         if (config.isCacheEnabled()) {
+            // Format value according to OpenAPI schema before caching
+            String formattedValue = formatValueForSchema(value, parameterInfo);
+
             String cacheKey = buildCacheKey(parameterInfo);
-            cache.put(cacheKey, new CachedValue(value));
+            cache.put(cacheKey, new CachedValue(formattedValue));
 
             // Also add to diverse value cache
-            cacheDiverseValue(parameterInfo, value);
+            cacheDiverseValue(parameterInfo, formattedValue);
         }
     }
 
@@ -1024,14 +1031,17 @@ public class SmartInputFetcher {
      * Cache multiple diverse values for a parameter
      */
     private void cacheDiverseValue(ParameterInfo parameterInfo, String value) {
+        // Format value according to OpenAPI schema before caching
+        String formattedValue = formatValueForSchema(value, parameterInfo);
+
         String cacheKey = buildCacheKey(parameterInfo);
         diverseValueCache.computeIfAbsent(cacheKey, k -> new ArrayList<>());
 
         List<String> values = diverseValueCache.get(cacheKey);
-        if (!values.contains(value)) {
-            values.add(value);
+        if (!values.contains(formattedValue)) {
+            values.add(formattedValue);
             log.debug("📋 Cached diverse value '{}' for parameter '{}' (total: {})",
-                     value, parameterInfo.getName(), values.size());
+                     formattedValue, parameterInfo.getName(), values.size());
         }
     }
 
@@ -1161,8 +1171,10 @@ public class SmartInputFetcher {
         prompt.append("2. Look for values in arrays, nested objects, and all fields\n");
         prompt.append("3. Consider field names, data types, and semantic meaning\n");
         prompt.append("4. Extract actual values, not field names or paths\n");
-        prompt.append("5. Return each value on a separate line\n");
-        prompt.append("6. If no relevant values found, respond with: NO_VALUES_FOUND\n\n");
+        prompt.append("5. For array-type parameters (stations, distances, lists), extract individual elements\n");
+        prompt.append("6. For numeric parameters, extract only numeric values\n");
+        prompt.append("7. Return each value on a separate line\n");
+        prompt.append("8. If no relevant values found, respond with: NO_VALUES_FOUND\n\n");
 
         prompt.append("Example for parameter 'stationName':\n");
         prompt.append("Shanghai\n");
@@ -1540,9 +1552,9 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Validate if a value is suitable for the parameter
+     * Validate if a value is suitable for the parameter and format it according to OpenAPI schema
      */
-    private boolean isValidValueForParameter(String value, ParameterInfo parameterInfo) {
+     private boolean isValidValueForParameter(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
             return false;
         }
@@ -1554,6 +1566,212 @@ public class SmartInputFetcher {
 
         // Accept reasonable values
         return true;
+    }
+
+    /**
+     * Format value according to OpenAPI schema type
+     */
+    private String formatValueForSchema(String value, ParameterInfo parameterInfo) {
+        if (value == null || parameterInfo == null) {
+            return value;
+        }
+
+        try {
+            // Check if parameter should be an array based on OpenAPI schema
+            if (shouldBeArrayType(parameterInfo)) {
+                return formatAsArrayValue(value, parameterInfo);
+            }
+
+            // Check if parameter should be a number
+            if (shouldBeNumberType(parameterInfo)) {
+                return formatAsNumberValue(value, parameterInfo);
+            }
+
+            // Default: return as string
+            return value;
+
+        } catch (Exception e) {
+            log.debug("Failed to format value '{}' for parameter '{}': {}",
+                     value, parameterInfo.getName(), e.getMessage());
+            return value; // Return original value if formatting fails
+        }
+    }
+
+    /**
+     * Check if parameter should be array type based on OpenAPI schema
+     */
+    private boolean shouldBeArrayType(ParameterInfo parameterInfo) {
+        String paramName = parameterInfo.getName().toLowerCase();
+        String paramType = parameterInfo.getType();
+
+        // Check explicit array indicators
+        if (paramType != null && paramType.toLowerCase().contains("array")) {
+            return true;
+        }
+
+        // Check parameter names that typically should be arrays
+        if (paramName.contains("list") || paramName.contains("stations") ||
+            paramName.contains("distances") || paramName.endsWith("s")) {
+            return true;
+        }
+
+        // Use LLM to determine if parameter should be array
+        return askLLMForArrayTypeDecision(parameterInfo);
+    }
+
+    /**
+     * Ask LLM to determine if parameter should be array type
+     */
+    private boolean askLLMForArrayTypeDecision(ParameterInfo parameterInfo) {
+        try {
+            String prompt = buildArrayTypePrompt(parameterInfo);
+
+            if (prompt.length() > 500) {
+                // Fallback to name-based heuristics
+                String paramName = parameterInfo.getName().toLowerCase();
+                return paramName.contains("list") || paramName.contains("stations") ||
+                       paramName.contains("distances") || paramName.endsWith("s");
+            }
+
+            String llmResponse = askLLMForArrayTypeDecisionCall(prompt);
+
+            if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                String cleanResponse = llmResponse.trim().toLowerCase();
+                return cleanResponse.equals("yes") || cleanResponse.equals("true") || cleanResponse.equals("array");
+            }
+
+            return false;
+
+        } catch (Exception e) {
+            log.debug("LLM array type decision failed for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Build prompt for array type decision
+     */
+    private String buildArrayTypePrompt(ParameterInfo parameterInfo) {
+        StringBuilder prompt = new StringBuilder();
+
+        prompt.append("Determine if parameter '").append(parameterInfo.getName()).append("' ");
+        prompt.append("(type: ").append(parameterInfo.getType()).append(") should be an array type ");
+        prompt.append("based on OpenAPI schema conventions.\n\n");
+
+        if (parameterInfo.getDescription() != null && !parameterInfo.getDescription().trim().isEmpty()) {
+            prompt.append("Description: ").append(parameterInfo.getDescription()).append("\n\n");
+        }
+
+        prompt.append("Array type indicators:\n");
+        prompt.append("- Parameter names ending with 's' (stations, distances)\n");
+        prompt.append("- Parameter names containing 'list' (stationList, distanceList)\n");
+        prompt.append("- Parameters that represent collections or multiple values\n\n");
+
+        prompt.append("Respond with 'YES' if should be array, 'NO' if should be string/primitive.");
+
+        return prompt.toString();
+    }
+
+    /**
+     * Ask LLM for array type decision
+     */
+    private String askLLMForArrayTypeDecisionCall(String prompt) {
+        try {
+            String systemContent = "You are an OpenAPI schema expert. Determine if parameters should be array types based on naming conventions and semantic meaning.";
+
+            String result = llmService.generateText(systemContent, prompt, 10, 0.1);
+
+            if (result != null && !result.trim().isEmpty()) {
+                return result.trim();
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            log.debug("LLM array type decision call failed: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Format value as array
+     */
+    private String formatAsArrayValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "[]";
+        }
+
+        try {
+            // If value already looks like JSON array, return as-is
+            if (value.trim().startsWith("[") && value.trim().endsWith("]")) {
+                return value;
+            }
+
+            // Split comma-separated values into array
+            String[] parts;
+            if (value.contains(",")) {
+                parts = value.split(",");
+            } else {
+                parts = new String[]{value};
+            }
+
+            // Build JSON array
+            StringBuilder arrayBuilder = new StringBuilder("[");
+            for (int i = 0; i < parts.length; i++) {
+                if (i > 0) arrayBuilder.append(", ");
+                arrayBuilder.append("\"").append(parts[i].trim()).append("\"");
+            }
+            arrayBuilder.append("]");
+
+            return arrayBuilder.toString();
+
+        } catch (Exception e) {
+            log.debug("Failed to format '{}' as array for parameter '{}': {}",
+                     value, parameterInfo.getName(), e.getMessage());
+            return "[\"" + value + "\"]"; // Fallback: single-element array
+        }
+    }
+
+    /**
+     * Check if parameter should be number type
+     */
+    private boolean shouldBeNumberType(ParameterInfo parameterInfo) {
+        String paramType = parameterInfo.getType();
+        if (paramType != null) {
+            String lowerType = paramType.toLowerCase();
+            return lowerType.contains("number") || lowerType.contains("integer") ||
+                   lowerType.contains("int") || lowerType.contains("double") ||
+                   lowerType.contains("float");
+        }
+        return false;
+    }
+
+    /**
+     * Format value as number
+     */
+    private String formatAsNumberValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "0";
+        }
+
+        try {
+            // Remove non-numeric characters except decimal point and minus
+            String cleanValue = value.replaceAll("[^0-9.-]", "");
+
+            if (cleanValue.isEmpty()) {
+                return "0";
+            }
+
+            // Try to parse as number to validate
+            Double.parseDouble(cleanValue);
+            return cleanValue;
+
+        } catch (NumberFormatException e) {
+            log.debug("Failed to format '{}' as number for parameter '{}': {}",
+                     value, parameterInfo.getName(), e.getMessage());
+            return "0"; // Fallback
+        }
     }
 
     private String buildCacheKey(ParameterInfo parameterInfo) {
