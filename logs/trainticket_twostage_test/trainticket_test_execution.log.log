@@ -18,7 +18,7 @@
 2025-07-24 13:16:53 INFO  TestGenerationAndExecution:607 - Output coverage: false
 2025-07-24 13:16:53 INFO  TestGenerationAndExecution:611 - CSV statistics: true
 2025-07-24 13:16:53 INFO  TestGenerationAndExecution:615 - Delete previous results: true
-2025-07-24 13:16:53 INFO  TestGenerationAndExecution:619 - Similarity metric: LEVENSHTEIN
+-2025-07-24 13:16:53 INFO  TestGenerationAndExecution:619 - Similarity metric: LEVENSHTEIN
 2025-07-24 13:16:53 INFO  TestGenerationAndExecution:623 - Number of candidates: 100
 2025-07-24 13:16:53 INFO  TestGenerationAndExecution:627 - Faulty ratio: 0.1
 2025-07-24 13:16:53 INFO  TestGenerationAndExecution:631 - Faulty dependency ratio: 0.05

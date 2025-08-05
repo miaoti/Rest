@@ -300,85 +300,93 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
         String resolvedPath = route;
 
-        // Check if this is the first step
-        boolean isFirstStep = context.isEmpty() || stepNumber.equals("1");
+        // Check if this is step 0 (login) - should not use smart fetch
+        boolean isLoginStep = context.isEmpty() && stepNumber.equals("0");
 
-        // Extract parameters from trace data only for non-first steps
-        if (!isFirstStep) {
+        // Check if this is the first business step (step 1) - should use smart fetch
+        boolean isFirstBusinessStep = stepNumber.equals("1");
+
+        // Check if this is a subsequent step (step 2+) - should check dependencies first
+        boolean isSubsequentStep = !isLoginStep && !isFirstBusinessStep;
+
+        // Extract parameters from trace data only for subsequent steps
+        if (isSubsequentStep) {
             extractParametersFromTrace(span, bodyFields, queryParams, pathParams, headerParams);
         }
 
         if (opCfg.getTestParameters() != null) {
+            log.info("🔍 Processing {} parameters for step {} (login: {}, firstBusiness: {}, subsequent: {})",
+                    opCfg.getTestParameters().size(), stepNumber, isLoginStep, isFirstBusinessStep, isSubsequentStep);
+
             for (TestParameter p : opCfg.getTestParameters()) {
+                log.info("📋 Parameter: {} (type: {}, in: {}, description: '{}')",
+                        p.getName(), p.getType(), p.getIn(), p.getDescription());
                 String val = null;
 
-                if (isFirstStep) {
-                    /* For the first step, use shared parameter pools */
+                if (isLoginStep) {
+                    /* Step 0 (Login): Use simple generation, no smart fetch needed */
                     if (useLLM) {
-                        // Determine the root API key for this step
-                        String currentRootApiKey = verb.toUpperCase() + "_" + route;
-                        
-                        // Get shared parameter pool for this root API
-                        Map<String, List<String>> parameterPool = sharedParameterPools.get(currentRootApiKey);
-                        
-                        if (parameterPool != null && parameterPool.containsKey(p.getName())) {
-                            List<String> sharedValues = parameterPool.get(p.getName());
-                            
-                            // Select value based on variant index from shared pool
-                            if (variantIndex < sharedValues.size()) {
-                                val = sharedValues.get(variantIndex);
-                                log.info("Shared Pool → {} {} = {} (variant {}, step {}, pool: {})", 
-                                        service, p.getName(), val, variantIndex, stepNumber, currentRootApiKey);
-                            } else {
-                                // Fallback to cycling through available values
-                                val = sharedValues.get(variantIndex % sharedValues.size());
-                                log.info("Shared Pool (Cycled) → {} {} = {} (variant {}, step {}, pool: {})", 
-                                        service, p.getName(), val, variantIndex, stepNumber, currentRootApiKey);
+                        ParameterInfo info = createParameterInfo(p);
+                        List<String> vals = llmGen.generateParameterValues(info);
+                        val = vals.isEmpty() ? "LOGIN_" + p.getName() : vals.get(0);
+                        log.info("Login Step → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                    } else {
+                        val = "LOGIN_" + p.getName() + "_v" + variantIndex;
+                    }
+                } else if (isFirstBusinessStep) {
+                    /* Step 1 (First Business Step): Use smart fetch for all parameters */
+                    log.info("🎯 Step 1 parameter '{}' - attempting smart fetch", p.getName());
+
+                    if (useLLM) {
+                        ParameterInfo info = createParameterInfo(p);
+
+                        // Try Smart Input Fetching first for step 1 parameters
+                        if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
+                            log.info("🚀 Calling smart fetch for step 1 parameter '{}'", p.getName());
+                            try {
+                                val = smartFetcher.fetchSmartInput(info);
+                                if (val != null && !val.trim().isEmpty()) {
+                                    log.info("Smart Fetch (Step 1) → {} {} = {} ✅", service, p.getName(), val);
+                                } else {
+                                    log.info("Smart Fetch (Step 1) → {} {} = NULL, falling back to LLM", service, p.getName());
+                                    val = null; // Fall back to LLM
+                                }
+                            } catch (Exception e) {
+                                log.warn("Smart fetching failed for step 1 {}.{}, falling back to LLM: {}",
+                                         service, p.getName(), e.getMessage());
+                                val = null; // Fall back to LLM
                             }
                         } else {
-                            // Fallback: generate new values if no shared pool found (shouldn't happen)
-                            log.warn("No shared pool found for {} {} in root API {}, generating fallback", 
-                                    service, p.getName(), currentRootApiKey);
-                            
-                        ParameterInfo info = new ParameterInfo();
-                        info.setName(p.getName());
-                        info.setDescription(p.getDescription());
-                        info.setInLocation(p.getIn());
-                        info.setType(p.getType());
-                        info.setFormat(p.getFormat());
-                        info.setSchemaType(p.getType());
-                        info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
-                        info.setRegex(p.getPattern());
+                            log.warn("❌ Smart fetch not available for step 1 parameter '{}' (fetcher: {}, config: {}, enabled: {})",
+                                    p.getName(), smartFetcher != null, smartFetchConfig != null,
+                                    smartFetchConfig != null ? smartFetchConfig.isEnabled() : "N/A");
+                        }
 
-                        List<String> llmSeedValues = llmGen.generateParameterValues(info);
-                        
-                        if (!llmSeedValues.isEmpty()) {
-                            List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
-                                val = variantIndex < expandedValues.size() 
-                                        ? expandedValues.get(variantIndex) 
-                                        : expandedValues.get(variantIndex % expandedValues.size());
-                                log.info("Fallback Two-Stage → {} {} = {} (variant {}, step {})", 
-                                        service, p.getName(), val, variantIndex, stepNumber);
-                            } else {
-                                val = "LLM_EMPTY_" + variantIndex;
-                                log.warn("Fallback: LLM returned no values for {} {}", service, p.getName());
-                            }
+                        // Fall back to traditional LLM generation if smart fetching didn't work
+                        if (val == null) {
+                            List<String> vals = llmGen.generateParameterValues(info);
+                            val = vals.isEmpty() ? "LLM_EMPTY_" + p.getName() : vals.get(0);
+                            log.info("LLM (Step 1 Fallback) → {} {} = {}", service, p.getName(), val);
                         }
                     } else {
-                        /* Fallback if LLM is disabled */
-                        val = "INIT_" + p.getName() + "_v" + variantIndex;
+                        log.info("🚫 LLM disabled for step 1 parameter '{}'", p.getName());
+                        val = "STEP1_" + p.getName() + "_v" + variantIndex;
                     }
                 } else {
-                    /* For subsequent steps, use the dependency-based logic */
+                    /* Subsequent Steps (2+): Check dependencies first, then use smart fetch for independent parameters */
 
                     /* 3a. Use previously captured OUTPUT value from context (dependency) ------ */
                     val = context.get(p.getName());
+                    if (val != null) {
+                        log.info("Dependency (Output) → {} {} = {} (from previous step output, step {})",
+                                service, p.getName(), val, stepNumber);
+                    }
 
                     /* 3b. Use previously captured INPUT value for consistency --------------- */
                     if (val == null) {
                         val = context.get("input." + p.getName());
                         if (val != null) {
-                            log.info("Input Consistency → {} {} = {} (reusing from previous API input, step {})", 
+                            log.info("Dependency (Input) → {} {} = {} (reusing from previous API input, step {})",
                                     service, p.getName(), val, stepNumber);
                         }
                     }
@@ -386,41 +394,39 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     /* 3c. Use trace data if available and no context value ------------- */
                     if (val == null) {
                         val = getTraceParameterValue(span, p.getName());
+                        if (val != null) {
+                            log.info("Trace Data → {} {} = {} (from trace, step {})",
+                                    service, p.getName(), val, stepNumber);
+                        }
                     }
 
-                    /* 3d. Call Smart Input Fetching or LLM if enabled and no trace/context value */
+                    /* 3d. Parameter is INDEPENDENT - use Smart Input Fetching or LLM */
                     if (val == null && useLLM) {
-                        ParameterInfo info = new ParameterInfo();
-                        info.setName(p.getName());
-                        info.setDescription(p.getDescription());
-                        info.setInLocation(p.getIn());
-                        info.setType(p.getType());
-                        info.setFormat(p.getFormat());
-                        info.setSchemaType(p.getType());
-                        info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
-                        info.setRegex(p.getPattern());
+                        log.info("Parameter '{}' is INDEPENDENT in step {} - generating new value", p.getName(), stepNumber);
 
-                        // Try Smart Input Fetching first if available
+                        ParameterInfo info = createParameterInfo(p);
+
+                        // Try Smart Input Fetching first for independent parameters
                         if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
                             try {
                                 val = smartFetcher.fetchSmartInput(info);
                                 if (val != null && !val.trim().isEmpty()) {
-                                    log.info("Smart Fetch → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                                    log.info("Smart Fetch (Independent) → {} {} = {} ✅ (step {})", service, p.getName(), val, stepNumber);
                                 } else {
                                     val = null; // Ensure we fall back to LLM
                                 }
                             } catch (Exception e) {
-                                log.debug("Smart fetching failed for {}.{}, falling back to LLM: {}", 
+                                log.debug("Smart fetching failed for independent parameter {}.{}, falling back to LLM: {}",
                                          service, p.getName(), e.getMessage());
                                 val = null; // Ensure we fall back to LLM
                             }
                         }
-                        
+
                         // Fall back to traditional LLM generation if smart fetching didn't work
                         if (val == null) {
                             List<String> vals = llmGen.generateParameterValues(info);
                             val = vals.isEmpty() ? "LLM_EMPTY" : vals.get(0);
-                            log.info("LLM (Fallback) → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
+                            log.info("LLM (Independent Fallback) → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
                         }
                     }
 
@@ -452,10 +458,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         String rawBody = span.getInputFields().get("http.request.body");
         String bodyJson;
         
-        if (isFirstStep) {
-            // For first step, always use LLM-generated bodyFields
+        if (isLoginStep || isFirstBusinessStep) {
+            // For login step and first business step, always use generated bodyFields
             bodyJson = bodyFields.isEmpty() ? null : generateRequestBody(bodyFields, opCfg);
-            log.info("Using LLM-generated body for first step {}: {}", stepNumber, bodyJson);
+            log.info("Using generated body for step {}: {}", stepNumber, bodyJson);
         } else {
             // For subsequent steps, prefer trace body, fallback to generated fields
             bodyJson = rawBody != null
@@ -543,10 +549,26 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
+     * Helper method to create ParameterInfo from TestParameter
+     */
+    private ParameterInfo createParameterInfo(TestParameter p) {
+        ParameterInfo info = new ParameterInfo();
+        info.setName(p.getName());
+        info.setDescription(p.getDescription());
+        info.setInLocation(p.getIn());
+        info.setType(p.getType());
+        info.setFormat(p.getFormat());
+        info.setSchemaType(p.getType());
+        info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
+        info.setRegex(p.getPattern());
+        return info;
+    }
+
+    /**
      * Extract parameter values from trace input/output fields.
      */
-    private void extractParametersFromTrace(WorkflowStep span, 
-                                           Map<String,String> bodyFields,
+    private void extractParametersFromTrace(WorkflowStep span,
+                                           Map<String,Object> bodyFields,
                                            Map<String,String> queryParams,
                                            Map<String,String> pathParams,
                                            Map<String,String> headerParams) {
@@ -1223,25 +1245,57 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
                 info.setRegex(p.getPattern());
 
-                // Stage 1: Get 5 seed values from LLM
-                List<String> llmSeedValues = llmGen.generateParameterValues(info);
-                
-                if (!llmSeedValues.isEmpty()) {
-                    // Stage 2: Expand using semantic models to get more variants
-                    List<String> expandedValues = expander.expandValues(llmSeedValues, 15);
-                    parameterPool.put(p.getName(), expandedValues);
-                    
-                    log.info("Generated shared pool for parameter '{}': {} values", 
-                            p.getName(), expandedValues.size());
-                } else {
-                    // Fallback values
-                    List<String> fallbackValues = new ArrayList<>();
-                    for (int i = 0; i < 15; i++) {
-                        fallbackValues.add("LLM_EMPTY_" + i);
+                // 🚀 FIXED: Try Smart Input Fetching first for shared parameter pool generation
+                List<String> finalValues = new ArrayList<>();
+
+                if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
+                    try {
+                        // Generate multiple smart-fetched values for the pool
+                        for (int i = 0; i < 15; i++) {
+                            String smartValue = smartFetcher.fetchSmartInput(info);
+                            if (smartValue != null && !smartValue.trim().isEmpty()) {
+                                finalValues.add(smartValue);
+                            }
+                        }
+
+                        if (!finalValues.isEmpty()) {
+                            log.info("Smart Fetch Pool → parameter '{}': {} smart values generated",
+                                    p.getName(), finalValues.size());
+                        }
+                    } catch (Exception e) {
+                        log.debug("Smart fetching failed for shared pool parameter '{}': {}",
+                                 p.getName(), e.getMessage());
                     }
-                    parameterPool.put(p.getName(), fallbackValues);
-                    log.warn("LLM returned no values for parameter '{}', using fallback", p.getName());
                 }
+
+                // If smart fetch didn't provide enough values, supplement with LLM
+                if (finalValues.size() < 15) {
+                    int needed = 15 - finalValues.size();
+                    log.info("Smart fetch provided {} values for '{}', generating {} more with LLM",
+                            finalValues.size(), p.getName(), needed);
+
+                    // Stage 1: Get seed values from LLM
+                    List<String> llmSeedValues = llmGen.generateParameterValues(info);
+
+                    if (!llmSeedValues.isEmpty()) {
+                        // Stage 2: Expand using semantic models to get more variants
+                        List<String> expandedValues = expander.expandValues(llmSeedValues, needed);
+                        finalValues.addAll(expandedValues);
+
+                        log.info("LLM Pool → parameter '{}': {} additional values generated",
+                                p.getName(), expandedValues.size());
+                    } else {
+                        // Fallback values
+                        for (int i = finalValues.size(); i < 15; i++) {
+                            finalValues.add("LLM_EMPTY_" + i);
+                        }
+                        log.warn("LLM returned no values for parameter '{}', using fallback", p.getName());
+                    }
+                }
+
+                parameterPool.put(p.getName(), finalValues);
+                log.info("Generated shared pool for parameter '{}': {} total values (smart + LLM + fallback)",
+                        p.getName(), finalValues.size());
             }
         }
         

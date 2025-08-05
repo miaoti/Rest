@@ -92,7 +92,7 @@ public class SmartInputFetcher {
         double randomValue = random.nextDouble();
         if (randomValue < config.getSmartFetchPercentage()) {
             // Use smart fetching (e.g., 90% of the time if percentage = 0.9)
-            log.debug("Attempting smart fetch for parameter '{}' (random: {:.3f} < {:.1f}%)", 
+            log.info("🎯 Smart Fetch Decision → {} (random: {:.3f} < {:.1f}%)",
                      parameterInfo.getName(), randomValue, config.getSmartFetchPercentage() * 100);
             try {
                 String result = fetchFromSmartSource(parameterInfo);
@@ -109,7 +109,7 @@ public class SmartInputFetcher {
             }
         } else {
             // Use traditional LLM generation (e.g., 10% of the time if percentage = 0.9)
-            log.debug("Using LLM generation for parameter '{}' (random: {:.3f} >= {:.1f}%)", 
+            log.info("🤖 LLM Decision → {} (random: {:.3f} >= {:.1f}%)",
                      parameterInfo.getName(), randomValue, config.getSmartFetchPercentage() * 100);
             return fallbackToLLM(parameterInfo);
         }
@@ -133,11 +133,15 @@ public class SmartInputFetcher {
         
         // Look for existing mappings
         List<ApiMapping> mappings = registry.getMappingsForParameter(paramName);
-        
+        log.info("🔍 Parameter '{}' has {} existing mappings", paramName, mappings.size());
+
         // If no mappings found, try to discover new ones
         if (mappings.isEmpty() && config.isLlmDiscoveryEnabled()) {
-            log.debug("No existing mappings for '{}', attempting discovery", paramName);
+            log.info("🚀 No existing mappings for '{}', attempting discovery...", paramName);
             mappings = discoverApiMappings(parameterInfo);
+            log.info("🎯 Discovery for '{}' found {} new mappings", paramName, mappings.size());
+        } else if (mappings.isEmpty()) {
+            log.warn("❌ No mappings for '{}' and discovery is disabled", paramName);
         }
         
         // Try each mapping in order of score
@@ -172,29 +176,42 @@ public class SmartInputFetcher {
      */
     private List<ApiMapping> discoverApiMappings(ParameterInfo parameterInfo) {
         List<ApiMapping> discoveries = new ArrayList<>();
-        
+        String paramName = parameterInfo.getName();
+
         try {
+            log.info("🔍 Starting discovery for parameter '{}'", paramName);
+
             // 1. Pattern-based discovery
-            discoveries.addAll(discoverByPatterns(parameterInfo));
-            
+            List<ApiMapping> patternMappings = discoverByPatterns(parameterInfo);
+            discoveries.addAll(patternMappings);
+            log.info("📋 Pattern discovery for '{}' found {} mappings", paramName, patternMappings.size());
+
             // 2. LLM-based discovery
             if (config.isLlmDiscoveryEnabled()) {
-                discoveries.addAll(discoverByLLM(parameterInfo));
+                List<ApiMapping> llmMappings = discoverByLLM(parameterInfo);
+                discoveries.addAll(llmMappings);
+                log.info("🤖 LLM discovery for '{}' found {} mappings", paramName, llmMappings.size());
+            } else {
+                log.info("🚫 LLM discovery disabled for '{}'", paramName);
             }
-            
+
             // 3. Save discovered mappings to registry
             for (ApiMapping mapping : discoveries) {
                 registry.addMapping(parameterInfo.getName(), mapping);
+                log.info("💾 Saved mapping for '{}': {} -> {}", paramName, mapping.getService(), mapping.getEndpoint());
             }
-            
+
             if (!discoveries.isEmpty()) {
                 saveRegistry(); // Persist learned mappings
+                log.info("✅ Registry updated with {} new mappings for '{}'", discoveries.size(), paramName);
+            } else {
+                log.warn("❌ No mappings discovered for parameter '{}'", paramName);
             }
-            
+
         } catch (Exception e) {
-            log.warn("Discovery failed for parameter '{}': {}", parameterInfo.getName(), e.getMessage());
+            log.warn("💥 Discovery failed for parameter '{}': {}", parameterInfo.getName(), e.getMessage(), e);
         }
-        
+
         return discoveries;
     }
     
@@ -204,9 +221,15 @@ public class SmartInputFetcher {
     private List<ApiMapping> discoverByPatterns(ParameterInfo parameterInfo) {
         List<ApiMapping> mappings = new ArrayList<>();
         String paramName = parameterInfo.getName();
-        
+
+        log.info("🔍 Pattern discovery for '{}' checking {} patterns", paramName, registry.getServicePatterns().size());
+
         for (ServicePattern pattern : registry.getServicePatterns()) {
+            log.debug("🔍 Checking pattern '{}' against parameter '{}'", pattern.getPattern(), paramName);
+
             if (Pattern.matches(pattern.getPattern(), paramName)) {
+                log.info("✅ Pattern '{}' matched parameter '{}'", pattern.getPattern(), paramName);
+
                 for (String endpoint : pattern.getEndpoints()) {
                     for (String service : pattern.getServices()) {
                         // Create a basic mapping - could be improved with schema analysis
@@ -214,13 +237,17 @@ public class SmartInputFetcher {
                         ApiMapping mapping = new ApiMapping(endpoint, service, extractPath);
                         mapping.setPriority(config.getPatternDiscoveryPriority());
                         mappings.add(mapping);
-                        
-                        log.debug("Pattern-discovered mapping: {} -> {}", paramName, mapping);
+
+                        log.info("📋 Created pattern mapping: '{}' -> {} {} (extractPath: {})",
+                                 paramName, service, endpoint, extractPath);
                     }
                 }
+            } else {
+                log.debug("❌ Pattern '{}' did not match parameter '{}'", pattern.getPattern(), paramName);
             }
         }
-        
+
+        log.info("📋 Pattern discovery for '{}' created {} mappings", paramName, mappings.size());
         return mappings;
     }
     
@@ -472,6 +499,17 @@ public class SmartInputFetcher {
         try {
             List<String> values = llmGenerator.generateParameterValues(parameterInfo);
             String result = values.isEmpty() ? "DEFAULT_" + parameterInfo.getName() : values.get(0);
+
+            // Clean any malformed LLM output (e.g., ```json)
+            if (result != null) {
+                result = cleanJsonFromMarkdown(result);
+                // If the result is still malformed or empty after cleaning, use a default
+                if (result.trim().isEmpty() || result.equals("json") || result.startsWith("```")) {
+                    result = "DEFAULT_" + parameterInfo.getName();
+                    log.warn("LLM returned malformed output, using default for parameter '{}'", parameterInfo.getName());
+                }
+            }
+
             log.info("LLM (Fallback) → {} = {}", parameterInfo.getName(), result);
             return result;
         } catch (Exception e) {

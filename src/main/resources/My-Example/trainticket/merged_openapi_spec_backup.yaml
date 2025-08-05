@@ -9,7 +9,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0
 tags:
-- name: web-mvc-links-handler
+- name: web-mvc-links-handlerContent-Type
   description: Web Mvc Links Handler
 - name: operation-handler
   description: Operation Handler

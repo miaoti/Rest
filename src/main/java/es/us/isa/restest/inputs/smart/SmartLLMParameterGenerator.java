@@ -72,23 +72,18 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
         try {
             // Build parameter info from available data
             ParameterInfo parameterInfo = createParameterInfo();
-            
-            // Decide whether to use smart fetching based on configured percentage
-            boolean useSmartFetching = random.nextDouble() < config.getSmartFetchPercentage();
-            
-            if (useSmartFetching) {
-                // Try smart fetching first
-                String smartValue = smartFetcher.fetchSmartInput(parameterInfo);
-                
-                if (smartValue != null && !smartValue.trim().isEmpty()) {
-                    logger.debug("Smart fetching provided value '{}' for parameter '{}'", 
-                               smartValue, parameterInfo.getName());
-                    return TextNode.valueOf(smartValue);
-                }
+
+            // Try smart fetching first (percentage check is handled inside SmartInputFetcher)
+            String smartValue = smartFetcher.fetchSmartInput(parameterInfo);
+
+            if (smartValue != null && !smartValue.trim().isEmpty()) {
+                logger.debug("Smart fetching provided value '{}' for parameter '{}'",
+                           smartValue, parameterInfo.getName());
+                return TextNode.valueOf(smartValue);
             }
-            
+
         } catch (Exception e) {
-            logger.debug("Smart fetching failed for parameter '{}', falling back to LLM: {}", 
+            logger.debug("Smart fetching failed for parameter '{}', falling back to LLM: {}",
                         getParameterName(), e.getMessage());
         }
         
