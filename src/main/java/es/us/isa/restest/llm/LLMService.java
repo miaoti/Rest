@@ -32,7 +32,9 @@ public class LLMService {
             this.geminiClient = new GeminiApiClient(
                 config.getGeminiApiKey(),
                 config.getGeminiModel(),
-                config.getGeminiApiUrl()
+                config.getGeminiApiUrl(),
+                config.getMaxRetries(),
+                config.isRateLimitRetryEnabled()
             );
         } else {
             this.geminiClient = null;

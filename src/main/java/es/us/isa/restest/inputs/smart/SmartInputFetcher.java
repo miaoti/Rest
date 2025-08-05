@@ -430,6 +430,8 @@ public class SmartInputFetcher {
      */
     private String extractValueDirectlyFromResponse(String responseBody, ParameterInfo parameterInfo) {
         try {
+            log.info("🔄 Starting DIRECT VALUE EXTRACTION for parameter '{}'", parameterInfo.getName());
+
             // Build direct extraction prompt
             String prompt = buildDirectExtractionPrompt(responseBody, parameterInfo);
 
@@ -437,6 +439,8 @@ public class SmartInputFetcher {
                 log.warn("Direct extraction prompt too long ({} chars), using fallback", prompt.length());
                 return extractValueWithSimpleFallback(responseBody, parameterInfo);
             }
+
+            log.info("🧠 Calling LLM for DIRECT VALUE EXTRACTION (not JSONPath) for parameter '{}'", parameterInfo.getName());
 
             // Ask LLM to extract value directly
             String llmResponse = askLLMForDirectValueExtraction(prompt);
@@ -450,7 +454,16 @@ public class SmartInputFetcher {
                     return extractValueWithSimpleFallback(responseBody, parameterInfo);
                 }
 
-                log.info("🧠 LLM extracted value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
+                // Check if LLM incorrectly returned a JSONPath expression
+                if (cleanResponse.startsWith("$.") || cleanResponse.contains("$[") || cleanResponse.contains("data[")) {
+                    log.error("❌ CRITICAL BUG: LLM returned JSONPath expression '{}' instead of actual value for parameter '{}'",
+                             cleanResponse, parameterInfo.getName());
+                    log.error("❌ This should NEVER happen with direct value extraction!");
+                    log.error("❌ Using fallback extraction instead");
+                    return extractValueWithSimpleFallback(responseBody, parameterInfo);
+                }
+
+                log.info("✅ LLM extracted ACTUAL VALUE '{}' for parameter '{}' (not JSONPath)", cleanResponse, parameterInfo.getName());
                 return cleanResponse;
             }
 
@@ -491,8 +504,8 @@ public class SmartInputFetcher {
      */
     private String askLLMForDirectValueExtraction(String prompt) {
         try {
-            // Call LLM for direct value extraction
-            String rawResponse = callLLMForExtractionPathDiscovery(prompt);
+            // Call LLM for direct value extraction (NOT JSONPath generation)
+            String rawResponse = callLLMForDirectValueExtractionFromResponse(prompt);
 
             if (rawResponse != null && !rawResponse.trim().isEmpty()) {
                 String cleaned = cleanJsonFromMarkdown(rawResponse);
@@ -1218,32 +1231,10 @@ public class SmartInputFetcher {
     }
 
     private String askLLMForExtractionPath(String prompt) {
-        try {
-            // Call LLM directly for extraction path discovery with appropriate system prompt
-            String rawResponse = callLLMForExtractionPathDiscovery(prompt);
-
-            if (rawResponse != null && !rawResponse.trim().isEmpty()) {
-                // Clean any markdown formatting and return the JSONPath
-                String cleaned = cleanJsonFromMarkdown(rawResponse);
-
-                // Check for NO_GOOD_MATCH response first
-                if (cleaned.trim().equals("NO_GOOD_MATCH")) {
-                    return "NO_GOOD_MATCH";
-                }
-
-                // Remove quotes if the LLM wrapped the path in quotes
-                if (cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
-                    cleaned = cleaned.substring(1, cleaned.length() - 1);
-                }
-                return cleaned;
-            }
-
-            return null;
-
-        } catch (Exception e) {
-            log.warn("Failed to ask LLM for extraction path: {}", e.getMessage());
-            return null;
-        }
+        log.warn("❌ DEPRECATED: askLLMForExtractionPath called - this should not happen!");
+        log.warn("❌ The system should use direct value extraction instead of JSONPath discovery");
+        log.warn("❌ Returning null to force fallback to direct extraction");
+        return null;
     }
 
     private String buildLLMDiscoveryPrompt(ParameterInfo parameterInfo, List<String> availableServices) {
@@ -1400,31 +1391,43 @@ public class SmartInputFetcher {
      }
 
      /**
-       * Call LLM directly for extraction path discovery with appropriate system prompt
+       * DEPRECATED: Old JSONPath discovery method - replaced by direct value extraction
+       * This method is disabled to prevent JSONPath expressions from being returned
        */
       private String callLLMForExtractionPathDiscovery(String prompt) {
-          String systemContent =
-                  "You are an API testing assistant that helps create JSONPath expressions " +
-                  "to extract specific data from JSON API responses. " +
-                  "Respond with a valid JSONPath expression (e.g., $.data[*].name or $.items[0].id). " +
-                  "Do NOT generate test values. Only return the JSONPath expression.";
+          log.warn("❌ DEPRECATED: callLLMForExtractionPathDiscovery called - this should not happen!");
+          log.warn("❌ The system should use direct value extraction instead of JSONPath discovery");
+          log.warn("❌ Returning null to force fallback to direct extraction");
+          return null;
+      }
 
-          log.debug("[Extraction Path Discovery LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
-          log.debug("[Extraction Path Discovery LLM] User prompt: {}", prompt);
+      /**
+       * Call LLM for direct value extraction from API response
+       */
+      private String callLLMForDirectValueExtractionFromResponse(String prompt) {
+          String systemContent =
+                  "You are an API testing assistant that extracts specific parameter values from JSON API responses. " +
+                  "Given a JSON response and a parameter description, extract the most appropriate actual value from the response. " +
+                  "Return ONLY the extracted value, not a JSONPath expression. " +
+                  "If no suitable value exists in the response, return 'NO_GOOD_MATCH'. " +
+                  "Do NOT return JSONPath expressions like $.data[*].name - return actual values like 'John Doe' or '12345'.";
+
+          log.debug("[Direct Value Extraction LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
+          log.debug("[Direct Value Extraction LLM] User prompt: {}", prompt);
 
           try {
               String result = llmService.generateText(systemContent, prompt, 100, 0.3);
 
               if (result != null && !result.trim().isEmpty()) {
-                  log.debug("[Extraction Path Discovery LLM] Successfully generated content: {}", result);
+                  log.debug("[Direct Value Extraction LLM] Successfully generated content: {}", result);
                   return result;
               } else {
-                  log.warn("[Extraction Path Discovery LLM] LLM service returned null or empty result");
+                  log.warn("[Direct Value Extraction LLM] LLM service returned null or empty result");
                   return null;
               }
 
           } catch (Exception e) {
-              log.warn("[Extraction Path Discovery LLM] Failed to call LLM service: {}", e.getMessage());
+              log.warn("[Direct Value Extraction LLM] Failed to call LLM service: {}", e.getMessage());
               return null;
           }
       }
