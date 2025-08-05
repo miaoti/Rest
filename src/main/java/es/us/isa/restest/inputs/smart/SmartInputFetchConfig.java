@@ -14,6 +14,7 @@ public class SmartInputFetchConfig {
     private String registryPath;
     private String openApiSpecPath;
     private boolean llmDiscoveryEnabled;
+    private boolean llmEndpointSelectionEnabled;
     private int maxCandidates;
     private boolean dependencyResolutionEnabled;
     private long discoveryTimeoutMs;
@@ -34,6 +35,7 @@ public class SmartInputFetchConfig {
         this.registryPath = "input-fetch-registry.yaml";
         this.openApiSpecPath = "src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml";
         this.llmDiscoveryEnabled = true;
+        this.llmEndpointSelectionEnabled = true;
         this.maxCandidates = 5;
         this.dependencyResolutionEnabled = true;
         this.discoveryTimeoutMs = 5000;
@@ -67,7 +69,10 @@ public class SmartInputFetchConfig {
         
         config.llmDiscoveryEnabled = Boolean.parseBoolean(
             properties.getOrDefault("smart.input.fetch.llm.discovery.enabled", "true"));
-        
+
+        config.llmEndpointSelectionEnabled = Boolean.parseBoolean(
+            properties.getOrDefault("smart.input.fetch.llm.endpoint.selection.enabled", "true"));
+
         config.maxCandidates = Integer.parseInt(
             properties.getOrDefault("smart.input.fetch.max.candidates", "5"));
         
@@ -120,8 +125,13 @@ public class SmartInputFetchConfig {
     public void setOpenApiSpecPath(String openApiSpecPath) { this.openApiSpecPath = openApiSpecPath; }
     
     public boolean isLlmDiscoveryEnabled() { return llmDiscoveryEnabled; }
-    public void setLlmDiscoveryEnabled(boolean llmDiscoveryEnabled) { 
-        this.llmDiscoveryEnabled = llmDiscoveryEnabled; 
+    public void setLlmDiscoveryEnabled(boolean llmDiscoveryEnabled) {
+        this.llmDiscoveryEnabled = llmDiscoveryEnabled;
+    }
+
+    public boolean isLlmEndpointSelectionEnabled() { return llmEndpointSelectionEnabled; }
+    public void setLlmEndpointSelectionEnabled(boolean llmEndpointSelectionEnabled) {
+        this.llmEndpointSelectionEnabled = llmEndpointSelectionEnabled;
     }
     
     public int getMaxCandidates() { return maxCandidates; }
