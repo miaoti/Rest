@@ -822,8 +822,7 @@ public class SmartInputFetcher {
 
                         // Validate that we got reasonable results
                         if (services.size() > 0 && services.size() <= 5) {
-                            log.info("LLM suggested {} services for '{}': {}",
-                                    services.size(), parameterInfo.getName(), services);
+                            log.info("LLM suggested {} services: {}", services.size(), services);
                             return services;
                         } else {
                             log.warn("LLM returned {} services (expected 1-5): {}", services.size(), services);
