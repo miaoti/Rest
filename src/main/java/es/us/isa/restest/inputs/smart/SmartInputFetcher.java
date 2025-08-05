@@ -282,16 +282,22 @@ public class SmartInputFetcher {
             String prompt = buildLLMDiscoveryPrompt(parameterInfo, availableServices);
             List<String> suggestedServices = askLLMForServices(prompt);
             
-            // Create mappings for suggested services
-            for (String service : suggestedServices) {
+            // Create mappings for suggested services with priority based on order
+            for (int i = 0; i < suggestedServices.size(); i++) {
+                String service = suggestedServices.get(i);
                 String endpoint = inferEndpointForService(service, parameterInfo);
                 if (endpoint != null) {
                     String extractPath = guessExtractPath(parameterInfo, endpoint);
                     ApiMapping mapping = new ApiMapping(endpoint, service, extractPath);
-                    mapping.setPriority(config.getLlmDiscoveryPriority());
+
+                    // Set priority based on LLM ranking (higher priority = lower number)
+                    // First service gets highest priority (base priority), second gets base+1, etc.
+                    int priority = config.getLlmDiscoveryPriority() + i;
+                    mapping.setPriority(priority);
                     mappings.add(mapping);
-                    
-                    log.debug("LLM-discovered mapping: {} -> {}", parameterInfo.getName(), mapping);
+
+                    log.info("LLM-discovered mapping #{}: {} -> {} {} (priority: {})",
+                            i+1, parameterInfo.getName(), service, endpoint, priority);
                 }
             }
             
@@ -393,11 +399,83 @@ public class SmartInputFetcher {
     
     private String buildValueSelectionPrompt(String extractedData, ParameterInfo parameterInfo) {
         String template = registry.getLlmPrompts().get("valueSelection");
+
+        // Handle message length limit (2044 chars for GPT4All)
+        String truncatedData = truncateDataForLLM(extractedData, template, parameterInfo);
+
         return template
-                .replace("{extractedData}", extractedData != null ? extractedData : "")
+                .replace("{extractedData}", truncatedData != null ? truncatedData : "")
                 .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
                 .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
                 .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "");
+    }
+
+    /**
+     * Truncate extracted data to fit within LLM message length limits
+     */
+    private String truncateDataForLLM(String extractedData, String template, ParameterInfo parameterInfo) {
+        if (extractedData == null) return "";
+
+        // Calculate space available for data (leave 200 chars buffer for template + parameters)
+        String tempPrompt = template
+                .replace("{extractedData}", "")
+                .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
+                .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
+                .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "");
+
+        int maxDataLength = 1844 - tempPrompt.length(); // 2044 - 200 buffer
+
+        if (extractedData.length() <= maxDataLength) {
+            return extractedData;
+        }
+
+        // Try to truncate intelligently
+        try {
+            // If it's JSON, try to keep complete objects/arrays
+            if (extractedData.trim().startsWith("{") || extractedData.trim().startsWith("[")) {
+                return truncateJsonIntelligently(extractedData, maxDataLength);
+            } else {
+                // Simple truncation for non-JSON data
+                return extractedData.substring(0, maxDataLength) + "...";
+            }
+        } catch (Exception e) {
+            // Fallback to simple truncation
+            return extractedData.substring(0, Math.min(maxDataLength, extractedData.length())) + "...";
+        }
+    }
+
+    /**
+     * Intelligently truncate JSON to keep complete objects/arrays when possible
+     */
+    private String truncateJsonIntelligently(String jsonData, int maxLength) {
+        if (jsonData.length() <= maxLength) return jsonData;
+
+        try {
+            // Parse JSON to understand structure
+            Object parsed = objectMapper.readValue(jsonData, Object.class);
+
+            if (parsed instanceof List) {
+                List<?> list = (List<?>) parsed;
+                // Keep first few items that fit within limit
+                List<Object> truncatedList = new ArrayList<>();
+                for (Object item : list) {
+                    String itemJson = objectMapper.writeValueAsString(item);
+                    String currentJson = objectMapper.writeValueAsString(truncatedList);
+                    if (currentJson.length() + itemJson.length() + 10 < maxLength) { // +10 for array brackets
+                        truncatedList.add(item);
+                    } else {
+                        break;
+                    }
+                }
+                return objectMapper.writeValueAsString(truncatedList);
+            } else {
+                // For objects, try to keep essential fields
+                return jsonData.substring(0, Math.min(maxLength - 3, jsonData.length())) + "...";
+            }
+        } catch (Exception e) {
+            // Fallback to simple truncation
+            return jsonData.substring(0, Math.min(maxLength - 3, jsonData.length())) + "...";
+        }
     }
     
     private String askLLMForValueSelection(String prompt) {
@@ -735,9 +813,23 @@ public class SmartInputFetcher {
                     JsonNode jsonResponse = objectMapper.readTree(cleanedResponse);
                     if (jsonResponse.isArray()) {
                         List<String> services = new ArrayList<>();
-                        jsonResponse.forEach(node -> services.add(node.asText()));
-                        log.debug("LLM suggested {} services: {}", services.size(), services);
-                        return services;
+                        jsonResponse.forEach(node -> {
+                            String serviceName = node.asText().trim();
+                            if (!serviceName.isEmpty()) {
+                                services.add(serviceName);
+                            }
+                        });
+
+                        // Validate that we got reasonable results
+                        if (services.size() > 0 && services.size() <= 5) {
+                            log.info("LLM suggested {} services for '{}': {}",
+                                    services.size(), parameterInfo.getName(), services);
+                            return services;
+                        } else {
+                            log.warn("LLM returned {} services (expected 1-5): {}", services.size(), services);
+                            // Return first 3 if too many, or all if too few
+                            return services.subList(0, Math.min(3, services.size()));
+                        }
                     } else {
                         log.debug("LLM response is not a JSON array: {}", cleanedResponse);
                     }

@@ -91,12 +91,13 @@ servicePatterns:
   - "/api/v1/priceservice/prices"
   - "/api/v1/travelservice/trips"
 llmPrompts:
-  apiDiscovery: "Given this input parameter information:\n- Parameter name: {parameterName}\n\
-    - Parameter type: {parameterType}\n- Parameter description: {parameterDescription}\n\
-    - Parameter location: {parameterLocation}\n\nAvailable microservices: {availableServices}\n\
-    \nWhich services would most likely provide realistic data for this parameter?\n\
-    Respond with a JSON array of service names in priority order.\nConsider semantic\
-    \ meaning, naming patterns, and likely data relationships.\n"
+  apiDiscovery: "Parameter: {parameterName} (type: {parameterType}, location: {parameterLocation})\n\
+    Description: {parameterDescription}\n\nServices: {availableServices}\n\n\
+    Task: Select the TOP 3 services most likely to provide realistic data for this parameter.\n\
+    Consider semantic meaning and naming patterns.\n\n\
+    Respond ONLY with a JSON array of exactly 3 service names in priority order:\n\
+    [\"service1\", \"service2\", \"service3\"]\n\n\
+    No explanations, no extra text, just the JSON array."
   endpointDiscovery: "Given this microservice: {serviceName}\nAnd this input parameter:\
     \ {parameterName} (type: {parameterType}, description: {parameterDescription})\n\
     \nWhat would be the most likely REST API endpoint path within this service to\
@@ -104,18 +105,13 @@ llmPrompts:
     \ and the parameter's semantic meaning.\n\nRespond with a JSON object containing:\n\
     {\n  \"endpoint\": \"/api/v1/path/to/resource\",\n  \"method\": \"GET\",\n  \"\
     confidence\": 0.85\n}\n"
-  dataExtraction: "Given this API response structure: {responseSchema}\nAnd this target\
-    \ parameter: {parameterName} (type: {parameterType})\n\nWhat is the best JSONPath\
-    \ expression to extract appropriate values?\nConsider that we need values suitable\
-    \ for the parameter type and semantic meaning.\nRespond with just the JSONPath\
-    \ expression.\n"
-  valueSelection: "Given this extracted data from an API: {extractedData}\nAnd this\
-    \ target parameter: {parameterName} (type: {parameterType}, description: {parameterDescription})\n\
-    \nWhich value from the extracted data would be most appropriate for this parameter?\n\
-    Consider the parameter's type, semantic meaning, and realistic test data requirements.\n\
-    \nIf the data is an array, select the most suitable element.\nIf the data is an\
-    \ object, select the most appropriate field value.\n\nRespond with just the selected\
-    \ value as a string.\n"
+  dataExtraction: "Response: {responseSchema}\nParameter: {parameterName} (type: {parameterType})\n\n\
+    Task: Provide the JSONPath to extract suitable values.\n\
+    Respond ONLY with the JSONPath expression, no explanations:\n\
+    Example: $.data[*].fieldName\n\nJSONPath:"
+  valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\n\
+    Task: Select the most suitable value for this parameter.\n\
+    Respond ONLY with the selected value, no explanations."
 cache:
   enabled: true
   maxEntries: 1000
