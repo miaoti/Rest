@@ -13,7 +13,7 @@ public class LLMConfig {
     private static final Logger logger = LogManager.getLogger(LLMConfig.class);
     
     public enum ModelType {
-        LOCAL, GEMINI
+        LOCAL, GEMINI, OLLAMA
     }
     
     // General LLM settings
@@ -31,6 +31,11 @@ public class LLMConfig {
     private String geminiModel;
     private String geminiApiUrl;
 
+    // Ollama API settings
+    private boolean ollamaEnabled;
+    private String ollamaUrl;
+    private String ollamaModel;
+
     // Rate limiting settings
     private int maxRetries;
     private boolean rateLimitRetryEnabled;
@@ -46,6 +51,9 @@ public class LLMConfig {
         this.geminiApiKey = "";
         this.geminiModel = "gemini-2.0-flash-exp";
         this.geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models";
+        this.ollamaEnabled = false;
+        this.ollamaUrl = "http://localhost:11434";
+        this.ollamaModel = "gemma3:4b";
         this.maxRetries = 3;
         this.rateLimitRetryEnabled = true;
     }
@@ -80,14 +88,22 @@ public class LLMConfig {
         config.geminiApiUrl = properties.getOrDefault(
             "llm.gemini.api.url", "https://generativelanguage.googleapis.com/v1beta/models");
 
+        // Ollama API settings
+        config.ollamaEnabled = Boolean.parseBoolean(
+            properties.getOrDefault("llm.ollama.enabled", "false"));
+        config.ollamaUrl = properties.getOrDefault(
+            "llm.ollama.url", "http://localhost:11434");
+        config.ollamaModel = properties.getOrDefault(
+            "llm.ollama.model", "gemma2:2b");
+
         // Rate limiting settings
         config.maxRetries = Integer.parseInt(
             properties.getOrDefault("llm.rate.limit.max.retries", "3"));
         config.rateLimitRetryEnabled = Boolean.parseBoolean(
             properties.getOrDefault("llm.rate.limit.retry.enabled", "true"));
 
-        logger.info("LLMConfig initialized: enabled={}, modelType={}, localEnabled={}, geminiEnabled={}, maxRetries={}, rateLimitRetryEnabled={}",
-                   config.enabled, config.modelType, config.localEnabled, config.geminiEnabled, config.maxRetries, config.rateLimitRetryEnabled);
+        logger.info("LLMConfig initialized: enabled={}, modelType={}, localEnabled={}, geminiEnabled={}, ollamaEnabled={}, maxRetries={}, rateLimitRetryEnabled={}",
+                   config.enabled, config.modelType, config.localEnabled, config.geminiEnabled, config.ollamaEnabled, config.maxRetries, config.rateLimitRetryEnabled);
         
         return config;
     }
@@ -102,12 +118,15 @@ public class LLMConfig {
         
         switch (modelType) {
             case LOCAL:
-                return localEnabled && localUrl != null && !localUrl.trim().isEmpty() 
+                return localEnabled && localUrl != null && !localUrl.trim().isEmpty()
                        && localModel != null && !localModel.trim().isEmpty();
             case GEMINI:
                 return geminiEnabled && geminiApiKey != null && !geminiApiKey.trim().isEmpty()
                        && geminiModel != null && !geminiModel.trim().isEmpty()
                        && geminiApiUrl != null && !geminiApiUrl.trim().isEmpty();
+            case OLLAMA:
+                return ollamaEnabled && ollamaUrl != null && !ollamaUrl.trim().isEmpty()
+                       && ollamaModel != null && !ollamaModel.trim().isEmpty();
             default:
                 return false;
         }
@@ -141,6 +160,15 @@ public class LLMConfig {
     public String getGeminiApiUrl() { return geminiApiUrl; }
     public void setGeminiApiUrl(String geminiApiUrl) { this.geminiApiUrl = geminiApiUrl; }
 
+    public boolean isOllamaEnabled() { return ollamaEnabled; }
+    public void setOllamaEnabled(boolean ollamaEnabled) { this.ollamaEnabled = ollamaEnabled; }
+
+    public String getOllamaUrl() { return ollamaUrl; }
+    public void setOllamaUrl(String ollamaUrl) { this.ollamaUrl = ollamaUrl; }
+
+    public String getOllamaModel() { return ollamaModel; }
+    public void setOllamaModel(String ollamaModel) { this.ollamaModel = ollamaModel; }
+
     public int getMaxRetries() { return maxRetries; }
     public void setMaxRetries(int maxRetries) { this.maxRetries = maxRetries; }
 
@@ -151,9 +179,11 @@ public class LLMConfig {
     public String toString() {
         return String.format(
             "LLMConfig{enabled=%s, modelType=%s, localEnabled=%s, localUrl='%s', localModel='%s', " +
-            "geminiEnabled=%s, geminiModel='%s', geminiApiUrl='%s', maxRetries=%d, rateLimitRetryEnabled=%s}",
+            "geminiEnabled=%s, geminiModel='%s', geminiApiUrl='%s', ollamaEnabled=%s, ollamaUrl='%s', ollamaModel='%s', " +
+            "maxRetries=%d, rateLimitRetryEnabled=%s}",
             enabled, modelType, localEnabled, localUrl, localModel,
-            geminiEnabled, geminiModel, geminiApiUrl, maxRetries, rateLimitRetryEnabled
+            geminiEnabled, geminiModel, geminiApiUrl, ollamaEnabled, ollamaUrl, ollamaModel,
+            maxRetries, rateLimitRetryEnabled
         );
     }
 }
