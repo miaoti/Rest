@@ -46,7 +46,7 @@ servicePatterns:
   - "ts-station-service"
   endpoints:
   - "/api/v1/stationservice/stations"
-- pattern: ".*[Uu]ser.*"
+- pattern: ".*[Uu]ser.*|.*[Ll]ogin.*"
   services:
   - "ts-user-service"
   - "ts-contacts-service"
@@ -60,13 +60,15 @@ servicePatterns:
   endpoints:
   - "/api/v1/trainservice/trains"
   - "/api/v1/travelservice/trips"
-- pattern: ".*[Rr]oute.*"
+- pattern: ".*[Rr]oute.*|.*[Ii]d.*"
   services:
   - "ts-route-service"
   - "ts-route-plan-service"
+  - "ts-admin-route-service"
   endpoints:
   - "/api/v1/routeservice/routes"
   - "/api/v1/routeplanservice/routePlans"
+  - "/api/v1/adminrouteservice/adminroute"
 - pattern: ".*[Oo]rder.*"
   services:
   - "ts-order-service"
@@ -74,6 +76,20 @@ servicePatterns:
   endpoints:
   - "/api/v1/orderservice/orders"
   - "/api/v1/orderOtherservice/orderOthers"
+- pattern: ".*[Dd]istance.*"
+  services:
+  - "ts-route-service"
+  - "ts-admin-route-service"
+  endpoints:
+  - "/api/v1/routeservice/routes"
+  - "/api/v1/adminrouteservice/adminroute"
+- pattern: ".*[Pp]rice.*|.*[Cc]ost.*"
+  services:
+  - "ts-price-service"
+  - "ts-travel-service"
+  endpoints:
+  - "/api/v1/priceservice/prices"
+  - "/api/v1/travelservice/trips"
 llmPrompts:
   apiDiscovery: "Given this input parameter information:\n- Parameter name: {parameterName}\n\
     - Parameter type: {parameterType}\n- Parameter description: {parameterDescription}\n\
