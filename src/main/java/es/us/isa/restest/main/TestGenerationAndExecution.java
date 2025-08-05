@@ -685,7 +685,12 @@ public class TestGenerationAndExecution {
 			"llm.ollama.url",
 			"llm.ollama.model",
 			"llm.rate.limit.retry.enabled",
-			"llm.rate.limit.max.retries"
+			"llm.rate.limit.max.retries",
+			// Authentication properties for smart fetch
+			"auth.admin.username",
+			"auth.admin.password",
+			"auth.user.username",
+			"auth.user.password"
 		};
 		
 		int configuredCount = 0;

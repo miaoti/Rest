@@ -26,6 +26,12 @@ public class SmartInputFetchConfig {
     private String defaultContentType;
     private int successResponseCode;
     private long schemaDiscoveryTimeoutMs;
+
+    // Authentication settings
+    private String authAdminUsername;
+    private String authAdminPassword;
+    private String authUserUsername;
+    private String authUserPassword;
     
     // Default constructor
     public SmartInputFetchConfig() {
@@ -105,7 +111,13 @@ public class SmartInputFetchConfig {
         
         config.schemaDiscoveryTimeoutMs = Long.parseLong(
             properties.getOrDefault("smart.input.fetch.schema.discovery.timeout.ms", "3000"));
-        
+
+        // Authentication settings
+        config.authAdminUsername = properties.getOrDefault("auth.admin.username", "admin");
+        config.authAdminPassword = properties.getOrDefault("auth.admin.password", "222222");
+        config.authUserUsername = properties.getOrDefault("auth.user.username", "fdse_microservice");
+        config.authUserPassword = properties.getOrDefault("auth.user.password", "111111");
+
         return config;
     }
     
@@ -177,9 +189,21 @@ public class SmartInputFetchConfig {
     }
     
     public long getSchemaDiscoveryTimeoutMs() { return schemaDiscoveryTimeoutMs; }
-    public void setSchemaDiscoveryTimeoutMs(long schemaDiscoveryTimeoutMs) { 
-        this.schemaDiscoveryTimeoutMs = schemaDiscoveryTimeoutMs; 
+    public void setSchemaDiscoveryTimeoutMs(long schemaDiscoveryTimeoutMs) {
+        this.schemaDiscoveryTimeoutMs = schemaDiscoveryTimeoutMs;
     }
+
+    public String getAuthAdminUsername() { return authAdminUsername; }
+    public void setAuthAdminUsername(String authAdminUsername) { this.authAdminUsername = authAdminUsername; }
+
+    public String getAuthAdminPassword() { return authAdminPassword; }
+    public void setAuthAdminPassword(String authAdminPassword) { this.authAdminPassword = authAdminPassword; }
+
+    public String getAuthUserUsername() { return authUserUsername; }
+    public void setAuthUserUsername(String authUserUsername) { this.authUserUsername = authUserUsername; }
+
+    public String getAuthUserPassword() { return authUserPassword; }
+    public void setAuthUserPassword(String authUserPassword) { this.authUserPassword = authUserPassword; }
     
     @Override
     public String toString() {
