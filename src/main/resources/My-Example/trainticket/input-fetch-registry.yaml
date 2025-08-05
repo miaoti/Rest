@@ -95,28 +95,40 @@ llmPrompts:
     Description: {parameterDescription}\n\nServices: {availableServices}\n\n\
     Task: Select the TOP 3 services most likely to provide realistic data for this parameter.\n\
     Consider semantic meaning and naming patterns.\n\n\
-    Respond ONLY with a JSON array of exactly 3 service names in priority order:\n\
+    If you find good matches, respond with a JSON array of 1-3 service names in priority order:\n\
     [\"service1\", \"service2\", \"service3\"]\n\n\
-    No explanations, no extra text, just the JSON array."
-  endpointDiscovery: "Given this microservice: {serviceName}\nAnd this input parameter:\
-    \ {parameterName} (type: {parameterType}, description: {parameterDescription})\n\
-    \nWhat would be the most likely REST API endpoint path within this service to\
-    \ fetch data for this parameter?\nConsider RESTful conventions, resource naming,\
-    \ and the parameter's semantic meaning.\n\nRespond with a JSON object containing:\n\
-    {\n  \"endpoint\": \"/api/v1/path/to/resource\",\n  \"method\": \"GET\",\n  \"\
-    confidence\": 0.85\n}\n"
+    If NO services seem suitable for this parameter, respond with:\n\
+    NO_GOOD_MATCH\n\n\
+    Respond ONLY with the JSON array OR 'NO_GOOD_MATCH', no explanations."
+  endpointDiscovery: "Service: {serviceName}\nParameter: {parameterName} (type: {parameterType})\n\
+    Description: {parameterDescription}\n\n\
+    Task: Find the most likely REST API endpoint in this service for this parameter.\n\
+    Consider RESTful conventions and semantic meaning.\n\n\
+    If you find a good match, respond with JSON:\n\
+    {\"endpoint\": \"/api/v1/path\", \"method\": \"GET\", \"confidence\": 0.85}\n\n\
+    If NO endpoint seems suitable, respond with:\n\
+    NO_GOOD_MATCH\n\n\
+    Respond ONLY with JSON OR 'NO_GOOD_MATCH'."
   dataExtraction: "API Response: {responseSchema}\n\n\
     Target Parameter: {parameterName} (type: {parameterType})\n\
-    Task: Find the JSONPath to extract values suitable for parameter '{parameterName}'.\n\
-    Look for fields that match the parameter name or semantic meaning.\n\n\
+    Description: {parameterDescription}\n\n\
+    Task: Find the JSONPath to extract values suitable for this parameter.\n\
+    Look for fields that match the parameter name, description, or semantic meaning.\n\n\
     Examples:\n\
     - For 'stationName' parameter: $.data[*].name or $.data[*].stationName\n\
     - For 'distanceList' parameter: $.data[*].distances or $.data[*].route.distances\n\
     - For 'id' parameter: $.data[*].id\n\n\
-    JSONPath for '{parameterName}':"
-  valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\n\
-    Task: Select the most suitable value for this parameter.\n\
-    Respond ONLY with the selected value, no explanations."
+    If you find a good JSONPath, respond with just the path:\n\
+    $.data[*].fieldName\n\n\
+    If NO suitable field exists in the response, respond with:\n\
+    NO_GOOD_MATCH"
+  valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\
+    Description: {parameterDescription}\n\n\
+    Task: Select the most suitable value for this parameter based on its name, type, and description.\n\n\
+    If you find a suitable value, respond with just the value:\n\
+    selectedValue\n\n\
+    If NO value seems appropriate for this parameter, respond with:\n\
+    NO_GOOD_MATCH"
 cache:
   enabled: true
   maxEntries: 1000

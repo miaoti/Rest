@@ -100,7 +100,7 @@ public class SmartInputFetcher {
                     log.info("Smart Fetch → {} = {} ✅", parameterInfo.getName(), result);
                     return result;
                 } else {
-                    log.info("Smart Fetch → {} = FAILED, falling back to LLM", parameterInfo.getName());
+                    log.info("Smart Fetch → {} = FAILED (no good matches found), falling back to LLM", parameterInfo.getName());
                     return fallbackToLLM(parameterInfo);
                 }
             } catch (Exception e) {
@@ -283,21 +283,26 @@ public class SmartInputFetcher {
             List<String> suggestedServices = askLLMForServices(prompt);
             
             // Create mappings for suggested services with priority based on order
-            for (int i = 0; i < suggestedServices.size(); i++) {
-                String service = suggestedServices.get(i);
-                String endpoint = inferEndpointForService(service, parameterInfo);
-                if (endpoint != null) {
-                    String extractPath = guessExtractPath(parameterInfo, endpoint);
-                    ApiMapping mapping = new ApiMapping(endpoint, service, extractPath);
+            if (suggestedServices.isEmpty()) {
+                log.info("LLM indicated no good service matches for parameter '{}', skipping LLM discovery",
+                        parameterInfo.getName());
+            } else {
+                for (int i = 0; i < suggestedServices.size(); i++) {
+                    String service = suggestedServices.get(i);
+                    String endpoint = inferEndpointForService(service, parameterInfo);
+                    if (endpoint != null) {
+                        String extractPath = guessExtractPath(parameterInfo, endpoint);
+                        ApiMapping mapping = new ApiMapping(endpoint, service, extractPath);
 
-                    // Set priority based on LLM ranking (higher priority = lower number)
-                    // First service gets highest priority (base priority), second gets base+1, etc.
-                    int priority = config.getLlmDiscoveryPriority() + i;
-                    mapping.setPriority(priority);
-                    mappings.add(mapping);
+                        // Set priority based on LLM ranking (higher priority = lower number)
+                        // First service gets highest priority (base priority), second gets base+1, etc.
+                        int priority = config.getLlmDiscoveryPriority() + i;
+                        mapping.setPriority(priority);
+                        mappings.add(mapping);
 
-                    log.info("LLM-discovered mapping #{}: {} -> {} {} (priority: {})",
-                            i+1, parameterInfo.getName(), service, endpoint, priority);
+                        log.info("LLM-discovered mapping #{}: {} -> {} {} (priority: {})",
+                                i+1, parameterInfo.getName(), service, endpoint, priority);
+                    }
                 }
             }
             
@@ -387,8 +392,16 @@ public class SmartInputFetcher {
             String llmResponse = askLLMForValueSelection(prompt);
             
             if (llmResponse != null && !llmResponse.trim().isEmpty()) {
-                log.debug("LLM selected value '{}' for parameter '{}'", llmResponse, parameterInfo.getName());
-                return llmResponse.trim();
+                String cleanResponse = llmResponse.trim();
+
+                // Check for NO_GOOD_MATCH response
+                if (cleanResponse.equals("NO_GOOD_MATCH")) {
+                    log.info("LLM indicated no good value match for parameter '{}'", parameterInfo.getName());
+                    return null; // Will trigger fallback to traditional LLM generation
+                }
+
+                log.debug("LLM selected value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
+                return cleanResponse;
             }
         } catch (Exception e) {
             log.debug("LLM value selection failed for parameter '{}': {}", 
@@ -501,6 +514,12 @@ public class SmartInputFetcher {
             if (rawResponse != null && !rawResponse.trim().isEmpty()) {
                 // Clean any markdown formatting
                 String cleaned = cleanJsonFromMarkdown(rawResponse);
+
+                // Check for NO_GOOD_MATCH response first
+                if (cleaned.trim().equals("NO_GOOD_MATCH")) {
+                    return "NO_GOOD_MATCH";
+                }
+
                 // Remove quotes if the LLM wrapped the value in quotes
                 if (cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
                     cleaned = cleaned.substring(1, cleaned.length() - 1);
@@ -709,6 +728,13 @@ public class SmartInputFetcher {
                         String cleanPath = llmResponse.trim();
                         // Remove any markdown formatting
                         cleanPath = cleanJsonFromMarkdown(cleanPath);
+
+                        // Check for NO_GOOD_MATCH response
+                        if (cleanPath.equals("NO_GOOD_MATCH")) {
+                            log.info("LLM indicated no good JSONPath match for parameter '{}'", parameterInfo.getName());
+                            return null; // Will trigger fallback
+                        }
+
                         log.info("LLM suggested JSONPath '{}' for parameter '{}'", cleanPath, parameterInfo.getName());
                         return cleanPath;
                     }
@@ -824,11 +850,13 @@ public class SmartInputFetcher {
 
         String paramName = parameterInfo.getName() != null ? parameterInfo.getName() : "";
         String paramType = parameterInfo.getType() != null ? parameterInfo.getType() : "";
+        String paramDesc = parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "";
 
         return template
                 .replace("{responseSchema}", truncatedSchema != null ? truncatedSchema : "")
                 .replace("{parameterName}", paramName)
                 .replace("{parameterType}", paramType)
+                .replace("{parameterDescription}", paramDesc)
                 // Handle multiple parameter name references in the new template
                 .replaceAll("\\{parameterName\\}", paramName);
     }
@@ -843,7 +871,8 @@ public class SmartInputFetcher {
         String tempPrompt = template
                 .replace("{responseSchema}", "")
                 .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
-                .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "");
+                .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
+                .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "");
 
         int maxSchemaLength = 1500 - tempPrompt.length(); // Much more aggressive limit
 
@@ -873,17 +902,23 @@ public class SmartInputFetcher {
         try {
             // Call LLM directly for extraction path discovery with appropriate system prompt
             String rawResponse = callLLMForExtractionPathDiscovery(prompt);
-            
+
             if (rawResponse != null && !rawResponse.trim().isEmpty()) {
                 // Clean any markdown formatting and return the JSONPath
                 String cleaned = cleanJsonFromMarkdown(rawResponse);
+
+                // Check for NO_GOOD_MATCH response first
+                if (cleaned.trim().equals("NO_GOOD_MATCH")) {
+                    return "NO_GOOD_MATCH";
+                }
+
                 // Remove quotes if the LLM wrapped the path in quotes
                 if (cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
                     cleaned = cleaned.substring(1, cleaned.length() - 1);
                 }
                 return cleaned;
             }
-            
+
             return null;
             
         } catch (Exception e) {
@@ -945,6 +980,12 @@ public class SmartInputFetcher {
                     String cleanedResponse = cleanJsonFromMarkdown(rawResponse);
                     
                     JsonNode jsonResponse = objectMapper.readTree(cleanedResponse);
+                    // Check for NO_GOOD_MATCH response
+                    if (cleanedResponse.trim().equals("NO_GOOD_MATCH")) {
+                        log.info("LLM indicated no good service matches for this parameter");
+                        return new ArrayList<>();
+                    }
+
                     if (jsonResponse.isArray()) {
                         List<String> services = new ArrayList<>();
                         jsonResponse.forEach(node -> {
@@ -1291,11 +1332,18 @@ public class SmartInputFetcher {
          try {
              // Call LLM directly for endpoint discovery with appropriate system prompt
              String rawResponse = callLLMForEndpointDiscovery(prompt);
-             
+
              if (rawResponse != null && !rawResponse.trim().isEmpty()) {
-                 return cleanJsonFromMarkdown(rawResponse);
+                 String cleaned = cleanJsonFromMarkdown(rawResponse);
+
+                 // Check for NO_GOOD_MATCH response
+                 if (cleaned.trim().equals("NO_GOOD_MATCH")) {
+                     return "NO_GOOD_MATCH";
+                 }
+
+                 return cleaned;
              }
-             
+
              return null;
              
          } catch (Exception e) {
@@ -1305,6 +1353,12 @@ public class SmartInputFetcher {
      }
      
      private String parseEndpointFromLLMResponse(String llmResponse) {
+         // Check for NO_GOOD_MATCH response first
+         if (llmResponse != null && llmResponse.trim().equals("NO_GOOD_MATCH")) {
+             log.info("LLM indicated no good endpoint match");
+             return null;
+         }
+
          try {
              JsonNode jsonResponse = objectMapper.readTree(llmResponse);
              if (jsonResponse.has("endpoint")) {
