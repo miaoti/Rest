@@ -296,7 +296,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         Map<String,String> pathParams   = new LinkedHashMap<>();
         Map<String,String> queryParams  = new LinkedHashMap<>();
         Map<String,String> headerParams = new LinkedHashMap<>();
-        Map<String,String> bodyFields   = new LinkedHashMap<>();
+        Map<String,Object> bodyFields   = new LinkedHashMap<>();
 
         String resolvedPath = route;
 
@@ -616,7 +616,28 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      */
     private void parseFormData(String data, Map<String,String> target) {
         if (data == null || data.trim().isEmpty()) return;
-        
+
+        String[] pairs = data.split("&");
+        for (String pair : pairs) {
+            String[] kv = pair.split("=", 2);
+            if (kv.length == 2) {
+                try {
+                    String key = java.net.URLDecoder.decode(kv[0], "UTF-8");
+                    String value = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                    target.put(key, value);
+                } catch (Exception e) {
+                    target.put(kv[0], kv[1]);
+                }
+            }
+        }
+    }
+
+    /**
+     * Parse form data or query string into key-value pairs (Object version).
+     */
+    private void parseFormData(String data, Map<String,Object> target) {
+        if (data == null || data.trim().isEmpty()) return;
+
         String[] pairs = data.split("&");
         for (String pair : pairs) {
             String[] kv = pair.split("=", 2);
@@ -834,11 +855,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * This ensures that if the same parameter is needed again (e.g., loginId), we reuse the same value
      * instead of generating a new one, maintaining consistency across the test case.
      */
-    private void storeUsedInputsInContext(Map<String, String> context, 
+    private void storeUsedInputsInContext(Map<String, String> context,
                                          Map<String, String> pathParams,
-                                         Map<String, String> queryParams, 
+                                         Map<String, String> queryParams,
                                          Map<String, String> headerParams,
-                                         Map<String, String> bodyFields) {
+                                         Map<String, Object> bodyFields) {
         // Store path parameters with "input." prefix for consistency tracking
         for (Map.Entry<String, String> entry : pathParams.entrySet()) {
             context.put("input." + entry.getKey(), entry.getValue());
@@ -855,8 +876,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         }
         
         // Store body fields with "input." prefix for consistency tracking
-        for (Map.Entry<String, String> entry : bodyFields.entrySet()) {
-            context.put("input." + entry.getKey(), entry.getValue());
+        for (Map.Entry<String, Object> entry : bodyFields.entrySet()) {
+            context.put("input." + entry.getKey(), entry.getValue().toString());
         }
     }
 
@@ -912,14 +933,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /** Simple JSON builder for test bodies. */
-    private static String toJson(Map<String,String> map) {
+    private static String toJson(Map<String,Object> map) {
         StringBuilder sb = new StringBuilder("{");
         boolean first = true;
-        for (Map.Entry<String,String> e : map.entrySet()) {
+        for (Map.Entry<String,Object> e : map.entrySet()) {
             if (!first) sb.append(',');
             first = false;
             sb.append('"').append(e.getKey()).append("\":")
-                    .append('"').append(e.getValue()
+                    .append('"').append(e.getValue().toString()
                             .replace("\\", "\\\\")
                             .replace("\"","\\\""))
                     .append('"');
@@ -1405,7 +1426,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * Handles special case: single array-type body parameter should generate entire body as array.
      * Otherwise, generates standard JSON object.
      */
-    private String generateRequestBody(Map<String, String> bodyFields, Operation opCfg) {
+    private String generateRequestBody(Map<String, Object> bodyFields, Operation opCfg) {
         // 🔥 FIX: Check if we have a single body parameter with type "array"
         if (bodyFields.size() == 1 && bodyFields.containsKey("body")) {
             // Find the body parameter in the configuration to check its type
@@ -1413,7 +1434,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 for (TestParameter p : opCfg.getTestParameters()) {
                     if ("body".equals(p.getName()) && "body".equals(p.getIn()) && "array".equals(p.getType())) {
                         // This is an array-type body parameter - generate entire body as array
-                        String singleValue = bodyFields.get("body");
+                        String singleValue = bodyFields.get("body").toString();
                         return generateJsonArray(singleValue, p);
                     }
                 }
