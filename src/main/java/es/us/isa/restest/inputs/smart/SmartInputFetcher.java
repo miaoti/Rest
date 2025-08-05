@@ -319,11 +319,13 @@ public class SmartInputFetcher {
     private String fetchFromApiMapping(ApiMapping mapping, ParameterInfo parameterInfo) throws Exception {
         String url = baseUrl + mapping.getEndpoint();
         
-        log.info("🌐 API Call: {} {} for parameter '{}'", mapping.getMethod(), url, parameterInfo.getName());
+        // Always use GET for data fetching
+        String httpMethod = "GET";
+        log.info("🌐 API Call: {} {} for parameter '{}'", httpMethod, url, parameterInfo.getName());
 
-        // Make HTTP request
+        // Make HTTP request (GET only for data fetching)
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setRequestMethod(mapping.getMethod());
+        conn.setRequestMethod(httpMethod);
         conn.setRequestProperty("Content-Type", config.getDefaultContentType());
         conn.setConnectTimeout((int) config.getDiscoveryTimeoutMs());
         conn.setReadTimeout((int) config.getDiscoveryTimeoutMs());
@@ -1602,25 +1604,60 @@ public class SmartInputFetcher {
     }
     
     private String inferEndpointForService(String service, ParameterInfo parameterInfo) {
-        // Simplified approach: Always try to find a reasonable endpoint
+        // Pure LLM-based endpoint selection (GET endpoints only)
         if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
-            List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints = openAPIDiscovery.getEndpointsForService(service);
-            if (!endpoints.isEmpty()) {
-                // Use simple scoring to pick the best endpoint
-                String selectedEndpoint = selectBestEndpointForParameter(endpoints, parameterInfo);
-                log.info("🎯 Selected endpoint '{}' for parameter '{}' in service '{}'",
-                        selectedEndpoint, parameterInfo.getName(), service);
-                return selectedEndpoint;
+            List<OpenAPIEndpointDiscovery.EndpointInfo> allEndpoints = openAPIDiscovery.getEndpointsForService(service);
+
+            // Filter to only GET endpoints for data fetching
+            List<OpenAPIEndpointDiscovery.EndpointInfo> getEndpoints = allEndpoints.stream()
+                    .filter(endpoint -> "GET".equalsIgnoreCase(endpoint.getMethod()))
+                    .collect(Collectors.toList());
+
+            if (!getEndpoints.isEmpty()) {
+                log.info("🔍 Found {} GET endpoints for service '{}' (filtered from {} total)",
+                        getEndpoints.size(), service, allEndpoints.size());
+
+                // Use LLM to select the best GET endpoint
+                String selectedEndpoint = selectEndpointWithLLM(getEndpoints, parameterInfo, service);
+                if (selectedEndpoint != null && !selectedEndpoint.equals("NO_GOOD_MATCH")) {
+                    log.info("🧠 LLM selected GET endpoint '{}' for parameter '{}' in service '{}'",
+                            selectedEndpoint, parameterInfo.getName(), service);
+                    return selectedEndpoint;
+                }
+
+                // If LLM says NO_GOOD_MATCH, pick the first reasonable GET endpoint
+                String fallbackEndpoint = pickFirstReasonableEndpoint(getEndpoints);
+                log.info("🔧 LLM said NO_GOOD_MATCH, using fallback GET endpoint '{}' for parameter '{}'",
+                        fallbackEndpoint, parameterInfo.getName());
+                return fallbackEndpoint;
+            } else {
+                log.warn("⚠️ No GET endpoints found for service '{}' (found {} non-GET endpoints)",
+                        service, allEndpoints.size());
             }
         }
-        
 
-        
         // Final fallback: create a reasonable endpoint based on service name
         String fallbackEndpoint = "/api/v1/" + service.toLowerCase().replace("ts-", "").replace("-service", "") + "/query";
-        log.info("🔧 Using fallback endpoint '{}' for service '{}' and parameter '{}'",
+        log.info("🔧 Using generated endpoint '{}' for service '{}' and parameter '{}'",
                 fallbackEndpoint, service, parameterInfo.getName());
         return fallbackEndpoint;
+     }
+
+     /**
+      * Pick the first reasonable endpoint (avoid welcome, health, etc.)
+      */
+     private String pickFirstReasonableEndpoint(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints) {
+         // First try: avoid utility endpoints
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             String path = endpoint.getPath().toLowerCase();
+             if (!path.contains("welcome") && !path.contains("health") &&
+                 !path.contains("status") && !path.contains("info")) {
+                 return endpoint.getPath();
+             }
+         }
+
+         // Last resort: use first endpoint
+         return endpoints.get(0).getPath();
      }
 
      /**
@@ -1674,130 +1711,31 @@ public class SmartInputFetcher {
          prompt.append("Parameter: ").append(parameterInfo.getName()).append(" (type: ").append(parameterInfo.getType()).append(")\n");
          prompt.append("Description: ").append(parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "").append("\n\n");
 
-         prompt.append("Available endpoints:\n");
+         prompt.append("Available GET endpoints (for data fetching):\n");
          for (int i = 0; i < Math.min(10, endpoints.size()); i++) {
              OpenAPIEndpointDiscovery.EndpointInfo endpoint = endpoints.get(i);
-             prompt.append("- ").append(endpoint.getMethod().toUpperCase()).append(" ").append(endpoint.getPath()).append("\n");
+             // Only show GET endpoints (should already be filtered, but double-check)
+             if ("GET".equalsIgnoreCase(endpoint.getMethod())) {
+                 prompt.append("- GET ").append(endpoint.getPath()).append("\n");
+             }
          }
 
-         prompt.append("\nTask: Select the BEST endpoint to fetch data for this parameter.\n");
-         prompt.append("Consider parameter semantics and endpoint purposes.\n\n");
+         prompt.append("\nTask: Select the BEST GET endpoint to fetch data for this parameter.\n");
+         prompt.append("We only use GET endpoints for data fetching (no POST/PUT/DELETE).\n\n");
          prompt.append("Guidelines:\n");
-         prompt.append("- For 'list' parameters: prefer GET endpoints returning collections\n");
-         prompt.append("- For 'id' parameters: prefer GET endpoints with path parameters\n");
+         prompt.append("- For 'list' parameters: prefer GET endpoints returning collections (no path params)\n");
+         prompt.append("- For 'id' parameters: prefer GET endpoints that return lists (can extract IDs)\n");
          prompt.append("- For 'name' parameters: prefer GET endpoints returning entity details\n");
          prompt.append("- Avoid utility endpoints (welcome, health, status)\n\n");
          prompt.append("Respond with ONLY the endpoint path (e.g., /api/v1/service/resource)\n");
-         prompt.append("If NO endpoint is suitable, respond with: NO_GOOD_MATCH");
+         prompt.append("If NO GET endpoint is suitable, respond with: NO_GOOD_MATCH");
 
          return prompt.toString();
      }
 
-     /**
-      * Intelligently select the best endpoint for a parameter from available OpenAPI endpoints
-      */
-     private String selectBestEndpointForParameter(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo) {
-         String paramName = parameterInfo.getName() != null ? parameterInfo.getName().toLowerCase() : "";
-         String paramDesc = parameterInfo.getDescription() != null ? parameterInfo.getDescription().toLowerCase() : "";
 
-         // Score each endpoint based on how well it matches the parameter
-         String bestEndpoint = null;
-         int bestScore = -1;
 
-         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
-             int score = scoreEndpointForParameter(endpoint, paramName, paramDesc);
-             log.debug("Endpoint '{}' scored {} for parameter '{}'", endpoint.getPath(), score, paramName);
 
-             if (score > bestScore) {
-                 bestScore = score;
-                 bestEndpoint = endpoint.getPath();
-             }
-         }
-
-         // If no endpoint scored well, use the first non-welcome endpoint
-         if (bestScore <= 0) {
-             for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
-                 if (!endpoint.getPath().contains("welcome") && !endpoint.getPath().contains("health")) {
-                     log.debug("No good scoring endpoint, using first non-utility endpoint: {}", endpoint.getPath());
-                     return endpoint.getPath();
-                 }
-             }
-             // Last resort: use first endpoint
-             return endpoints.get(0).getPath();
-         }
-
-         log.info("Selected endpoint '{}' with score {} for parameter '{}'", bestEndpoint, bestScore, paramName);
-         return bestEndpoint;
-     }
-
-     /**
-      * Score how well an endpoint matches a parameter (higher score = better match)
-      */
-     private int scoreEndpointForParameter(OpenAPIEndpointDiscovery.EndpointInfo endpoint, String paramName, String paramDesc) {
-         String path = endpoint.getPath().toLowerCase();
-         String method = endpoint.getMethod() != null ? endpoint.getMethod().toLowerCase() : "get";
-         int score = 0;
-
-         // Prefer GET endpoints for data fetching (unless parameter suggests otherwise)
-         if ("get".equals(method)) {
-             score += 10;
-         }
-
-         // Score based on parameter name patterns
-         if (paramName.contains("list") || paramName.contains("all")) {
-             // For list parameters, prefer endpoints that return collections
-             if (path.contains("/routes") && !path.contains("/{") && "get".equals(method)) {
-                 score += 50; // /api/v1/routeservice/routes (GET all)
-             }
-             if (path.contains("/stations") && !path.contains("/{") && "get".equals(method)) {
-                 score += 50; // /api/v1/stationservice/stations (GET all)
-             }
-             if (path.contains("/travels") && !path.contains("/{") && "get".equals(method)) {
-                 score += 50; // /api/v1/travelservice/travels (GET all)
-             }
-         }
-
-         // Score based on semantic matching
-         if (paramName.contains("distance")) {
-             if (path.contains("route")) score += 30;
-             if (path.contains("travel")) score += 20;
-         }
-
-         if (paramName.contains("station")) {
-             if (path.contains("station")) score += 30;
-             if (path.contains("route")) score += 20;
-         }
-
-         if (paramName.contains("train")) {
-             if (path.contains("train")) score += 30;
-             if (path.contains("travel")) score += 20;
-         }
-
-         if (paramName.contains("price") || paramName.contains("cost")) {
-             if (path.contains("price")) score += 30;
-             if (path.contains("order")) score += 20;
-         }
-
-         if (paramName.contains("user") || paramName.contains("login")) {
-             if (path.contains("user")) score += 30;
-             if (path.contains("auth")) score += 20;
-         }
-
-         // Penalize utility endpoints
-         if (path.contains("welcome") || path.contains("health") || path.contains("status")) {
-             score -= 100;
-         }
-
-         // Penalize endpoints with many path parameters (they're usually for specific lookups)
-         long pathParamCount = path.chars().filter(ch -> ch == '{').count();
-         if (pathParamCount > 1) {
-             score -= 20;
-         } else if (pathParamCount == 1) {
-             score -= 10;
-         }
-
-         return score;
-     }
 
      private String buildEndpointDiscoveryPrompt(String serviceName, ParameterInfo parameterInfo) {
          return buildEndpointDiscoveryPrompt(serviceName, parameterInfo, new ArrayList<>());
