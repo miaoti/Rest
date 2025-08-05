@@ -651,16 +651,16 @@ public class TestGenerationAndExecution {
 	}
 
 	/**
-	 * Pass Smart Input Fetching configuration properties to system properties
-	 * This ensures MST generator can access the smart fetching configuration
+	 * Pass Smart Input Fetching and LLM configuration properties to system properties
+	 * This ensures MST generator can access the smart fetching and LLM configuration
 	 */
 	private static void passSmartInputFetchingProperties() {
-		logger.info("🔧 Configuring Smart Input Fetching for MST mode...");
-		
-		// List of all smart input fetching properties
+		logger.info("🔧 Configuring Smart Input Fetching and LLM for MST mode...");
+
+		// List of all smart input fetching and LLM properties
 		String[] smartProperties = {
 			"smart.input.fetch.enabled",
-			"smart.input.fetch.percentage", 
+			"smart.input.fetch.percentage",
 			"smart.input.fetch.registry.path",
 			"smart.input.fetch.openapi.spec.path",
 			"smart.input.fetch.llm.discovery.enabled",
@@ -670,7 +670,17 @@ public class TestGenerationAndExecution {
 			"smart.input.fetch.cache.enabled",
 			"smart.input.fetch.cache.ttl.seconds",
 			"oas.path",
-			"base.url"
+			"base.url",
+			// LLM configuration properties
+			"llm.enabled",
+			"llm.model.type",
+			"llm.local.enabled",
+			"llm.local.url",
+			"llm.local.model",
+			"llm.gemini.enabled",
+			"llm.gemini.api.key",
+			"llm.gemini.model",
+			"llm.gemini.api.url"
 		};
 		
 		int configuredCount = 0;
@@ -686,18 +696,28 @@ public class TestGenerationAndExecution {
 		}
 		
 		if (configuredCount > 0) {
-			logger.info("🚀 Smart Input Fetching configured with {} properties for MST mode", configuredCount);
-			
+			logger.info("🚀 Smart Input Fetching and LLM configured with {} properties for MST mode", configuredCount);
+
 			// Log the key settings
 			String enabled = System.getProperty("smart.input.fetch.enabled", "false");
 			String percentage = System.getProperty("smart.input.fetch.percentage", "0.0");
 			String registryPath = System.getProperty("smart.input.fetch.registry.path", "not set");
-			
+
+			// Log LLM settings
+			String llmEnabled = System.getProperty("llm.enabled", "false");
+			String llmModelType = System.getProperty("llm.model.type", "local");
+			String geminiApiKey = System.getProperty("llm.gemini.api.key", "not set");
+
 			logger.info("📊 Smart Fetching Settings:");
 			logger.info("   - Enabled: {}", enabled);
-			logger.info("   - Percentage: {}% smart fetching", 
+			logger.info("   - Percentage: {}% smart fetching",
 				Float.parseFloat(percentage) * 100);
 			logger.info("   - Registry: {}", registryPath);
+
+			logger.info("🤖 LLM Settings:");
+			logger.info("   - Enabled: {}", llmEnabled);
+			logger.info("   - Model Type: {}", llmModelType);
+			logger.info("   - Gemini API Key: {}", geminiApiKey.equals("not set") ? "not set" : "configured");
 			
 			if ("true".equals(enabled)) {
 				logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");
