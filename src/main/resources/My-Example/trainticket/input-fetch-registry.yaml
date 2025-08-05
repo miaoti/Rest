@@ -105,10 +105,15 @@ llmPrompts:
     \ and the parameter's semantic meaning.\n\nRespond with a JSON object containing:\n\
     {\n  \"endpoint\": \"/api/v1/path/to/resource\",\n  \"method\": \"GET\",\n  \"\
     confidence\": 0.85\n}\n"
-  dataExtraction: "Response: {responseSchema}\nParameter: {parameterName} (type: {parameterType})\n\n\
-    Task: Provide the JSONPath to extract suitable values.\n\
-    Respond ONLY with the JSONPath expression, no explanations:\n\
-    Example: $.data[*].fieldName\n\nJSONPath:"
+  dataExtraction: "API Response: {responseSchema}\n\n\
+    Target Parameter: {parameterName} (type: {parameterType})\n\
+    Task: Find the JSONPath to extract values suitable for parameter '{parameterName}'.\n\
+    Look for fields that match the parameter name or semantic meaning.\n\n\
+    Examples:\n\
+    - For 'stationName' parameter: $.data[*].name or $.data[*].stationName\n\
+    - For 'distanceList' parameter: $.data[*].distances or $.data[*].route.distances\n\
+    - For 'id' parameter: $.data[*].id\n\n\
+    JSONPath for '{parameterName}':"
   valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\n\
     Task: Select the most suitable value for this parameter.\n\
     Respond ONLY with the selected value, no explanations."
