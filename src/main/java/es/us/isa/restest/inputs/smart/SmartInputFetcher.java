@@ -46,10 +46,13 @@ public class SmartInputFetcher {
     private final ObjectMapper objectMapper;
     private final Random random;
     private final OpenAPIEndpointDiscovery openAPIDiscovery;
+    private final SmartFetchAuthManager authManager;
 
     // Runtime data
     private InputFetchRegistry registry;
     private Map<String, CachedValue> cache;
+    private Map<String, List<String>> diverseValueCache; // Cache multiple values per parameter
+    private Map<String, Integer> valueRotationIndex; // Track which value to use next
     private String baseUrl;
 
     // Cache for fetched values
@@ -79,12 +82,22 @@ public class SmartInputFetcher {
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
         this.cache = new ConcurrentHashMap<>();
+        this.diverseValueCache = new ConcurrentHashMap<>();
+        this.valueRotationIndex = new ConcurrentHashMap<>();
         this.openAPIDiscovery = new OpenAPIEndpointDiscovery();
+
+        // Initialize authentication manager
+        this.authManager = new SmartFetchAuthManager(
+            baseUrl,
+            config.getAuthAdminUsername(),
+            config.getAuthAdminPassword()
+        );
 
         loadRegistry();
         loadOpenAPISpec();
 
         log.info("SmartInputFetcher initialized with config: {}", config);
+        log.info("Authentication manager configured: {}", authManager.isConfigured());
     }
 
     /**
@@ -99,7 +112,8 @@ public class SmartInputFetcher {
             "llm.local.enabled", "llm.local.url", "llm.local.model",
             "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
             "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
-            "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries"
+            "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries",
+            "auth.admin.username", "auth.admin.password", "auth.user.username", "auth.user.password"
         };
 
         for (String prop : llmProperties) {
@@ -127,6 +141,14 @@ public class SmartInputFetcher {
             // Use smart fetching (e.g., 90% of the time if percentage = 0.9)
             log.info("🎯 Smart Fetch Decision → {} (random: {:.3f} < {:.1f}%)",
                      parameterInfo.getName(), randomValue, config.getSmartFetchPercentage() * 100);
+
+            // First, try to get a diverse cached value
+            String diverseValue = getNextDiverseValue(parameterInfo);
+            if (diverseValue != null) {
+                log.info("🔄 Using diverse cached value → {} = {} ✅", parameterInfo.getName(), diverseValue);
+                return diverseValue;
+            }
+
             try {
                 String result = fetchFromSmartSource(parameterInfo);
                 if (result != null) {
@@ -346,6 +368,14 @@ public class SmartInputFetcher {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod(httpMethod);
         conn.setRequestProperty("Content-Type", config.getDefaultContentType());
+
+        // Add authentication headers
+        if (authManager.isConfigured()) {
+            authManager.addAuthHeaders(conn);
+            log.debug("🔐 Added authentication headers to API request");
+        } else {
+            log.warn("⚠️ Authentication not configured, API call may fail with 403");
+        }
         conn.setConnectTimeout((int) config.getDiscoveryTimeoutMs());
         conn.setReadTimeout((int) config.getDiscoveryTimeoutMs());
 
@@ -452,6 +482,10 @@ public class SmartInputFetcher {
                 }
 
                 log.info("✅ LLM extracted ACTUAL VALUE '{}' for parameter '{}' (not JSONPath)", cleanResponse, parameterInfo.getName());
+
+                // Try to extract additional diverse values from the same response
+                extractAdditionalDiverseValues(responseBody, parameterInfo, cleanResponse);
+
                 return cleanResponse;
             }
 
@@ -980,7 +1014,181 @@ public class SmartInputFetcher {
         if (config.isCacheEnabled()) {
             String cacheKey = buildCacheKey(parameterInfo);
             cache.put(cacheKey, new CachedValue(value));
+
+            // Also add to diverse value cache
+            cacheDiverseValue(parameterInfo, value);
         }
+    }
+
+    /**
+     * Cache multiple diverse values for a parameter
+     */
+    private void cacheDiverseValue(ParameterInfo parameterInfo, String value) {
+        String cacheKey = buildCacheKey(parameterInfo);
+        diverseValueCache.computeIfAbsent(cacheKey, k -> new ArrayList<>());
+
+        List<String> values = diverseValueCache.get(cacheKey);
+        if (!values.contains(value)) {
+            values.add(value);
+            log.debug("📋 Cached diverse value '{}' for parameter '{}' (total: {})",
+                     value, parameterInfo.getName(), values.size());
+        }
+    }
+
+    /**
+     * Get next diverse value using rotation
+     */
+    private String getNextDiverseValue(ParameterInfo parameterInfo) {
+        String cacheKey = buildCacheKey(parameterInfo);
+        List<String> values = diverseValueCache.get(cacheKey);
+
+        if (values == null || values.isEmpty()) {
+            return null;
+        }
+
+        // Get current rotation index
+        int currentIndex = valueRotationIndex.getOrDefault(cacheKey, 0);
+
+        // Get value at current index
+        String value = values.get(currentIndex % values.size());
+
+        // Update rotation index for next call
+        valueRotationIndex.put(cacheKey, (currentIndex + 1) % values.size());
+
+        log.debug("🔄 Rotating to diverse value '{}' for parameter '{}' (index: {}/{})",
+                 value, parameterInfo.getName(), currentIndex, values.size());
+
+        return value;
+    }
+
+    /**
+     * Extract additional diverse values from API response for parameter diversity
+     */
+    private void extractAdditionalDiverseValues(String responseBody, ParameterInfo parameterInfo, String firstValue) {
+        try {
+            log.debug("🔍 Extracting additional diverse values for parameter '{}'", parameterInfo.getName());
+
+            // Parse JSON response to find more values of the same type
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(responseBody);
+
+            Set<String> extractedValues = new HashSet<>();
+            extractedValues.add(firstValue); // Include the first value
+
+            // Extract values based on parameter type and name
+            extractValuesFromJsonNode(rootNode, parameterInfo, extractedValues);
+
+            // Cache all extracted diverse values
+            for (String value : extractedValues) {
+                if (!value.equals(firstValue)) { // Don't re-cache the first value
+                    cacheDiverseValue(parameterInfo, value);
+                }
+            }
+
+            if (extractedValues.size() > 1) {
+                log.info("📋 Extracted {} diverse values for parameter '{}': {}",
+                        extractedValues.size(), parameterInfo.getName(),
+                        extractedValues.stream().limit(5).collect(Collectors.toList()));
+            }
+
+        } catch (Exception e) {
+            log.debug("Failed to extract additional diverse values for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+        }
+    }
+
+    /**
+     * Recursively extract values from JSON node based on parameter characteristics
+     */
+    private void extractValuesFromJsonNode(JsonNode node, ParameterInfo parameterInfo, Set<String> extractedValues) {
+        if (node == null || extractedValues.size() >= 10) { // Limit to 10 diverse values
+            return;
+        }
+
+        String paramName = parameterInfo.getName().toLowerCase();
+        String paramType = parameterInfo.getType();
+
+        if (node.isArray()) {
+            // Extract from array elements
+            for (JsonNode arrayElement : node) {
+                extractValuesFromJsonNode(arrayElement, parameterInfo, extractedValues);
+            }
+        } else if (node.isObject()) {
+            // Extract from object fields
+            node.fields().forEachRemaining(entry -> {
+                String fieldName = entry.getKey().toLowerCase();
+                JsonNode fieldValue = entry.getValue();
+
+                // Check if field name matches parameter name or type
+                if (isRelevantField(fieldName, paramName, paramType)) {
+                    if (fieldValue.isTextual()) {
+                        String value = fieldValue.asText().trim();
+                        if (!value.isEmpty() && isValidValueForParameter(value, parameterInfo)) {
+                            extractedValues.add(value);
+                        }
+                    } else if (fieldValue.isNumber()) {
+                        extractedValues.add(fieldValue.asText());
+                    }
+                }
+
+                // Recursively search in nested objects/arrays
+                extractValuesFromJsonNode(fieldValue, parameterInfo, extractedValues);
+            });
+        }
+    }
+
+    /**
+     * Check if a field is relevant for the parameter
+     */
+    private boolean isRelevantField(String fieldName, String paramName, String paramType) {
+        // Direct name match
+        if (fieldName.equals(paramName)) {
+            return true;
+        }
+
+        // Partial name match
+        if (fieldName.contains(paramName) || paramName.contains(fieldName)) {
+            return true;
+        }
+
+        // Type-based matching
+        if (paramName.contains("id") && fieldName.contains("id")) {
+            return true;
+        }
+        if (paramName.contains("name") && fieldName.contains("name")) {
+            return true;
+        }
+        if (paramName.contains("station") && fieldName.contains("station")) {
+            return true;
+        }
+        if (paramName.contains("train") && fieldName.contains("train")) {
+            return true;
+        }
+        if (paramName.contains("seat") && fieldName.contains("seat")) {
+            return true;
+        }
+        if (paramName.contains("class") && fieldName.contains("class")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate if a value is suitable for the parameter
+     */
+    private boolean isValidValueForParameter(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+
+        // Reject UUIDs and very long strings
+        if (value.length() > 50 || value.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")) {
+            return false;
+        }
+
+        // Accept reasonable values
+        return true;
     }
 
     private String buildCacheKey(ParameterInfo parameterInfo) {
@@ -1155,6 +1363,12 @@ public class SmartInputFetcher {
             conn.setRequestProperty("Content-Type", config.getDefaultContentType());
             conn.setConnectTimeout((int) config.getSchemaDiscoveryTimeoutMs());
             conn.setReadTimeout((int) config.getSchemaDiscoveryTimeoutMs());
+
+            // Add authentication headers for schema discovery
+            if (authManager.isConfigured()) {
+                authManager.addAuthHeaders(conn);
+                log.debug("🔐 Added authentication headers to schema discovery request");
+            }
 
             int responseCode = conn.getResponseCode();
             if (responseCode == config.getSuccessResponseCode()) {
@@ -1747,11 +1961,16 @@ public class SmartInputFetcher {
          String cleanResponse = llmResponse.trim();
          log.debug("🔍 Validating LLM endpoint selection '{}' against {} available endpoints", cleanResponse, endpoints.size());
 
-         // 1. Exact match (most common case)
+         // 1. Exact match (most common case) - but only for GET endpoints
          for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
              if (endpoint.getPath().equals(cleanResponse)) {
-                 log.debug("✅ Exact match found: '{}'", cleanResponse);
-                 return cleanResponse;
+                 if ("GET".equalsIgnoreCase(endpoint.getMethod())) {
+                     log.debug("✅ Exact GET match found: '{}'", cleanResponse);
+                     return cleanResponse;
+                 } else {
+                     log.warn("❌ LLM suggested '{}' but it's {} method, not GET. Rejecting.", cleanResponse, endpoint.getMethod());
+                     return null; // Reject non-GET endpoints immediately
+                 }
              }
          }
 
@@ -1886,24 +2105,28 @@ public class SmartInputFetcher {
          prompt.append("Parameter: ").append(parameterInfo.getName()).append(" (type: ").append(parameterInfo.getType()).append(")\n");
          prompt.append("Description: ").append(parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "").append("\n\n");
 
-         prompt.append("Available GET endpoints (for data fetching):\n");
-         for (int i = 0; i < Math.min(10, endpoints.size()); i++) {
+         prompt.append("Available GET endpoints (ONLY GET methods for data fetching - DO NOT suggest POST/PUT/DELETE):\n");
+         int shownCount = 0;
+         for (int i = 0; i < endpoints.size() && shownCount < 10; i++) {
              OpenAPIEndpointDiscovery.EndpointInfo endpoint = endpoints.get(i);
              // Only show GET endpoints (should already be filtered, but double-check)
              if ("GET".equalsIgnoreCase(endpoint.getMethod())) {
+                 shownCount++;
                  prompt.append("- GET ").append(endpoint.getPath()).append("\n");
              }
          }
 
          prompt.append("\nTask: Select the BEST GET endpoint to fetch data for this parameter.\n");
-         prompt.append("We only use GET endpoints for data fetching (no POST/PUT/DELETE).\n\n");
+         prompt.append("IMPORTANT: You MUST choose from the GET endpoints listed above ONLY.\n");
+         prompt.append("DO NOT suggest endpoints that are not in the list above.\n");
+         prompt.append("DO NOT suggest POST, PUT, DELETE, or PATCH endpoints.\n\n");
          prompt.append("Guidelines:\n");
          prompt.append("- For 'list' parameters: prefer GET endpoints returning collections (no path params)\n");
          prompt.append("- For 'id' parameters: prefer GET endpoints that return lists (can extract IDs)\n");
          prompt.append("- For 'name' parameters: prefer GET endpoints returning entity details\n");
          prompt.append("- Avoid utility endpoints (welcome, health, status)\n\n");
-         prompt.append("Respond with ONLY the endpoint path (e.g., /api/v1/service/resource)\n");
-         prompt.append("If NO GET endpoint is suitable, respond with: NO_GOOD_MATCH");
+         prompt.append("Respond with ONLY the endpoint path from the list above (e.g., /api/v1/service/resource)\n");
+         prompt.append("If NO GET endpoint from the list above is suitable, respond with: NO_GOOD_MATCH");
 
          return prompt.toString();
      }
