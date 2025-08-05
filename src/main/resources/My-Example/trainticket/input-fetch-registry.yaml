@@ -102,25 +102,35 @@ llmPrompts:
     Respond ONLY with the JSON array OR 'NO_GOOD_MATCH', no explanations."
   endpointDiscovery: "Service: {serviceName}\nParameter: {parameterName} (type: {parameterType})\n\
     Description: {parameterDescription}\n\n\
-    Task: Find the most likely REST API endpoint in this service for this parameter.\n\
-    Consider RESTful conventions and semantic meaning.\n\n\
-    If you find a good match, respond with JSON:\n\
-    {\"endpoint\": \"/api/v1/path\", \"method\": \"GET\", \"confidence\": 0.85}\n\n\
-    If NO endpoint seems suitable, respond with:\n\
-    NO_GOOD_MATCH\n\n\
-    Respond ONLY with JSON OR 'NO_GOOD_MATCH'."
+    Task: Select the BEST endpoint from this service for fetching data for this parameter.\n\
+    Consider parameter semantics and endpoint purposes.\n\n\
+    Guidelines:\n\
+    - For 'list' parameters: prefer GET endpoints that return collections (no path params)\n\
+    - For 'id' parameters: prefer GET endpoints with path parameters\n\
+    - For 'name' parameters: prefer GET endpoints that return entity details\n\
+    - Avoid utility endpoints (welcome, health, status)\n\n\
+    If you find a suitable endpoint, respond with JSON:\n\
+    {\"endpoint\": \"/api/v1/servicename/resource\", \"method\": \"GET\", \"confidence\": 0.9}\n\n\
+    If NO endpoint is suitable for this parameter, respond with:\n\
+    NO_GOOD_MATCH"
   dataExtraction: "API Response: {responseSchema}\n\n\
     Target Parameter: {parameterName} (type: {parameterType})\n\
     Description: {parameterDescription}\n\n\
-    Task: Find the JSONPath to extract values suitable for this parameter.\n\
-    Look for fields that match the parameter name, description, or semantic meaning.\n\n\
+    Task: Find the BEST JSONPath to extract realistic values for this parameter.\n\
+    Match by parameter name, description, and data type compatibility.\n\n\
+    JSONPath Guidelines:\n\
+    - For arrays/lists: Use [*] to get all elements or [0] for first element\n\
+    - For nested objects: Navigate with dot notation (e.g., .route.distances)\n\
+    - For string parameters: Extract string fields or convert numbers to strings\n\
+    - For numeric parameters: Extract numeric fields\n\n\
     Examples:\n\
-    - For 'stationName' parameter: $.data[*].name or $.data[*].stationName\n\
-    - For 'distanceList' parameter: $.data[*].distances or $.data[*].route.distances\n\
-    - For 'id' parameter: $.data[*].id\n\n\
-    If you find a good JSONPath, respond with just the path:\n\
+    - 'distanceList' (array of distances): $.data[*].route.distances[*]\n\
+    - 'stationName' (single station): $.data[0].startStation\n\
+    - 'routeId' (identifier): $.data[0].route.id\n\
+    - 'trainType' (type name): $.data[0].trainType.name\n\n\
+    Respond with the BEST JSONPath:\n\
     $.data[*].fieldName\n\n\
-    If NO suitable field exists in the response, respond with:\n\
+    If NO suitable field exists, respond with:\n\
     NO_GOOD_MATCH"
   valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\
     Description: {parameterDescription}\n\n\

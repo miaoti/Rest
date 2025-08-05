@@ -319,8 +319,8 @@ public class SmartInputFetcher {
     private String fetchFromApiMapping(ApiMapping mapping, ParameterInfo parameterInfo) throws Exception {
         String url = baseUrl + mapping.getEndpoint();
         
-        log.debug("Fetching data from: {}", url);
-        
+        log.info("🌐 API Call: {} {} for parameter '{}'", mapping.getMethod(), url, parameterInfo.getName());
+
         // Make HTTP request
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod(mapping.getMethod());
@@ -331,20 +331,67 @@ public class SmartInputFetcher {
         try {
             int responseCode = conn.getResponseCode();
             if (responseCode != config.getSuccessResponseCode()) {
+                log.warn("❌ API call failed with HTTP {}: {}", responseCode, url);
                 throw new Exception("HTTP " + responseCode + " from " + url);
             }
-            
+
             // Read response
             String responseBody = readResponse(conn);
-            
+            log.debug("API response preview: {}", responseBody.substring(0, Math.min(200, responseBody.length())));
+
+            // Validate response quality
+            if (!isValidApiResponse(responseBody, parameterInfo)) {
+                log.warn("❌ Invalid API response from {}", url);
+                return null;
+            }
+
             // Extract value using JSONPath
-            return extractValueFromResponse(responseBody, mapping.getExtractPath(), parameterInfo);
+            String result = extractValueFromResponse(responseBody, mapping.getExtractPath(), parameterInfo);
+            if (result != null && !result.trim().isEmpty()) {
+                log.info("✅ Smart Fetch Success: {} = '{}' (from {})",
+                        parameterInfo.getName(), result, mapping.getService());
+                return result;
+            } else {
+                log.warn("❌ No valid value extracted for parameter '{}'", parameterInfo.getName());
+                return null;
+            }
             
         } finally {
             conn.disconnect();
         }
     }
-    
+
+    /**
+     * Validate that API response contains useful data
+     */
+    private boolean isValidApiResponse(String responseBody, ParameterInfo parameterInfo) {
+        if (responseBody == null || responseBody.trim().isEmpty()) {
+            return false;
+        }
+
+        // Check for common error responses
+        String lower = responseBody.toLowerCase();
+        if (lower.contains("error") || lower.contains("exception") ||
+            lower.contains("not found") || lower.contains("unauthorized")) {
+            return false;
+        }
+
+        // Check for empty data structures
+        if (responseBody.trim().equals("{}") || responseBody.trim().equals("[]") ||
+            responseBody.contains("\"data\":[]") || responseBody.contains("\"data\":{}")) {
+            log.debug("API response contains empty data structure");
+            return false;
+        }
+
+        // Check minimum content length (avoid trivial responses)
+        if (responseBody.length() < 20) {
+            log.debug("API response too short: {} chars", responseBody.length());
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Extract value from API response using JSONPath
      */
@@ -359,23 +406,77 @@ public class SmartInputFetcher {
                     return selectedValue;
                 }
                 
-                // Fallback: use simple logic if LLM fails
-                if (result instanceof List) {
-                    List<?> list = (List<?>) result;
-                    if (!list.isEmpty()) {
-                        Object value = list.get(0); // Take first element as fallback
-                        return value != null ? value.toString() : null;
-                    }
-                } else {
-                    return result.toString();
+                // Fallback: use intelligent selection logic if LLM fails
+                return selectValueWithFallbackLogic(result, parameterInfo);
+            }
+        } catch (PathNotFoundException e) {
+            log.debug("JSONPath '{}' not found in response for parameter '{}'",
+                     extractPath, parameterInfo.getName());
+        } catch (Exception e) {
+            log.debug("Failed to extract value using JSONPath '{}' for parameter '{}': {}",
+                     extractPath, parameterInfo.getName(), e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Smart fallback value selection when LLM fails
+     */
+    private String selectValueWithFallbackLogic(Object result, ParameterInfo parameterInfo) {
+        if (result == null) return null;
+
+        String paramName = parameterInfo.getName() != null ? parameterInfo.getName().toLowerCase() : "";
+        String paramType = parameterInfo.getType() != null ? parameterInfo.getType().toLowerCase() : "";
+
+        if (result instanceof List) {
+            List<?> list = (List<?>) result;
+            if (list.isEmpty()) return null;
+
+            // Smart selection based on parameter characteristics
+            if (paramName.contains("list") || paramName.contains("array")) {
+                // For list parameters, return a representative value (not first, which might be 0)
+                if (list.size() > 1) {
+                    Object value = list.get(1); // Second element often more representative
+                    return value != null ? value.toString() : null;
                 }
             }
-            
-            return null;
-            
-        } catch (PathNotFoundException e) {
-            log.debug("JSONPath '{}' not found in response", extractPath);
-            return null;
+
+            if (paramName.contains("id") || paramName.contains("identifier")) {
+                // For ID parameters, prefer non-empty, non-zero values
+                for (Object item : list) {
+                    if (item != null) {
+                        String str = item.toString();
+                        if (!str.isEmpty() && !str.equals("0") && !str.equals("null")) {
+                            return str;
+                        }
+                    }
+                }
+            }
+
+            if (paramName.contains("name") || paramName.contains("title")) {
+                // For name parameters, prefer non-empty strings
+                for (Object item : list) {
+                    if (item != null) {
+                        String str = item.toString();
+                        if (!str.isEmpty() && !str.matches("\\d+")) { // Not just numbers
+                            return str;
+                        }
+                    }
+                }
+            }
+
+            // Default: take first non-null element
+            for (Object item : list) {
+                if (item != null) {
+                    return item.toString();
+                }
+            }
+        } else {
+            return result.toString();
+        }
+
+        return null;
+    }
         } catch (Exception e) {
             log.warn("Failed to extract value using path '{}': {}", extractPath, e.getMessage());
             return null;
@@ -735,8 +836,15 @@ public class SmartInputFetcher {
                             return null; // Will trigger fallback
                         }
 
-                        log.info("LLM suggested JSONPath '{}' for parameter '{}'", cleanPath, parameterInfo.getName());
-                        return cleanPath;
+                        // Validate JSONPath before using it
+                        if (isValidJsonPath(cleanPath, responseSchema)) {
+                            log.info("✅ LLM suggested valid JSONPath '{}' for parameter '{}'", cleanPath, parameterInfo.getName());
+                            return cleanPath;
+                        } else {
+                            log.warn("❌ LLM suggested invalid JSONPath '{}' for parameter '{}', using fallback",
+                                    cleanPath, parameterInfo.getName());
+                            return null; // Will trigger pattern-based fallback
+                        }
                     }
                 } else {
                     log.warn("Prompt too long ({} chars) for LLM, using pattern-based fallback for parameter '{}'",
@@ -816,6 +924,40 @@ public class SmartInputFetcher {
 
         // Default fallback
         return "$.data[*]." + paramName;
+    }
+
+    /**
+     * Validate that a JSONPath expression works with the given response
+     */
+    private boolean isValidJsonPath(String jsonPath, String responseBody) {
+        if (jsonPath == null || jsonPath.trim().isEmpty()) {
+            return false;
+        }
+
+        try {
+            // Test the JSONPath against the response
+            Object result = JsonPath.read(responseBody, jsonPath);
+
+            // Check if result is meaningful
+            if (result == null) {
+                return false;
+            }
+
+            if (result instanceof List) {
+                List<?> list = (List<?>) result;
+                return !list.isEmpty(); // List should have at least one element
+            }
+
+            if (result instanceof String) {
+                return !((String) result).trim().isEmpty(); // String should not be empty
+            }
+
+            return true; // Other types (numbers, objects) are generally valid
+
+        } catch (Exception e) {
+            log.debug("JSONPath validation failed for '{}': {}", jsonPath, e.getMessage());
+            return false;
+        }
     }
 
     private String getApiResponseSchema(String endpoint) {
@@ -1273,28 +1415,38 @@ public class SmartInputFetcher {
     }
     
     private String inferEndpointForService(String service, ParameterInfo parameterInfo) {
-        // First try OpenAPI discovery
+        // First try OpenAPI discovery with intelligent endpoint selection
         if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
             List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints = openAPIDiscovery.getEndpointsForService(service);
             if (!endpoints.isEmpty()) {
-                // Use the first endpoint or apply some selection logic
-                String endpoint = endpoints.get(0).getPath();
-                log.debug("OpenAPI discovered endpoint '{}' for service '{}'", endpoint, service);
-                return endpoint;
+                // Apply intelligent selection logic based on parameter
+                String selectedEndpoint = selectBestEndpointForParameter(endpoints, parameterInfo);
+                log.info("OpenAPI selected endpoint '{}' for parameter '{}' in service '{}'",
+                        selectedEndpoint, parameterInfo.getName(), service);
+                return selectedEndpoint;
             }
         }
         
-        // Fallback to LLM discovery if OpenAPI doesn't have the service
+        // Fallback to LLM discovery if OpenAPI doesn't have the service or selection failed
         try {
+            // Get available endpoints for context if possible
+            List<String> availableEndpoints = new ArrayList<>();
+            if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
+                List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints = openAPIDiscovery.getEndpointsForService(service);
+                for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+                    availableEndpoints.add(endpoint.getMethod().toUpperCase() + " " + endpoint.getPath());
+                }
+            }
+
             // Use LLM to discover the most appropriate endpoint for this service and parameter
-            String prompt = buildEndpointDiscoveryPrompt(service, parameterInfo);
+            String prompt = buildEndpointDiscoveryPrompt(service, parameterInfo, availableEndpoints);
             String llmResponse = askLLMForEndpoint(prompt);
-            
+
             if (llmResponse != null && !llmResponse.trim().isEmpty()) {
                 return parseEndpointFromLLMResponse(llmResponse);
             }
         } catch (Exception e) {
-            log.warn("LLM endpoint discovery failed for service '{}' and parameter '{}': {}", 
+            log.warn("LLM endpoint discovery failed for service '{}' and parameter '{}': {}",
                     service, parameterInfo.getName(), e.getMessage());
         }
         
@@ -1303,22 +1455,142 @@ public class SmartInputFetcher {
         log.debug("Using fallback endpoint '{}' for service '{}'", fallbackEndpoint, service);
         return fallbackEndpoint;
      }
-     
+
+     /**
+      * Intelligently select the best endpoint for a parameter from available OpenAPI endpoints
+      */
+     private String selectBestEndpointForParameter(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo) {
+         String paramName = parameterInfo.getName() != null ? parameterInfo.getName().toLowerCase() : "";
+         String paramDesc = parameterInfo.getDescription() != null ? parameterInfo.getDescription().toLowerCase() : "";
+
+         // Score each endpoint based on how well it matches the parameter
+         String bestEndpoint = null;
+         int bestScore = -1;
+
+         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+             int score = scoreEndpointForParameter(endpoint, paramName, paramDesc);
+             log.debug("Endpoint '{}' scored {} for parameter '{}'", endpoint.getPath(), score, paramName);
+
+             if (score > bestScore) {
+                 bestScore = score;
+                 bestEndpoint = endpoint.getPath();
+             }
+         }
+
+         // If no endpoint scored well, use the first non-welcome endpoint
+         if (bestScore <= 0) {
+             for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
+                 if (!endpoint.getPath().contains("welcome") && !endpoint.getPath().contains("health")) {
+                     log.debug("No good scoring endpoint, using first non-utility endpoint: {}", endpoint.getPath());
+                     return endpoint.getPath();
+                 }
+             }
+             // Last resort: use first endpoint
+             return endpoints.get(0).getPath();
+         }
+
+         log.info("Selected endpoint '{}' with score {} for parameter '{}'", bestEndpoint, bestScore, paramName);
+         return bestEndpoint;
+     }
+
+     /**
+      * Score how well an endpoint matches a parameter (higher score = better match)
+      */
+     private int scoreEndpointForParameter(OpenAPIEndpointDiscovery.EndpointInfo endpoint, String paramName, String paramDesc) {
+         String path = endpoint.getPath().toLowerCase();
+         String method = endpoint.getMethod() != null ? endpoint.getMethod().toLowerCase() : "get";
+         int score = 0;
+
+         // Prefer GET endpoints for data fetching (unless parameter suggests otherwise)
+         if ("get".equals(method)) {
+             score += 10;
+         }
+
+         // Score based on parameter name patterns
+         if (paramName.contains("list") || paramName.contains("all")) {
+             // For list parameters, prefer endpoints that return collections
+             if (path.contains("/routes") && !path.contains("/{") && "get".equals(method)) {
+                 score += 50; // /api/v1/routeservice/routes (GET all)
+             }
+             if (path.contains("/stations") && !path.contains("/{") && "get".equals(method)) {
+                 score += 50; // /api/v1/stationservice/stations (GET all)
+             }
+             if (path.contains("/travels") && !path.contains("/{") && "get".equals(method)) {
+                 score += 50; // /api/v1/travelservice/travels (GET all)
+             }
+         }
+
+         // Score based on semantic matching
+         if (paramName.contains("distance")) {
+             if (path.contains("route")) score += 30;
+             if (path.contains("travel")) score += 20;
+         }
+
+         if (paramName.contains("station")) {
+             if (path.contains("station")) score += 30;
+             if (path.contains("route")) score += 20;
+         }
+
+         if (paramName.contains("train")) {
+             if (path.contains("train")) score += 30;
+             if (path.contains("travel")) score += 20;
+         }
+
+         if (paramName.contains("price") || paramName.contains("cost")) {
+             if (path.contains("price")) score += 30;
+             if (path.contains("order")) score += 20;
+         }
+
+         if (paramName.contains("user") || paramName.contains("login")) {
+             if (path.contains("user")) score += 30;
+             if (path.contains("auth")) score += 20;
+         }
+
+         // Penalize utility endpoints
+         if (path.contains("welcome") || path.contains("health") || path.contains("status")) {
+             score -= 100;
+         }
+
+         // Penalize endpoints with many path parameters (they're usually for specific lookups)
+         long pathParamCount = path.chars().filter(ch -> ch == '{').count();
+         if (pathParamCount > 1) {
+             score -= 20;
+         } else if (pathParamCount == 1) {
+             score -= 10;
+         }
+
+         return score;
+     }
+
      private String buildEndpointDiscoveryPrompt(String serviceName, ParameterInfo parameterInfo) {
+         return buildEndpointDiscoveryPrompt(serviceName, parameterInfo, new ArrayList<>());
+     }
+
+     private String buildEndpointDiscoveryPrompt(String serviceName, ParameterInfo parameterInfo, List<String> availableEndpoints) {
          String template = registry.getLlmPrompts().get("endpointDiscovery");
-         
+
          // Truncate description if too long to prevent message length issues
          String description = parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "";
-         if (description.length() > 500) {
-             description = description.substring(0, 497) + "...";
+         if (description.length() > 300) {
+             description = description.substring(0, 297) + "...";
          }
-         
+
+         // Build available endpoints context
+         String endpointsContext = "";
+         if (!availableEndpoints.isEmpty()) {
+             endpointsContext = "\n\nAvailable endpoints in " + serviceName + ":\n" +
+                               String.join("\n", availableEndpoints.subList(0, Math.min(5, availableEndpoints.size())));
+             if (availableEndpoints.size() > 5) {
+                 endpointsContext += "\n... and " + (availableEndpoints.size() - 5) + " more";
+             }
+         }
+
          String prompt = template
                  .replace("{serviceName}", serviceName != null ? serviceName : "")
                  .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
                  .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
-                 .replace("{parameterDescription}", description);
-         
+                 .replace("{parameterDescription}", description) + endpointsContext;
+
          // Ensure total prompt length doesn't exceed limit
          if (prompt.length() > 2000) {
              log.warn("Endpoint discovery prompt too long ({}), truncating", prompt.length());
