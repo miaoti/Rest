@@ -1602,60 +1602,24 @@ public class SmartInputFetcher {
     }
     
     private String inferEndpointForService(String service, ParameterInfo parameterInfo) {
-        // First try LLM-based endpoint selection if enabled
-        if (config.isLlmEndpointSelectionEnabled()) {
-            if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
-                List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints = openAPIDiscovery.getEndpointsForService(service);
-                if (!endpoints.isEmpty()) {
-                    // Use LLM to select the best endpoint
-                    String selectedEndpoint = selectEndpointWithLLM(endpoints, parameterInfo, service);
-                    if (selectedEndpoint != null) {
-                        log.info("🧠 LLM selected endpoint '{}' for parameter '{}' in service '{}'",
-                                selectedEndpoint, parameterInfo.getName(), service);
-                        return selectedEndpoint;
-                    }
-                }
-            }
-        }
-
-        // Fallback to scoring-based selection
+        // Simplified approach: Always try to find a reasonable endpoint
         if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
             List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints = openAPIDiscovery.getEndpointsForService(service);
             if (!endpoints.isEmpty()) {
-                // Apply intelligent selection logic based on parameter
+                // Use simple scoring to pick the best endpoint
                 String selectedEndpoint = selectBestEndpointForParameter(endpoints, parameterInfo);
-                log.info("📊 Scoring selected endpoint '{}' for parameter '{}' in service '{}'",
+                log.info("🎯 Selected endpoint '{}' for parameter '{}' in service '{}'",
                         selectedEndpoint, parameterInfo.getName(), service);
                 return selectedEndpoint;
             }
         }
         
-        // Fallback to LLM discovery if OpenAPI doesn't have the service or selection failed
-        try {
-            // Get available endpoints for context if possible
-            List<String> availableEndpoints = new ArrayList<>();
-            if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
-                List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints = openAPIDiscovery.getEndpointsForService(service);
-                for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
-                    availableEndpoints.add(endpoint.getMethod().toUpperCase() + " " + endpoint.getPath());
-                }
-            }
 
-            // Use LLM to discover the most appropriate endpoint for this service and parameter
-            String prompt = buildEndpointDiscoveryPrompt(service, parameterInfo, availableEndpoints);
-            String llmResponse = askLLMForEndpoint(prompt);
-
-            if (llmResponse != null && !llmResponse.trim().isEmpty()) {
-                return parseEndpointFromLLMResponse(llmResponse);
-            }
-        } catch (Exception e) {
-            log.warn("LLM endpoint discovery failed for service '{}' and parameter '{}': {}",
-                    service, parameterInfo.getName(), e.getMessage());
-        }
         
-        // Final fallback to a default pattern
-        String fallbackEndpoint = "/api/v1/" + service.toLowerCase().replace("-", "") + "/data";
-        log.debug("Using fallback endpoint '{}' for service '{}'", fallbackEndpoint, service);
+        // Final fallback: create a reasonable endpoint based on service name
+        String fallbackEndpoint = "/api/v1/" + service.toLowerCase().replace("ts-", "").replace("-service", "") + "/query";
+        log.info("🔧 Using fallback endpoint '{}' for service '{}' and parameter '{}'",
+                fallbackEndpoint, service, parameterInfo.getName());
         return fallbackEndpoint;
      }
 

@@ -100,19 +100,7 @@ llmPrompts:
     If NO services seem suitable for this parameter, respond with:\n\
     NO_GOOD_MATCH\n\n\
     Respond ONLY with the JSON array OR 'NO_GOOD_MATCH', no explanations."
-  endpointDiscovery: "Service: {serviceName}\nParameter: {parameterName} (type: {parameterType})\n\
-    Description: {parameterDescription}\n\n\
-    Task: Select the BEST endpoint from this service for fetching data for this parameter.\n\
-    Consider parameter semantics and endpoint purposes.\n\n\
-    Guidelines:\n\
-    - For 'list' parameters: prefer GET endpoints that return collections (no path params)\n\
-    - For 'id' parameters: prefer GET endpoints with path parameters\n\
-    - For 'name' parameters: prefer GET endpoints that return entity details\n\
-    - Avoid utility endpoints (welcome, health, status)\n\n\
-    If you find a suitable endpoint, respond with JSON:\n\
-    {\"endpoint\": \"/api/v1/servicename/resource\", \"method\": \"GET\", \"confidence\": 0.9}\n\n\
-    If NO endpoint is suitable for this parameter, respond with:\n\
-    NO_GOOD_MATCH"
+
   directValueExtraction: "API Response: {responseSchema}\n\n\
     Target Parameter: {parameterName} (type: {parameterType})\n\
     Description: {parameterDescription}\n\n\
