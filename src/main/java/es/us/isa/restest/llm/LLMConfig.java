@@ -68,7 +68,18 @@ public class LLMConfig {
             properties.getOrDefault("llm.enabled", "true"));
         
         String modelTypeStr = properties.getOrDefault("llm.model.type", "local").toLowerCase();
-        config.modelType = "gemini".equals(modelTypeStr) ? ModelType.GEMINI : ModelType.LOCAL;
+        switch (modelTypeStr) {
+            case "gemini":
+                config.modelType = ModelType.GEMINI;
+                break;
+            case "ollama":
+                config.modelType = ModelType.OLLAMA;
+                break;
+            case "local":
+            default:
+                config.modelType = ModelType.LOCAL;
+                break;
+        }
         
         // Local LLM settings
         config.localEnabled = Boolean.parseBoolean(
@@ -94,7 +105,7 @@ public class LLMConfig {
         config.ollamaUrl = properties.getOrDefault(
             "llm.ollama.url", "http://localhost:11434");
         config.ollamaModel = properties.getOrDefault(
-            "llm.ollama.model", "gemma2:2b");
+            "llm.ollama.model", "gemma3:4b");
 
         // Rate limiting settings
         config.maxRetries = Integer.parseInt(

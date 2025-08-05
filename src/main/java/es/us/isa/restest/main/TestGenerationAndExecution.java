@@ -680,7 +680,12 @@ public class TestGenerationAndExecution {
 			"llm.gemini.enabled",
 			"llm.gemini.api.key",
 			"llm.gemini.model",
-			"llm.gemini.api.url"
+			"llm.gemini.api.url",
+			"llm.ollama.enabled",
+			"llm.ollama.url",
+			"llm.ollama.model",
+			"llm.rate.limit.retry.enabled",
+			"llm.rate.limit.max.retries"
 		};
 		
 		int configuredCount = 0;
@@ -707,6 +712,8 @@ public class TestGenerationAndExecution {
 			String llmEnabled = System.getProperty("llm.enabled", "false");
 			String llmModelType = System.getProperty("llm.model.type", "local");
 			String geminiApiKey = System.getProperty("llm.gemini.api.key", "not set");
+			String ollamaEnabled = System.getProperty("llm.ollama.enabled", "false");
+			String ollamaModel = System.getProperty("llm.ollama.model", "not set");
 
 			logger.info("📊 Smart Fetching Settings:");
 			logger.info("   - Enabled: {}", enabled);
@@ -718,6 +725,8 @@ public class TestGenerationAndExecution {
 			logger.info("   - Enabled: {}", llmEnabled);
 			logger.info("   - Model Type: {}", llmModelType);
 			logger.info("   - Gemini API Key: {}", geminiApiKey.equals("not set") ? "not set" : "configured");
+			logger.info("   - Ollama Enabled: {}", ollamaEnabled);
+			logger.info("   - Ollama Model: {}", ollamaModel);
 			
 			if ("true".equals(enabled)) {
 				logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");

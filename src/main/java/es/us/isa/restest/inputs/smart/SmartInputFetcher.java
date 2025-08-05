@@ -97,7 +97,9 @@ public class SmartInputFetcher {
         String[] llmProperties = {
             "llm.enabled", "llm.model.type",
             "llm.local.enabled", "llm.local.url", "llm.local.model",
-            "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url"
+            "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
+            "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
+            "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries"
         };
 
         for (String prop : llmProperties) {
