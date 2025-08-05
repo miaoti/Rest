@@ -113,25 +113,24 @@ llmPrompts:
     {\"endpoint\": \"/api/v1/servicename/resource\", \"method\": \"GET\", \"confidence\": 0.9}\n\n\
     If NO endpoint is suitable for this parameter, respond with:\n\
     NO_GOOD_MATCH"
-  dataExtraction: "API Response: {responseSchema}\n\n\
+  directValueExtraction: "API Response: {responseSchema}\n\n\
     Target Parameter: {parameterName} (type: {parameterType})\n\
     Description: {parameterDescription}\n\n\
-    Task: Find the BEST JSONPath to extract realistic values for this parameter.\n\
-    Match by parameter name, description, and data type compatibility.\n\n\
-    JSONPath Guidelines:\n\
-    - For arrays/lists: Use [*] to get all elements or [0] for first element\n\
-    - For nested objects: Navigate with dot notation (e.g., .route.distances)\n\
-    - For string parameters: Extract string fields or convert numbers to strings\n\
-    - For numeric parameters: Extract numeric fields\n\n\
+    Task: Extract or derive a suitable value for this parameter from the API response above.\n\
+    You must use ONLY values that appear in the response - do not generate new values.\n\n\
+    Guidelines:\n\
+    - Look for exact field matches first\n\
+    - Consider semantically related fields\n\
+    - Use any reasonable value from the response\n\
+    - For list parameters: you can combine multiple values with commas\n\
+    - Ensure the returned value matches the parameter type\n\n\
     Examples:\n\
-    - 'distanceList' (array of distances): $.data[*].route.distances[*]\n\
-    - 'stationName' (single station): $.data[0].startStation\n\
-    - 'routeId' (identifier): $.data[0].route.id\n\
-    - 'trainType' (type name): $.data[0].trainType.name\n\n\
-    Respond with the BEST JSONPath:\n\
-    $.data[*].fieldName\n\n\
-    If NO suitable field exists, respond with:\n\
-    NO_GOOD_MATCH"
+    - For 'stationName': use values from 'from', 'to', or similar fields\n\
+    - For 'price': use values from 'price' or cost-related fields\n\
+    - For 'id': use any ID field from the response\n\
+    - For 'distanceList': use numeric values or station names that could represent distances\n\n\
+    Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')\n\
+    If no suitable value exists in the response: NO_GOOD_MATCH"
   valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\n\
     Description: {parameterDescription}\n\n\
     Task: Select the most suitable value for this parameter based on its name, type, and description.\n\n\
