@@ -247,39 +247,25 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Discover APIs using pattern matching
+     * DEPRECATED: Pattern discovery creates JSONPath mappings - we want direct extraction only
      */
     private List<ApiMapping> discoverByPatterns(ParameterInfo parameterInfo) {
         List<ApiMapping> mappings = new ArrayList<>();
         String paramName = parameterInfo.getName();
 
         log.info("🔍 Pattern discovery for '{}' checking {} patterns", paramName, registry.getServicePatterns().size());
+        log.warn("❌ DEPRECATED: Pattern discovery creates JSONPath mappings - we want direct extraction only");
+        log.warn("❌ Skipping pattern discovery to avoid JSONPath expressions like '$.data[*].route.endStation'");
 
-        for (ServicePattern pattern : registry.getServicePatterns()) {
-            log.debug("🔍 Checking pattern '{}' against parameter '{}'", pattern.getPattern(), paramName);
+        // DISABLED: Pattern discovery creates JSONPath mappings, but we want direct extraction only
+        // The old pattern discovery would create mappings like:
+        // endStation -> /api/v1/stationservice/stations (extractPath: $.data[*].route.endStation)
+        //
+        // Instead, we want LLM-based discovery that creates:
+        // endStation -> /api/v1/stationservice/stations (extractPath: DIRECT_EXTRACTION)
 
-            if (Pattern.matches(pattern.getPattern(), paramName)) {
-                log.info("✅ Pattern '{}' matched parameter '{}'", pattern.getPattern(), paramName);
-
-                for (String endpoint : pattern.getEndpoints()) {
-                    for (String service : pattern.getServices()) {
-                        // Create a basic mapping - could be improved with schema analysis
-                        String extractPath = guessExtractPath(parameterInfo, endpoint);
-                        ApiMapping mapping = new ApiMapping(endpoint, service, extractPath);
-                        mapping.setPriority(config.getPatternDiscoveryPriority());
-                        mappings.add(mapping);
-
-                        log.info("📋 Created pattern mapping: '{}' -> {} {} (extractPath: {})",
-                                 paramName, service, endpoint, extractPath);
-                    }
-                }
-            } else {
-                log.debug("❌ Pattern '{}' did not match parameter '{}'", pattern.getPattern(), paramName);
-            }
-        }
-
-        log.info("📋 Pattern discovery for '{}' created {} mappings", paramName, mappings.size());
-        return mappings;
+        log.info("📋 Pattern discovery for '{}' created {} mappings (disabled for direct extraction)", paramName, mappings.size());
+        return mappings; // Return empty list to force LLM-based discovery
     }
 
     /**
@@ -571,11 +557,19 @@ public class SmartInputFetcher {
                             return fallbackValue;
                         }
 
-                        // Last resort: return first non-null string value
+                        // Last resort: Ask LLM to generate a meaningful value instead of using random strings
+                        log.info("📋 No suitable values found in API response, asking LLM to generate meaningful value for parameter '{}'", parameterInfo.getName());
+                        String llmGeneratedValue = generateValueWithLLM(parameterInfo);
+                        if (llmGeneratedValue != null && !llmGeneratedValue.trim().isEmpty()) {
+                            log.info("✅ LLM generated meaningful value '{}' for parameter '{}'", llmGeneratedValue, parameterInfo.getName());
+                            return llmGeneratedValue;
+                        }
+
+                        // Final fallback: return first non-null string value only if LLM fails
                         for (Map.Entry<?, ?> entry : firstItem.entrySet()) {
                             Object value = entry.getValue();
                             if (value != null && value instanceof String && !value.toString().trim().isEmpty()) {
-                                log.info("📋 Fallback using first string value '{}' for parameter '{}'",
+                                log.warn("📋 LLM generation failed, using first string value '{}' for parameter '{}' as last resort",
                                         value, parameterInfo.getName());
                                 return value.toString();
                             }
@@ -1429,6 +1423,141 @@ public class SmartInputFetcher {
           } catch (Exception e) {
               log.warn("[Direct Value Extraction LLM] Failed to call LLM service: {}", e.getMessage());
               return null;
+          }
+      }
+
+      /**
+       * Generate a meaningful value using LLM when API extraction fails
+       */
+      private String generateValueWithLLM(ParameterInfo parameterInfo) {
+          try {
+              log.info("🧠 Asking LLM to generate meaningful value for parameter '{}'", parameterInfo.getName());
+
+              // Build prompt for value generation
+              String prompt = buildValueGenerationPrompt(parameterInfo);
+
+              if (prompt.length() > 2044) {
+                  log.warn("Value generation prompt too long ({} chars), using simple generation", prompt.length());
+                  return generateSimpleValue(parameterInfo);
+              }
+
+              // Ask LLM to generate a meaningful value
+              String llmResponse = askLLMForValueGeneration(prompt);
+
+              if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                  String cleanResponse = llmResponse.trim();
+
+                  // Clean up the response (remove quotes, extra whitespace)
+                  if (cleanResponse.startsWith("\"") && cleanResponse.endsWith("\"")) {
+                      cleanResponse = cleanResponse.substring(1, cleanResponse.length() - 1);
+                  }
+
+                  // Validate that it's not a JSONPath expression
+                  if (cleanResponse.startsWith("$.") || cleanResponse.contains("$[") || cleanResponse.contains("data[")) {
+                      log.warn("❌ LLM returned JSONPath expression '{}' instead of actual value for parameter '{}'",
+                               cleanResponse, parameterInfo.getName());
+                      return generateSimpleValue(parameterInfo);
+                  }
+
+                  log.info("✅ LLM generated meaningful value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
+                  return cleanResponse;
+              }
+
+              log.warn("LLM value generation returned null/empty for parameter '{}'", parameterInfo.getName());
+              return generateSimpleValue(parameterInfo);
+
+          } catch (Exception e) {
+              log.warn("LLM value generation failed for parameter '{}': {}", parameterInfo.getName(), e.getMessage());
+              return generateSimpleValue(parameterInfo);
+          }
+      }
+
+      /**
+       * Build prompt for LLM value generation
+       */
+      private String buildValueGenerationPrompt(ParameterInfo parameterInfo) {
+          StringBuilder prompt = new StringBuilder();
+
+          prompt.append("Generate a realistic test value for the following parameter:\n\n");
+          prompt.append("Parameter Name: ").append(parameterInfo.getName()).append("\n");
+          prompt.append("Parameter Type: ").append(parameterInfo.getType()).append("\n");
+
+          if (parameterInfo.getDescription() != null && !parameterInfo.getDescription().trim().isEmpty()
+              && !parameterInfo.getDescription().equals("null")) {
+              prompt.append("Description: ").append(parameterInfo.getDescription()).append("\n");
+          }
+
+          prompt.append("\nBased on the parameter name and type, generate a realistic test value.\n");
+          prompt.append("Examples:\n");
+          prompt.append("- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'\n");
+          prompt.append("- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'\n");
+          prompt.append("- For 'userId' (string): 'user123' or 'john.doe'\n");
+          prompt.append("- For 'trainNumber' (string): 'G1237' or 'D2468'\n");
+          prompt.append("- For 'price' (number): '150.50' or '89.99'\n");
+          prompt.append("- For 'distance' (number): '350' or '1200'\n");
+          prompt.append("- For 'date' (string): '2024-12-25' or '2024-01-15'\n");
+          prompt.append("- For 'time' (string): '14:30' or '09:15'\n");
+
+          prompt.append("\nRespond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').\n");
+          prompt.append("Do NOT include quotes, explanations, or JSONPath expressions.\n");
+          prompt.append("If you cannot generate a suitable value: NO_GOOD_MATCH");
+
+          return prompt.toString();
+      }
+
+      /**
+       * Ask LLM to generate a meaningful value
+       */
+      private String askLLMForValueGeneration(String prompt) {
+          try {
+              // Use a simple system prompt for value generation
+              String systemContent = "You are a test data generator. Generate realistic test values based on parameter information. " +
+                                    "Return only the actual value, never JSONPath expressions or explanations.";
+
+              String result = llmService.generateText(systemContent, prompt, 50, 0.7);
+
+              if (result != null && !result.trim().isEmpty()) {
+                  log.debug("[Value Generation LLM] Successfully generated value: {}", result);
+                  return result;
+              } else {
+                  log.warn("[Value Generation LLM] LLM service returned null or empty result");
+                  return null;
+              }
+
+          } catch (Exception e) {
+              log.warn("[Value Generation LLM] Failed to call LLM service: {}", e.getMessage());
+              return null;
+          }
+      }
+
+      /**
+       * Generate simple value based on parameter type and name when LLM fails
+       */
+      private String generateSimpleValue(ParameterInfo parameterInfo) {
+          String paramName = parameterInfo.getName().toLowerCase();
+          String paramType = parameterInfo.getType();
+
+          // Generate based on parameter name patterns
+          if (paramName.contains("station")) {
+              return "Shanghai";
+          } else if (paramName.contains("user") || paramName.contains("login")) {
+              return "testuser123";
+          } else if (paramName.contains("train") || paramName.contains("number")) {
+              return "G1237";
+          } else if (paramName.contains("date")) {
+              return "2024-12-25";
+          } else if (paramName.contains("time")) {
+              return "14:30";
+          } else if (paramName.contains("price") || paramName.contains("cost")) {
+              return "150.50";
+          } else if (paramName.contains("distance")) {
+              return "350";
+          } else if (paramName.contains("id")) {
+              return "test123";
+          } else if ("number".equals(paramType) || "integer".equals(paramType)) {
+              return "100";
+          } else {
+              return "testvalue";
           }
       }
 
