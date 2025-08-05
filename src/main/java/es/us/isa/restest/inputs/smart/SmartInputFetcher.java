@@ -477,11 +477,6 @@ public class SmartInputFetcher {
 
         return null;
     }
-        } catch (Exception e) {
-            log.warn("Failed to extract value using path '{}': {}", extractPath, e.getMessage());
-            return null;
-        }
-    }
     
     private String selectValueWithLLM(Object extractedData, ParameterInfo parameterInfo) {
         try {
