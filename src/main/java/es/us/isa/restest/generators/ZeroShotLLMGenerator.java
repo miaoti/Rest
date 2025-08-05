@@ -65,11 +65,12 @@ public class ZeroShotLLMGenerator {
      */
     public List<String> generateParameterValues(ParameterInfo param, int howMany) {
         System.out.println("*** ZeroShotLLMGenerator.generateParameterValues called for: " + param.getName() + " (howMany=" + howMany + ")");
-        
-        // 1) check cache
-        if (cache.containsKey(param.getName())) {
-            System.out.println("*** Found cached value for: " + param.getName());
-            return cache.get(param.getName());
+
+        // 1) check cache using proper cache key (name + type + location)
+        String cacheKey = buildCacheKey(param);
+        if (cache.containsKey(cacheKey)) {
+            System.out.println("*** Found cached value for: " + param.getName() + " (type: " + param.getType() + ")");
+            return cache.get(cacheKey);
         }
 
         // 2) build prompt
@@ -98,9 +99,20 @@ public class ZeroShotLLMGenerator {
             values = Collections.singletonList("");
         }
 
-        // store in cache
-        cache.put(param.getName(), values);
+        // store in cache using proper cache key
+        cache.put(cacheKey, values);
         return values;
+    }
+
+    /**
+     * Build cache key that includes parameter name, type, and location
+     * This ensures parameters with same name but different types are cached separately
+     */
+    private String buildCacheKey(ParameterInfo param) {
+        String name = param.getName() != null ? param.getName() : "unknown";
+        String type = param.getType() != null ? param.getType() : "unknown";
+        String location = param.getInLocation() != null ? param.getInLocation() : "unknown";
+        return name + ":" + type + ":" + location;
     }
 
     /**
