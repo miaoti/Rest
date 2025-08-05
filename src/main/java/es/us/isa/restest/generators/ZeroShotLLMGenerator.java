@@ -5,6 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import es.us.isa.restest.inputs.llm.ParameterInfo;
+import es.us.isa.restest.llm.LLMService;
+import es.us.isa.restest.llm.LLMConfig;
+import es.us.isa.restest.util.PropertyManager;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import okhttp3.MediaType;
@@ -22,6 +25,38 @@ public class ZeroShotLLMGenerator {
 
     // optional: param name -> cached list of values
     private final Map<String, List<String>> cache = new ConcurrentHashMap<>();
+
+    // LLM service for unified model access
+    private final LLMService llmService;
+
+    public ZeroShotLLMGenerator() {
+        // Initialize LLM service with properties
+        Map<String, String> properties = loadLLMProperties();
+        this.llmService = LLMService.getInstance(properties);
+    }
+
+    /**
+     * Load LLM properties from system properties
+     */
+    private Map<String, String> loadLLMProperties() {
+        Map<String, String> properties = new HashMap<>();
+
+        // List of LLM-related properties to load
+        String[] llmProperties = {
+            "llm.enabled", "llm.model.type",
+            "llm.local.enabled", "llm.local.url", "llm.local.model",
+            "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url"
+        };
+
+        for (String prop : llmProperties) {
+            String value = System.getProperty(prop);
+            if (value != null) {
+                properties.put(prop, value);
+            }
+        }
+
+        return properties;
+    }
 
     /**
      * Generate multiple candidate values for a parameter.
@@ -269,9 +304,6 @@ public class ZeroShotLLMGenerator {
 
 
     private String callLLM(String prompt) {
-        // Use local gpt4all API instead of external services
-        final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-
         String systemContent =
                 "You are an AI system that generates parameter values for API testing. " +
                         "CRITICAL: When asked to generate N values, you MUST return exactly N lines. " +
@@ -279,69 +311,22 @@ public class ZeroShotLLMGenerator {
                         "Do NOT put multiple values on the same line separated by spaces or commas. " +
                         "Do NOT add explanations, numbering, or extra formatting.";
 
-        // Build the request body compatible with OpenAI API format (which gpt4all supports)
-        JSONArray messages = new JSONArray()
-                .put(new JSONObject().put("role", "system").put("content", systemContent))
-                .put(new JSONObject().put("role", "user").put("content", prompt));
-
-        JSONObject requestBody = new JSONObject()
-                .put("model", "llama-3-8b-instruct")
-                .put("messages", messages)
-                .put("max_tokens", 200)
-                .put("temperature", 0.7);
-
-        System.out.println("[Local LLM] Sending request to: " + LOCAL_LLM_API_URL);
-        System.out.println("[Local LLM] Request body: " + requestBody.toString());
+        System.out.println("[LLM] Calling LLM service with model type: " + llmService.getConfig().getModelType());
+        System.out.println("[LLM] User prompt: " + prompt);
 
         try {
-            // Build HTTP client with longer timeout
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(90, TimeUnit.SECONDS)  // Increased to 90 seconds
-                    .build();
+            String result = llmService.generateText(systemContent, prompt, 200, 0.7);
 
-            RequestBody body = RequestBody.create(
-                    requestBody.toString(),
-                    MediaType.parse("application/json")
-            );
-
-            Request request = new Request.Builder()
-                    .url(LOCAL_LLM_API_URL)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                System.out.println("[Local LLM] Response code: " + response.code());
-                String responseBody = response.body().string();
-                System.out.println("[Local LLM] Response body: " + responseBody);
-                
-                if (!response.isSuccessful()) {
-                    System.out.println("[Local LLM] HTTP error: " + response.code() + " - " + response.message());
-                    return generateFallbackValue();
-                }
-
-                JSONObject jsonResponse = new JSONObject(responseBody);
-
-                if (jsonResponse.has("choices")) {
-                    JSONArray choices = jsonResponse.getJSONArray("choices");
-                    if (choices.length() > 0) {
-                        JSONObject choice = choices.getJSONObject(0);
-                        JSONObject message = choice.getJSONObject("message");
-                        String content = message.getString("content").trim();
-                        
-                        System.out.println("[Local LLM] Successfully extracted content: " + content);
-                        return content;
-                    }
-                }
-                
-                System.out.println("[Local LLM] No choices in response, using fallback");
+            if (result != null && !result.trim().isEmpty()) {
+                System.out.println("[LLM] Successfully generated content: " + result);
+                return result;
+            } else {
+                System.out.println("[LLM] LLM service returned null or empty result, using fallback");
                 return generateFallbackValue();
             }
 
         } catch (Exception e) {
-            System.out.println("[Local LLM] Error calling local LLM API: " + e.getMessage());
+            System.out.println("[LLM] Error calling LLM service: " + e.getMessage());
             e.printStackTrace();
             return generateFallbackValue();
         }

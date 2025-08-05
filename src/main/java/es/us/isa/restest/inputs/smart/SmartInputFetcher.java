@@ -3,6 +3,8 @@ package es.us.isa.restest.inputs.smart;
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.specification.OpenAPISpecification;
+import es.us.isa.restest.llm.LLMService;
+import es.us.isa.restest.llm.LLMConfig;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +42,7 @@ public class SmartInputFetcher {
 
     private final SmartInputFetchConfig config;
     private final AiDrivenLLMGenerator llmGenerator;
+    private final LLMService llmService;
     private final ObjectMapper objectMapper;
     private final Random random;
     private final OpenAPIEndpointDiscovery openAPIDiscovery;
@@ -68,6 +71,11 @@ public class SmartInputFetcher {
         this.config = config;
         this.baseUrl = baseUrl;
         this.llmGenerator = new AiDrivenLLMGenerator();
+
+        // Initialize LLM service with properties from system
+        Map<String, String> llmProperties = loadLLMProperties();
+        this.llmService = LLMService.getInstance(llmProperties);
+
         this.objectMapper = new ObjectMapper();
         this.random = new Random();
         this.cache = new ConcurrentHashMap<>();
@@ -77,6 +85,29 @@ public class SmartInputFetcher {
         loadOpenAPISpec();
 
         log.info("SmartInputFetcher initialized with config: {}", config);
+    }
+
+    /**
+     * Load LLM properties from system properties
+     */
+    private Map<String, String> loadLLMProperties() {
+        Map<String, String> properties = new HashMap<>();
+
+        // List of LLM-related properties to load
+        String[] llmProperties = {
+            "llm.enabled", "llm.model.type",
+            "llm.local.enabled", "llm.local.url", "llm.local.model",
+            "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url"
+        };
+
+        for (String prop : llmProperties) {
+            String value = System.getProperty(prop);
+            if (value != null) {
+                properties.put(prop, value);
+            }
+        }
+
+        return properties;
     }
 
     /**
@@ -829,69 +860,26 @@ public class SmartInputFetcher {
      * Call LLM specifically for value selection (not parameter generation)
      */
     private String callLLMForValueSelection(String prompt) {
+        String systemContent = "You are an AI assistant that selects the most appropriate value from given data. Respond with only the selected value, no explanations.";
+
+        log.debug("[Value Selection LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
+        log.debug("[Value Selection LLM] User prompt: {}", prompt);
+
         try {
-            final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
+            String result = llmService.generateText(systemContent, prompt, 100, 0.1);
 
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(60, TimeUnit.SECONDS)
-                    .build();
-
-            JSONObject requestBody = new JSONObject();
-            requestBody.put("model", "gpt-3.5-turbo");
-            requestBody.put("max_tokens", 100); // Short response for value selection
-            requestBody.put("temperature", 0.1); // Low temperature for consistent selection
-
-            JSONArray messages = new JSONArray();
-            JSONObject systemMessage = new JSONObject();
-            systemMessage.put("role", "system");
-            systemMessage.put("content", "You are an AI assistant that selects the most appropriate value from given data. Respond with only the selected value, no explanations.");
-            messages.put(systemMessage);
-
-            JSONObject userMessage = new JSONObject();
-            userMessage.put("role", "user");
-            userMessage.put("content", prompt);
-            messages.put(userMessage);
-
-            requestBody.put("messages", messages);
-
-            RequestBody body = RequestBody.create(
-                    requestBody.toString(),
-                    MediaType.parse("application/json")
-            );
-
-            Request request = new Request.Builder()
-                    .url(LOCAL_LLM_API_URL)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String responseBody = response.body().string();
-                    JSONObject jsonResponse = new JSONObject(responseBody);
-
-                    if (jsonResponse.has("choices")) {
-                        JSONArray choices = jsonResponse.getJSONArray("choices");
-                        if (choices.length() > 0) {
-                            JSONObject firstChoice = choices.getJSONObject(0);
-                            if (firstChoice.has("message")) {
-                                JSONObject message = firstChoice.getJSONObject("message");
-                                if (message.has("content")) {
-                                    return message.getString("content").trim();
-                                }
-                            }
-                        }
-                    }
-                }
+            if (result != null && !result.trim().isEmpty()) {
+                log.debug("[Value Selection LLM] Successfully generated content: {}", result);
+                return result;
+            } else {
+                log.warn("[Value Selection LLM] LLM service returned null or empty result");
+                return null;
             }
 
         } catch (Exception e) {
-            log.warn("Failed to call LLM for value selection: {}", e.getMessage());
+            log.warn("[Value Selection LLM] Failed to call LLM service: {}", e.getMessage());
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -1430,150 +1418,60 @@ public class SmartInputFetcher {
       * Call LLM directly for endpoint discovery with appropriate system prompt
       */
      private String callLLMForEndpointDiscovery(String prompt) {
-         final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-
          String systemContent =
                  "You are an API testing assistant that helps identify REST API endpoints " +
                  "within microservices that would provide data for given parameters. " +
                  "Respond with the most likely endpoint path (e.g., /api/v1/service/resource). " +
                  "Do NOT generate test values. Only return the endpoint path.";
 
+         log.debug("[Endpoint Discovery LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
+         log.debug("[Endpoint Discovery LLM] User prompt: {}", prompt);
+
          try {
-             // Build the request using the same HTTP client setup as ZeroShotLLMGenerator
-             org.json.JSONArray messages = new org.json.JSONArray()
-                     .put(new org.json.JSONObject().put("role", "system").put("content", systemContent))
-                     .put(new org.json.JSONObject().put("role", "user").put("content", prompt));
+             String result = llmService.generateText(systemContent, prompt, 100, 0.3);
 
-             org.json.JSONObject requestBody = new org.json.JSONObject()
-                     .put("model", "llama-3-8b-instruct")
-                     .put("messages", messages)
-                     .put("max_tokens", 100)
-                     .put("temperature", 0.3);
-
-             log.debug("[Endpoint Discovery LLM] Sending request to: {}", LOCAL_LLM_API_URL);
-             log.debug("[Endpoint Discovery LLM] Request body: {}", requestBody.toString());
-
-             // Use the same HTTP client configuration as ZeroShotLLMGenerator
-             okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
-                     .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                     .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                     .readTimeout(90, java.util.concurrent.TimeUnit.SECONDS)
-                     .build();
-
-             okhttp3.RequestBody body = okhttp3.RequestBody.create(
-                     requestBody.toString(),
-                     okhttp3.MediaType.parse("application/json")
-             );
-
-             okhttp3.Request request = new okhttp3.Request.Builder()
-                     .url(LOCAL_LLM_API_URL)
-                     .post(body)
-                     .addHeader("Content-Type", "application/json")
-                     .build();
-
-             try (okhttp3.Response response = client.newCall(request).execute()) {
-                 if (response.isSuccessful() && response.body() != null) {
-                     String responseBody = response.body().string();
-                     log.debug("[Endpoint Discovery LLM] Response: {}", responseBody);
-
-                     // Parse the response to extract the content
-                     org.json.JSONObject jsonResponse = new org.json.JSONObject(responseBody);
-                     if (jsonResponse.has("choices")) {
-                         org.json.JSONArray choices = jsonResponse.getJSONArray("choices");
-                         if (choices.length() > 0) {
-                             org.json.JSONObject firstChoice = choices.getJSONObject(0);
-                             if (firstChoice.has("message")) {
-                                 org.json.JSONObject message = firstChoice.getJSONObject("message");
-                                 if (message.has("content")) {
-                                     return message.getString("content").trim();
-                                 }
-                             }
-                         }
-                     }
-                 } else {
-                     log.warn("[Endpoint Discovery LLM] HTTP error: {} - {}", response.code(), response.message());
-                 }
+             if (result != null && !result.trim().isEmpty()) {
+                 log.debug("[Endpoint Discovery LLM] Successfully generated content: {}", result);
+                 return result;
+             } else {
+                 log.warn("[Endpoint Discovery LLM] LLM service returned null or empty result");
+                 return null;
              }
-         } catch (Exception e) {
-             log.warn("[Endpoint Discovery LLM] Failed to call LLM: {}", e.getMessage());
-         }
 
-         return null;
+         } catch (Exception e) {
+             log.warn("[Endpoint Discovery LLM] Failed to call LLM service: {}", e.getMessage());
+             return null;
+         }
      }
 
      /**
        * Call LLM directly for extraction path discovery with appropriate system prompt
        */
       private String callLLMForExtractionPathDiscovery(String prompt) {
-          final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-
           String systemContent =
                   "You are an API testing assistant that helps create JSONPath expressions " +
                   "to extract specific data from JSON API responses. " +
                   "Respond with a valid JSONPath expression (e.g., $.data[*].name or $.items[0].id). " +
                   "Do NOT generate test values. Only return the JSONPath expression.";
 
+          log.debug("[Extraction Path Discovery LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
+          log.debug("[Extraction Path Discovery LLM] User prompt: {}", prompt);
+
           try {
-              // Build the request using the same HTTP client setup as ZeroShotLLMGenerator
-              org.json.JSONArray messages = new org.json.JSONArray()
-                      .put(new org.json.JSONObject().put("role", "system").put("content", systemContent))
-                      .put(new org.json.JSONObject().put("role", "user").put("content", prompt));
+              String result = llmService.generateText(systemContent, prompt, 100, 0.3);
 
-              org.json.JSONObject requestBody = new org.json.JSONObject()
-                      .put("model", "llama-3-8b-instruct")
-                      .put("messages", messages)
-                      .put("max_tokens", 100)
-                      .put("temperature", 0.3);
-
-              log.debug("[Extraction Path Discovery LLM] Sending request to: {}", LOCAL_LLM_API_URL);
-              log.debug("[Extraction Path Discovery LLM] Request body: {}", requestBody.toString());
-
-              // Use the same HTTP client configuration as ZeroShotLLMGenerator
-              okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
-                      .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                      .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                      .readTimeout(90, java.util.concurrent.TimeUnit.SECONDS)
-                      .build();
-
-              okhttp3.RequestBody body = okhttp3.RequestBody.create(
-                      requestBody.toString(),
-                      okhttp3.MediaType.parse("application/json")
-              );
-
-              okhttp3.Request request = new okhttp3.Request.Builder()
-                      .url(LOCAL_LLM_API_URL)
-                      .post(body)
-                      .addHeader("Content-Type", "application/json")
-                      .build();
-
-              try (okhttp3.Response response = client.newCall(request).execute()) {
-                  if (response.isSuccessful() && response.body() != null) {
-                      String responseBody = response.body().string();
-                      log.debug("[Extraction Path Discovery LLM] Response: {}", responseBody);
-
-                      // Parse the response to extract the content
-                      org.json.JSONObject jsonResponse = new org.json.JSONObject(responseBody);
-                      if (jsonResponse.has("choices")) {
-                          org.json.JSONArray choices = jsonResponse.getJSONArray("choices");
-                          if (choices.length() > 0) {
-                              org.json.JSONObject firstChoice = choices.getJSONObject(0);
-                              if (firstChoice.has("message")) {
-                                  org.json.JSONObject message = firstChoice.getJSONObject("message");
-                                  if (message.has("content")) {
-                                      return message.getString("content").trim();
-                                  }
-                              }
-                          }
-                      }
-                  } else {
-                      log.warn("[Extraction Path Discovery LLM] HTTP error: {} - {}", response.code(), response.message());
-                  }
+              if (result != null && !result.trim().isEmpty()) {
+                  log.debug("[Extraction Path Discovery LLM] Successfully generated content: {}", result);
+                  return result;
+              } else {
+                  log.warn("[Extraction Path Discovery LLM] LLM service returned null or empty result");
+                  return null;
               }
-          } catch (Exception e) {
-              log.warn("[Extraction Path Discovery LLM] Failed to call LLM: {}", e.getMessage());
-          }
 
-          return null;
+          } catch (Exception e) {
+              log.warn("[Extraction Path Discovery LLM] Failed to call LLM service: {}", e.getMessage());
+              return null;
+          }
       }
 
       /**
