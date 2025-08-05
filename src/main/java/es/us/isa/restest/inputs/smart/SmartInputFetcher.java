@@ -1343,75 +1343,30 @@ public class SmartInputFetcher {
      * Call LLM directly for service discovery with appropriate system prompt
      */
     private String callLLMForServiceDiscovery(String prompt) {
-        final String LOCAL_LLM_API_URL = "http://localhost:4891/v1/chat/completions";
-
         String systemContent =
                 "You are an API testing assistant that helps identify which microservices " +
                 "would most likely provide realistic data for given parameters. " +
                 "Respond with a JSON array of service names in priority order. " +
                 "Do NOT generate test values. Only return service names as a JSON array.";
 
+        log.debug("[Service Discovery LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
+        log.debug("[Service Discovery LLM] User prompt: {}", prompt);
+
         try {
-            // Build the request using the same HTTP client setup as ZeroShotLLMGenerator
-            org.json.JSONArray messages = new org.json.JSONArray()
-                    .put(new org.json.JSONObject().put("role", "system").put("content", systemContent))
-                    .put(new org.json.JSONObject().put("role", "user").put("content", prompt));
+            String result = llmService.generateText(systemContent, prompt, 200, 0.7);
 
-            org.json.JSONObject requestBody = new org.json.JSONObject()
-                    .put("model", "llama-3-8b-instruct")
-                    .put("messages", messages)
-                    .put("max_tokens", 200)
-                    .put("temperature", 0.7);
-
-            log.debug("[Service Discovery LLM] Sending request to: {}", LOCAL_LLM_API_URL);
-            log.debug("[Service Discovery LLM] Request body: {}", requestBody.toString());
-
-            // Use the same HTTP client configuration as ZeroShotLLMGenerator
-            okhttp3.OkHttpClient client = new okhttp3.OkHttpClient.Builder()
-                    .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                    .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                    .readTimeout(90, java.util.concurrent.TimeUnit.SECONDS)
-                    .build();
-
-            okhttp3.RequestBody body = okhttp3.RequestBody.create(
-                    requestBody.toString(),
-                    okhttp3.MediaType.parse("application/json")
-            );
-
-            okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url(LOCAL_LLM_API_URL)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
-
-            try (okhttp3.Response response = client.newCall(request).execute()) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String responseBody = response.body().string();
-                    log.debug("[Service Discovery LLM] Response: {}", responseBody);
-
-                    // Parse the response to extract the content
-                    org.json.JSONObject jsonResponse = new org.json.JSONObject(responseBody);
-                    if (jsonResponse.has("choices")) {
-                        org.json.JSONArray choices = jsonResponse.getJSONArray("choices");
-                        if (choices.length() > 0) {
-                            org.json.JSONObject firstChoice = choices.getJSONObject(0);
-                            if (firstChoice.has("message")) {
-                                org.json.JSONObject message = firstChoice.getJSONObject("message");
-                                if (message.has("content")) {
-                                    return message.getString("content").trim();
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    log.warn("[Service Discovery LLM] HTTP error: {} - {}", response.code(), response.message());
-                }
+            if (result != null && !result.trim().isEmpty()) {
+                log.debug("[Service Discovery LLM] Successfully generated content: {}", result);
+                return result;
+            } else {
+                log.warn("[Service Discovery LLM] LLM service returned null or empty result");
+                return null;
             }
-        } catch (Exception e) {
-            log.warn("[Service Discovery LLM] Failed to call LLM: {}", e.getMessage());
-        }
 
-        return null;
+        } catch (Exception e) {
+            log.warn("[Service Discovery LLM] Failed to call LLM service: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
