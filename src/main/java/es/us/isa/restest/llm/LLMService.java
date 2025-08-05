@@ -19,6 +19,7 @@ public class LLMService {
     
     private final LLMConfig config;
     private final GeminiApiClient geminiClient;
+    private final OllamaApiClient ollamaClient;
     private final OkHttpClient httpClient;
     
     // Singleton instance
@@ -38,6 +39,18 @@ public class LLMService {
             );
         } else {
             this.geminiClient = null;
+        }
+
+        // Initialize Ollama client if needed
+        if (config.getModelType() == LLMConfig.ModelType.OLLAMA && config.isOllamaEnabled()) {
+            this.ollamaClient = new OllamaApiClient(
+                config.getOllamaUrl(),
+                config.getOllamaModel(),
+                config.getMaxRetries(),
+                config.isRateLimitRetryEnabled()
+            );
+        } else {
+            this.ollamaClient = null;
         }
         
         // Initialize HTTP client for local model
@@ -92,6 +105,8 @@ public class LLMService {
                 return generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
             case LOCAL:
                 return generateWithLocal(systemPrompt, userPrompt, maxTokens, temperature);
+            case OLLAMA:
+                return generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
             default:
                 logger.error("Unknown model type: {}", config.getModelType());
                 return null;
@@ -201,6 +216,19 @@ public class LLMService {
         }
     }
     
+    /**
+     * Generate text using Ollama API
+     */
+    private String generateWithOllama(String systemPrompt, String userPrompt, int maxTokens, double temperature) {
+        if (ollamaClient == null) {
+            logger.error("Ollama client is not initialized. Check configuration.");
+            return null;
+        }
+
+        logger.debug("[LLMService] Using Ollama API for generation");
+        return ollamaClient.generateContent(systemPrompt, userPrompt, maxTokens, temperature);
+    }
+
     /**
      * Get current configuration
      */
