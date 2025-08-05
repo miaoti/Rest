@@ -1062,21 +1062,15 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Extract additional diverse values from API response for parameter diversity
+     * Extract additional diverse values from API response using LLM-based analysis
      */
     private void extractAdditionalDiverseValues(String responseBody, ParameterInfo parameterInfo, String firstValue) {
         try {
             log.debug("🔍 Extracting additional diverse values for parameter '{}'", parameterInfo.getName());
 
-            // Parse JSON response to find more values of the same type
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(responseBody);
-
-            Set<String> extractedValues = new HashSet<>();
+            // Use LLM to extract all possible values from the response
+            Set<String> extractedValues = extractAllValuesWithLLM(responseBody, parameterInfo);
             extractedValues.add(firstValue); // Include the first value
-
-            // Extract values based on parameter type and name
-            extractValuesFromJsonNode(rootNode, parameterInfo, extractedValues);
 
             // Cache all extracted diverse values
             for (String value : extractedValues) {
@@ -1091,10 +1085,336 @@ public class SmartInputFetcher {
                         extractedValues.stream().limit(5).collect(Collectors.toList()));
             }
 
+            // If we don't have enough values, generate more using semantic similarity
+            int requiredValues = getRequiredValueCount(parameterInfo);
+            if (extractedValues.size() < requiredValues) {
+                log.info("🔍 Need {} values but only have {}, generating additional values using semantic similarity",
+                        requiredValues, extractedValues.size());
+                generateAdditionalValuesWithSemanticSimilarity(parameterInfo, extractedValues, requiredValues);
+            }
+
         } catch (Exception e) {
             log.debug("Failed to extract additional diverse values for parameter '{}': {}",
                      parameterInfo.getName(), e.getMessage());
         }
+    }
+
+    /**
+     * Extract all possible values from API response using LLM
+     */
+    private Set<String> extractAllValuesWithLLM(String responseBody, ParameterInfo parameterInfo) {
+        Set<String> extractedValues = new HashSet<>();
+
+        try {
+            String prompt = buildMultipleValueExtractionPrompt(responseBody, parameterInfo);
+
+            if (prompt.length() > 2044) {
+                log.warn("Multiple value extraction prompt too long ({} chars), using fallback", prompt.length());
+                return extractValuesWithFallback(responseBody, parameterInfo);
+            }
+
+            String llmResponse = askLLMForMultipleValueExtraction(prompt);
+
+            if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                // Parse LLM response to extract multiple values
+                String[] values = llmResponse.split("[,\\n\\r]+");
+                for (String value : values) {
+                    String cleanValue = value.trim().replaceAll("^[\"']|[\"']$", ""); // Remove quotes
+                    if (!cleanValue.isEmpty() && !cleanValue.equals("NO_VALUES_FOUND") &&
+                        isValidValueForParameter(cleanValue, parameterInfo)) {
+                        extractedValues.add(cleanValue);
+                    }
+                }
+
+                log.debug("LLM extracted {} values from API response for parameter '{}'",
+                         extractedValues.size(), parameterInfo.getName());
+            }
+
+        } catch (Exception e) {
+            log.debug("LLM multiple value extraction failed for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+        }
+
+        return extractedValues;
+    }
+
+    /**
+     * Build prompt for LLM multiple value extraction
+     */
+    private String buildMultipleValueExtractionPrompt(String responseBody, ParameterInfo parameterInfo) {
+        StringBuilder prompt = new StringBuilder();
+
+        prompt.append("Extract ALL possible values from this JSON response that could be used for parameter '");
+        prompt.append(parameterInfo.getName()).append("' (type: ").append(parameterInfo.getType()).append(").\n\n");
+
+        if (parameterInfo.getDescription() != null && !parameterInfo.getDescription().trim().isEmpty()
+            && !parameterInfo.getDescription().equals("null")) {
+            prompt.append("Parameter description: ").append(parameterInfo.getDescription()).append("\n\n");
+        }
+
+        // Truncate response if too long
+        String truncatedResponse = truncateResponseSchemaForLLM(responseBody, "", parameterInfo);
+        prompt.append("JSON Response:\n").append(truncatedResponse).append("\n\n");
+
+        prompt.append("Instructions:\n");
+        prompt.append("1. Find ALL values in the JSON that are semantically relevant for this parameter\n");
+        prompt.append("2. Look for values in arrays, nested objects, and all fields\n");
+        prompt.append("3. Consider field names, data types, and semantic meaning\n");
+        prompt.append("4. Extract actual values, not field names or paths\n");
+        prompt.append("5. Return each value on a separate line\n");
+        prompt.append("6. If no relevant values found, respond with: NO_VALUES_FOUND\n\n");
+
+        prompt.append("Example for parameter 'stationName':\n");
+        prompt.append("Shanghai\n");
+        prompt.append("Beijing\n");
+        prompt.append("Nanjing\n");
+
+        return prompt.toString();
+    }
+
+    /**
+     * Ask LLM to extract multiple values from API response
+     */
+    private String askLLMForMultipleValueExtraction(String prompt) {
+        try {
+            String systemContent = "You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. " +
+                                  "Focus on finding diverse, meaningful values that match the parameter semantically. " +
+                                  "Return actual values, not JSONPath expressions or field names.";
+
+            String result = llmService.generateText(systemContent, prompt, 200, 0.3);
+
+            if (result != null && !result.trim().isEmpty()) {
+                log.debug("[Multiple Value Extraction LLM] Successfully extracted values: {}", result);
+                return result;
+            } else {
+                log.warn("[Multiple Value Extraction LLM] LLM service returned null or empty result");
+                return null;
+            }
+
+        } catch (Exception e) {
+            log.warn("[Multiple Value Extraction LLM] Failed to call LLM service: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Fallback value extraction when LLM fails
+     */
+    private Set<String> extractValuesWithFallback(String responseBody, ParameterInfo parameterInfo) {
+        Set<String> extractedValues = new HashSet<>();
+
+        try {
+            // Simple JSON parsing fallback
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(responseBody);
+
+            extractValuesFromJsonNode(rootNode, parameterInfo, extractedValues);
+
+        } catch (Exception e) {
+            log.debug("Fallback value extraction failed for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+        }
+
+        return extractedValues;
+    }
+
+    /**
+     * Get required number of diverse values based on test case count
+     */
+    private int getRequiredValueCount(ParameterInfo parameterInfo) {
+        // Estimate based on typical test generation needs
+        // This could be made configurable or dynamic based on test suite size
+        return Math.max(5, 10); // At least 5, preferably 10 diverse values
+    }
+
+    /**
+     * Generate additional values using semantic similarity when API values are insufficient
+     */
+    private void generateAdditionalValuesWithSemanticSimilarity(ParameterInfo parameterInfo, Set<String> existingValues, int requiredCount) {
+        try {
+            int additionalNeeded = requiredCount - existingValues.size();
+            if (additionalNeeded <= 0) {
+                return;
+            }
+
+            log.info("🧠 Generating {} additional values for parameter '{}' using semantic similarity",
+                    additionalNeeded, parameterInfo.getName());
+
+            // Use LLM to generate semantically similar values
+            Set<String> generatedValues = generateSemanticallySimilarValues(parameterInfo, existingValues, additionalNeeded);
+
+            // Cache the generated values
+            for (String value : generatedValues) {
+                cacheDiverseValue(parameterInfo, value);
+            }
+
+            if (!generatedValues.isEmpty()) {
+                log.info("✅ Generated {} additional semantic values for parameter '{}': {}",
+                        generatedValues.size(), parameterInfo.getName(),
+                        generatedValues.stream().limit(3).collect(Collectors.toList()));
+            }
+
+        } catch (Exception e) {
+            log.warn("Failed to generate additional semantic values for parameter '{}': {}",
+                    parameterInfo.getName(), e.getMessage());
+        }
+    }
+
+    /**
+     * Generate semantically similar values using LLM-based semantic understanding
+     */
+    private Set<String> generateSemanticallySimilarValues(ParameterInfo parameterInfo, Set<String> existingValues, int count) {
+        Set<String> generatedValues = new HashSet<>();
+
+        try {
+            String prompt = buildSemanticSimilarityPrompt(parameterInfo, existingValues, count);
+
+            if (prompt.length() > 2044) {
+                log.warn("Semantic similarity prompt too long ({} chars), using fallback", prompt.length());
+                return generateFallbackSemanticValues(parameterInfo, existingValues, count);
+            }
+
+            String llmResponse = askLLMForSemanticSimilarValues(prompt);
+
+            if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                // Parse LLM response to extract generated values
+                String[] values = llmResponse.split("[,\\n\\r]+");
+                for (String value : values) {
+                    String cleanValue = value.trim().replaceAll("^[\"']|[\"']$", ""); // Remove quotes
+                    if (!cleanValue.isEmpty() && !cleanValue.equals("NO_VALUES_GENERATED") &&
+                        !existingValues.contains(cleanValue) &&
+                        isValidValueForParameter(cleanValue, parameterInfo)) {
+                        generatedValues.add(cleanValue);
+
+                        if (generatedValues.size() >= count) {
+                            break; // Got enough values
+                        }
+                    }
+                }
+
+                log.debug("LLM generated {} semantic values for parameter '{}'",
+                         generatedValues.size(), parameterInfo.getName());
+            }
+
+        } catch (Exception e) {
+            log.debug("LLM semantic value generation failed for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+        }
+
+        return generatedValues;
+    }
+
+    /**
+     * Build prompt for semantic similarity-based value generation
+     */
+    private String buildSemanticSimilarityPrompt(ParameterInfo parameterInfo, Set<String> existingValues, int count) {
+        StringBuilder prompt = new StringBuilder();
+
+        prompt.append("Generate ").append(count).append(" additional values that are semantically similar to the existing values ");
+        prompt.append("for parameter '").append(parameterInfo.getName()).append("' (type: ").append(parameterInfo.getType()).append(").\n\n");
+
+        if (parameterInfo.getDescription() != null && !parameterInfo.getDescription().trim().isEmpty()
+            && !parameterInfo.getDescription().equals("null")) {
+            prompt.append("Parameter description: ").append(parameterInfo.getDescription()).append("\n\n");
+        }
+
+        prompt.append("Existing values:\n");
+        for (String value : existingValues.stream().limit(5).collect(Collectors.toList())) {
+            prompt.append("- ").append(value).append("\n");
+        }
+
+        prompt.append("\nInstructions:\n");
+        prompt.append("1. Generate values that are semantically similar to the existing ones\n");
+        prompt.append("2. Consider the same domain, category, or type as existing values\n");
+        prompt.append("3. Use similar naming patterns, formats, or structures\n");
+        prompt.append("4. Generate realistic, meaningful values (not random strings)\n");
+        prompt.append("5. Each value should be different from existing ones\n");
+        prompt.append("6. Return each value on a separate line\n");
+        prompt.append("7. If unable to generate similar values, respond with: NO_VALUES_GENERATED\n\n");
+
+        prompt.append("Examples:\n");
+        prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
+        prompt.append("If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456\n");
+        prompt.append("If existing values are [admin, user123] → generate: manager, guest456, operator\n");
+
+        return prompt.toString();
+    }
+
+    /**
+     * Ask LLM to generate semantically similar values
+     */
+    private String askLLMForSemanticSimilarValues(String prompt) {
+        try {
+            String systemContent = "You are an expert in semantic similarity and test data generation. " +
+                                  "Generate diverse but semantically similar values based on existing examples. " +
+                                  "Focus on maintaining the same domain, format, and meaning while ensuring diversity. " +
+                                  "Use your knowledge of real-world entities, naming patterns, and data structures.";
+
+            String result = llmService.generateText(systemContent, prompt, 150, 0.7); // Higher temperature for creativity
+
+            if (result != null && !result.trim().isEmpty()) {
+                log.debug("[Semantic Similarity LLM] Successfully generated similar values: {}", result);
+                return result;
+            } else {
+                log.warn("[Semantic Similarity LLM] LLM service returned null or empty result");
+                return null;
+            }
+
+        } catch (Exception e) {
+            log.warn("[Semantic Similarity LLM] Failed to call LLM service: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Fallback semantic value generation when LLM fails
+     */
+    private Set<String> generateFallbackSemanticValues(ParameterInfo parameterInfo, Set<String> existingValues, int count) {
+        Set<String> generatedValues = new HashSet<>();
+
+        try {
+            // Simple pattern-based generation as fallback
+            String paramName = parameterInfo.getName().toLowerCase();
+
+            if (paramName.contains("station") && !existingValues.isEmpty()) {
+                // Generate station names
+                String[] stationSuffixes = {"Station", "Railway", "Terminal", "Junction", "Central"};
+                String[] cityPrefixes = {"North", "South", "East", "West", "Central", "New", "Old"};
+
+                for (int i = 0; i < count && generatedValues.size() < count; i++) {
+                    String prefix = cityPrefixes[i % cityPrefixes.length];
+                    String suffix = stationSuffixes[i % stationSuffixes.length];
+                    generatedValues.add(prefix + " " + suffix);
+                }
+            } else if (paramName.contains("train") && !existingValues.isEmpty()) {
+                // Generate train numbers
+                String[] trainPrefixes = {"G", "D", "K", "T", "Z", "C"};
+                for (int i = 0; i < count && generatedValues.size() < count; i++) {
+                    String prefix = trainPrefixes[i % trainPrefixes.length];
+                    int number = 1000 + (i * 123) % 9000; // Generate varied numbers
+                    generatedValues.add(prefix + number);
+                }
+            } else if (paramName.contains("user") || paramName.contains("id")) {
+                // Generate user IDs
+                String[] userPrefixes = {"user", "admin", "guest", "manager", "operator", "tester"};
+                for (int i = 0; i < count && generatedValues.size() < count; i++) {
+                    String prefix = userPrefixes[i % userPrefixes.length];
+                    int number = 100 + (i * 47) % 900;
+                    generatedValues.add(prefix + number);
+                }
+            } else {
+                // Generic fallback
+                for (int i = 0; i < count; i++) {
+                    generatedValues.add("generated_value_" + (i + 1));
+                }
+            }
+
+        } catch (Exception e) {
+            log.debug("Fallback semantic value generation failed for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+        }
+
+        return generatedValues;
     }
 
     /**
@@ -1138,40 +1458,85 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Check if a field is relevant for the parameter
+     * Check if a field is relevant for the parameter using LLM-based analysis
      */
     private boolean isRelevantField(String fieldName, String paramName, String paramType) {
-        // Direct name match
-        if (fieldName.equals(paramName)) {
-            return true;
-        }
+        // Use LLM to determine field relevance instead of hardcoded rules
+        return askLLMForFieldRelevance(fieldName, paramName, paramType);
+    }
 
-        // Partial name match
-        if (fieldName.contains(paramName) || paramName.contains(fieldName)) {
-            return true;
-        }
+    /**
+     * Ask LLM to determine if a field is relevant for a parameter
+     */
+    private boolean askLLMForFieldRelevance(String fieldName, String paramName, String paramType) {
+        try {
+            String prompt = buildFieldRelevancePrompt(fieldName, paramName, paramType);
 
-        // Type-based matching
-        if (paramName.contains("id") && fieldName.contains("id")) {
-            return true;
-        }
-        if (paramName.contains("name") && fieldName.contains("name")) {
-            return true;
-        }
-        if (paramName.contains("station") && fieldName.contains("station")) {
-            return true;
-        }
-        if (paramName.contains("train") && fieldName.contains("train")) {
-            return true;
-        }
-        if (paramName.contains("seat") && fieldName.contains("seat")) {
-            return true;
-        }
-        if (paramName.contains("class") && fieldName.contains("class")) {
-            return true;
-        }
+            if (prompt.length() > 500) { // Keep prompt short for efficiency
+                // Fallback to simple name matching for very long prompts
+                return fieldName.toLowerCase().contains(paramName.toLowerCase()) ||
+                       paramName.toLowerCase().contains(fieldName.toLowerCase());
+            }
 
-        return false;
+            String llmResponse = askLLMForFieldRelevanceDecision(prompt);
+
+            if (llmResponse != null && !llmResponse.trim().isEmpty()) {
+                String cleanResponse = llmResponse.trim().toLowerCase();
+                return cleanResponse.equals("yes") || cleanResponse.equals("true") || cleanResponse.equals("relevant");
+            }
+
+            // Fallback to simple matching if LLM fails
+            return fieldName.toLowerCase().contains(paramName.toLowerCase());
+
+        } catch (Exception e) {
+            log.debug("LLM field relevance check failed for field '{}' and parameter '{}': {}",
+                     fieldName, paramName, e.getMessage());
+            // Fallback to simple matching
+            return fieldName.toLowerCase().contains(paramName.toLowerCase());
+        }
+    }
+
+    /**
+     * Build prompt for LLM field relevance analysis
+     */
+    private String buildFieldRelevancePrompt(String fieldName, String paramName, String paramType) {
+        StringBuilder prompt = new StringBuilder();
+
+        prompt.append("Determine if the JSON field '").append(fieldName).append("' is relevant ");
+        prompt.append("for extracting values for parameter '").append(paramName).append("' ");
+        prompt.append("(type: ").append(paramType).append(").\n\n");
+
+        prompt.append("Consider semantic similarity, naming patterns, and data types.\n");
+        prompt.append("Examples of relevant matches:\n");
+        prompt.append("- Field 'stationName' is relevant for parameter 'endStation'\n");
+        prompt.append("- Field 'trainId' is relevant for parameter 'trainNumber'\n");
+        prompt.append("- Field 'seatType' is relevant for parameter 'seatClass'\n");
+        prompt.append("- Field 'userId' is relevant for parameter 'loginId'\n\n");
+
+        prompt.append("Respond with 'YES' if relevant, 'NO' if not relevant.");
+
+        return prompt.toString();
+    }
+
+    /**
+     * Ask LLM for field relevance decision
+     */
+    private String askLLMForFieldRelevanceDecision(String prompt) {
+        try {
+            String systemContent = "You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.";
+
+            String result = llmService.generateText(systemContent, prompt, 10, 0.1); // Low temperature for consistency
+
+            if (result != null && !result.trim().isEmpty()) {
+                return result.trim();
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            log.debug("LLM field relevance decision failed: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
