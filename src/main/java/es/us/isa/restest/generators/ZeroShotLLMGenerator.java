@@ -249,70 +249,7 @@ public class ZeroShotLLMGenerator {
     }
 
 
-    /**
-     * This method is currently a stub. In a real system,
-     * you'd do an API call to ChatGPT / local LLM / etc.
-     */
-    /**
-     * This method calls the OpenAI ChatGPT API (model "gpt-3.5-turbo")
-     * to produce multiple line-separated answers.
-     *
-     * Replace "YOUR_OPENAI_API_KEY" with your real key from
-     * https://platform.openai.com/account/api-keys
-     *
-     * If you don't have an API key, you'll need to sign up for
-     * an OpenAI account, which includes a free trial with credits.
-     */
-    private String callLLMGPT(String prompt) {
-        final String OPENAI_API_KEY = "sk-proj-13vRlyGryVRNXe3f6MHpGaJhSWoPtXlnIjFI0Y8zAdOt47t8GxLrlmFWSrRrEsTyoR3AN6SHXxT3BlbkFJTt6UwbBtBQsI_XObKpD6csvDBOUgjInkA";
-        final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-
-        String systemContent =
-                "You are an AI system that generates parameter values for API testing. " +
-                        "CRITICAL: When asked to generate N values, you MUST return exactly N lines. " +
-                        "Each line contains exactly one value. Use line breaks between values. " +
-                        "Do NOT put multiple values on the same line separated by spaces or commas. " +
-                        "Do NOT add explanations, numbering, or extra formatting.";
-
-        // ✅ Use org.json to build the request safely
-        JSONArray messages = new JSONArray()
-                .put(new JSONObject().put("role", "system").put("content", systemContent))
-                .put(new JSONObject().put("role", "user").put("content", prompt));
-
-        JSONObject requestBody = new JSONObject()
-                .put("model", "gpt-3.5-turbo")
-                .put("messages", messages)
-                .put("max_tokens", 200)
-                .put("temperature", 0.7)
-                .put("n", 1);
-
-        // Build and send request
-        okhttp3.OkHttpClient httpClient = new okhttp3.OkHttpClient();
-        okhttp3.RequestBody body = okhttp3.RequestBody.create(
-                requestBody.toString(), okhttp3.MediaType.parse("application/json"));
-
-        okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(OPENAI_API_URL)
-                .header("Authorization", "Bearer " + OPENAI_API_KEY)
-                .post(body)
-                .build();
-
-        try (okhttp3.Response response = httpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                System.err.println("[ChatGPT] API call failed with code " + response.code());
-                String err = response.body() != null ? response.body().string() : "";
-                System.err.println("[ChatGPT] Response body: " + err);
-                return "";
-            }
-
-            String responseBody = response.body() != null ? response.body().string() : "";
-//            System.out.println("This is the response body: " + responseBody);
-            return extractContentFromResponse(responseBody);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
+    // Legacy method removed - now using unified LLM service via callLLM()
 
 
     private String callLLM(String prompt) {
@@ -372,72 +309,7 @@ public class ZeroShotLLMGenerator {
 
 
 
-    /**
-     * ChatGPT responses are in JSON. We need to parse out:
-     *   response.choices[0].message.content
-     *
-     * We'll do a quick substring approach or a small JSON parse.
-     * For a robust solution, use Jackson or Gson.
-     */
-    private String extractContentFromResponse(String responseJson) {
-        // Example JSON (truncated for demonstration):
-        // {
-        //   "id": "chatcmpl-123",
-        //   "object": "chat.completion",
-        //   "choices": [
-        //     {
-        //       "index": 0,
-        //       "message": {
-        //         "role": "assistant",
-        //         "content": "line1\nline2\nline3"
-        //       },
-        //       ...
-        //     }
-        //   ],
-        //   ...
-        // }
-
-        // For brevity, let's do a naive parse.
-        // But it's better to use a JSON library.
-        // We'll search for: "content": "
-        String contentMarker = "\"content\":";
-        int ix = responseJson.indexOf(contentMarker);
-        if (ix < 0) {
-            return "";
-        }
-        // skip contentMarker
-        int start = responseJson.indexOf("\"", ix + contentMarker.length());
-        if (start < 0) return "";
-        // next quote
-        int end = responseJson.indexOf("\"", start + 1);
-        if (end < 0) return "";
-
-        // This only gets up to the next quote, doesn't handle escapes or multiple lines well
-        // We'll do a more robust approach below:
-
-        // Instead, let's do a quick JSON parse with minimal libs:
-        // you can do this if you have a small JSON library.
-        // Or parse with substring if we trust there are no edge cases.
-        // We'll do a minimal approach here.
-        // For demonstration, let's do a basic approach:
-
-        // This is a minimal approach, but let's do something a bit better:
-
-        try {
-            // Use org.json or another library if you prefer
-            JSONObject obj = new JSONObject(responseJson);
-            JSONArray choices = obj.getJSONArray("choices");
-            if (choices.length() > 0) {
-                JSONObject firstChoice = choices.getJSONObject(0);
-                JSONObject msg = firstChoice.getJSONObject("message");
-                return msg.optString("content", "");
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
+    // Legacy method removed - response parsing now handled by unified LLM service
 
     /**
      * Escape quotes or backslashes so we can embed user text in JSON.
