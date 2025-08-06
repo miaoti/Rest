@@ -1,0 +1,1 @@
+{"distanceList":"350","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"wuxi,shijiazhuang","id":"123","loginId":"1a2b3c4d-5678-9012-345","startStation":"wuxi","stationList":"suzhou","stations":"[\"Grand Central Terminal\", \"Union Station - Denver\", \"King Street Station - Newcastle\", \"Victoria Station - London\", \"Penn Station - New York\"]"}

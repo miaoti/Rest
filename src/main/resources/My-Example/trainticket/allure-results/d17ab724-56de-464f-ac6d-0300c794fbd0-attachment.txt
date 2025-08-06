@@ -1,1 +1,0 @@
-{"distanceList":"-3.14","distances":"789","endStation":"New York - Grand Central","id":"12345","loginId":"User123","startStation":"Los angeles union station","stationList":"Houston intermodal center","stations":"Chicago Union Terminal"}

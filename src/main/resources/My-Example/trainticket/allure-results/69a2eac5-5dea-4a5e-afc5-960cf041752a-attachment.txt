@@ -1,1 +1,0 @@
-{"accountId":"testing","boughtDate":"2019-07-01T06:00:00Z","coachNumber":"-9","contactsDocumentNumber":"ABC!@#$%","contactsName":"John Doe","documentType":"25","from":"chicago","id":"hi","price":"3.50","seatClass":"30","seatNumber":"a1","status":"201","to":"miami","trainNumber":"abc123","travelDate":"2023-10-05t09:00","travelTime":"2021-11-05t13:30"}

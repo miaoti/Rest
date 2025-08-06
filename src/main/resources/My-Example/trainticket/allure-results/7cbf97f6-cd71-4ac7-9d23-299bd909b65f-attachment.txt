@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"shijiazhuang","id":"e8b4d9a1-f3c2-4a7b-9d1e-c8f2a7b9d1e5","loginId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","startStation":"wuxi","stationList":"nanjing","stations":"zhejiang"}

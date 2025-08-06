@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"a10da578-32fa-4c04-903e-afbf34b09c51","trainType":"Special","routeId":"api-123","basicPriceRate":45.0,"firstClassPriceRate":10.95}}

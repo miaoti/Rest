@@ -1,1 +1,0 @@
-{"distanceList":"50","endStation":"Chicago - union square","id":"12345","startStation":"Los angeles union station","stationList":"Chicago loop"}

@@ -1,1 +1,0 @@
-{"distanceList":"-3.14","distances":"5.2","endStation":"Phoenix - Arizona State University","id":"Xyz789","loginId":"Testaccount001","startStation":"Chicago union station","stationList":"houston intermodal center","stations":"Houston hobby airport"}

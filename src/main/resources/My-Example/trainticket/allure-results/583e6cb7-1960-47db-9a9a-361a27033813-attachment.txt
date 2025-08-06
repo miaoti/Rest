@@ -1,1 +1,0 @@
-{"distanceList":"0","endStation":"Houston - Hobby Airport","id":"Xyz789","startStation":"San Francisco 49ers Stadium","stationList":"Phoenix Sky Harbor"}

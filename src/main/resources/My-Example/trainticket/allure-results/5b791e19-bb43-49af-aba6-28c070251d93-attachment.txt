@@ -1,1 +1,0 @@
-{"accountId":"ABC123","boughtDate":"2023-01-01T00:00:00Z","coachNumber":"7","contactsDocumentNumber":"tuvw-x-yz","contactsName":"Jane smith","documentType":"-1","from":"Houston","id":"09876","price":"25.49","seatClass":"1","seatNumber":"h6","status":"-2","to":"Test@example.com","trainNumber":"Abcdefg","travelDate":"2023-10-05","travelTime":"2022-02-01T14:00"}

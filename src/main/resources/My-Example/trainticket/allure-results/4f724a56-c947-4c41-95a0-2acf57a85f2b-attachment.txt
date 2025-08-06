@@ -1,1 +1,0 @@
-{"distanceList":"0","endStation":"Chicago Union Station","id":"Sydney_measured_####kbps","startStation":"Boston south station","stationList":"chicago loop"}

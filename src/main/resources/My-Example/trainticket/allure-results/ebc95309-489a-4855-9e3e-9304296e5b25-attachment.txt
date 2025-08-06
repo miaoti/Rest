@@ -1,1 +1,0 @@
-{"distanceList":"BORDER_=","distances":"789","endStation":"Los Angeles - Union Station","id":"09876","loginId":"Admins","startStation":"New York Penn Station","stationList":"chicago loop","stations":"New York Penn Station"}

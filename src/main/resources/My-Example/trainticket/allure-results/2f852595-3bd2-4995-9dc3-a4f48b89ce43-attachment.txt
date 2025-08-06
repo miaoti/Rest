@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"waco","id":"06f71780-c647-465c-969f-cf8c019bc45f","loginId":"a1b2c3d4-e5f6-7890-1234-567890abcdef","startStation":"wuxi","stationList":"nanjing","stations":"nanjing"}

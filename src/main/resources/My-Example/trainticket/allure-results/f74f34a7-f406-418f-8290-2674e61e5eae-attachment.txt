@@ -1,1 +1,0 @@
-{"distanceList":"-3.14","endStation":"New york - grand central","id":"abcde","startStation":"boston south station","stationList":"Chicago loop"}

@@ -1,1 +1,0 @@
-{"distanceList":"bd_div_story","endStation":"chicago union station","id":"user123","startStation":"boston south station","stationList":"los angeles union square"}

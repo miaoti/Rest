@@ -1,1 +1,0 @@
-{"basicPriceRate":"23.47","firstClassPriceRate":"bd_div_story","id":"User123","routeId":"example_route123","trainType":"Freightcar"}

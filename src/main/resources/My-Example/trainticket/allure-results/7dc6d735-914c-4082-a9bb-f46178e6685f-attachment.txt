@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"hello_world","trainType":"Express","routeId":"buf","basicPriceRate":10.5,"firstClassPriceRate":89.99}}

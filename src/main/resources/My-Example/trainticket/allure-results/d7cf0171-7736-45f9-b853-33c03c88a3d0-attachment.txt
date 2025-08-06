@@ -1,0 +1,1 @@
+{"basicPriceRate":"4.0","firstClassPriceRate":"129.99","id":"bdbacf78-877f-4d8c-ace5-399f12897a57","routeId":"12345","trainType":"Passenger"}

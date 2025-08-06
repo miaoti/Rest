@@ -1,1 +1,0 @@
-{"distanceList":"-5.5","distances":"```json","endStation":"Chicago union station","id":"Abcdefg","loginId":"johnston","startStation":"San Francisco Powell Street BART Station","stationList":"new york penn station","stations":"Museum of modern art"}

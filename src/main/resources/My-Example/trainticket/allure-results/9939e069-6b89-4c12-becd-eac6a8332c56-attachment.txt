@@ -1,1 +1,0 @@
-{"distanceList":"-3.14","endStation":"phoenix - arizona state university","id":"Abcde","startStation":"Chicago Union Station","stationList":"houston intermodal center"}

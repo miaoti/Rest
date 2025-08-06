@@ -1,1 +1,0 @@
-{"distanceList":"var_bd_=_getElementsByClass","endStation":"Phoenix - Arizona State University","id":"Abcde","startStation":"New York Penn Station","stationList":"los angeles terminal"}

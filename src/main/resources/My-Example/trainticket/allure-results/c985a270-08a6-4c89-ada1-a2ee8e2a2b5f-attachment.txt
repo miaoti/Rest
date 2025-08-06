@@ -1,1 +1,0 @@
-{"basicPriceRate":"23.99","firstClassPriceRate":"15.75","id":"Hello_world","routeId":"printf","trainType":"Freight"}

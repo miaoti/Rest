@@ -1,0 +1,1 @@
+{"status":1,"msg":"Success","data":{"[\"Grand Central Terminal\", \"O'Hare International Airport\", \"Hartsfield-Jackson Atlanta International Airport\", \"Denver International Airport\", \"LaGuardia Airport\"]":null,"qingdao":null,"xiamen":null}}

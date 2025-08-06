@@ -1,0 +1,1 @@
+{"distanceList":"350","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"suzhou","id":"e8b4d9a1-f3c2-4a7b-9d1e-c8f2a7b9d1e5","loginId":"c7d8e9f0-1234-5678-9abc-def012345678","startStation":"wuxi","stationList":"taiyuan","stations":"taiyuan"}

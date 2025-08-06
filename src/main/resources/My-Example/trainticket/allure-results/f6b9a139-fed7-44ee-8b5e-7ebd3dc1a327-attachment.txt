@@ -1,1 +1,0 @@
-{"distanceList":"-5.5","endStation":"Los angeles union station","id":"users","startStation":"los angeles union station","stationList":"new york penn station"}
