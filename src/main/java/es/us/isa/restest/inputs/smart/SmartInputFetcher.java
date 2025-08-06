@@ -1271,73 +1271,7 @@ public class SmartInputFetcher {
         return true; // Response looks valid
     }
 
-    /**
-     * Extract value using simple fallback when LLM fails
-     */
-    private String extractValueWithSimpleFallback(String responseBody, ParameterInfo parameterInfo) {
-        try {
-            // Use LLM to generate a contextually appropriate value
-            String llmGeneratedValue = generateValueWithLLM(parameterInfo);
-
-            if (llmGeneratedValue != null && !llmGeneratedValue.trim().isEmpty()) {
-                log.debug("LLM generated fallback value '{}' for parameter '{}'",
-                         llmGeneratedValue, parameterInfo.getName());
-                return llmGeneratedValue;
-            }
-
-            // If LLM fails, try to extract any reasonable value from response
-            return extractAnyReasonableValueFromResponse(responseBody, parameterInfo);
-
-        } catch (Exception e) {
-            log.debug("Fallback value generation failed for parameter '{}': {}",
-                     parameterInfo.getName(), e.getMessage());
-            return generateMinimalFallbackValue(parameterInfo);
-        }
-    }
-
-    /**
-     * Extract any reasonable value from response when all else fails
-     */
-    private String extractAnyReasonableValueFromResponse(String responseBody, ParameterInfo parameterInfo) {
-        try {
-            Object parsed = objectMapper.readValue(responseBody, Object.class);
-
-            if (parsed instanceof Map) {
-                Map<?, ?> map = (Map<?, ?>) parsed;
-
-                // Look for data array
-                if (map.containsKey("data") && map.get("data") instanceof List) {
-                    List<?> dataList = (List<?>) map.get("data");
-                    if (!dataList.isEmpty() && dataList.get(0) instanceof Map) {
-                        Map<?, ?> firstItem = (Map<?, ?>) dataList.get(0);
-
-                        // Use LLM to find the most appropriate field
-                        String semanticMatch = askLLMForSemanticFieldMatching(firstItem, parameterInfo.getName());
-                        if (semanticMatch != null) {
-                            Object value = firstItem.get(semanticMatch);
-                            if (value != null) {
-                                return value.toString();
-                            }
-                        }
-
-                        // If no semantic match, return any non-null value
-                        for (Map.Entry<?, ?> entry : firstItem.entrySet()) {
-                            if (entry.getValue() != null && !entry.getValue().toString().trim().isEmpty()) {
-                                return entry.getValue().toString();
-                            }
-                        }
-                    }
-                }
-            }
-
-            return generateMinimalFallbackValue(parameterInfo);
-
-        } catch (Exception e) {
-            log.debug("Failed to extract any value from response for parameter '{}': {}",
-                     parameterInfo.getName(), e.getMessage());
-            return generateMinimalFallbackValue(parameterInfo);
-        }
-    }
+    // Duplicate method removed - using the original extractValueWithSimpleFallback method above
 
     /**
      * Generate minimal fallback value based on schema type
