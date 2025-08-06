@@ -1031,31 +1031,25 @@ public class SmartInputFetcher {
     private String fallbackToLLM(ParameterInfo parameterInfo) {
         try {
             List<String> values = llmGenerator.generateParameterValues(parameterInfo);
-            String result = values.isEmpty() ? null : values.get(0);
 
-            // Clean any malformed LLM output (e.g., ```json)
-            if (result != null) {
-                result = cleanJsonFromMarkdown(result);
-                // If the result is still malformed or empty after cleaning, use a default
-                if (result.trim().isEmpty() || result.equals("json") || result.startsWith("```")) {
-                    result = null;
-                    log.warn("LLM returned malformed output for parameter '{}'", parameterInfo.getName());
-                }
+            if (values.isEmpty()) {
+                log.warn("LLM returned empty values list for parameter '{}'", parameterInfo.getName());
+                String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
+                log.info("Empty Values Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
+                return appropriateFallback;
             }
 
-            // Validate the LLM-generated value
-            if (result != null && isValidValueForParameter(result, parameterInfo)) {
-                log.info("LLM (Fallback) → {} = {}", parameterInfo.getName(), result);
-                return result;
-            } else if (result != null) {
-                log.warn("❌ LLM generated invalid value '{}' for parameter '{}', generating appropriate fallback",
-                        result, parameterInfo.getName());
-            }
+            // Check if this is an array parameter
+            String schemaType = getOpenAPISchemaType(parameterInfo);
+            boolean isArrayParameter = "array".equals(schemaType);
 
-            // Generate appropriate fallback based on parameter info
-            String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
-            log.info("Appropriate Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
-            return appropriateFallback;
+            if (isArrayParameter) {
+                // For array parameters, process all values and return as array
+                return handleArrayParameterFromLLM(parameterInfo, values);
+            } else {
+                // For single-value parameters, take the first value
+                return handleSingleValueParameterFromLLM(parameterInfo, values.get(0));
+            }
 
         } catch (Exception e) {
             log.warn("LLM fallback failed for '{}': {}", parameterInfo.getName(), e.getMessage());
@@ -1063,6 +1057,65 @@ public class SmartInputFetcher {
             log.info("Exception Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
             return appropriateFallback;
         }
+    }
+
+    /**
+     * Handle array parameter from LLM values
+     */
+    private String handleArrayParameterFromLLM(ParameterInfo parameterInfo, List<String> values) {
+        List<String> validValues = new ArrayList<>();
+
+        for (String value : values) {
+            if (value != null) {
+                String cleanedValue = cleanJsonFromMarkdown(value);
+                if (!cleanedValue.trim().isEmpty() && !cleanedValue.equals("json") && !cleanedValue.startsWith("```")) {
+                    String processedValue = cleanLLMGeneratedValue(cleanedValue, parameterInfo);
+                    if (processedValue != null && isValidValueForParameter(processedValue, parameterInfo)) {
+                        validValues.add(processedValue);
+                    }
+                }
+            }
+        }
+
+        if (!validValues.isEmpty()) {
+            // Return as JSON array string for array parameters
+            String arrayResult = "[" + validValues.stream()
+                    .map(v -> "\"" + v + "\"")
+                    .collect(Collectors.joining(", ")) + "]";
+            log.info("LLM (Array Fallback) → {} = {} (from {} values)",
+                    parameterInfo.getName(), arrayResult, validValues.size());
+            return arrayResult;
+        } else {
+            log.warn("❌ No valid values found in LLM array response for parameter '{}'", parameterInfo.getName());
+            String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
+            log.info("Array Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
+            return appropriateFallback;
+        }
+    }
+
+    /**
+     * Handle single value parameter from LLM
+     */
+    private String handleSingleValueParameterFromLLM(ParameterInfo parameterInfo, String value) {
+        if (value != null) {
+            String result = cleanJsonFromMarkdown(value);
+            if (!result.trim().isEmpty() && !result.equals("json") && !result.startsWith("```")) {
+                String cleanedResult = cleanLLMGeneratedValue(result, parameterInfo);
+                if (cleanedResult != null && isValidValueForParameter(cleanedResult, parameterInfo)) {
+                    log.info("LLM (Fallback) → {} = {} (cleaned from '{}')",
+                            parameterInfo.getName(), cleanedResult, result);
+                    return cleanedResult;
+                } else {
+                    log.warn("❌ LLM generated invalid value '{}' for parameter '{}', generating appropriate fallback",
+                            result, parameterInfo.getName());
+                }
+            }
+        }
+
+        // Generate appropriate fallback based on parameter info
+        String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
+        log.info("Single Value Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
+        return appropriateFallback;
     }
 
 
@@ -1135,6 +1188,36 @@ public class SmartInputFetcher {
             // Also add to diverse value cache
             cacheDiverseValue(parameterInfo, formattedValue);
         }
+    }
+
+    /**
+     * Clean LLM-generated values (remove units, clean formatting, etc.)
+     */
+    private String cleanLLMGeneratedValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+
+        String cleanValue = value.trim();
+        String paramName = parameterInfo.getName().toLowerCase();
+
+        // Remove quotes if present
+        if (cleanValue.startsWith("\"") && cleanValue.endsWith("\"") && cleanValue.length() > 1) {
+            cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
+        }
+
+        // For distance/numeric parameters, extract numeric part from values with units
+        if (paramName.contains("distance") || paramName.contains("price") || paramName.contains("rate")) {
+            String numericPart = extractNumericPart(cleanValue);
+            if (numericPart != null) {
+                log.debug("Extracted numeric part '{}' from LLM value '{}' for parameter '{}'",
+                         numericPart, value, parameterInfo.getName());
+                return numericPart;
+            }
+        }
+
+        // For other parameters, return cleaned value
+        return cleanValue;
     }
 
     /**
@@ -1377,7 +1460,14 @@ public class SmartInputFetcher {
 
             // Use LLM to generate appropriate value based on parameter semantics
             StringBuilder prompt = new StringBuilder();
-            prompt.append("Generate a single realistic value for this parameter:\n\n");
+            boolean isArrayType = "array".equals(schemaType);
+
+            if (isArrayType) {
+                prompt.append("Generate a JSON array with 2-3 realistic values for this parameter:\n\n");
+            } else {
+                prompt.append("Generate a single realistic value for this parameter:\n\n");
+            }
+
             prompt.append("Parameter name: ").append(parameterInfo.getName()).append("\n");
             prompt.append("Schema type: ").append(schemaType != null ? schemaType : "string").append("\n");
             if (schemaFormat != null) {
@@ -1387,8 +1477,14 @@ public class SmartInputFetcher {
             // Add semantic hints based on parameter name
             if (paramName.contains("distance")) {
                 prompt.append("Semantic hint: This represents a distance measurement\n");
+                if (isArrayType) {
+                    prompt.append("Example: [\"10 miles\", \"25 km\", \"150 meters\"]\n");
+                }
             } else if (paramName.contains("station")) {
                 prompt.append("Semantic hint: This represents a train station name\n");
+                if (isArrayType) {
+                    prompt.append("Example: [\"Shanghai\", \"Beijing\", \"Guangzhou\"]\n");
+                }
             } else if (paramName.contains("id")) {
                 prompt.append("Semantic hint: This represents an identifier\n");
             } else if (paramName.contains("price") || paramName.contains("rate")) {
@@ -1398,27 +1494,34 @@ public class SmartInputFetcher {
             }
 
             prompt.append("\nInstructions:\n");
-            prompt.append("1. Generate ONE realistic value that matches the parameter semantics\n");
-            prompt.append("2. For numeric types, return only the number (no units)\n");
-            prompt.append("3. For string types, return a realistic string value\n");
-            prompt.append("4. For boolean types, return 'true' or 'false'\n");
-            prompt.append("5. Return ONLY the value, no explanation\n");
+            if (isArrayType) {
+                prompt.append("1. Generate a JSON array with 2-3 realistic values\n");
+                prompt.append("2. For distance arrays, include values with units (like \"10 miles\", \"25 km\")\n");
+                prompt.append("3. Return ONLY the JSON array, no explanation\n");
+                prompt.append("4. Format: [\"value1\", \"value2\", \"value3\"]\n");
+            } else {
+                prompt.append("1. Generate ONE realistic value that matches the parameter semantics\n");
+                prompt.append("2. For distance values, include units (like \"10 miles\", \"25 km\")\n");
+                prompt.append("3. For string types, return a realistic string value\n");
+                prompt.append("4. For boolean types, return 'true' or 'false'\n");
+                prompt.append("5. Return ONLY the value, no explanation\n");
+            }
 
             String systemContent = "You are a test data generator. Generate realistic values based on parameter semantics and schema types.";
 
             String result = llmService.generateText(systemContent, prompt.toString(), 20, 0.3);
 
             if (result != null && !result.trim().isEmpty()) {
-                String cleanResult = result.trim();
+                String cleanResult = cleanLLMGeneratedValue(result, parameterInfo);
 
-                // Remove quotes if present
-                if (cleanResult.startsWith("\"") && cleanResult.endsWith("\"") && cleanResult.length() > 1) {
-                    cleanResult = cleanResult.substring(1, cleanResult.length() - 1);
-                }
-
-                // Validate the generated value
-                if (isValidValueForParameter(cleanResult, parameterInfo)) {
+                // Validate the cleaned value
+                if (cleanResult != null && isValidValueForParameter(cleanResult, parameterInfo)) {
+                    log.debug("LLM minimal fallback generated valid value '{}' (cleaned from '{}') for parameter '{}'",
+                             cleanResult, result, parameterInfo.getName());
                     return cleanResult;
+                } else {
+                    log.debug("LLM minimal fallback generated invalid value '{}' for parameter '{}'",
+                             result, parameterInfo.getName());
                 }
             }
 
@@ -1435,16 +1538,38 @@ public class SmartInputFetcher {
      * Generate minimal value based on schema type only (last resort)
      */
     private String generateSchemaBasedMinimalValue(ParameterInfo parameterInfo, String schemaType) {
+        String paramName = parameterInfo.getName().toLowerCase();
+
         if ("integer".equals(schemaType)) {
+            // For distance parameters, use appropriate numeric values
+            if (paramName.contains("distance")) {
+                return "100";
+            }
             return "1";
         } else if ("number".equals(schemaType)) {
+            // For distance parameters, use appropriate numeric values
+            if (paramName.contains("distance")) {
+                return "100.0";
+            }
             return "1.0";
         } else if ("boolean".equals(schemaType)) {
             return "false";
+        } else if ("array".equals(schemaType)) {
+            // For array types, return JSON array with appropriate values
+            if (paramName.contains("distance")) {
+                return "[\"100 miles\", \"50 km\"]";
+            } else if (paramName.contains("station")) {
+                return "[\"Shanghai\", \"Beijing\"]";
+            } else if (paramName.contains("id")) {
+                return "[\"id123\", \"id456\"]";
+            } else {
+                return "[\"item1\", \"item2\"]";
+            }
         } else {
-            // For string/array types, use parameter name as hint
-            String paramName = parameterInfo.getName().toLowerCase();
-            if (paramName.contains("station")) {
+            // For string types, use parameter name as hint
+            if (paramName.contains("distance")) {
+                return "100";
+            } else if (paramName.contains("station")) {
                 return "Station";
             } else if (paramName.contains("id")) {
                 return "id123";
@@ -1950,11 +2075,13 @@ public class SmartInputFetcher {
             return true;
         }
 
-        // Distance/numeric parameters should not have non-numeric values
-        if ((paramName.contains("distance") || paramName.contains("price") || paramName.contains("rate")) &&
-            !isNumericValue(cleanValue)) {
-            log.debug("Rejecting non-numeric value '{}' for numeric parameter '{}'", cleanValue, paramName);
-            return true;
+        // Distance/numeric parameters should not have non-numeric values (but allow values with units)
+        if ((paramName.contains("distance") || paramName.contains("price") || paramName.contains("rate"))) {
+            String numericPart = extractNumericPart(cleanValue);
+            if (numericPart == null || numericPart.trim().isEmpty()) {
+                log.debug("Rejecting non-numeric value '{}' for numeric parameter '{}'", cleanValue, paramName);
+                return true;
+            }
         }
 
         // LLM explanatory text patterns
@@ -1988,18 +2115,51 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Check if a value is numeric
+     * Check if a value is numeric (including values with units like "10 miles")
      */
     private boolean isNumericValue(String value) {
         if (value == null || value.trim().isEmpty()) {
             return false;
         }
+
+        String cleanValue = value.trim();
+
+        // Try direct parsing first
         try {
-            Double.parseDouble(value.trim());
+            Double.parseDouble(cleanValue);
             return true;
         } catch (NumberFormatException e) {
-            return false;
+            // If direct parsing fails, try extracting numeric part
+            return extractNumericPart(cleanValue) != null;
         }
+    }
+
+    /**
+     * Extract numeric part from values like "10 miles", "150.5 km", etc.
+     */
+    private String extractNumericPart(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+
+        String cleanValue = value.trim();
+
+        // Pattern to match numbers at the beginning (with optional decimal)
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^([0-9]+\\.?[0-9]*)");
+        java.util.regex.Matcher matcher = pattern.matcher(cleanValue);
+
+        if (matcher.find()) {
+            String numericPart = matcher.group(1);
+            try {
+                // Validate it's a valid number
+                Double.parseDouble(numericPart);
+                return numericPart;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+
+        return null;
     }
 
     /**
