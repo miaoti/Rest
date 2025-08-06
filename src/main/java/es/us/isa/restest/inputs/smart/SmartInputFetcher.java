@@ -1329,11 +1329,13 @@ public class SmartInputFetcher {
         prompt.append("1. Find ALL values in the JSON that are semantically relevant for this parameter\n");
         prompt.append("2. Look for values in arrays, nested objects, and all fields\n");
         prompt.append("3. Consider field names, data types, and semantic meaning\n");
-        prompt.append("4. Extract actual values, not field names or paths\n");
-        prompt.append("5. For array-type parameters (stations, distances, lists), extract individual elements\n");
+        prompt.append("4. Extract ONLY actual data values, NOT field names, paths, or descriptions\n");
+        prompt.append("5. For array-type parameters (stations, distances), extract individual elements\n");
         prompt.append("6. For numeric parameters, extract only numeric values\n");
-        prompt.append("7. Return each value on a separate line\n");
-        prompt.append("8. If no relevant values found, respond with: NO_VALUES_FOUND\n\n");
+        prompt.append("7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions\n");
+        prompt.append("8. Do NOT generate explanatory text or descriptions\n");
+        prompt.append("9. Return each value on a separate line\n");
+        prompt.append("10. If no relevant values found, respond with: NO_VALUES_FOUND\n\n");
 
         prompt.append("Example for parameter 'stationName':\n");
         prompt.append("Shanghai\n");
@@ -1498,10 +1500,13 @@ public class SmartInputFetcher {
         prompt.append("1. Generate values that are semantically similar to the existing ones\n");
         prompt.append("2. Consider the same domain, category, or type as existing values\n");
         prompt.append("3. Use similar naming patterns, formats, or structures\n");
-        prompt.append("4. Generate realistic, meaningful values (not random strings)\n");
-        prompt.append("5. Each value should be different from existing ones\n");
-        prompt.append("6. Return each value on a separate line\n");
-        prompt.append("7. If unable to generate similar values, respond with: NO_VALUES_GENERATED\n\n");
+        prompt.append("4. Generate realistic, meaningful values (not random strings or descriptions)\n");
+        prompt.append("5. For IDs: generate actual UUID-like strings, not descriptions about UUIDs\n");
+        prompt.append("6. For names: generate actual names, not generic terms like 'objects' or 'service'\n");
+        prompt.append("7. Each value should be different from existing ones\n");
+        prompt.append("8. Return ONLY the actual values, no explanatory text\n");
+        prompt.append("9. Return each value on a separate line\n");
+        prompt.append("10. If unable to generate similar values, respond with: NO_VALUES_GENERATED\n\n");
 
         prompt.append("Examples:\n");
         prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
@@ -1718,12 +1723,87 @@ public class SmartInputFetcher {
             return false;
         }
 
-        // Reject UUIDs and very long strings
-        if (value.length() > 50 || value.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")) {
+        String cleanValue = value.trim().toLowerCase();
+        String paramName = parameterInfo.getName().toLowerCase();
+
+        // Reject nonsensical LLM hallucinations
+        if (isNonsensicalValue(cleanValue, paramName)) {
+            log.debug("Rejecting nonsensical value '{}' for parameter '{}'", value, parameterInfo.getName());
             return false;
         }
 
+        // Reject very long strings (likely descriptions, not data)
+        if (value.length() > 100) {
+            log.debug("Rejecting overly long value '{}' for parameter '{}'", value, parameterInfo.getName());
+            return false;
+        }
+
+        // For ID parameters, be more strict
+        if (paramName.contains("id")) {
+            return isValidIdValue(value, parameterInfo);
+        }
+
         // Accept reasonable values
+        return true;
+    }
+
+    /**
+     * Check if a value is nonsensical LLM hallucination
+     */
+    private boolean isNonsensicalValue(String cleanValue, String paramName) {
+        // Generic/meaningless terms
+        if (cleanValue.equals("objects") || cleanValue.equals("service") || cleanValue.equals("data") ||
+            cleanValue.equals("response") || cleanValue.equals("result") || cleanValue.equals("value") ||
+            cleanValue.equals("item") || cleanValue.equals("element") || cleanValue.equals("field")) {
+            return true;
+        }
+
+        // LLM explanatory text patterns
+        if (cleanValue.contains("the format appears to be") ||
+            cleanValue.contains("delivery route") ||
+            cleanValue.contains("this is a") ||
+            cleanValue.contains("represents a") ||
+            cleanValue.contains("should be a") ||
+            cleanValue.contains("example of") ||
+            cleanValue.contains("type of")) {
+            return true;
+        }
+
+        // Partial sentences or fragments
+        if (cleanValue.contains("). the") || cleanValue.contains(", which") ||
+            cleanValue.contains("such as") || cleanValue.contains("for example")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate ID values more strictly
+     */
+    private boolean isValidIdValue(String value, ParameterInfo parameterInfo) {
+        String cleanValue = value.trim();
+
+        // Accept UUIDs
+        if (cleanValue.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
+            return true;
+        }
+
+        // Accept numeric IDs
+        if (cleanValue.matches("\\d+")) {
+            return true;
+        }
+
+        // Accept short alphanumeric IDs
+        if (cleanValue.matches("[a-zA-Z0-9._-]{1,20}")) {
+            return true;
+        }
+
+        // Reject descriptive text for ID fields
+        if (cleanValue.length() > 50 || cleanValue.contains(" ")) {
+            return false;
+        }
+
         return true;
     }
 
@@ -1771,24 +1851,23 @@ public class SmartInputFetcher {
         // FIXED: Be more conservative about array detection
         // Only treat as array if explicitly indicated by naming or schema
 
-        // Explicit array indicators (very specific)
+        // Explicit array indicators (very specific) - based on actual OpenAPI schema
         if (paramName.equals("distances") || paramName.equals("stations")) {
+            log.debug("Parameter '{}' detected as array type (explicit OpenAPI schema)", paramName);
             return true; // These are explicitly arrays in TrainTicket OpenAPI
         }
 
-        // Do NOT treat these as arrays (common mistakes):
-        // - seatClass (should be string)
-        // - stationList (should be string, despite "List" in name)
-        // - distanceList (should be string, despite "List" in name)
-        // - routeId (should be string)
-        // - trainType (should be string)
-
-        // Conservative approach: only use LLM for ambiguous cases
-        if (paramName.contains("list") && !paramName.equals("stationlist") && !paramName.equals("distancelist")) {
-            return askLLMForArrayTypeDecision(parameterInfo);
+        // Explicit NON-array parameters (prevent false positives)
+        if (paramName.equals("seatclass") || paramName.equals("stationlist") ||
+            paramName.equals("distancelist") || paramName.contains("id") ||
+            paramName.equals("traintype") || paramName.equals("routeid")) {
+            log.debug("Parameter '{}' detected as string type (explicit OpenAPI schema)", paramName);
+            return false; // These are explicitly strings in TrainTicket OpenAPI
         }
 
-        return false; // Default to string type
+        // For ambiguous cases, default to string (safer)
+        log.debug("Parameter '{}' defaulting to string type (conservative approach)", paramName);
+        return false; // Default to string type for safety
     }
 
     /**
