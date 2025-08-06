@@ -1,1 +1,0 @@
-{"distanceList":"4,000","distances":"var_bd_=_getElementsByClass","endStation":"San Francisco International Airport","id":"Xyz789","loginId":"Admin456","startStation":"Chicago transit authority - union station","stationList":"Chicago Loop","stations":"central london station"}

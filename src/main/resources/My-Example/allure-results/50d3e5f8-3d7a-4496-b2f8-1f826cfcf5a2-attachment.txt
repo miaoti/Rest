@@ -1,1 +1,0 @@
-{"distanceList":"25.5","endStation":"New York Penn Station","id":"buf","startStation":"Chicago transit authority - union station","stationList":"san francisco international airport"}

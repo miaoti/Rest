@@ -1,1 +1,0 @@
-{"distanceList":"25.5","distances":"0","endStation":"New York Penn Station","id":"buf","loginId":"perez_hilton","startStation":"Chicago transit authority - union station","stationList":"san francisco international airport","stations":"Central London Station"}

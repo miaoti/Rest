@@ -1,0 +1,1 @@
+{"accountId":"1234567890","boughtDate":"2013-05-04 12:00:00","coachNumber":"12345","contactsDocumentNumber":"DocumentNumber_One","contactsName":"fdse_microservice","documentType":"1","from":"suzhou","id":"7d5c8b3a-4321-","price":"19.99","seatClass":"1","seatNumber":"1A","status":"1","to":"beijing","trainNumber":"1234567890","travelDate":"2024-03-15","travelTime":"30"}

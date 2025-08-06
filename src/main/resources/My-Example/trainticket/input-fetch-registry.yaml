@@ -5,55 +5,55 @@ lastUpdated:
 - 8
 - 5
 - 20
-- 10
-- 1
-- 391497100
+- 43
+- 18
+- 557512600
 parameterMappings:
   loginId:
-  - endpoint: "/api/v1/adminuserservice/users"
+  - endpoint: "/api/v1/userservice/users/id/{userId}"
     method: "GET"
-    service: "ts-admin-user-service"
+    service: "ts-user-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
     - 2025
     - 8
     - 5
-    - 19
-    - 58
-    - 15
-    - 600850500
+    - 20
+    - 31
+    - 32
+    - 417095400
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/userservice/users/id/{userId}"
+  - endpoint: "/api/v1/adminuserservice/users"
     method: "GET"
-    service: "ts-user-service"
+    service: "ts-admin-user-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
     - 2025
     - 8
     - 5
-    - 19
-    - 58
-    - 17
-    - 878945500
-    successRate: 0.0
+    - 20
+    - 31
+    - 52
+    - 381560800
+    successRate: 0.1
     description: null
-  - endpoint: "/api/v1/securityservice/securityConfigs"
+  - endpoint: "/api/v1/basicservice/basic/{stationName}"
     method: "GET"
-    service: "ts-security-service"
+    service: "ts-basic-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
     - 2025
     - 8
     - 5
-    - 19
-    - 58
-    - 38
-    - 465145300
-    successRate: 0.1
+    - 20
+    - 31
+    - 36
+    - 517089400
+    successRate: 0.0
     description: null
   trainType:
   - endpoint: "/api/v1/trainservice/trains/byName/{name}"
@@ -66,9 +66,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 56
-    - 197445700
+    - 43
+    - 5
+    - 440180800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -81,9 +81,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 58
-    - 629840800
+    - 43
+    - 5
+    - 431679900
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/train_types/{tripId}"
@@ -96,13 +96,13 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 10
-    - 1
-    - 391497100
+    - 43
+    - 5
+    - 422254300
     successRate: 0.0
     description: null
   documentType:
-  - endpoint: "/api/v1/orderservice/order/{orderId}"
+  - endpoint: "/api/v1/orderservice/order/status/{orderId}/{status}"
     method: "GET"
     service: "ts-order-service"
     extractPath: "DIRECT_EXTRACTION"
@@ -112,9 +112,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 6
-    - 20
-    - 799364500
+    - 40
+    - 39
+    - 448600300
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/priceservice/prices/{routeId}/{trainType}"
@@ -127,9 +127,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 6
-    - 23
-    - 284477600
+    - 40
+    - 42
+    - 5577500
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -142,9 +142,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 6
     - 41
-    - 51708900
+    - 0
+    - 244893200
     successRate: 0.1
     description: null
   contactsDocumentNumber:
@@ -158,9 +158,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
-    - 31
-    - 682090800
+    - 36
+    - 10
+    - 204349300
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/adminbasicservice/adminbasic/contacts"
@@ -173,14 +173,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
-    - 41
-    - 535903100
-    successRate: 0.1
+    - 36
+    - 12
+    - 916104000
+    successRate: 0.0
     description: null
-  - endpoint: "/api/v1/userservice/users/id/{userId}"
+  - endpoint: "/api/v1/adminuserservice/users"
     method: "GET"
-    service: "ts-user-service"
+    service: "ts-admin-user-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
@@ -188,10 +188,10 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
     - 36
-    - 879977300
-    successRate: 0.0
+    - 29
+    - 468214500
+    successRate: 0.1
     description: null
   body:
   - endpoint: "/api/v1/routeservice/routes"
@@ -203,10 +203,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 59
-    - 14
-    - 952900100
+    - 20
+    - 32
+    - 48
+    - 304011800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -218,10 +218,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 59
-    - 17
-    - 445663000
+    - 20
+    - 32
+    - 50
+    - 883615300
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/stationservice/stations"
@@ -234,9 +234,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 0
-    - 24
-    - 477502100
+    - 33
+    - 59
+    - 139752500
     successRate: 0.1
     description: null
   contactsName:
@@ -250,9 +250,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
-    - 47
-    - 798864000
+    - 36
+    - 36
+    - 5185700
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/adminuserservice/users"
@@ -265,9 +265,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 3
-    - 3
-    - 151474800
+    - 36
+    - 52
+    - 224740800
     successRate: 0.1
     description: null
   - endpoint: "/api/v1/userservice/users/{userName}"
@@ -280,9 +280,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
-    - 52
-    - 203428300
+    - 36
+    - 40
+    - 471013700
     successRate: 0.0
     description: null
   seatNumber:
@@ -296,9 +296,9 @@ parameterMappings:
     - 8
     - 5
     - 20
+    - 38
     - 8
-    - 18
-    - 408635100
+    - 980254800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -311,9 +311,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 55
-    - 422071200
+    - 42
+    - 17
+    - 243130500
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips/{tripId}"
@@ -326,9 +326,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 55
-    - 412223900
+    - 42
+    - 17
+    - 233777600
     successRate: 0.0
     description: null
   coachNumber:
@@ -342,9 +342,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 53
-    - 703023500
+    - 42
+    - 15
+    - 512505200
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -357,9 +357,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 53
-    - 688857500
+    - 42
+    - 15
+    - 503119400
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips/{tripId}"
@@ -372,9 +372,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 53
-    - 673365800
+    - 42
+    - 15
+    - 493586800
     successRate: 0.0
     description: null
   routeId:
@@ -388,9 +388,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 46
-    - 891164200
+    - 42
+    - 50
+    - 790873800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeplanservice/welcome"
@@ -403,14 +403,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 40
-    - 673632600
+    - 42
+    - 44
+    - 834557500
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+  - endpoint: "/api/v1/routeservice/routes/{routeId}"
     method: "GET"
-    service: "ts-travel-service"
+    service: "ts-route-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
@@ -418,9 +418,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 43
-    - 409256100
+    - 42
+    - 47
+    - 290175000
     successRate: 0.0
     description: null
   seatClass:
@@ -434,9 +434,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 55
-    - 401941100
+    - 42
+    - 17
+    - 224022400
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/seatservice/welcome"
@@ -449,9 +449,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 33
-    - 19399100
+    - 37
+    - 54
+    - 810394500
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips/{tripId}"
@@ -464,9 +464,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 53
-    - 722835600
+    - 42
+    - 15
+    - 525158800
     successRate: 0.0
     description: null
   price:
@@ -480,9 +480,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 7
-    - 459696000
+    - 37
+    - 28
+    - 969340800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/consignpriceservice/consignprice/config"
@@ -495,9 +495,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 24
-    - 404722000
+    - 37
+    - 46
+    - 438692900
     successRate: 0.1
     description: null
   - endpoint: "/api/v1/orderservice/order/price/{orderId}"
@@ -510,15 +510,15 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 14
-    - 226645600
+    - 37
+    - 35
+    - 787944200
     successRate: 0.0
     description: null
   from:
-  - endpoint: "/api/v1/orderservice/order"
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
     method: "GET"
-    service: "ts-order-service"
+    service: "ts-route-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
@@ -526,14 +526,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 3
-    - 38
-    - 153923500
+    - 41
+    - 6
+    - 795076200
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+  - endpoint: "/api/v1/orderservice/order"
     method: "GET"
-    service: "ts-route-service"
+    service: "ts-order-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
@@ -541,9 +541,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 3
-    - 40
-    - 578179200
+    - 41
+    - 9
+    - 682100300
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -556,9 +556,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 0
-    - 937167300
+    - 41
+    - 31
+    - 163780400
     successRate: 0.1
     description: null
   startStation:
@@ -572,14 +572,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 0
-    - 44
-    - 253185300
+    - 32
+    - 9
+    - 761396600
     successRate: 0.1
     description: null
-  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
     method: "GET"
-    service: "ts-travel-service"
+    service: "ts-route-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
@@ -587,14 +587,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 0
-    - 39
-    - 156859400
+    - 32
+    - 3
+    - 868180900
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
     method: "GET"
-    service: "ts-route-service"
+    service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
@@ -602,9 +602,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 0
-    - 39
-    - 147685400
+    - 32
+    - 3
+    - 858816500
     successRate: 0.0
     description: null
   id:
@@ -617,10 +617,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 57
-    - 46
-    - 8323800
+    - 20
+    - 31
+    - 1
+    - 796964200
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/adminorderservice/adminorder"
@@ -632,10 +632,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 58
-    - 9
-    - 742529500
+    - 20
+    - 31
+    - 26
+    - 70854300
     successRate: 0.1
     description: null
   - endpoint: "/api/v1/routeservice/routes/{routeId}"
@@ -647,10 +647,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 57
-    - 50
-    - 62237800
+    - 20
+    - 31
+    - 5
+    - 952470600
     successRate: 0.0
     description: null
   distances:
@@ -663,10 +663,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 56
-    - 58
-    - 588899000
+    - 20
+    - 34
+    - 49
+    - 320821500
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -678,26 +678,26 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 57
-    - 0
-    - 857635400
-    successRate: 0.0
+    - 20
+    - 35
+    - 2
+    - 710126700
+    successRate: 0.1
     description: null
-  - endpoint: "/api/v1/priceservice/prices"
+  - endpoint: "/api/v1/travelplanservice/welcome"
     method: "GET"
-    service: "ts-price-service"
+    service: "ts-travel-plan-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
     - 2025
     - 8
     - 5
-    - 19
-    - 57
-    - 19
-    - 188982400
-    successRate: 0.1
+    - 20
+    - 34
+    - 53
+    - 786595300
+    successRate: 0.0
     description: null
   travelTime:
   - endpoint: "/api/v1/travelservice/trips/{tripId}"
@@ -710,9 +710,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 57
-    - 112716100
+    - 42
+    - 19
+    - 17023800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -725,9 +725,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 57
-    - 103017400
+    - 42
+    - 19
+    - 8486000
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/priceservice/prices/{routeId}/{trainType}"
@@ -740,9 +740,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 57
-    - 92936500
+    - 42
+    - 18
+    - 999257100
     successRate: 0.0
     description: null
   endStation:
@@ -755,13 +755,13 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 57
-    - 24
-    - 991898900
-    successRate: 0.0
+    - 20
+    - 30
+    - 55
+    - 341980400
+    successRate: 0.1
     description: null
-  - endpoint: "/api/v1/travelservice/trips"
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
     method: "GET"
     service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
@@ -770,11 +770,11 @@ parameterMappings:
     - 2025
     - 8
     - 5
+    - 20
+    - 30
     - 19
-    - 57
-    - 39
-    - 725138900
-    successRate: 0.1
+    - 843770400
+    successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
     method: "GET"
@@ -785,10 +785,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
+    - 20
+    - 30
     - 19
-    - 57
-    - 29
-    - 480453900
+    - 833481600
     successRate: 0.0
     description: null
   distanceList:
@@ -802,9 +802,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 1
-    - 20
-    - 998414700
+    - 29
+    - 49
+    - 400406100
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -817,14 +817,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 1
-    - 33
-    - 773561800
-    successRate: 0.1
+    - 29
+    - 51
+    - 671734200
+    successRate: 0.0
     description: null
-  - endpoint: "/api/v1/routeplanservice/welcome"
+  - endpoint: "/api/v1/priceservice/prices"
     method: "GET"
-    service: "ts-route-plan-service"
+    service: "ts-price-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
@@ -832,10 +832,10 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 1
-    - 25
-    - 593973900
-    successRate: 0.0
+    - 30
+    - 2
+    - 484450200
+    successRate: 0.1
     description: null
   firstClassPriceRate:
   - endpoint: "/api/v1/priceservice/prices/{routeId}/{trainType}"
@@ -848,9 +848,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 29
-    - 313900500
+    - 42
+    - 33
+    - 383168200
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -863,9 +863,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 29
-    - 304263300
+    - 42
+    - 33
+    - 374176900
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips/{tripId}"
@@ -878,9 +878,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 29
-    - 295227900
+    - 42
+    - 33
+    - 364386100
     successRate: 0.0
     description: null
   stations:
@@ -893,10 +893,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 58
-    - 52
-    - 766628800
+    - 20
+    - 32
+    - 21
+    - 810855400
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -908,10 +908,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 58
-    - 55
-    - 90068900
+    - 20
+    - 32
+    - 24
+    - 199596800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -923,10 +923,10 @@ parameterMappings:
     - 2025
     - 8
     - 5
-    - 19
-    - 59
-    - 9
-    - 19628400
+    - 20
+    - 32
+    - 38
+    - 468907300
     successRate: 0.1
     description: null
   differenceMoney:
@@ -940,14 +940,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 3
-    - 9
-    - 732495600
+    - 36
+    - 58
+    - 850376100
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/consignpriceservice/consignprice/{weight}/{isWithinRegion}"
+  - endpoint: "/api/v1/paymentservice/payment"
     method: "GET"
-    service: "ts-consign-price-service"
+    service: "ts-payment-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
@@ -955,14 +955,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 3
-    - 12
-    - 642226600
-    successRate: 0.0
+    - 37
+    - 14
+    - 398191900
+    successRate: 0.1
     description: null
-  - endpoint: "/api/v1/paymentservice/payment"
+  - endpoint: "/api/v1/consignpriceservice/consignprice/{weight}/{isWithinRegion}"
     method: "GET"
-    service: "ts-payment-service"
+    service: "ts-consign-price-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
@@ -970,13 +970,13 @@ parameterMappings:
     - 8
     - 5
     - 20
+    - 37
     - 3
-    - 25
-    - 146481500
-    successRate: 0.1
+    - 827476300
+    successRate: 0.0
     description: null
   basicPriceRate:
-  - endpoint: "/api/v1/priceservice/prices/{routeId}/{trainType}"
+  - endpoint: "/api/v1/priceservice/prices"
     method: "GET"
     service: "ts-price-service"
     extractPath: "DIRECT_EXTRACTION"
@@ -986,9 +986,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 3
-    - 539184700
+    - 43
+    - 13
+    - 642958000
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/basicservice/basic/{stationName}"
@@ -1001,9 +1001,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 5
-    - 656691700
+    - 43
+    - 15
+    - 800235900
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/consignpriceservice/consignprice/price"
@@ -1016,10 +1016,10 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 9
-    - 17
-    - 541597100
-    successRate: 0.1
+    - 43
+    - 18
+    - 557512600
+    successRate: 0.0
     description: null
   accountId:
   - endpoint: "/api/v1/orderservice/order/security/{checkDate}/{accountId}"
@@ -1032,14 +1032,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 7
-    - 43
-    - 579830400
+    - 35
+    - 20
+    - 112963000
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/userservice/users/id/{userId}"
+  - endpoint: "/api/v1/adminuserservice/users"
     method: "GET"
-    service: "ts-user-service"
+    service: "ts-admin-user-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
@@ -1047,14 +1047,14 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 7
-    - 46
-    - 7366400
-    successRate: 0.0
+    - 35
+    - 41
+    - 334663800
+    successRate: 0.1
     description: null
-  - endpoint: "/api/v1/adminuserservice/users"
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
     method: "GET"
-    service: "ts-admin-user-service"
+    service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
@@ -1062,13 +1062,13 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 4
-    - 394577800
-    successRate: 0.1
+    - 35
+    - 25
+    - 1817000
+    successRate: 0.0
     description: null
   travelDate:
-  - endpoint: "/api/v1/travelservice/trips"
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
     method: "GET"
     service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
@@ -1078,9 +1078,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 5
-    - 33
-    - 733896500
+    - 39
+    - 32
+    - 887176600
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/priceservice/prices"
@@ -1093,9 +1093,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 5
-    - 44
-    - 992050000
+    - 39
+    - 48
+    - 98908200
     successRate: 0.1
     description: null
   - endpoint: "/api/v1/travel2service/trips/{tripId}"
@@ -1108,9 +1108,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 5
-    - 38
-    - 797838100
+    - 39
+    - 37
+    - 983958300
     successRate: 0.0
     description: null
   boughtDate:
@@ -1124,9 +1124,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 1
-    - 55
-    - 496980700
+    - 40
+    - 8
+    - 892479800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -1139,9 +1139,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
-    - 18
-    - 515791700
+    - 40
+    - 31
+    - 901890500
     successRate: 0.1
     description: null
   - endpoint: "/api/v1/trainservice/trains/byName/{name}"
@@ -1154,9 +1154,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 2
-    - 0
-    - 592982100
+    - 40
+    - 13
+    - 978693200
     successRate: 0.0
     description: null
   stationList:
@@ -1170,9 +1170,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 0
-    - 50
-    - 365902000
+    - 34
+    - 10
+    - 649320000
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -1185,9 +1185,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 0
-    - 52
-    - 762295800
+    - 34
+    - 13
+    - 75103900
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -1200,9 +1200,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 1
-    - 7
-    - 728264000
+    - 34
+    - 27
+    - 710382100
     successRate: 0.1
     description: null
   trainNumber:
@@ -1216,9 +1216,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 57
-    - 82921800
+    - 42
+    - 18
+    - 989742300
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/stationservice/stations/name/{stationIdForName}"
@@ -1231,9 +1231,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 57
-    - 72204800
+    - 42
+    - 18
+    - 980967000
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -1246,9 +1246,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 8
-    - 57
-    - 61777300
+    - 42
+    - 18
+    - 971094900
     successRate: 0.0
     description: null
   to:
@@ -1262,9 +1262,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 55
-    - 340230500
+    - 38
+    - 53
+    - 476147200
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -1277,9 +1277,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 4
-    - 57
-    - 948826100
+    - 38
+    - 56
+    - 104902400
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/orderservice/order"
@@ -1292,9 +1292,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 5
-    - 12
-    - 900796700
+    - 39
+    - 11
+    - 374743800
     successRate: 0.1
     description: null
   status:
@@ -1308,9 +1308,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 6
-    - 57
-    - 940311000
+    - 38
+    - 27
+    - 522066800
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/priceservice/prices"
@@ -1323,9 +1323,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 7
-    - 0
-    - 224460200
+    - 38
+    - 29
+    - 813544600
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -1338,9 +1338,9 @@ parameterMappings:
     - 8
     - 5
     - 20
-    - 7
-    - 21
-    - 607295300
+    - 38
+    - 47
+    - 20685700
     successRate: 0.1
     description: null
 servicePatterns:

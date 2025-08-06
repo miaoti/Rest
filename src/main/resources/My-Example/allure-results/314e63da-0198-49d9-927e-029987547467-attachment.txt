@@ -1,1 +1,0 @@
-{"distanceList":"25.5","distances":"4567890","endStation":"Los angeles union station","id":"Sydney_measured_####kbps","loginId":"John_doe","startStation":"New York City Subway - Times Square","stationList":"new york penn station","stations":"Central london station"}

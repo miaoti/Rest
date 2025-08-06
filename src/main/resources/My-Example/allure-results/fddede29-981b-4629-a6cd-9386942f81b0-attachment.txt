@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"[\"d1e2f3a4-b5c6-7890-1234-567890abcdef\"]","endStation":"dalian","id":"9c8a7b65-4321-9abc-def0-19a876543210","loginId":"a3e8d1f9-c0b2-4a7d-8e9b-1c6a7f3e9d01","startStation":"wuxi","stationList":"Grand Central Terminal","stations":"[\"shenzhen\"]"}

@@ -1,1 +1,0 @@
-{"distanceList":"4,000","distances":"1000","endStation":"Los angeles union station","id":"admin001","loginId":"users","startStation":"Boston's MBTA - South Station","stationList":"Los Angeles Union Station","stations":"Harajuku Station"}

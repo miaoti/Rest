@@ -1,1 +1,0 @@
-{"accountId":"tested","boughtDate":"2019-06-01t12:00:00z","coachNumber":"-1000","contactsDocumentNumber":"987-654-321","contactsName":"alice johnson","documentType":"250","from":"nyc","id":"printf","price":"$100.00","seatClass":"3","seatNumber":"e345","status":"200","to":"Bobbrown","trainNumber":"xyz789","travelDate":"2026-04-18","travelTime":"2024-06-15t12:30:00z"}

@@ -1,1 +1,0 @@
-{"distanceList":"10","endStation":"Los angeles union station","id":"Sydney_measured_####kbps","startStation":"Chicago transit authority - union station","stationList":"Houston Hobby Airport"}

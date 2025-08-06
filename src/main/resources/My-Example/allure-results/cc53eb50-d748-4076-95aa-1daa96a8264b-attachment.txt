@@ -1,1 +1,0 @@
-{"distanceList":"4,000","endStation":"Chicago o'hare international airport","id":"Abc123","startStation":"san francisco bay area rapid transit (bart) - powell street station","stationList":"Chicago Loop"}
