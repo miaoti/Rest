@@ -18,6 +18,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -142,6 +143,9 @@ public class SmartInputFetcher {
             log.info("🎯 Smart Fetch Decision → {} (random: {:.3f} < {:.1f}%)",
                      parameterInfo.getName(), randomValue, config.getSmartFetchPercentage() * 100);
 
+            // Clear any invalid cached values before proceeding
+            clearInvalidCachedValues(parameterInfo);
+
             // First, try to get a diverse cached value
             String diverseValue = getNextDiverseValue(parameterInfo);
             if (diverseValue != null) {
@@ -208,13 +212,20 @@ public class SmartInputFetcher {
             try {
                 String value = fetchFromApiMapping(mapping, parameterInfo);
                 if (value != null && !value.trim().isEmpty()) {
-                    // Update success rate and cache
-                    mapping.updateSuccessRate(true);
-                    cacheValue(parameterInfo, value);
+                    // Validate value before caching and returning
+                    if (isValidValueForParameter(value, parameterInfo)) {
+                        // Update success rate and cache only valid values
+                        mapping.updateSuccessRate(true);
+                        cacheValue(parameterInfo, value);
 
-                    log.debug("Successfully fetched value '{}' for parameter '{}' from {}",
-                             value, paramName, mapping.getEndpoint());
-                    return value;
+                        log.debug("Successfully fetched valid value '{}' for parameter '{}' from {}",
+                                 value, paramName, mapping.getEndpoint());
+                        return value;
+                    } else {
+                        log.warn("❌ Rejecting invalid value '{}' for parameter '{}' from {}",
+                                value, paramName, mapping.getEndpoint());
+                        mapping.updateSuccessRate(false);
+                    }
                 }
             } catch (Exception e) {
                 log.debug("Failed to fetch from mapping {}: {}", mapping, e.getMessage());
@@ -596,12 +607,19 @@ public class SmartInputFetcher {
                             }
                         }
 
-                        // Semantic matching fallback
+                        // Semantic matching fallback with validation
                         String fallbackValue = findSemanticMatch(firstItem, paramName);
                         if (fallbackValue != null) {
-                            log.info("📋 Fallback found semantic match '{}' for parameter '{}'",
-                                    fallbackValue, parameterInfo.getName());
-                            return fallbackValue;
+                            // ✅ CRITICAL FIX: Validate the fallback value before accepting it
+                            if (isValidValueForParameter(fallbackValue, parameterInfo)) {
+                                log.info("📋 Fallback found valid semantic match '{}' for parameter '{}'",
+                                        fallbackValue, parameterInfo.getName());
+                                return fallbackValue;
+                            } else {
+                                log.warn("❌ Fallback found invalid semantic match '{}' for parameter '{}' - rejecting",
+                                        fallbackValue, parameterInfo.getName());
+                                // Continue to LLM generation instead of using invalid value
+                            }
                         }
 
                         // Last resort: Ask LLM to generate a meaningful value instead of using random strings
@@ -612,13 +630,20 @@ public class SmartInputFetcher {
                             return llmGeneratedValue;
                         }
 
-                        // Final fallback: return first non-null string value only if LLM fails
+                        // Final fallback: return first valid string value only if LLM fails
                         for (Map.Entry<?, ?> entry : firstItem.entrySet()) {
                             Object value = entry.getValue();
                             if (value != null && value instanceof String && !value.toString().trim().isEmpty()) {
-                                log.warn("📋 LLM generation failed, using first string value '{}' for parameter '{}' as last resort",
-                                        value, parameterInfo.getName());
-                                return value.toString();
+                                String stringValue = value.toString();
+                                // ✅ CRITICAL FIX: Validate even the last resort value
+                                if (isValidValueForParameter(stringValue, parameterInfo)) {
+                                    log.warn("📋 LLM generation failed, using first valid string value '{}' for parameter '{}' as last resort",
+                                            stringValue, parameterInfo.getName());
+                                    return stringValue;
+                                } else {
+                                    log.debug("❌ Rejecting invalid last resort value '{}' for parameter '{}'",
+                                             stringValue, parameterInfo.getName());
+                                }
                             }
                         }
                     }
@@ -1001,30 +1026,130 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Fallback to traditional LLM generation
+     * Fallback to traditional LLM generation with validation
      */
     private String fallbackToLLM(ParameterInfo parameterInfo) {
         try {
             List<String> values = llmGenerator.generateParameterValues(parameterInfo);
-            String result = values.isEmpty() ? "DEFAULT_" + parameterInfo.getName() : values.get(0);
+            String result = values.isEmpty() ? null : values.get(0);
 
             // Clean any malformed LLM output (e.g., ```json)
             if (result != null) {
                 result = cleanJsonFromMarkdown(result);
                 // If the result is still malformed or empty after cleaning, use a default
                 if (result.trim().isEmpty() || result.equals("json") || result.startsWith("```")) {
-                    result = "DEFAULT_" + parameterInfo.getName();
-                    log.warn("LLM returned malformed output, using default for parameter '{}'", parameterInfo.getName());
+                    result = null;
+                    log.warn("LLM returned malformed output for parameter '{}'", parameterInfo.getName());
                 }
             }
 
-            log.info("LLM (Fallback) → {} = {}", parameterInfo.getName(), result);
-            return result;
+            // Validate the LLM-generated value
+            if (result != null && isValidValueForParameter(result, parameterInfo)) {
+                log.info("LLM (Fallback) → {} = {}", parameterInfo.getName(), result);
+                return result;
+            } else if (result != null) {
+                log.warn("❌ LLM generated invalid value '{}' for parameter '{}', generating appropriate fallback",
+                        result, parameterInfo.getName());
+            }
+
+            // Generate appropriate fallback based on parameter info
+            String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
+            log.info("Appropriate Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
+            return appropriateFallback;
+
         } catch (Exception e) {
             log.warn("LLM fallback failed for '{}': {}", parameterInfo.getName(), e.getMessage());
-            String fallback = "FALLBACK_" + parameterInfo.getName();
-            log.info("Default Fallback → {} = {}", parameterInfo.getName(), fallback);
-            return fallback;
+            String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
+            log.info("Exception Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
+            return appropriateFallback;
+        }
+    }
+
+    /**
+     * Generate minimal appropriate fallback value based on parameter info (no hardcoding)
+     */
+    private String generateMinimalFallbackValue(ParameterInfo parameterInfo) {
+        try {
+            String paramName = parameterInfo.getName().toLowerCase();
+            String schemaType = getOpenAPISchemaType(parameterInfo);
+            String schemaFormat = getOpenAPISchemaFormat(parameterInfo);
+
+            // Use LLM to generate appropriate value based on parameter semantics
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("Generate a single realistic value for this parameter:\n\n");
+            prompt.append("Parameter name: ").append(parameterInfo.getName()).append("\n");
+            prompt.append("Schema type: ").append(schemaType != null ? schemaType : "string").append("\n");
+            if (schemaFormat != null) {
+                prompt.append("Schema format: ").append(schemaFormat).append("\n");
+            }
+
+            // Add semantic hints based on parameter name
+            if (paramName.contains("distance")) {
+                prompt.append("Semantic hint: This represents a distance measurement\n");
+            } else if (paramName.contains("station")) {
+                prompt.append("Semantic hint: This represents a train station name\n");
+            } else if (paramName.contains("id")) {
+                prompt.append("Semantic hint: This represents an identifier\n");
+            } else if (paramName.contains("price") || paramName.contains("rate")) {
+                prompt.append("Semantic hint: This represents a price or rate value\n");
+            } else if (paramName.contains("date") || paramName.contains("time")) {
+                prompt.append("Semantic hint: This represents a date or time value\n");
+            }
+
+            prompt.append("\nInstructions:\n");
+            prompt.append("1. Generate ONE realistic value that matches the parameter semantics\n");
+            prompt.append("2. For numeric types, return only the number (no units)\n");
+            prompt.append("3. For string types, return a realistic string value\n");
+            prompt.append("4. For boolean types, return 'true' or 'false'\n");
+            prompt.append("5. Return ONLY the value, no explanation\n");
+
+            String systemContent = "You are a test data generator. Generate realistic values based on parameter semantics and schema types.";
+
+            String result = llmService.generateText(systemContent, prompt.toString(), 20, 0.3);
+
+            if (result != null && !result.trim().isEmpty()) {
+                String cleanResult = result.trim();
+
+                // Remove quotes if present
+                if (cleanResult.startsWith("\"") && cleanResult.endsWith("\"") && cleanResult.length() > 1) {
+                    cleanResult = cleanResult.substring(1, cleanResult.length() - 1);
+                }
+
+                // Validate the generated value
+                if (isValidValueForParameter(cleanResult, parameterInfo)) {
+                    return cleanResult;
+                }
+            }
+
+            // If LLM fails, use schema-based minimal values
+            return generateSchemaBasedMinimalValue(parameterInfo, schemaType);
+
+        } catch (Exception e) {
+            log.debug("Failed to generate minimal fallback value for '{}': {}", parameterInfo.getName(), e.getMessage());
+            return generateSchemaBasedMinimalValue(parameterInfo, getOpenAPISchemaType(parameterInfo));
+        }
+    }
+
+    /**
+     * Generate minimal value based on schema type only (last resort)
+     */
+    private String generateSchemaBasedMinimalValue(ParameterInfo parameterInfo, String schemaType) {
+        if ("integer".equals(schemaType)) {
+            return "1";
+        } else if ("number".equals(schemaType)) {
+            return "1.0";
+        } else if ("boolean".equals(schemaType)) {
+            return "false";
+        } else {
+            // For string/array types, use parameter name as hint
+            String paramName = parameterInfo.getName().toLowerCase();
+            if (paramName.contains("station")) {
+                return "Station";
+            } else if (paramName.contains("id")) {
+                return "id123";
+            } else {
+                return "value";
+            }
         }
     }
 
@@ -1099,9 +1224,16 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Cache multiple diverse values for a parameter
+     * Cache multiple diverse values for a parameter - only cache valid values
      */
     private void cacheDiverseValue(ParameterInfo parameterInfo, String value) {
+        // Validate value before caching
+        if (!isValidValueForParameter(value, parameterInfo)) {
+            log.debug("❌ Skipping caching of invalid diverse value '{}' for parameter '{}'",
+                     value, parameterInfo.getName());
+            return;
+        }
+
         // Format value according to OpenAPI schema before caching
         String formattedValue = formatValueForSchema(value, parameterInfo);
 
@@ -1113,6 +1245,41 @@ public class SmartInputFetcher {
             values.add(formattedValue);
             log.debug("📋 Cached diverse value '{}' for parameter '{}' (total: {})",
                      formattedValue, parameterInfo.getName(), values.size());
+        }
+    }
+
+    /**
+     * Clear invalid cached values for a parameter
+     */
+    private void clearInvalidCachedValues(ParameterInfo parameterInfo) {
+        String cacheKey = buildCacheKey(parameterInfo);
+
+        // Clear main cache
+        if (cache.containsKey(cacheKey)) {
+            CachedValue cachedValue = cache.get(cacheKey);
+            if (cachedValue != null && !isValidValueForParameter(cachedValue.getValue(), parameterInfo)) {
+                cache.remove(cacheKey);
+                log.info("🧹 Cleared invalid cached value for parameter '{}'", parameterInfo.getName());
+            }
+        }
+
+        // Clear diverse value cache
+        if (diverseValueCache.containsKey(cacheKey)) {
+            List<String> values = diverseValueCache.get(cacheKey);
+            List<String> validValues = values.stream()
+                    .filter(value -> isValidValueForParameter(value, parameterInfo))
+                    .collect(Collectors.toList());
+
+            if (validValues.size() != values.size()) {
+                if (validValues.isEmpty()) {
+                    diverseValueCache.remove(cacheKey);
+                    log.info("🧹 Cleared all invalid diverse cached values for parameter '{}'", parameterInfo.getName());
+                } else {
+                    diverseValueCache.put(cacheKey, validValues);
+                    log.info("🧹 Removed {} invalid diverse cached values for parameter '{}', kept {} valid values",
+                            values.size() - validValues.size(), parameterInfo.getName(), validValues.size());
+                }
+            }
         }
     }
 
