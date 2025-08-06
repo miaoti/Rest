@@ -633,42 +633,94 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Find semantic matches for parameter names
+     * Find semantic matches using LLM-based analysis instead of hardcoded rules
      */
     private String findSemanticMatch(Map<?, ?> data, String paramName) {
-        // Distance-related
-        if (paramName.contains("distance")) {
-            for (String field : new String[]{"price", "from", "to", "trainNumber"}) {
-                Object value = data.get(field);
-                if (value != null) return value.toString();
-            }
-        }
+        try {
+            // Use LLM to find semantically relevant fields in the data
+            String semanticMatch = askLLMForSemanticFieldMatching(data, paramName);
 
-        // Station-related
-        if (paramName.contains("station")) {
-            for (String field : new String[]{"from", "to", "contactsName"}) {
-                Object value = data.get(field);
-                if (value != null) return value.toString();
-            }
-        }
+            if (semanticMatch != null && !semanticMatch.trim().isEmpty()) {
+                // Try to extract the suggested field from data
+                Object value = data.get(semanticMatch.trim());
+                if (value != null) {
+                    log.debug("LLM found semantic match: field '{}' → value '{}' for parameter '{}'",
+                             semanticMatch, value, paramName);
+                    return value.toString();
+                }
 
-        // ID-related
-        if (paramName.contains("id")) {
-            for (String field : new String[]{"id", "accountId", "trainNumber"}) {
-                Object value = data.get(field);
-                if (value != null) return value.toString();
+                // Try case-insensitive matching
+                for (Map.Entry<?, ?> entry : data.entrySet()) {
+                    if (entry.getKey() != null &&
+                        entry.getKey().toString().equalsIgnoreCase(semanticMatch.trim())) {
+                        log.debug("LLM found semantic match (case-insensitive): field '{}' → value '{}' for parameter '{}'",
+                                 entry.getKey(), entry.getValue(), paramName);
+                        return entry.getValue().toString();
+                    }
+                }
             }
-        }
 
-        // Name-related
-        if (paramName.contains("name")) {
-            for (String field : new String[]{"contactsName", "trainNumber"}) {
-                Object value = data.get(field);
-                if (value != null) return value.toString();
+            return null;
+
+        } catch (Exception e) {
+            log.debug("LLM semantic matching failed for parameter '{}': {}", paramName, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Ask LLM to find semantically relevant fields in data for a parameter
+     */
+    private String askLLMForSemanticFieldMatching(Map<?, ?> data, String paramName) {
+        try {
+            StringBuilder prompt = new StringBuilder();
+
+            prompt.append("Find the most semantically relevant field in this data for the parameter '").append(paramName).append("':\n\n");
+
+            prompt.append("Available fields:\n");
+            for (Map.Entry<?, ?> entry : data.entrySet()) {
+                if (entry.getKey() != null) {
+                    prompt.append("- ").append(entry.getKey().toString()).append("\n");
+                }
             }
-        }
 
-        return null;
+            prompt.append("\nParameter: ").append(paramName).append("\n\n");
+
+            prompt.append("Instructions:\n");
+            prompt.append("1. Find the field that is most semantically related to the parameter\n");
+            prompt.append("2. Consider meaning, context, and domain relevance\n");
+            prompt.append("3. Return ONLY the field name, nothing else\n");
+            prompt.append("4. If no relevant field exists, respond with: NO_MATCH\n\n");
+
+            prompt.append("Examples:\n");
+            prompt.append("Parameter 'startStation' → field 'from'\n");
+            prompt.append("Parameter 'endStation' → field 'to'\n");
+            prompt.append("Parameter 'userId' → field 'accountId'\n");
+            prompt.append("Parameter 'trainId' → field 'trainNumber'\n\n");
+
+            prompt.append("Which field is most relevant for parameter '").append(paramName).append("'?");
+
+            if (prompt.length() > 1000) {
+                log.warn("Semantic matching prompt too long ({} chars), skipping LLM", prompt.length());
+                return null;
+            }
+
+            String systemContent = "You are a semantic field matching expert. Find the most relevant field in the data for the given parameter. " +
+                                  "Consider semantic meaning, not just string similarity.";
+
+            String result = llmService.generateText(systemContent, prompt.toString(), 10, 0.2);
+
+            if (result != null && !result.trim().isEmpty() && !result.trim().equals("NO_MATCH")) {
+                log.debug("[Semantic Matching LLM] Found field: {}", result.trim());
+                return result.trim();
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            log.debug("LLM semantic field matching failed: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -1224,88 +1276,90 @@ public class SmartInputFetcher {
      */
     private String extractValueWithSimpleFallback(String responseBody, ParameterInfo parameterInfo) {
         try {
-            String paramName = parameterInfo.getName().toLowerCase();
+            // Use LLM to generate a contextually appropriate value
+            String llmGeneratedValue = generateValueWithLLM(parameterInfo);
 
-            // Generate reasonable fallback values based on parameter type
-            if (paramName.contains("id") || paramName.contains("route")) {
-                return generateReasonableId(paramName);
-            } else if (paramName.contains("station")) {
-                return generateReasonableStation();
-            } else if (paramName.contains("train")) {
-                return generateReasonableTrain();
-            } else if (paramName.contains("price") || paramName.contains("rate")) {
-                return generateReasonablePrice();
-            } else if (paramName.contains("class") || paramName.contains("type")) {
-                return generateReasonableClass(paramName);
-            } else {
-                return generateGenericValue(paramName);
+            if (llmGeneratedValue != null && !llmGeneratedValue.trim().isEmpty()) {
+                log.debug("LLM generated fallback value '{}' for parameter '{}'",
+                         llmGeneratedValue, parameterInfo.getName());
+                return llmGeneratedValue;
             }
+
+            // If LLM fails, try to extract any reasonable value from response
+            return extractAnyReasonableValueFromResponse(responseBody, parameterInfo);
 
         } catch (Exception e) {
             log.debug("Fallback value generation failed for parameter '{}': {}",
                      parameterInfo.getName(), e.getMessage());
-            return "fallback_value";
+            return generateMinimalFallbackValue(parameterInfo);
         }
     }
 
     /**
-     * Generate reasonable ID values
+     * Extract any reasonable value from response when all else fails
      */
-    private String generateReasonableId(String paramName) {
-        if (paramName.contains("route")) {
-            return "route_" + (System.currentTimeMillis() % 10000);
-        } else if (paramName.contains("account")) {
-            return "acc_" + (System.currentTimeMillis() % 10000);
-        } else {
-            return "id_" + (System.currentTimeMillis() % 10000);
+    private String extractAnyReasonableValueFromResponse(String responseBody, ParameterInfo parameterInfo) {
+        try {
+            Object parsed = objectMapper.readValue(responseBody, Object.class);
+
+            if (parsed instanceof Map) {
+                Map<?, ?> map = (Map<?, ?>) parsed;
+
+                // Look for data array
+                if (map.containsKey("data") && map.get("data") instanceof List) {
+                    List<?> dataList = (List<?>) map.get("data");
+                    if (!dataList.isEmpty() && dataList.get(0) instanceof Map) {
+                        Map<?, ?> firstItem = (Map<?, ?>) dataList.get(0);
+
+                        // Use LLM to find the most appropriate field
+                        String semanticMatch = askLLMForSemanticFieldMatching(firstItem, parameterInfo.getName());
+                        if (semanticMatch != null) {
+                            Object value = firstItem.get(semanticMatch);
+                            if (value != null) {
+                                return value.toString();
+                            }
+                        }
+
+                        // If no semantic match, return any non-null value
+                        for (Map.Entry<?, ?> entry : firstItem.entrySet()) {
+                            if (entry.getValue() != null && !entry.getValue().toString().trim().isEmpty()) {
+                                return entry.getValue().toString();
+                            }
+                        }
+                    }
+                }
+            }
+
+            return generateMinimalFallbackValue(parameterInfo);
+
+        } catch (Exception e) {
+            log.debug("Failed to extract any value from response for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+            return generateMinimalFallbackValue(parameterInfo);
         }
     }
 
     /**
-     * Generate reasonable station names
+     * Generate minimal fallback value based on schema type
      */
-    private String generateReasonableStation() {
-        String[] stations = {"Shanghai", "Beijing", "Nanjing", "Suzhou", "Hangzhou"};
-        return stations[(int)(System.currentTimeMillis() % stations.length)];
-    }
+    private String generateMinimalFallbackValue(ParameterInfo parameterInfo) {
+        String schemaType = getOpenAPISchemaType(parameterInfo);
 
-    /**
-     * Generate reasonable train numbers
-     */
-    private String generateReasonableTrain() {
-        String[] prefixes = {"G", "D", "K", "T"};
-        String prefix = prefixes[(int)(System.currentTimeMillis() % prefixes.length)];
-        return prefix + (1000 + (System.currentTimeMillis() % 9000));
-    }
-
-    /**
-     * Generate reasonable prices
-     */
-    private String generateReasonablePrice() {
-        return String.valueOf(50 + (System.currentTimeMillis() % 500));
-    }
-
-    /**
-     * Generate reasonable class/type values
-     */
-    private String generateReasonableClass(String paramName) {
-        if (paramName.contains("seat")) {
-            String[] classes = {"1", "2", "Economy", "Business"};
-            return classes[(int)(System.currentTimeMillis() % classes.length)];
-        } else if (paramName.contains("train")) {
-            String[] types = {"highspeed", "normal", "express"};
-            return types[(int)(System.currentTimeMillis() % types.length)];
-        } else {
-            return "standard";
+        switch (schemaType) {
+            case "integer":
+                return "1";
+            case "number":
+                return "1.0";
+            case "boolean":
+                return "false";
+            case "array":
+                return "[]";
+            default:
+                return "default";
         }
     }
 
-    /**
-     * Generate generic reasonable values
-     */
-    private String generateGenericValue(String paramName) {
-        return paramName + "_" + (System.currentTimeMillis() % 1000);
-    }
+    // All hardcoded generation methods removed - now using LLM-based generation only
 
     /**
      * Build prompt for LLM multiple value extraction
@@ -1543,54 +1597,91 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Fallback semantic value generation when LLM fails
+     * LLM-based fallback semantic value generation when primary LLM fails
      */
     private Set<String> generateFallbackSemanticValues(ParameterInfo parameterInfo, Set<String> existingValues, int count) {
         Set<String> generatedValues = new HashSet<>();
 
         try {
-            // Simple pattern-based generation as fallback
-            String paramName = parameterInfo.getName().toLowerCase();
+            // Try a simpler LLM prompt for fallback generation
+            String fallbackValue = generateValueWithLLM(parameterInfo);
 
-            if (paramName.contains("station") && !existingValues.isEmpty()) {
-                // Generate station names
-                String[] stationSuffixes = {"Station", "Railway", "Terminal", "Junction", "Central"};
-                String[] cityPrefixes = {"North", "South", "East", "West", "Central", "New", "Old"};
+            if (fallbackValue != null && !fallbackValue.trim().isEmpty() &&
+                !existingValues.contains(fallbackValue) &&
+                isValidValueForParameter(fallbackValue, parameterInfo)) {
+                generatedValues.add(fallbackValue);
+            }
 
-                for (int i = 0; i < count && generatedValues.size() < count; i++) {
-                    String prefix = cityPrefixes[i % cityPrefixes.length];
-                    String suffix = stationSuffixes[i % stationSuffixes.length];
-                    generatedValues.add(prefix + " " + suffix);
+            // If we need more values, generate variations
+            while (generatedValues.size() < count) {
+                String variation = generateValueVariationWithLLM(parameterInfo, generatedValues);
+                if (variation != null && !variation.trim().isEmpty() &&
+                    !generatedValues.contains(variation) && !existingValues.contains(variation) &&
+                    isValidValueForParameter(variation, parameterInfo)) {
+                    generatedValues.add(variation);
+                } else {
+                    // If LLM fails completely, generate minimal schema-compliant values
+                    String minimalValue = generateMinimalFallbackValue(parameterInfo);
+                    if (!generatedValues.contains(minimalValue) && !existingValues.contains(minimalValue)) {
+                        generatedValues.add(minimalValue + "_" + generatedValues.size());
+                    }
                 }
-            } else if (paramName.contains("train") && !existingValues.isEmpty()) {
-                // Generate train numbers
-                String[] trainPrefixes = {"G", "D", "K", "T", "Z", "C"};
-                for (int i = 0; i < count && generatedValues.size() < count; i++) {
-                    String prefix = trainPrefixes[i % trainPrefixes.length];
-                    int number = 1000 + (i * 123) % 9000; // Generate varied numbers
-                    generatedValues.add(prefix + number);
-                }
-            } else if (paramName.contains("user") || paramName.contains("id")) {
-                // Generate user IDs
-                String[] userPrefixes = {"user", "admin", "guest", "manager", "operator", "tester"};
-                for (int i = 0; i < count && generatedValues.size() < count; i++) {
-                    String prefix = userPrefixes[i % userPrefixes.length];
-                    int number = 100 + (i * 47) % 900;
-                    generatedValues.add(prefix + number);
-                }
-            } else {
-                // Generic fallback
-                for (int i = 0; i < count; i++) {
-                    generatedValues.add("generated_value_" + (i + 1));
+
+                // Prevent infinite loop
+                if (generatedValues.size() >= count || generatedValues.size() >= 10) {
+                    break;
                 }
             }
 
         } catch (Exception e) {
             log.debug("Fallback semantic value generation failed for parameter '{}': {}",
                      parameterInfo.getName(), e.getMessage());
+
+            // Last resort: generate minimal values
+            for (int i = 0; i < count && generatedValues.size() < count; i++) {
+                String minimalValue = generateMinimalFallbackValue(parameterInfo);
+                generatedValues.add(minimalValue + "_" + i);
+            }
         }
 
         return generatedValues;
+    }
+
+    /**
+     * Generate value variation using LLM
+     */
+    private String generateValueVariationWithLLM(ParameterInfo parameterInfo, Set<String> existingValues) {
+        try {
+            StringBuilder prompt = new StringBuilder();
+
+            prompt.append("Generate a new value similar to these existing values for parameter '")
+                  .append(parameterInfo.getName()).append("':\n\n");
+
+            prompt.append("Existing values:\n");
+            for (String value : existingValues) {
+                prompt.append("- ").append(value).append("\n");
+            }
+
+            prompt.append("\nGenerate ONE new value that is:\n");
+            prompt.append("1. Similar in style and format to existing values\n");
+            prompt.append("2. Different from all existing values\n");
+            prompt.append("3. Appropriate for parameter '").append(parameterInfo.getName()).append("'\n");
+            prompt.append("4. Return ONLY the value, no explanations\n");
+
+            String systemContent = "You are a value generation expert. Generate realistic, diverse values that match the pattern of existing values.";
+
+            String result = llmService.generateText(systemContent, prompt.toString(), 10, 0.7); // Higher temperature for diversity
+
+            if (result != null && !result.trim().isEmpty()) {
+                return result.trim();
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            log.debug("LLM value variation generation failed: {}", e.getMessage());
+            return null;
+        }
     }
 
     /**
@@ -1816,18 +1907,26 @@ public class SmartInputFetcher {
         }
 
         try {
-            // Check if parameter should be an array based on OpenAPI schema
-            if (shouldBeArrayType(parameterInfo)) {
+            // Get the actual OpenAPI schema type for this parameter
+            String schemaType = getOpenAPISchemaType(parameterInfo);
+            String schemaFormat = getOpenAPISchemaFormat(parameterInfo);
+
+            log.debug("Formatting value '{}' for parameter '{}' with schema type: {}, format: {}",
+                     value, parameterInfo.getName(), schemaType, schemaFormat);
+
+            // Format based on actual OpenAPI schema type
+            if ("array".equals(schemaType)) {
                 return formatAsArrayValue(value, parameterInfo);
-            }
-
-            // Check if parameter should be a number
-            if (shouldBeNumberType(parameterInfo)) {
+            } else if ("integer".equals(schemaType)) {
+                return formatAsIntegerValue(value, parameterInfo, schemaFormat);
+            } else if ("number".equals(schemaType)) {
                 return formatAsNumberValue(value, parameterInfo);
+            } else if ("boolean".equals(schemaType)) {
+                return formatAsBooleanValue(value, parameterInfo);
+            } else {
+                // Default: string type
+                return formatAsStringValue(value, parameterInfo);
             }
-
-            // Default: return as string
-            return value;
 
         } catch (Exception e) {
             log.debug("Failed to format value '{}' for parameter '{}': {}",
@@ -1837,37 +1936,235 @@ public class SmartInputFetcher {
     }
 
     /**
+     * Get OpenAPI schema type for parameter by reading the actual schema
+     */
+    private String getOpenAPISchemaType(ParameterInfo parameterInfo) {
+        try {
+            // Try to determine schema type from parameter info
+            String paramType = parameterInfo.getType();
+            if (paramType != null && !paramType.trim().isEmpty() && !paramType.equals("null")) {
+                String lowerType = paramType.toLowerCase().trim();
+
+                // Direct type mapping
+                if (lowerType.contains("integer") || lowerType.contains("int")) {
+                    return "integer";
+                } else if (lowerType.contains("number") || lowerType.contains("double") || lowerType.contains("float")) {
+                    return "number";
+                } else if (lowerType.contains("boolean") || lowerType.contains("bool")) {
+                    return "boolean";
+                } else if (lowerType.contains("array")) {
+                    return "array";
+                } else if (lowerType.contains("string")) {
+                    return "string";
+                }
+            }
+
+            // Fallback: use parameter name-based heuristics with OpenAPI knowledge
+            return inferSchemaTypeFromParameterName(parameterInfo);
+
+        } catch (Exception e) {
+            log.debug("Failed to get OpenAPI schema type for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+            return "string"; // Safe default
+        }
+    }
+
+    /**
+     * Get OpenAPI schema format for parameter
+     */
+    private String getOpenAPISchemaFormat(ParameterInfo parameterInfo) {
+        try {
+            String paramType = parameterInfo.getType();
+            if (paramType != null && paramType.toLowerCase().contains("int32")) {
+                return "int32";
+            } else if (paramType != null && paramType.toLowerCase().contains("int64")) {
+                return "int64";
+            }
+            return null; // No specific format
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Infer schema type from parameter name using LLM-based analysis
+     */
+    private String inferSchemaTypeFromParameterName(ParameterInfo parameterInfo) {
+        try {
+            // Use LLM to infer the most likely OpenAPI schema type
+            String llmInferredType = askLLMForSchemaTypeInference(parameterInfo);
+
+            if (llmInferredType != null && !llmInferredType.trim().isEmpty()) {
+                String cleanType = llmInferredType.trim().toLowerCase();
+
+                // Validate LLM response against known OpenAPI types
+                if (cleanType.equals("integer") || cleanType.equals("number") ||
+                    cleanType.equals("string") || cleanType.equals("boolean") ||
+                    cleanType.equals("array")) {
+                    log.debug("LLM inferred schema type '{}' for parameter '{}'", cleanType, parameterInfo.getName());
+                    return cleanType;
+                }
+            }
+
+            log.debug("LLM schema type inference failed for parameter '{}', defaulting to string", parameterInfo.getName());
+            return "string"; // Safe default
+
+        } catch (Exception e) {
+            log.debug("Failed to infer schema type for parameter '{}': {}", parameterInfo.getName(), e.getMessage());
+            return "string"; // Safe default
+        }
+    }
+
+    /**
+     * Ask LLM to infer OpenAPI schema type from parameter characteristics
+     */
+    private String askLLMForSchemaTypeInference(ParameterInfo parameterInfo) {
+        try {
+            String prompt = buildSchemaTypeInferencePrompt(parameterInfo);
+
+            if (prompt.length() > 800) {
+                log.warn("Schema type inference prompt too long ({} chars), using fallback", prompt.length());
+                return "string";
+            }
+
+            String systemContent = "You are an OpenAPI schema expert. Analyze parameter characteristics to determine the most likely OpenAPI schema type. " +
+                                  "Consider parameter names, descriptions, and common API patterns. " +
+                                  "Respond with exactly one word: integer, number, string, boolean, or array.";
+
+            String result = llmService.generateText(systemContent, prompt, 10, 0.1); // Low temperature for consistency
+
+            if (result != null && !result.trim().isEmpty()) {
+                log.debug("[Schema Type Inference LLM] Inferred type: {}", result.trim());
+                return result.trim();
+            }
+
+            return null;
+
+        } catch (Exception e) {
+            log.debug("LLM schema type inference failed: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Build prompt for LLM schema type inference
+     */
+    private String buildSchemaTypeInferencePrompt(ParameterInfo parameterInfo) {
+        StringBuilder prompt = new StringBuilder();
+
+        prompt.append("Determine the most likely OpenAPI schema type for this parameter:\n\n");
+        prompt.append("Parameter name: ").append(parameterInfo.getName()).append("\n");
+
+        if (parameterInfo.getType() != null && !parameterInfo.getType().trim().isEmpty() &&
+            !parameterInfo.getType().equals("null")) {
+            prompt.append("Declared type: ").append(parameterInfo.getType()).append("\n");
+        }
+
+        if (parameterInfo.getDescription() != null && !parameterInfo.getDescription().trim().isEmpty() &&
+            !parameterInfo.getDescription().equals("null")) {
+            prompt.append("Description: ").append(parameterInfo.getDescription()).append("\n");
+        }
+
+        prompt.append("\nOpenAPI schema types:\n");
+        prompt.append("- integer: whole numbers (seatClass, coachNumber, status)\n");
+        prompt.append("- number: decimal numbers (price, rate, distance)\n");
+        prompt.append("- string: text values (name, id, description)\n");
+        prompt.append("- boolean: true/false values (enabled, active, valid)\n");
+        prompt.append("- array: collections of values (stations, distances, items)\n\n");
+
+        prompt.append("Based on the parameter name and characteristics, what is the most likely schema type?\n");
+        prompt.append("Respond with exactly one word: integer, number, string, boolean, or array");
+
+        return prompt.toString();
+    }
+
+    /**
+     * Format value as integer
+     */
+    private String formatAsIntegerValue(String value, ParameterInfo parameterInfo, String format) {
+        if (value == null || value.trim().isEmpty()) {
+            return "0";
+        }
+
+        try {
+            // Remove non-numeric characters except minus sign
+            String cleanValue = value.replaceAll("[^0-9-]", "");
+
+            if (cleanValue.isEmpty() || cleanValue.equals("-")) {
+                return "0";
+            }
+
+            // Parse as integer to validate
+            int intValue = Integer.parseInt(cleanValue);
+
+            // Apply format constraints
+            if ("int32".equals(format)) {
+                // Ensure within int32 range
+                if (intValue < Integer.MIN_VALUE || intValue > Integer.MAX_VALUE) {
+                    return "0";
+                }
+            }
+
+            return String.valueOf(intValue);
+
+        } catch (NumberFormatException e) {
+            log.debug("Failed to format '{}' as integer for parameter '{}': {}",
+                     value, parameterInfo.getName(), e.getMessage());
+            return "0"; // Safe fallback
+        }
+    }
+
+    /**
+     * Format value as boolean
+     */
+    private String formatAsBooleanValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "false";
+        }
+
+        String cleanValue = value.trim().toLowerCase();
+
+        // True values
+        if (cleanValue.equals("true") || cleanValue.equals("1") ||
+            cleanValue.equals("yes") || cleanValue.equals("on") ||
+            cleanValue.equals("enabled") || cleanValue.equals("active")) {
+            return "true";
+        }
+
+        // False values (default)
+        return "false";
+    }
+
+    /**
+     * Format value as string (with validation)
+     */
+    private String formatAsStringValue(String value, ParameterInfo parameterInfo) {
+        if (value == null) {
+            return "";
+        }
+
+        String cleanValue = value.trim();
+
+        // Remove quotes if present (they'll be added by JSON serialization)
+        if (cleanValue.startsWith("\"") && cleanValue.endsWith("\"") && cleanValue.length() > 1) {
+            cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
+        }
+
+        return cleanValue;
+    }
+
+    /**
      * Check if parameter should be array type based on OpenAPI schema
      */
     private boolean shouldBeArrayType(ParameterInfo parameterInfo) {
-        String paramName = parameterInfo.getName().toLowerCase();
-        String paramType = parameterInfo.getType();
+        // Use the new schema type detection
+        String schemaType = getOpenAPISchemaType(parameterInfo);
+        boolean isArray = "array".equals(schemaType);
 
-        // Check explicit array indicators in type
-        if (paramType != null && paramType.toLowerCase().contains("array")) {
-            return true;
-        }
+        log.debug("Parameter '{}' schema type: '{}', isArray: {}",
+                 parameterInfo.getName(), schemaType, isArray);
 
-        // FIXED: Be more conservative about array detection
-        // Only treat as array if explicitly indicated by naming or schema
-
-        // Explicit array indicators (very specific) - based on actual OpenAPI schema
-        if (paramName.equals("distances") || paramName.equals("stations")) {
-            log.debug("Parameter '{}' detected as array type (explicit OpenAPI schema)", paramName);
-            return true; // These are explicitly arrays in TrainTicket OpenAPI
-        }
-
-        // Explicit NON-array parameters (prevent false positives)
-        if (paramName.equals("seatclass") || paramName.equals("stationlist") ||
-            paramName.equals("distancelist") || paramName.contains("id") ||
-            paramName.equals("traintype") || paramName.equals("routeid")) {
-            log.debug("Parameter '{}' detected as string type (explicit OpenAPI schema)", paramName);
-            return false; // These are explicitly strings in TrainTicket OpenAPI
-        }
-
-        // For ambiguous cases, default to string (safer)
-        log.debug("Parameter '{}' defaulting to string type (conservative approach)", paramName);
-        return false; // Default to string type for safety
+        return isArray;
     }
 
     /**
@@ -2009,17 +2306,11 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Check if parameter should be number type
+     * Check if parameter should be number type (deprecated - use getOpenAPISchemaType instead)
      */
     private boolean shouldBeNumberType(ParameterInfo parameterInfo) {
-        String paramType = parameterInfo.getType();
-        if (paramType != null) {
-            String lowerType = paramType.toLowerCase();
-            return lowerType.contains("number") || lowerType.contains("integer") ||
-                   lowerType.contains("int") || lowerType.contains("double") ||
-                   lowerType.contains("float");
-        }
-        return false;
+        String schemaType = getOpenAPISchemaType(parameterInfo);
+        return "number".equals(schemaType) || "integer".equals(schemaType);
     }
 
     /**
