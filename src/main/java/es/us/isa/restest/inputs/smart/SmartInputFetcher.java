@@ -1632,36 +1632,39 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Generate string value algorithmically based on parameter name analysis
+     * Generate string value algorithmically based ONLY on parameter name characteristics - NO HARDCODING
      */
     private String generateAlgorithmicStringValue(String paramName) {
-        String lowerName = paramName.toLowerCase();
+        // Use ONLY the parameter name to generate values - no hardcoded strings or arrays
 
-        // Analyze parameter name to determine appropriate value pattern
-        if (lowerName.contains("id")) {
-            // Generate ID-like value using hash
-            return "id" + Math.abs(paramName.hashCode() % 10000);
-        } else if (lowerName.contains("name")) {
-            // Generate name-like value
-            return "name" + Math.abs(paramName.hashCode() % 100);
-        } else if (lowerName.contains("station")) {
-            // Generate station-like value using parameter characteristics
-            char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
-            int index = Math.abs(paramName.hashCode() % chars.length);
-            return "Station" + chars[index];
-        } else if (lowerName.contains("distance")) {
-            // Generate distance-like value with units
-            int distance = Math.abs(paramName.hashCode() % 500) + 10;
-            String[] units = {"km", "miles", "meters"};
-            String unit = units[Math.abs(paramName.hashCode() % units.length)];
-            return distance + " " + unit;
-        } else if (lowerName.contains("date") || lowerName.contains("time")) {
-            // Generate date/time-like value
-            return "2024-01-" + String.format("%02d", (Math.abs(paramName.hashCode() % 28) + 1));
-        } else {
-            // Generate generic value based on parameter name
-            return paramName.replaceAll("[^a-zA-Z0-9]", "") + Math.abs(paramName.hashCode() % 100);
+        // Clean parameter name for base generation
+        String cleanName = paramName.replaceAll("[^a-zA-Z0-9]", "");
+
+        // Generate hash-based numeric component
+        int hashValue = Math.abs(paramName.hashCode());
+
+        // Create value using parameter name characteristics only
+        StringBuilder result = new StringBuilder();
+
+        // Use first few characters of parameter name as base
+        if (cleanName.length() > 0) {
+            // Take first 1-3 characters based on name length
+            int prefixLength = Math.min(cleanName.length(), Math.max(1, cleanName.length() / 3));
+            result.append(cleanName.substring(0, prefixLength).toLowerCase());
         }
+
+        // Add hash-derived numeric component
+        result.append(hashValue % 10000);
+
+        // For parameters that might need units, add hash-derived suffix
+        String lowerName = paramName.toLowerCase();
+        if (lowerName.contains("distance") || lowerName.contains("length") || lowerName.contains("size")) {
+            // Generate unit-like suffix using parameter characteristics
+            char unitChar = (char)('a' + (hashValue % 26));
+            result.append(unitChar);
+        }
+
+        return result.toString();
     }
 
     // All hardcoded generation methods removed - now using LLM-based generation only
@@ -1860,7 +1863,19 @@ public class SmartInputFetcher {
         prompt.append("2. Consider the same domain, category, or type as existing values\n");
         prompt.append("3. Use similar naming patterns, formats, or structures\n");
         prompt.append("4. Generate realistic, meaningful values (not random strings or descriptions)\n");
-        prompt.append("5. For IDs: generate actual UUID-like strings, not descriptions about UUIDs\n");
+
+        // Add parameter-specific instructions
+        String paramName = parameterInfo.getName().toLowerCase();
+        if (paramName.contains("station")) {
+            prompt.append("5. For station parameters: generate actual city/station names, not UUIDs or random strings\n");
+        } else if (paramName.contains("id") && !paramName.contains("station")) {
+            prompt.append("5. For ID parameters: generate actual UUID-like strings or meaningful IDs\n");
+        } else if (paramName.contains("distance")) {
+            prompt.append("5. For distance parameters: generate numeric values with appropriate units\n");
+        } else {
+            prompt.append("5. Generate values appropriate to the parameter type and domain\n");
+        }
+
         prompt.append("6. For names: generate actual names, not generic terms like 'objects' or 'service'\n");
         prompt.append("7. Each value should be different from existing ones\n");
         prompt.append("8. Return ONLY the actual values, no explanatory text\n");
@@ -1868,9 +1883,17 @@ public class SmartInputFetcher {
         prompt.append("10. If unable to generate similar values, respond with: NO_VALUES_GENERATED\n\n");
 
         prompt.append("Examples:\n");
-        prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
-        prompt.append("If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456\n");
-        prompt.append("If existing values are [admin, user123] → generate: manager, guest456, operator\n");
+        if (paramName.contains("station")) {
+            prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
+            prompt.append("If existing values are [wuxi, suzhou] → generate: hangzhou, nanjing, changzhou\n");
+        } else if (paramName.contains("distance")) {
+            prompt.append("If existing values are [100, 250] → generate: 150, 300, 75\n");
+            prompt.append("If existing values are [10 miles, 50 km] → generate: 25 miles, 75 km, 100 meters\n");
+        } else {
+            prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
+            prompt.append("If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456\n");
+            prompt.append("If existing values are [admin, user123] → generate: manager, guest456, operator\n");
+        }
 
         return prompt.toString();
     }
@@ -3303,20 +3326,36 @@ public class SmartInputFetcher {
               if (llmResponse != null && !llmResponse.trim().isEmpty()) {
                   String cleanResponse = llmResponse.trim();
 
-                  // Clean up the response (remove quotes, extra whitespace)
-                  if (cleanResponse.startsWith("\"") && cleanResponse.endsWith("\"")) {
-                      cleanResponse = cleanResponse.substring(1, cleanResponse.length() - 1);
-                  }
+                  // Check if this is an array parameter
+                  String schemaType = getOpenAPISchemaType(parameterInfo);
+                  boolean isArrayParameter = "array".equals(schemaType);
 
-                  // Validate that it's not a JSONPath expression
-                  if (cleanResponse.startsWith("$.") || cleanResponse.contains("$[") || cleanResponse.contains("data[")) {
-                      log.warn("❌ LLM returned JSONPath expression '{}' instead of actual value for parameter '{}'",
-                               cleanResponse, parameterInfo.getName());
-                      return generateSimpleValue(parameterInfo);
-                  }
+                  if (isArrayParameter) {
+                      // For array parameters, expect JSON array format
+                      if (cleanResponse.startsWith("[") && cleanResponse.endsWith("]")) {
+                          log.info("✅ LLM generated meaningful array value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
+                          return cleanResponse;
+                      } else {
+                          log.warn("❌ LLM returned non-array value '{}' for array parameter '{}', generating fallback array",
+                                   cleanResponse, parameterInfo.getName());
+                          return generateSimpleValue(parameterInfo);
+                      }
+                  } else {
+                      // For single-value parameters, clean up quotes
+                      if (cleanResponse.startsWith("\"") && cleanResponse.endsWith("\"")) {
+                          cleanResponse = cleanResponse.substring(1, cleanResponse.length() - 1);
+                      }
 
-                  log.info("✅ LLM generated meaningful value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
-                  return cleanResponse;
+                      // Validate that it's not a JSONPath expression
+                      if (cleanResponse.startsWith("$.") || cleanResponse.contains("$[") || cleanResponse.contains("data[")) {
+                          log.warn("❌ LLM returned JSONPath expression '{}' instead of actual value for parameter '{}'",
+                                   cleanResponse, parameterInfo.getName());
+                          return generateSimpleValue(parameterInfo);
+                      }
+
+                      log.info("✅ LLM generated meaningful value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
+                      return cleanResponse;
+                  }
               }
 
               log.warn("LLM value generation returned null/empty for parameter '{}'", parameterInfo.getName());
@@ -3329,14 +3368,24 @@ public class SmartInputFetcher {
       }
 
       /**
-       * Build prompt for LLM value generation
+       * Build prompt for LLM value generation - ARRAY AWARE
        */
       private String buildValueGenerationPrompt(ParameterInfo parameterInfo) {
           StringBuilder prompt = new StringBuilder();
 
-          prompt.append("Generate a realistic test value for the following parameter:\n\n");
+          // Check if this is an array parameter
+          String schemaType = getOpenAPISchemaType(parameterInfo);
+          boolean isArrayParameter = "array".equals(schemaType);
+
+          if (isArrayParameter) {
+              prompt.append("Generate a realistic JSON array for the following array parameter:\n\n");
+          } else {
+              prompt.append("Generate a realistic test value for the following parameter:\n\n");
+          }
+
           prompt.append("Parameter Name: ").append(parameterInfo.getName()).append("\n");
           prompt.append("Parameter Type: ").append(parameterInfo.getType()).append("\n");
+          prompt.append("Schema Type: ").append(schemaType != null ? schemaType : "string").append("\n");
 
           if (parameterInfo.getDescription() != null && !parameterInfo.getDescription().trim().isEmpty()
               && !parameterInfo.getDescription().equals("null")) {
@@ -3344,18 +3393,34 @@ public class SmartInputFetcher {
           }
 
           prompt.append("\nBased on the parameter name and type, generate a realistic test value.\n");
-          prompt.append("Examples:\n");
-          prompt.append("- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'\n");
-          prompt.append("- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'\n");
-          prompt.append("- For 'userId' (string): 'user123' or 'john.doe'\n");
-          prompt.append("- For 'trainNumber' (string): 'G1237' or 'D2468'\n");
-          prompt.append("- For 'price' (number): '150.50' or '89.99'\n");
-          prompt.append("- For 'distance' (number): '350' or '1200'\n");
-          prompt.append("- For 'date' (string): '2024-12-25' or '2024-01-15'\n");
-          prompt.append("- For 'time' (string): '14:30' or '09:15'\n");
 
-          prompt.append("\nRespond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').\n");
-          prompt.append("Do NOT include quotes, explanations, or JSONPath expressions.\n");
+          if (isArrayParameter) {
+              prompt.append("Array Examples:\n");
+              prompt.append("- For 'distances' (array): [\"10 miles\", \"50 km\", \"100 meters\"]\n");
+              prompt.append("- For 'stations' (array): [\"Shanghai\", \"Beijing\", \"Guangzhou\"]\n");
+              prompt.append("- For 'userIds' (array): [\"user123\", \"john.doe\", \"admin\"]\n");
+              prompt.append("- For 'trainNumbers' (array): [\"G1237\", \"D2468\", \"K1234\"]\n");
+              prompt.append("- For 'prices' (array): [\"150.50\", \"89.99\", \"200.00\"]\n");
+              prompt.append("- For 'dates' (array): [\"2024-12-25\", \"2024-01-15\", \"2024-03-10\"]\n");
+
+              prompt.append("\nRespond with ONLY a JSON array (e.g., [\"Shanghai\", \"Beijing\"] or [\"10 miles\", \"50 km\"]).\n");
+              prompt.append("Generate 2-3 realistic values in the array.\n");
+              prompt.append("Do NOT include explanations or extra text.\n");
+          } else {
+              prompt.append("Single Value Examples:\n");
+              prompt.append("- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'\n");
+              prompt.append("- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'\n");
+              prompt.append("- For 'userId' (string): 'user123' or 'john.doe'\n");
+              prompt.append("- For 'trainNumber' (string): 'G1237' or 'D2468'\n");
+              prompt.append("- For 'price' (number): '150.50' or '89.99'\n");
+              prompt.append("- For 'distance' (number): '350' or '1200'\n");
+              prompt.append("- For 'date' (string): '2024-12-25' or '2024-01-15'\n");
+              prompt.append("- For 'time' (string): '14:30' or '09:15'\n");
+
+              prompt.append("\nRespond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').\n");
+              prompt.append("Do NOT include quotes, explanations, or JSONPath expressions.\n");
+          }
+
           prompt.append("If you cannot generate a suitable value: NO_GOOD_MATCH");
 
           return prompt.toString();
@@ -3387,33 +3452,17 @@ public class SmartInputFetcher {
       }
 
       /**
-       * Generate simple value based on parameter type and name when LLM fails
+       * Generate simple value based on parameter type and name when LLM fails - NO HARDCODING, ARRAY AWARE
        */
       private String generateSimpleValue(ParameterInfo parameterInfo) {
-          String paramName = parameterInfo.getName().toLowerCase();
-          String paramType = parameterInfo.getType();
-
-          // Generate based on parameter name patterns
-          if (paramName.contains("station")) {
-              return "Shanghai";
-          } else if (paramName.contains("user") || paramName.contains("login")) {
-              return "testuser123";
-          } else if (paramName.contains("train") || paramName.contains("number")) {
-              return "G1237";
-          } else if (paramName.contains("date")) {
-              return "2024-12-25";
-          } else if (paramName.contains("time")) {
-              return "14:30";
-          } else if (paramName.contains("price") || paramName.contains("cost")) {
-              return "150.50";
-          } else if (paramName.contains("distance")) {
-              return "350";
-          } else if (paramName.contains("id")) {
-              return "test123";
-          } else if ("number".equals(paramType) || "integer".equals(paramType)) {
-              return "100";
-          } else {
-              return "testvalue";
+          // Use the same no-hardcoding approach as generateMinimalFallbackValue
+          try {
+              return generateMinimalFallbackValue(parameterInfo);
+          } catch (Exception e) {
+              log.debug("Failed to generate simple value for '{}': {}", parameterInfo.getName(), e.getMessage());
+              // Absolute last resort: use algorithmic generation
+              String schemaType = getOpenAPISchemaType(parameterInfo);
+              return generateAlgorithmicMinimalValue(parameterInfo, schemaType);
           }
       }
 
