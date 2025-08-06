@@ -1,1 +1,0 @@
-{"distanceList":"4,000","distances":"0","endStation":"boston logan international terminal","id":"cbs","loginId":"Admin456","startStation":"Boston's mbta - south station","stationList":"Chicago loop","stations":"Montreal vanier train terminal"}

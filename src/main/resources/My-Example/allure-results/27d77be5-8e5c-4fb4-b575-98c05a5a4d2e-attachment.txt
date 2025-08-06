@@ -1,1 +1,0 @@
-{"distanceList":"4,000","endStation":"boston logan international terminal","id":"cbs","startStation":"Boston's mbta - south station","stationList":"Chicago loop"}

@@ -1,0 +1,1 @@
+{"status":1,"msg":"Save and Modify success","data":{"id":"da87f07a-9481-4da4-9ee3-9e3169568187","stations":["Grand Central Terminal"],"distances":[10],"startStation":"wuxi","endStation":"shanghai"}}

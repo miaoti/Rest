@@ -1,0 +1,1 @@
+{"distanceList":"suzhou","distances":"[\"f0123456-7890-1234-5678-90abcdef1234\"]","endStation":"shanghai","id":"123","loginId":"john.doe123","startStation":"wuxi","stationList":"shanghai,suzhou,taiyuan","stations":"[\"shanghai\"]"}

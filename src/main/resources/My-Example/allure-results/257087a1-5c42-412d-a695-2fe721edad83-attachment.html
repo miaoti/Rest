@@ -1,0 +1,40 @@
+<div>POST to http://129.62.148.112:32677/api/v1/adminrouteservice/adminroute</div>
+
+<h4>Body</h4>
+<div>
+    <pre class="preformated-text">
+    {
+    &quot;distanceList&quot;: &quot;suzhou&quot;,
+    &quot;distances&quot;: &quot;[\&quot;f0123456-7890-1234-5678-90abcdef1234\&quot;]&quot;,
+    &quot;endStation&quot;: &quot;shanghai&quot;,
+    &quot;id&quot;: &quot;123&quot;,
+    &quot;loginId&quot;: &quot;john.doe123&quot;,
+    &quot;startStation&quot;: &quot;wuxi&quot;,
+    &quot;stationList&quot;: &quot;shanghai,suzhou,taiyuan&quot;,
+    &quot;stations&quot;: &quot;[\&quot;shanghai\&quot;]&quot;
+}
+    </pre>
+</div>
+
+<h4>Headers</h4>
+<div>
+        <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiJkZThlMDJiOS01ZDkyLTQ5MjgtYTJjOC1iMjVlNDM5NGJkZDciLCJpYXQiOjE3NTQ0NDI2MzQsImV4cCI6MTc1NDQ0NjIzNH0.dgkbgdZZuPioilkScwzZSaPHIA4g44tqTgofKZHdfpc</div>
+        <div>Accept: */*</div>
+        <div>Content-Type: application/json; charset=UTF-8</div>
+</div>
+
+
+
+<h4>Curl</h4>
+<div>
+curl -v -X POST &#39;http://129.62.148.112:32677/api/v1/adminrouteservice/adminroute&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiJkZThlMDJiOS01ZDkyLTQ5MjgtYTJjOC1iMjVlNDM5NGJkZDciLCJpYXQiOjE3NTQ0NDI2MzQsImV4cCI6MTc1NDQ0NjIzNH0.dgkbgdZZuPioilkScwzZSaPHIA4g44tqTgofKZHdfpc&#39; -H &#39;Accept: */*&#39; -H &#39;Content-Type: application/json; charset=UTF-8&#39; -d &#39;{
+    &quot;distanceList&quot;: &quot;suzhou&quot;,
+    &quot;distances&quot;: &quot;[\&quot;f0123456-7890-1234-5678-90abcdef1234\&quot;]&quot;,
+    &quot;endStation&quot;: &quot;shanghai&quot;,
+    &quot;id&quot;: &quot;123&quot;,
+    &quot;loginId&quot;: &quot;john.doe123&quot;,
+    &quot;startStation&quot;: &quot;wuxi&quot;,
+    &quot;stationList&quot;: &quot;shanghai,suzhou,taiyuan&quot;,
+    &quot;stations&quot;: &quot;[\&quot;shanghai\&quot;]&quot;
+}&#39;
+</div>

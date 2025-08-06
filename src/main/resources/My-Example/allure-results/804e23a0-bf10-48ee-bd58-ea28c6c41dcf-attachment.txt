@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"f4efb26e-0546-4af0-84a7-510b058ea81f","trainType":"low","routeId":"printf","basicPriceRate":68.0,"firstClassPriceRate":0.49}}

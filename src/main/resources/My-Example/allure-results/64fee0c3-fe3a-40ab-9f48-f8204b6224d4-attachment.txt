@@ -1,1 +1,0 @@
-{"distanceList":"6789","distances":"-3.5","endStation":"Boston logan international terminal","id":"abc123","loginId":"jane12","startStation":"San Francisco Bay Area Rapid Transit (BART) - Powell Street Station","stationList":"houston hobby airport","stations":"Central london station"}

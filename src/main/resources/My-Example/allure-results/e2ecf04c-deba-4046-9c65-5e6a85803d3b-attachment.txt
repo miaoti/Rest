@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"cc6406e6-16ee-43b6-abb9-2d4718b23a31","stations":["New york penn station"],"distances":[10],"startStation":"boston's mbta - south station","endStation":"New york penn station"}}

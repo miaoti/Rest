@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"BORDER_=","endStation":"New York Penn Station","id":"buf","loginId":"galljdaj","startStation":"Los angeles metro - lax terminal 4","stationList":"Houston hobby airport","stations":"Montreal vanier train terminal"}

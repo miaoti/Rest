@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"0","endStation":"Los Angeles Union Station","id":"brennan","loginId":"John_doe","startStation":"los angeles metro - lax terminal 4","stationList":"Los angeles union station","stations":"paris gare de l'est"}

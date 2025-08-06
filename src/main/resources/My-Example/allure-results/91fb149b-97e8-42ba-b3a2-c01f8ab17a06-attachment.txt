@@ -1,1 +1,0 @@
-{"basicPriceRate":"10.5","firstClassPriceRate":"350.00","id":"Abc123","routeId":"098765","trainType":"tourist coach"}

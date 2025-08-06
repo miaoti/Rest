@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"9c6aeb6f-0494-4509-8cd2-231ff08880b3","stations":["los angeles union station"],"distances":[6789],"startStation":"san francisco bay area rapid transit (bart) - powell street station","endStation":"chicago o'hare international airport"}}

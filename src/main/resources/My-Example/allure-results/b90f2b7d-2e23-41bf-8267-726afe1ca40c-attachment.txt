@@ -1,1 +1,0 @@
-{"distanceList":"4,000","endStation":"new york penn station","id":"User456","startStation":"Boston's MBTA - South Station","stationList":"Los Angeles Union Station"}
