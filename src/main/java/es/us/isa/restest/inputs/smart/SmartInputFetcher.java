@@ -481,6 +481,13 @@ public class SmartInputFetcher {
                     return extractValueWithSimpleFallback(responseBody, parameterInfo);
                 }
 
+                // Validate LLM response quality before using it
+                if (!isValidLLMResponse(cleanResponse, parameterInfo)) {
+                    log.warn("❌ LLM response '{}' is invalid for parameter '{}', using fallback",
+                            cleanResponse, parameterInfo.getName());
+                    return extractValueWithSimpleFallback(responseBody, parameterInfo);
+                }
+
                 log.info("✅ LLM extracted ACTUAL VALUE '{}' for parameter '{}' (not JSONPath)", cleanResponse, parameterInfo.getName());
 
                 // Format the value according to OpenAPI schema
@@ -1149,6 +1156,158 @@ public class SmartInputFetcher {
     }
 
     /**
+     * Validate LLM response quality to reject explanations and invalid values
+     */
+    private boolean isValidLLMResponse(String response, ParameterInfo parameterInfo) {
+        if (response == null || response.trim().isEmpty()) {
+            return false;
+        }
+
+        String cleanResponse = response.trim();
+        String paramName = parameterInfo.getName().toLowerCase();
+
+        // Reject responses that look like explanations or descriptions
+        if (cleanResponse.contains("The format appears to be") ||
+            cleanResponse.contains("delivery route)") ||
+            cleanResponse.contains("This is a") ||
+            cleanResponse.contains("appears to be") ||
+            cleanResponse.contains("should be") ||
+            cleanResponse.contains("typically") ||
+            cleanResponse.contains("usually") ||
+            cleanResponse.contains("format:") ||
+            cleanResponse.contains("example:") ||
+            cleanResponse.length() > 100) { // Very long responses are likely explanations
+            log.warn("❌ LLM response looks like explanation, not value: '{}'", cleanResponse);
+            return false;
+        }
+
+        // Reject generic placeholder values
+        if (cleanResponse.equals("objects") ||
+            cleanResponse.equals("values") ||
+            cleanResponse.equals("data") ||
+            cleanResponse.equals("items") ||
+            cleanResponse.equals("elements") ||
+            cleanResponse.equals("content")) {
+            log.warn("❌ LLM response is generic placeholder: '{}'", cleanResponse);
+            return false;
+        }
+
+        // Validate parameter-specific formats
+        if (paramName.contains("id") || paramName.contains("route")) {
+            // IDs should be reasonable length and format
+            if (cleanResponse.length() < 3 || cleanResponse.length() > 50) {
+                log.warn("❌ ID parameter '{}' has invalid length: '{}'", paramName, cleanResponse);
+                return false;
+            }
+
+            // Reject responses that contain explanatory text
+            if (cleanResponse.contains(" ") && cleanResponse.split(" ").length > 3) {
+                log.warn("❌ ID parameter '{}' contains too many words: '{}'", paramName, cleanResponse);
+                return false;
+            }
+        }
+
+        // Validate numeric parameters
+        if (paramName.contains("price") || paramName.contains("rate") || paramName.contains("number")) {
+            // Should be numeric or at least contain numbers
+            if (!cleanResponse.matches(".*\\d.*")) {
+                log.warn("❌ Numeric parameter '{}' contains no digits: '{}'", paramName, cleanResponse);
+                return false;
+            }
+        }
+
+        return true; // Response looks valid
+    }
+
+    /**
+     * Extract value using simple fallback when LLM fails
+     */
+    private String extractValueWithSimpleFallback(String responseBody, ParameterInfo parameterInfo) {
+        try {
+            String paramName = parameterInfo.getName().toLowerCase();
+
+            // Generate reasonable fallback values based on parameter type
+            if (paramName.contains("id") || paramName.contains("route")) {
+                return generateReasonableId(paramName);
+            } else if (paramName.contains("station")) {
+                return generateReasonableStation();
+            } else if (paramName.contains("train")) {
+                return generateReasonableTrain();
+            } else if (paramName.contains("price") || paramName.contains("rate")) {
+                return generateReasonablePrice();
+            } else if (paramName.contains("class") || paramName.contains("type")) {
+                return generateReasonableClass(paramName);
+            } else {
+                return generateGenericValue(paramName);
+            }
+
+        } catch (Exception e) {
+            log.debug("Fallback value generation failed for parameter '{}': {}",
+                     parameterInfo.getName(), e.getMessage());
+            return "fallback_value";
+        }
+    }
+
+    /**
+     * Generate reasonable ID values
+     */
+    private String generateReasonableId(String paramName) {
+        if (paramName.contains("route")) {
+            return "route_" + (System.currentTimeMillis() % 10000);
+        } else if (paramName.contains("account")) {
+            return "acc_" + (System.currentTimeMillis() % 10000);
+        } else {
+            return "id_" + (System.currentTimeMillis() % 10000);
+        }
+    }
+
+    /**
+     * Generate reasonable station names
+     */
+    private String generateReasonableStation() {
+        String[] stations = {"Shanghai", "Beijing", "Nanjing", "Suzhou", "Hangzhou"};
+        return stations[(int)(System.currentTimeMillis() % stations.length)];
+    }
+
+    /**
+     * Generate reasonable train numbers
+     */
+    private String generateReasonableTrain() {
+        String[] prefixes = {"G", "D", "K", "T"};
+        String prefix = prefixes[(int)(System.currentTimeMillis() % prefixes.length)];
+        return prefix + (1000 + (System.currentTimeMillis() % 9000));
+    }
+
+    /**
+     * Generate reasonable prices
+     */
+    private String generateReasonablePrice() {
+        return String.valueOf(50 + (System.currentTimeMillis() % 500));
+    }
+
+    /**
+     * Generate reasonable class/type values
+     */
+    private String generateReasonableClass(String paramName) {
+        if (paramName.contains("seat")) {
+            String[] classes = {"1", "2", "Economy", "Business"};
+            return classes[(int)(System.currentTimeMillis() % classes.length)];
+        } else if (paramName.contains("train")) {
+            String[] types = {"highspeed", "normal", "express"};
+            return types[(int)(System.currentTimeMillis() % types.length)];
+        } else {
+            return "standard";
+        }
+    }
+
+    /**
+     * Generate generic reasonable values
+     */
+    private String generateGenericValue(String paramName) {
+        return paramName + "_" + (System.currentTimeMillis() % 1000);
+    }
+
+    /**
      * Build prompt for LLM multiple value extraction
      */
     private String buildMultipleValueExtractionPrompt(String responseBody, ParameterInfo parameterInfo) {
@@ -1604,19 +1763,32 @@ public class SmartInputFetcher {
         String paramName = parameterInfo.getName().toLowerCase();
         String paramType = parameterInfo.getType();
 
-        // Check explicit array indicators
+        // Check explicit array indicators in type
         if (paramType != null && paramType.toLowerCase().contains("array")) {
             return true;
         }
 
-        // Check parameter names that typically should be arrays
-        if (paramName.contains("list") || paramName.contains("stations") ||
-            paramName.contains("distances") || paramName.endsWith("s")) {
-            return true;
+        // FIXED: Be more conservative about array detection
+        // Only treat as array if explicitly indicated by naming or schema
+
+        // Explicit array indicators (very specific)
+        if (paramName.equals("distances") || paramName.equals("stations")) {
+            return true; // These are explicitly arrays in TrainTicket OpenAPI
         }
 
-        // Use LLM to determine if parameter should be array
-        return askLLMForArrayTypeDecision(parameterInfo);
+        // Do NOT treat these as arrays (common mistakes):
+        // - seatClass (should be string)
+        // - stationList (should be string, despite "List" in name)
+        // - distanceList (should be string, despite "List" in name)
+        // - routeId (should be string)
+        // - trainType (should be string)
+
+        // Conservative approach: only use LLM for ambiguous cases
+        if (paramName.contains("list") && !paramName.equals("stationlist") && !paramName.equals("distancelist")) {
+            return askLLMForArrayTypeDecision(parameterInfo);
+        }
+
+        return false; // Default to string type
     }
 
     /**
@@ -1695,7 +1867,7 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Format value as array
+     * Format value as array - FIXED to avoid string-wrapped JSON
      */
     private String formatAsArrayValue(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
@@ -1703,24 +1875,48 @@ public class SmartInputFetcher {
         }
 
         try {
-            // If value already looks like JSON array, return as-is
-            if (value.trim().startsWith("[") && value.trim().endsWith("]")) {
-                return value;
+            String trimmedValue = value.trim();
+
+            // CRITICAL FIX: If value is already a JSON array string, parse and return properly
+            if (trimmedValue.startsWith("[") && trimmedValue.endsWith("]")) {
+                // Try to parse as JSON to validate it's a proper array
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode arrayNode = mapper.readTree(trimmedValue);
+                    if (arrayNode.isArray()) {
+                        return trimmedValue; // It's already a valid JSON array
+                    }
+                } catch (Exception e) {
+                    log.debug("Value looks like array but isn't valid JSON: '{}'", trimmedValue);
+                }
+            }
+
+            // CRITICAL FIX: Don't wrap strings that are already JSON in quotes
+            // This was causing "seatClass": "[\"1\"]" instead of "seatClass": ["1"]
+            if (trimmedValue.startsWith("\"[") && trimmedValue.endsWith("]\"")) {
+                // Remove outer quotes from JSON array string
+                return trimmedValue.substring(1, trimmedValue.length() - 1);
             }
 
             // Split comma-separated values into array
             String[] parts;
-            if (value.contains(",")) {
-                parts = value.split(",");
+            if (trimmedValue.contains(",")) {
+                parts = trimmedValue.split(",");
             } else {
-                parts = new String[]{value};
+                parts = new String[]{trimmedValue};
             }
 
             // Build JSON array
             StringBuilder arrayBuilder = new StringBuilder("[");
             for (int i = 0; i < parts.length; i++) {
                 if (i > 0) arrayBuilder.append(", ");
-                arrayBuilder.append("\"").append(parts[i].trim()).append("\"");
+                String part = parts[i].trim();
+                // Remove quotes if already present
+                if (part.startsWith("\"") && part.endsWith("\"")) {
+                    arrayBuilder.append(part);
+                } else {
+                    arrayBuilder.append("\"").append(part).append("\"");
+                }
             }
             arrayBuilder.append("]");
 
@@ -2201,9 +2397,16 @@ public class SmartInputFetcher {
           String systemContent =
                   "You are an API testing assistant that extracts specific parameter values from JSON API responses. " +
                   "Given a JSON response and a parameter description, extract the most appropriate actual value from the response. " +
-                  "Return ONLY the extracted value, not a JSONPath expression. " +
-                  "If no suitable value exists in the response, return 'NO_GOOD_MATCH'. " +
-                  "Do NOT return JSONPath expressions like $.data[*].name - return actual values like 'John Doe' or '12345'.";
+                  "CRITICAL RULES:\n" +
+                  "1. Return ONLY the extracted value, not explanations or descriptions\n" +
+                  "2. Do NOT return JSONPath expressions like $.data[*].name\n" +
+                  "3. Do NOT return explanatory text like 'The format appears to be...'\n" +
+                  "4. Do NOT return generic words like 'objects', 'data', 'items'\n" +
+                  "5. For IDs: return actual ID values like 'route123' or 'abc-def-123'\n" +
+                  "6. For names: return actual names like 'Shanghai' or 'Beijing'\n" +
+                  "7. For numbers: return actual numbers like '100' or '25.5'\n" +
+                  "8. If no suitable value exists, return 'NO_GOOD_MATCH'\n" +
+                  "Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'";
 
           log.debug("[Direct Value Extraction LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
           log.debug("[Direct Value Extraction LLM] User prompt: {}", prompt);
