@@ -1535,47 +1535,132 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Generate minimal value based on schema type only (last resort)
+     * Generate minimal value based on schema type only (last resort) - NO HARDCODING!
      */
     private String generateSchemaBasedMinimalValue(ParameterInfo parameterInfo, String schemaType) {
-        String paramName = parameterInfo.getName().toLowerCase();
+        try {
+            // Use LLM to generate even the most basic fallback values
+            return generateLLMBasedMinimalValue(parameterInfo, schemaType);
+        } catch (Exception e) {
+            log.debug("LLM-based minimal value generation failed for '{}': {}", parameterInfo.getName(), e.getMessage());
+            // Only as absolute last resort, use algorithmic generation based on parameter analysis
+            return generateAlgorithmicMinimalValue(parameterInfo, schemaType);
+        }
+    }
+
+    /**
+     * Generate minimal value using LLM (no hardcoding)
+     */
+    private String generateLLMBasedMinimalValue(ParameterInfo parameterInfo, String schemaType) {
+        String paramName = parameterInfo.getName();
+
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("Generate a minimal realistic value for this parameter:\n\n");
+        prompt.append("Parameter name: ").append(paramName).append("\n");
+        prompt.append("Schema type: ").append(schemaType != null ? schemaType : "string").append("\n");
+
+        // Add context based on schema type
+        if ("array".equals(schemaType)) {
+            prompt.append("Required format: JSON array with 1-2 values\n");
+            prompt.append("Example format: [\"value1\", \"value2\"]\n");
+        } else if ("integer".equals(schemaType)) {
+            prompt.append("Required format: Integer number\n");
+            prompt.append("Example format: 42\n");
+        } else if ("number".equals(schemaType)) {
+            prompt.append("Required format: Decimal number\n");
+            prompt.append("Example format: 42.5\n");
+        } else if ("boolean".equals(schemaType)) {
+            prompt.append("Required format: Boolean value\n");
+            prompt.append("Example format: true or false\n");
+        } else {
+            prompt.append("Required format: String value\n");
+            prompt.append("Example format: \"text\"\n");
+        }
+
+        prompt.append("\nInstructions:\n");
+        prompt.append("1. Generate a realistic value based on the parameter name\n");
+        prompt.append("2. Consider what this parameter might represent in a real system\n");
+        prompt.append("3. Return ONLY the value in the correct format, no explanation\n");
+        prompt.append("4. For arrays, return a JSON array\n");
+        prompt.append("5. For strings, do not include quotes (they will be added automatically)\n");
+
+        String systemContent = "You are a minimal test data generator. Generate the simplest realistic value for the given parameter.";
+
+        String result = llmService.generateText(systemContent, prompt.toString(), 30, 0.1);
+
+        if (result != null && !result.trim().isEmpty()) {
+            String cleanResult = result.trim();
+
+            // Remove quotes if present for non-array values
+            if (!"array".equals(schemaType) && cleanResult.startsWith("\"") && cleanResult.endsWith("\"") && cleanResult.length() > 1) {
+                cleanResult = cleanResult.substring(1, cleanResult.length() - 1);
+            }
+
+            log.debug("LLM minimal value generated '{}' for parameter '{}' (type: {})",
+                     cleanResult, paramName, schemaType);
+            return cleanResult;
+        }
+
+        throw new RuntimeException("LLM failed to generate minimal value");
+    }
+
+    /**
+     * Generate minimal value using algorithmic approach (absolute last resort, no hardcoding)
+     */
+    private String generateAlgorithmicMinimalValue(ParameterInfo parameterInfo, String schemaType) {
+        String paramName = parameterInfo.getName();
 
         if ("integer".equals(schemaType)) {
-            // For distance parameters, use appropriate numeric values
-            if (paramName.contains("distance")) {
-                return "100";
-            }
-            return "1";
+            // Use parameter name hash to generate consistent but varied integers
+            return String.valueOf(Math.abs(paramName.hashCode() % 1000) + 1);
         } else if ("number".equals(schemaType)) {
-            // For distance parameters, use appropriate numeric values
-            if (paramName.contains("distance")) {
-                return "100.0";
-            }
-            return "1.0";
+            // Use parameter name hash to generate consistent but varied numbers
+            double value = (Math.abs(paramName.hashCode() % 10000) + 1) / 10.0;
+            return String.valueOf(value);
         } else if ("boolean".equals(schemaType)) {
-            return "false";
+            // Use parameter name hash to generate consistent boolean
+            return String.valueOf(paramName.hashCode() % 2 == 0);
         } else if ("array".equals(schemaType)) {
-            // For array types, return JSON array with appropriate values
-            if (paramName.contains("distance")) {
-                return "[\"100 miles\", \"50 km\"]";
-            } else if (paramName.contains("station")) {
-                return "[\"Shanghai\", \"Beijing\"]";
-            } else if (paramName.contains("id")) {
-                return "[\"id123\", \"id456\"]";
-            } else {
-                return "[\"item1\", \"item2\"]";
-            }
+            // Generate array with algorithmic values
+            String baseValue = generateAlgorithmicStringValue(paramName);
+            String secondValue = generateAlgorithmicStringValue(paramName + "_2");
+            return "[\"" + baseValue + "\", \"" + secondValue + "\"]";
         } else {
-            // For string types, use parameter name as hint
-            if (paramName.contains("distance")) {
-                return "100";
-            } else if (paramName.contains("station")) {
-                return "Station";
-            } else if (paramName.contains("id")) {
-                return "id123";
-            } else {
-                return "value";
-            }
+            // Generate string value algorithmically
+            return generateAlgorithmicStringValue(paramName);
+        }
+    }
+
+    /**
+     * Generate string value algorithmically based on parameter name analysis
+     */
+    private String generateAlgorithmicStringValue(String paramName) {
+        String lowerName = paramName.toLowerCase();
+
+        // Analyze parameter name to determine appropriate value pattern
+        if (lowerName.contains("id")) {
+            // Generate ID-like value using hash
+            return "id" + Math.abs(paramName.hashCode() % 10000);
+        } else if (lowerName.contains("name")) {
+            // Generate name-like value
+            return "name" + Math.abs(paramName.hashCode() % 100);
+        } else if (lowerName.contains("station")) {
+            // Generate station-like value using parameter characteristics
+            char[] chars = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+            int index = Math.abs(paramName.hashCode() % chars.length);
+            return "Station" + chars[index];
+        } else if (lowerName.contains("distance")) {
+            // Generate distance-like value with units
+            int distance = Math.abs(paramName.hashCode() % 500) + 10;
+            String[] units = {"km", "miles", "meters"};
+            String unit = units[Math.abs(paramName.hashCode() % units.length)];
+            return distance + " " + unit;
+        } else if (lowerName.contains("date") || lowerName.contains("time")) {
+            // Generate date/time-like value
+            return "2024-01-" + String.format("%02d", (Math.abs(paramName.hashCode() % 28) + 1));
+        } else {
+            // Generate generic value based on parameter name
+            return paramName.replaceAll("[^a-zA-Z0-9]", "") + Math.abs(paramName.hashCode() % 100);
         }
     }
 
