@@ -677,10 +677,18 @@ public class SmartInputFetcher {
 
             prompt.append("Find the most semantically relevant field in this data for the parameter '").append(paramName).append("':\n\n");
 
-            prompt.append("Available fields:\n");
+            prompt.append("Available fields and their values:\n");
             for (Map.Entry<?, ?> entry : data.entrySet()) {
-                if (entry.getKey() != null) {
-                    prompt.append("- ").append(entry.getKey().toString()).append("\n");
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    String fieldName = entry.getKey().toString();
+                    String fieldValue = entry.getValue().toString();
+
+                    // Truncate long values for readability
+                    if (fieldValue.length() > 50) {
+                        fieldValue = fieldValue.substring(0, 47) + "...";
+                    }
+
+                    prompt.append("- ").append(fieldName).append(": ").append(fieldValue).append("\n");
                 }
             }
 
@@ -689,24 +697,28 @@ public class SmartInputFetcher {
             prompt.append("Instructions:\n");
             prompt.append("1. Find the field that is most semantically related to the parameter\n");
             prompt.append("2. Consider meaning, context, and domain relevance\n");
-            prompt.append("3. Return ONLY the field name, nothing else\n");
-            prompt.append("4. If no relevant field exists, respond with: NO_MATCH\n\n");
+            prompt.append("3. Consider the VALUE TYPE - don't match UUIDs to distance/numeric parameters\n");
+            prompt.append("4. For distance/numeric parameters, only match numeric fields\n");
+            prompt.append("5. For ID parameters, prefer UUID or numeric ID fields\n");
+            prompt.append("6. Return ONLY the field name, nothing else\n");
+            prompt.append("7. If no relevant field exists, respond with: NO_MATCH\n\n");
 
             prompt.append("Examples:\n");
-            prompt.append("Parameter 'startStation' → field 'from'\n");
-            prompt.append("Parameter 'endStation' → field 'to'\n");
-            prompt.append("Parameter 'userId' → field 'accountId'\n");
-            prompt.append("Parameter 'trainId' → field 'trainNumber'\n\n");
+            prompt.append("Parameter 'startStation' → field 'from' (if from contains station names)\n");
+            prompt.append("Parameter 'endStation' → field 'to' (if to contains station names)\n");
+            prompt.append("Parameter 'userId' → field 'accountId' (if accountId contains IDs)\n");
+            prompt.append("Parameter 'distance' → field 'price' (if price contains numbers, not UUIDs)\n");
+            prompt.append("Parameter 'trainId' → field 'trainNumber' (if trainNumber contains train IDs)\n\n");
 
             prompt.append("Which field is most relevant for parameter '").append(paramName).append("'?");
 
-            if (prompt.length() > 1000) {
+            if (prompt.length() > 1200) {
                 log.warn("Semantic matching prompt too long ({} chars), skipping LLM", prompt.length());
                 return null;
             }
 
             String systemContent = "You are a semantic field matching expert. Find the most relevant field in the data for the given parameter. " +
-                                  "Consider semantic meaning, not just string similarity.";
+                                  "Consider both semantic meaning AND value type compatibility. Never match UUID values to numeric parameters.";
 
             String result = llmService.generateText(systemContent, prompt.toString(), 10, 0.2);
 
@@ -1783,6 +1795,19 @@ public class SmartInputFetcher {
             return true;
         }
 
+        // UUID values for non-ID parameters (major issue!)
+        if (isUUIDValue(cleanValue) && !paramName.contains("id")) {
+            log.debug("Rejecting UUID value '{}' for non-ID parameter '{}'", cleanValue, paramName);
+            return true;
+        }
+
+        // Distance/numeric parameters should not have non-numeric values
+        if ((paramName.contains("distance") || paramName.contains("price") || paramName.contains("rate")) &&
+            !isNumericValue(cleanValue)) {
+            log.debug("Rejecting non-numeric value '{}' for numeric parameter '{}'", cleanValue, paramName);
+            return true;
+        }
+
         // LLM explanatory text patterns
         if (cleanValue.contains("the format appears to be") ||
             cleanValue.contains("delivery route") ||
@@ -1801,6 +1826,31 @@ public class SmartInputFetcher {
         }
 
         return false;
+    }
+
+    /**
+     * Check if a value is a UUID
+     */
+    private boolean isUUIDValue(String value) {
+        if (value == null || value.length() != 36) {
+            return false;
+        }
+        return value.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+    }
+
+    /**
+     * Check if a value is numeric
+     */
+    private boolean isNumericValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+        try {
+            Double.parseDouble(value.trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     /**
@@ -1833,7 +1883,8 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Format value according to OpenAPI schema type
+     * Format value according to OpenAPI schema type - but return raw values for Smart Fetch
+     * Let the test generation system handle final formatting based on schema
      */
     private String formatValueForSchema(String value, ParameterInfo parameterInfo) {
         if (value == null || parameterInfo == null) {
@@ -1845,21 +1896,20 @@ public class SmartInputFetcher {
             String schemaType = getOpenAPISchemaType(parameterInfo);
             String schemaFormat = getOpenAPISchemaFormat(parameterInfo);
 
-            log.debug("Formatting value '{}' for parameter '{}' with schema type: {}, format: {}",
+            log.debug("Smart Fetch returning raw value '{}' for parameter '{}' with schema type: {}, format: {}",
                      value, parameterInfo.getName(), schemaType, schemaFormat);
 
-            // Format based on actual OpenAPI schema type
-            if ("array".equals(schemaType)) {
-                return formatAsArrayValue(value, parameterInfo);
-            } else if ("integer".equals(schemaType)) {
-                return formatAsIntegerValue(value, parameterInfo, schemaFormat);
+            // For Smart Fetch, return raw values and let test generation handle formatting
+            // Only do basic validation and cleanup
+            if ("integer".equals(schemaType)) {
+                return cleanIntegerValue(value, parameterInfo);
             } else if ("number".equals(schemaType)) {
-                return formatAsNumberValue(value, parameterInfo);
+                return cleanNumberValue(value, parameterInfo);
             } else if ("boolean".equals(schemaType)) {
-                return formatAsBooleanValue(value, parameterInfo);
+                return cleanBooleanValue(value, parameterInfo);
             } else {
-                // Default: string type
-                return formatAsStringValue(value, parameterInfo);
+                // For strings and arrays, return raw value
+                return cleanStringValue(value, parameterInfo);
             }
 
         } catch (Exception e) {
@@ -1867,6 +1917,112 @@ public class SmartInputFetcher {
                      value, parameterInfo.getName(), e.getMessage());
             return value; // Return original value if formatting fails
         }
+    }
+
+    /**
+     * Clean integer value without full formatting
+     */
+    private String cleanIntegerValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "1";
+        }
+
+        try {
+            // Remove non-numeric characters except minus sign
+            String cleanValue = value.replaceAll("[^0-9-]", "");
+
+            if (cleanValue.isEmpty() || cleanValue.equals("-")) {
+                return "1";
+            }
+
+            // Parse as integer to validate
+            int intValue = Integer.parseInt(cleanValue);
+            return String.valueOf(intValue);
+
+        } catch (NumberFormatException e) {
+            log.debug("Failed to clean integer value '{}' for parameter '{}': {}",
+                     value, parameterInfo.getName(), e.getMessage());
+            return "1"; // Safe fallback
+        }
+    }
+
+    /**
+     * Clean number value without full formatting
+     */
+    private String cleanNumberValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "1.0";
+        }
+
+        try {
+            // Remove non-numeric characters except minus sign and decimal point
+            String cleanValue = value.replaceAll("[^0-9.-]", "");
+
+            if (cleanValue.isEmpty() || cleanValue.equals("-") || cleanValue.equals(".")) {
+                return "1.0";
+            }
+
+            // Parse as double to validate
+            double doubleValue = Double.parseDouble(cleanValue);
+            return String.valueOf(doubleValue);
+
+        } catch (NumberFormatException e) {
+            log.debug("Failed to clean number value '{}' for parameter '{}': {}",
+                     value, parameterInfo.getName(), e.getMessage());
+            return "1.0"; // Safe fallback
+        }
+    }
+
+    /**
+     * Clean boolean value without full formatting
+     */
+    private String cleanBooleanValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "false";
+        }
+
+        String cleanValue = value.trim().toLowerCase();
+
+        // True values
+        if (cleanValue.equals("true") || cleanValue.equals("1") ||
+            cleanValue.equals("yes") || cleanValue.equals("on") ||
+            cleanValue.equals("enabled") || cleanValue.equals("active")) {
+            return "true";
+        }
+
+        // False values (default)
+        return "false";
+    }
+
+    /**
+     * Clean string value without full formatting
+     */
+    private String cleanStringValue(String value, ParameterInfo parameterInfo) {
+        if (value == null) {
+            return "";
+        }
+
+        String cleanValue = value.trim();
+
+        // Remove quotes if present (they'll be added by JSON serialization)
+        if (cleanValue.startsWith("\"") && cleanValue.endsWith("\"") && cleanValue.length() > 1) {
+            cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
+        }
+
+        // Remove array brackets if present - let test generation handle arrays
+        if (cleanValue.startsWith("[") && cleanValue.endsWith("]")) {
+            // Extract first element from array string
+            cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
+            if (cleanValue.contains(",")) {
+                cleanValue = cleanValue.split(",")[0].trim();
+            }
+            // Remove quotes from extracted element
+            if (cleanValue.startsWith("\"") && cleanValue.endsWith("\"") && cleanValue.length() > 1) {
+                cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
+            }
+        }
+
+        return cleanValue;
     }
 
     /**
