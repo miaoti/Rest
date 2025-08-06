@@ -1065,93 +1065,7 @@ public class SmartInputFetcher {
         }
     }
 
-    /**
-     * Generate minimal appropriate fallback value based on parameter info (no hardcoding)
-     */
-    private String generateMinimalFallbackValue(ParameterInfo parameterInfo) {
-        try {
-            String paramName = parameterInfo.getName().toLowerCase();
-            String schemaType = getOpenAPISchemaType(parameterInfo);
-            String schemaFormat = getOpenAPISchemaFormat(parameterInfo);
 
-            // Use LLM to generate appropriate value based on parameter semantics
-            StringBuilder prompt = new StringBuilder();
-            prompt.append("Generate a single realistic value for this parameter:\n\n");
-            prompt.append("Parameter name: ").append(parameterInfo.getName()).append("\n");
-            prompt.append("Schema type: ").append(schemaType != null ? schemaType : "string").append("\n");
-            if (schemaFormat != null) {
-                prompt.append("Schema format: ").append(schemaFormat).append("\n");
-            }
-
-            // Add semantic hints based on parameter name
-            if (paramName.contains("distance")) {
-                prompt.append("Semantic hint: This represents a distance measurement\n");
-            } else if (paramName.contains("station")) {
-                prompt.append("Semantic hint: This represents a train station name\n");
-            } else if (paramName.contains("id")) {
-                prompt.append("Semantic hint: This represents an identifier\n");
-            } else if (paramName.contains("price") || paramName.contains("rate")) {
-                prompt.append("Semantic hint: This represents a price or rate value\n");
-            } else if (paramName.contains("date") || paramName.contains("time")) {
-                prompt.append("Semantic hint: This represents a date or time value\n");
-            }
-
-            prompt.append("\nInstructions:\n");
-            prompt.append("1. Generate ONE realistic value that matches the parameter semantics\n");
-            prompt.append("2. For numeric types, return only the number (no units)\n");
-            prompt.append("3. For string types, return a realistic string value\n");
-            prompt.append("4. For boolean types, return 'true' or 'false'\n");
-            prompt.append("5. Return ONLY the value, no explanation\n");
-
-            String systemContent = "You are a test data generator. Generate realistic values based on parameter semantics and schema types.";
-
-            String result = llmService.generateText(systemContent, prompt.toString(), 20, 0.3);
-
-            if (result != null && !result.trim().isEmpty()) {
-                String cleanResult = result.trim();
-
-                // Remove quotes if present
-                if (cleanResult.startsWith("\"") && cleanResult.endsWith("\"") && cleanResult.length() > 1) {
-                    cleanResult = cleanResult.substring(1, cleanResult.length() - 1);
-                }
-
-                // Validate the generated value
-                if (isValidValueForParameter(cleanResult, parameterInfo)) {
-                    return cleanResult;
-                }
-            }
-
-            // If LLM fails, use schema-based minimal values
-            return generateSchemaBasedMinimalValue(parameterInfo, schemaType);
-
-        } catch (Exception e) {
-            log.debug("Failed to generate minimal fallback value for '{}': {}", parameterInfo.getName(), e.getMessage());
-            return generateSchemaBasedMinimalValue(parameterInfo, getOpenAPISchemaType(parameterInfo));
-        }
-    }
-
-    /**
-     * Generate minimal value based on schema type only (last resort)
-     */
-    private String generateSchemaBasedMinimalValue(ParameterInfo parameterInfo, String schemaType) {
-        if ("integer".equals(schemaType)) {
-            return "1";
-        } else if ("number".equals(schemaType)) {
-            return "1.0";
-        } else if ("boolean".equals(schemaType)) {
-            return "false";
-        } else {
-            // For string/array types, use parameter name as hint
-            String paramName = parameterInfo.getName().toLowerCase();
-            if (paramName.contains("station")) {
-                return "Station";
-            } else if (paramName.contains("id")) {
-                return "id123";
-            } else {
-                return "value";
-            }
-        }
-    }
 
     /**
      * Helper methods
@@ -1257,7 +1171,7 @@ public class SmartInputFetcher {
         // Clear main cache
         if (cache.containsKey(cacheKey)) {
             CachedValue cachedValue = cache.get(cacheKey);
-            if (cachedValue != null && !isValidValueForParameter(cachedValue.getValue(), parameterInfo)) {
+            if (cachedValue != null && !isValidValueForParameter(cachedValue.value, parameterInfo)) {
                 cache.remove(cacheKey);
                 log.info("🧹 Cleared invalid cached value for parameter '{}'", parameterInfo.getName());
             }
@@ -1456,19 +1370,87 @@ public class SmartInputFetcher {
      * Generate minimal fallback value based on schema type
      */
     private String generateMinimalFallbackValue(ParameterInfo parameterInfo) {
-        String schemaType = getOpenAPISchemaType(parameterInfo);
+        try {
+            String paramName = parameterInfo.getName().toLowerCase();
+            String schemaType = getOpenAPISchemaType(parameterInfo);
+            String schemaFormat = getOpenAPISchemaFormat(parameterInfo);
 
-        switch (schemaType) {
-            case "integer":
-                return "1";
-            case "number":
-                return "1.0";
-            case "boolean":
-                return "false";
-            case "array":
-                return "[]";
-            default:
-                return "default";
+            // Use LLM to generate appropriate value based on parameter semantics
+            StringBuilder prompt = new StringBuilder();
+            prompt.append("Generate a single realistic value for this parameter:\n\n");
+            prompt.append("Parameter name: ").append(parameterInfo.getName()).append("\n");
+            prompt.append("Schema type: ").append(schemaType != null ? schemaType : "string").append("\n");
+            if (schemaFormat != null) {
+                prompt.append("Schema format: ").append(schemaFormat).append("\n");
+            }
+
+            // Add semantic hints based on parameter name
+            if (paramName.contains("distance")) {
+                prompt.append("Semantic hint: This represents a distance measurement\n");
+            } else if (paramName.contains("station")) {
+                prompt.append("Semantic hint: This represents a train station name\n");
+            } else if (paramName.contains("id")) {
+                prompt.append("Semantic hint: This represents an identifier\n");
+            } else if (paramName.contains("price") || paramName.contains("rate")) {
+                prompt.append("Semantic hint: This represents a price or rate value\n");
+            } else if (paramName.contains("date") || paramName.contains("time")) {
+                prompt.append("Semantic hint: This represents a date or time value\n");
+            }
+
+            prompt.append("\nInstructions:\n");
+            prompt.append("1. Generate ONE realistic value that matches the parameter semantics\n");
+            prompt.append("2. For numeric types, return only the number (no units)\n");
+            prompt.append("3. For string types, return a realistic string value\n");
+            prompt.append("4. For boolean types, return 'true' or 'false'\n");
+            prompt.append("5. Return ONLY the value, no explanation\n");
+
+            String systemContent = "You are a test data generator. Generate realistic values based on parameter semantics and schema types.";
+
+            String result = llmService.generateText(systemContent, prompt.toString(), 20, 0.3);
+
+            if (result != null && !result.trim().isEmpty()) {
+                String cleanResult = result.trim();
+
+                // Remove quotes if present
+                if (cleanResult.startsWith("\"") && cleanResult.endsWith("\"") && cleanResult.length() > 1) {
+                    cleanResult = cleanResult.substring(1, cleanResult.length() - 1);
+                }
+
+                // Validate the generated value
+                if (isValidValueForParameter(cleanResult, parameterInfo)) {
+                    return cleanResult;
+                }
+            }
+
+            // If LLM fails, use schema-based minimal values
+            return generateSchemaBasedMinimalValue(parameterInfo, schemaType);
+
+        } catch (Exception e) {
+            log.debug("Failed to generate minimal fallback value for '{}': {}", parameterInfo.getName(), e.getMessage());
+            return generateSchemaBasedMinimalValue(parameterInfo, getOpenAPISchemaType(parameterInfo));
+        }
+    }
+
+    /**
+     * Generate minimal value based on schema type only (last resort)
+     */
+    private String generateSchemaBasedMinimalValue(ParameterInfo parameterInfo, String schemaType) {
+        if ("integer".equals(schemaType)) {
+            return "1";
+        } else if ("number".equals(schemaType)) {
+            return "1.0";
+        } else if ("boolean".equals(schemaType)) {
+            return "false";
+        } else {
+            // For string/array types, use parameter name as hint
+            String paramName = parameterInfo.getName().toLowerCase();
+            if (paramName.contains("station")) {
+                return "Station";
+            } else if (paramName.contains("id")) {
+                return "id123";
+            } else {
+                return "value";
+            }
         }
     }
 
