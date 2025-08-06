@@ -1,1 +1,0 @@
-{"distanceList":"987654321","distances":"789","endStation":"Chicago - union square","id":"abcde","loginId":"users","startStation":"new york penn station","stationList":"Chicago loop","stations":"los angeles union station"}

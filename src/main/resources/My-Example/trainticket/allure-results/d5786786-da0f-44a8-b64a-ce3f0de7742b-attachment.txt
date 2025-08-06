@@ -1,1 +1,0 @@
-{"distanceList":"-5.5","distances":"[\"10\", \"25.5\", \"40.3\", \"65.7\", \"80\"]","endStation":"houston hobby airport","id":"testing","loginId":"Admin456","startStation":"Boston south station","stationList":"chicago loop","stations":"museum of modern art"}

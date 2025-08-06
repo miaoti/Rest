@@ -1,1 +1,0 @@
-{"basicPriceRate":"23.99","firstClassPriceRate":"45.60","id":"hello_world","routeId":"gui","trainType":"Special"}

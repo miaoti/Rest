@@ -1,1 +1,0 @@
-{"accountId":"ABC123","boughtDate":"2023-01-01t00:00:00z","coachNumber":"456789","contactsDocumentNumber":"tuvw-x-yz","contactsName":"alice johnson","documentType":"2048","from":"new york","id":"buf","price":"3.99","seatClass":"3","seatNumber":"f6","status":"200","to":"Test@example.com","trainNumber":"abcdefg","travelDate":"2024-01-01","travelTime":"2023-10-05T09:00"}

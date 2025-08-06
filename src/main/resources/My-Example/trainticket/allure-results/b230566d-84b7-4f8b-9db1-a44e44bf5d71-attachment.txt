@@ -1,0 +1,1 @@
+{"distanceList":"350","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"waco","id":"f1a2b3c4-5678-e1fa-9b8c-d7e5f4a3b2c1","loginId":"a1b2c3d4-e5f6-7890-1234-567890abcdef","startStation":"wuxi","stationList":"Grand Central Terminal","stations":"taiyuan"}

@@ -1,0 +1,1 @@
+{"distanceList":"350","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"shijiazhuang","id":"bdbacf78-877f-4d8c-ace5-399f12897a57","loginId":"98765432-bcdef-4321-abcd-ef0123456789","startStation":"Grand Central Terminal","stationList":"zibo","stations":"zhejiang"}

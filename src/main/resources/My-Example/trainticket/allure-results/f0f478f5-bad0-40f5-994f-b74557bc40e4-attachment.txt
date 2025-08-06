@@ -1,1 +1,0 @@
-{"basicPriceRate":"0.00","firstClassPriceRate":"bd_div_story","id":"Abcde","routeId":"sample_route_012","trainType":"Highspeedrailway"}

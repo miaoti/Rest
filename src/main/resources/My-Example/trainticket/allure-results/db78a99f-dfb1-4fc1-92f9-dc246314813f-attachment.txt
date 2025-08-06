@@ -1,1 +1,0 @@
-{"basicPriceRate":"45.0","firstClassPriceRate":"10.95","id":"Abcdefg","routeId":"gui","trainType":"passengers"}

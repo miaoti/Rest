@@ -1,0 +1,1 @@
+{"distanceList":"350","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"wuxi","id":"3f78a","loginId":"1a2b3c4d-5678-9012-345","startStation":"wuxi","stationList":"guangzhou","stations":"wuxi"}

@@ -1,1 +1,0 @@
-{"distanceList":"-5.5","endStation":"Chicago union station","id":"tests","startStation":"boston south station","stationList":"New york penn station"}

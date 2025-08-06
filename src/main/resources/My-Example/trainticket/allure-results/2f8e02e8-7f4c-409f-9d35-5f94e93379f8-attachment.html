@@ -1,0 +1,40 @@
+<div>POST to http://129.62.148.112:32677/api/v1/adminrouteservice/adminroute</div>
+
+<h4>Body</h4>
+<div>
+    <pre class="preformated-text">
+    {
+    &quot;distanceList&quot;: &quot;350&quot;,
+    &quot;distances&quot;: &quot;[\&quot;10\&quot;, \&quot;50\&quot;, \&quot;100\&quot;, \&quot;250\&quot;, \&quot;500\&quot;]&quot;,
+    &quot;endStation&quot;: &quot;xuzhou&quot;,
+    &quot;id&quot;: &quot;f1a2b3c4-5678-e1fa-9b8c-d7e5f4a3b2c1&quot;,
+    &quot;loginId&quot;: &quot;4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f&quot;,
+    &quot;startStation&quot;: &quot;wuxi&quot;,
+    &quot;stationList&quot;: &quot;shanghai,suzhou,taiyuan&quot;,
+    &quot;stations&quot;: &quot;[\&quot;Grand Central Terminal\&quot;, \&quot;Union Station - Denver\&quot;, \&quot;King Street Station - Newcastle\&quot;, \&quot;Victoria Station - London\&quot;, \&quot;Penn Station - New York\&quot;]&quot;
+}
+    </pre>
+</div>
+
+<h4>Headers</h4>
+<div>
+        <div>Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiJkZThlMDJiOS01ZDkyLTQ5MjgtYTJjOC1iMjVlNDM5NGJkZDciLCJpYXQiOjE3NTQ0NDgxNDEsImV4cCI6MTc1NDQ1MTc0MX0.qy0OKiZLH1M1AbBM2QBnfc5h-7Y5_ZUq-i8wzOoRLWY</div>
+        <div>Accept: */*</div>
+        <div>Content-Type: application/json; charset=UTF-8</div>
+</div>
+
+
+
+<h4>Curl</h4>
+<div>
+curl -v -X POST &#39;http://129.62.148.112:32677/api/v1/adminrouteservice/adminroute&#39; -H &#39;Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiJkZThlMDJiOS01ZDkyLTQ5MjgtYTJjOC1iMjVlNDM5NGJkZDciLCJpYXQiOjE3NTQ0NDgxNDEsImV4cCI6MTc1NDQ1MTc0MX0.qy0OKiZLH1M1AbBM2QBnfc5h-7Y5_ZUq-i8wzOoRLWY&#39; -H &#39;Accept: */*&#39; -H &#39;Content-Type: application/json; charset=UTF-8&#39; -d &#39;{
+    &quot;distanceList&quot;: &quot;350&quot;,
+    &quot;distances&quot;: &quot;[\&quot;10\&quot;, \&quot;50\&quot;, \&quot;100\&quot;, \&quot;250\&quot;, \&quot;500\&quot;]&quot;,
+    &quot;endStation&quot;: &quot;xuzhou&quot;,
+    &quot;id&quot;: &quot;f1a2b3c4-5678-e1fa-9b8c-d7e5f4a3b2c1&quot;,
+    &quot;loginId&quot;: &quot;4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f&quot;,
+    &quot;startStation&quot;: &quot;wuxi&quot;,
+    &quot;stationList&quot;: &quot;shanghai,suzhou,taiyuan&quot;,
+    &quot;stations&quot;: &quot;[\&quot;Grand Central Terminal\&quot;, \&quot;Union Station - Denver\&quot;, \&quot;King Street Station - Newcastle\&quot;, \&quot;Victoria Station - London\&quot;, \&quot;Penn Station - New York\&quot;]&quot;
+}&#39;
+</div>

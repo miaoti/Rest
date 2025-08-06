@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"633feb80-2204-4b6a-8b0a-6f832dc26d80","trainType":"passengers","routeId":"gui","basicPriceRate":45.0,"firstClassPriceRate":10.95}}

@@ -1,1 +1,0 @@
-{"distanceList":"12.3","distances":"10","endStation":"Phoenix - Arizona State University","id":"xyz789","loginId":"testaccount001","startStation":"New York Penn Station","stationList":"phoenix sky harbor","stations":"los angeles union station"}

@@ -1,1 +1,0 @@
-{"accountId":"tested","boughtDate":"2019-07-01T06:00:00Z","coachNumber":"-9","contactsDocumentNumber":"XYZ123","contactsName":"Jane Smith","documentType":"4000","from":"baltimore","id":"testing","price":"99.99","seatClass":"20","seatNumber":"C4567890","status":"301","to":"baltimore","trainNumber":"XYZ789","travelDate":"2024-01-15T14:30","travelTime":"2021-11-05t13:30"}

@@ -1,1 +1,0 @@
-{"distanceList":"bd_div_story","distances":"```","endStation":"Boston south station","id":"test123","loginId":"admin456","startStation":"boston south station","stationList":"New york penn station","stations":"Buckingham palace"}

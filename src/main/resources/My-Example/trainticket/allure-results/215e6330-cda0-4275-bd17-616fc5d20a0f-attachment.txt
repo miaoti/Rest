@@ -1,1 +1,0 @@
-{"basicPriceRate":"78.6","firstClassPriceRate":"15.75","id":"testing","routeId":"testroute","trainType":"Freight"}

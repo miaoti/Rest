@@ -1,1 +1,0 @@
-{"distanceList":"bd_div_story","distances":"[\"10\", \"25.5\", \"40.3\", \"65.7\", \"80\"]","endStation":"chicago union station","id":"user123","loginId":"dave","startStation":"boston south station","stationList":"los angeles union square","stations":"Grand central terminal"}

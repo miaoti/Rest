@@ -1,1 +1,0 @@
-{"distanceList":"bd_div_story","distances":"[\"10\", \"25.5\", \"40.3\", \"65.7\", \"80\"]","endStation":"Boston south station","id":"Abcdefg","loginId":"User123","startStation":"New york penn station","stationList":"new york penn station","stations":"Grand Central Terminal"}

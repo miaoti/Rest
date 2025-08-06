@@ -1,1 +1,0 @@
-{"distanceList":"0","endStation":"Los angeles - union station","id":"Abcde","startStation":"Boston South Station","stationList":"new york city station"}

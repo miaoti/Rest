@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"f77a273f-b9bc-49f7-bbf1-53037a809973","stations":["Los angeles union square"],"distances":[0],"startStation":"new york penn station","endStation":"Boston south station"}}

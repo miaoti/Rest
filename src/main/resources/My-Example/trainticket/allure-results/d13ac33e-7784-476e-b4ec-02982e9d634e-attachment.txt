@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"72e70815-a699-44fd-9463-bc79d572e915","trainType":"Passenger","routeId":"yyyy","basicPriceRate":45.0,"firstClassPriceRate":89.99}}
