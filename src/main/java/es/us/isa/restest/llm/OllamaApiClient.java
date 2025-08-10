@@ -1,5 +1,6 @@
 package es.us.isa.restest.llm;
 
+import es.us.isa.restest.util.LLMCommunicationLogger;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

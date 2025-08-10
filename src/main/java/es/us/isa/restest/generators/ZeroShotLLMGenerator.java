@@ -47,7 +47,12 @@ public class ZeroShotLLMGenerator {
             "llm.local.enabled", "llm.local.url", "llm.local.model",
             "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
             "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
-            "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries"
+            "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries",
+            // LLM Communication Logging Properties
+            "llm.communication.logging.enabled", "llm.communication.logging.dir",
+            "llm.communication.logging.file.prefix", "llm.communication.logging.include.response.time",
+            "llm.communication.logging.include.content", "llm.communication.logging.include.metadata",
+            "llm.communication.logging.level", "llm.communication.logging.max.content.length"
         };
 
         for (String prop : llmProperties) {

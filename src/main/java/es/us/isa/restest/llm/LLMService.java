@@ -1,5 +1,6 @@
 package es.us.isa.restest.llm;
 
+import es.us.isa.restest.util.LLMCommunicationLogger;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,12 +23,31 @@ public class LLMService {
     private final GeminiApiClient geminiClient;
     private final OllamaApiClient ollamaClient;
     private final OkHttpClient httpClient;
-    
+    private final LLMCommunicationLogger communicationLogger;
+
     // Singleton instance
     private static LLMService instance;
     
     private LLMService(LLMConfig config) {
+        this(config, new Properties());
+    }
+
+    private LLMService(LLMConfig config, Properties properties) {
         this.config = config;
+
+        // Initialize communication logger with provided properties
+        Properties loggerProps = new Properties();
+        // Copy LLM communication logging properties
+        for (String key : properties.stringPropertyNames()) {
+            if (key.startsWith("llm.communication.logging.")) {
+                loggerProps.setProperty(key, properties.getProperty(key));
+            }
+        }
+        // Set default if not specified
+        if (!loggerProps.containsKey("llm.communication.logging.enabled")) {
+            loggerProps.setProperty("llm.communication.logging.enabled", "true");
+        }
+        this.communicationLogger = LLMCommunicationLogger.getInstance(loggerProps);
         
         // Initialize Gemini client if needed
         if (config.getModelType() == LLMConfig.ModelType.GEMINI && config.isGeminiEnabled()) {
@@ -72,13 +93,28 @@ public class LLMService {
         }
         return instance;
     }
-    
+
+    /**
+     * Get or create singleton instance with communication logging properties
+     */
+    public static synchronized LLMService getInstance(LLMConfig config, Properties properties) {
+        if (instance == null) {
+            instance = new LLMService(config, properties);
+        }
+        return instance;
+    }
+
     /**
      * Get instance from properties map
      */
     public static synchronized LLMService getInstance(Map<String, String> properties) {
         LLMConfig config = LLMConfig.fromProperties(properties);
-        return getInstance(config);
+
+        // Convert Map to Properties for communication logger
+        Properties props = new Properties();
+        props.putAll(properties);
+
+        return getInstance(config, props);
     }
     
     /**
@@ -94,23 +130,54 @@ public class LLMService {
             logger.warn("LLM is disabled in configuration");
             return null;
         }
-        
+
         if (!config.isValid()) {
             logger.error("LLM configuration is invalid: {}", config);
             return null;
         }
-        
-        switch (config.getModelType()) {
-            case GEMINI:
-                return generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
-            case LOCAL:
-                return generateWithLocal(systemPrompt, userPrompt, maxTokens, temperature);
-            case OLLAMA:
-                return generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
-            default:
-                logger.error("Unknown model type: {}", config.getModelType());
-                return null;
+
+        // Log the request
+        String modelType = config.getModelType().toString();
+        String modelName = getModelName();
+        String endpoint = getEndpoint();
+        Object metadata = createMetadata(maxTokens, temperature);
+
+        LLMCommunicationLogger.LLMRequestContext context = communicationLogger.logRequest(
+            modelType, modelName, systemPrompt, userPrompt, endpoint, metadata);
+
+        long startTime = System.currentTimeMillis();
+        String result = null;
+        boolean success = false;
+        String errorMessage = null;
+
+        try {
+            switch (config.getModelType()) {
+                case GEMINI:
+                    result = generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
+                    break;
+                case LOCAL:
+                    result = generateWithLocal(systemPrompt, userPrompt, maxTokens, temperature);
+                    break;
+                case OLLAMA:
+                    result = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
+                    break;
+                default:
+                    errorMessage = "Unknown model type: " + config.getModelType();
+                    logger.error(errorMessage);
+                    break;
+            }
+
+            success = (result != null);
+
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+            logger.error("Error during LLM generation: {}", errorMessage, e);
+        } finally {
+            // Log the response
+            communicationLogger.logResponse(context, result, success, errorMessage);
         }
+
+        return result;
     }
     
     /**
@@ -241,5 +308,53 @@ public class LLMService {
      */
     public boolean isReady() {
         return config.isEnabled() && config.isValid();
+    }
+
+    /**
+     * Get model name for logging
+     */
+    private String getModelName() {
+        switch (config.getModelType()) {
+            case GEMINI:
+                return config.getGeminiModel();
+            case LOCAL:
+                return config.getLocalModel();
+            case OLLAMA:
+                return config.getOllamaModel();
+            default:
+                return "Unknown";
+        }
+    }
+
+    /**
+     * Get endpoint for logging
+     */
+    private String getEndpoint() {
+        switch (config.getModelType()) {
+            case GEMINI:
+                return config.getGeminiApiUrl();
+            case LOCAL:
+                return config.getLocalUrl();
+            case OLLAMA:
+                return config.getOllamaUrl();
+            default:
+                return "Unknown";
+        }
+    }
+
+    /**
+     * Create metadata object for logging
+     */
+    private Object createMetadata(int maxTokens, double temperature) {
+        return String.format("maxTokens=%d, temperature=%.2f", maxTokens, temperature);
+    }
+
+    /**
+     * Close communication logger
+     */
+    public void close() {
+        if (communicationLogger != null) {
+            communicationLogger.close();
+        }
     }
 }
