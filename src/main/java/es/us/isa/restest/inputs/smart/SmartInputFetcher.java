@@ -114,7 +114,12 @@ public class SmartInputFetcher {
             "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
             "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
             "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries",
-            "auth.admin.username", "auth.admin.password", "auth.user.username", "auth.user.password"
+            "auth.admin.username", "auth.admin.password", "auth.user.username", "auth.user.password",
+            // LLM Communication Logging Properties
+            "llm.communication.logging.enabled", "llm.communication.logging.dir",
+            "llm.communication.logging.file.prefix", "llm.communication.logging.include.response.time",
+            "llm.communication.logging.include.content", "llm.communication.logging.include.metadata",
+            "llm.communication.logging.level", "llm.communication.logging.max.content.length"
         };
 
         for (String prop : llmProperties) {
@@ -1303,7 +1308,50 @@ public class SmartInputFetcher {
         log.debug("🔄 Rotating to diverse value '{}' for parameter '{}' (index: {}/{})",
                  value, parameterInfo.getName(), currentIndex, values.size());
 
-        return value;
+        // Format the cached value according to parameter schema
+        String formattedValue = formatCachedValueForSchema(value, parameterInfo);
+
+        if (!formattedValue.equals(value)) {
+            log.debug("🔧 Formatted cached value '{}' → '{}' for parameter '{}'",
+                     value, formattedValue, parameterInfo.getName());
+        }
+
+        return formattedValue;
+    }
+
+    /**
+     * Format cached value according to parameter schema (especially for arrays)
+     */
+    private String formatCachedValueForSchema(String cachedValue, ParameterInfo parameterInfo) {
+        if (cachedValue == null || parameterInfo == null) {
+            return cachedValue;
+        }
+
+        try {
+            String schemaType = getOpenAPISchemaType(parameterInfo);
+
+            // For array parameters, ensure the cached value is formatted as an array
+            if ("array".equals(schemaType)) {
+                // If cached value is already a JSON array, return as-is
+                if (cachedValue.startsWith("[") && cachedValue.endsWith("]")) {
+                    return cachedValue;
+                }
+
+                // Convert single cached value to array format
+                String arrayValue = "[\"" + cachedValue + "\"]";
+                log.debug("Converted cached single value '{}' to array '{}' for array parameter '{}'",
+                         cachedValue, arrayValue, parameterInfo.getName());
+                return arrayValue;
+            }
+
+            // For non-array parameters, return cached value as-is
+            return cachedValue;
+
+        } catch (Exception e) {
+            log.debug("Failed to format cached value '{}' for parameter '{}': {}",
+                     cachedValue, parameterInfo.getName(), e.getMessage());
+            return cachedValue;
+        }
     }
 
     /**
@@ -2324,8 +2372,11 @@ public class SmartInputFetcher {
                 return cleanNumberValue(value, parameterInfo);
             } else if ("boolean".equals(schemaType)) {
                 return cleanBooleanValue(value, parameterInfo);
+            } else if ("array".equals(schemaType)) {
+                // For array parameters, format as JSON array
+                return formatAsArrayValue(value, parameterInfo);
             } else {
-                // For strings and arrays, return raw value
+                // For string parameters, return raw value
                 return cleanStringValue(value, parameterInfo);
             }
 
@@ -2409,6 +2460,60 @@ public class SmartInputFetcher {
 
         // False values (default)
         return "false";
+    }
+
+    /**
+     * Format value as JSON array for array parameters
+     */
+    private String formatAsArrayValue(String value, ParameterInfo parameterInfo) {
+        if (value == null || value.trim().isEmpty()) {
+            return "[]";
+        }
+
+        String cleanValue = value.trim();
+
+        // If already a JSON array, return as-is
+        if (cleanValue.startsWith("[") && cleanValue.endsWith("]")) {
+            log.debug("Value '{}' is already a JSON array for parameter '{}'", cleanValue, parameterInfo.getName());
+            return cleanValue;
+        }
+
+        // If comma-separated values, convert to JSON array
+        if (cleanValue.contains(",")) {
+            String[] parts = cleanValue.split(",");
+            StringBuilder arrayBuilder = new StringBuilder("[");
+            for (int i = 0; i < parts.length; i++) {
+                if (i > 0) arrayBuilder.append(", ");
+                String part = parts[i].trim();
+                // Remove quotes if already present
+                if (part.startsWith("\"") && part.endsWith("\"")) {
+                    arrayBuilder.append(part);
+                } else {
+                    arrayBuilder.append("\"").append(part).append("\"");
+                }
+            }
+            arrayBuilder.append("]");
+
+            log.debug("Converted comma-separated '{}' to JSON array '{}' for parameter '{}'",
+                     cleanValue, arrayBuilder.toString(), parameterInfo.getName());
+            return arrayBuilder.toString();
+        }
+
+        // Single value, wrap in array
+        String singleValue = cleanValue;
+        if (singleValue.startsWith("\"") && singleValue.endsWith("\"")) {
+            // Already quoted
+            String result = "[" + singleValue + "]";
+            log.debug("Wrapped quoted single value '{}' in array '{}' for parameter '{}'",
+                     cleanValue, result, parameterInfo.getName());
+            return result;
+        } else {
+            // Add quotes and wrap in array
+            String result = "[\"" + singleValue + "\"]";
+            log.debug("Wrapped single value '{}' in array '{}' for parameter '{}'",
+                     cleanValue, result, parameterInfo.getName());
+            return result;
+        }
     }
 
     /**

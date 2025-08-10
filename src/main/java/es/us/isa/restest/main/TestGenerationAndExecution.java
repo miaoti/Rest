@@ -71,7 +71,8 @@ public class TestGenerationAndExecution {
 
 	private static List<String> argsList;								// List containing args
 
-	private static Integer numTestCases; 								// Number of test cases per operation
+	private static Integer numTestCases;
+	// Number of test cases per operation
 	private static String OAISpecPath; 									// Path to OAS specification file
 	private static OpenAPISpecification spec; 							// OAS specification
 	private static String confPath; 									// Path to test configuration file
