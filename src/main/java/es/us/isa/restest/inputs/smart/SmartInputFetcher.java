@@ -2462,59 +2462,7 @@ public class SmartInputFetcher {
         return "false";
     }
 
-    /**
-     * Format value as JSON array for array parameters
-     */
-    private String formatAsArrayValue(String value, ParameterInfo parameterInfo) {
-        if (value == null || value.trim().isEmpty()) {
-            return "[]";
-        }
-
-        String cleanValue = value.trim();
-
-        // If already a JSON array, return as-is
-        if (cleanValue.startsWith("[") && cleanValue.endsWith("]")) {
-            log.debug("Value '{}' is already a JSON array for parameter '{}'", cleanValue, parameterInfo.getName());
-            return cleanValue;
-        }
-
-        // If comma-separated values, convert to JSON array
-        if (cleanValue.contains(",")) {
-            String[] parts = cleanValue.split(",");
-            StringBuilder arrayBuilder = new StringBuilder("[");
-            for (int i = 0; i < parts.length; i++) {
-                if (i > 0) arrayBuilder.append(", ");
-                String part = parts[i].trim();
-                // Remove quotes if already present
-                if (part.startsWith("\"") && part.endsWith("\"")) {
-                    arrayBuilder.append(part);
-                } else {
-                    arrayBuilder.append("\"").append(part).append("\"");
-                }
-            }
-            arrayBuilder.append("]");
-
-            log.debug("Converted comma-separated '{}' to JSON array '{}' for parameter '{}'",
-                     cleanValue, arrayBuilder.toString(), parameterInfo.getName());
-            return arrayBuilder.toString();
-        }
-
-        // Single value, wrap in array
-        String singleValue = cleanValue;
-        if (singleValue.startsWith("\"") && singleValue.endsWith("\"")) {
-            // Already quoted
-            String result = "[" + singleValue + "]";
-            log.debug("Wrapped quoted single value '{}' in array '{}' for parameter '{}'",
-                     cleanValue, result, parameterInfo.getName());
-            return result;
-        } else {
-            // Add quotes and wrap in array
-            String result = "[\"" + singleValue + "\"]";
-            log.debug("Wrapped single value '{}' in array '{}' for parameter '{}'",
-                     cleanValue, result, parameterInfo.getName());
-            return result;
-        }
-    }
+    
 
     /**
      * Clean string value without full formatting
