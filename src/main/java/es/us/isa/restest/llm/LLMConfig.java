@@ -113,10 +113,57 @@ public class LLMConfig {
         config.rateLimitRetryEnabled = Boolean.parseBoolean(
             properties.getOrDefault("llm.rate.limit.retry.enabled", "true"));
 
+        // Auto-correct modelType if selected backend is disabled but another is enabled
+        // This makes configuration resilient when a launcher overrides llm.model.type inconsistently
+        ModelType originalType = config.modelType;
+        if (!config.isValid()) {
+            // Prefer LOCAL if enabled
+            if (config.localEnabled && config.localUrl != null && !config.localUrl.trim().isEmpty()) {
+                config.modelType = ModelType.LOCAL;
+            } else if (config.ollamaEnabled && config.ollamaUrl != null && !config.ollamaUrl.trim().isEmpty()) {
+                config.modelType = ModelType.OLLAMA;
+            } else if (config.geminiEnabled && config.geminiApiKey != null && !config.geminiApiKey.trim().isEmpty()) {
+                config.modelType = ModelType.GEMINI;
+            }
+        }
+
+        if (originalType != config.modelType) {
+            logger.warn("LLMConfig: Overriding modelType {} -> {} based on enabled providers to ensure a valid configuration", originalType, config.modelType);
+        }
+
         logger.info("LLMConfig initialized: enabled={}, modelType={}, localEnabled={}, geminiEnabled={}, ollamaEnabled={}, maxRetries={}, rateLimitRetryEnabled={}",
                    config.enabled, config.modelType, config.localEnabled, config.geminiEnabled, config.ollamaEnabled, config.maxRetries, config.rateLimitRetryEnabled);
         
+        // Automatically ensure only the selected model type is enabled
+        config.enforceModelTypeConsistency();
+        
         return config;
+    }
+    
+    /**
+     * Ensure only the selected model type is enabled, disable others
+     */
+    private void enforceModelTypeConsistency() {
+        switch (this.modelType) {
+            case LOCAL:
+                this.localEnabled = true;
+                this.geminiEnabled = false;
+                this.ollamaEnabled = false;
+                logger.info("Enforcing LOCAL model configuration - disabled Gemini and Ollama");
+                break;
+            case GEMINI:
+                this.localEnabled = false;
+                this.geminiEnabled = true;
+                this.ollamaEnabled = false;
+                logger.info("Enforcing GEMINI model configuration - disabled Local and Ollama");
+                break;
+            case OLLAMA:
+                this.localEnabled = false;
+                this.geminiEnabled = false;
+                this.ollamaEnabled = true;
+                logger.info("Enforcing OLLAMA model configuration - disabled Local and Gemini");
+                break;
+        }
     }
     
     /**

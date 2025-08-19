@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * - Configurable content truncation
  * - Thread-safe operation
  * - Automatic log file creation with timestamps
+ * - System resource monitoring for local models (CPU/Memory usage)
  */
 public class LLMCommunicationLogger {
     
@@ -49,6 +50,9 @@ public class LLMCommunicationLogger {
     private PrintWriter logWriter;
     private final Object writerLock = new Object();
     
+    // Resource monitoring
+    private final SystemResourceMonitor resourceMonitor;
+    
     // Formatters
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private static final DateTimeFormatter FILE_TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
@@ -64,6 +68,16 @@ public class LLMCommunicationLogger {
         this.maxContentLength = Integer.parseInt(properties.getProperty("llm.communication.logging.max.content.length", "10000"));
         
         this.sessionId = generateSessionId();
+        
+        // Initialize resource monitoring for local models
+        try {
+            this.resourceMonitor = SystemResourceMonitor.getInstance(properties);
+            log.info("SystemResourceMonitor initialized successfully. Enabled: {}", 
+                    resourceMonitor != null ? resourceMonitor.isEnabled() : "null");
+        } catch (Exception e) {
+            log.error("Failed to initialize SystemResourceMonitor: {}", e.getMessage(), e);
+            throw e;
+        }
         
         if (enabled) {
             initializeLogFile();
@@ -106,6 +120,22 @@ public class LLMCommunicationLogger {
         long requestId = requestCounter.incrementAndGet();
         long startTime = System.currentTimeMillis();
         
+        // Start resource monitoring for local models
+        SystemResourceMonitor.ResourceMonitoringContext resourceContext = null;
+        log.debug("Checking resource monitoring: resourceMonitor={}, modelType={}", 
+                 resourceMonitor != null ? "initialized" : "null", modelType);
+        
+        if (resourceMonitor != null && resourceMonitor.shouldMonitor(modelType)) {
+            log.debug("Starting resource monitoring for {} model", modelType);
+            resourceContext = resourceMonitor.startMonitoring(requestId, modelType, modelName);
+            log.debug("Resource monitoring context created: {}", 
+                     resourceContext != null && resourceContext.isMonitoring() ? "active" : "inactive");
+        } else {
+            log.debug("Resource monitoring not started. Monitor null: {}, Should monitor: {}", 
+                     resourceMonitor == null, 
+                     resourceMonitor != null ? resourceMonitor.shouldMonitor(modelType) : "N/A");
+        }
+        
         try {
             synchronized (writerLock) {
                 if (logWriter != null) {
@@ -122,6 +152,22 @@ public class LLMCommunicationLogger {
                         logWriter.println("Endpoint: " + (endpoint != null ? endpoint : "Unknown"));
                         if (additionalMetadata != null) {
                             logWriter.println("Additional Metadata: " + additionalMetadata.toString());
+                        }
+                        
+                        // Log resource monitoring status for local models
+                        if ("LOCAL".equalsIgnoreCase(modelType) || "OLLAMA".equalsIgnoreCase(modelType)) {
+                            if (resourceMonitor != null && resourceMonitor.isEnabled()) {
+                                if (resourceContext != null && resourceContext.isMonitoring()) {
+                                    logWriter.println("Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources");
+                                } else {
+                                    logWriter.println("Resource Monitoring: ⚠️ ENABLED but NOT ACTIVE (Check logs for errors)");
+                                }
+                            } else {
+                                String reason = resourceMonitor == null ? "not initialized" : "disabled in config";
+                                logWriter.println("Resource Monitoring: ❌ DISABLED (" + reason + ")");
+                            }
+                        } else {
+                            logWriter.println("Resource Monitoring: ⏭️ SKIPPED (Online Model)");
                         }
                     }
                     
@@ -142,7 +188,7 @@ public class LLMCommunicationLogger {
             log.error("Failed to log LLM request: {}", e.getMessage());
         }
         
-        return new LLMRequestContext(requestId, startTime, true);
+        return new LLMRequestContext(requestId, startTime, true, resourceContext);
     }
     
     /**
@@ -156,6 +202,8 @@ public class LLMCommunicationLogger {
         long endTime = System.currentTimeMillis();
         long responseTime = endTime - context.getStartTime();
         
+        // Resource monitoring data is captured at response time
+        
         try {
             synchronized (writerLock) {
                 if (logWriter != null) {
@@ -165,6 +213,14 @@ public class LLMCommunicationLogger {
                     
                     if (includeResponseTime) {
                         logWriter.println("Response Time: " + responseTime + " ms");
+                    }
+                    
+                    // Log resource monitoring summary if available
+                    if (context.getResourceContext() != null && context.getResourceContext().isMonitoring()) {
+                        String monitoringSummary = resourceMonitor.stopMonitoring(context.getResourceContext());
+                        if (!monitoringSummary.equals("No monitoring data available")) {
+                            logWriter.println("📊 Resource Usage During Generation: " + monitoringSummary);
+                        }
                     }
                     
                     if (!success && errorMessage != null) {
@@ -300,16 +356,24 @@ public class LLMCommunicationLogger {
         private final long requestId;
         private long startTime;
         private final boolean logged;
+        private final SystemResourceMonitor.ResourceMonitoringContext resourceContext;
         
         public LLMRequestContext(long requestId, long startTime, boolean logged) {
+            this(requestId, startTime, logged, null);
+        }
+        
+        public LLMRequestContext(long requestId, long startTime, boolean logged, 
+                               SystemResourceMonitor.ResourceMonitoringContext resourceContext) {
             this.requestId = requestId;
             this.startTime = startTime;
             this.logged = logged;
+            this.resourceContext = resourceContext;
         }
         
         public long getRequestId() { return requestId; }
         public long getStartTime() { return startTime; }
         public boolean isLogged() { return logged; }
         public void setStartTime(long startTime) { this.startTime = startTime; }
+        public SystemResourceMonitor.ResourceMonitoringContext getResourceContext() { return resourceContext; }
     }
 }

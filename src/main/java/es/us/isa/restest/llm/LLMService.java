@@ -37,9 +37,9 @@ public class LLMService {
 
         // Initialize communication logger with provided properties
         Properties loggerProps = new Properties();
-        // Copy LLM communication logging properties
+        // Copy LLM communication logging AND resource monitoring properties
         for (String key : properties.stringPropertyNames()) {
-            if (key.startsWith("llm.communication.logging.")) {
+            if (key.startsWith("llm.communication.logging.") || key.startsWith("llm.resource.monitoring.")) {
                 loggerProps.setProperty(key, properties.getProperty(key));
             }
         }
@@ -75,10 +75,14 @@ public class LLMService {
         }
         
         // Initialize HTTP client for local model
+        // Disable timeouts for long-running local generations per user requirement
         this.httpClient = new OkHttpClient.Builder()
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(90, TimeUnit.SECONDS)
+                .connectTimeout(0, TimeUnit.MILLISECONDS)
+                .writeTimeout(0, TimeUnit.MILLISECONDS)
+                .readTimeout(0, TimeUnit.MILLISECONDS)
+                .retryOnConnectionFailure(true)
+                .pingInterval(30, TimeUnit.SECONDS)
+                .callTimeout(0, TimeUnit.MILLISECONDS)
                 .build();
         
         logger.info("LLMService initialized with model type: {}", config.getModelType());
@@ -236,14 +240,25 @@ public class LLMService {
                     .addHeader("Content-Type", "application/json")
                     .build();
             
-            try (Response response = httpClient.newCall(request).execute()) {
+            // Ensure per-request no-timeout client in case singleton was initialized earlier with timeouts
+            OkHttpClient noTimeoutClient = httpClient.newBuilder()
+                    .connectTimeout(0, TimeUnit.MILLISECONDS)
+                    .writeTimeout(0, TimeUnit.MILLISECONDS)
+                    .readTimeout(0, TimeUnit.MILLISECONDS)
+                    .callTimeout(0, TimeUnit.MILLISECONDS)
+                    .build();
+
+            try (Response response = noTimeoutClient.newCall(request).execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     logger.debug("[Local LLM] Response: {}", responseBody);
                     
                     return parseLocalLLMResponse(responseBody);
                 } else {
-                    String errorBody = response.body() != null ? response.body().string() : "No error body";
+                    String errorBody = "";
+                    try {
+                        errorBody = response.body() != null ? response.body().string() : "No error body";
+                    } catch (Exception ignore) { }
                     logger.error("[Local LLM] Request failed with code {}: {}", response.code(), errorBody);
                     return null;
                 }
