@@ -129,6 +129,15 @@ public class SmartInputFetcher {
             }
         }
 
+        // If model type is set to ollama but local is enabled, prefer LOCAL to match user's intent
+        String modelType = properties.getOrDefault("llm.model.type", "local").toLowerCase();
+        String localEnabled = properties.getOrDefault("llm.local.enabled", "false");
+        String ollamaEnabled = properties.getOrDefault("llm.ollama.enabled", "false");
+        if ("ollama".equals(modelType) && Boolean.parseBoolean(localEnabled) && !Boolean.parseBoolean(ollamaEnabled)) {
+            properties.put("llm.model.type", "local");
+            log.warn("LLM config: Overriding llm.model.type=ollama -> local because llm.local.enabled=true and llm.ollama.enabled=false");
+        }
+
         return properties;
     }
 
@@ -607,6 +616,10 @@ public class SmartInputFetcher {
                                 if (value != null) {
                                     log.info("📋 Fallback extracted '{}' from field '{}' for parameter '{}'",
                                             value, entry.getKey(), parameterInfo.getName());
+                                    // Populate diverse cache from this same response to avoid repeats
+                                    try {
+                                        extractAdditionalDiverseValues(responseBody, parameterInfo, value.toString());
+                                    } catch (Exception ignore) { }
                                     return value.toString();
                                 }
                             }
@@ -619,6 +632,10 @@ public class SmartInputFetcher {
                             if (isValidValueForParameter(fallbackValue, parameterInfo)) {
                                 log.info("📋 Fallback found valid semantic match '{}' for parameter '{}'",
                                         fallbackValue, parameterInfo.getName());
+                                // Populate diverse cache from the same response so subsequent tests rotate values
+                                try {
+                                    extractAdditionalDiverseValues(responseBody, parameterInfo, fallbackValue);
+                                } catch (Exception ignore) { }
                                 return fallbackValue;
                             } else {
                                 log.warn("❌ Fallback found invalid semantic match '{}' for parameter '{}' - rejecting",
@@ -632,6 +649,10 @@ public class SmartInputFetcher {
                         String llmGeneratedValue = generateValueWithLLM(parameterInfo);
                         if (llmGeneratedValue != null && !llmGeneratedValue.trim().isEmpty()) {
                             log.info("✅ LLM generated meaningful value '{}' for parameter '{}'", llmGeneratedValue, parameterInfo.getName());
+                            // Also try to enrich cache from response for future diversity
+                            try {
+                                extractAdditionalDiverseValues(responseBody, parameterInfo, llmGeneratedValue);
+                            } catch (Exception ignore) { }
                             return llmGeneratedValue;
                         }
 
@@ -1052,8 +1073,50 @@ public class SmartInputFetcher {
                 // For array parameters, process all values and return as array
                 return handleArrayParameterFromLLM(parameterInfo, values);
             } else {
-                // For single-value parameters, take the first value
-                return handleSingleValueParameterFromLLM(parameterInfo, values.get(0));
+                // For single-value parameters:
+                // 1) Clean and validate all returned values
+                // 2) Cache them as diverse options
+                // 3) Return a rotated value to avoid repeating the same choice across tests
+                int cachedCountBefore = 0;
+                String cacheKey = buildCacheKey(parameterInfo);
+                if (diverseValueCache.containsKey(cacheKey)) {
+                    cachedCountBefore = diverseValueCache.get(cacheKey).size();
+                }
+
+                List<String> validCleanedValues = new ArrayList<>();
+                for (String value : values) {
+                    if (value == null) continue;
+                    String cleaned = cleanJsonFromMarkdown(value);
+                    if (cleaned == null || cleaned.trim().isEmpty() || cleaned.equals("json") || cleaned.startsWith("```")) {
+                        continue;
+                    }
+                    String processed = cleanLLMGeneratedValue(cleaned, parameterInfo);
+                    if (processed != null && isValidValueForParameter(processed, parameterInfo)) {
+                        validCleanedValues.add(processed);
+                        // Add to diverse cache for rotation
+                        cacheDiverseValue(parameterInfo, processed);
+                    }
+                }
+
+                if (!validCleanedValues.isEmpty()) {
+                    // If we added new options to the cache, rotate to the next one
+                    int cachedCountAfter = diverseValueCache.getOrDefault(cacheKey, Collections.emptyList()).size();
+                    if (cachedCountAfter > cachedCountBefore) {
+                        String rotated = getNextDiverseValue(parameterInfo);
+                        if (rotated != null && !rotated.trim().isEmpty()) {
+                            log.info("LLM (Fallback, Rotated) → {} = {} (from {} options)",
+                                    parameterInfo.getName(), rotated, cachedCountAfter);
+                            return rotated;
+                        }
+                    }
+                    // Fallback to first valid cleaned value if rotation not available
+                    return validCleanedValues.get(0);
+                }
+
+                // If nothing valid came from LLM values, fall back to minimal value
+                String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
+                log.info("Single Value Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
+                return appropriateFallback;
             }
 
         } catch (Exception e) {
@@ -2500,7 +2563,18 @@ public class SmartInputFetcher {
      */
     private String getOpenAPISchemaType(ParameterInfo parameterInfo) {
         try {
-            // Try to determine schema type from parameter info
+            // 1) Prefer exact schema type coming from OpenAPI if available
+            String declaredSchemaType = parameterInfo.getSchemaType();
+            if (declaredSchemaType != null && !declaredSchemaType.trim().isEmpty() && !"null".equals(declaredSchemaType)) {
+                String lowerSchemaType = declaredSchemaType.toLowerCase().trim();
+                if (lowerSchemaType.equals("integer") || lowerSchemaType.equals("number") ||
+                    lowerSchemaType.equals("string") || lowerSchemaType.equals("boolean") ||
+                    lowerSchemaType.equals("array")) {
+                    return lowerSchemaType;
+                }
+            }
+
+            // 2) Fall back to generic type hints if provided
             String paramType = parameterInfo.getType();
             if (paramType != null && !paramType.trim().isEmpty() && !paramType.equals("null")) {
                 String lowerType = paramType.toLowerCase().trim();
