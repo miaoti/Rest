@@ -365,6 +365,12 @@ public class TestGenerationAndExecution {
 				if (numTestCases != null) {
 					System.setProperty("testsperoperation", numTestCases.toString());
 				}
+				// New: pass step generation control for MST (only first business step)
+				String onlyFirstStep = readParameterValue("mst.generate.only.first.step");
+				if (onlyFirstStep != null) {
+					System.setProperty("mst.generate.only.first.step", onlyFirstStep);
+					logger.info("MST first-step-only mode: {}", onlyFirstStep);
+				}
 				
 				// CRITICAL: Pass Smart Input Fetching configuration to MST generator
 				passSmartInputFetchingProperties();

@@ -1,0 +1,1 @@
+{"distanceList":"25","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"Times Square","id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","loginId":"c7e9d3a1-f8b2-4a1c-9d5e-7b3a1c2d4e5f","startStation":"dallas","stationList":"dallas","stations":"[\"dallas\"]"}

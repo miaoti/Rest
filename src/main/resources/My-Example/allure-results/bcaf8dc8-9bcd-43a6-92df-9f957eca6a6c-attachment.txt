@@ -1,1 +1,0 @@
-{"distanceList":"10","distances":"[\"b8f9d7c1-a2b3-4567-89ab-cdef12345678\"]","endStation":"shanghai","id":"7d5c8b3a-4321-","loginId":"a3e8d1f9-c0b2-4a7d-8e9b-1c6a7f3e9d01","startStation":"wuxi","stationList":"Grand Central Terminal","stations":"[\"shanghai\"]"}

@@ -1,0 +1,22 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-route-service
+Method: POST
+Path: /api/v1/adminrouteservice/adminroute
+Operation: POST /api/v1/adminrouteservice/adminroute
+Request Start (μs): 1757366649948000
+Search Window: 1757366639948000 to 1757366679948000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-route-service&operation=POST+%2Fapi%2Fv1%2Fadminrouteservice%2Fadminroute&start=1757366639948000&end=1757366679948000
+Response Status: 200
+Response Body Length: 23682
+Traces Found: 1
+Analyzing 1 traces for API calls...
+Trace 0: score=6015, APIs=3, hasTarget=true, timeDiff=216000μs, spans=7
+  Operations: POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, OnCommittedResponseWrapper...., BasicErrorController.error, POST, +2 more
+
+Selected trace 0 with score 6015 (CURRENT EXECUTION - perfect match!)
