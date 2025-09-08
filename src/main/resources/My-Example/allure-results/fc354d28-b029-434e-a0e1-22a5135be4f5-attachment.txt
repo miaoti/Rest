@@ -1,0 +1,1 @@
+{"distanceList":"75","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"Penn Station","id":"3c4d5e6f-789a-0123-4567-89abcdef01","loginId":"9d1f4a8e-c7b3-4a9d-8e1f-4a8e9d1f4a8e","startStation":"waco","stationList":"waco","stations":"[\"waco\"]"}

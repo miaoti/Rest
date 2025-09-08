@@ -1,1 +1,0 @@
-{"distanceList":"suzhou","distances":"[\"b8f9d7c1-a2b3-4567-89ab-cdef12345678\"]","endStation":"chengdu","id":"e8f7d6c5-4321-9abc-def0-19a876543210","loginId":"1b2a9354-4987-459a-a72d-bf85c789cab5","startStation":"wuxi","stationList":"nanjing","stations":"[\"dalian\"]"}

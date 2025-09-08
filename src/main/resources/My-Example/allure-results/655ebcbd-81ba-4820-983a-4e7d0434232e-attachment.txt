@@ -1,1 +1,0 @@
-{"distanceList":"suzhou","distances":"[\"f0123456-7890-1234-5678-90abcdef1234\"]","endStation":"taiyuan","id":"bdbacf78-877f-4d8c-ace5-399f12897a57","loginId":"john.doe123","startStation":"wuxi","stationList":"guangzhou","stations":"[\"chongqing\"]"}

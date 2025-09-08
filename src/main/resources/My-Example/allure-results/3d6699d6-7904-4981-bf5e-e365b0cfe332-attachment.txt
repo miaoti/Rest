@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-route-service` failed due to a JSON deserialization error during `AdminRouteController.addRoute` processing. The input data contained an `ArrayList<java.lang.Object>` that Jackson couldn't correctly deserialize from a string.
+
+**FIX:**  Inspect the request payload sent to `ts-admin-route-service` during the `addRoute` operation.  Specifically, verify the structure and data types of the `distances` field within the `RouteInfo` object.  The payload likely contains an incorrectly formatted list.  Correct the data structure to match the expected format for the `distances` field.  This likely requires a change to the data validation or transformation logic within `ts-admin-route-service`.

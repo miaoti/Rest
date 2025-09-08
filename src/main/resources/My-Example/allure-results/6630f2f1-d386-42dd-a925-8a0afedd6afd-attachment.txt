@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**TECHNICAL ANALYSIS:**
+
+**ROOT CAUSE:** `ts-admin-route-service` failed due to a JSON parsing error during `AdminRouteController.addRoute` processing. The input data contained an `ArrayList<java.lang.Object>` that Jackson couldn't deserialize as a string.
+
+**FIX:** Investigate the data being sent to `AdminRouteController.addRoute` via `ts-gateway-service`. Specifically, examine the structure and content of the `distances` field within the `edu.fudan.common.entity.RouteInfo` object. Ensure the `distances` field always contains a valid string representation of the expected data type.  Review the data validation logic on the receiving end (ts-admin-route-service) to ensure it's correctly handling the data format.

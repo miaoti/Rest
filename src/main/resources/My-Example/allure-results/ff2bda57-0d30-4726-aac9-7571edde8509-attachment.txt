@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"Grand Central Terminal","id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","loginId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","startStation":"wuxi","stationList":"wuxi,shijiazhuang","stations":"[\"wuxi\", \"shijiazhuang\"]"}
