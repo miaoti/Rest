@@ -1,1 +1,0 @@
-["[\"haidian\"]", "[\"guangzhou\"]", "[\"dalian\"]"]

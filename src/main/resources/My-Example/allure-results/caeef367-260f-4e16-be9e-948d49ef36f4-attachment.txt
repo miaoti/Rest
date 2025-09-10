@@ -1,0 +1,241 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-route-service
+Method: POST
+Path: /api/v1/adminrouteservice/adminroute
+Operation: POST /api/v1/adminrouteservice/adminroute
+Request Start (μs): 1757366626947000
+Search Window: 1757366616947000 to 1757366656947000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-route-service&operation=POST+%2Fapi%2Fv1%2Fadminrouteservice%2Fadminroute&start=1757366616947000&end=1757366656947000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-route-service&operation=POST&start=1757366616947000&end=1757366656947000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-admin-route-service&start=1757366616947000&end=1757366656947000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&lookback=10m&service=ts-admin-route-service
+Response Status: 200
+Response Body Length: 566934
+Traces Found: 100
+Analyzing 100 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 4: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 5: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 6: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 7: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 8: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 9: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 10: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 11: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 12: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 13: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 14: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 15: score=1015, APIs=3, hasTarget=true, timeDiff=2064608000μs, spans=7
+  Operations: POST /*, POST, FilteringWebHandler.handle, OnCommittedResponseWrapper...., POST /api/v1/adminrouteserv..., +2 more
+Trace 16: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 17: score=1015, APIs=3, hasTarget=true, timeDiff=2041474000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., AdminRouteController.addRoute, POST /api/v1/adminrouteserv..., BasicErrorController.error, POST /*, +2 more
+Trace 18: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 19: score=1015, APIs=3, hasTarget=true, timeDiff=2015268994μs, spans=7
+  Operations: FilteringWebHandler.handle, POST, POST /*, OnCommittedResponseWrapper...., AdminRouteController.addRoute, +2 more
+Trace 20: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 21: score=1015, APIs=3, hasTarget=true, timeDiff=1996484000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., AdminRouteController.addRoute, POST /api/v1/adminrouteserv..., BasicErrorController.error, POST, +2 more
+Trace 22: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 23: score=1015, APIs=3, hasTarget=true, timeDiff=1969166000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, POST, +2 more
+Trace 24: score=1015, APIs=3, hasTarget=true, timeDiff=1950675000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, +2 more
+Trace 25: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 26: score=1015, APIs=3, hasTarget=true, timeDiff=1923473000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., AdminRouteController.addRoute, POST /api/v1/adminrouteserv..., BasicErrorController.error, POST, +2 more
+Trace 27: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 28: score=1015, APIs=3, hasTarget=true, timeDiff=1897392000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, BasicErrorController.error, FilteringWebHandler.handle, +2 more
+Trace 29: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 30: score=1015, APIs=3, hasTarget=true, timeDiff=1871489000μs, spans=7
+  Operations: POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, OnCommittedResponseWrapper...., BasicErrorController.error, POST, +2 more
+Trace 31: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 32: score=1015, APIs=3, hasTarget=true, timeDiff=1845071992μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, POST /api/v1/adminrouteserv..., OnCommittedResponseWrapper...., +2 more
+Trace 33: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 34: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 35: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 36: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 37: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 38: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 39: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 40: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 41: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 42: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 43: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 44: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 45: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 46: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 47: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 48: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 49: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 50: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 51: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 52: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 53: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 54: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 55: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 56: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 57: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 58: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 59: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 60: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 61: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 62: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 63: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 64: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 65: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 66: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 67: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 68: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 69: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 70: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 71: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 72: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 73: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 74: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 75: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 76: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 77: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 78: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 79: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 80: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 81: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 82: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 83: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 84: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 85: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 86: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 87: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 88: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 89: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 90: score=1015, APIs=3, hasTarget=true, timeDiff=135426000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, OnCommittedResponseWrapper...., AdminRouteController.addRoute, +2 more
+Trace 91: score=1015, APIs=3, hasTarget=true, timeDiff=113006000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, BasicErrorController.error, POST, +2 more
+Trace 92: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 93: score=1015, APIs=3, hasTarget=true, timeDiff=92876000μs, spans=7
+  Operations: OnCommittedResponseWrapper...., POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, BasicErrorController.error, POST, +2 more
+Trace 94: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 95: score=1015, APIs=3, hasTarget=true, timeDiff=71967000μs, spans=7
+  Operations: POST /api/v1/adminrouteserv..., OnCommittedResponseWrapper...., AdminRouteController.addRoute, BasicErrorController.error, POST, +2 more
+Trace 96: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 97: score=1015, APIs=3, hasTarget=true, timeDiff=47201000μs, spans=7
+  Operations: POST /api/v1/adminrouteserv..., OnCommittedResponseWrapper...., BasicErrorController.error, AdminRouteController.addRoute, POST, +2 more
+Trace 98: score=1115, APIs=3, hasTarget=true, timeDiff=22595000μs, spans=7
+  Operations: POST /api/v1/adminrouteserv..., OnCommittedResponseWrapper...., AdminRouteController.addRoute, BasicErrorController.error, POST, +2 more
+Trace 99: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 98 with score 1115 (contains API calls - from previous execution)

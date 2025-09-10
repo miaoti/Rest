@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-route-service` is failing during `AdminRouteController.addRoute` via a POST request. The failure is due to a `JSON parse error` within the `edu.fudan.common.entity.RouteInfo["distances"]` field. Specifically, the service is attempting to deserialize a `java.util.ArrayList<java.lang.Object>` from a JSON string, which is invalid.
+
+**FIX:**  Review the JSON payload being sent in the POST request to `AdminRouteController.addRoute`. Ensure the `distances` field contains a valid JSON array of numbers, not a generic `ArrayList<java.lang.Object>`.  Validate the data type and format of the data being sent.

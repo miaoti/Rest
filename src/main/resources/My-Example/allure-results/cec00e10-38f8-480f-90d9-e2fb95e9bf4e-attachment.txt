@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-route-service` failed during `AdminRouteController.addRoute` via a POST request. The failure is due to a `HttpMessageNotReadableException` – specifically, an inability to deserialize a `java.util.ArrayList<java.lang.Object>` within the `RouteInfo` entity's `distances` field.  The input data being sent was not correctly formatted for Jackson’s deserialization process.
+
+**FIX:**  Inspect the JSON payload being sent in the POST request to the `AdminRouteController.addRoute` endpoint.  The `distances` field must contain a valid JSON array of numbers (or numbers represented as strings if that's the expected format).  Verify the data type and format of the `distances` field in the request body.

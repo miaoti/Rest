@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**Technical Analysis:**
+
+**Root Cause:** `ts-admin-route-service`’s `AdminRouteController.addRoute` operation failed due to a JSON parsing error (MismatchedInputException) within the `RouteInfo["distances"]` field.  The root cause is a deserialization problem attempting to parse a string as an `ArrayList<java.lang.Object>` when it should be a different data type.
+
+**Specific Action:** Review the data being sent to `ts-admin-route-service`’s `addRoute` endpoint.  Specifically, examine the structure and data types of the `distances` field within the `RouteInfo` object.  The data being sent is likely incorrectly formatted, causing the Jackson library to fail during deserialization.  Validate the data structure and data types being sent to ensure they conform to the expected schema for the `distances` field.

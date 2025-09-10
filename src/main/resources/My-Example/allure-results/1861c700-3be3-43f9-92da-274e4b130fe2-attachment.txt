@@ -1,1 +1,0 @@
-{"distanceList":"10","distances":"[\"d1e2f3a4-b5c6-7890-1234-567890abcdef\"]","endStation":"wuhan","id":"123","loginId":"1c","startStation":"Grand Central Terminal","stationList":"suzhou","stations":"[\"taiyuan\"]"}
