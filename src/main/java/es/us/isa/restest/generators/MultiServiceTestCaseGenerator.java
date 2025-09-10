@@ -33,6 +33,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private final AiDrivenLLMGenerator                       llmGen = new AiDrivenLLMGenerator();
     private final SemanticParameterExpander                 expander = new SemanticParameterExpander();
     
+    // Configuration: when enabled, only generate first business step (writer keeps login as step 0)
+    private final boolean                                    onlyFirstBusinessStep;
+    
     // Smart Input Fetching System
     private SmartInputFetcher smartFetcher;
     private SmartInputFetchConfig smartFetchConfig;
@@ -57,6 +60,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         this.serviceConfigs   = serviceConfigs;
         this.scenarios        = scenarios;
         this.useLLM           = useLLMforParams;
+        this.onlyFirstBusinessStep = Boolean.parseBoolean(System.getProperty("mst.generate.only.first.step", "false"));
         
         // Initialize Smart Input Fetching System
         initializeSmartInputFetching();
@@ -198,6 +202,12 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 traverse(root, tc, context, "1", v);
             }
             
+            // If configured, keep only the first business step (step 1). Login (step 0) is handled by writer
+            if (onlyFirstBusinessStep && tc.getSteps().size() > 1) {
+                log.info("First-step-only mode enabled: trimming scenario '{}' steps from {} to 1", scenarioId, tc.getSteps().size());
+                tc.getSteps().subList(1, tc.getSteps().size()).clear();
+            }
+
             // After processing, update scenario name based on actual first business step
             if (!tc.getSteps().isEmpty()) {
                 MultiServiceTestCase.StepCall firstStep = tc.getSteps().get(0);
@@ -241,6 +251,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                           String stepNumber,
                           int variantIndex) {
 
+        // In first-step-only mode: if we've already added one business step, stop further traversal
+        if (onlyFirstBusinessStep && !tc.getSteps().isEmpty()) {
+            return;
+        }
+
         /* 1. Extract HTTP operation info from span ---------------------------------- */
         final String service = span.getServiceName();
         final String opName  = span.getOperationName();
@@ -277,6 +292,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             return;
         }
 
+        // Skip login/auth related operations (writer handles login as Step 0)
+        if (isLoginOrAuthOperation(service, opName)) {
+            log.debug("Skipping login/auth operation in generator: {} - {} {}", service, verb, route);
+            gotoChildren(span, tc, context, stepNumber, variantIndex);
+            return;
+        }
+
         /* 2. Load service‑specific test‑configuration ------------------------------ */
         TestConfigurationObject cfg = serviceConfigs.get(service);
         if (cfg == null) {
@@ -300,14 +322,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
         String resolvedPath = route;
 
-        // Check if this is step 0 (login) - should not use smart fetch
-        boolean isLoginStep = context.isEmpty() && stepNumber.equals("0");
-
-        // Check if this is the first business step (step 1) - should use smart fetch
-        boolean isFirstBusinessStep = stepNumber.equals("1");
-
-        // Check if this is a subsequent step (step 2+) - should check dependencies first
-        boolean isSubsequentStep = !isLoginStep && !isFirstBusinessStep;
+        // Define step roles for parameter generation
+        boolean isFirstBusinessStep = tc.getSteps().isEmpty();
+        boolean isSubsequentStep = !isFirstBusinessStep;
 
         // Extract parameters from trace data only for subsequent steps
         if (isSubsequentStep) {
@@ -315,25 +332,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         }
 
         if (opCfg.getTestParameters() != null) {
-            log.info("🔍 Processing {} parameters for step {} (login: {}, firstBusiness: {}, subsequent: {})",
-                    opCfg.getTestParameters().size(), stepNumber, isLoginStep, isFirstBusinessStep, isSubsequentStep);
+            log.info("🔍 Processing {} parameters for step {} (firstBusiness: {}, subsequent: {})",
+                    opCfg.getTestParameters().size(), stepNumber, isFirstBusinessStep, isSubsequentStep);
 
             for (TestParameter p : opCfg.getTestParameters()) {
                 log.info("📋 Parameter: {} (type: {}, in: {}, description: '{}')",
                         p.getName(), p.getType(), p.getIn(), p.getDescription());
                 String val = null;
 
-                if (isLoginStep) {
-                    /* Step 0 (Login): Use simple generation, no smart fetch needed */
-                    if (useLLM) {
-                        ParameterInfo info = createParameterInfo(p);
-                        List<String> vals = llmGen.generateParameterValues(info);
-                        val = vals.isEmpty() ? "LOGIN_" + p.getName() : vals.get(0);
-                        log.info("Login Step → {} {} = {} (step {})", service, p.getName(), val, stepNumber);
-                    } else {
-                        val = "LOGIN_" + p.getName() + "_v" + variantIndex;
-                    }
-                } else if (isFirstBusinessStep) {
+                if (isFirstBusinessStep) {
                     /* Step 1 (First Business Step): Use smart fetch for all parameters */
                     log.info("🎯 Step 1 parameter '{}' - attempting smart fetch", p.getName());
 
@@ -458,7 +465,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         String rawBody = span.getInputFields().get("http.request.body");
         String bodyJson;
         
-        if (isLoginStep || isFirstBusinessStep) {
+        if (isFirstBusinessStep) {
             // For login step and first business step, always use generated bodyFields
             bodyJson = bodyFields.isEmpty() ? null : generateRequestBody(bodyFields, opCfg);
             log.info("Using generated body for step {}: {}", stepNumber, bodyJson);
@@ -545,6 +552,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 span.getOutputFields().size());
 
         /* 7. Process children with hierarchical numbering -------------------------- */
+        if (onlyFirstBusinessStep) {
+            // Do not traverse further in first-step-only mode
+            return;
+        }
         gotoChildren(span, tc, context, stepNumber, variantIndex);
     }
 
@@ -912,6 +923,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             }
             return url;
         }
+    }
+
+    /** Detect login/auth related operations to skip as generator steps */
+    private boolean isLoginOrAuthOperation(String service, String opName) {
+        if (service == null && opName == null) return false;
+        String s = service != null ? service.toLowerCase(Locale.ROOT) : "";
+        String o = opName != null ? opName.toLowerCase(Locale.ROOT) : "";
+        return s.contains("login") || s.contains("auth") || s.contains("signin") || s.contains("token")
+                || o.contains("login") || o.contains("auth") || o.contains("signin") || o.contains("token");
     }
 
     /**

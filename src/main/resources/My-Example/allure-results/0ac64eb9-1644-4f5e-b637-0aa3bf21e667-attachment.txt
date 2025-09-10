@@ -1,1 +1,0 @@
-{"status":1,"msg":"Save and Modify success","data":{"id":"7828c2d4-ab36-44ed-9e2c-25bdb41f7e5f","stations":["suzhou"],"distances":[10],"startStation":"Grand Central Terminal","endStation":"wuhan"}}

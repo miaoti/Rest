@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"LaGuardia Airport","id":"2a9b8c7d-6543-210f-8765-4","loginId":"2a","startStation":"austin","stationList":"austin","stations":"[\"austin\"]"}

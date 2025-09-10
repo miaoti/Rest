@@ -1,0 +1,1 @@
+{"distanceList":"50","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"Grand Central Terminal","id":"d8f9a0b1-c234-5678-9abc-def01234567","loginId":"b8f2a1d9-e5c3-478b-9f2a-3c1d4e5f6b78","startStation":"suzhou","stationList":"suzhou","stations":"[\"suzhou\"]"}

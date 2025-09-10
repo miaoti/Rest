@@ -1,0 +1,804 @@
+################################################################################
+# LLM COMMUNICATION LOG
+# Session ID: LLM-1757279444359-1
+# Started: 2025-09-07 16:10:44.386
+# Configuration:
+#   - Include Response Time: true
+#   - Include Content: true
+#   - Include Metadata: true
+#   - Max Content Length: 10000
+#   - Log Level: INFO
+################################################################################
+
+================================================================================
+🚀 LLM REQUEST #1
+================================================================================
+Timestamp: 2025-09-07 16:11:27.589
+Session ID: LLM-1757279444359-1
+Request ID: 1
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"6d20b8cb-039c-474c-ae25-b6177ea41152","trainType":"GaoTieOne","routeId":"92708982-77af-4318-be25-57ccb0ff69ad","basicPriceRate":0.38,"firstClassPriceRate":1.0},{"id":"c5679b7e-4a54-4f52-9939-1ae86ba16fa7","trainType":"GaoTieOne","routeId":"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d","basicPriceRate":0.5,"firstClassPriceRate":1.0}],"status":1}
+
+Target Parameter: basicPriceRate (type: number)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #1
+Timestamp: 2025-09-07 16:11:37.478
+Status: ✅ SUCCESS
+Response Time: 9904 ms
+📊 Resource Usage During Generation: System CPU: avg=3.4%, max=17.0% | System Memory: avg=83.7%, max=86.3% (27.4 GB/31.7 GB) | ollama.exe Process: max=98.8 MB | Samples: 20 over 9903ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0.38
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #2
+================================================================================
+Timestamp: 2025-09-07 16:11:37.487
+Session ID: LLM-1757279444359-1
+Request ID: 2
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'basicPriceRate' (type: number).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"6d20b8cb-039c-474c-ae25-b6177ea41152","trainType":"GaoTieOne","routeId":"92708982-77af-4318-be25-57ccb0ff69ad","basicPriceRate":0.38,"firstClassPriceRate":1.0},{"id":"c5679b7e-4a54-4f52-9939-1ae86ba16fa7","trainType":"GaoTieOne","routeId":"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d","basicPriceRate":0.5,"firstClassPriceRate":1.0}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #2
+Timestamp: 2025-09-07 16:11:40.759
+Status: ✅ SUCCESS
+Response Time: 3272 ms
+📊 Resource Usage During Generation: System CPU: avg=1.1%, max=4.0% | System Memory: avg=86.3%, max=86.3% (27.4 GB/31.7 GB) | ollama.exe Process: max=115.1 MB | Samples: 7 over 3272ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0.38
+0.5
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #3
+================================================================================
+Timestamp: 2025-09-07 16:11:40.760
+Session ID: LLM-1757279444359-1
+Request ID: 3
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 8 additional values that are semantically similar to the existing values for parameter 'basicPriceRate' (type: number).
+
+Existing values:
+- 0.38
+- 0.5
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #3
+Timestamp: 2025-09-07 16:11:44.093
+Status: ✅ SUCCESS
+Response Time: 3333 ms
+📊 Resource Usage During Generation: System CPU: avg=1.7%, max=4.0% | System Memory: avg=86.4%, max=86.4% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.3 MB | Samples: 7 over 3334ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0.45
+0.62
+0.81
+0.29
+0.77
+0.93
+0.51
+0.71
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #4
+================================================================================
+Timestamp: 2025-09-07 16:11:44.118
+Session ID: LLM-1757279444359-1
+Request ID: 4
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"06f71780-c647-465c-969f-cf8c019bc45f","boughtDate":"2025-04-30 09:14:51","travelDate":"2022-10-01 00:00:00","travelTime":"2022-10-01 00:00:00","accountId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","contactsName":"Contacts_One","documentType":1,"contactsDocumentNumber":"DocumentNumber_One","trainNumber":"G1237","coachNumber":5,"seatClass":2,"seatNumber":"FirstClass-30","from":"DFW","to":"PDX","status":0,"price":"100.0"}],"status":1}
+
+Target Parameter: firstClassPriceRate (type: number)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #4
+Timestamp: 2025-09-07 16:11:48.530
+Status: ✅ SUCCESS
+Response Time: 4412 ms
+📊 Resource Usage During Generation: System CPU: avg=1.6%, max=3.6% | System Memory: avg=86.4%, max=86.4% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.6 MB | Samples: 9 over 4412ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+100.0
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #5
+================================================================================
+Timestamp: 2025-09-07 16:11:48.531
+Session ID: LLM-1757279444359-1
+Request ID: 5
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'firstClassPriceRate' (type: number).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"06f71780-c647-465c-969f-cf8c019bc45f","boughtDate":"2025-04-30 09:14:51","travelDate":"2022-10-01 00:00:00","travelTime":"2022-10-01 00:00:00","accountId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","contactsName":"Contacts_One","documentType":1,"contactsDocumentNumber":"DocumentNumber_One","trainNumber":"G1237","coachNumber":5,"seatClass":2,"seatNumber":"FirstClass-30","from":"DFW","to":"PDX","status":0,"price":"100.0"},{"id":"bdbacf78-877f-4d8c-ace5-399f12897a57","boughtDate":"2025-04-30 09:14:51","travelDate":"2022-10-01 00:00:00","travelTime":"2022-10-01 00:00:00","accountId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","contactsName":"Contacts_One","documentType":1,"contactsDocumentNumber":"DocumentNumber_One","trainNumber":"G1234","coachNumber":6,"seatClass":2,"seatNumber":"FirstClass-30","from":"shanghai","to":"beijing","status":0,"price":"100.0"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #5
+Timestamp: 2025-09-07 16:11:53.108
+Status: ✅ SUCCESS
+Response Time: 4577 ms
+📊 Resource Usage During Generation: System CPU: avg=1.4%, max=4.1% | System Memory: avg=86.5%, max=86.6% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.6 MB | Samples: 9 over 4577ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+100.0
+100.0
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #6
+================================================================================
+Timestamp: 2025-09-07 16:11:53.109
+Session ID: LLM-1757279444359-1
+Request ID: 6
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'firstClassPriceRate' (type: number).
+
+Existing values:
+- 100.0
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #6
+Timestamp: 2025-09-07 16:11:56.822
+Status: ✅ SUCCESS
+Response Time: 3713 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=3.7% | System Memory: avg=86.6%, max=86.6% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.6 MB | Samples: 8 over 3714ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+95.5
+98.2
+102.1
+105.0
+110.7
+115.3
+120.9
+130.1
+145.8
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #7
+================================================================================
+Timestamp: 2025-09-07 16:11:56.898
+Session ID: LLM-1757279444359-1
+Request ID: 7
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"},{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","stations":["nanjing","xuzhou","jinan","beijing"],"distances":[0,500,700,1200],"startStation":"nanjing","endStation":"beijing"}],"status":1}
+
+Target Parameter: id (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #7
+Timestamp: 2025-09-07 16:12:01.874
+Status: ✅ SUCCESS
+Response Time: 4976 ms
+📊 Resource Usage During Generation: System CPU: avg=1.6%, max=3.3% | System Memory: avg=86.5%, max=86.6% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.7 MB | Samples: 10 over 4976ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0b23bd3e-876a-4af3-b920-c50a90c90b04
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #8
+================================================================================
+Timestamp: 2025-09-07 16:12:01.875
+Session ID: LLM-1757279444359-1
+Request ID: 8
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'id' (type: string).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"},{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","stations":["nanjing","xuzhou","jinan","beijing"],"distances":[0,500,700,1200],"startStation":"nanjing","endStation":"beijing"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #8
+Timestamp: 2025-09-07 16:12:06.849
+Status: ✅ SUCCESS
+Response Time: 4974 ms
+📊 Resource Usage During Generation: System CPU: avg=1.9%, max=3.2% | System Memory: avg=86.5%, max=86.5% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.8 MB | Samples: 10 over 4974ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0b23bd3e-876a-4af3-b920-c50a90c90b04
+9fc9c261-3263-4bfa-82f8-bb44e06b2f52
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #9
+================================================================================
+Timestamp: 2025-09-07 16:12:06.849
+Session ID: LLM-1757279444359-1
+Request ID: 9
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 8 additional values that are semantically similar to the existing values for parameter 'id' (type: string).
+
+Existing values:
+- 9fc9c261-3263-4bfa-82f8-bb44e06b2f52
+- 0b23bd3e-876a-4af3-b920-c50a90c90b04
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. For ID parameters: generate actual UUID-like strings or meaningful IDs
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #9
+Timestamp: 2025-09-07 16:12:14.606
+Status: ✅ SUCCESS
+Response Time: 7757 ms
+📊 Resource Usage During Generation: System CPU: avg=2.0%, max=3.5% | System Memory: avg=86.2%, max=86.4% (27.4 GB/31.7 GB) | ollama.exe Process: max=116.9 MB | Samples: 16 over 7757ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+a1b2c3d4-e5f6-7890-1234-567890abcdef
+f1e2d3c4-b3a2-1098-7654-34567890abcd
+c8d7e6f5-4321-0987-6543-210987654321
+7a9b0c1d-2345-6789-ef01-23456789abcd
+d3e4f567-89ab-c
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #10
+================================================================================
+Timestamp: 2025-09-07 16:12:14.610
+Session ID: LLM-1757279444359-1
+Request ID: 10
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: routeId
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #10
+Timestamp: 2025-09-07 16:12:17.191
+Status: ✅ SUCCESS
+Response Time: 2581 ms
+📊 Resource Usage During Generation: System CPU: avg=2.9%, max=3.7% | System Memory: avg=85.8%, max=85.8% (27.2 GB/31.7 GB) | ollama.exe Process: max=117.1 MB | Samples: 6 over 2581ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12345
+abcde
+1234567890
+!@#$%^&*()
+ROUTE-123
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #11
+================================================================================
+Timestamp: 2025-09-07 16:12:17.223
+Session ID: LLM-1757279444359-1
+Request ID: 11
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"67aba9ad-f550-46b3-ac36-2de602f63bdf","name":"GaoTieOne","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":250},{"id":"a08c8717-03a9-49c4-bbfe-1654634fd377","name":"GaoTieTwo","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":200}],"status":1}
+
+Target Parameter: trainType (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #11
+Timestamp: 2025-09-07 16:12:21.085
+Status: ✅ SUCCESS
+Response Time: 3862 ms
+📊 Resource Usage During Generation: System CPU: avg=1.8%, max=2.6% | System Memory: avg=85.7%, max=85.8% (27.2 GB/31.7 GB) | ollama.exe Process: max=117.8 MB | Samples: 8 over 3862ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+GaoTieOne
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #12
+================================================================================
+Timestamp: 2025-09-07 16:12:21.086
+Session ID: LLM-1757279444359-1
+Request ID: 12
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'trainType' (type: string).
+
+JSON Response:
+{"status":1,"msg":"success","data":[{"id":"67aba9ad-f550-46b3-ac36-2de602f63bdf","name":"GaoTieOne","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":250},{"id":"a08c8717-03a9-49c4-bbfe-1654634fd377","name":"GaoTieTwo","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":200},{"id":"949351c8-3045-49a4-a9b7-e169fd18876f","name":"DongCheOne","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":180},{"id":"a2c02325-dbe0-4a7e-8758-cdbb5627d7bf","name":"ZhiDa","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":120},{"id":"1166673d-12ab-4c4c-be69-6f64d1840da8","name":"TeKuai","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":120},{"id":"f25e1e46-e89a-4814-9c43-956db1c7bd60","name":"KuaiSu","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":90},{"id":"87ae0a5b-ad66-4ab5-b25d-712d2ebf5aa5","name":"Express","economyClass":2,"confortClass":5,"averageSpeed":300}]}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #12
+Timestamp: 2025-09-07 16:12:26.999
+Status: ✅ SUCCESS
+Response Time: 5913 ms
+📊 Resource Usage During Generation: System CPU: avg=1.6%, max=3.1% | System Memory: avg=85.7%, max=85.9% (27.2 GB/31.7 GB) | ollama.exe Process: max=119.0 MB | Samples: 12 over 5913ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+GaoTieOne
+GaoTieTwo
+DongCheOne
+ZhiDa
+TeKuai
+KuaiSu
+Express
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #13
+================================================================================
+Timestamp: 2025-09-07 16:12:27.000
+Session ID: LLM-1757279444359-1
+Request ID: 13
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 3 additional values that are semantically similar to the existing values for parameter 'trainType' (type: string).
+
+Existing values:
+- Express
+- DongCheOne
+- GaoTieOne
+- TeKuai
+- ZhiDa
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #13
+Timestamp: 2025-09-07 16:12:29.515
+Status: ✅ SUCCESS
+Response Time: 2515 ms
+📊 Resource Usage During Generation: System CPU: avg=2.5%, max=4.7% | System Memory: avg=85.8%, max=85.8% (27.2 GB/31.7 GB) | ollama.exe Process: max=121.5 MB | Samples: 5 over 2515ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+ZhiDaOne
+XiaoMi
+Huawei
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #14
+================================================================================
+Timestamp: 2025-09-07 16:12:29.527
+Session ID: LLM-1757279444359-1
+Request ID: 14
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: id
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #14
+Timestamp: 2025-09-07 16:12:31.824
+Status: ✅ SUCCESS
+Response Time: 2297 ms
+📊 Resource Usage During Generation: System CPU: avg=2.5%, max=3.4% | System Memory: avg=85.8%, max=85.9% (27.2 GB/31.7 GB) | ollama.exe Process: max=125.0 MB | Samples: 5 over 2297ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123
+abc
+456789
+-1234
+hello_world
+--------------------------------------------------------------------------------
+================================================================================
+

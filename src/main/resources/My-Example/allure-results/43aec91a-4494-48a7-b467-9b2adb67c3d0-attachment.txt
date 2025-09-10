@@ -1,1 +1,0 @@
-{"distanceList":"suzhou","endStation":"guangzhou","id":"f1e2d3c5-4321-9abc-def0-19a876543210","startStation":"wuxi","stationList":"nanjing"}

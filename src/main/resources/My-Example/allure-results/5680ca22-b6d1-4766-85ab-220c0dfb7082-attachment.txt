@@ -1,0 +1,1 @@
+{"distanceList":"10","distances":"[\"10\", \"50\", \"100\", \"250\", \"500\"]","endStation":"Union Station","id":"d8f9a0b1-c234-5678-9abc-def01234567","loginId":"john.doe123","startStation":"xuzhou","stationList":"jiaxingnan","stations":"[\"jiaxingnan\"]"}

@@ -1,1 +1,0 @@
-{"distanceList":"suzhou","distances":"10 miles","endStation":"guangzhou","id":"f1e2d3c5-4321-9abc-def0-19a876543210","loginId":"9f4a7b2c-d3e1-4f8a-9e0d-b7c14e5a3f92","startStation":"wuxi","stationList":"nanjing","stations":"[\"shenzhen\"]"}

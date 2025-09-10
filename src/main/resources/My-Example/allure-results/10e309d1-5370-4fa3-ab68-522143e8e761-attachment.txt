@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**TECHNICAL ANALYSIS:**
+
+**ROOT CAUSE:** `ts-admin-route-service` failed during `AdminRouteController.addRoute` due to a JSON deserialization error. Specifically, the `distances` field within a `RouteInfo` entity could not be deserialized as a `java.util.ArrayList<java.lang.Object>`.
+
+**FIX:**  Investigate the data being sent to `ts-admin-route-service` via the `POST` request. The `distances` field likely contains invalid JSON data.  Validate the structure and content of the `RouteInfo` entity being transmitted, ensuring it conforms to the expected `java.util.ArrayList<java.lang.Object>` format.  This likely requires debugging the data generation logic within `ts-gateway-service` that’s constructing the `RouteInfo` object.

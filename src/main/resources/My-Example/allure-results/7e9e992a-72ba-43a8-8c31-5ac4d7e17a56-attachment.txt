@@ -1,1 +1,0 @@
-{"distanceList":"suzhou","distances":"[\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\"]","endStation":"chongqing","id":"06f71780-c647-465c-969f-cf8c019bc45f","loginId":"1c","startStation":"wuxi","stationList":"hangzhou","stations":"[\"beijing\"]"}
