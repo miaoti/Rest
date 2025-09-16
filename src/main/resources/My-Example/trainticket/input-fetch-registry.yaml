@@ -2,12 +2,12 @@
 version: "1.0"
 lastUpdated:
 - 2025
-- 8
-- 11
-- 22
-- 42
-- 17
-- 904357200
+- 9
+- 16
+- 18
+- 28
+- 12
+- 430847600
 parameterMappings:
   loginId:
   - endpoint: "/api/v1/user/query"
@@ -1408,3 +1408,73 @@ cache:
   enabled: true
   maxEntries: 1000
   ttlSeconds: 300
+parameterErrors:
+  /api/v1/adminrouteservice/adminroute:
+    distances:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize instance of `java"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distances"
+      timestamp:
+      - 2025
+      - 9
+      - 16
+      - 18
+      - 28
+      - 12
+      - 428842700
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize instance of `java"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distances"
+      timestamp:
+      - 2025
+      - 9
+      - 16
+      - 18
+      - 24
+      - 43
+      - 619308200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distances"
+      timestamp:
+      - 2025
+      - 9
+      - 16
+      - 18
+      - 25
+      - 19
+      - 346067100
+      additionalInfo: null
+    distanceList:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distanceList"
+      timestamp:
+      - 2025
+      - 9
+      - 16
+      - 18
+      - 23
+      - 27
+      - 69110800
+      additionalInfo: null
+    body:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "body"
+      timestamp:
+      - 2025
+      - 9
+      - 16
+      - 18
+      - 22
+      - 50
+      - 992547900
+      additionalInfo: null

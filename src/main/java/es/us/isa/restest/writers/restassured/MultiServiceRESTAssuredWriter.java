@@ -134,9 +134,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("import java.net.http.HttpResponse;");
                 pw.println("import org.json.JSONObject;");
                 pw.println("import org.json.JSONArray;");
+                pw.println("import es.us.isa.restest.analysis.TraceErrorAnalyzer;");
+                pw.println("import es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer;");
+                pw.println("import es.us.isa.restest.inputs.smart.InputFetchRegistry;");
+                pw.println("import es.us.isa.restest.inputs.smart.ParameterError;");
                 pw.println("import static org.junit.Assert.*;");
                 pw.println("import es.us.isa.restest.testcases.MultiServiceTestCase;");
-                pw.println("import es.us.isa.restest.analysis.TraceErrorAnalyzer;");
 
                 if (allureReport) {
                     pw.println("import io.qameta.allure.Allure;");
@@ -154,7 +157,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
                     pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
                     pw.println();
-                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros) {");
+                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
@@ -377,6 +380,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                        // Perform error analysis");
                                 pw.println("                                        TraceErrorAnalyzer.ErrorAnalysisResult errorAnalysis = TraceErrorAnalyzer.analyzeTrace(bestTrace);");
                                 pw.println("                                        String errorReport = TraceErrorAnalyzer.generateErrorReport(errorAnalysis);");
+                                pw.println("                                        ");
+                                pw.println("                                        // Perform parameter error analysis if there are errors");
+                                pw.println("                                        if (errorAnalysis.hasErrors()) {");
+                                pw.println("                                            analyzeAndRecordParameterErrors(bestTrace, stepParameters);");
+                                pw.println("                                        }");
                                 pw.println("                                        ");
                                 pw.println("                                        // Attach trace information to Allure report");
                                 pw.println("                                        if (errorAnalysis.hasErrors()) {");
@@ -818,6 +826,69 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("        }");
                     pw.println("    }");
                     pw.println();
+                    
+                    // Add parameter error analysis method
+                    pw.println("    private static void analyzeAndRecordParameterErrors(JSONObject trace, Map<String, String> stepParameters) {");
+                    pw.println("        try {");
+                    pw.println("            // Get LLM properties from system properties");
+                    pw.println("            Map<String, String> llmProperties = new HashMap<>();");
+                    pw.println("            llmProperties.put(\"llm.enabled\", System.getProperty(\"llm.enabled\", \"true\"));");
+                    pw.println("            llmProperties.put(\"llm.model.type\", System.getProperty(\"llm.model.type\", \"ollama\"));");
+                    pw.println("            llmProperties.put(\"llm.ollama.enabled\", System.getProperty(\"llm.ollama.enabled\", \"true\"));");
+                    pw.println("            llmProperties.put(\"llm.ollama.url\", System.getProperty(\"llm.ollama.url\", \"http://localhost:11434\"));");
+                    pw.println("            llmProperties.put(\"llm.ollama.model\", System.getProperty(\"llm.ollama.model\", \"gemma3:4b\"));");
+                    pw.println("            llmProperties.put(\"llm.gemini.enabled\", System.getProperty(\"llm.gemini.enabled\", \"false\"));");
+                    pw.println("            llmProperties.put(\"llm.gemini.api.key\", System.getProperty(\"llm.gemini.api.key\", \"\"));");
+                    pw.println("            llmProperties.put(\"llm.gemini.model\", System.getProperty(\"llm.gemini.model\", \"gemini-2.0-flash-exp\"));");
+                    pw.println("            llmProperties.put(\"llm.gemini.api.url\", System.getProperty(\"llm.gemini.api.url\", \"https://generativelanguage.googleapis.com/v1beta/models\"));");
+                    pw.println("            ");
+                    pw.println("            // Analyze parameter errors");
+                    pw.println("            es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer.ParameterErrorAnalysisResult result = ");
+                    pw.println("                es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer.analyzeParameterErrors(trace, stepParameters, llmProperties);");
+                    pw.println("            ");
+                    pw.println("            if (result.hasParameterErrors()) {");
+                    pw.println("                System.out.println(\"🔍 Parameter Error Analysis: Found \" + result.getIdentifiedErrors().size() + \" parameter-related errors\");");
+                    pw.println("                ");
+                    pw.println("                // Load and update the input fetch registry");
+                    pw.println("                String registryPath = System.getProperty(\"smart.input.fetch.registry.path\");");
+                    pw.println("                if (registryPath != null && !registryPath.isEmpty()) {");
+                    pw.println("                    try {");
+                    pw.println("                        java.io.File registryFile = new java.io.File(registryPath);");
+                    pw.println("                        es.us.isa.restest.inputs.smart.InputFetchRegistry registry;");
+                    pw.println("                        ");
+                    pw.println("                        if (registryFile.exists()) {");
+                    pw.println("                            registry = es.us.isa.restest.inputs.smart.InputFetchRegistry.loadFromFile(registryFile);");
+                    pw.println("                        } else {");
+                    pw.println("                            registry = new es.us.isa.restest.inputs.smart.InputFetchRegistry();");
+                    pw.println("                        }");
+                    pw.println("                        ");
+                    pw.println("                        // Record each parameter error");
+                    pw.println("                        for (es.us.isa.restest.inputs.smart.ParameterError error : result.getIdentifiedErrors()) {");
+                    pw.println("                            registry.addParameterError(error.getApiEndpoint(), error.getParameterName(), error);");
+                    pw.println("                            System.out.println(\"📝 Recorded error: \" + error.getParameterName() + \" -> \" + error.getErrorType() + \": \" + error.getErrorReason());");
+                    pw.println("                        }");
+                    pw.println("                        ");
+                    pw.println("                        // Save updated registry");
+                    pw.println("                        registry.saveToFile(registryFile);");
+                    pw.println("                        System.out.println(\"💾 Updated parameter error registry at: \" + registryPath);");
+                    pw.println("                        ");
+                    pw.println("                    } catch (Exception e) {");
+                    pw.println("                        System.err.println(\"⚠️ Failed to update parameter error registry: \" + e.getMessage());");
+                    pw.println("                        e.printStackTrace();");
+                    pw.println("                    }");
+                    pw.println("                } else {");
+                    pw.println("                    System.err.println(\"⚠️ Parameter error registry path not configured. Set 'smart.input.fetch.registry.path' property.\");");
+                    pw.println("                }");
+                    pw.println("            } else {");
+                    pw.println("                System.out.println(\"✅ No parameter-related errors detected in trace\");");
+                    pw.println("            }");
+                    pw.println("            ");
+                    pw.println("        } catch (Exception e) {");
+                    pw.println("            System.err.println(\"⚠️ Error during parameter error analysis: \" + e.getMessage());");
+                    pw.println("            e.printStackTrace();");
+                    pw.println("        }");
+                    pw.println("    }");
+                    pw.println();
                 }
 
                 /* ---------- Rest-assured global setup --------------------------- */
@@ -923,6 +994,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("        // Step execution results tracking");
                     pw.println("        final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();");
                     pw.println("        final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();");
+                    pw.println("        // Parameter tracking for error analysis");
+                    pw.println("        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();");
                     pw.println();
 
                     int stepIdx = 1;
@@ -1059,12 +1132,18 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 int sourceStepIdx = dep.getValue().sourceStepIndex;
                                 pw.println("                        String " + paramName + "Value = capturedOutputs.get(" + sourceStepIdx + ");");
                                 pw.println("                        if (" + paramName + "Value != null) {");
+                                pw.println("                            allStepParameters.put(\"" + paramName + "\", " + paramName + "Value);");
                                 if (step.getMethod().getMethod().equalsIgnoreCase("GET")) {
                                     pw.println("                            req = req.queryParam(\"" + paramName + "\", " + paramName + "Value);");
                                 } else {
                                     pw.println("                            // Add to body if needed");
                                 }
                                 pw.println("                        }");
+                            }
+                            
+                            // Add body parameters if any
+                            if (!requestBody.isEmpty()) {
+                                pw.println("                        allStepParameters.put(\"body\", \"" + escape(requestBody) + "\");");
                             }
                             
                             pw.println("                        Response stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
@@ -1089,7 +1168,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            Allure.addAttachment(\"📥 Response (\" + actualStatus + \")\", \"application/json\", responseBody);");
                             pw.println("                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)");
                             pw.println("                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
-                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros);");
+                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters);");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
                             pw.println("                        }");
@@ -1160,7 +1239,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         // Remove detailed failure analysis - replaced by intelligent analysis
                         pw.println("                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)");
                         pw.println("                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
-                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros);");
+                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters);");
                         pw.println("                        ");
                         pw.println("                        // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure");
                         pw.println("                        throw new RuntimeException(\"" + escape(stepTitle) + " failed: \" + failureReason + \" (\" + errorType + \")\", t);");

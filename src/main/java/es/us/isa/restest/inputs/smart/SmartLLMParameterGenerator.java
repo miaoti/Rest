@@ -64,9 +64,9 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
     
     @Override
     public JsonNode nextValue() {
-        // If smart fetching is not available or disabled, use parent's LLM generation
+        // If smart fetching is not available or disabled, use parent's LLM generation with error context
         if (!initialized || !config.isEnabled()) {
-            return super.nextValue();
+            return generateWithErrorContext();
         }
         
         try {
@@ -87,8 +87,8 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
                         getParameterName(), e.getMessage());
         }
         
-        // Fall back to traditional LLM generation
-        return super.nextValue();
+        // Fall back to traditional LLM generation with error context
+        return generateWithErrorContext();
     }
     
     @Override
@@ -161,6 +161,94 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
         if (config != null && config.isEnabled() && smartFetcher == null) {
             // Re-initialize with new config
             initializeSmartFetching();
+        }
+    }
+    
+    /**
+     * Generate parameter value with error context awareness
+     * This method uses the error registry to avoid known problematic values
+     */
+    private JsonNode generateWithErrorContext() {
+        try {
+            // Get the parent's fallback value
+            JsonNode parentFallbackNode = super.nextValue();
+
+            // Build parameter info with error context
+            ParameterInfo pinfo = createParameterInfoWithErrorContext();
+
+            // Ask the LLM for possible values with error awareness
+            java.util.List<String> llmValues = getAiDrivenGenerator().generateParameterValues(pinfo);
+
+            // Decide which value to return
+            if (llmValues != null && !llmValues.isEmpty()) {
+                String chosen = llmValues.get(random.nextInt(llmValues.size()));
+                logger.debug("SmartLLMParameterGenerator used error-aware LLM value for '{}' => {}", 
+                           pinfo.getName(), chosen);
+                return new TextNode(chosen);
+            } else {
+                logger.debug("SmartLLMParameterGenerator had no LLM output, fallback => {}", 
+                           parentFallbackNode.asText());
+                return parentFallbackNode;
+            }
+            
+        } catch (Exception e) {
+            logger.warn("Error in generateWithErrorContext for parameter '{}': {}", 
+                       getParameterName(), e.getMessage());
+            return super.nextValue();
+        }
+    }
+    
+    /**
+     * Create ParameterInfo object with error context from registry
+     */
+    private ParameterInfo createParameterInfoWithErrorContext() {
+        ParameterInfo pinfo = createParameterInfo();
+        
+        try {
+            // Load error context from registry
+            String registryPath = System.getProperty("smart.input.fetch.registry.path");
+            if (registryPath != null && !registryPath.isEmpty()) {
+                java.io.File registryFile = new java.io.File(registryPath);
+                if (registryFile.exists()) {
+                    InputFetchRegistry registry = InputFetchRegistry.loadFromFile(registryFile);
+                    
+                    // Build API endpoint identifier 
+                    String apiEndpoint = getOperationPath();
+                    if (apiEndpoint != null) {
+                        String errorContext = registry.getErrorContextForParameter(apiEndpoint, pinfo.getName());
+                        if (!errorContext.isEmpty()) {
+                            // Enhance the description with error context
+                            String existingDesc = pinfo.getDescription() != null ? pinfo.getDescription() : "";
+                            String enhancedDesc = existingDesc + "\n\n" + errorContext;
+                            pinfo.setDescription(enhancedDesc);
+                            
+                            logger.debug("Added error context for parameter '{}' on endpoint '{}': {} error patterns found",
+                                       pinfo.getName(), apiEndpoint, 
+                                       registry.getParameterErrors(apiEndpoint, pinfo.getName()).size());
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Could not load error context for parameter '{}': {}", pinfo.getName(), e.getMessage());
+        }
+        
+        return pinfo;
+    }
+    
+    /**
+     * Get access to the AiDrivenLLMGenerator from parent class
+     */
+    private es.us.isa.restest.generators.AiDrivenLLMGenerator getAiDrivenGenerator() {
+        try {
+            // Use reflection to access the private aiDriven field from parent
+            java.lang.reflect.Field field = getClass().getSuperclass().getDeclaredField("aiDriven");
+            field.setAccessible(true);
+            return (es.us.isa.restest.generators.AiDrivenLLMGenerator) field.get(this);
+        } catch (Exception e) {
+            logger.warn("Could not access AiDrivenLLMGenerator from parent: {}", e.getMessage());
+            // Create a new instance as fallback
+            return new es.us.isa.restest.generators.AiDrivenLLMGenerator();
         }
     }
     

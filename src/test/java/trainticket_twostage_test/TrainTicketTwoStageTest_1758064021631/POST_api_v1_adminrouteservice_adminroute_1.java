@@ -1,4 +1,4 @@
-package trainticket_twostage_test.TrainTicketTwoStageTest_1757288030880;
+package trainticket_twostage_test.TrainTicketTwoStageTest_1758064021631;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -17,6 +17,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import es.us.isa.restest.analysis.TraceErrorAnalyzer;
+import es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer;
+import es.us.isa.restest.inputs.smart.InputFetchRegistry;
+import es.us.isa.restest.inputs.smart.ParameterError;
 import static org.junit.Assert.*;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import io.qameta.allure.Allure;
@@ -30,15 +34,15 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
     private static final String JAEGER_BASE_URL = System.getProperty("jaeger.base.url", "http://129.62.148.112:30005/jaeger/ui/api");
     private static final String JAEGER_LOOKBACK = System.getProperty("jaeger.lookback", "10m");
 
-    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros) {
+    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters) {
         if (!JAEGER_ENABLED) return;
         try {
             String operation = method + " " + path;
             String opEncoded = URLEncoder.encode(operation, StandardCharsets.UTF_8);
             String svcEncoded = URLEncoder.encode(service, StandardCharsets.UTF_8);
-            // Create precise time window around the request (30 seconds before, 60 seconds after)
-            long start = requestStartMicros - (30L * 1000L * 1000L); // 30 seconds earlier (us)
-            long end = requestStartMicros + (60L * 1000L * 1000L); // 60 seconds later (us)
+            // Create very precise time window for unique trace identification (10 seconds before, 30 seconds after)
+            long start = requestStartMicros - (10L * 1000L * 1000L); // 10 seconds earlier (us)
+            long end = requestStartMicros + (30L * 1000L * 1000L); // 30 seconds later (us)
             if (start < 0) start = 0;
             
             // Try multiple query strategies to find traces
@@ -73,8 +77,21 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
             debugInfo.append("Request Start (μs): ").append(requestStartMicros).append("\n");
             debugInfo.append("Search Window: ").append(start).append(" to ").append(end).append(" (μs)\n");
             debugInfo.append("Time Window: ").append((end - start) / 1000000).append(" seconds\n");
-            debugInfo.append("🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)\n\n");
+            debugInfo.append("🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)\n");
+            debugInfo.append("⏱️ Test Separation: 2-second delay enforced between executions for unique traces\n");
+            debugInfo.append("🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing\n");
+            debugInfo.append("🔄 Retry Strategy: Multiple attempts to find current execution trace\n\n");
             
+            // 🔄 Retry mechanism to find current execution trace
+            boolean foundCurrentTrace = false;
+            int maxRetries = 3;
+            
+            for (int retry = 0; retry < maxRetries && !foundCurrentTrace; retry++) {
+                if (retry > 0) {
+                    debugInfo.append("\n🔄 RETRY ").append(retry).append(": Searching again for current execution trace...\n");
+                    try { Thread.sleep(2000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                }
+                
             for (int queryIdx = 0; queryIdx < queryUrls.length; queryIdx++) {
                 String url = queryUrls[queryIdx];
                 debugInfo.append("Query ").append(queryIdx + 1).append(": ").append(url).append("\n");
@@ -156,16 +173,18 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                                         }
                                     }
                                     
-                                    // Enhanced scoring - prioritize recent execution timing
+                                    // Enhanced scoring - HEAVILY prioritize recent execution timing
                                     if (hasTargetOperation) traceScore += 1000; // Target operation match
-                                    traceScore += apiCallCount * 10; // More API calls = better
+                                    traceScore += apiCallCount * 5; // More API calls = better (reduced weight)
                                     
-                                    // CRITICAL: Time proximity scoring for recent executions
+                                    // CRITICAL: Ultra-precise time proximity scoring (test separation enforced)
                                     if (closestTime < Long.MAX_VALUE) {
-                                        if (closestTime < 5000000L) traceScore += 1000; // Within 5 seconds (very recent)
-                                        else if (closestTime < 15000000L) traceScore += 500; // Within 15 seconds
-                                        else if (closestTime < 30000000L) traceScore += 200; // Within 30 seconds
-                                        else if (closestTime < 60000000L) traceScore += 100; // Within 1 minute
+                                        if (closestTime < 1000000L) traceScore += 5000; // Within 1 second (CURRENT execution)
+                                        else if (closestTime < 2000000L) traceScore += 3000; // Within 2 seconds (EXACT execution)
+                                        else if (closestTime < 5000000L) traceScore += 1500; // Within 5 seconds (very recent)
+                                        else if (closestTime < 10000000L) traceScore += 500; // Within 10 seconds
+                                        else if (closestTime < 20000000L) traceScore += 200; // Within 20 seconds
+                                        else if (closestTime < 30000000L) traceScore += 100; // Within 30 seconds
                                     }
                                     
                                     debugInfo.append("Trace ").append(i).append(": score=").append(traceScore);
@@ -192,9 +211,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                                         if (bestTrace == null) {
                                             shouldSelectTrace = true;
                                         } else {
-                                            // For recent traces (within 30 seconds), prioritize timing over score
-                                            boolean currentIsRecent = closestTime < 30000000L; // 30 seconds
-                                            boolean bestIsRecent = bestDiff < 30000000L;
+                                            // For recent traces (within 10 seconds), prioritize timing over score
+                                            boolean currentIsRecent = closestTime < 10000000L; // 10 seconds (post-delay execution)
+                                            boolean bestIsRecent = bestDiff < 10000000L;
                                             
                                             if (currentIsRecent && !bestIsRecent) {
                                                 shouldSelectTrace = true; // Always prefer recent traces
@@ -221,12 +240,41 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                                 
                                 debugInfo.append("\nSelected trace ").append(bestTraceIdx).append(" with score ").append(bestScore);
                                 if (bestScore > 0) {
-                                    debugInfo.append(" (contains API calls)\n");
+                                    // Check if this is a current execution trace (within 3 seconds)
+                                    boolean isCurrentTrace = bestDiff < 3000000L; // 3 seconds
+                                    if (isCurrentTrace) {
+                                        debugInfo.append(" (CURRENT EXECUTION - perfect match!)\n");
+                                        foundCurrentTrace = true;
+                                    } else {
+                                        debugInfo.append(" (contains API calls - from previous execution)\n");
+                                    }
                                     
                                     if (bestTrace != null) {
+                                        // Generate trace analysis and displays
                                         String traceTable = generateTraceTable(bestTrace);
                                         String traceSummary = generateTraceSummary(bestTrace);
-                                        Allure.addAttachment("🔗 API Call Trace", "text/plain", traceTable);
+                                        
+                                        // Perform error analysis
+                                        TraceErrorAnalyzer.ErrorAnalysisResult errorAnalysis = TraceErrorAnalyzer.analyzeTrace(bestTrace);
+                                        String errorReport = TraceErrorAnalyzer.generateErrorReport(errorAnalysis);
+                                        
+                                        // Perform parameter error analysis if there are errors
+                                        if (errorAnalysis.hasErrors()) {
+                                            analyzeAndRecordParameterErrors(bestTrace, stepParameters);
+                                        }
+                                        
+                                        // Attach trace information to Allure report
+                                        if (errorAnalysis.hasErrors()) {
+                                            // Get intelligent analysis from LLM
+                                            String intelligentAnalysis = TraceErrorAnalyzer.generateIntelligentAnalysis(errorAnalysis, bestTrace);
+                                            if (intelligentAnalysis != null && !intelligentAnalysis.trim().isEmpty()) {
+                                                Allure.addAttachment("🤖 INTELLIGENT ANALYSIS", "text/plain", intelligentAnalysis);
+                                            }
+                                            
+                                            Allure.addAttachment("🔗 API Call Trace (FAILED)", "text/plain", traceTable);
+                                        } else {
+                                            Allure.addAttachment("🔗 API Call Trace (SUCCESS)", "text/plain", traceTable);
+                                        }
                                         Allure.addAttachment("📊 Trace Summary", "text/plain", traceSummary);
                                         Allure.addAttachment("📈 Raw Trace Data", "application/json", bestTrace.toString());
                                         Allure.addAttachment("🔍 Query Debug Info", "text/plain", debugInfo.toString());
@@ -254,7 +302,17 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                 }
             }
             
-            // No traces found with any query
+            // If we found a current trace, exit retry loop
+            if (foundCurrentTrace) {
+                debugInfo.append("✅ Found current execution trace, stopping retries.\n");
+                break; // Exit retry loop
+            }
+            }
+            
+            // No traces found with any query after all retries
+            if (!foundCurrentTrace) {
+                debugInfo.append("❌ No current execution traces found after ").append(maxRetries).append(" retries\n");
+            }
             debugInfo.append("❌ No traces found with any query strategy");
             Allure.addAttachment("🔍 Jaeger Query Debug (No Traces)", "text/plain", debugInfo.toString());
             
@@ -270,9 +328,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
             String traceId = trace.optString("traceID", "");
             
             StringBuilder table = new StringBuilder();
-            table.append("████████████████████████████████████████████████████████████████████████████████████████\n");
+            table.append("----------------------------------------------------------------------------------------\n");
             table.append("                           🔗 MICROSERVICE API CALL TRACE                           \n");
-            table.append("████████████████████████████████████████████████████████████████████████████████████████\n");
+            table.append("----------------------------------------------------------------------------------------\n");
             if (!traceId.isEmpty()) {
                 table.append("Trace ID: ").append(traceId).append("\n");
                 String uiBase = JAEGER_BASE_URL.endsWith("/api") ? JAEGER_BASE_URL.substring(0, JAEGER_BASE_URL.length() - 4) : JAEGER_BASE_URL;
@@ -505,6 +563,21 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         return new String[]{method, endpoint, status};
     }
 
+    private static boolean hasErrorTag(JSONObject span) {
+        if (!span.has("tags")) return false;
+        
+        JSONArray tags = span.getJSONArray("tags");
+        for (int i = 0; i < tags.length(); i++) {
+            JSONObject tag = tags.getJSONObject(i);
+            if ("error".equals(tag.optString("key")) && 
+                "bool".equals(tag.optString("type")) && 
+                tag.optBoolean("value", false)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static String formatDuration(long durationMicros) {
         if (durationMicros < 1000) {
             return durationMicros + "μs";
@@ -526,10 +599,39 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         String endpoint = httpInfo[1];
         String status = httpInfo[2];
         long duration = span.optLong("duration", 0L);
+        
+        // Filter out gateway services - only show actual business APIs
+        boolean isGateway = serviceName.toLowerCase().contains("gateway") || 
+                           serviceName.toLowerCase().contains("proxy") ||
+                           serviceName.toLowerCase().equals("gateway-service") ||
+                           serviceName.toLowerCase().equals("ts-gateway-service") ||
+                           serviceName.toLowerCase().equals("api-gateway");
+        
+        // If this is a gateway, skip rendering but still process children
+        if (isGateway) {
+            // Render children recursively without showing this gateway span
+            List<String> children = apiChildren.getOrDefault(spanId, Collections.emptyList());
+            for (String childId : children) {
+                renderApiHierarchy(table, childId, apiSpanById, apiChildren, processes, depth, counter, "");
+            }
+            return;
+        }
+        
+        // Check for errors in this span
+        boolean hasError = hasErrorTag(span);
         String durationStr = formatDuration(duration);
         
-        // Format for compact display
-        String statusIcon = status.startsWith("2") ? "✅" : status.startsWith("4") || status.startsWith("5") ? "❌" : "❓";
+        // Use SINGLE status indicator - prioritize error detection over HTTP status
+        String statusIcon;
+        if (hasError) {
+            statusIcon = "❌";  // Error detected in span
+        } else if (status.startsWith("2")) {
+            statusIcon = "✅";  // HTTP 2xx success
+        } else if (status.startsWith("4") || status.startsWith("5")) {
+            statusIcon = "❌";  // HTTP 4xx/5xx error
+        } else {
+            statusIcon = "❓";  // Unknown/other status
+        }
         
         // Smart service name handling - keep essential info
         String displayService = serviceName;
@@ -576,9 +678,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Build comprehensive format with full information
         int apiNumber = counter.getAndIncrement();
         
-        // Main line: [#] Service Method Status(time)
+        // Main line: [#] Status Service Method HTTPStatus(time)
         line.append(String.format("[%d] %s %s %s %s(%s)", 
-            apiNumber, displayService, method, statusIcon, status, durationStr));
+            apiNumber, statusIcon, displayService, method, status, durationStr));
         table.append(line.toString()).append("\n");
         
         // Detail line: Full endpoint path (indented)
@@ -598,6 +700,67 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         List<String> children = apiChildren.getOrDefault(spanId, Collections.emptyList());
         for (String childId : children) {
             renderApiHierarchy(table, childId, apiSpanById, apiChildren, processes, depth + 1, counter, "");
+        }
+    }
+
+    private static void analyzeAndRecordParameterErrors(JSONObject trace, Map<String, String> stepParameters) {
+        try {
+            // Get LLM properties from system properties
+            Map<String, String> llmProperties = new HashMap<>();
+            llmProperties.put("llm.enabled", System.getProperty("llm.enabled", "true"));
+            llmProperties.put("llm.model.type", System.getProperty("llm.model.type", "ollama"));
+            llmProperties.put("llm.ollama.enabled", System.getProperty("llm.ollama.enabled", "true"));
+            llmProperties.put("llm.ollama.url", System.getProperty("llm.ollama.url", "http://localhost:11434"));
+            llmProperties.put("llm.ollama.model", System.getProperty("llm.ollama.model", "gemma3:4b"));
+            llmProperties.put("llm.gemini.enabled", System.getProperty("llm.gemini.enabled", "false"));
+            llmProperties.put("llm.gemini.api.key", System.getProperty("llm.gemini.api.key", ""));
+            llmProperties.put("llm.gemini.model", System.getProperty("llm.gemini.model", "gemini-2.0-flash-exp"));
+            llmProperties.put("llm.gemini.api.url", System.getProperty("llm.gemini.api.url", "https://generativelanguage.googleapis.com/v1beta/models"));
+            
+            // Analyze parameter errors
+            es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer.ParameterErrorAnalysisResult result = 
+                es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer.analyzeParameterErrors(trace, stepParameters, llmProperties);
+            
+            if (result.hasParameterErrors()) {
+                System.out.println("🔍 Parameter Error Analysis: Found " + result.getIdentifiedErrors().size() + " parameter-related errors");
+                
+                // Load and update the input fetch registry
+                String registryPath = System.getProperty("smart.input.fetch.registry.path");
+                if (registryPath != null && !registryPath.isEmpty()) {
+                    try {
+                        java.io.File registryFile = new java.io.File(registryPath);
+                        es.us.isa.restest.inputs.smart.InputFetchRegistry registry;
+                        
+                        if (registryFile.exists()) {
+                            registry = es.us.isa.restest.inputs.smart.InputFetchRegistry.loadFromFile(registryFile);
+                        } else {
+                            registry = new es.us.isa.restest.inputs.smart.InputFetchRegistry();
+                        }
+                        
+                        // Record each parameter error
+                        for (es.us.isa.restest.inputs.smart.ParameterError error : result.getIdentifiedErrors()) {
+                            registry.addParameterError(error.getApiEndpoint(), error.getParameterName(), error);
+                            System.out.println("📝 Recorded error: " + error.getParameterName() + " -> " + error.getErrorType() + ": " + error.getErrorReason());
+                        }
+                        
+                        // Save updated registry
+                        registry.saveToFile(registryFile);
+                        System.out.println("💾 Updated parameter error registry at: " + registryPath);
+                        
+                    } catch (Exception e) {
+                        System.err.println("⚠️ Failed to update parameter error registry: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.err.println("⚠️ Parameter error registry path not configured. Set 'smart.input.fetch.registry.path' property.");
+                }
+            } else {
+                System.out.println("✅ No parameter-related errors detected in trace");
+            }
+            
+        } catch (Exception e) {
+            System.err.println("⚠️ Error during parameter error analysis: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -666,9 +829,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -709,7 +883,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"350,1000,1300\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f\",\"startStation\":\"wuxi\",\"stationList\":\"wuxi,shijiazhuang\",\"stations\":\"[\\\"wuxi\\\", \\\"shijiazhuang\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -717,6 +891,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -735,7 +910,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -801,8 +978,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -945,9 +1123,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -988,7 +1177,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"275\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Times Square\",\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"loginId\":\"fedcba98-7654-3210-9876-543210fedcba\",\"startStation\":\"dallas\",\"stationList\":\"dallas\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Union Station - Denver\\\", \\\"King Street Station - Newcastle\\\", \\\"Waterloo Station\\\", \\\"Victoria Station\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -996,6 +1185,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -1014,7 +1204,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -1080,8 +1272,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -1224,9 +1417,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -1267,7 +1471,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"980\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Penn Station\",\"id\":\"e4d3c2b1-0a98\",\"loginId\":\"a1b2c3d4-e5f6-7890-1234-567890abcdef\",\"startStation\":\"suzhou\",\"stationList\":\"suzhou\",\"stations\":\"[\\\"dallas\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -1275,6 +1479,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -1293,7 +1498,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -1359,8 +1566,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -1503,9 +1711,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -1546,7 +1765,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"520\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"b9c8a7d6-5432-1098-7654-321098765432\",\"loginId\":\"98765432-bcdef-4321-abcd-ef0123456789\",\"startStation\":\"waco\",\"stationList\":\"waco\",\"stations\":\"[\\\"suzhou\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -1554,6 +1773,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -1572,7 +1792,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -1638,8 +1860,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -1782,9 +2005,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -1825,7 +2059,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"400\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Times Square\",\"id\":\"a1b2c3d4-e5f6-7890-1234-567890abcdef\",\"loginId\":\"1a2b3c4d-5678-9012-3456-789012345678\",\"startStation\":\"shijiazhuang\",\"stationList\":\"shijiazhuang\",\"stations\":\"[\\\"waco\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -1833,6 +2067,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -1851,7 +2086,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -1917,8 +2154,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -2061,9 +2299,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -2104,7 +2353,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Penn Station\",\"id\":\"123\",\"loginId\":\"c9d8e7f6-5432-1098-\",\"startStation\":\"austin\",\"stationList\":\"austin\",\"stations\":\"[\\\"shijiazhuang\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -2112,6 +2361,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -2130,7 +2380,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -2196,8 +2448,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -2340,9 +2593,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -2383,7 +2647,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"1a2b3c4d-5678-9012-3456-789012345678\",\"loginId\":\"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f\",\"startStation\":\"shanghaihongqiao\",\"stationList\":\"wuxi\",\"stations\":\"[\\\"austin\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -2391,6 +2655,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -2409,7 +2674,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -2475,8 +2742,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -2619,9 +2887,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -2662,7 +2941,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"1520\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Times Square\",\"id\":\"123\",\"loginId\":\"fedcba98-7654-3210-9876-543210fedcba\",\"startStation\":\"zhenjiang\",\"stationList\":\"shanghaihongqiao\",\"stations\":\"[\\\"wuxi\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -2670,6 +2949,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -2688,7 +2968,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -2754,8 +3036,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -2898,9 +3181,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -2941,7 +3235,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"1100\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Penn Station\",\"id\":\"fedcba09-8765-4321-0fed-cba987654321\",\"loginId\":\"a1b2c3d4-e5f6-7890-1234-567890abcdef\",\"startStation\":\"jiaxingnan\",\"stationList\":\"zhenjiang\",\"stations\":\"[\\\"shanghaihongqiao\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -2949,6 +3243,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -2967,7 +3262,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -3033,8 +3330,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
@@ -3177,9 +3475,20 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
         // Step execution results tracking
         final java.util.Map<Integer, Boolean> stepResults = new java.util.HashMap<>();
         final java.util.Map<Integer, String> capturedOutputs = new java.util.HashMap<>();
+        // Parameter tracking for error analysis
+        final java.util.Map<String, String> allStepParameters = new java.util.HashMap<>();
 
         // Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)
         // 🔥 ALWAYS create Allure step - execution decision happens INSIDE
+        
+        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces
+        // This prevents tests from executing so rapidly that they find the same traces
+        try {
+            Thread.sleep(2000); // 2 second delay between tests for trace separation
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        
         final long requestStartMicros = System.currentTimeMillis() * 1000L;
         try {
             Allure.step("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200)", () -> {
@@ -3220,7 +3529,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"1375\",\"distances\":\"[10, 25, 50]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"98765432-bcdef-4321-abcd-ef0123456789\",\"startStation\":\"xuzhou\",\"stationList\":\"jiaxingnan\",\"stations\":\"[\\\"zhenjiang\\\"]\"}";
+                        String requestBody1 = "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}";
                         req = req.body(requestBody1);
                         
                         // Add request details as single attachment
@@ -3228,6 +3537,7 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
+                        allStepParameters.put("body", "{\"distanceList\":\"10\",\"distances\":\"[\\\"10\\\", \\\"50\\\", \\\"100\\\", \\\"250\\\", \\\"500\\\"]\",\"endStation\":\"Grand Central Terminal\",\"id\":\"12345\",\"loginId\":\"john.doe123\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal\",\"stations\":\"[\\\"Grand Central Terminal\\\", \\\"Times Square-42 St\\\", \\\"Union Station-Downtown\\\", \\\"Waterfront Station\\\", \\\"Brooklyn Bridge-Brooklyn Terminal\\\"]\"}");
                         Response stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
                                .statusCode(200)
@@ -3246,7 +3556,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             
                             // Single response attachment (avoid duplication)
                             Allure.addAttachment("📥 Response (" + actualStatus + ")", "application/json", responseBody);
-                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                            attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         } catch (Exception e) {
                             Allure.parameter("🎯 Result", "✅ SUCCESS (response capture failed)");
                         }
@@ -3312,8 +3624,9 @@ public class POST_api_v1_adminrouteservice_adminroute_1 {
                             errorDetails.append("• Review full error message\n• Check service status\n• Verify request parameters\n");
                         }
                         
-                        Allure.addAttachment("💥 Detailed Failure Analysis", "text/plain", errorDetails.toString());
-                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros);
+                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)
+                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                        attachJaegerTrace("ts-admin-route-service", "POST", "/api/v1/adminrouteservice/adminroute", requestStartMicros, allStepParameters);
                         
                         // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure
                         throw new RuntimeException("Step 1: ts-admin-route-service POST /api/v1/adminrouteservice/adminroute (expect 200) failed: " + failureReason + " (" + errorType + ")", t);
