@@ -1,0 +1,158 @@
+---
+version: "1.0"
+lastUpdated:
+- 2025
+- 8
+- 11
+- 22
+- 42
+- 17
+- 904357200
+parameterMappings:
+  loginId:
+  - endpoint: "/api/v1/user/query"
+    method: "GET"
+    service: "ts-User-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 16
+    - 51
+    - 27
+    - 53115900
+    successRate: 0.0
+    description: null
+  trainType:
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-Travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 22
+    - 33
+    - 52
+    - 735802100
+    successRate: 0.0
+    description: null
+servicePatterns:
+- pattern: ".*[Ss]tation.*"
+  services:
+  - "ts-station-service"
+  endpoints:
+  - "/api/v1/stationservice/stations"
+- pattern: ".*[Uu]ser.*"
+  services:
+  - "ts-user-service"
+  - "ts-contacts-service"
+  endpoints:
+  - "/api/v1/userservice/users"
+  - "/api/v1/contactservice/contacts"
+- pattern: ".*[Tt]rain.*"
+  services:
+  - "ts-train-service"
+  - "ts-travel-service"
+  endpoints:
+  - "/api/v1/trainservice/trains"
+  - "/api/v1/travelservice/trips"
+llmPrompts:
+  apiDiscovery: "Parameter: {parameterName} (type: {parameterType}, location: {parameterLocation})\nDescription: {parameterDescription}\n\nServices: {availableServices}\n\nTask: Select the TOP 3 services most likely to provide realistic data for this parameter.\nConsider semantic meaning and naming patterns.\n\nIf you find good matches, respond with a JSON array of 1-3 service names in priority order:\n[\"service1\", \"service2\", \"service3\"]\n\nIf NO services seem suitable for this parameter, respond with:\nNO_GOOD_MATCH\n\nRespond ONLY with the JSON array OR 'NO_GOOD_MATCH', no explanations."
+  directValueExtraction: "API Response: {responseSchema}\n\nTarget Parameter: {parameterName} (type: {parameterType})\nDescription: {parameterDescription}\n\nTask: Extract or derive a suitable value for this parameter from the API response above.\nYou must use ONLY values that appear in the response - do not generate new values.\n\nGuidelines:\n- Look for exact field matches first\n- Consider semantically related fields\n- Use any reasonable value from the response\n- For list parameters: you can combine multiple values with commas\n- Ensure the returned value matches the parameter type\n\nExamples:\n- For 'stationName': use values from 'from', 'to', or similar fields\n- For 'price': use values from 'price' or cost-related fields\n- For 'id': use any ID field from the response\n- For 'distanceList': use numeric values or station names that could represent distances\n\nRespond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')\nIf no suitable value exists in the response: NO_GOOD_MATCH"
+  valueSelection: "Data: {extractedData}\nParameter: {parameterName} (type: {parameterType})\nDescription: {parameterDescription}\n\nTask: Select the most suitable value for this parameter based on its name, type, and description.\n\nIf you find a suitable value, respond with just the value:\nselectedValue\n\nIf NO value seems appropriate for this parameter, respond with:\nNO_GOOD_MATCH"
+cache:
+  enabled: true
+  maxEntries: 1000
+  ttlSeconds: 300
+# NEW: Parameter error tracking section
+parameterErrors:
+  "/api/v1/trainservice/trains":
+    trainType:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Invalid train type format - must be alphanumeric"
+      apiEndpoint: "/api/v1/trainservice/trains"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 8
+      - 11
+      - 15
+      - 30
+      - 45
+      - 123456789
+      additionalInfo: "NumberFormatException when parsing 'train@123' - special characters not allowed"
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Empty or null train type not accepted"
+      apiEndpoint: "/api/v1/trainservice/trains"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 8
+      - 11
+      - 15
+      - 32
+      - 15
+      - 987654321
+      additionalInfo: "IllegalArgumentException for empty string"
+  "/api/v1/stationservice/stations":
+    stationName:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Station name contains invalid characters"
+      apiEndpoint: "/api/v1/stationservice/stations"
+      parameterName: "stationName"
+      timestamp:
+      - 2025
+      - 8
+      - 11
+      - 16
+      - 15
+      - 30
+      - 555666777
+      additionalInfo: "ValidationException for station name with numbers: 'Station123'"
+  "/api/v1/orderservice/orders":
+    price:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Negative price values not allowed"
+      apiEndpoint: "/api/v1/orderservice/orders"
+      parameterName: "price"
+      timestamp:
+      - 2025
+      - 8
+      - 11
+      - 17
+      - 0
+      - 0
+      - 111222333
+      additionalInfo: "IllegalArgumentException for price = -100.50"
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Price precision exceeds allowed decimal places"
+      apiEndpoint: "/api/v1/orderservice/orders"
+      parameterName: "price"
+      timestamp:
+      - 2025
+      - 8
+      - 11
+      - 17
+      - 5
+      - 0
+      - 444555666
+      additionalInfo: "Validation failed for price = 123.456789 (more than 2 decimal places)"
+    loginId:
+    - errorType: "AUTHORIZATION_ERROR"
+      errorReason: "Invalid login ID format"
+      apiEndpoint: "/api/v1/orderservice/orders"
+      parameterName: "loginId"
+      timestamp:
+      - 2025
+      - 8
+      - 11
+      - 17
+      - 10
+      - 0
+      - 777888999
+      additionalInfo: "Authentication failed for malformed loginId: 'user@domain.com.invalid'"

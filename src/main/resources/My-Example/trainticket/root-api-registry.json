@@ -1,0 +1,177 @@
+{
+  "root_apis": {"POST /api/v1/adminrouteservice/adminroute": {
+    "path": "/api/v1/adminrouteservice/adminroute",
+    "method": "POST",
+    "service": "ts-gateway-service",
+    "operation": "POST /*",
+    "trees": [{
+      "tree_id": "tree_1_admin_add_route_success",
+      "structure_hash": "709484885",
+      "root": {
+        "http_method": "POST",
+        "children": [
+          {
+            "http_method": "UNKNOWN",
+            "service": "ts-gateway-service",
+            "operation": "FilteringWebHandler.handle",
+            "api_path": "FilteringWebHandler.handle"
+          },
+          {
+            "http_method": "POST",
+            "children": [{
+              "http_method": "POST",
+              "children": [{
+                "http_method": "UNKNOWN",
+                "children": [
+                  {
+                    "http_method": "POST",
+                    "children": [{
+                      "http_method": "POST",
+                      "children": [{
+                        "http_method": "UNKNOWN",
+                        "children": [{
+                          "http_method": "UNKNOWN",
+                          "children": [{
+                            "http_method": "UNKNOWN",
+                            "children": [{
+                              "http_method": "UNKNOWN",
+                              "service": "ts-station-service",
+                              "operation": "SELECT ts.station",
+                              "api_path": "SELECT ts.station"
+                            }],
+                            "service": "ts-station-service",
+                            "operation": "SELECT station",
+                            "api_path": "SELECT station"
+                          }],
+                          "service": "ts-station-service",
+                          "operation": "StationRepository.findByNames",
+                          "api_path": "StationRepository.findByNames"
+                        }],
+                        "service": "ts-station-service",
+                        "operation": "StationController.queryForIdBatch",
+                        "api_path": "StationController.queryForIdBatch"
+                      }],
+                      "service": "ts-station-service",
+                      "operation": "POST /api/v1/stationservice/stations/idlist",
+                      "api_path": "/api/v1/stationservice/stations/idlist"
+                    }],
+                    "service": "ts-admin-route-service",
+                    "operation": "POST",
+                    "api_path": "/api/v1/stationservice/stations/idlist"
+                  },
+                  {
+                    "http_method": "POST",
+                    "children": [{
+                      "http_method": "POST",
+                      "children": [{
+                        "http_method": "UNKNOWN",
+                        "children": [{
+                          "http_method": "UNKNOWN",
+                          "children": [
+                            {
+                              "http_method": "UNKNOWN",
+                              "children": [{
+                                "http_method": "UNKNOWN",
+                                "service": "ts-route-service",
+                                "operation": "SELECT ts.route",
+                                "api_path": "SELECT ts.route"
+                              }],
+                              "service": "ts-route-service",
+                              "operation": "Session.merge route.entity.Route",
+                              "api_path": "Session.merge route.entity.Route"
+                            },
+                            {
+                              "http_method": "UNKNOWN",
+                              "children": [
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route",
+                                  "api_path": "INSERT ts.route"
+                                },
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route_distances",
+                                  "api_path": "INSERT ts.route_distances"
+                                },
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route_distances",
+                                  "api_path": "INSERT ts.route_distances"
+                                },
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route_distances",
+                                  "api_path": "INSERT ts.route_distances"
+                                },
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route_stations",
+                                  "api_path": "INSERT ts.route_stations"
+                                },
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route_stations",
+                                  "api_path": "INSERT ts.route_stations"
+                                },
+                                {
+                                  "http_method": "UNKNOWN",
+                                  "service": "ts-route-service",
+                                  "operation": "INSERT ts.route_stations",
+                                  "api_path": "INSERT ts.route_stations"
+                                }
+                              ],
+                              "service": "ts-route-service",
+                              "operation": "Transaction.commit",
+                              "api_path": "Transaction.commit"
+                            }
+                          ],
+                          "service": "ts-route-service",
+                          "operation": "RouteRepository.save",
+                          "api_path": "RouteRepository.save"
+                        }],
+                        "service": "ts-route-service",
+                        "operation": "RouteController.createAndModifyRoute",
+                        "api_path": "RouteController.createAndModifyRoute"
+                      }],
+                      "service": "ts-route-service",
+                      "operation": "POST /api/v1/routeservice/routes",
+                      "api_path": "/api/v1/routeservice/routes"
+                    }],
+                    "service": "ts-admin-route-service",
+                    "operation": "POST",
+                    "api_path": "/api/v1/routeservice/routes"
+                  }
+                ],
+                "service": "ts-admin-route-service",
+                "operation": "AdminRouteController.addRoute",
+                "api_path": "AdminRouteController.addRoute"
+              }],
+              "service": "ts-admin-route-service",
+              "operation": "POST /api/v1/adminrouteservice/adminroute",
+              "api_path": "/api/v1/adminrouteservice/adminroute"
+            }],
+            "service": "ts-gateway-service",
+            "operation": "POST",
+            "api_path": "/api/v1/adminrouteservice/adminroute"
+          }
+        ],
+        "service": "ts-gateway-service",
+        "operation": "POST /*",
+        "api_path": "/api/v1/adminrouteservice/adminroute"
+      },
+      "source_trace": "admin_add_route_success"
+    }]
+  }},
+  "registry_metadata": {
+    "total_root_apis": 1,
+    "last_updated": "Tue Sep 16 18:21:14 CDT 2025",
+    "total_trees": 1,
+    "version": "1.0"
+  }
+}
