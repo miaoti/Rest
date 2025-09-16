@@ -23,6 +23,7 @@ import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.TestCase;
 import es.us.isa.restest.util.Timer;
 import es.us.isa.restest.workflow.TraceWorkflowExtractor;
+import es.us.isa.restest.registry.RootApiRegistry;
 import es.us.isa.restest.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.WorkflowScenarioUtils;
 import es.us.isa.restest.writers.IWriter;
@@ -355,6 +356,30 @@ public class TestGenerationAndExecution {
                                 List<WorkflowScenario> scenarios =
                                                 TraceWorkflowExtractor.extractScenarios(TraceFile);
                                 scenarios = WorkflowScenarioUtils.deduplicateBySteps(scenarios);
+
+				// 5.5. Register root APIs with their tree structures in the registry
+				String registryPath = readParameterValue("root.api.registry.path");
+				if (registryPath != null && !registryPath.isEmpty()) {
+					logger.info("Initializing Root API Registry at: {}", registryPath);
+					RootApiRegistry registry = new RootApiRegistry(registryPath);
+					
+					registry.registerRootApisFromScenarios(scenarios);
+					registry.saveRegistry();
+					
+					RootApiRegistry.RegistryStats stats = registry.getStats();
+					logger.info("Root API Registry updated: {} total root APIs, {} total trees", 
+						   stats.getTotalRootApis(), stats.getTotalTrees());
+					
+					// Optionally log all registered root APIs for debugging
+					if (logger.isDebugEnabled()) {
+						logger.debug("Registered Root APIs:");
+						for (String apiKey : registry.getAllRootApiKeys()) {
+							logger.debug("  - {}", apiKey);
+						}
+					}
+				} else {
+					logger.warn("Root API Registry path not configured. Set 'root.api.registry.path' property to enable registry.");
+				}
 
 
 				// Pass configuration parameters as system properties for the generator
