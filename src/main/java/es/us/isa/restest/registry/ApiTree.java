@@ -21,46 +21,117 @@ public class ApiTree {
     private final String treeId;
     private final String sourceTrace;
     private final TreeNode root;
-    private final String structureHash;
     
     /**
      * Creates a new ApiTree from a WorkflowStep tree.
      */
-    public ApiTree(String treeId, String sourceTrace, WorkflowStep rootStep, String structureHash) {
+    public ApiTree(String treeId, String sourceTrace, WorkflowStep rootStep, String unused) {
         this.treeId = treeId;
         this.sourceTrace = sourceTrace;
-        this.structureHash = structureHash;
         this.root = convertWorkflowStepToTreeNode(rootStep);
     }
     
     /**
      * Private constructor for deserialization.
      */
-    private ApiTree(String treeId, String sourceTrace, TreeNode root, String structureHash) {
+    private ApiTree(String treeId, String sourceTrace, TreeNode root) {
         this.treeId = treeId;
         this.sourceTrace = sourceTrace;
         this.root = root;
-        this.structureHash = structureHash;
     }
     
     /**
      * Converts a WorkflowStep tree to a simplified TreeNode structure.
      * This focuses on the API call patterns rather than specific execution data.
+     * Filters out gateway calls and internal operations, keeping only actual API calls.
      */
     private TreeNode convertWorkflowStepToTreeNode(WorkflowStep step) {
+        String httpMethod = extractHttpMethod(step);
+        String apiPath = extractApiPath(step);
+        
         TreeNode node = new TreeNode(
             step.getServiceName(),
             step.getOperationName(),
-            extractHttpMethod(step),
-            extractApiPath(step)
+            httpMethod,
+            apiPath
         );
         
-        // Convert children
+        // Convert children, filtering out gateway and internal calls
         for (WorkflowStep child : step.getChildren()) {
-            node.addChild(convertWorkflowStepToTreeNode(child));
+            TreeNode childNode = convertWorkflowStepToTreeNode(child);
+            // Only add if it's an actual API call (not gateway, not internal operation)
+            if (isActualApiCall(childNode)) {
+                node.addChild(childNode);
+            } else {
+                // If child is not an API call, promote its children to this level
+                for (TreeNode grandChild : childNode.getChildren()) {
+                    node.addChild(grandChild);
+                }
+            }
         }
         
+        // Remove duplicates from children
+        deduplicateChildren(node);
+        
         return node;
+    }
+    
+    /**
+     * Determines if a TreeNode represents an actual API call (not gateway or internal operation).
+     * Actual API calls should have an HTTP method and a path starting with /api/v1/
+     */
+    private boolean isActualApiCall(TreeNode node) {
+        String path = node.getApiPath();
+        String httpMethod = node.getHttpMethod();
+        
+        // Must have a valid HTTP method (GET, POST, PUT, DELETE, PATCH)
+        if (httpMethod == null || httpMethod.equals("UNKNOWN") || httpMethod.isEmpty()) {
+            return false;
+        }
+        
+        // Must have an API path starting with /api/v1/
+        if (path == null || !path.startsWith("/api/v1/")) {
+            return false;
+        }
+        
+        // Exclude gateway service calls (they just proxy to real services)
+        if (node.getServiceName() != null && node.getServiceName().toLowerCase().contains("gateway")) {
+            return false;
+        }
+        
+        // Exclude any path that looks like an internal operation (contains dots or capitals indicating method names)
+        if (path.contains(".") || path.matches(".*[A-Z].*")) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Recursively removes duplicate API calls in the tree.
+     * This handles cases where the same API appears multiple times due to gateway forwarding.
+     */
+    private void deduplicateChildren(TreeNode node) {
+        if (node.getChildren().isEmpty()) {
+            return;
+        }
+        
+        // Use a Set to track unique API calls (method + path)
+        java.util.Set<String> seenApis = new java.util.HashSet<>();
+        java.util.List<TreeNode> uniqueChildren = new java.util.ArrayList<>();
+        
+        for (TreeNode child : node.getChildren()) {
+            String apiKey = child.getHttpMethod() + " " + child.getApiPath();
+            if (!seenApis.contains(apiKey)) {
+                seenApis.add(apiKey);
+                uniqueChildren.add(child);
+                // Recursively deduplicate this child's children
+                deduplicateChildren(child);
+            }
+        }
+        
+        // Replace children with deduplicated list
+        node.replaceChildren(uniqueChildren);
     }
     
     /**
@@ -96,33 +167,53 @@ public class ApiTree {
     
     /**
      * Converts this tree to JSON format.
+     * Simplified to show only essential information.
      */
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("tree_id", treeId);
         json.put("source_trace", sourceTrace);
-        json.put("structure_hash", structureHash);
-        json.put("root", root.toJson());
+        
+        // Only include children, not the root itself (since root is already the API key)
+        JSONArray childrenArray = new JSONArray();
+        for (TreeNode child : root.getChildren()) {
+            childrenArray.put(child.toJson());
+        }
+        json.put("children", childrenArray);
+        
         return json;
     }
     
     /**
      * Creates an ApiTree from JSON data.
+     * Creates a dummy root node from the children array if needed.
      */
     public static ApiTree fromJson(JSONObject json) {
         String treeId = json.optString("tree_id", "");
         String sourceTrace = json.optString("source_trace", "");
-        String structureHash = json.optString("structure_hash", "");
-        TreeNode root = TreeNode.fromJson(json.optJSONObject("root"));
         
-        return new ApiTree(treeId, sourceTrace, root, structureHash);
+        // Create a dummy root node and populate it with children from JSON
+        TreeNode root = new TreeNode("", "", "", "");
+        
+        if (json.has("children")) {
+            JSONArray childrenArray = json.getJSONArray("children");
+            for (int i = 0; i < childrenArray.length(); i++) {
+                TreeNode child = TreeNode.fromJson(childrenArray.getJSONObject(i));
+                if (child != null) {
+                    root.addChild(child);
+                }
+            }
+        } else if (json.has("root")) {
+            // Legacy format support
+            root = TreeNode.fromJson(json.optJSONObject("root"));
+        }
+        
+        return new ApiTree(treeId, sourceTrace, root);
     }
     
     // Getters
     public String getTreeId() { return treeId; }
     public String getSourceTrace() { return sourceTrace; }
     public TreeNode getRoot() { return root; }
-    public String getStructureHash() { return structureHash; }
     
     @Override
     public String toString() {
@@ -151,12 +242,16 @@ public class ApiTree {
             children.add(child);
         }
         
+        public void replaceChildren(java.util.List<TreeNode> newChildren) {
+            children.clear();
+            children.addAll(newChildren);
+        }
+        
         public JSONObject toJson() {
             JSONObject json = new JSONObject();
-            json.put("service", serviceName);
-            json.put("operation", operation);
-            json.put("http_method", httpMethod);
-            json.put("api_path", apiPath);
+            // Only output method and path for cleaner format
+            json.put("method", httpMethod);
+            json.put("path", apiPath);
             
             if (!children.isEmpty()) {
                 JSONArray childrenArray = new JSONArray();
@@ -172,10 +267,11 @@ public class ApiTree {
         public static TreeNode fromJson(JSONObject json) {
             if (json == null) return null;
             
+            // Support both old and new JSON formats
             String serviceName = json.optString("service", "unknown");
             String operation = json.optString("operation", "unknown");
-            String httpMethod = json.optString("http_method", "UNKNOWN");
-            String apiPath = json.optString("api_path", "");
+            String httpMethod = json.optString("method", json.optString("http_method", "UNKNOWN"));
+            String apiPath = json.optString("path", json.optString("api_path", ""));
             
             TreeNode node = new TreeNode(serviceName, operation, httpMethod, apiPath);
             

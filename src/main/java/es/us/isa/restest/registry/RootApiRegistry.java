@@ -67,12 +67,20 @@ public class RootApiRegistry {
     
     /**
      * Registers root APIs from workflow scenarios, avoiding duplicates.
+     * Preserves existing registry content and only adds new unique trees.
      * @param scenarios list of workflow scenarios extracted from traces
      * @return number of new root APIs registered (excluding duplicates)
      */
     public int registerRootApisFromScenarios(List<WorkflowScenario> scenarios) {
+        int initialRootApis = registry.size();
+        int initialTrees = registry.values().stream()
+            .mapToInt(entry -> entry.getTrees().size()).sum();
+        
         int newRootApis = 0;
         int newTrees = 0;
+        
+        log.info("Starting registration with {} existing root APIs and {} existing trees", 
+                initialRootApis, initialTrees);
         
         for (WorkflowScenario scenario : scenarios) {
             String sourceFileName = scenario.getSourceFileName();
@@ -80,27 +88,50 @@ public class RootApiRegistry {
             for (WorkflowStep rootStep : scenario.getRootSteps()) {
                 String rootApiKey = generateRootApiKey(rootStep);
                 
-                // Check if this root API is already registered
+                boolean isNewApi = !registry.containsKey(rootApiKey);
+                
+                // Get or create the root API entry
                 RootApiEntry entry = registry.computeIfAbsent(rootApiKey, k -> {
-                    log.info("Registering new root API: {}", rootApiKey);
+                    log.info("✓ Registering NEW root API: {}", rootApiKey);
                     return new RootApiEntry(rootStep);
                 });
                 
+                if (isNewApi) {
+                    newRootApis++;
+                }
+                
                 // Add the tree structure for this execution pattern
                 String treeId = generateTreeId(entry, sourceFileName);
-                if (entry.addTree(treeId, sourceFileName, rootStep)) {
-                    newTrees++;
-                    log.debug("Added new tree '{}' for root API '{}'", treeId, rootApiKey);
+                int treesBefore = entry.getTrees().size();
+                boolean added = entry.addTree(treeId, sourceFileName, rootStep);
+                int treesAfter = entry.getTrees().size();
+                
+                if (added) {
+                    if (treesAfter == treesBefore) {
+                        // Tree count didn't change - must have replaced a subset
+                        log.info("  ↻ REPLACED subset tree for '{}' with more complete tree from trace: {}", 
+                                rootApiKey, sourceFileName);
+                    } else {
+                        // Tree count increased - new tree added
+                        newTrees++;
+                        log.info("  ✓ Added NEW tree for '{}' from trace: {}", rootApiKey, sourceFileName);
+                    }
                 } else {
-                    log.debug("Tree structure already exists for root API '{}' from source '{}'", 
+                    log.debug("  ⊗ Skipped tree for '{}' from trace: {} (duplicate or subset of existing tree)", 
                              rootApiKey, sourceFileName);
                 }
             }
         }
         
-        newRootApis = registry.size();
-        log.info("Registry updated: {} total root APIs, {} new trees added", 
-                registry.size(), newTrees);
+        int totalRootApis = registry.size();
+        int totalTrees = registry.values().stream()
+            .mapToInt(entry -> entry.getTrees().size()).sum();
+        
+        log.info("=== Registration Summary ===");
+        log.info("Root APIs: {} existing + {} new = {} total", 
+                initialRootApis, newRootApis, totalRootApis);
+        log.info("Trees: {} existing + {} new = {} total", 
+                initialTrees, newTrees, totalTrees);
         
         return newRootApis;
     }
@@ -149,11 +180,13 @@ public class RootApiRegistry {
     
     /**
      * Loads registry from the JSON file if it exists.
+     * This preserves all existing content - new registrations will be added to it.
      */
     private void loadRegistryFromFile() {
         File file = new File(registryFilePath);
         if (!file.exists()) {
             log.info("Registry file does not exist, starting with empty registry: {}", registryFilePath);
+            log.info("New registry will be created at: {}", registryFilePath);
             return;
         }
         
@@ -164,13 +197,20 @@ public class RootApiRegistry {
             if (registryJson.has("root_apis")) {
                 JSONObject rootApis = registryJson.getJSONObject("root_apis");
                 
+                int loadedApis = 0;
+                int loadedTrees = 0;
+                
                 for (String apiKey : rootApis.keySet()) {
                     JSONObject apiData = rootApis.getJSONObject(apiKey);
                     RootApiEntry entry = RootApiEntry.fromJson(apiData);
                     registry.put(apiKey, entry);
+                    loadedApis++;
+                    loadedTrees += entry.getTrees().size();
                 }
                 
-                log.info("Loaded {} root APIs from registry file: {}", registry.size(), registryFilePath);
+                log.info("✓ Loaded EXISTING registry: {} root APIs, {} trees from: {}", 
+                        loadedApis, loadedTrees, registryFilePath);
+                log.info("  New content will be merged with existing content");
             }
             
         } catch (Exception e) {

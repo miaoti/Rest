@@ -1,177 +1,1917 @@
 {
-  "root_apis": {"POST /api/v1/adminrouteservice/adminroute": {
-    "path": "/api/v1/adminrouteservice/adminroute",
-    "method": "POST",
-    "service": "ts-gateway-service",
-    "operation": "POST /*",
-    "trees": [{
-      "tree_id": "tree_1_admin_add_route_success",
-      "structure_hash": "709484885",
-      "root": {
-        "http_method": "POST",
+  "root_apis": {
+    "GET /api/v1/userservice/users": {
+      "path": "/api/v1/userservice/users",
+      "method": "GET",
+      "trees": [{
         "children": [
           {
-            "http_method": "UNKNOWN",
-            "service": "ts-gateway-service",
-            "operation": "FilteringWebHandler.handle",
-            "api_path": "FilteringWebHandler.handle"
+            "path": "/api/v1/userservice/users",
+            "method": "GET"
           },
           {
-            "http_method": "POST",
+            "path": "/api/v1/trainservice/trains",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/routeservice/routes",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/admintravelservice/admintravel",
+            "method": "GET",
+            "children": [
+              {
+                "path": "/api/v1/travelservice/admin_trip",
+                "method": "GET",
+                "children": [{
+                  "path": "/api/v1/travelservice/admin_trip",
+                  "method": "GET",
+                  "children": [
+                    {
+                      "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                        "method": "GET"
+                      }]
+                    }
+                  ]
+                }]
+              },
+              {
+                "path": "/api/v1/travel2service/admin_trip",
+                "method": "GET",
+                "children": [{
+                  "path": "/api/v1/travel2service/admin_trip",
+                  "method": "GET",
+                  "children": [
+                    {
+                      "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                        "method": "GET"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                        "method": "GET"
+                      }]
+                    }
+                  ]
+                }]
+              }
+            ]
+          },
+          {
+            "path": "/api/v1/verifycode/generate",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/travelservice/trips/left",
+            "method": "POST",
+            "children": [
+              {
+                "path": "/api/v1/basicservice/basic/travels",
+                "method": "POST",
+                "children": [{
+                  "path": "/api/v1/basicservice/basic/travels",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/stationservice/stations/idlist",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/stationservice/stations/idlist",
+                      "method": "POST"
+                    }]
+                  }]
+                }]
+              },
+              {
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST",
+                "children": [{
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/orderservice/order/tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/orderservice/order/tickets",
+                      "method": "POST"
+                    }]
+                  }]
+                }]
+              }
+            ]
+          },
+          {
+            "path": "/api/v1/users/login",
+            "method": "POST"
+          },
+          {
+            "path": "/api/v1/travel2service/trips/left",
+            "method": "POST",
             "children": [{
-              "http_method": "POST",
+              "path": "/api/v1/travel2service/trips/left",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/adminorderservice/adminorder",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/orderservice/order",
+              "method": "GET",
               "children": [{
-                "http_method": "UNKNOWN",
-                "children": [
-                  {
-                    "http_method": "POST",
-                    "children": [{
-                      "http_method": "POST",
-                      "children": [{
-                        "http_method": "UNKNOWN",
+                "path": "/api/v1/orderservice/order",
+                "method": "GET"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/stationservice/stations",
+            "method": "GET"
+          },
+          {
+            "path": "/api/v1/adminrouteservice/adminroute",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes",
+                "method": "GET"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/adminbasicservice/adminbasic/configs",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/configservice/configs",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/configservice/configs",
+                "method": "GET"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/travelservice/trips/routes",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trips/routes",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trip_detail",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [
+                {
+                  "path": "/api/v1/basicservice/basic/travel",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [
+                      {
+                        "path": "/api/v1/stationservice/stations/id/shanghai",
+                        "method": "GET",
                         "children": [{
-                          "http_method": "UNKNOWN",
-                          "children": [{
-                            "http_method": "UNKNOWN",
-                            "children": [{
-                              "http_method": "UNKNOWN",
-                              "service": "ts-station-service",
-                              "operation": "SELECT ts.station",
-                              "api_path": "SELECT ts.station"
-                            }],
-                            "service": "ts-station-service",
-                            "operation": "SELECT station",
-                            "api_path": "SELECT station"
-                          }],
-                          "service": "ts-station-service",
-                          "operation": "StationRepository.findByNames",
-                          "api_path": "StationRepository.findByNames"
-                        }],
-                        "service": "ts-station-service",
-                        "operation": "StationController.queryForIdBatch",
-                        "api_path": "StationController.queryForIdBatch"
-                      }],
-                      "service": "ts-station-service",
-                      "operation": "POST /api/v1/stationservice/stations/idlist",
-                      "api_path": "/api/v1/stationservice/stations/idlist"
-                    }],
-                    "service": "ts-admin-route-service",
-                    "operation": "POST",
-                    "api_path": "/api/v1/stationservice/stations/idlist"
-                  },
-                  {
-                    "http_method": "POST",
-                    "children": [{
-                      "http_method": "POST",
-                      "children": [{
-                        "http_method": "UNKNOWN",
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/stationservice/stations/id/taiyuan",
+                        "method": "GET",
                         "children": [{
-                          "http_method": "UNKNOWN",
-                          "children": [
-                            {
-                              "http_method": "UNKNOWN",
-                              "children": [{
-                                "http_method": "UNKNOWN",
-                                "service": "ts-route-service",
-                                "operation": "SELECT ts.route",
-                                "api_path": "SELECT ts.route"
-                              }],
-                              "service": "ts-route-service",
-                              "operation": "Session.merge route.entity.Route",
-                              "api_path": "Session.merge route.entity.Route"
-                            },
-                            {
-                              "http_method": "UNKNOWN",
-                              "children": [
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route",
-                                  "api_path": "INSERT ts.route"
-                                },
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route_distances",
-                                  "api_path": "INSERT ts.route_distances"
-                                },
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route_distances",
-                                  "api_path": "INSERT ts.route_distances"
-                                },
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route_distances",
-                                  "api_path": "INSERT ts.route_distances"
-                                },
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route_stations",
-                                  "api_path": "INSERT ts.route_stations"
-                                },
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route_stations",
-                                  "api_path": "INSERT ts.route_stations"
-                                },
-                                {
-                                  "http_method": "UNKNOWN",
-                                  "service": "ts-route-service",
-                                  "operation": "INSERT ts.route_stations",
-                                  "api_path": "INSERT ts.route_stations"
-                                }
-                              ],
-                              "service": "ts-route-service",
-                              "operation": "Transaction.commit",
-                              "api_path": "Transaction.commit"
-                            }
-                          ],
-                          "service": "ts-route-service",
-                          "operation": "RouteRepository.save",
-                          "api_path": "RouteRepository.save"
-                        }],
-                        "service": "ts-route-service",
-                        "operation": "RouteController.createAndModifyRoute",
-                        "api_path": "RouteController.createAndModifyRoute"
-                      }],
-                      "service": "ts-route-service",
-                      "operation": "POST /api/v1/routeservice/routes",
-                      "api_path": "/api/v1/routeservice/routes"
-                    }],
-                    "service": "ts-admin-route-service",
-                    "operation": "POST",
-                    "api_path": "/api/v1/routeservice/routes"
-                  }
-                ],
-                "service": "ts-admin-route-service",
-                "operation": "AdminRouteController.addRoute",
-                "api_path": "AdminRouteController.addRoute"
-              }],
-              "service": "ts-admin-route-service",
-              "operation": "POST /api/v1/adminrouteservice/adminroute",
-              "api_path": "/api/v1/adminrouteservice/adminroute"
-            }],
-            "service": "ts-gateway-service",
-            "operation": "POST",
-            "api_path": "/api/v1/adminrouteservice/adminroute"
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                },
+                {
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST"
+                  }]
+                }
+              ]
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/seatservice/seats/left_tickets",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/adminbasicservice/adminbasic/stations",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/stationservice/stations",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/stationservice/stations",
+                "method": "GET"
+              }]
+            }]
           }
         ],
-        "service": "ts-gateway-service",
-        "operation": "POST /*",
-        "api_path": "/api/v1/adminrouteservice/adminroute"
-      },
-      "source_trace": "admin_add_route_success"
-    }]
-  }},
+        "source_trace": "traces-1759192647565"
+      }]
+    },
+    "POST /api/v1/adminbasicservice/adminbasic/prices": {
+      "path": "/api/v1/adminbasicservice/adminbasic/prices",
+      "method": "POST",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/adminbasicservice/adminbasic/prices",
+          "method": "POST",
+          "children": [{
+            "path": "/api/v1/priceservice/prices",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/priceservice/prices",
+              "method": "POST"
+            }]
+          }]
+        }],
+        "source_trace": "admin_price_create"
+      }]
+    },
+    "POST /api/v1/travelplanservice/travelPlan/minStation": {
+      "path": "/api/v1/travelplanservice/travelPlan/minStation",
+      "method": "POST",
+      "trees": [{
+        "children": [
+          {
+            "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/travelservice/trips/routes",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trips/routes",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trip_detail",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [
+                {
+                  "path": "/api/v1/basicservice/basic/travel",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [
+                      {
+                        "path": "/api/v1/stationservice/stations/id/shanghai",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/stationservice/stations/id/taiyuan",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                },
+                {
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST"
+                  }]
+                }
+              ]
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/seatservice/seats/left_tickets",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travelservice/trips/left",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travelservice/trips/left",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trips/left",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/left",
+              "method": "POST"
+            }]
+          }
+        ],
+        "source_trace": "traces-1759192426876"
+      }]
+    },
+    "POST /api/v1/travelservice/trips/left": {
+      "path": "/api/v1/travelservice/trips/left",
+      "method": "POST",
+      "trees": [
+        {
+          "children": [{
+            "path": "/api/v1/travelservice/trips/left",
+            "method": "POST",
+            "children": [
+              {
+                "path": "/api/v1/basicservice/basic/travels",
+                "method": "POST",
+                "children": [{
+                  "path": "/api/v1/basicservice/basic/travels",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/stationservice/stations/idlist",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/stationservice/stations/idlist",
+                      "method": "POST"
+                    }]
+                  }]
+                }]
+              },
+              {
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST",
+                "children": [{
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [
+                    {
+                      "path": "/api/v1/orderservice/order/tickets",
+                      "method": "POST",
+                      "children": [{
+                        "path": "/api/v1/orderservice/order/tickets",
+                        "method": "POST"
+                      }]
+                    },
+                    {
+                      "path": "/api/v1/adminorderservice/adminorder",
+                      "method": "GET",
+                      "children": [{
+                        "path": "/api/v1/orderservice/order",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/orderservice/order",
+                          "method": "GET"
+                        }]
+                      }]
+                    }
+                  ]
+                }]
+              }
+            ]
+          }],
+          "source_trace": "traces-1759191634608"
+        },
+        {
+          "children": [
+            {
+              "path": "/api/v1/travelservice/trips/left",
+              "method": "POST",
+              "children": [
+                {
+                  "path": "/api/v1/basicservice/basic/travels",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/basicservice/basic/travels",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/stationservice/stations/idlist",
+                      "method": "POST",
+                      "children": [{
+                        "path": "/api/v1/stationservice/stations/idlist",
+                        "method": "POST"
+                      }]
+                    }]
+                  }]
+                },
+                {
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [
+                      {
+                        "path": "/api/v1/orderservice/order/tickets",
+                        "method": "POST",
+                        "children": [{
+                          "path": "/api/v1/orderservice/order/tickets",
+                          "method": "POST"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/adminbasicservice/adminbasic/configs",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/configservice/configs",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/configservice/configs",
+                            "method": "GET"
+                          }]
+                        }]
+                      }
+                    ]
+                  }]
+                }
+              ]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travelservice/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trip_detail",
+                "method": "POST",
+                "children": [
+                  {
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/basicservice/basic/travel",
+                      "method": "POST",
+                      "children": [
+                        {
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/shanghai",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/taiyuan",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                            "method": "GET"
+                          }]
+                        }
+                      ]
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/seatservice/seats/left_tickets",
+                      "method": "POST"
+                    }]
+                  }
+                ]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST"
+              }]
+            }
+          ],
+          "source_trace": "traces-1759192607236"
+        },
+        {
+          "children": [
+            {
+              "path": "/api/v1/travelservice/trips/left",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/basicservice/basic/travels",
+                "method": "POST",
+                "children": [{
+                  "path": "/api/v1/basicservice/basic/travels",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/stationservice/stations/idlist",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/stationservice/stations/idlist",
+                      "method": "POST"
+                    }]
+                  }]
+                }]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travelservice/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trip_detail",
+                "method": "POST",
+                "children": [
+                  {
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/basicservice/basic/travel",
+                      "method": "POST",
+                      "children": [
+                        {
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/shanghai",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/taiyuan",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                            "method": "GET"
+                          }]
+                        }
+                      ]
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/seatservice/seats/left_tickets",
+                      "method": "POST"
+                    }]
+                  }
+                ]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/left",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/left",
+                "method": "POST"
+              }]
+            }
+          ],
+          "source_trace": "traces-1759192477682"
+        }
+      ]
+    },
+    "POST /api/v1/users/login": {
+      "path": "/api/v1/users/login",
+      "method": "POST",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/users/login",
+          "method": "POST"
+        }],
+        "source_trace": "traces-1759192590782"
+      }]
+    },
+    "DELETE /api/v1/admintravelservice/admintravel/null32321": {
+      "path": "/api/v1/admintravelservice/admintravel/null32321",
+      "method": "DELETE",
+      "trees": [{
+        "children": [
+          {
+            "path": "/api/v1/admintravelservice/admintravel/null32321",
+            "method": "DELETE",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/null32321",
+              "method": "DELETE",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/null32321",
+                "method": "DELETE"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/admintravelservice/admintravel/nullescss",
+            "method": "DELETE",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/nullescss",
+              "method": "DELETE",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/nullescss",
+                "method": "DELETE"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/admintravelservice/admintravel/null1111",
+            "method": "DELETE",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/null1111",
+              "method": "DELETE",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/null1111",
+                "method": "DELETE"
+              }]
+            }]
+          }
+        ],
+        "source_trace": "traces-1759192514835"
+      }]
+    },
+    "GET /api/v1/admintravelservice/admintravel": {
+      "path": "/api/v1/admintravelservice/admintravel",
+      "method": "GET",
+      "trees": [
+        {
+          "children": [
+            {
+              "path": "/api/v1/admintravelservice/admintravel",
+              "method": "GET",
+              "children": [
+                {
+                  "path": "/api/v1/travelservice/admin_trip",
+                  "method": "GET",
+                  "children": [{
+                    "path": "/api/v1/travelservice/admin_trip",
+                    "method": "GET",
+                    "children": [
+                      {
+                        "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                },
+                {
+                  "path": "/api/v1/travel2service/admin_trip",
+                  "method": "GET",
+                  "children": [{
+                    "path": "/api/v1/travel2service/admin_trip",
+                    "method": "GET",
+                    "children": [
+                      {
+                        "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                }
+              ]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travelservice/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trip_detail",
+                "method": "POST",
+                "children": [
+                  {
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/basicservice/basic/travel",
+                      "method": "POST",
+                      "children": [
+                        {
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/shanghai",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/taiyuan",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                            "method": "GET"
+                          }]
+                        }
+                      ]
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/seatservice/seats/left_tickets",
+                      "method": "POST"
+                    }]
+                  }
+                ]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/left",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travelservice/trips/left",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/left",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/left",
+                "method": "POST"
+              }]
+            }
+          ],
+          "source_trace": "traces-1759192514835"
+        },
+        {
+          "children": [
+            {
+              "path": "/api/v1/admintravelservice/admintravel",
+              "method": "GET",
+              "children": [
+                {
+                  "path": "/api/v1/travelservice/admin_trip",
+                  "method": "GET",
+                  "children": [{
+                    "path": "/api/v1/travelservice/admin_trip",
+                    "method": "GET",
+                    "children": [
+                      {
+                        "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                },
+                {
+                  "path": "/api/v1/travel2service/admin_trip",
+                  "method": "GET",
+                  "children": [{
+                    "path": "/api/v1/travel2service/admin_trip",
+                    "method": "GET",
+                    "children": [
+                      {
+                        "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                }
+              ]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/left",
+              "method": "POST",
+              "children": [
+                {
+                  "path": "/api/v1/basicservice/basic/travels",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/basicservice/basic/travels",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/stationservice/stations/idlist",
+                      "method": "POST",
+                      "children": [{
+                        "path": "/api/v1/stationservice/stations/idlist",
+                        "method": "POST"
+                      }]
+                    }]
+                  }]
+                },
+                {
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/orderservice/order/tickets",
+                      "method": "POST",
+                      "children": [{
+                        "path": "/api/v1/orderservice/order/tickets",
+                        "method": "POST"
+                      }]
+                    }]
+                  }]
+                }
+              ]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/left",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/left",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/trainservice/trains",
+              "method": "GET"
+            },
+            {
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travelservice/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trip_detail",
+                "method": "POST",
+                "children": [
+                  {
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/basicservice/basic/travel",
+                      "method": "POST",
+                      "children": [
+                        {
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/shanghai",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/taiyuan",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                            "method": "GET"
+                          }]
+                        }
+                      ]
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/seatservice/seats/left_tickets",
+                      "method": "POST"
+                    }]
+                  }
+                ]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST"
+              }]
+            }
+          ],
+          "source_trace": "traces-1759192489270"
+        },
+        {
+          "children": [
+            {
+              "path": "/api/v1/admintravelservice/admintravel",
+              "method": "GET",
+              "children": [
+                {
+                  "path": "/api/v1/travelservice/admin_trip",
+                  "method": "GET",
+                  "children": [{
+                    "path": "/api/v1/travelservice/admin_trip",
+                    "method": "GET",
+                    "children": [
+                      {
+                        "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                },
+                {
+                  "path": "/api/v1/travel2service/admin_trip",
+                  "method": "GET",
+                  "children": [{
+                    "path": "/api/v1/travel2service/admin_trip",
+                    "method": "GET",
+                    "children": [
+                      {
+                        "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                }
+              ]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/left",
+              "method": "POST",
+              "children": [
+                {
+                  "path": "/api/v1/basicservice/basic/travels",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/basicservice/basic/travels",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/stationservice/stations/idlist",
+                      "method": "POST",
+                      "children": [{
+                        "path": "/api/v1/stationservice/stations/idlist",
+                        "method": "POST"
+                      }]
+                    }]
+                  }]
+                },
+                {
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/orderservice/order/tickets",
+                      "method": "POST",
+                      "children": [{
+                        "path": "/api/v1/orderservice/order/tickets",
+                        "method": "POST"
+                      }]
+                    }]
+                  }]
+                }
+              ]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/left",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/left",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes",
+              "method": "GET"
+            },
+            {
+              "path": "/api/v1/adminrouteservice/adminroute",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes",
+                "method": "GET",
+                "children": [{
+                  "path": "/api/v1/routeservice/routes",
+                  "method": "GET"
+                }]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travelservice/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trips/routes",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/travel2service/trip_detail",
+                "method": "POST",
+                "children": [
+                  {
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/basicservice/basic/travel",
+                      "method": "POST",
+                      "children": [
+                        {
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/shanghai",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/stationservice/stations/id/taiyuan",
+                            "method": "GET"
+                          }]
+                        },
+                        {
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET",
+                          "children": [{
+                            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                            "method": "GET"
+                          }]
+                        }
+                      ]
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST",
+                    "children": [{
+                      "path": "/api/v1/seatservice/seats/left_tickets",
+                      "method": "POST"
+                    }]
+                  }
+                ]
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                "method": "GET"
+              }]
+            },
+            {
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/seatservice/seats/left_tickets",
+                "method": "POST"
+              }]
+            }
+          ],
+          "source_trace": "traces-1759192441410"
+        }
+      ]
+    },
+    "GET /api/v1/verifycode/generate": {
+      "path": "/api/v1/verifycode/generate",
+      "method": "GET",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/verifycode/generate",
+          "method": "GET"
+        }],
+        "source_trace": "traces-1759192530103"
+      }]
+    },
+    "GET /api/v1/adminbasicservice/adminbasic/configs": {
+      "path": "/api/v1/adminbasicservice/adminbasic/configs",
+      "method": "GET",
+      "trees": [{
+        "children": [
+          {
+            "path": "/api/v1/adminbasicservice/adminbasic/configs",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/configservice/configs",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/configservice/configs",
+                "method": "GET"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/adminbasicservice/adminbasic/stations",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/stationservice/stations",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/stationservice/stations",
+                "method": "GET"
+              }]
+            }]
+          }
+        ],
+        "source_trace": "traces-1759192558645"
+      }]
+    },
+    "GET /api/v1/adminorderservice/adminorder": {
+      "path": "/api/v1/adminorderservice/adminorder",
+      "method": "GET",
+      "trees": [{
+        "children": [
+          {
+            "path": "/api/v1/adminorderservice/adminorder",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/orderservice/order",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/orderservice/order",
+                "method": "GET"
+              }]
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/shanghai/taiyuan",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/travelservice/trips/routes",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travelservice/trips/routes",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trips/routes",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trips/routes",
+              "method": "POST"
+            }]
+          },
+          {
+            "path": "/api/v1/travel2service/trip_detail",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/travel2service/trip_detail",
+              "method": "POST",
+              "children": [
+                {
+                  "path": "/api/v1/basicservice/basic/travel",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/basicservice/basic/travel",
+                    "method": "POST",
+                    "children": [
+                      {
+                        "path": "/api/v1/stationservice/stations/id/shanghai",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/stationservice/stations/id/shanghai",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/stationservice/stations/id/taiyuan",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/stationservice/stations/id/taiyuan",
+                          "method": "GET"
+                        }]
+                      },
+                      {
+                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                        "method": "GET",
+                        "children": [{
+                          "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                          "method": "GET"
+                        }]
+                      }
+                    ]
+                  }]
+                },
+                {
+                  "path": "/api/v1/seatservice/seats/left_tickets",
+                  "method": "POST",
+                  "children": [{
+                    "path": "/api/v1/seatservice/seats/left_tickets",
+                    "method": "POST"
+                  }]
+                }
+              ]
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+              "method": "GET"
+            }]
+          },
+          {
+            "path": "/api/v1/seatservice/seats/left_tickets",
+            "method": "POST",
+            "children": [{
+              "path": "/api/v1/seatservice/seats/left_tickets",
+              "method": "POST"
+            }]
+          }
+        ],
+        "source_trace": "traces-1759192663045"
+      }]
+    },
+    "POST /api/v1/adminrouteservice/adminroute": {
+      "path": "/api/v1/adminrouteservice/adminroute",
+      "method": "POST",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/adminrouteservice/adminroute",
+          "method": "POST",
+          "children": [
+            {
+              "path": "/api/v1/stationservice/stations/idlist",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/stationservice/stations/idlist",
+                "method": "POST"
+              }]
+            },
+            {
+              "path": "/api/v1/routeservice/routes",
+              "method": "POST",
+              "children": [{
+                "path": "/api/v1/routeservice/routes",
+                "method": "POST"
+              }]
+            }
+          ]
+        }],
+        "source_trace": "admin_add_route_failed"
+      }]
+    },
+    "GET /api/v1/adminrouteservice/adminroute": {
+      "path": "/api/v1/adminrouteservice/adminroute",
+      "method": "GET",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/adminrouteservice/adminroute",
+          "method": "GET",
+          "children": [{
+            "path": "/api/v1/routeservice/routes",
+            "method": "GET",
+            "children": [{
+              "path": "/api/v1/routeservice/routes",
+              "method": "GET"
+            }]
+          }]
+        }],
+        "source_trace": "traces-1759192571460"
+      }]
+    },
+    "POST /api/v1/adminorderservice/adminorder": {
+      "path": "/api/v1/adminorderservice/adminorder",
+      "method": "POST",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/adminorderservice/adminorder",
+          "method": "POST"
+        }],
+        "source_trace": "admin_order_create"
+      }]
+    }
+  },
   "registry_metadata": {
-    "total_root_apis": 1,
-    "last_updated": "Tue Sep 16 18:21:14 CDT 2025",
-    "total_trees": 1,
+    "total_root_apis": 13,
+    "last_updated": "Mon Oct 27 14:41:57 CDT 2025",
+    "total_trees": 17,
     "version": "1.0"
   }
 }
