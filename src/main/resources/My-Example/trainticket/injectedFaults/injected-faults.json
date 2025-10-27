@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "total_faults": 16,
+    "generated_at": "Mon Oct 27 15:15:35 CDT 2025",
+    "version": "1.0"
+  },
+  "injected_faults": [
+    {
+      "service": "ts-admin-order-service",
+      "api": "POST /api/v1/adminorderservice/adminorder",
+      "faultName": "INVALID_CONTACTS_NAME_FAULT"
+    },
+    {
+      "service": "ts-admin-order-service",
+      "api": "PUT /api/v1/adminorderservice/adminorder",
+      "faultName": "INVALID_SEAT_NUMBER_FAULT"
+    },
+    {
+      "service": "ts-admin-order-service",
+      "api": "DELETE /api/v1/adminorderservice/adminorder/{orderId}/{trainNumber}",
+      "faultName": "INVALID_ORDER_ID_LENGTH_FAULT"
+    },
+    {
+      "service": "ts-admin-basic-info-service",
+      "api": "POST /api/v1/adminbasicservice/adminbasic/prices",
+      "faultName": "INVALID_PRICE_RATE_FAULT"
+    },
+    {
+      "service": "ts-admin-basic-info-service",
+      "api": "POST /api/v1/adminbasicservice/adminbasic/prices",
+      "faultName": "INVALID_ROUTE_ID_FAULT"
+    },
+    {
+      "service": "ts-travel-plan-service",
+      "api": "POST /api/v1/travelplanservice/travelPlan/minStation",
+      "faultName": "INVALID_STATION_NAME_FAULT"
+    },
+    {
+      "service": "ts-travel-plan-service",
+      "api": "POST /api/v1/travelplanservice/travelPlan/minStation",
+      "faultName": "SAME_STATION_FAULT (Travel Plan)"
+    },
+    {
+      "service": "ts-travel-service",
+      "api": "POST /api/v1/travelservice/trips/left",
+      "faultName": "SAME_STATION_FAULT (Trip Query)"
+    },
+    {
+      "service": "ts-travel-service",
+      "api": "POST /api/v1/travelservice/trips/left",
+      "faultName": "PAST_DATE_FAULT"
+    },
+    {
+      "service": "ts-travel-service",
+      "api": "POST /api/v1/travelservice/trips/left",
+      "faultName": "INVALID_DATE_FORMAT_FAULT"
+    },
+    {
+      "service": "ts-auth-service",
+      "api": "POST /api/v1/users/login",
+      "faultName": "INVALID_USERNAME_FORMAT_FAULT"
+    },
+    {
+      "service": "ts-auth-service",
+      "api": "POST /api/v1/users/login",
+      "faultName": "INVALID_PASSWORD_LENGTH_FAULT"
+    },
+    {
+      "service": "ts-admin-travel-service",
+      "api": "DELETE /api/v1/admintravelservice/admintravel/{tripId}",
+      "faultName": "INVALID_TRIP_ID_FORMAT_FAULT"
+    },
+    {
+      "service": "ts-admin-travel-service",
+      "api": "DELETE /api/v1/admintravelservice/admintravel/{tripId}",
+      "faultName": "INVALID_TRIP_ID_LENGTH_FAULT"
+    },
+    {
+      "service": "ts-admin-route-service",
+      "api": "POST /api/v1/adminrouteservice/adminroute",
+      "faultName": "INSUFFICIENT_STATIONS_FAULT"
+    },
+    {
+      "service": "ts-admin-route-service",
+      "api": "POST /api/v1/adminrouteservice/adminroute",
+      "faultName": "DUPLICATE_STATIONS_FAULT"
+    }
+  ]
+}
