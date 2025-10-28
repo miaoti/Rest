@@ -1151,6 +1151,35 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
                             pw.println("                               .extract().response();");
                             pw.println("                        ");
+                            
+                            // 🔍 FAULT DETECTION: Inject fault detection code for root API (step 0)
+                            if (stepIdx == 0) {
+                                pw.println("                        // 🔍 FAULT DETECTION: Check if root API response contains injected fault");
+                                pw.println("                        try {");
+                                pw.println("                            String faultCheckBody = stepResponse" + stepIdx + ".getBody().asString();");
+                                pw.println("                            org.json.JSONObject faultJson = new org.json.JSONObject(faultCheckBody);");
+                                pw.println("                            if (faultJson.has(\"data\")) {");
+                                pw.println("                                org.json.JSONObject dataObj = faultJson.getJSONObject(\"data\");");
+                                pw.println("                                if (dataObj.optBoolean(\"isInjected\", false)) {");
+                                pw.println("                                    String detectedFaultName = dataObj.optString(\"faultName\", \"\");");
+                                pw.println("                                    if (!detectedFaultName.isEmpty()) {");
+                                pw.println("                                        es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
+                                pw.println("                                            detectedFaultName,");
+                                pw.println("                                            this.getClass().getName(),");
+                                pw.println("                                            \"" + escape(testMethodName) + "\",");
+                                pw.println("                                            System.currentTimeMillis(),");
+                                pw.println("                                            faultCheckBody");
+                                pw.println("                                        );");
+                                pw.println("                                        System.out.println(\"🔍 FAULT DETECTED: \" + detectedFaultName + \" in test: " + escape(testMethodName) + "\");");
+                                pw.println("                                    }");
+                                pw.println("                                }");
+                                pw.println("                            }");
+                                pw.println("                        } catch (Exception faultEx) {");
+                                pw.println("                            // Silent fail - don't break test execution");
+                                pw.println("                        }");
+                                pw.println("                        ");
+                            }
+                            
                             pw.println("                        stepResults.put(" + stepIdx + ", true);");
                             pw.println("                        System.out.println(\"✅ " + escape(stepTitle) + " - SUCCESS\");");
                             

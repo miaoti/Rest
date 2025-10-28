@@ -169,6 +169,17 @@ public class TestGenerationAndExecution {
 			String className = testClassName + "_" + id;
 			logger.info("Generated unique test identifier: {}", className);
 			
+			// 🔍 FAULT DETECTION: Initialize tracker with injected faults
+			logger.info("🔍 Initializing Fault Detection Tracker...");
+			String faultsJsonPath = readParameterValue("fault.detection.injected.faults.path");
+			if (faultsJsonPath == null || faultsJsonPath.isEmpty()) {
+				// Default path if not configured
+				faultsJsonPath = "src/main/resources/My-Example/trainticket/injectedFaults/injected-faults.json";
+			}
+			es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().reset();
+			es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
+			logger.info("🔍 Fault Detection Tracker initialized from: {}", faultsJsonPath);
+			
 			// Set up writer
 			if (writer instanceof MultiServiceRESTAssuredWriter) {
 				((MultiServiceRESTAssuredWriter) writer).setClassName(className);
@@ -206,6 +217,24 @@ public class TestGenerationAndExecution {
 					logger.info("NOTE: Multiple test classes from this run will appear as separate test suites in one report");
 					reportManager.generateReport();
 				}
+				
+				// 🔍 FAULT DETECTION: Generate fault detection report
+				logger.info("🔍 Generating Fault Detection Report...");
+				String faultReportDir = readParameterValue("fault.detection.report.dir");
+				if (faultReportDir == null || faultReportDir.isEmpty()) {
+					// Default directory if not configured
+					faultReportDir = "logs/fault-detection-reports";
+				}
+				es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
+					.generateReport(faultReportDir, experimentName + "_" + id);
+				
+				// Log detection statistics
+				java.util.Map<String, Object> stats = es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().getStatistics();
+				logger.info("🔍 Fault Detection Summary:");
+				logger.info("   - Total Injected Faults: {}", stats.get("totalInjectedFaults"));
+				logger.info("   - Detected Faults: {}", stats.get("detectedFaults"));
+				logger.info("   - Detection Rate: {:.1f}%", stats.get("detectionRate"));
+				logger.info("   - Report saved to: {}", faultReportDir);
 			}
 			
 			// Generate reports
