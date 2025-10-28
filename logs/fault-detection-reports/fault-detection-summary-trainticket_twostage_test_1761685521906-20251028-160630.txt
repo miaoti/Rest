@@ -1,0 +1,91 @@
+================================================================================
+                    FAULT DETECTION SUMMARY REPORT
+================================================================================
+
+Experiment:         trainticket_twostage_test_1761685521906
+Generated:          2025-10-28 16:06:30
+Tracking Started:   2025-10-28 16:05:21
+Total Test Cases:   0
+
+================================================================================
+FAULT COVERAGE SUMMARY
+================================================================================
+
+Total Injected Faults:    16
+Detected Faults:          0 (0.0%)
+Undetected Faults:        16 (100.0%)
+
+Detection Progress:
+[░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 0.0%
+
+================================================================================
+UNDETECTED FAULTS (16)
+================================================================================
+
+1. DUPLICATE_STATIONS_FAULT
+   Service:       ts-admin-route-service
+   API:           POST /api/v1/adminrouteservice/adminroute
+
+2. INSUFFICIENT_STATIONS_FAULT
+   Service:       ts-admin-route-service
+   API:           POST /api/v1/adminrouteservice/adminroute
+
+3. INVALID_CONTACTS_NAME_FAULT
+   Service:       ts-admin-order-service
+   API:           POST /api/v1/adminorderservice/adminorder
+
+4. INVALID_DATE_FORMAT_FAULT
+   Service:       ts-travel-service
+   API:           POST /api/v1/travelservice/trips/left
+
+5. INVALID_ORDER_ID_LENGTH_FAULT
+   Service:       ts-admin-order-service
+   API:           DELETE /api/v1/adminorderservice/adminorder/{orderId}/{trainNumber}
+
+6. INVALID_PASSWORD_LENGTH_FAULT
+   Service:       ts-auth-service
+   API:           POST /api/v1/users/login
+
+7. INVALID_PRICE_RATE_FAULT
+   Service:       ts-admin-basic-info-service
+   API:           POST /api/v1/adminbasicservice/adminbasic/prices
+
+8. INVALID_ROUTE_ID_FAULT
+   Service:       ts-admin-basic-info-service
+   API:           POST /api/v1/adminbasicservice/adminbasic/prices
+
+9. INVALID_SEAT_NUMBER_FAULT
+   Service:       ts-admin-order-service
+   API:           PUT /api/v1/adminorderservice/adminorder
+
+10. INVALID_STATION_NAME_FAULT
+   Service:       ts-travel-plan-service
+   API:           POST /api/v1/travelplanservice/travelPlan/minStation
+
+11. INVALID_TRIP_ID_FORMAT_FAULT
+   Service:       ts-admin-travel-service
+   API:           DELETE /api/v1/admintravelservice/admintravel/{tripId}
+
+12. INVALID_TRIP_ID_LENGTH_FAULT
+   Service:       ts-admin-travel-service
+   API:           DELETE /api/v1/admintravelservice/admintravel/{tripId}
+
+13. INVALID_USERNAME_FORMAT_FAULT
+   Service:       ts-auth-service
+   API:           POST /api/v1/users/login
+
+14. PAST_DATE_FAULT
+   Service:       ts-travel-service
+   API:           POST /api/v1/travelservice/trips/left
+
+15. SAME_STATION_FAULT (Travel Plan)
+   Service:       ts-travel-plan-service
+   API:           POST /api/v1/travelplanservice/travelPlan/minStation
+
+16. SAME_STATION_FAULT (Trip Query)
+   Service:       ts-travel-service
+   API:           POST /api/v1/travelservice/trips/left
+
+================================================================================
+                          END OF REPORT
+================================================================================
