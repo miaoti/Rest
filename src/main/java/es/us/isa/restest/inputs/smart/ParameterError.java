@@ -76,3 +76,4 @@ public class ParameterError {
                            errorType, errorReason, apiEndpoint, parameterName, timestamp);
     }
 }
+
