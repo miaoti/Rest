@@ -83,7 +83,7 @@ flowchart TD
     R -->|true| S[Stop traversal]
     R -->|false| T[Visit children]
     T --> G
-    S --> U[Finalize variant (rename by first business API)]
+    S --> U[Finalize variant rename by first business API]
     U --> V[next variant]
 ```
 
