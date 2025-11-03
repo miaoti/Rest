@@ -3,40 +3,40 @@
 ```mermaid
 flowchart TD
     A[Start RESTest MST] --> B[Read properties]
-    B --> C{generator == MST?}
-    C -->|No| Z[Classic modes (RT/CBT/FT/ART/LLM)]
-    C -->|Yes| D[Init FaultDetectionTracker + load injected faults]
-    D --> E[Load OpenAPI spec (oas.path)]
-    E --> F[Load multi-service YAML (conf.path) -> serviceConfigs]
-    F --> G[Build serviceSpecs map (service -> spec)]
-    G --> H[Extract scenarios from traces (TraceFile)]
+    B --> C{generator equals MST}
+    C -->|No| Z[Classic modes RT CBT FT ART LLM]
+    C -->|Yes| D[Init fault detection and load injected faults]
+    D --> E[Load OpenAPI spec]
+    E --> F[Load multi service YAML to serviceConfigs]
+    F --> G[Build serviceSpecs map]
+    G --> H[Extract scenarios from traces]
     H --> I[Deduplicate scenarios]
-    I --> J{root.api.registry.path set?}
-    J -->|Yes| K[Init RootApiRegistry; register trees; save]
+    I --> J{root api registry path set}
+    J -->|Yes| K[Init RootApiRegistry and register trees]
     J -->|No| L[Skip registry]
     K --> M
     L --> M
-    M[Propagate MST props -> System.setProperty]
-    M --> M1[testsperoperation | test.variants.per.scenario]
-    M --> M2[mst.generate.only.first.step]
-    M --> M3[smart.input.fetch.* + llm.* + auth.*]
-    M3 --> N[Create MultiServiceTestCaseGenerator(useLLM=true)]
-    N --> O[Configure MultiServiceRESTAssuredWriter(className,id, baseUrl)]
+    M[Propagate MST properties]
+    M --> M1[testsperoperation or test variants per scenario]
+    M --> M2[mst generate only first step]
+    M --> M3[smart input fetch and llm and auth]
+    M3 --> N[Create MST generator use LLM]
+    N --> O[Configure MST writer]
     O --> P[generator.generate()]
-    P --> Q[statsReportManager.setTestCases]
-    Q --> R[writer.write(testCases) -> multiple .java files]
-    R --> S{experiment.execute?}
-    S -->|true| T[executeGeneratedTestsWithJUnit]
-    T --> T1[Clean old test-classes; setup Allure for IDE]
-    T1 --> T2[Compile tests (JavaCompiler -> fallback Maven)]
+    P --> Q[Set stats test cases]
+    Q --> R[Write tests multiple files]
+    R --> S{experiment execute}
+    S -->|true| T[Execute generated tests]
+    T --> T1[Clean test classes and setup Allure]
+    T1 --> T2[Compile tests then fallback maven]
     T2 --> T3[Add target/test-classes to classpath]
     T3 --> T4[Load classes; JUnitCore + AllureJunit4]
     T4 --> T5[Run; log results]
-    T5 --> U{allure.report?}
-    U -->|true| V[AllureReportManager.generateReport]
-    T5 --> W[Generate Fault Detection Report]
+    T5 --> U{allure report}
+    U -->|true| V[Generate Allure report]
+    T5 --> W[Generate fault detection report]
     S -->|false| X[Skip execution]
-    V --> Y[StatsReportManager.generateReport(id, execute)]
+    V --> Y[Generate stats report]
     W --> Y
     X --> Y
     Y --> AA[End]
@@ -46,17 +46,17 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[generate()] --> B[Group scenarios by root API]
+    A[generate] --> B[Group scenarios by root API]
     B --> C[Generate shared parameter pools per root API]
-    C --> D[For each scenario -> generateScenarioVariants]
+    C --> D[For each scenario generateScenarioVariants]
     D --> E[get variantCount from System properties]
-    E --> F[For v in 1..variantCount -> build MultiServiceTestCase]
+    E --> F[For each v build MultiServiceTestCase]
     F --> G[Traverse trace tree DFS]
-    G --> H{Is span HTTP op?}
+    G --> H{Is span HTTP]
     H -->|No| H1[skip; visit children]
     H1 --> G
-    H -->|Yes| I[Load service op config (verb+path)]
-    I --> J{Step is first business step?}
+    H -->|Yes| I[Load service operation config]
+    I --> J{Is first business step}
     J -->|Yes| K[For each parameter]
     K --> K1[Try Smart Fetch]
     K1 -->|success| K2[use value]
@@ -64,22 +64,22 @@ flowchart TD
     K2 --> L
     K3 --> L[Collect path/query/header/body maps]
     J -->|No| M[For each parameter]
-    M --> M1[Check context dependency: previous output]
+    M --> M1[Check previous output dependency]
     M1 -->|found| L
     M1 -->|not found| M2[Check input reuse]
     M2 -->|found| L
     M2 -->|not found| M3[Check trace value]
     M3 -->|found| L
-    M3 -->|not found| M4[Try Smart Fetch else LLM]
+    M3 -->|not found| M4[Try Smart Fetch or LLM]
     M4 --> L[Collect path/query/header/body maps]
     L --> N{Body selection}
-    N -->|step 1| B1[Generate body from fields]
-    N -->|step > 1| B2[Prefer trace body else generate]
-    B1 --> O[Expected status: config -> else successful trace -> else 200]
+    N -->|step one| B1[Generate body from fields]
+    N -->|step later| B2[Prefer trace body or generate]
+    B1 --> O[Expected status logic]
     B2 --> O
     O --> P[Create StepCall + capture outputs]
-    P --> Q[Update context with outputs and input.* values]
-    Q --> R{mst.generate.only.first.step?}
+    P --> Q[Update context with outputs and inputs]
+    Q --> R{first step only}
     R -->|true| S[Stop traversal]
     R -->|false| T[Visit children]
     T --> G
@@ -91,34 +91,34 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[Identify first business op (verb+path)] --> B[Load Operation TestParameters]
+    A[Identify first business operation] --> B[Load operation test parameters]
     B --> C[For each parameter]
     C --> D[Smart Fetch up to 15 values]
-    D --> E[If less than 15, get LLM seed values]
+    D --> E[If less than limit get LLM seed values]
     E --> F[Semantic expand to needed count]
-    F --> G[Pool: smart plus expanded plus fallback]
+    F --> G[Pool smart plus expanded plus fallback]
 ```
 
 ### Smart Input Fetching Flow (SmartInputFetcher)
 
 ```mermaid
 flowchart TD
-    A[fetchSmartInput(ParameterInfo)] --> B{enabled?}
+    A[fetchSmartInput] --> B{enabled}
     B -->|No| C[Fallback to LLM]
-    B -->|Yes| D[Random less than smart.fetch.percentage?]
+    B -->|Yes| D[Random below threshold]
     D -->|No| C[Fallback to LLM]
     D -->|Yes| E[Clear invalid cached]
     E --> F[Next diverse cached value?]
     F -->|Yes| G[Return cached]
     F -->|No| H[Fetch from smart sources]
     H --> I[Load mappings from registry]
-    I --> J{Empty and discovery enabled?}
-    J -->|Yes| K[Discover mappings (patterns + LLM)]
+    I --> J{Empty and discovery enabled}
+    J -->|Yes| K[Discover mappings]
     J -->|No| L[Proceed]
     K --> L
-    L --> M[Rank by score; limit max.candidates]
+    L --> M[Rank by score then limit]
     M --> N[Iterate candidates then call endpoint]
-    N --> O[Validate value; update success; cache]
+    N --> O[Validate update cache]
     O -->|valid| P[Return]
     O -->|invalid| N
     N -->|none valid| C[Fallback to LLM]
@@ -128,17 +128,17 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[generateText(system,user,maxTokens,temp)] --> B{llm.enabled AND config valid?}
+    A[generateText] --> B{llm enabled and config valid}
     B -->|No| C[Return null]
-    B -->|Yes| D[Log request (LLMCommunicationLogger)]
-    D --> E{model.type}
+    B -->|Yes| D[Log LLM request]
+    D --> E{model type}
     E -- GEMINI --> F[GeminiApiClient]
-    E -- LOCAL --> G[Local HTTP endpoint]
+    E -- LOCAL --> G[Local HTTP]
     E -- OLLAMA --> H[OllamaApiClient]
     F --> I
     G --> I
     H --> I[Result]
-    I --> J[Log response]
+    I --> J[Log LLM response]
     J --> K[Return text]
 ```
 
@@ -146,17 +146,17 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[writer.write(testCases)] --> B[Group by scenarioName]
-    B --> C[Create package dir: packageName/testClassName]
-    C --> D[Emit one .java per scenario]
-    D --> E[JUnit + REST-assured code; optional Allure + Jaeger attachments]
-    E --> F[executeGeneratedTestsWithJUnit]
-    F --> G[Clean target/test-classes (isolation)]
-    G --> H[Setup Allure results dir; clean old results]
-    H --> I[Compile tests via JavaCompiler; fallback to Maven]
-    I --> J[Add target/test-classes to context classloader]
-    J --> K[Load classes; JUnitCore + AllureJunit4]
-    K --> L[Run tests; log results]
+    A[Write tests] --> B[Group by scenario name]
+    B --> C[Create package directory]
+    C --> D[Emit one file per scenario]
+    D --> E[Add JUnit and REST assured code]
+    E --> F[Execute generated tests]
+    F --> G[Clean test classes isolation]
+    G --> H[Setup Allure results and clean]
+    H --> I[Compile tests then maybe Maven]
+    I --> J[Add test classes to classloader]
+    J --> K[Load classes and attach Allure]
+    K --> L[Run tests and log]
 ```
 
 ### Conditions, Flags, and Inputs (key branches)
