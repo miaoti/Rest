@@ -4,16 +4,16 @@
 flowchart TD
     A[Start RESTest MST] --> B[Read properties]
     B --> C{generator == MST?}
-    C -- No --> Z[Classic modes (RT/CBT/FT/ART/LLM)]
-    C -- Yes --> D[Init FaultDetectionTracker + load injected faults]
+    C -->|No| Z[Classic modes (RT/CBT/FT/ART/LLM)]
+    C -->|Yes| D[Init FaultDetectionTracker + load injected faults]
     D --> E[Load OpenAPI spec (oas.path)]
     E --> F[Load multi-service YAML (conf.path) -> serviceConfigs]
     F --> G[Build serviceSpecs map (service -> spec)]
     G --> H[Extract scenarios from traces (TraceFile)]
     H --> I[Deduplicate scenarios]
     I --> J{root.api.registry.path set?}
-    J -- Yes --> K[Init RootApiRegistry; register trees; save]
-    J -- No --> L[Skip registry]
+    J -->|Yes| K[Init RootApiRegistry; register trees; save]
+    J -->|No| L[Skip registry]
     K --> M
     L --> M
     M[Propagate MST props -> System.setProperty]
@@ -26,16 +26,16 @@ flowchart TD
     P --> Q[statsReportManager.setTestCases]
     Q --> R[writer.write(testCases) -> multiple .java files]
     R --> S{experiment.execute?}
-    S -- true --> T[executeGeneratedTestsWithJUnit]
+    S -->|true| T[executeGeneratedTestsWithJUnit]
     T --> T1[Clean old test-classes; setup Allure for IDE]
     T1 --> T2[Compile tests (JavaCompiler -> fallback Maven)]
     T2 --> T3[Add target/test-classes to classpath]
     T3 --> T4[Load classes; JUnitCore + AllureJunit4]
     T4 --> T5[Run; log results]
     T5 --> U{allure.report?}
-    U -- true --> V[AllureReportManager.generateReport]
+    U -->|true| V[AllureReportManager.generateReport]
     T5 --> W[Generate Fault Detection Report]
-    S -- false --> X[Skip execution]
+    S -->|false| X[Skip execution]
     V --> Y[StatsReportManager.generateReport(id, execute)]
     W --> Y
     X --> Y
@@ -53,33 +53,35 @@ flowchart TD
     E --> F[For v in 1..variantCount -> build MultiServiceTestCase]
     F --> G[Traverse trace tree DFS]
     G --> H{Is span HTTP op?}
-    H -- No --> H1[skip; visit children] --> G
-    H -- Yes --> I[Load service op config (verb+path)]
+    H -->|No| H1[skip; visit children]
+    H1 --> G
+    H -->|Yes| I[Load service op config (verb+path)]
     I --> J{Step is first business step?}
-    J -- Yes --> K[For each parameter]
+    J -->|Yes| K[For each parameter]
     K --> K1[Try Smart Fetch]
-    K1 --> |success| K2[use value]
-    K1 --> |fail or disabled| K3[LLM fallback]
+    K1 -->|success| K2[use value]
+    K1 -->|fail or disabled| K3[LLM fallback]
     K2 --> L
     K3 --> L[Collect path/query/header/body maps]
-    J -- No --> M[For each parameter]
+    J -->|No| M[For each parameter]
     M --> M1[Check context dependency: previous output]
-    M1 --> |found| L
-    M1 --> |not found| M2[Check input reuse]
-    M2 --> |found| L
-    M2 --> |not found| M3[Check trace value]
-    M3 --> |found| L
-    M3 --> |not found| M4[Try Smart Fetch else LLM]
+    M1 -->|found| L
+    M1 -->|not found| M2[Check input reuse]
+    M2 -->|found| L
+    M2 -->|not found| M3[Check trace value]
+    M3 -->|found| L
+    M3 -->|not found| M4[Try Smart Fetch else LLM]
     M4 --> L[Collect path/query/header/body maps]
     L --> N{Body selection}
-    N -- step 1 --> gen body from fields
-    N -- step > 1 --> prefer trace body else gen from fields
-    N --> O[Expected status: config -> else successful trace -> else 200]
+    N -->|step 1| B1[Generate body from fields]
+    N -->|step > 1| B2[Prefer trace body else generate]
+    B1 --> O[Expected status: config -> else successful trace -> else 200]
+    B2 --> O
     O --> P[Create StepCall + capture outputs]
     P --> Q[Update context with outputs and input.* values]
     Q --> R{mst.generate.only.first.step?}
-    R -- true --> S[Stop traversal]
-    R -- false --> T[Visit children]
+    R -->|true| S[Stop traversal]
+    R -->|false| T[Visit children]
     T --> G
     S --> U[Finalize variant (rename by first business API)]
     U --> V[next variant]
@@ -102,24 +104,24 @@ flowchart LR
 ```mermaid
 flowchart TD
     A[fetchSmartInput(ParameterInfo)] --> B{enabled?}
-    B -- No --> C[Fallback to LLM]
-    B -- Yes --> D[Random less than smart.fetch.percentage?]
-    D -- No --> C[Fallback to LLM]
-    D -- Yes --> E[Clear invalid cached]
+    B -->|No| C[Fallback to LLM]
+    B -->|Yes| D[Random less than smart.fetch.percentage?]
+    D -->|No| C[Fallback to LLM]
+    D -->|Yes| E[Clear invalid cached]
     E --> F[Next diverse cached value?]
-    F -- Yes --> G[Return cached]
-    F -- No --> H[Fetch from smart sources]
+    F -->|Yes| G[Return cached]
+    F -->|No| H[Fetch from smart sources]
     H --> I[Load mappings from registry]
     I --> J{Empty and discovery enabled?}
-    J -- Yes --> K[Discover mappings (patterns + LLM)]
-    J -- No --> L[Proceed]
+    J -->|Yes| K[Discover mappings (patterns + LLM)]
+    J -->|No| L[Proceed]
     K --> L
     L --> M[Rank by score; limit max.candidates]
     M --> N[Iterate candidates then call endpoint]
     N --> O[Validate value; update success; cache]
-    O --> |valid| P[Return]
-    O --> |invalid| N
-    N --> |none valid| C[Fallback to LLM]
+    O -->|valid| P[Return]
+    O -->|invalid| N
+    N -->|none valid| C[Fallback to LLM]
 ```
 
 ### LLM Communication Path (LLMService)
@@ -127,8 +129,8 @@ flowchart TD
 ```mermaid
 flowchart LR
     A[generateText(system,user,maxTokens,temp)] --> B{llm.enabled AND config valid?}
-    B -- No --> C[Return null]
-    B -- Yes --> D[Log request (LLMCommunicationLogger)]
+    B -->|No| C[Return null]
+    B -->|Yes| D[Log request (LLMCommunicationLogger)]
     D --> E{model.type}
     E -- GEMINI --> F[GeminiApiClient]
     E -- LOCAL --> G[Local HTTP endpoint]
