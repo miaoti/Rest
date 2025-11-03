@@ -20,7 +20,9 @@ flowchart TD
     M --> M1[testsperoperation or test variants per scenario]
     M --> M2[mst generate only first step]
     M --> M3[smart input fetch and llm and auth]
-    M3 --> N[Create MST generator use LLM]
+    M1 --> N[Create MST generator use LLM]
+    M2 --> N
+    M3 --> N
     N --> O[Configure MST writer]
     O --> P[Run generator]
     P --> Q[Set stats test cases]
