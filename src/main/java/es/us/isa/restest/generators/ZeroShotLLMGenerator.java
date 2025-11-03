@@ -112,6 +112,54 @@ public class ZeroShotLLMGenerator {
     }
 
     /**
+     * Generate faulty parameter values for negative testing
+     */
+    public List<String> generateFaultyParameterValues(ParameterInfo param, int howMany) {
+        System.out.println("*** ZeroShotLLMGenerator.generateFaultyParameterValues called for: " + param.getName() + " (howMany=" + howMany + ")");
+        
+        String prompt = buildFaultyPrompt(param, howMany);
+        String rawOutput = callLLM(prompt);
+        System.out.println("*** LLM Faulty Raw output: " + rawOutput);
+        
+        List<String> faultyValues = parseLines(rawOutput);
+        
+        // Add common faulty patterns
+        faultyValues.add(null);
+        faultyValues.add("");
+        faultyValues.add(" ");
+        
+        // Limit to requested count
+        if (faultyValues.size() > howMany) {
+            faultyValues = faultyValues.subList(0, howMany);
+        }
+        
+        return faultyValues;
+    }
+    
+    /**
+     * Build prompt for generating faulty parameter values
+     */
+    private String buildFaultyPrompt(ParameterInfo param, int howMany) {
+        StringBuilder prompt = new StringBuilder();
+        prompt.append("Generate ").append(howMany).append(" INVALID/FAULTY test values for parameter:\n");
+        prompt.append("Name: ").append(param.getName()).append("\n");
+        prompt.append("Type: ").append(param.getType()).append("\n");
+        if (param.getDescription() != null) {
+            prompt.append("Description: ").append(param.getDescription()).append("\n");
+        }
+        if (param.getRegex() != null) {
+            prompt.append("Valid Pattern: ").append(param.getRegex()).append("\n");
+        }
+        prompt.append("\nGenerate values that would FAIL validation:\n");
+        prompt.append("- Values that don't match the pattern\n");
+        prompt.append("- Edge cases (very long strings, special characters)\n");
+        prompt.append("- Type mismatches (if expecting number, provide string)\n");
+        prompt.append("- Out of range values\n");
+        prompt.append("\nReturn only the values, one per line:");
+        return prompt.toString();
+    }
+
+    /**
      * Build cache key that includes parameter name, type, and location
      * This ensures parameters with same name but different types are cached separately
      */

@@ -99,6 +99,31 @@ flowchart LR
     D --> E[If less than limit get LLM seed values]
     E --> F[Semantic expand to needed count]
     F --> G[Pool smart plus expanded plus fallback]
+    C --> H[Generate faulty pool with LLM]
+    H --> I[Ask LLM for 10 invalid values per parameter]
+    I --> J[Add common faulty patterns null empty special]
+    J --> K[Store faulty pool by root API key]
+```
+
+### Faulty Test Selection (Based on faulty.ratio)
+
+```mermaid
+flowchart TD
+    A[Read faulty.ratio from properties] --> B[Calculate faulty count variants times ratio]
+    B --> C[Randomly select which variants are faulty]
+    C --> D[For each variant]
+    D --> E{Is faulty variant}
+    E -->|Yes| F[Add faulty prefix to test name]
+    E -->|No| G[Use normal test name]
+    F --> H[For each parameter decide if faulty]
+    G --> H
+    H --> I{Should make param faulty}
+    I -->|Yes all params| J[Use faulty pool values for ALL params]
+    I -->|Yes some params| K[30 percent chance per param to use faulty value]
+    I -->|No| L[Use normal smart fetch or LLM]
+    J --> M[Generate test with faulty inputs]
+    K --> M
+    L --> M
 ```
 
 ### Smart Input Fetching Flow (SmartInputFetcher)
@@ -166,6 +191,7 @@ flowchart TD
 - generator == MST: switches to multi-service flow
 - testsperoperation / test.variants.per.scenario: number of variants per scenario
 - mst.generate.only.first.step: generate only first business step (writer handles login as step 0)
+- faulty.ratio: percentage of test variants that should be intentionally faulty (e.g., 0.1 = 10%)
 - smart.input.fetch.enabled: enables Smart Fetch system
 - smart.input.fetch.percentage: probability Smart Fetch vs LLM
 - smart.input.fetch.registry.path: registry used for mappings and learning

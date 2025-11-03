@@ -428,6 +428,12 @@ public class TestGenerationAndExecution {
 				
 				// CRITICAL: Pass Smart Input Fetching configuration to MST generator
 				passSmartInputFetchingProperties();
+				
+				// Pass faulty.ratio to MST generator
+				if (faultyRatio != null) {
+					System.setProperty("faulty.ratio", faultyRatio.toString());
+					logger.info("MST faulty ratio: {}", faultyRatio);
+				}
 
 				// 7. Instantiate the generator
 				gen = new MultiServiceTestCaseGenerator(
