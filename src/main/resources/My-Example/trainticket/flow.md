@@ -22,7 +22,7 @@ flowchart TD
     M --> M3[smart input fetch and llm and auth]
     M3 --> N[Create MST generator use LLM]
     N --> O[Configure MST writer]
-    O --> P[generator.generate()]
+    O --> P[Run generator]
     P --> Q[Set stats test cases]
     Q --> R[Write tests multiple files]
     R --> S{experiment execute}
@@ -30,7 +30,7 @@ flowchart TD
     T --> T1[Clean test classes and setup Allure]
     T1 --> T2[Compile tests then fallback maven]
     T2 --> T3[Add target/test-classes to classpath]
-    T3 --> T4[Load classes; JUnitCore + AllureJunit4]
+    T3 --> T4[Load classes and attach Allure]
     T4 --> T5[Run; log results]
     T5 --> U{allure report}
     U -->|true| V[Generate Allure report]
@@ -52,7 +52,7 @@ flowchart TD
     D --> E[get variantCount from System properties]
     E --> F[For each v build MultiServiceTestCase]
     F --> G[Traverse trace tree DFS]
-    G --> H{Is span HTTP]
+    G --> H{Is span HTTP op}
     H -->|No| H1[skip; visit children]
     H1 --> G
     H -->|Yes| I[Load service operation config]
@@ -77,7 +77,7 @@ flowchart TD
     N -->|step later| B2[Prefer trace body or generate]
     B1 --> O[Expected status logic]
     B2 --> O
-    O --> P[Create StepCall + capture outputs]
+    O --> P[Create StepCall and capture outputs]
     P --> Q[Update context with outputs and inputs]
     Q --> R{first step only}
     R -->|true| S[Stop traversal]
