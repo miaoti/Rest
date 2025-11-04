@@ -44,6 +44,9 @@ public class MultiServiceTestCase extends TestCase {
 
     /* name of the logical scenario this test case belongs to */
     private String scenarioName;
+    
+    /* track faulty parameters for Allure reporting */
+    private final List<String> faultyParameters = new ArrayList<>();
 
     /** Add a step (request/response) to the workflow. */
     public void addStepCall(StepCall step) {
@@ -60,6 +63,16 @@ public class MultiServiceTestCase extends TestCase {
     }
 
     public String getScenarioName() { return scenarioName; }
+    
+    /** Track a parameter that was made faulty in this test case */
+    public void addFaultyParameter(String paramName, String faultyValue) {
+        faultyParameters.add(paramName + "=" + faultyValue);
+    }
+    
+    /** Get list of faulty parameters for reporting */
+    public List<String> getFaultyParameters() {
+        return faultyParameters;
+    }
 
 
     /**

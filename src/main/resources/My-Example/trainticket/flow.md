@@ -105,25 +105,47 @@ flowchart LR
     J --> K[Store faulty pool by root API key]
 ```
 
-### Faulty Test Selection (Based on faulty.ratio)
+### Faulty Test Selection (Round-Robin Single Parameter Strategy)
 
 ```mermaid
 flowchart TD
-    A[Read faulty.ratio from properties] --> B[Calculate faulty count variants times ratio]
+    A[Read faulty.ratio from properties] --> B[Calculate faulty count]
     B --> C[Randomly select which variants are faulty]
-    C --> D[For each variant]
-    D --> E{Is faulty variant}
-    E -->|Yes| F[Add faulty prefix to test name]
-    E -->|No| G[Use normal test name]
-    F --> H[For each parameter decide if faulty]
-    G --> H
-    H --> I{Should make param faulty}
-    I -->|Yes all params| J[Use faulty pool values for ALL params]
-    I -->|Yes some params| K[30 percent chance per param to use faulty value]
-    I -->|No| L[Use normal smart fetch or LLM]
-    J --> M[Generate test with faulty inputs]
-    K --> M
-    L --> M
+    C --> D[Initialize parameter rotation list from faulty pool keys]
+    D --> E[Set rotation index to 0]
+    E --> F[For each variant]
+    F --> G{Is faulty variant}
+    G -->|Yes| H[Get target param at rotation index]
+    G -->|No| I[Generate normal test]
+    H --> J[Increment rotation index mod param count]
+    J --> K[For each parameter in operation]
+    K --> L{Is this the target param}
+    L -->|Yes| M[Use faulty value from pool]
+    L -->|No| N[Use normal smart fetch or LLM]
+    M --> O[Track faulty param in test case]
+    N --> P[Continue to next parameter]
+    O --> P
+    P --> Q{More parameters}
+    Q -->|Yes| K
+    Q -->|No| R[Complete faulty test with ONE faulty param]
+```
+
+**Key Point**: Each faulty test case has exactly ONE faulty parameter. Parameters cycle in round-robin fashion:
+- Test 1 faulty: paramA faulty, paramB normal
+- Test 2 faulty: paramB faulty, paramA normal  
+- Test 3 faulty: paramA faulty again (cycle repeats)
+- etc.
+
+### Faulty Test Reporting (Allure Integration)
+
+```mermaid
+flowchart LR
+    A[Test case marked as faulty] --> B[Track faulty parameters during generation]
+    B --> C[Writer checks if test is faulty]
+    C --> D[Add Allure parameter Test Type FAULTY]
+    D --> E[Add Allure parameter Faulty Parameters list]
+    E --> F[Add Allure description with faulty values]
+    F --> G[Report displays in Allure with warning icon]
 ```
 
 ### Smart Input Fetching Flow (SmartInputFetcher)

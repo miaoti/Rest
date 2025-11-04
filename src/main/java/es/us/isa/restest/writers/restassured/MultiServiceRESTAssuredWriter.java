@@ -368,45 +368,37 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                    if (isCurrentTrace) {");
                                 pw.println("                                        debugInfo.append(\" (CURRENT EXECUTION - perfect match!)\\n\");");
                                 pw.println("                                        foundCurrentTrace = true;");
-                                pw.println("                                    } else {");
-                                pw.println("                                        debugInfo.append(\" (contains API calls - from previous execution)\\n\");");
-                                pw.println("                                    }");
-                                pw.println("                                    ");
-                                pw.println("                                    if (bestTrace != null) {");
-                                pw.println("                                        // Generate trace analysis and displays");
-                                pw.println("                                        String traceTable = generateTraceTable(bestTrace);");
-                                pw.println("                                        String traceSummary = generateTraceSummary(bestTrace);");
                                 pw.println("                                        ");
-                                pw.println("                                        // Perform error analysis");
-                                pw.println("                                        TraceErrorAnalyzer.ErrorAnalysisResult errorAnalysis = TraceErrorAnalyzer.analyzeTrace(bestTrace);");
-                                pw.println("                                        String errorReport = TraceErrorAnalyzer.generateErrorReport(errorAnalysis);");
-                                pw.println("                                        ");
-                                pw.println("                                        // Perform parameter error analysis if there are errors");
-                                pw.println("                                        if (errorAnalysis.hasErrors()) {");
-                                pw.println("                                            analyzeAndRecordParameterErrors(bestTrace, stepParameters);");
-                                pw.println("                                        }");
-                                pw.println("                                        ");
-                                pw.println("                                        // Attach trace information to Allure report");
-                                pw.println("                                        if (errorAnalysis.hasErrors()) {");
-                                pw.println("                                            // Get intelligent analysis from LLM");
-                                pw.println("                                            String intelligentAnalysis = TraceErrorAnalyzer.generateIntelligentAnalysis(errorAnalysis, bestTrace);");
-                                pw.println("                                            if (intelligentAnalysis != null && !intelligentAnalysis.trim().isEmpty()) {");
-                                pw.println("                                                Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS\", \"text/plain\", intelligentAnalysis);");
-                                pw.println("                                            }");
+                                pw.println("                                        // Found current execution - attach trace and return immediately");
+                                pw.println("                                        if (bestTrace != null) {");
+                                pw.println("                                            String traceTable = generateTraceTable(bestTrace);");
+                                pw.println("                                            String traceSummary = generateTraceSummary(bestTrace);");
+                                pw.println("                                            TraceErrorAnalyzer.ErrorAnalysisResult errorAnalysis = TraceErrorAnalyzer.analyzeTrace(bestTrace);");
+                                pw.println("                                            String errorReport = TraceErrorAnalyzer.generateErrorReport(errorAnalysis);");
                                 pw.println("                                            ");
-                                pw.println("                                            Allure.addAttachment(\"🔗 API Call Trace (FAILED)\", \"text/plain\", traceTable);");
-                                pw.println("                                        } else {");
-                                pw.println("                                            Allure.addAttachment(\"🔗 API Call Trace (SUCCESS)\", \"text/plain\", traceTable);");
+                                pw.println("                                            if (errorAnalysis.hasErrors()) {");
+                                pw.println("                                                analyzeAndRecordParameterErrors(bestTrace, stepParameters);");
+                                pw.println("                                                String intelligentAnalysis = TraceErrorAnalyzer.generateIntelligentAnalysis(errorAnalysis, bestTrace);");
+                                pw.println("                                                if (intelligentAnalysis != null && !intelligentAnalysis.trim().isEmpty()) {");
+                                pw.println("                                                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS\", \"text/plain\", intelligentAnalysis);");
+                                pw.println("                                                }");
+                                pw.println("                                                Allure.addAttachment(\"🔗 API Call Trace (FAILED)\", \"text/plain\", traceTable);");
+                                pw.println("                                            } else {");
+                                pw.println("                                                Allure.addAttachment(\"🔗 API Call Trace (SUCCESS)\", \"text/plain\", traceTable);");
+                                pw.println("                                            }");
+                                pw.println("                                            Allure.addAttachment(\"📊 Trace Summary\", \"text/plain\", traceSummary);");
+                                pw.println("                                            Allure.addAttachment(\"📈 Raw Trace Data\", \"application/json\", bestTrace.toString());");
+                                pw.println("                                            Allure.addAttachment(\"🔍 Query Debug Info\", \"text/plain\", debugInfo.toString());");
+                                pw.println("                                            return;");
                                 pw.println("                                        }");
-                                pw.println("                                        Allure.addAttachment(\"📊 Trace Summary\", \"text/plain\", traceSummary);");
-                                pw.println("                                        Allure.addAttachment(\"📈 Raw Trace Data\", \"application/json\", bestTrace.toString());");
-                                pw.println("                                        Allure.addAttachment(\"🔍 Query Debug Info\", \"text/plain\", debugInfo.toString());");
-                                pw.println("                                        return;");
+                                pw.println("                                    } else {");
+                                pw.println("                                        debugInfo.append(\" (contains API calls - from PREVIOUS execution - continuing search)\\n\");");
+                                pw.println("                                        debugInfo.append(\"⏭️ This trace is from a previous execution. Continuing to search for current execution...\\n\");");
+                                pw.println("                                        // Don't return - this is an old trace, keep searching for current execution");
                                 pw.println("                                    }");
                                 pw.println("                                } else {");
                                 pw.println("                                    debugInfo.append(\" (no API calls found)\\n\");");
                                 pw.println("                                    debugInfo.append(\"\\n⚠️ This query found traces but no API calls. Continuing to next strategy...\\n\");");
-                                pw.println("                                    // Don't return yet - try next query strategy");
                                 pw.println("                                }");
                     pw.println("                            } else {");
                     pw.println("                                debugInfo.append(\"No traces found in response\\n\");");
@@ -925,6 +917,30 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                     pw.println("    @Test");
                     pw.println("    public void " + testMethodName + "() throws Exception {");
+                    
+                    /* ------------ Add Allure metadata for faulty tests ---------- */
+                    if (scenario instanceof MultiServiceTestCase) {
+                        MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;
+                        System.out.println("DEBUG: Test " + testMethodName + " - isFaulty=" + scenario.getFaulty() + 
+                                         ", faultyParamsCount=" + mstc.getFaultyParameters().size() +
+                                         ", allureReport=" + allureReport);
+                        if (allureReport && scenario.getFaulty() && !mstc.getFaultyParameters().isEmpty()) {
+                            System.out.println("DEBUG: Adding faulty metadata for: " + String.join(", ", mstc.getFaultyParameters()));
+                            pw.println("        // 🚨 FAULTY TEST METADATA");
+                            pw.println("        Allure.parameter(\"🚨 Test Type\", \"FAULTY (Negative Testing)\");");
+                            
+                            // Escape special characters for Java string literals
+                            String faultyParamsEscaped = escapeJavaString(String.join(", ", mstc.getFaultyParameters()));
+                            String faultyParamsNewlineEscaped = escapeJavaString(String.join("\\n", mstc.getFaultyParameters()));
+                            
+                            pw.println("        Allure.parameter(\"🔴 Faulty Parameters\", \"" + faultyParamsEscaped + "\");");
+                            pw.println("        Allure.description(\"**⚠️ This is an intentional FAULTY test case for negative testing.**\\n\\n\" +");
+                            pw.println("                         \"The following parameters were intentionally set to invalid values:\\n\" +");
+                            pw.println("                         \"" + faultyParamsNewlineEscaped + "\\n\\n\" +");
+                            pw.println("                         \"This test is expected to trigger validation errors or error responses.\");");
+                            pw.println();
+                        }
+                    }
 
                     /* ------------ login (own Allure step) ---------------------- */
                     pw.println("        final String[] _jwt     = new String[1];");
@@ -1441,6 +1457,35 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     
     private static String escape(String s) {
         return s == null ? "" : s.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    /**
+     * Escape a string for use in Java string literals (for generated test code).
+     * This handles all special characters that need escaping in Java strings.
+     */
+    private static String escapeJavaString(String s) {
+        if (s == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;  // Backslash
+                case '\"': sb.append("\\\""); break;  // Double quote
+                case '\n': sb.append("\\n"); break;   // Newline
+                case '\r': sb.append("\\r"); break;   // Carriage return
+                case '\t': sb.append("\\t"); break;   // Tab
+                case '\b': sb.append("\\b"); break;   // Backspace
+                case '\f': sb.append("\\f"); break;   // Form feed
+                default:
+                    // For any non-printable or control characters, use unicode escape
+                    if (c < 32 || c > 126) {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+                    break;
+            }
+        }
+        return sb.toString();
     }
 
     private static String sanitize(String s) {

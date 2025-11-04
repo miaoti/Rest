@@ -44,6 +44,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private float faultyRatio;
     private Map<String, Map<String, List<String>>> faultyParameterPools = new HashMap<>();
     private Random random = new Random();
+    
+    // Track which parameter should be faulty in current test case (round-robin)
+    private List<String> parameterRotation = new ArrayList<>();
+    private int currentFaultyParamIndex = 0;
 
     // Pattern to match HTTP operations in operation names
     private static final Pattern HTTP_OPERATION_PATTERN = 
@@ -67,6 +71,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         this.useLLM           = useLLMforParams;
         this.onlyFirstBusinessStep = Boolean.parseBoolean(System.getProperty("mst.generate.only.first.step", "false"));
         this.faultyRatio = Float.parseFloat(System.getProperty("faulty.ratio", "0.1"));
+        
+        log.info("=== FAULTY TEST CONFIGURATION ===");
+        log.info("faulty.ratio from system property: {}", System.getProperty("faulty.ratio", "0.1"));
+        log.info("Parsed faultyRatio: {}", this.faultyRatio);
+        log.info("This means {}% of test variants will be faulty", this.faultyRatio * 100);
         
         // Initialize Smart Input Fetching System
         initializeSmartInputFetching();
@@ -176,12 +185,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
         
         // Calculate faulty variants
+        log.info("=== FAULTY VARIANT CALCULATION ===");
+        log.info("Total variants: {}", variantCount);
+        log.info("Faulty ratio: {}", faultyRatio);
+        log.info("Calculation: {} * {} = {}", variantCount, faultyRatio, variantCount * faultyRatio);
         int faultyCount = Math.round(variantCount * faultyRatio);
+        log.info("Math.round({}) = {} faulty variants", variantCount * faultyRatio, faultyCount);
+        
         Set<Integer> faultyVariantIndices = new HashSet<>();
         while (faultyVariantIndices.size() < faultyCount) {
             faultyVariantIndices.add(random.nextInt(variantCount));
         }
-        log.info("Marking {} out of {} variants as faulty: {}", faultyCount, variantCount, faultyVariantIndices);
+        log.info("Selected faulty variant indices (0-based): {}", faultyVariantIndices);
+        log.info("Marking {} out of {} variants as faulty", faultyCount, variantCount);
+        
+        // Initialize parameter rotation for round-robin faulty parameter selection
+        String rootApiKey = getRootApiKeyForScenario(sc);
+        initializeParameterRotation(rootApiKey);
+        log.info("Parameter rotation initialized with {} parameters: {}", parameterRotation.size(), parameterRotation);
         
         // Determine scenario identifier based on first API call
             String firstApiName = getFirstApiOperationName(sc);
@@ -211,13 +232,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             tc.setScenarioName(scenarioId);
             tc.setFaulty(isFaultyVariant);
             
-            log.info("--- Generating variant {} ({}) [Faulty: {}] ---", v, tc.getOperationId(), isFaultyVariant);
+            // For faulty variants, determine which parameter should be faulty (round-robin)
+            String targetFaultyParam = null;
+            if (isFaultyVariant && !parameterRotation.isEmpty()) {
+                targetFaultyParam = parameterRotation.get(currentFaultyParamIndex);
+                log.info("🎯 Target faulty parameter for this variant: '{}'", targetFaultyParam);
+                // Move to next parameter for next faulty test
+                currentFaultyParamIndex = (currentFaultyParamIndex + 1) % parameterRotation.size();
+            }
+            
+            String faultyMarker = isFaultyVariant ? 
+                "🔴 FAULTY (param: " + targetFaultyParam + ")" : "✅ NORMAL";
+            log.info("--- Generating variant {}/{}: {} [{}] ---", (v + 1), variantCount, tc.getOperationId(), faultyMarker);
             
             Map<String,String> context = new HashMap<>();
             
             // Process workflow steps with variant-specific parameter generation
             for (WorkflowStep root : sc.getRootSteps()) {
-                traverse(root, tc, context, "1", v, isFaultyVariant);
+                traverse(root, tc, context, "1", v, isFaultyVariant, targetFaultyParam);
             }
             
             // If configured, keep only the first business step (step 1). Login (step 0) is handled by writer
@@ -236,12 +268,26 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                  }
             }
             
+            // DEBUG: Log faulty parameters
+            if (isFaultyVariant) {
+                log.info("🔴 FAULTY TEST: {} has {} faulty parameters: {}", 
+                        tc.getOperationId(), tc.getFaultyParameters().size(), tc.getFaultyParameters());
+            }
+            
             variants.add(tc);
             
             log.info("--- Completed variant {} with {} steps ---", v, tc.getSteps().size());
         }
         
-        log.info("=== Generated {} total test case variants ===", variants.size());
+        // Summary of generated variants
+        long actualFaultyCount = variants.stream().filter(TestCase::getFaulty).count();
+        long actualNormalCount = variants.size() - actualFaultyCount;
+        log.info("=== GENERATION SUMMARY ===");
+        log.info("Total variants generated: {}", variants.size());
+        log.info("🔴 Faulty variants: {} ({}%)", actualFaultyCount, (actualFaultyCount * 100.0 / variants.size()));
+        log.info("✅ Normal variants: {} ({}%)", actualNormalCount, (actualNormalCount * 100.0 / variants.size()));
+        log.info("Expected faulty ratio: {}%", faultyRatio * 100);
+        
         return variants;
     }
 
@@ -263,13 +309,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * @param stepNumber hierarchical step number (e.g., "1", "1.1", "1.2.1")
      * @param variantIndex index of current test variant for parameter selection
      * @param isFaultyVariant whether this test variant should use faulty parameters
+     * @param targetFaultyParam the specific parameter name that should be faulty (null if not faulty test)
      */
     private void traverse(WorkflowStep span,
                           MultiServiceTestCase tc,
                           Map<String,String> context,
                           String stepNumber,
                           int variantIndex,
-                          boolean isFaultyVariant) {
+                          boolean isFaultyVariant,
+                          String targetFaultyParam) {
 
         // In first-step-only mode: if we've already added one business step, stop further traversal
         if (onlyFirstBusinessStep && !tc.getSteps().isEmpty()) {
@@ -301,21 +349,21 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             } else {
                             // Skip non-HTTP operations (internal spans, database calls, etc.)
             log.debug("Skipping non-HTTP span: {} - {}", service, opName);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
             return;
             }
         }
 
         if (verb == null || route == null) {
             log.debug("Could not extract HTTP method/path from span: {} - {}", service, opName);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
             return;
         }
 
         // Skip login/auth related operations (writer handles login as Step 0)
         if (isLoginOrAuthOperation(service, opName)) {
             log.debug("Skipping login/auth operation in generator: {} - {} {}", service, verb, route);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
             return;
         }
 
@@ -323,14 +371,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         TestConfigurationObject cfg = serviceConfigs.get(service);
         if (cfg == null) {
             log.warn("No test‑configuration for service '{}' (step {})", service, stepNumber);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
             return;
         }
 
         Operation opCfg = findOperation(cfg, verb, route);
         if (opCfg == null) {
             log.warn("No Operation config {} {} in service '{}' (step {})", verb, route, service, stepNumber);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
             return;
         }
 
@@ -363,26 +411,35 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 if (isFirstBusinessStep) {
                     /* Step 1 (First Business Step): Check if faulty, then use smart fetch or faulty values */
                     log.info("🎯 Step 1 parameter '{}' - attempting smart fetch", p.getName());
+                    
+                    boolean faultyValueSet = false;
 
                     if (useLLM) {
                         ParameterInfo info = createParameterInfo(p);
                         
-                        // Check if this is a faulty variant and should use faulty values
-                        if (isFaultyVariant && shouldMakeParameterFaulty()) {
+                        // Check if this is a faulty variant AND this is the target faulty parameter
+                        if (isFaultyVariant && targetFaultyParam != null && p.getName().equals(targetFaultyParam)) {
+                            log.info("🔴 FAULTY VARIANT: Making parameter '{}' faulty (target param)", p.getName());
+                            
                             // Use faulty value from faulty pool
                             String rootApiKey = getRootApiKeyForCurrentStep(tc);
                             Map<String, List<String>> faultyPool = faultyParameterPools.get(rootApiKey);
+                            
                             if (faultyPool != null && faultyPool.containsKey(p.getName())) {
                                 List<String> faultyValues = faultyPool.get(p.getName());
                                 if (!faultyValues.isEmpty()) {
                                     val = faultyValues.get(random.nextInt(faultyValues.size()));
-                                    log.info("Faulty Test → {} = {} (intentionally faulty)", p.getName(), val);
+                                    tc.addFaultyParameter(p.getName(), val);
+                                    faultyValueSet = true;  // Mark that faulty value is set
+                                    log.info("✅ Faulty Test → {} = {} (intentionally faulty) - LOCKED", p.getName(), val);
                                 }
+                            } else {
+                                log.warn("⚠️ No faulty pool found for rootApiKey='{}' or parameter='{}'", rootApiKey, p.getName());
                             }
                         }
 
-                        // Try Smart Input Fetching first for step 1 parameters (if not faulty)
-                        if (val == null && smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
+                        // Try Smart Input Fetching first for step 1 parameters (ONLY if not faulty)
+                        if (!faultyValueSet && val == null && smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
                             log.info("🚀 Calling smart fetch for step 1 parameter '{}'", p.getName());
                             try {
                                 val = smartFetcher.fetchSmartInput(info);
@@ -403,15 +460,17 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                     smartFetchConfig != null ? smartFetchConfig.isEnabled() : "N/A");
                         }
 
-                        // Fall back to traditional LLM generation if smart fetching didn't work
-                        if (val == null) {
+                        // Fall back to traditional LLM generation if smart fetching didn't work (ONLY if not faulty)
+                        if (!faultyValueSet && val == null) {
                             List<String> vals = llmGen.generateParameterValues(info);
                             val = vals.isEmpty() ? "LLM_EMPTY_" + p.getName() : vals.get(0);
                             log.info("LLM (Step 1 Fallback) → {} {} = {}", service, p.getName(), val);
                         }
                     } else {
-                        log.info("🚫 LLM disabled for step 1 parameter '{}'", p.getName());
-                        val = "STEP1_" + p.getName() + "_v" + variantIndex;
+                        if (!faultyValueSet) {
+                            log.info("🚫 LLM disabled for step 1 parameter '{}'", p.getName());
+                            val = "STEP1_" + p.getName() + "_v" + variantIndex;
+                        }
                     }
                 } else {
                     /* Subsequent Steps (2+): Check dependencies first, then use smart fetch for independent parameters */
@@ -590,7 +649,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             // Do not traverse further in first-step-only mode
             return;
         }
-        gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant);
+        gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
     }
 
     /**
@@ -615,7 +674,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private Map<String,String> convertObjectMapToStringMap(Map<String,Object> objectMap) {
         Map<String,String> stringMap = new LinkedHashMap<>();
         for (Map.Entry<String,Object> entry : objectMap.entrySet()) {
-            stringMap.put(entry.getKey(), entry.getValue().toString());
+            Object value = entry.getValue();
+            // Handle null values (e.g., from faulty test cases)
+            stringMap.put(entry.getKey(), value == null ? null : value.toString());
         }
         return stringMap;
     }
@@ -933,7 +994,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         
         // Store body fields with "input." prefix for consistency tracking
         for (Map.Entry<String, Object> entry : bodyFields.entrySet()) {
-            context.put("input." + entry.getKey(), entry.getValue().toString());
+            Object value = entry.getValue();
+            // Handle null values (e.g., from faulty test cases)
+            context.put("input." + entry.getKey(), value == null ? null : value.toString());
         }
     }
 
@@ -976,25 +1039,56 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                               Map<String,String> ctx,
                               String parentStepNumber,
                               int variantIndex,
-                              boolean isFaultyVariant) {
+                              boolean isFaultyVariant,
+                              String targetFaultyParam) {
         List<WorkflowStep> children = parent.getChildren();
         for (int i = 0; i < children.size(); i++) {
             String childStepNumber = parentStepNumber + "." + (i + 1);
-            traverse(children.get(i), tc, ctx, childStepNumber, variantIndex, isFaultyVariant);
+            traverse(children.get(i), tc, ctx, childStepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
         }
     }
     
     /**
-     * Determine if a parameter should be made faulty in a faulty test variant.
-     * 50% chance to make ALL parameters faulty, 50% chance to make only some (30% per param).
+     * Initialize parameter rotation list for round-robin faulty parameter selection
      */
-    private boolean shouldMakeParameterFaulty() {
-        // 50% chance to make ALL parameters faulty, 50% chance to make only some
-        if (random.nextBoolean()) {
-            return true; // Make all parameters faulty
-        } else {
-            return random.nextFloat() < 0.3f; // 30% chance for each parameter
+    private void initializeParameterRotation(String rootApiKey) {
+        parameterRotation.clear();
+        currentFaultyParamIndex = 0;
+        
+        Map<String, List<String>> faultyPool = faultyParameterPools.get(rootApiKey);
+        if (faultyPool != null) {
+            parameterRotation.addAll(faultyPool.keySet());
         }
+        
+        log.info("Initialized parameter rotation for '{}': {}", rootApiKey, parameterRotation);
+    }
+    
+    /**
+     * Get root API key for a scenario (used for parameter rotation initialization)
+     */
+    private String getRootApiKeyForScenario(WorkflowScenario scenario) {
+        // Find first business step
+        WorkflowStep firstBusinessStep = findFirstBusinessStep(scenario);
+        if (firstBusinessStep == null) {
+            return null;
+        }
+        
+        String opName = firstBusinessStep.getOperationName();
+        
+        // Extract HTTP method and path
+        String verb = null, route = null;
+        Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
+        if (httpMatcher.matches()) {
+            verb = httpMatcher.group(1).toUpperCase();
+            route = httpMatcher.group(2);
+        }
+        
+        if (verb != null && route != null) {
+            String rootApiKey = verb + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
+            return rootApiKey;
+        }
+        
+        return null;
     }
     
     /**
@@ -1046,11 +1140,18 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         for (Map.Entry<String,Object> e : map.entrySet()) {
             if (!first) sb.append(',');
             first = false;
-            sb.append('"').append(e.getKey()).append("\":")
-                    .append('"').append(e.getValue().toString()
-                            .replace("\\", "\\\\")
-                            .replace("\"","\\\""))
-                    .append('"');
+            sb.append('"').append(e.getKey()).append("\":");
+            
+            // Handle null values (e.g., from faulty test cases)
+            Object value = e.getValue();
+            if (value == null) {
+                sb.append("null");
+            } else {
+                sb.append('"').append(value.toString()
+                                .replace("\\", "\\\\")
+                                .replace("\"","\\\""))
+                        .append('"');
+            }
         }
         return sb.append('}').toString();
     }
@@ -1226,16 +1327,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         String opName = step.getOperationName();
         String serviceName = step.getServiceName();
         
-        // Skip login/auth related operations
+        // Skip login/auth AND gateway operations
         if (opName != null && serviceName != null) {
             String opLower = opName.toLowerCase();
             String serviceLower = serviceName.toLowerCase();
             
-            if (opLower.contains("login") || opLower.contains("auth") || 
-                serviceLower.contains("login") || serviceLower.contains("auth") ||
-                opLower.contains("signin") || opLower.contains("token")) {
-                // Skip login/auth operations
-            } else {
+            // Skip login/auth
+            boolean isLoginAuth = opLower.contains("login") || opLower.contains("auth") || 
+                                  serviceLower.contains("login") || serviceLower.contains("auth") ||
+                                  opLower.contains("signin") || opLower.contains("token");
+            
+            // Skip gateway services (they're just proxies, not business services)
+            boolean isGateway = serviceLower.contains("gateway") || 
+                               opName.equals("POST /*") || opName.equals("GET /*") ||
+                               opName.equals("PUT /*") || opName.equals("DELETE /*");
+            
+            if (!isLoginAuth && !isGateway) {
                 // Try to extract HTTP method and path
                 String verb = null, route = null;
                 
@@ -1266,7 +1373,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 }
                 
                 if (verb != null && route != null) {
-                    return verb.toUpperCase() + "_" + route;
+                    // Normalize the route by replacing non-alphanumeric characters with underscores
+                    String normalizedRoute = route.replaceAll("[^a-zA-Z0-9_]", "_");
+                    return verb.toUpperCase() + "_" + normalizedRoute;
                 }
             }
         }
@@ -1438,31 +1547,38 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      */
     private void generateFaultyParameterPools(Map<String, List<WorkflowScenario>> groupedScenarios) {
         log.info("=== GENERATING FAULTY PARAMETER POOLS ===");
+        log.info("Number of scenario groups: {}", groupedScenarios.size());
         
         for (Map.Entry<String, List<WorkflowScenario>> entry : groupedScenarios.entrySet()) {
             String rootApiKey = entry.getKey();
+            log.info("Processing root API key: '{}'", rootApiKey);
             WorkflowScenario representativeScenario = entry.getValue().get(0);
             Map<String, List<String>> faultyPool = generateFaultyPoolForRootApi(representativeScenario, rootApiKey);
             
             faultyParameterPools.put(rootApiKey, faultyPool);
-            log.info("Generated faulty pool for '{}' with {} parameters", rootApiKey, faultyPool.size());
+            log.info("✅ Generated faulty pool for '{}' with {} parameters: {}", 
+                    rootApiKey, faultyPool.size(), faultyPool.keySet());
         }
         
         log.info("=== COMPLETED: {} faulty parameter pools generated ===", faultyParameterPools.size());
+        log.info("All faulty pool keys: {}", faultyParameterPools.keySet());
     }
 
     /**
      * Generate a faulty parameter pool for a specific root API using the first scenario as reference
      */
     private Map<String, List<String>> generateFaultyPoolForRootApi(WorkflowScenario scenario, String rootApiKey) {
+        log.info("🔨 Generating faulty pool for root API: '{}'", rootApiKey);
         Map<String, List<String>> faultyPool = new HashMap<>();
         
         // Find the first business API step to extract its parameters
         WorkflowStep firstBusinessStep = findFirstBusinessStep(scenario);
         if (firstBusinessStep == null) {
-            log.warn("No business step found for root API: {}", rootApiKey);
+            log.warn("❌ No business step found for root API: {}", rootApiKey);
             return faultyPool;
         }
+        log.info("✅ Found first business step: service='{}', operation='{}'", 
+                firstBusinessStep.getServiceName(), firstBusinessStep.getOperationName());
         
         // Extract HTTP operation info
         String service = firstBusinessStep.getServiceName();
@@ -1504,15 +1620,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         }
         
         // Generate faulty parameter values for all parameters in this operation
+        log.info("Generating faulty values for operation: {} {} (useLLM: {}, paramCount: {})", 
+                verb, route, useLLM, opCfg.getTestParameters() != null ? opCfg.getTestParameters().size() : 0);
+        
         if (opCfg.getTestParameters() != null && useLLM) {
             for (TestParameter p : opCfg.getTestParameters()) {
+                log.info("💉 Generating faulty values for parameter: '{}'", p.getName());
                 ParameterInfo info = createParameterInfo(p);
                 List<String> faultyValues = llmGen.generateFaultyParameterValues(info, 10);
                 faultyPool.put(p.getName(), faultyValues);
-                log.info("Generated faulty pool for parameter '{}': {} values", p.getName(), faultyValues.size());
+                log.info("✅ Generated faulty pool for parameter '{}': {} values - {}", 
+                        p.getName(), faultyValues.size(), faultyValues);
             }
+        } else {
+            log.warn("⚠️ Cannot generate faulty pool: useLLM={}, testParameters={}", 
+                    useLLM, opCfg.getTestParameters() != null);
         }
         
+        log.info("📦 Final faulty pool for '{}': {} parameters total", rootApiKey, faultyPool.size());
         return faultyPool;
     }
 
@@ -1536,14 +1661,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         String opName = step.getOperationName();
         String serviceName = step.getServiceName();
         
-        // Skip login/auth operations
+        // Skip login/auth operations AND gateway operations
         if (opName != null && serviceName != null) {
             String opLower = opName.toLowerCase();
             String serviceLower = serviceName.toLowerCase();
             
-            if (!(opLower.contains("login") || opLower.contains("auth") || 
-                  serviceLower.contains("login") || serviceLower.contains("auth") ||
-                  opLower.contains("signin") || opLower.contains("token"))) {
+            // Skip login/auth
+            boolean isLoginAuth = opLower.contains("login") || opLower.contains("auth") || 
+                                  serviceLower.contains("login") || serviceLower.contains("auth") ||
+                                  opLower.contains("signin") || opLower.contains("token");
+            
+            // Skip gateway services (they're just proxies, not business services)
+            boolean isGateway = serviceLower.contains("gateway") || 
+                               opName.equals("POST /*") || opName.equals("GET /*") ||
+                               opName.equals("PUT /*") || opName.equals("DELETE /*");
+            
+            if (!isLoginAuth && !isGateway) {
                 return step; // This is a business step
             }
         }
@@ -1721,3 +1854,4 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                   .replace("\t", "\\t");
     }
 }
+
