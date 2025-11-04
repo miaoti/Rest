@@ -434,6 +434,13 @@ public class TestGenerationAndExecution {
 					System.setProperty("faulty.ratio", faultyRatio.toString());
 					logger.info("MST faulty ratio: {}", faultyRatio);
 				}
+				
+				// Pass faulty.round-robin strategy to MST generator
+				String faultyRoundRobin = readParameterValue("faulty.round-robin");
+				if (faultyRoundRobin != null) {
+					System.setProperty("faulty.round-robin", faultyRoundRobin);
+					logger.info("MST faulty round-robin mode: {}", faultyRoundRobin);
+				}
 
 				// 7. Instantiate the generator
 				gen = new MultiServiceTestCaseGenerator(

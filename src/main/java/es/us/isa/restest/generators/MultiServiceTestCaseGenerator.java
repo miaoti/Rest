@@ -42,10 +42,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     
     // Faulty Test Generation System
     private float faultyRatio;
+    private boolean faultyRoundRobin = true;  // true = round-robin, false = random
     private Map<String, Map<String, List<String>>> faultyParameterPools = new HashMap<>();
     private Random random = new Random();
     
-    // Track which parameter should be faulty in current test case (round-robin)
+    // Track which parameter should be faulty in current test case (round-robin mode)
     private List<String> parameterRotation = new ArrayList<>();
     private int currentFaultyParamIndex = 0;
 
@@ -71,11 +72,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         this.useLLM           = useLLMforParams;
         this.onlyFirstBusinessStep = Boolean.parseBoolean(System.getProperty("mst.generate.only.first.step", "false"));
         this.faultyRatio = Float.parseFloat(System.getProperty("faulty.ratio", "0.1"));
+        this.faultyRoundRobin = Boolean.parseBoolean(System.getProperty("faulty.round-robin", "true"));
         
         log.info("=== FAULTY TEST CONFIGURATION ===");
         log.info("faulty.ratio from system property: {}", System.getProperty("faulty.ratio", "0.1"));
         log.info("Parsed faultyRatio: {}", this.faultyRatio);
         log.info("This means {}% of test variants will be faulty", this.faultyRatio * 100);
+        log.info("Faulty parameter selection mode: {}", this.faultyRoundRobin ? "ROUND-ROBIN" : "RANDOM");
         
         // Initialize Smart Input Fetching System
         initializeSmartInputFetching();
@@ -232,24 +235,36 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             tc.setScenarioName(scenarioId);
             tc.setFaulty(isFaultyVariant);
             
-            // For faulty variants, determine which parameter should be faulty (round-robin)
-            String targetFaultyParam = null;
+            // For faulty variants, determine which parameter(s) should be faulty
+            List<String> targetFaultyParams = new ArrayList<>();
             if (isFaultyVariant && !parameterRotation.isEmpty()) {
-                targetFaultyParam = parameterRotation.get(currentFaultyParamIndex);
-                log.info("🎯 Target faulty parameter for this variant: '{}'", targetFaultyParam);
-                // Move to next parameter for next faulty test
-                currentFaultyParamIndex = (currentFaultyParamIndex + 1) % parameterRotation.size();
+                if (faultyRoundRobin) {
+                    // ROUND-ROBIN MODE: Select exactly ONE parameter in rotation
+                    String singleParam = parameterRotation.get(currentFaultyParamIndex);
+                    targetFaultyParams.add(singleParam);
+                    log.info("🔴 [ROUND-ROBIN] Target faulty parameter for this variant: '{}'", singleParam);
+                    // Move to next parameter for next faulty test
+                    currentFaultyParamIndex = (currentFaultyParamIndex + 1) % parameterRotation.size();
+                } else {
+                    // RANDOM MODE: Randomly select one or more parameters
+                    int numFaultyParams = 1 + random.nextInt(Math.min(3, parameterRotation.size())); // 1 to 3 params
+                    List<String> availableParams = new ArrayList<>(parameterRotation);
+                    Collections.shuffle(availableParams, random);
+                    targetFaultyParams.addAll(availableParams.subList(0, Math.min(numFaultyParams, availableParams.size())));
+                    log.info("🔴 [RANDOM] Target faulty parameters for this variant ({} params): {}", 
+                            targetFaultyParams.size(), targetFaultyParams);
+                }
             }
             
             String faultyMarker = isFaultyVariant ? 
-                "🔴 FAULTY (param: " + targetFaultyParam + ")" : "✅ NORMAL";
+                "🔴 FAULTY (params: " + String.join(", ", targetFaultyParams) + ")" : "✅ NORMAL";
             log.info("--- Generating variant {}/{}: {} [{}] ---", (v + 1), variantCount, tc.getOperationId(), faultyMarker);
             
             Map<String,String> context = new HashMap<>();
             
             // Process workflow steps with variant-specific parameter generation
             for (WorkflowStep root : sc.getRootSteps()) {
-                traverse(root, tc, context, "1", v, isFaultyVariant, targetFaultyParam);
+                traverse(root, tc, context, "1", v, isFaultyVariant, targetFaultyParams);
             }
             
             // If configured, keep only the first business step (step 1). Login (step 0) is handled by writer
@@ -309,7 +324,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * @param stepNumber hierarchical step number (e.g., "1", "1.1", "1.2.1")
      * @param variantIndex index of current test variant for parameter selection
      * @param isFaultyVariant whether this test variant should use faulty parameters
-     * @param targetFaultyParam the specific parameter name that should be faulty (null if not faulty test)
+     * @param targetFaultyParams list of parameter names that should be faulty (empty if not faulty test)
      */
     private void traverse(WorkflowStep span,
                           MultiServiceTestCase tc,
@@ -317,7 +332,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                           String stepNumber,
                           int variantIndex,
                           boolean isFaultyVariant,
-                          String targetFaultyParam) {
+                          List<String> targetFaultyParams) {
 
         // In first-step-only mode: if we've already added one business step, stop further traversal
         if (onlyFirstBusinessStep && !tc.getSteps().isEmpty()) {
@@ -349,21 +364,21 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             } else {
                             // Skip non-HTTP operations (internal spans, database calls, etc.)
             log.debug("Skipping non-HTTP span: {} - {}", service, opName);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
             return;
             }
         }
 
         if (verb == null || route == null) {
             log.debug("Could not extract HTTP method/path from span: {} - {}", service, opName);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
             return;
         }
 
         // Skip login/auth related operations (writer handles login as Step 0)
         if (isLoginOrAuthOperation(service, opName)) {
             log.debug("Skipping login/auth operation in generator: {} - {} {}", service, verb, route);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
             return;
         }
 
@@ -371,14 +386,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         TestConfigurationObject cfg = serviceConfigs.get(service);
         if (cfg == null) {
             log.warn("No test‑configuration for service '{}' (step {})", service, stepNumber);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
             return;
         }
 
         Operation opCfg = findOperation(cfg, verb, route);
         if (opCfg == null) {
             log.warn("No Operation config {} {} in service '{}' (step {})", verb, route, service, stepNumber);
-            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+            gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
             return;
         }
 
@@ -417,8 +432,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     if (useLLM) {
                         ParameterInfo info = createParameterInfo(p);
                         
-                        // Check if this is a faulty variant AND this is the target faulty parameter
-                        if (isFaultyVariant && targetFaultyParam != null && p.getName().equals(targetFaultyParam)) {
+                        // Check if this is a faulty variant AND this is one of the target faulty parameters
+                        if (isFaultyVariant && targetFaultyParams != null && targetFaultyParams.contains(p.getName())) {
                             log.info("🔴 FAULTY VARIANT: Making parameter '{}' faulty (target param)", p.getName());
                             
                             // Use faulty value from faulty pool
@@ -649,7 +664,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             // Do not traverse further in first-step-only mode
             return;
         }
-        gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+        gotoChildren(span, tc, context, stepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
     }
 
     /**
@@ -1040,11 +1055,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                               String parentStepNumber,
                               int variantIndex,
                               boolean isFaultyVariant,
-                              String targetFaultyParam) {
+                              List<String> targetFaultyParams) {
         List<WorkflowStep> children = parent.getChildren();
         for (int i = 0; i < children.size(); i++) {
             String childStepNumber = parentStepNumber + "." + (i + 1);
-            traverse(children.get(i), tc, ctx, childStepNumber, variantIndex, isFaultyVariant, targetFaultyParam);
+            traverse(children.get(i), tc, ctx, childStepNumber, variantIndex, isFaultyVariant, targetFaultyParams);
         }
     }
     

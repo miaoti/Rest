@@ -20,9 +20,11 @@ flowchart TD
     M --> M1[testsperoperation or test variants per scenario]
     M --> M2[mst generate only first step]
     M --> M3[smart input fetch and llm and auth]
+    M --> M4[faulty ratio and faulty round-robin]
     M1 --> N[Create MST generator use LLM]
     M2 --> N
     M3 --> N
+    M4 --> N
     N --> O[Configure MST writer]
     O --> P[Run generator]
     P --> Q[Set stats test cases]
@@ -60,9 +62,12 @@ flowchart TD
     H -->|Yes| I[Load service operation config]
     I --> J{Is first business step}
     J -->|Yes| K[For each parameter]
-    K --> K1[Try Smart Fetch]
+    K --> K0{Is target faulty param}
+    K0 -->|Yes| K00[Use faulty value and lock]
+    K0 -->|No| K1[Try Smart Fetch]
     K1 -->|success| K2[use value]
     K1 -->|fail or disabled| K3[LLM fallback]
+    K00 --> L
     K2 --> L
     K3 --> L[Collect path/query/header/body maps]
     J -->|No| M[For each parameter]
@@ -105,36 +110,38 @@ flowchart LR
     J --> K[Store faulty pool by root API key]
 ```
 
-### Faulty Test Selection (Round-Robin Single Parameter Strategy)
+### Faulty Test Selection (Configurable Strategy)
 
 ```mermaid
 flowchart TD
-    A[Read faulty.ratio from properties] --> B[Calculate faulty count]
+    A[Read faulty.ratio and faulty.round-robin] --> B[Calculate faulty count]
     B --> C[Randomly select which variants are faulty]
     C --> D[Initialize parameter rotation list from faulty pool keys]
-    D --> E[Set rotation index to 0]
-    E --> F[For each variant]
-    F --> G{Is faulty variant}
-    G -->|Yes| H[Get target param at rotation index]
-    G -->|No| I[Generate normal test]
-    H --> J[Increment rotation index mod param count]
-    J --> K[For each parameter in operation]
-    K --> L{Is this the target param}
-    L -->|Yes| M[Use faulty value from pool]
-    L -->|No| N[Use normal smart fetch or LLM]
-    M --> O[Track faulty param in test case]
-    N --> P[Continue to next parameter]
-    O --> P
-    P --> Q{More parameters}
-    Q -->|Yes| K
-    Q -->|No| R[Complete faulty test with ONE faulty param]
+    D --> E[For each variant]
+    E --> F{Is faulty variant}
+    F -->|No| G[Generate normal test]
+    F -->|Yes| H{faulty.round-robin}
+    H -->|true| I[ROUND-ROBIN: Get param at rotation index]
+    H -->|false| J[RANDOM: Select 1-3 params randomly]
+    I --> K[Increment rotation index mod param count]
+    J --> L[For each parameter in operation]
+    K --> L
+    L --> M{Is target faulty param}
+    M -->|Yes| N[Use faulty value from pool and lock]
+    M -->|No| O[Use normal smart fetch or LLM]
+    N --> P[Track faulty param in test case]
+    O --> Q[Continue to next parameter]
+    P --> Q
+    Q --> R{More parameters}
+    R -->|Yes| L
+    R -->|No| S[Complete faulty test]
 ```
 
-**Key Point**: Each faulty test case has exactly ONE faulty parameter. Parameters cycle in round-robin fashion:
-- Test 1 faulty: paramA faulty, paramB normal
-- Test 2 faulty: paramB faulty, paramA normal  
-- Test 3 faulty: paramA faulty again (cycle repeats)
-- etc.
+**Strategies**:
+- **Round-Robin** (faulty.round-robin=true, default): ONE faulty param per test, cycling through all params
+  - Test 1: paramA faulty, Test 2: paramB faulty, Test 3: paramA faulty (cycle repeats)
+- **Random** (faulty.round-robin=false): 1-3 randomly selected faulty params per test
+  - Test 1: [paramA, paramC] faulty, Test 2: [paramB] faulty, Test 3: [paramA, paramB, paramC] faulty
 
 ### Faulty Test Reporting (Allure Integration)
 
@@ -214,6 +221,7 @@ flowchart TD
 - testsperoperation / test.variants.per.scenario: number of variants per scenario
 - mst.generate.only.first.step: generate only first business step (writer handles login as step 0)
 - faulty.ratio: percentage of test variants that should be intentionally faulty (e.g., 0.1 = 10%)
+- faulty.round-robin: true (default) = one param per test cycling, false = 1-3 random params per test
 - smart.input.fetch.enabled: enables Smart Fetch system
 - smart.input.fetch.percentage: probability Smart Fetch vs LLM
 - smart.input.fetch.registry.path: registry used for mappings and learning
