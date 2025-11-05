@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request to an endpoint, resulting in a `400` Bad Request error due to a malformed JSON payload. The payload contained an invalid integer value ("0xdeadbeef") within the `documentType` field of an `Order` entity, causing a `HttpMessageNotReadableException` during deserialization.
+
+**FIX:**  Investigate the data being sent by `ts-gateway-service` to the `ts-admin-order-service`. Specifically, validate the `documentType` field to ensure it conforms to the expected integer format (e.g., using a JSON schema validator).  The data source generating this invalid integer value needs to be corrected.

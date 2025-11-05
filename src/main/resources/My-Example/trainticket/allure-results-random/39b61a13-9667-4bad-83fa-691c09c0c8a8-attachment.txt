@@ -1,0 +1,1 @@
+{"status":1,"msg":"Success","data":{"id":"52bde26a-b7ee-4071-a899-2f689501890d","boughtDate":"2023-10-26","travelDate":"2024-03-15","travelTime":"65","accountId":"123","contactsName":"John Doe","documentType":1,"contactsDocumentNumber":"1234567890","trainNumber":"12345","coachNumber":12345,"seatClass":1,"seatNumber":"1A","from":"12345","to":"JohnDoe","status":10,"price":"0.50"}}

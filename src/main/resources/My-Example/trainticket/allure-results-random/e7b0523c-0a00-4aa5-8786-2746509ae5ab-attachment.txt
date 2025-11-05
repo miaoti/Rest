@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request that resulted in a `400` error due to a JSON parsing error within the `ts-admin-order-service`. Specifically, the `addOrder` operation attempted to deserialize a string value ("1000000000000000000") into an `Integer`, which exceeded the valid range.
+
+**FIX:**  Review the data being sent to the `addOrder` endpoint in `ts-admin-order-service`.  The `documentType` field is receiving a string value that cannot be correctly parsed as an integer.  Implement input validation to reject or sanitize this value before sending it to the API.  Consider using a more robust data type (e.g., `String` instead of `Integer`) for the `documentType` field, or providing a mechanism to handle extremely large numerical values appropriately.

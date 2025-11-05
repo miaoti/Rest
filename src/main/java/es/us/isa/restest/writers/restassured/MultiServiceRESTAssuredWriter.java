@@ -918,6 +918,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("    @Test");
                     pw.println("    public void " + testMethodName + "() throws Exception {");
                     
+                    /* ------------ Record test case for fault detection tracking ---------- */
+                    pw.println("        // Record test execution for fault detection tracking");
+                    pw.println("        es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()");
+                    pw.println("            .recordTestCase(this.getClass().getName(), \"" + testMethodName + "\");");
+                    pw.println();
+                    
                     /* ------------ Add Allure metadata for faulty tests ---------- */
                     if (scenario instanceof MultiServiceTestCase) {
                         MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;

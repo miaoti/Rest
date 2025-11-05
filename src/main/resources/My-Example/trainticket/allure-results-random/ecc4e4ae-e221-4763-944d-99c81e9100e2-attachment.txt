@@ -1,0 +1,24 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-order-service
+Method: POST
+Path: /api/v1/adminorderservice/adminorder
+Operation: POST /api/v1/adminorderservice/adminorder
+Request Start (μs): 1762294369172000
+Search Window: 1762294359172000 to 1762294399172000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-order-service&operation=POST+%2Fapi%2Fv1%2Fadminorderservice%2Fadminorder&start=1762294359172000&end=1762294399172000
+Response Status: 200
+Response Body Length: 46444
+Traces Found: 2
+Analyzing 2 traces for API calls...
+Trace 0: score=6015, APIs=3, hasTarget=true, timeDiff=276000μs, spans=7
+  Operations: FilteringWebHandler.handle, POST /*, POST, AdminOrderController.addOrder, POST /api/v1/adminorderserv..., +2 more
+Trace 1: score=1525, APIs=5, hasTarget=true, timeDiff=7107000μs, spans=16
+  Operations: POST /api/v1/orderOtherServ..., OrderOtherRepository.save, OrderOtherRepository.findBy..., Transaction.commit, SELECT Order, +11 more
+
+Selected trace 0 with score 6015 (CURRENT EXECUTION - perfect match!)

@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 11
-- 3
+- 4
 - 17
-- 0
-- 0
-- 938636600
+- 2
+- 15
+- 752830000
 parameterMappings:
   loginId:
   - endpoint: "/api/v1/user/query"
@@ -1409,6 +1409,22 @@ cache:
   maxEntries: 1000
   ttlSeconds: 300
 parameterErrors:
+  /api/v1/orderOtherService/orderOther/admin:
+    accountId:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'account_id' at row\
+        \ 1"
+      apiEndpoint: "/api/v1/orderOtherService/orderOther/admin"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 30
+      - 50
+      - 860883000
+      additionalInfo: null
   /api/v1/adminorderservice/adminorder:
     accountId:
     - errorType: "CONSTRAINT_ERROR"
@@ -1419,11 +1435,24 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 3
+      - 4
       - 16
       - 38
-      - 59
-      - 797685400
+      - 48
+      - 569553100
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 11
+      - 26
+      - 19304200
       additionalInfo: null
     coachNumber:
     - errorType: "TYPE_MISMATCH"
@@ -1447,25 +1476,39 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 3
-      - 16
-      - 59
-      - 56
-      - 754194900
+      - 4
+      - 17
+      - 1
+      - 36
+      - 901887300
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"1e+10\": not a valid Integer value"
+        \ String \"[1, 2, 3]\": not a valid Integer value"
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "coachNumber"
       timestamp:
       - 2025
       - 11
-      - 3
+      - 4
+      - 16
+      - 41
+      - 20
+      - 987740900
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"\"coachNumber\"\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 4
       - 17
-      - 0
-      - 0
-      - 926595600
+      - 1
+      - 40
+      - 752688900
       additionalInfo: null
     documentType:
     - errorType: "NULL_ERROR"
@@ -1504,25 +1547,25 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 3
+      - 4
       - 16
-      - 38
-      - 18
-      - 665733400
+      - 40
+      - 22
+      - 314602500
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"\"abc\"\": not a valid Integer value"
+        \ String \"123456789012345678901234567890\": not a valid Integer value"
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "documentType"
       timestamp:
       - 2025
       - 11
-      - 3
+      - 4
       - 16
-      - 38
-      - 22
-      - 686537000
+      - 40
+      - 26
+      - 229019400
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1537,6 +1580,49 @@ parameterErrors:
       - 7
       - 903647700
       additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"1000000000000000000\": Overflow: numeric value (1000000000000000000)\
+        \ out of..."
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "documentType"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 11
+      - 31
+      - 538276400
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"123456789012345678901234567890\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "documentType"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 38
+      - 9
+      - 985194200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"1"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "documentType"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 17
+      - 0
+      - 55
+      - 33354400
+      additionalInfo: null
     travelDate:
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1545,11 +1631,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 3
-      - 15
-      - 59
-      - 56
-      - 118284800
+      - 4
+      - 16
+      - 32
+      - 35
+      - 240288700
       additionalInfo: null
     contactsDocumentNumber:
     - errorType: "NULL_ERROR"
@@ -1573,27 +1659,177 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 3
-      - 15
-      - 14
-      - 22
-      - 793169400
+      - 4
+      - 17
+      - 0
+      - 51
+      - 162260400
       additionalInfo: null
     seatClass:
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"10000000000\": Overflow: numeric value (10000000000) out of range\
-        \ of Integer..."
+        \ String \"1000000000000000\": Overflow: numeric value (1000000000000000)\
+        \ out of range of..."
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "seatClass"
       timestamp:
       - 2025
       - 11
-      - 3
+      - 4
+      - 16
+      - 36
+      - 50
+      - 330458000
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatClass"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 26
+      - 30
+      - 244011300
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"123456789012345678901234567890\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatClass"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 34
+      - 4
+      - 865949800
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatClass"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 41
+      - 52
+      - 488052400
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"\"invalid\"\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatClass"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 41
+      - 56
+      - 323560200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"1"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatClass"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 17
+      - 2
       - 15
-      - 13
-      - 53
-      - 226285200
+      - 739873400
+      additionalInfo: null
+    trainNumber:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "trainNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 34
+      - 41
+      - 901426600
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "trainNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 37
+      - 25
+      - 364663400
+      additionalInfo: null
+    status:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"true\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "status"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 27
+      - 19
+      - 257633400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "status"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 11
+      - 49
+      - 909178400
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "status"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 37
+      - 40
+      - 836179800
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"\"invalid\"\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "status"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 37
+      - 44
+      - 629596700
       additionalInfo: null
   /api/v1/adminrouteservice/adminroute:
     distances:
