@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 11
-- 4
-- 17
-- 2
-- 15
-- 752830000
+- 5
+- 14
+- 3
+- 24
+- 310823200
 parameterMappings:
   loginId:
   - endpoint: "/api/v1/user/query"
@@ -1419,11 +1419,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 30
-      - 50
-      - 860883000
+      - 5
+      - 14
+      - 1
+      - 41
+      - 239105200
       additionalInfo: null
   /api/v1/adminorderservice/adminorder:
     accountId:
@@ -1476,11 +1476,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 17
+      - 5
+      - 14
       - 1
-      - 36
-      - 901887300
+      - 55
+      - 761897000
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1504,11 +1504,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 17
+      - 5
+      - 14
       - 1
-      - 40
-      - 752688900
+      - 59
+      - 534546000
       additionalInfo: null
     documentType:
     - errorType: "NULL_ERROR"
@@ -1547,11 +1547,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 40
-      - 22
-      - 314602500
+      - 5
+      - 13
+      - 59
+      - 3
+      - 728818900
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1659,11 +1659,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 17
-      - 0
-      - 51
-      - 162260400
+      - 5
+      - 13
+      - 55
+      - 54
+      - 336520700
       additionalInfo: null
     seatClass:
     - errorType: "TYPE_MISMATCH"
@@ -1688,11 +1688,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 26
-      - 30
-      - 244011300
+      - 5
+      - 14
+      - 2
+      - 29
+      - 693474000
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1770,11 +1770,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 37
-      - 25
-      - 364663400
+      - 5
+      - 14
+      - 0
+      - 26
+      - 901070800
       additionalInfo: null
     status:
     - errorType: "TYPE_MISMATCH"
@@ -1811,11 +1811,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 37
-      - 40
-      - 836179800
+      - 5
+      - 14
+      - 0
+      - 39
+      - 825407000
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1825,11 +1825,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 37
-      - 44
-      - 629596700
+      - 5
+      - 14
+      - 0
+      - 43
+      - 539253200
       additionalInfo: null
   /api/v1/adminrouteservice/adminroute:
     distances:
