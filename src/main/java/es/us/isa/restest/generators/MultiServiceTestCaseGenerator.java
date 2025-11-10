@@ -40,13 +40,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private SmartInputFetcher smartFetcher;
     private SmartInputFetchConfig smartFetchConfig;
     
-    // Faulty Test Generation System
+    // Negative Test Generation System (tests with intentionally invalid inputs)
     private float faultyRatio;
     private boolean faultyRoundRobin = true;  // true = round-robin, false = random
     private Map<String, Map<String, List<String>>> faultyParameterPools = new HashMap<>();
     private Random random = new Random();
     
-    // Track which parameter should be faulty in current test case (round-robin mode)
+    // Track which parameter should have invalid value in current test case (round-robin mode)
     private List<String> parameterRotation = new ArrayList<>();
     private int currentFaultyParamIndex = 0;
 
@@ -74,11 +74,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         this.faultyRatio = Float.parseFloat(System.getProperty("faulty.ratio", "0.1"));
         this.faultyRoundRobin = Boolean.parseBoolean(System.getProperty("faulty.round-robin", "true"));
         
-        log.info("=== FAULTY TEST CONFIGURATION ===");
+        log.info("=== NEGATIVE TEST CONFIGURATION ===");
         log.info("faulty.ratio from system property: {}", System.getProperty("faulty.ratio", "0.1"));
         log.info("Parsed faultyRatio: {}", this.faultyRatio);
-        log.info("This means {}% of test variants will be faulty", this.faultyRatio * 100);
-        log.info("Faulty parameter selection mode: {}", this.faultyRoundRobin ? "ROUND-ROBIN" : "RANDOM");
+        log.info("This means {}% of test variants will be negative tests (invalid inputs)", this.faultyRatio * 100);
+        log.info("Invalid parameter selection mode: {}", this.faultyRoundRobin ? "ROUND-ROBIN" : "RANDOM");
         
         // Initialize Smart Input Fetching System
         initializeSmartInputFetching();
@@ -187,22 +187,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("Generating {} test case variants for scenario {}", variantCount, baseCounter);
         log.info("LLM enabled: {}, Semantic expansion enabled: {}", useLLM, useLLM);
         
-        // Calculate faulty variants
-        log.info("=== FAULTY VARIANT CALCULATION ===");
+        // Calculate negative test variants
+        log.info("=== NEGATIVE TEST VARIANT CALCULATION ===");
         log.info("Total variants: {}", variantCount);
-        log.info("Faulty ratio: {}", faultyRatio);
+        log.info("Negative test ratio: {}", faultyRatio);
         log.info("Calculation: {} * {} = {}", variantCount, faultyRatio, variantCount * faultyRatio);
         int faultyCount = Math.round(variantCount * faultyRatio);
-        log.info("Math.round({}) = {} faulty variants", variantCount * faultyRatio, faultyCount);
+        log.info("Math.round({}) = {} negative test variants", variantCount * faultyRatio, faultyCount);
         
         Set<Integer> faultyVariantIndices = new HashSet<>();
         while (faultyVariantIndices.size() < faultyCount) {
             faultyVariantIndices.add(random.nextInt(variantCount));
         }
-        log.info("Selected faulty variant indices (0-based): {}", faultyVariantIndices);
-        log.info("Marking {} out of {} variants as faulty", faultyCount, variantCount);
+        log.info("Selected negative test variant indices (0-based): {}", faultyVariantIndices);
+        log.info("Marking {} out of {} variants as negative tests", faultyCount, variantCount);
         
-        // Initialize parameter rotation for round-robin faulty parameter selection
+        // Initialize parameter rotation for round-robin invalid parameter selection
         String rootApiKey = getRootApiKeyForScenario(sc);
         initializeParameterRotation(rootApiKey);
         log.info("Parameter rotation initialized with {} parameters: {}", parameterRotation.size(), parameterRotation);
@@ -228,22 +228,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         for (int v = 0; v < variantCount; v++) {
             boolean isFaultyVariant = faultyVariantIndices.contains(v);
             String testName = isFaultyVariant ? 
-                "test_faulty_" + scenarioId + "_" + (v + 1) :
+                "test_negative_" + scenarioId + "_" + (v + 1) :
                 "test_" + scenarioId + "_" + (v + 1);
             
             MultiServiceTestCase tc = new MultiServiceTestCase(testName);
             tc.setScenarioName(scenarioId);
             tc.setFaulty(isFaultyVariant);
             
-            // For faulty variants, determine which parameter(s) should be faulty
+            // For negative test variants, determine which parameter(s) should have invalid values
             List<String> targetFaultyParams = new ArrayList<>();
             if (isFaultyVariant && !parameterRotation.isEmpty()) {
                 if (faultyRoundRobin) {
                     // ROUND-ROBIN MODE: Select exactly ONE parameter in rotation
                     String singleParam = parameterRotation.get(currentFaultyParamIndex);
                     targetFaultyParams.add(singleParam);
-                    log.info("🔴 [ROUND-ROBIN] Target faulty parameter for this variant: '{}'", singleParam);
-                    // Move to next parameter for next faulty test
+                    log.info("🔴 [ROUND-ROBIN] Target invalid parameter for this variant: '{}'", singleParam);
+                    // Move to next parameter for next negative test
                     currentFaultyParamIndex = (currentFaultyParamIndex + 1) % parameterRotation.size();
                 } else {
                     // RANDOM MODE: Randomly select one or more parameters
@@ -251,13 +251,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     List<String> availableParams = new ArrayList<>(parameterRotation);
                     Collections.shuffle(availableParams, random);
                     targetFaultyParams.addAll(availableParams.subList(0, Math.min(numFaultyParams, availableParams.size())));
-                    log.info("🔴 [RANDOM] Target faulty parameters for this variant ({} params): {}", 
+                    log.info("🔴 [RANDOM] Target invalid parameters for this variant ({} params): {}", 
                             targetFaultyParams.size(), targetFaultyParams);
                 }
             }
             
             String faultyMarker = isFaultyVariant ? 
-                "🔴 FAULTY (params: " + String.join(", ", targetFaultyParams) + ")" : "✅ NORMAL";
+                "🔴 NEGATIVE TEST (invalid params: " + String.join(", ", targetFaultyParams) + ")" : "✅ POSITIVE TEST";
             log.info("--- Generating variant {}/{}: {} [{}] ---", (v + 1), variantCount, tc.getOperationId(), faultyMarker);
             
             Map<String,String> context = new HashMap<>();
@@ -283,9 +283,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                  }
             }
             
-            // DEBUG: Log faulty parameters
+            // DEBUG: Log invalid parameters
             if (isFaultyVariant) {
-                log.info("🔴 FAULTY TEST: {} has {} faulty parameters: {}", 
+                log.info("🔴 NEGATIVE TEST: {} has {} invalid parameters: {}", 
                         tc.getOperationId(), tc.getFaultyParameters().size(), tc.getFaultyParameters());
             }
             
@@ -299,9 +299,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         long actualNormalCount = variants.size() - actualFaultyCount;
         log.info("=== GENERATION SUMMARY ===");
         log.info("Total variants generated: {}", variants.size());
-        log.info("🔴 Faulty variants: {} ({}%)", actualFaultyCount, (actualFaultyCount * 100.0 / variants.size()));
-        log.info("✅ Normal variants: {} ({}%)", actualNormalCount, (actualNormalCount * 100.0 / variants.size()));
-        log.info("Expected faulty ratio: {}%", faultyRatio * 100);
+        log.info("🔴 Negative test variants: {} ({}%)", actualFaultyCount, (actualFaultyCount * 100.0 / variants.size()));
+        log.info("✅ Positive test variants: {} ({}%)", actualNormalCount, (actualNormalCount * 100.0 / variants.size()));
+        log.info("Expected negative test ratio: {}%", faultyRatio * 100);
         
         return variants;
     }
@@ -424,7 +424,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 String val = null;
 
                 if (isFirstBusinessStep) {
-                    /* Step 1 (First Business Step): Check if faulty, then use smart fetch or faulty values */
+                    /* Step 1 (First Business Step): Check if negative test, then use smart fetch or invalid values */
                     log.info("🎯 Step 1 parameter '{}' - attempting smart fetch", p.getName());
                     
                     boolean faultyValueSet = false;
@@ -432,11 +432,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     if (useLLM) {
                         ParameterInfo info = createParameterInfo(p);
                         
-                        // Check if this is a faulty variant AND this is one of the target faulty parameters
+                        // Check if this is a negative test variant AND this is one of the target invalid parameters
                         if (isFaultyVariant && targetFaultyParams != null && targetFaultyParams.contains(p.getName())) {
-                            log.info("🔴 FAULTY VARIANT: Making parameter '{}' faulty (target param)", p.getName());
+                            log.info("🔴 NEGATIVE TEST: Making parameter '{}' invalid (target param)", p.getName());
                             
-                            // Use faulty value from faulty pool
+                            // Use invalid value from faulty pool
                             String rootApiKey = getRootApiKeyForCurrentStep(tc);
                             Map<String, List<String>> faultyPool = faultyParameterPools.get(rootApiKey);
                             
@@ -445,11 +445,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                 if (!faultyValues.isEmpty()) {
                                     val = faultyValues.get(random.nextInt(faultyValues.size()));
                                     tc.addFaultyParameter(p.getName(), val);
-                                    faultyValueSet = true;  // Mark that faulty value is set
-                                    log.info("✅ Faulty Test → {} = {} (intentionally faulty) - LOCKED", p.getName(), val);
+                                    faultyValueSet = true;  // Mark that invalid value is set
+                                    log.info("✅ Negative Test → {} = {} (intentionally invalid) - LOCKED", p.getName(), val);
                                 }
                             } else {
-                                log.warn("⚠️ No faulty pool found for rootApiKey='{}' or parameter='{}'", rootApiKey, p.getName());
+                                log.warn("⚠️ No invalid value pool found for rootApiKey='{}' or parameter='{}'", rootApiKey, p.getName());
                             }
                         }
 

@@ -1,0 +1,2788 @@
+################################################################################
+# LLM COMMUNICATION LOG
+# Session ID: LLM-1762803266288-1
+# Started: 2025-11-10 13:34:26.314
+# Configuration:
+#   - Include Response Time: true
+#   - Include Content: true
+#   - Include Metadata: true
+#   - Max Content Length: 10000
+#   - Log Level: INFO
+################################################################################
+
+================================================================================
+🚀 LLM REQUEST #1
+================================================================================
+Timestamp: 2025-11-10 13:35:10.655
+Session ID: LLM-1762803266288-1
+Request ID: 1
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: accountId
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #1
+Timestamp: 2025-11-10 13:35:13.775
+Status: ✅ SUCCESS
+Response Time: 3130 ms
+📊 Resource Usage During Generation: System CPU: avg=1.7%, max=2.8% | System Memory: avg=89.4%, max=89.4% (28.3 GB/31.7 GB) | ollama.exe Process: max=118.2 MB | Samples: 7 over 3131ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890
+abcde
+987654321
+123-456-7890
+test_account
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #2
+================================================================================
+Timestamp: 2025-11-10 13:35:13.786
+Session ID: LLM-1762803266288-1
+Request ID: 2
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: boughtDate
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate valid date/time values in appropriate format.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #2
+Timestamp: 2025-11-10 13:35:16.387
+Status: ✅ SUCCESS
+Response Time: 2601 ms
+📊 Resource Usage During Generation: System CPU: avg=2.4%, max=2.8% | System Memory: avg=89.4%, max=89.4% (28.3 GB/31.7 GB) | ollama.exe Process: max=109.6 MB | Samples: 6 over 2602ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2023-10-26
+2023-11-15
+2024-01-05
+2023-12-31
+2024-02-29
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #3
+================================================================================
+Timestamp: 2025-11-10 13:35:16.390
+Session ID: LLM-1762803266288-1
+Request ID: 3
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: coachNumber
+- Location: formData
+- Data Type: integer
+- Format: int32
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #3
+Timestamp: 2025-11-10 13:35:18.338
+Status: ✅ SUCCESS
+Response Time: 1948 ms
+📊 Resource Usage During Generation: System CPU: avg=3.1%, max=4.1% | System Memory: avg=89.4%, max=89.4% (28.3 GB/31.7 GB) | ollama.exe Process: max=120.0 MB | Samples: 4 over 1949ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12345
+67890
+1000
+999999
+0
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #4
+================================================================================
+Timestamp: 2025-11-10 13:35:18.341
+Session ID: LLM-1762803266288-1
+Request ID: 4
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: contactsDocumentNumber
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #4
+Timestamp: 2025-11-10 13:35:21.220
+Status: ✅ SUCCESS
+Response Time: 2879 ms
+📊 Resource Usage During Generation: System CPU: avg=3.4%, max=3.9% | System Memory: avg=89.4%, max=89.5% (28.4 GB/31.7 GB) | ollama.exe Process: max=122.2 MB | Samples: 6 over 2879ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890
+9876543210
+5551234567
+1-800-555-0100
++1 800 555 0000
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #5
+================================================================================
+Timestamp: 2025-11-10 13:35:21.223
+Session ID: LLM-1762803266288-1
+Request ID: 5
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: contactsName
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #5
+Timestamp: 2025-11-10 13:35:22.642
+Status: ✅ SUCCESS
+Response Time: 1419 ms
+📊 Resource Usage During Generation: System CPU: avg=3.2%, max=4.4% | System Memory: avg=89.3%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=122.2 MB | Samples: 3 over 1419ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+John Doe
+Jane Smith
+Robert Jones
+Michael Brown
+Emily Wilson
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #6
+================================================================================
+Timestamp: 2025-11-10 13:35:22.644
+Session ID: LLM-1762803266288-1
+Request ID: 6
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: differenceMoney
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #6
+Timestamp: 2025-11-10 13:35:24.269
+Status: ✅ SUCCESS
+Response Time: 1625 ms
+📊 Resource Usage During Generation: System CPU: avg=1.6%, max=1.9% | System Memory: avg=89.3%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=124.2 MB | Samples: 4 over 1626ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+100
+-50
+0
+25.75
+-12.50
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #7
+================================================================================
+Timestamp: 2025-11-10 13:35:24.272
+Session ID: LLM-1762803266288-1
+Request ID: 7
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: documentType
+- Location: formData
+- Data Type: integer
+- Format: int32
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #7
+Timestamp: 2025-11-10 13:35:26.149
+Status: ✅ SUCCESS
+Response Time: 1877 ms
+📊 Resource Usage During Generation: System CPU: avg=2.7%, max=5.4% | System Memory: avg=89.3%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=128.0 MB | Samples: 4 over 1878ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1
+100
+1000
+10000
+100000
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #8
+================================================================================
+Timestamp: 2025-11-10 13:35:26.151
+Session ID: LLM-1762803266288-1
+Request ID: 8
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: from
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #8
+Timestamp: 2025-11-10 13:35:27.746
+Status: ✅ SUCCESS
+Response Time: 1595 ms
+📊 Resource Usage During Generation: System CPU: avg=2.5%, max=2.8% | System Memory: avg=89.3%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=128.0 MB | Samples: 3 over 1596ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123
+abc
+456def
+789xyz
+!@#$%^
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #9
+================================================================================
+Timestamp: 2025-11-10 13:35:29.714
+Session ID: LLM-1762803266288-1
+Request ID: 9
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"},{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","stations":["nanjing","xuzhou","jinan","beijing"],"distances":[0,500,700,1200],"startStation":"nanjing","endStation":"beijing"}],"status":1}
+
+Target Parameter: id (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #9
+Timestamp: 2025-11-10 13:35:34.687
+Status: ✅ SUCCESS
+Response Time: 4973 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=3.4% | System Memory: avg=89.2%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=119.4 MB | Samples: 10 over 4973ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0b23bd3e-876a-4af3-b920-c50a90c90b04
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #10
+================================================================================
+Timestamp: 2025-11-10 13:35:34.688
+Session ID: LLM-1762803266288-1
+Request ID: 10
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'id' (type: string).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"},{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","stations":["nanjing","xuzhou","jinan","beijing"],"distances":[0,500,700,1200],"startStation":"nanjing","endStation":"beijing"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #10
+Timestamp: 2025-11-10 13:35:39.244
+Status: ✅ SUCCESS
+Response Time: 4556 ms
+📊 Resource Usage During Generation: System CPU: avg=3.1%, max=3.6% | System Memory: avg=88.9%, max=89.1% (28.2 GB/31.7 GB) | ollama.exe Process: max=108.2 MB | Samples: 9 over 4556ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0b23bd3e-876a-4af3-b920-c50a90c90b04
+9fc9c261-3263-4bfa-82f8-bb44e06b2f52
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #11
+================================================================================
+Timestamp: 2025-11-10 13:35:39.245
+Session ID: LLM-1762803266288-1
+Request ID: 11
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 8 additional values that are semantically similar to the existing values for parameter 'id' (type: string).
+
+Existing values:
+- 9fc9c261-3263-4bfa-82f8-bb44e06b2f52
+- 0b23bd3e-876a-4af3-b920-c50a90c90b04
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. For ID parameters: generate actual UUID-like strings or meaningful IDs
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #11
+Timestamp: 2025-11-10 13:35:46.222
+Status: ✅ SUCCESS
+Response Time: 6977 ms
+📊 Resource Usage During Generation: System CPU: avg=2.3%, max=3.9% | System Memory: avg=88.8%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=109.4 MB | Samples: 14 over 6978ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+a1b2c3d4-e5f6-7890-1234-567890abcdef
+f1e2d3c4-b3a2-1098-7654-345678901234
+87654321-9876-5432-1098-765432109876
+d4c8f1a3-2b9d-4e1c-8f0a-b1c2d3e4f567
+9a8b7c
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #12
+================================================================================
+Timestamp: 2025-11-10 13:35:46.225
+Session ID: LLM-1762803266288-1
+Request ID: 12
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: id
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #12
+Timestamp: 2025-11-10 13:35:48.216
+Status: ✅ SUCCESS
+Response Time: 1991 ms
+📊 Resource Usage During Generation: System CPU: avg=3.3%, max=4.5% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=115.9 MB | Samples: 4 over 1992ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123
+abc
+456789
+xyz
+0
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #13
+================================================================================
+Timestamp: 2025-11-10 13:35:48.218
+Session ID: LLM-1762803266288-1
+Request ID: 13
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: price
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #13
+Timestamp: 2025-11-10 13:35:50.089
+Status: ✅ SUCCESS
+Response Time: 1871 ms
+📊 Resource Usage During Generation: System CPU: avg=2.9%, max=4.0% | System Memory: avg=88.8%, max=88.8% (28.2 GB/31.7 GB) | ollama.exe Process: max=114.2 MB | Samples: 4 over 1871ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+19.99
+100.50
+0.75
+-5.00
+1000
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #14
+================================================================================
+Timestamp: 2025-11-10 13:35:50.182
+Session ID: LLM-1762803266288-1
+Request ID: 14
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"071e0989-26ce-47b9-b870-7bb7f40ba7ec","boughtDate":"2025-10-29 05:31:35","travelDate":"2022-10-01 00:00:00","travelTime":"2022-10-01 00:00:00","accountId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","contactsName":"Contacts_One","documentType":1,"contactsDocumentNumber":"DocumentNumber_One","trainNumber":"G1237","coachNumber":5,"seatClass":2,"seatNumber":"FirstClass-30","from":"nanjing","to":"shanghaihongqiao","status":0,"price":"100.0"}],"status":1}
+
+Target Parameter: seatClass (type: integer)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #14
+Timestamp: 2025-11-10 13:35:54.247
+Status: ✅ SUCCESS
+Response Time: 4065 ms
+📊 Resource Usage During Generation: System CPU: avg=3.2%, max=4.0% | System Memory: avg=88.8%, max=88.8% (28.2 GB/31.7 GB) | ollama.exe Process: max=119.1 MB | Samples: 8 over 4066ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #15
+================================================================================
+Timestamp: 2025-11-10 13:35:54.248
+Session ID: LLM-1762803266288-1
+Request ID: 15
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'seatClass' (type: integer).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"071e0989-26ce-47b9-b870-7bb7f40ba7ec","boughtDate":"2025-10-29 05:31:35","travelDate":"2022-10-01 00:00:00","travelTime":"2022-10-01 00:00:00","accountId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","contactsName":"Contacts_One","documentType":1,"contactsDocumentNumber":"DocumentNumber_One","trainNumber":"G1237","coachNumber":5,"seatClass":2,"seatNumber":"FirstClass-30","from":"nanjing","to":"shanghaihongqiao","status":0,"price":"100.0"},{"id":"b12fc019-bd6a-4acf-8e0d-882c55348520","boughtDate":"2025-10-22 05:21:08","travelDate":"2022-10-01 00:00:00","travelTime":"2022-10-01 00:00:00","accountId":"4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f","contactsName":"Contacts_One","documentType":1,"contactsDocumentNumber":"DocumentNumber_One","trainNumber":"G1234","coachNumber":5,"seatClass":2,"seatNumber":"FirstClass-30","from":"shanghai","to":"beijing","status":0,"price":"100.0"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #15
+Timestamp: 2025-11-10 13:35:58.321
+Status: ✅ SUCCESS
+Response Time: 4073 ms
+📊 Resource Usage During Generation: System CPU: avg=2.9%, max=4.0% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=96.2 MB | Samples: 8 over 4074ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2
+2
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #16
+================================================================================
+Timestamp: 2025-11-10 13:35:58.322
+Session ID: LLM-1762803266288-1
+Request ID: 16
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'seatClass' (type: integer).
+
+Existing values:
+- 2
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #16
+Timestamp: 2025-11-10 13:36:00.726
+Status: ✅ SUCCESS
+Response Time: 2404 ms
+📊 Resource Usage During Generation: System CPU: avg=2.7%, max=3.9% | System Memory: avg=88.8%, max=88.8% (28.2 GB/31.7 GB) | ollama.exe Process: max=96.3 MB | Samples: 5 over 2405ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+economy
+business
+first
+premium
+luxury
+super
+ceo
+vp
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #17
+================================================================================
+Timestamp: 2025-11-10 13:36:00.727
+Session ID: LLM-1762803266288-1
+Request ID: 17
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: seatClass
+- Location: formData
+- Data Type: integer
+- Format: int32
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #17
+Timestamp: 2025-11-10 13:36:02.533
+Status: ✅ SUCCESS
+Response Time: 1806 ms
+📊 Resource Usage During Generation: System CPU: avg=2.3%, max=4.4% | System Memory: avg=88.9%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=109.6 MB | Samples: 4 over 1806ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1
+2
+3
+4
+5
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #18
+================================================================================
+Timestamp: 2025-11-10 13:36:02.535
+Session ID: LLM-1762803266288-1
+Request ID: 18
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: seatNumber
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #18
+Timestamp: 2025-11-10 13:36:04.418
+Status: ✅ SUCCESS
+Response Time: 1883 ms
+📊 Resource Usage During Generation: System CPU: avg=3.2%, max=4.4% | System Memory: avg=88.9%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=107.8 MB | Samples: 4 over 1884ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1A
+2B-12
+3C-456
+4A-01
+5B-789
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #19
+================================================================================
+Timestamp: 2025-11-10 13:36:04.420
+Session ID: LLM-1762803266288-1
+Request ID: 19
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: status
+- Location: formData
+- Data Type: integer
+- Format: int32
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #19
+Timestamp: 2025-11-10 13:36:06.174
+Status: ✅ SUCCESS
+Response Time: 1754 ms
+📊 Resource Usage During Generation: System CPU: avg=2.8%, max=4.0% | System Memory: avg=88.9%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=113.6 MB | Samples: 4 over 1754ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+10
+-5
+0
+1000
+-100
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #20
+================================================================================
+Timestamp: 2025-11-10 13:36:06.176
+Session ID: LLM-1762803266288-1
+Request ID: 20
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: to
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #20
+Timestamp: 2025-11-10 13:36:07.646
+Status: ✅ SUCCESS
+Response Time: 1470 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=2.8% | System Memory: avg=88.9%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=122.2 MB | Samples: 3 over 1471ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+John Doe
+Jane Smith
+Peter Jones
+Alice Brown
+Robert Williams
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #21
+================================================================================
+Timestamp: 2025-11-10 13:36:07.726
+Session ID: LLM-1762803266288-1
+Request ID: 21
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"cf3d1415-410d-4c71-93ed-c787669f6b1d","name":"GaoTieOne","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":250},{"id":"7da5ffbd-e63b-4e11-8b8d-3d0c9cd6cc0c","name":"GaoTieTwo","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":200}],"status":1}
+
+Target Parameter: trainNumber (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #21
+Timestamp: 2025-11-10 13:36:11.512
+Status: ✅ SUCCESS
+Response Time: 3786 ms
+📊 Resource Usage During Generation: System CPU: avg=2.1%, max=3.7% | System Memory: avg=88.9%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=114.7 MB | Samples: 8 over 3787ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+G1237
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #22
+================================================================================
+Timestamp: 2025-11-10 13:36:11.513
+Session ID: LLM-1762803266288-1
+Request ID: 22
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'trainNumber' (type: string).
+
+JSON Response:
+{"status":1,"msg":"success","data":[{"id":"cf3d1415-410d-4c71-93ed-c787669f6b1d","name":"GaoTieOne","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":250},{"id":"7da5ffbd-e63b-4e11-8b8d-3d0c9cd6cc0c","name":"GaoTieTwo","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":200},{"id":"fe25e21a-3045-4be1-a3de-0725e0d71485","name":"DongCheOne","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":180},{"id":"9dc4643b-dd1d-4617-bc70-93f376bad1ba","name":"ZhiDa","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":120},{"id":"708dfe21-e724-4f37-8bc6-233625c06469","name":"TeKuai","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":120},{"id":"8c92d006-6241-47d1-b889-cefa5616ba13","name":"KuaiSu","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":90}]}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #22
+Timestamp: 2025-11-10 13:36:22.426
+Status: ✅ SUCCESS
+Response Time: 10913 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=4.4% | System Memory: avg=88.9%, max=89.2% (28.3 GB/31.7 GB) | ollama.exe Process: max=109.6 MB | Samples: 22 over 10914ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+cf3d1415-410d-4c71-93ed-c787669f6b1d
+7da5ffbd-e63b-4e11-8b8d-3d0c9cd6cc0c
+fe25e21a-3045-4be1-a3de-0725e0d71485
+9dc4643b-dd1d-4617-bc70-93f376bad1ba
+708dfe21-e724-4f37-8bc6-233625c06469
+8c92d006-6241-47d1-b889-cefa5616ba13
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #23
+================================================================================
+Timestamp: 2025-11-10 13:36:22.427
+Session ID: LLM-1762803266288-1
+Request ID: 23
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'trainNumber' (type: string).
+
+Existing values:
+- G1237
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #23
+Timestamp: 2025-11-10 13:36:26.265
+Status: ✅ SUCCESS
+Response Time: 3838 ms
+📊 Resource Usage During Generation: System CPU: avg=2.1%, max=3.7% | System Memory: avg=88.8%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=125.0 MB | Samples: 8 over 3839ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+G1238
+G1239
+G1240
+G1241
+G1242
+G1243
+G1244
+G1245
+G1246
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #24
+================================================================================
+Timestamp: 2025-11-10 13:36:26.266
+Session ID: LLM-1762803266288-1
+Request ID: 24
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: trainNumber
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #24
+Timestamp: 2025-11-10 13:36:28.857
+Status: ✅ SUCCESS
+Response Time: 2591 ms
+📊 Resource Usage During Generation: System CPU: avg=3.5%, max=4.9% | System Memory: avg=88.8%, max=88.8% (28.2 GB/31.7 GB) | ollama.exe Process: max=129.3 MB | Samples: 5 over 2591ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12345
+ABC-123
+9876543
+Train 789
+InvalidTrain
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #25
+================================================================================
+Timestamp: 2025-11-10 13:36:28.858
+Session ID: LLM-1762803266288-1
+Request ID: 25
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: travelDate
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate valid date/time values in appropriate format.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #25
+Timestamp: 2025-11-10 13:36:31.710
+Status: ✅ SUCCESS
+Response Time: 2852 ms
+📊 Resource Usage During Generation: System CPU: avg=3.5%, max=4.4% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=117.6 MB | Samples: 6 over 2853ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2023-12-25
+2024-01-15
+2024-03-20
+2024-11-05
+2025-07-10
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #26
+================================================================================
+Timestamp: 2025-11-10 13:36:31.776
+Session ID: LLM-1762803266288-1
+Request ID: 26
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"},{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","stations":["nanjing","xuzhou","jinan","beijing"],"distances":[0,500,700,1200],"startStation":"nanjing","endStation":"beijing"}],"status":1}
+
+Target Parameter: travelTime (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #26
+Timestamp: 2025-11-10 13:36:35.965
+Status: ✅ SUCCESS
+Response Time: 4189 ms
+📊 Resource Usage During Generation: System CPU: avg=3.1%, max=4.0% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=109.3 MB | Samples: 9 over 4189ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+350
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #27
+================================================================================
+Timestamp: 2025-11-10 13:36:35.965
+Session ID: LLM-1762803266288-1
+Request ID: 27
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'travelTime' (type: string).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"},{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","stations":["nanjing","xuzhou","jinan","beijing"],"distances":[0,500,700,1200],"startStation":"nanjing","endStation":"beijing"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #27
+Timestamp: 2025-11-10 13:36:40.616
+Status: ✅ SUCCESS
+Response Time: 4651 ms
+📊 Resource Usage During Generation: System CPU: avg=3.1%, max=4.8% | System Memory: avg=89.4%, max=89.7% (28.4 GB/31.7 GB) | ollama.exe Process: max=111.9 MB | Samples: 10 over 4651ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+350
+1000
+1300
+500
+700
+1200
+0
+350
+1000
+1300
+500
+700
+1200
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #28
+================================================================================
+Timestamp: 2025-11-10 13:36:40.617
+Session ID: LLM-1762803266288-1
+Request ID: 28
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 3 additional values that are semantically similar to the existing values for parameter 'travelTime' (type: string).
+
+Existing values:
+- 0
+- 1300
+- 500
+- 1200
+- 700
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #28
+Timestamp: 2025-11-10 13:36:43.516
+Status: ✅ SUCCESS
+Response Time: 2900 ms
+📊 Resource Usage During Generation: System CPU: avg=4.3%, max=6.4% | System Memory: avg=89.7%, max=89.7% (28.4 GB/31.7 GB) | ollama.exe Process: max=117.0 MB | Samples: 6 over 2901ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+650
+875
+1020
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #29
+================================================================================
+Timestamp: 2025-11-10 13:36:43.518
+Session ID: LLM-1762803266288-1
+Request ID: 29
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+
+Parameter Information:
+- Name: travelTime
+- Location: formData
+- Data Type: string
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate valid date/time values in appropriate format.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #29
+Timestamp: 2025-11-10 13:36:45.711
+Status: ✅ SUCCESS
+Response Time: 2194 ms
+📊 Resource Usage During Generation: System CPU: avg=2.6%, max=4.2% | System Memory: avg=89.6%, max=89.7% (28.4 GB/31.7 GB) | ollama.exe Process: max=106.6 MB | Samples: 5 over 2195ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+30
+65
+120
+90
+155
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #30
+================================================================================
+Timestamp: 2025-11-10 13:36:45.714
+Session ID: LLM-1762803266288-1
+Request ID: 30
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: accountId
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #30
+Timestamp: 2025-11-10 13:36:52.793
+Status: ✅ SUCCESS
+Response Time: 7079 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=3.5% | System Memory: avg=89.5%, max=89.5% (28.4 GB/31.7 GB) | ollama.exe Process: max=113.1 MB | Samples: 14 over 7080ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",./<>?
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #31
+================================================================================
+Timestamp: 2025-11-10 13:36:52.794
+Session ID: LLM-1762803266288-1
+Request ID: 31
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: boughtDate
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #31
+Timestamp: 2025-11-10 13:36:59.348
+Status: ✅ SUCCESS
+Response Time: 6554 ms
+📊 Resource Usage During Generation: System CPU: avg=2.4%, max=4.2% | System Memory: avg=89.3%, max=89.5% (28.4 GB/31.7 GB) | ollama.exe Process: max=97.7 MB | Samples: 13 over 6555ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2023-13-32
+2023-13-32-Extra
+2023-13-32-A
+2023-13-32-A-B
+2023-13-32-A-B-C
+2023-13-32-A-B-C-D
+2023-13-32-A-B-C-D-E
+2023-13-32-A-B-C-D-E-F
+2023-13-32-A-B-C-D-E-F-G
+2023-13-32-A-B-C-D-E-F-G-H
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #32
+================================================================================
+Timestamp: 2025-11-10 13:36:59.351
+Session ID: LLM-1762803266288-1
+Request ID: 32
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: coachNumber
+Type: integer
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #32
+Timestamp: 2025-11-10 13:37:02.882
+Status: ✅ SUCCESS
+Response Time: 3531 ms
+📊 Resource Usage During Generation: System CPU: avg=2.8%, max=4.1% | System Memory: avg=89.1%, max=89.5% (28.4 GB/31.7 GB) | ollama.exe Process: max=108.9 MB | Samples: 7 over 3531ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123456789012345678901234567890
+abc
+123.45
+-10000000000
+0x12345678
+"coachNumber"
+5
+"coachNumber"
+100000000000
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #33
+================================================================================
+Timestamp: 2025-11-10 13:37:02.883
+Session ID: LLM-1762803266288-1
+Request ID: 33
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: contactsDocumentNumber
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #33
+Timestamp: 2025-11-10 13:37:09.714
+Status: ✅ SUCCESS
+Response Time: 6831 ms
+📊 Resource Usage During Generation: System CPU: avg=2.9%, max=4.7% | System Memory: avg=89.5%, max=89.6% (28.4 GB/31.7 GB) | ollama.exe Process: max=105.2 MB | Samples: 14 over 6832ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890123456789012345678901
+!@#$%^&*()_+=-`~[]\{}|;':",.
+abcdefghijklmnopqrstuvwxyzabcdefghijk
+1234567890123456789012345678901234567890
+-1234567890123456789012345678901
+"This is a string"
+12345678901234567890123456789012345678901234567890
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #34
+================================================================================
+Timestamp: 2025-11-10 13:37:09.715
+Session ID: LLM-1762803266288-1
+Request ID: 34
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: contactsName
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #34
+Timestamp: 2025-11-10 13:37:12.818
+Status: ✅ SUCCESS
+Response Time: 3103 ms
+📊 Resource Usage During Generation: System CPU: avg=3.2%, max=4.6% | System Memory: avg=89.3%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=113.9 MB | Samples: 7 over 3103ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",./<>?
+veryLongStringThatExceedsMaxLength
+123
+true
+null
+"invalid\nstring"
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #35
+================================================================================
+Timestamp: 2025-11-10 13:37:12.818
+Session ID: LLM-1762803266288-1
+Request ID: 35
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: differenceMoney
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #35
+Timestamp: 2025-11-10 13:37:19.911
+Status: ✅ SUCCESS
+Response Time: 7093 ms
+📊 Resource Usage During Generation: System CPU: avg=2.8%, max=5.2% | System Memory: avg=88.9%, max=89.2% (28.3 GB/31.7 GB) | ollama.exe Process: max=116.7 MB | Samples: 15 over 7094ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",./<>?
+12345678901234567890123456789012345678901
+abcde
+123456789012345678901234567890123456789012
+thisisalongstringthatshouldfail
+123456789012345678901234567890123456789012
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #36
+================================================================================
+Timestamp: 2025-11-10 13:37:19.912
+Session ID: LLM-1762803266288-1
+Request ID: 36
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: documentType
+Type: integer
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #36
+Timestamp: 2025-11-10 13:37:23.357
+Status: ✅ SUCCESS
+Response Time: 3445 ms
+📊 Resource Usage During Generation: System CPU: avg=2.4%, max=4.2% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=114.1 MB | Samples: 7 over 3446ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+"abc"
+123456789012345678901234567890
+"123"
+-100
+1000000000000000000
+NULL
+True
+[1,2,3]
+"documentType"
+5
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #37
+================================================================================
+Timestamp: 2025-11-10 13:37:23.358
+Session ID: LLM-1762803266288-1
+Request ID: 37
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: from
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #37
+Timestamp: 2025-11-10 13:37:26.676
+Status: ✅ SUCCESS
+Response Time: 3318 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=3.1% | System Memory: avg=88.8%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=115.5 MB | Samples: 7 over 3318ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",.
+1a2b3c4d5e6f7g8h9i0j
+123
+"This is a string"
+null
+true
+false
+1.5
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #38
+================================================================================
+Timestamp: 2025-11-10 13:37:26.677
+Session ID: LLM-1762803266288-1
+Request ID: 38
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: id
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #38
+Timestamp: 2025-11-10 13:37:29.354
+Status: ✅ SUCCESS
+Response Time: 2677 ms
+📊 Resource Usage During Generation: System CPU: avg=2.8%, max=3.7% | System Memory: avg=88.8%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=122.5 MB | Samples: 6 over 2677ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123456789012345678901234567890
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #39
+================================================================================
+Timestamp: 2025-11-10 13:37:29.355
+Session ID: LLM-1762803266288-1
+Request ID: 39
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: price
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #39
+Timestamp: 2025-11-10 13:37:36.539
+Status: ✅ SUCCESS
+Response Time: 7184 ms
+📊 Resource Usage During Generation: System CPU: avg=3.0%, max=4.4% | System Memory: avg=88.9%, max=89.0% (28.2 GB/31.7 GB) | ollama.exe Process: max=108.5 MB | Samples: 15 over 7185ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",./<>?
+12345678901234567890123456789012345678901
+abcde
+123456789012345678901234567890123456789012
+hello world
+1234567890123456789012345678901234567890123
+!@#$%
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #40
+================================================================================
+Timestamp: 2025-11-10 13:37:36.540
+Session ID: LLM-1762803266288-1
+Request ID: 40
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: seatClass
+Type: integer
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #40
+Timestamp: 2025-11-10 13:37:39.661
+Status: ✅ SUCCESS
+Response Time: 3121 ms
+📊 Resource Usage During Generation: System CPU: avg=3.8%, max=5.0% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=119.5 MB | Samples: 7 over 3121ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+abc
+123456789012345678901234567890
+!@#$%^&*()
+-1
+2147483648
+0
+10000000000
+"seatClass"
+None
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #41
+================================================================================
+Timestamp: 2025-11-10 13:37:39.661
+Session ID: LLM-1762803266288-1
+Request ID: 41
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: seatNumber
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #41
+Timestamp: 2025-11-10 13:37:42.451
+Status: ✅ SUCCESS
+Response Time: 2790 ms
+📊 Resource Usage During Generation: System CPU: avg=2.8%, max=3.4% | System Memory: avg=88.8%, max=88.8% (28.2 GB/31.7 GB) | ollama.exe Process: max=109.1 MB | Samples: 6 over 2791ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",.<>?/
+extremelyLongStringThatShouldFail
+123
+seatNumber
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #42
+================================================================================
+Timestamp: 2025-11-10 13:37:42.452
+Session ID: LLM-1762803266288-1
+Request ID: 42
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: status
+Type: integer
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #42
+Timestamp: 2025-11-10 13:37:47.527
+Status: ✅ SUCCESS
+Response Time: 5075 ms
+📊 Resource Usage During Generation: System CPU: avg=3.2%, max=4.3% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=114.4 MB | Samples: 10 over 5075ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+"abc"
+123456789012345678901234567890
+1234567890123456789012345678901234567890
+-1
+1000000000000000000000000000000
+123.45
+True
+[1, 2, 3]
+"status"
+None
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #43
+================================================================================
+Timestamp: 2025-11-10 13:37:47.528
+Session ID: LLM-1762803266288-1
+Request ID: 43
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: to
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #43
+Timestamp: 2025-11-10 13:37:50.417
+Status: ✅ SUCCESS
+Response Time: 2889 ms
+📊 Resource Usage During Generation: System CPU: avg=2.2%, max=3.2% | System Memory: avg=88.8%, max=88.8% (28.1 GB/31.7 GB) | ollama.exe Process: max=101.5 MB | Samples: 6 over 2890ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",.
+very_long_string_to_cause_error
+123
+to
+```
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #44
+================================================================================
+Timestamp: 2025-11-10 13:37:50.418
+Session ID: LLM-1762803266288-1
+Request ID: 44
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: trainNumber
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #44
+Timestamp: 2025-11-10 13:37:57.623
+Status: ✅ SUCCESS
+Response Time: 7205 ms
+📊 Resource Usage During Generation: System CPU: avg=3.0%, max=4.4% | System Memory: avg=88.9%, max=88.9% (28.2 GB/31.7 GB) | ollama.exe Process: max=117.3 MB | Samples: 15 over 7206ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+1234567890123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",./<>?
+12345678901234567890123456789012345678901
+abcde
+123456789012345678901234567890123456789012
+-12345678901234567890123456789012345678901
+1234567
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #45
+================================================================================
+Timestamp: 2025-11-10 13:37:57.624
+Session ID: LLM-1762803266288-1
+Request ID: 45
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: travelDate
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #45
+Timestamp: 2025-11-10 13:38:04.723
+Status: ✅ SUCCESS
+Response Time: 7099 ms
+📊 Resource Usage During Generation: System CPU: avg=3.2%, max=4.1% | System Memory: avg=88.9%, max=89.0% (28.2 GB/31.7 GB) | ollama.exe Process: max=120.6 MB | Samples: 14 over 7100ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2023-13-27
+2023-13-27-12:00:00
+2023-13-27abc
+2023-13-27
+2023-13-27-13:00:00
+2023-13-27-13:00:00:00
+2023-13-27-13:00:00:00abc
+2023-13-27-13:00:00:00abcde
+2023-13-27-13:00:00:00abcdef
+2023-13-27-13:00:00:00abcdefgh
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #46
+================================================================================
+Timestamp: 2025-11-10 13:38:04.724
+Session ID: LLM-1762803266288-1
+Request ID: 46
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 10 INVALID/FAULTY test values for parameter:
+Name: travelTime
+Type: string
+
+Generate values that would FAIL validation:
+- Values that don't match the pattern
+- Edge cases (very long strings, special characters)
+- Type mismatches (if expecting number, provide string)
+- Out of range values
+
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #46
+Timestamp: 2025-11-10 13:38:09.781
+Status: ✅ SUCCESS
+Response Time: 5057 ms
+📊 Resource Usage During Generation: System CPU: avg=2.3%, max=3.3% | System Memory: avg=89.0%, max=89.1% (28.2 GB/31.7 GB) | ollama.exe Process: max=108.7 MB | Samples: 10 over 5058ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+123456789012345678901234567890
+!@#$%^&*()_+=-`~[]\{}|;':",./<>?
+travelTime
+1234567890123456789012345678901
+"This is a very long string to test the validation"
+null
+1.23456789012345678901234567890
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #47
+================================================================================
+Timestamp: 2025-11-10 13:38:29.862
+Session ID: LLM-1762803266288-1
+Request ID: 47
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-gateway-service
+Operation: POST
+HTTP Status: 400
+Duration: 5.821ms
+
+TEST PARAMETERS USED:
+- body: {"accountId":"1234567890","boughtDate":"2023-10-26","coachNumber":"12345","contactsDocumentNumber":"1234567890","contactsName":"John Doe","differenceMoney":"100","documentType":"\"123\"","from":"123","id":"9a8b7c","price":"19.99","seatClass":"1","seatNumber":"1A","status":"10","to":"John Doe","trainNumber":"12345","travelDate":"2023-12-25","travelTime":"30"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #47
+Timestamp: 2025-11-10 13:38:32.455
+Status: ✅ SUCCESS
+Response Time: 2593 ms
+📊 Resource Usage During Generation: System CPU: avg=2.7%, max=3.0% | System Memory: avg=91.6%, max=91.6% (29.0 GB/31.7 GB) | ollama.exe Process: max=113.2 MB | Samples: 5 over 2593ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+PARAMETER_ERROR: YES
+PARAMETER: documentType
+ERROR_TYPE: FORMAT_ERROR
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #48
+================================================================================
+Timestamp: 2025-11-10 13:38:32.456
+Session ID: LLM-1762803266288-1
+Request ID: 48
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-admin-order-service
+Operation: AdminOrderController.addOrder
+HTTP Status: 0
+Duration: 0.576ms
+
+ERROR MESSAGES:
+- JSON parse error: Cannot deserialize value of type `int` from String ""123"": not a valid Integer value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String ""123"": not a valid Integer value
+ at [Source: (PushbackInputStream); line: 1, column: 178] (through reference chain: edu.fudan.common.entity.Order["documentType"])
+
+EXCEPTION TYPE: org.springframework.http.converter.HttpMessageNotReadableException
+
+STACK TRACE (first few lines):
+org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `int` from String ""123"": not a valid Integer value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String ""123"": not a valid Integer value
+at [Source: (PushbackInputStream); line: 1, column: 178] (through reference chain: edu.fudan.common.entity.Order["documentType"])
+at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:285)
+
+TEST PARAMETERS USED:
+- body: {"accountId":"1234567890","boughtDate":"2023-10-26","coachNumber":"12345","contactsDocumentNumber":"1234567890","contactsName":"John Doe","differenceMoney":"100","documentType":"\"123\"","from":"123","id":"9a8b7c","price":"19.99","seatClass":"1","seatNumber":"1A","status":"10","to":"John Doe","trainNumber":"12345","travelDate":"2023-12-25","travelTime":"30"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #48
+Timestamp: 2025-11-10 13:38:36.368
+Status: ✅ SUCCESS
+Response Time: 3912 ms
+📊 Resource Usage During Generation: System CPU: avg=2.6%, max=3.3% | System Memory: avg=91.6%, max=91.6% (29.0 GB/31.7 GB) | ollama.exe Process: max=112.3 MB | Samples: 8 over 3912ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+PARAMETER_ERROR: YES
+PARAMETER: documentType
+ERROR_TYPE: FORMAT_ERROR
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #49
+================================================================================
+Timestamp: 2025-11-10 13:38:36.392
+Session ID: LLM-1762803266288-1
+Request ID: 49
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: 6e9b9c0773a6251d238dc78b8633e57a
+- Total Spans: 7
+- Error Status: FAILED
+- Root Cause Failures: 2
+- Total Failed Spans: 2
+- Propagated Failures: 0
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-gateway-service
+- Failed Operation: POST
+- HTTP Status: 400
+- Execution Time: 5.821ms
+
+Root Cause #2:
+- Failed Service: ts-admin-order-service
+- Failed Operation: AdminOrderController.addOrder
+- HTTP Status: 0
+- Execution Time: 0.576ms
+- Exact Error: JSON parse error: Cannot deserialize value of type `int` from String ""123"": not a valid Integer value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String ""123"": not a valid Integer value
+ at [Source: (PushbackInputStream); line: 1, column: 178] (through reference chain: edu.fudan.common.entity.Order["documentType"])
+- Exception Type: org.springframework.http.converter.HttpMessageNotReadableException
+- Exact Failure Location:
+  → at [Source: (PushbackInputStream); line: 1, column: 178] (through reference chain: edu.fudan.common.entity.Order["documentType"]) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-gateway-service, ts-admin-order-service
+- HTTP Methods Used: POST
+- API Endpoints: 2 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #49
+Timestamp: 2025-11-10 13:38:44.875
+Status: ✅ SUCCESS
+Response Time: 8483 ms
+📊 Resource Usage During Generation: System CPU: avg=3.6%, max=5.3% | System Memory: avg=91.4%, max=91.6% (29.0 GB/31.7 GB) | ollama.exe Process: max=111.9 MB | Samples: 17 over 8483ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request to `ts-admin-order-service` resulting in a `400` error due to a malformed JSON payload within the `documentType` field of the `Order` entity.  The payload contained an invalid integer string ("123") where an integer value was expected.
+
+**FIX:**  Investigate the request originating from `ts-gateway-service`.  Specifically, examine the JSON payload being sent to the `ts-admin-order-service` endpoint.  Correct the invalid integer string ("123") to a valid integer representation (e.g., "123").  Validate JSON schema and data types at the source of the request within `ts-gateway-service`.
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #50
+================================================================================
+Timestamp: 2025-11-10 13:39:16.404
+Session ID: LLM-1762803266288-1
+Request ID: 50
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-admin-order-service
+Operation: AdminOrderController.addOrder
+HTTP Status: 0
+Duration: 0.506ms
+
+ERROR MESSAGES:
+- JSON parse error: Cannot deserialize value of type `int` from String "123456789012345678901234567890": not a valid Integer value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String "123456789012345678901234567890": not a valid Integer value
+ at [Source: (PushbackInputStream); line: 1, column: 67] (through reference chain: edu.fudan.common.entity.Order["coachNumber"])
+
+EXCEPTION TYPE: org.springframework.http.converter.HttpMessageNotReadableException
+
+STACK TRACE (first few lines):
+org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `int` from String "123456789012345678901234567890": not a valid Integer value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String "123456789012345678901234567890": not a valid Integer value
+at [Source: (PushbackInputStream); line: 1, column: 67] (through reference chain: edu.fudan.common.entity.Order["coachNumber"])
+at org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:285)
+
+TEST PARAMETERS USED:
+- body: {"accountId":"1234567890","boughtDate":"2023-10-26","coachNumber":"123456789012345678901234567890","contactsDocumentNumber":"1234567890","contactsName":"John Doe","differenceMoney":"100","documentType":"1","from":"123","id":"123","price":"19.99","seatClass":"1","seatNumber":"1A","status":"10","to":"John Doe","trainNumber":"12345","travelDate":"2025-07-10","travelTime":"30"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #50
+Timestamp: 2025-11-10 13:39:21.628
+Status: ✅ SUCCESS
+Response Time: 5224 ms
+📊 Resource Usage During Generation: System CPU: avg=2.6%, max=4.2% | System Memory: avg=91.3%, max=91.4% (29.0 GB/31.7 GB) | ollama.exe Process: max=106.2 MB | Samples: 11 over 5225ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+PARAMETER_ERROR: YES
+PARAMETER: coachNumber
+ERROR_TYPE: TYPE_MISMATCH
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #51
+================================================================================
+Timestamp: 2025-11-10 13:39:21.652
+Session ID: LLM-1762803266288-1
+Request ID: 51
+Model Type: OLLAMA
+Model Name: gemma3:4b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: c08af13d3ab61b2adaab2cc67d722174
+- Total Spans: 4
+- Error Status: FAILED
+- Root Cause Failures: 1
+- Total Failed Spans: 1
+- Propagated Failures: 0
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-admin-order-service
+- Failed Operation: AdminOrderController.addOrder
+- HTTP Status: 0
+- Execution Time: 0.506ms
+- Exact Error: JSON parse error: Cannot deserialize value of type `int` from String "123456789012345678901234567890": not a valid Integer value; nested exception is com.fasterxml.jackson.databind.exc.InvalidFormatException: Cannot deserialize value of type `int` from String "123456789012345678901234567890": not a valid Integer value
+ at [Source: (PushbackInputStream); line: 1, column: 67] (through reference chain: edu.fudan.common.entity.Order["coachNumber"])
+- Exception Type: org.springframework.http.converter.HttpMessageNotReadableException
+- Exact Failure Location:
+  → at [Source: (PushbackInputStream); line: 1, column: 67] (through reference chain: edu.fudan.common.entity.Order["coachNumber"]) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-admin-order-service
+- HTTP Methods Used: POST
+- API Endpoints: 1 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #51
+Timestamp: 2025-11-10 13:39:30.078
+Status: ✅ SUCCESS
+Response Time: 8426 ms
+📊 Resource Usage During Generation: System CPU: avg=3.0%, max=6.4% | System Memory: avg=91.3%, max=91.4% (29.0 GB/31.7 GB) | ollama.exe Process: max=106.3 MB | Samples: 17 over 8427ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+**ROOT CAUSE:** `ts-admin-order-service`’s `AdminOrderController.addOrder` endpoint failed due to a `HttpMessageNotReadableException` stemming from an invalid JSON payload. Specifically, the `coachNumber` field within the `edu.fudan.common.entity.Order` object was attempting to deserialize a string ("123456789012345678901234567890") into an integer.
+
+**FIX:**  The client application sending the POST request to `AdminOrderController.addOrder` is providing an invalid `coachNumber` value.  The client must be corrected to provide a valid integer value for the `coachNumber` field.  Investigate the client application's code to identify the source of the incorrect string value.
+--------------------------------------------------------------------------------
+================================================================================
+

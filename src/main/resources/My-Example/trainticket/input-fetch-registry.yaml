@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 11
-- 5
-- 14
-- 3
-- 24
-- 310823200
+- 10
+- 13
+- 39
+- 21
+- 645478300
 parameterMappings:
   loginId:
   - endpoint: "/api/v1/user/query"
@@ -1476,25 +1476,26 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 5
-      - 14
-      - 1
-      - 55
-      - 761897000
+      - 10
+      - 13
+      - 31
+      - 7
+      - 386677800
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"[1, 2, 3]\": not a valid Integer value"
+        \ String \"-10000000000\": Overflow: numeric value (-10000000000) out of range\
+        \ of Integer..."
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "coachNumber"
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 41
-      - 20
-      - 987740900
+      - 10
+      - 13
+      - 39
+      - 21
+      - 629484600
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1547,11 +1548,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 5
+      - 10
       - 13
-      - 59
-      - 3
-      - 728818900
+      - 38
+      - 32
+      - 456334700
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1561,11 +1562,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 40
-      - 26
-      - 229019400
+      - 10
+      - 13
+      - 38
+      - 36
+      - 368056700
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1729,11 +1730,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 41
-      - 56
-      - 323560200
+      - 10
+      - 13
+      - 29
+      - 46
+      - 123845600
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\

@@ -129,6 +129,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("import java.util.*;");
                 pw.println("import java.net.URLEncoder;");
                 pw.println("import java.nio.charset.StandardCharsets;");
+                pw.println("import org.hamcrest.Matchers;");
                 pw.println("import java.net.http.HttpClient;");
                 pw.println("import java.net.http.HttpRequest;");
                 pw.println("import java.net.http.HttpResponse;");
@@ -924,26 +925,26 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            .recordTestCase(this.getClass().getName(), \"" + testMethodName + "\");");
                     pw.println();
                     
-                    /* ------------ Add Allure metadata for faulty tests ---------- */
+                    /* ------------ Add Allure metadata for negative tests ---------- */
                     if (scenario instanceof MultiServiceTestCase) {
                         MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;
                         System.out.println("DEBUG: Test " + testMethodName + " - isFaulty=" + scenario.getFaulty() + 
                                          ", faultyParamsCount=" + mstc.getFaultyParameters().size() +
                                          ", allureReport=" + allureReport);
                         if (allureReport && scenario.getFaulty() && !mstc.getFaultyParameters().isEmpty()) {
-                            System.out.println("DEBUG: Adding faulty metadata for: " + String.join(", ", mstc.getFaultyParameters()));
-                            pw.println("        // 🚨 FAULTY TEST METADATA");
-                            pw.println("        Allure.parameter(\"🚨 Test Type\", \"FAULTY (Negative Testing)\");");
+                            System.out.println("DEBUG: Adding negative test metadata for: " + String.join(", ", mstc.getFaultyParameters()));
+                            pw.println("        // 🚨 NEGATIVE TEST METADATA");
+                            pw.println("        Allure.parameter(\"🚨 Test Type\", \"NEGATIVE (Invalid Input Testing)\");");
                             
                             // Escape special characters for Java string literals
                             String faultyParamsEscaped = escapeJavaString(String.join(", ", mstc.getFaultyParameters()));
                             String faultyParamsNewlineEscaped = escapeJavaString(String.join("\\n", mstc.getFaultyParameters()));
                             
-                            pw.println("        Allure.parameter(\"🔴 Faulty Parameters\", \"" + faultyParamsEscaped + "\");");
-                            pw.println("        Allure.description(\"**⚠️ This is an intentional FAULTY test case for negative testing.**\\n\\n\" +");
+                            pw.println("        Allure.parameter(\"🔴 Invalid Parameters\", \"" + faultyParamsEscaped + "\");");
+                            pw.println("        Allure.description(\"**⚠️ This is a NEGATIVE test case with intentionally invalid inputs.**\\n\\n\" +");
                             pw.println("                         \"The following parameters were intentionally set to invalid values:\\n\" +");
                             pw.println("                         \"" + faultyParamsNewlineEscaped + "\\n\\n\" +");
-                            pw.println("                         \"This test is expected to trigger validation errors or error responses.\");");
+                            pw.println("                         \"This test expects a 4XX or 5XX error response. If it returns 2XX, the test will FAIL.\");");
                             pw.println();
                         }
                     }
@@ -1029,10 +1030,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         
                         // Generate hierarchical step number if available from the generator
                         String stepNumber = "Step " + stepIdx;
+                        String expectedStatusDisplay = scenario.getFaulty() ? "4XX/5XX error" : String.valueOf(step.getExpectedStatus());
                         String stepTitle = stepNumber + ": "
                                 + step.getServiceName() + " "
                                 + verb.toUpperCase() + " " + step.getPath()
-                                + " (expect " + step.getExpectedStatus() + ")";
+                                + " (expect " + expectedStatusDisplay + ")";
 
                         pw.println("        // " + escape(stepTitle));
                         
@@ -1170,7 +1172,15 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             
                             pw.println("                        Response stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
                             pw.println("                               .then().log().ifValidationFails()");
-                            pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
+                            
+                            // For negative tests, expect 4XX or 5XX error codes instead of the OpenAPI expected status
+                            if (scenario.getFaulty()) {
+                                pw.println("                               // Negative test: expect error code (4XX or 5XX), not success code");
+                                pw.println("                               .statusCode(org.hamcrest.Matchers.greaterThanOrEqualTo(400))");
+                            } else {
+                                pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
+                            }
+                            
                             pw.println("                               .extract().response();");
                             pw.println("                        ");
                             
