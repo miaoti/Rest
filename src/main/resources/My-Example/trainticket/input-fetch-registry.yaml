@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 11
-- 10
-- 13
-- 39
-- 21
-- 645478300
+- 11
+- 14
+- 43
+- 42
+- 376771000
 parameterMappings:
   loginId:
   - endpoint: "/api/v1/user/query"
@@ -1454,6 +1454,20 @@ parameterErrors:
       - 26
       - 19304200
       additionalInfo: null
+    travelTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "travelTime"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 15
+      - 30
+      - 20
+      - 298116500
+      additionalInfo: null
     coachNumber:
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1463,11 +1477,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 3
-      - 16
-      - 0
-      - 0
-      - 70223300
+      - 10
+      - 14
+      - 28
+      - 55
+      - 346955500
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1492,10 +1506,10 @@ parameterErrors:
       - 2025
       - 11
       - 10
-      - 13
-      - 39
-      - 21
-      - 629484600
+      - 15
+      - 54
+      - 12
+      - 58032300
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1510,6 +1524,19 @@ parameterErrors:
       - 1
       - 59
       - 534546000
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 15
+      - 31
+      - 24
+      - 232536700
       additionalInfo: null
     documentType:
     - errorType: "NULL_ERROR"
@@ -1604,11 +1631,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
+      - 10
+      - 17
       - 16
-      - 38
-      - 9
-      - 985194200
+      - 10
+      - 938296400
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1624,6 +1651,19 @@ parameterErrors:
       - 55
       - 33354400
       additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "documentType"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 14
+      - 43
+      - 42
+      - 365669100
+      additionalInfo: null
     travelDate:
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1637,6 +1677,20 @@ parameterErrors:
       - 32
       - 35
       - 240288700
+      additionalInfo: null
+    '"documentType"':
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "\"documentType\""
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 14
+      - 29
+      - 51
+      - 156069300
       additionalInfo: null
     contactsDocumentNumber:
     - errorType: "NULL_ERROR"
@@ -1776,6 +1830,20 @@ parameterErrors:
       - 0
       - 26
       - 901070800
+      additionalInfo: null
+    seatNumber:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 17
+      - 16
+      - 2
+      - 476157900
       additionalInfo: null
     status:
     - errorType: "TYPE_MISMATCH"

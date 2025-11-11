@@ -1178,7 +1178,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                               // Negative test: expect error code (4XX or 5XX), not success code");
                                 pw.println("                               .statusCode(org.hamcrest.Matchers.greaterThanOrEqualTo(400))");
                             } else {
-                                pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
+                            pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
                             }
                             
                             pw.println("                               .extract().response();");

@@ -27,10 +27,21 @@ public class AiDrivenLLMGenerator {
     }
     
     /**
-     * Generate faulty parameter values using LLM
+     * Generate faulty parameter values using LLM - DEPRECATED
+     * Use generateInvalidInputPool instead
      */
+    @Deprecated
     public List<String> generateFaultyParameterValues(ParameterInfo param, int howMany) {
-        log.info("Generating {} faulty values for parameter '{}'", howMany, param.getName());
+        log.info("DEPRECATED: Use generateInvalidInputPool instead");
         return zeroShotLLM.generateFaultyParameterValues(param, howMany);
+    }
+    
+    /**
+     * Generate comprehensive invalid input pool with 8 fault types
+     * Delegates to ZeroShotLLMGenerator for actual generation
+     */
+    public es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
+        log.info("Delegating invalid input pool generation to ZeroShotLLMGenerator for parameter '{}'", param.getName());
+        return zeroShotLLM.generateInvalidInputPool(param);
     }
 }

@@ -1,5 +1,7 @@
 package es.us.isa.restest.inputs.llm;
 
+import java.util.List;
+
 public class ParameterInfo {
     private String name;
     private String description;
@@ -10,6 +12,11 @@ public class ParameterInfo {
 
     private String schemaType;
     private String schemaExample;
+    
+    // Additional context for better LLM generation
+    private String apiName;           // e.g., "POST /api/v1/adminorder"
+    private String serviceName;       // e.g., "ts-admin-order-service"
+    private List<String> allParameterNames;  // All parameters in this API for context
 
     // Getters / Setters
     public String getName() { return name; }
@@ -29,6 +36,13 @@ public class ParameterInfo {
     public void setSchemaType(String schemaType) { this.schemaType = schemaType; }
     public String getSchemaExample() { return schemaExample; }
     public void setSchemaExample(String schemaExample) { this.schemaExample = schemaExample; }
+    
+    public String getApiName() { return apiName; }
+    public void setApiName(String apiName) { this.apiName = apiName; }
+    public String getServiceName() { return serviceName; }
+    public void setServiceName(String serviceName) { this.serviceName = serviceName; }
+    public List<String> getAllParameterNames() { return allParameterNames; }
+    public void setAllParameterNames(List<String> allParameterNames) { this.allParameterNames = allParameterNames; }
 
     @Override
     public String toString() {
@@ -41,6 +55,9 @@ public class ParameterInfo {
                 ", description='" + description + '\'' +
                 ", schemaType='" + schemaType + '\'' +
                 ", schemaExample='" + schemaExample + '\'' +
+                ", apiName='" + apiName + '\'' +
+                ", serviceName='" + serviceName + '\'' +
+                ", allParameterNames=" + allParameterNames +
                 '}';
     }
 }

@@ -764,7 +764,11 @@ public class TestGenerationAndExecution {
 			"auth.admin.username",
 			"auth.admin.password",
 			"auth.user.username",
-			"auth.user.password"
+			"auth.user.password",
+			// Jaeger trace fetching properties
+			"jaeger.enabled",
+			"jaeger.base.url",
+			"jaeger.lookback"
 		};
 		
 		int configuredCount = 0;

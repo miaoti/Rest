@@ -97,62 +97,129 @@ flowchart TD
 ### Shared Parameter Pool Generation (per root API)
 
 ```mermaid
-flowchart LR
+flowchart TD
     A[Identify first business operation] --> B[Load operation test parameters]
     B --> C[For each parameter]
     C --> D[Smart Fetch up to 15 values]
     D --> E[If less than limit get LLM seed values]
     E --> F[Semantic expand to needed count]
     F --> G[Pool smart plus expanded plus fallback]
-    C --> H[Generate faulty pool with LLM]
-    H --> I[Ask LLM for 10 invalid values per parameter]
-    I --> J[Add common faulty patterns null empty special]
-    J --> K[Store faulty pool by root API key]
+    
+    C --> H[Generate comprehensive InvalidInputPool]
+    H --> I1[TYPE_MISMATCH: Ask LLM for wrong types]
+    I1 --> I2[Parse typed values: integer:55, boolean:true]
+    I2 --> I3[Add defaults based on param type]
+    I3 --> I4[REGEX_MISMATCH: Ask LLM for pattern violations]
+    I4 --> I5[SEMANTIC_MISMATCH: Ask LLM for meaningless values]
+    I5 --> I6[OVERFLOW: Ask LLM for huge values]
+    I6 --> I7[EMPTY_INPUT: Add empty string, whitespace]
+    I7 --> I8[NULL_INPUT: Add null, 'null', 'NULL']
+    I8 --> I9[SPECIAL_CHARACTERS: SQL injection, XSS]
+    I9 --> I10[BOUNDARY_VIOLATION: Off-by-one errors]
+    I10 --> J[Store InvalidInputPool by root API key]
+    J --> K[Pool tracks usage for round-robin]
 ```
 
-### Faulty Test Selection (Configurable Strategy)
+### Negative Test Selection with 8 Fault Types (Configurable Strategy)
 
 ```mermaid
 flowchart TD
-    A[Read faulty.ratio and faulty.round-robin] --> B[Calculate faulty count]
-    B --> C[Randomly select which variants are faulty]
-    C --> D[Initialize parameter rotation list from faulty pool keys]
+    A[Read faulty.ratio and faulty.round-robin] --> B[Calculate negative test count]
+    B --> C[Randomly select which variants are negative]
+    C --> D[Initialize parameter rotation list from pool keys]
     D --> E[For each variant]
-    E --> F{Is faulty variant}
-    F -->|No| G[Generate normal test]
+    E --> F{Is negative variant}
+    F -->|No| G[Generate positive test]
     F -->|Yes| H{faulty.round-robin}
-    H -->|true| I[ROUND-ROBIN: Get param at rotation index]
-    H -->|false| J[RANDOM: Select 1-3 params randomly]
-    I --> K[Increment rotation index mod param count]
-    J --> L[For each parameter in operation]
-    K --> L
-    L --> M{Is target faulty param}
-    M -->|Yes| N[Use faulty value from pool and lock]
+    H -->|true| I[ROUND-ROBIN MODE]
+    H -->|false| J[RANDOM MODE]
+    
+    I --> I1[Get param at rotation index]
+    I1 --> I2[Get InvalidInputPool for param]
+    I2 --> I3[Call pool.getNextRoundRobin]
+    I3 --> I4{Value available?}
+    I4 -->|Yes| I5[Got typed value e.g. Integer 55]
+    I4 -->|No| I6[All values exhausted]
+    I6 --> G[Generate positive test instead]
+    I5 --> I7[Convert to string based on type]
+    I7 --> I8[Track invalid param in test case]
+    I8 --> K[Increment rotation index]
+    
+    J --> J1[Select 1-3 params randomly]
+    J1 --> J2[Get InvalidInputPool for param]
+    J2 --> J3[Call pool.getRandomValue]
+    J3 --> J4[Got typed value can repeat]
+    J4 --> J5[Convert to string based on type]
+    J5 --> J6[Track invalid param in test case]
+    
+    K --> L[For each parameter in operation]
+    J6 --> L
+    L --> M{Is target invalid param}
+    M -->|Yes| N[Use invalid value LOCKED]
     M -->|No| O[Use normal smart fetch or LLM]
-    N --> P[Track faulty param in test case]
+    N --> P[Log fault type and value]
     O --> Q[Continue to next parameter]
     P --> Q
     Q --> R{More parameters}
     R -->|Yes| L
-    R -->|No| S[Complete faulty test]
+    R -->|No| S[Complete negative test]
 ```
 
 **Strategies**:
-- **Round-Robin** (faulty.round-robin=true, default): ONE faulty param per test, cycling through all params
-  - Test 1: paramA faulty, Test 2: paramB faulty, Test 3: paramA faulty (cycle repeats)
-- **Random** (faulty.round-robin=false): 1-3 randomly selected faulty params per test
-  - Test 1: [paramA, paramC] faulty, Test 2: [paramB] faulty, Test 3: [paramA, paramB, paramC] faulty
+- **Round-Robin** (faulty.round-robin=true, default): 
+  - ONE invalid param per test, cycling through all params
+  - For each param, cycles through all 8 fault types and their values
+  - NO REPETITION until all invalid values exhausted
+  - Test 1: paramA=TYPE_MISMATCH(55)
+  - Test 2: paramB=REGEX_MISMATCH("invalid@format")
+  - Test 3: paramA=SEMANTIC_MISMATCH(-5)
+  - Test 4: paramC=OVERFLOW("AAAA...")
+  - ... continues until all invalid values used
+  - When exhausted: generates positive tests
+  
+- **Random** (faulty.round-robin=false):
+  - 1-3 randomly selected invalid params per test
+  - Random fault type and value selection
+  - CAN REPEAT values across tests
+  - Test 1: [paramA=TYPE_MISMATCH(55), paramC=NULL_INPUT(null)]
+  - Test 2: [paramB=SPECIAL_CHARACTERS("' OR '1'='1")]
+  - Test 3: [paramA=TYPE_MISMATCH(55), paramB=EMPTY_INPUT(""), paramC=OVERFLOW("AAAA...")]
 
-### Faulty Test Reporting (Allure Integration)
+### Negative Test Reporting (Allure Integration)
 
 ```mermaid
 flowchart LR
-    A[Test case marked as faulty] --> B[Track faulty parameters during generation]
-    B --> C[Writer checks if test is faulty]
-    C --> D[Add Allure parameter Test Type FAULTY]
-    D --> E[Add Allure parameter Faulty Parameters list]
-    E --> F[Add Allure description with faulty values]
+    A[Test case marked as negative] --> B[Track invalid parameters during generation]
+    B --> C[Writer checks if test is negative]
+    C --> D[Add Allure parameter Test Type NEGATIVE]
+    D --> E[Add Allure parameter Invalid Parameters list]
+    E --> F[Add Allure description with invalid values and fault types]
     F --> G[Report displays in Allure with warning icon]
+    G --> H[Test expects 4XX/5XX error response]
+    H --> I[If 2XX received test FAILS]
+```
+
+### 8 Invalid Input Types (Comprehensive Coverage)
+
+```mermaid
+flowchart TD
+    A[Invalid Input Types] --> B1[TYPE_MISMATCH]
+    A --> B2[REGEX_MISMATCH]
+    A --> B3[SEMANTIC_MISMATCH]
+    A --> B4[OVERFLOW]
+    A --> B5[EMPTY_INPUT]
+    A --> B6[NULL_INPUT]
+    A --> B7[SPECIAL_CHARACTERS]
+    A --> B8[BOUNDARY_VIOLATION]
+    
+    B1 --> C1[Wrong data type<br/>String param gets Integer 55]
+    B2 --> C2[Pattern violation<br/>Email without @ symbol]
+    B3 --> C3[Meaningless value<br/>Age = -5, impossible date]
+    B4 --> C4[Exceeds limits<br/>10000 char string, MAX_INT]
+    B5 --> C5[Empty values<br/>Empty string, whitespace, []]
+    B6 --> C6[Null values<br/>null, 'null', 'NULL']
+    B7 --> C7[Injection attempts<br/>SQL injection, XSS, traversal]
+    B8 --> C8[Boundary errors<br/>Off-by-one, min-1, max+1]
 ```
 
 ### Smart Input Fetching Flow (SmartInputFetcher)

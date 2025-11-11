@@ -112,51 +112,365 @@ public class ZeroShotLLMGenerator {
     }
 
     /**
-     * Generate faulty parameter values for negative testing
+     * Generate faulty parameter values for negative testing - DEPRECATED
+     * Use generateInvalidInputPool instead for comprehensive fault coverage
      */
+    @Deprecated
     public List<String> generateFaultyParameterValues(ParameterInfo param, int howMany) {
-        System.out.println("*** ZeroShotLLMGenerator.generateFaultyParameterValues called for: " + param.getName() + " (howMany=" + howMany + ")");
-        
-        String prompt = buildFaultyPrompt(param, howMany);
-        String rawOutput = callLLM(prompt);
-        System.out.println("*** LLM Faulty Raw output: " + rawOutput);
-        
-        List<String> faultyValues = parseLines(rawOutput);
-        
-        // Add common faulty patterns
-        faultyValues.add(null);
-        faultyValues.add("");
-        faultyValues.add(" ");
-        
-        // Limit to requested count
-        if (faultyValues.size() > howMany) {
-            faultyValues = faultyValues.subList(0, howMany);
-        }
-        
-        return faultyValues;
+        System.out.println("*** DEPRECATED: Use generateInvalidInputPool instead");
+        return new ArrayList<>();
     }
     
     /**
-     * Build prompt for generating faulty parameter values
+     * Generate comprehensive invalid inputs for all fault types
+     * Returns an InvalidInputPool with properly typed invalid values
      */
-    private String buildFaultyPrompt(ParameterInfo param, int howMany) {
-        StringBuilder prompt = new StringBuilder();
-        prompt.append("Generate ").append(howMany).append(" INVALID/FAULTY test values for parameter:\n");
-        prompt.append("Name: ").append(param.getName()).append("\n");
-        prompt.append("Type: ").append(param.getType()).append("\n");
-        if (param.getDescription() != null) {
-            prompt.append("Description: ").append(param.getDescription()).append("\n");
+    public es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
+        System.out.println("*** ZeroShotLLMGenerator.generateInvalidInputPool for: " + param.getName() + 
+                          " (type: " + param.getType() + ")");
+        
+        es.us.isa.restest.inputs.InvalidInputPool pool = 
+            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), safeStr(param.getType()));
+        
+        // Generate each type of invalid input
+        generateTypeMismatchInputs(param, pool);
+        generateRegexMismatchInputs(param, pool);
+        generateSemanticMismatchInputs(param, pool);
+        generateOverflowInputs(param, pool);
+        generateEmptyInputs(param, pool);
+        generateNullInputs(param, pool);
+        generateSpecialCharacterInputs(param, pool);
+        generateBoundaryViolationInputs(param, pool);
+        
+        System.out.println("*** Generated invalid input pool:\n" + pool.getPoolSummary());
+        
+        return pool;
+    }
+    
+    /**
+     * Generate type mismatch inputs - wrong data type for the parameter
+     * CRITICAL: These are stored as raw objects (Integer, Boolean, etc.) NOT strings
+     */
+    private void generateTypeMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        String paramType = safeStr(param.getType()).toLowerCase();
+        
+        String prompt = "Generate 3-5 TYPE MISMATCH invalid values for parameter '" + param.getName() + "'.\n" +
+                       "Expected type: " + param.getType() + "\n" +
+                       "Description: " + safeStr(param.getDescription()) + "\n\n" +
+                       "Generate values of WRONG TYPE that would cause type validation errors.\n" +
+                       "Examples:\n" +
+                       "- If expecting string, provide: integer 123, boolean true, array [1,2,3]\n" +
+                       "- If expecting integer, provide: string 'abc', boolean false, object {}\n" +
+                       "- If expecting boolean, provide: string 'yes', integer 1, array []\n\n" +
+                       "IMPORTANT: Provide actual type-mismatched values, not string representations.\n" +
+                       "Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object\n" +
+                       "Examples: integer:999, string:notANumber, boolean:true, null:null\n" +
+                       "Return only the values, one per line:";
+        
+        String response = callLLM(prompt);
+        List<String> lines = parseLines(response);
+        
+        // Parse and add typed values
+        for (String line : lines) {
+            Object typedValue = parseTypedValue(line, paramType);
+            if (typedValue != null) {
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, typedValue);
+            }
         }
-        if (param.getRegex() != null) {
-            prompt.append("Valid Pattern: ").append(param.getRegex()).append("\n");
+        
+        // Add common type mismatches if LLM didn't provide enough
+        if (pool.getCountForType(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH) < 3) {
+            addDefaultTypeMismatches(paramType, pool);
         }
-        prompt.append("\nGenerate values that would FAIL validation:\n");
-        prompt.append("- Values that don't match the pattern\n");
-        prompt.append("- Edge cases (very long strings, special characters)\n");
-        prompt.append("- Type mismatches (if expecting number, provide string)\n");
-        prompt.append("- Out of range values\n");
-        prompt.append("\nReturn only the values, one per line:");
-        return prompt.toString();
+    }
+    
+    /**
+     * Parse typed value from LLM response (format: "type:value")
+     * Returns actual typed object (Integer, Boolean, etc.) not String
+     */
+    private Object parseTypedValue(String line, String expectedParamType) {
+        if (line == null || !line.contains(":")) {
+            return null;
+        }
+        
+        String[] parts = line.split(":", 2);
+        if (parts.length != 2) {
+            return null;
+        }
+        
+        String type = parts[0].trim().toLowerCase();
+        String value = parts[1].trim();
+        
+        // Parse based on specified type
+        try {
+            switch (type) {
+                case "integer":
+                case "int":
+                case "number":
+                    return Integer.parseInt(value);
+                    
+                case "long":
+                    return Long.parseLong(value);
+                    
+                case "double":
+                case "float":
+                    return Double.parseDouble(value);
+                    
+                case "boolean":
+                case "bool":
+                    return Boolean.parseBoolean(value);
+                    
+                case "null":
+                    return null;
+                    
+                case "string":
+                    return value;
+                    
+                case "array":
+                    return value; // Represented as string in JSON format
+                    
+                case "object":
+                    return value; // Represented as string in JSON format
+                    
+                default:
+                    return value;
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to parse typed value: " + line + " - " + e.getMessage());
+            return value; // Return as string if parsing fails
+        }
+    }
+    
+    /**
+     * Add default type mismatches based on parameter type
+     */
+    private void addDefaultTypeMismatches(String paramType, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        switch (paramType) {
+            case "string":
+                // String expects text, provide numbers/booleans/null
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 12345);
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, true);
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, null);
+                break;
+                
+            case "integer":
+            case "int":
+            case "number":
+                // Number expects integer, provide strings/booleans
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_a_number");
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "12.34abc");
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, false);
+                break;
+                
+            case "boolean":
+            case "bool":
+                // Boolean expects true/false, provide strings/numbers
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "yes");
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 1);
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "true");
+                break;
+                
+            case "array":
+                // Array expects list, provide primitives
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_an_array");
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 123);
+                break;
+                
+            case "object":
+                // Object expects key-value, provide primitives
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_an_object");
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 456);
+                break;
+                
+            default:
+                // Generic type mismatches
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, null);
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 999);
+                break;
+        }
+    }
+    
+    /**
+     * Generate regex pattern mismatch inputs
+     */
+    private void generateRegexMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        if (param.getRegex() == null || param.getRegex().isEmpty()) {
+            // No regex constraint, skip this type
+            return;
+        }
+        
+        String prompt = "Generate 3-5 values that DO NOT MATCH this regex pattern for parameter '" + param.getName() + "':\n" +
+                       "Pattern: " + param.getRegex() + "\n" +
+                       "Expected type: " + param.getType() + "\n" +
+                       "Description: " + safeStr(param.getDescription()) + "\n\n" +
+                       "Generate values that have correct type but VIOLATE the regex pattern.\n" +
+                       "Return only the invalid values, one per line:";
+        
+        String response = callLLM(prompt);
+        List<String> values = parseLines(response);
+        
+        for (String value : values) {
+            if (!value.matches(param.getRegex())) {
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.REGEX_MISMATCH, value);
+            }
+        }
+    }
+    
+    /**
+     * Generate semantically invalid inputs
+     */
+    private void generateSemanticMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        String prompt = "Generate 3-5 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
+                       "Type: " + param.getType() + "\n" +
+                       "Description: " + safeStr(param.getDescription()) + "\n\n" +
+                       "Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.\n" +
+                       "Examples:\n" +
+                       "- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)\n" +
+                       "- Email parameter: invalid format (missing @, no domain)\n" +
+                       "- Date parameter: impossible dates (Feb 30, Month 13)\n" +
+                       "- Country code: non-existent codes (ZZZ, XXX)\n" +
+                       "- Phone number: wrong format or length\n\n" +
+                       "Return only the semantically invalid values, one per line:";
+        
+        String response = callLLM(prompt);
+        List<String> values = parseLines(response);
+        
+        for (String value : values) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, value);
+        }
+    }
+    
+    /**
+     * Generate overflow inputs
+     */
+    private void generateOverflowInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        String paramType = safeStr(param.getType()).toLowerCase();
+        
+        String prompt = "Generate 3-5 OVERFLOW values for parameter '" + param.getName() + "'.\n" +
+                       "Type: " + param.getType() + "\n" +
+                       "Description: " + safeStr(param.getDescription()) + "\n\n" +
+                       "Generate values that EXCEED expected limits:\n";
+        
+        if ("string".equals(paramType)) {
+            prompt += "- Very long strings (1000+ characters)\n" +
+                     "- Strings with repeated characters (AAAA...)\n" +
+                     "- Maximum length violations\n";
+        } else if (paramType.contains("int") || paramType.contains("number")) {
+            prompt += "- Very large numbers (9999999999)\n" +
+                     "- Numbers beyond typical ranges\n" +
+                     "- Scientific notation extremes\n";
+        } else {
+            prompt += "- Values exceeding typical constraints\n" +
+                     "- Maximum size violations\n";
+        }
+        
+        prompt += "\nReturn only the overflow values, one per line:";
+        
+        String response = callLLM(prompt);
+        List<String> values = parseLines(response);
+        
+        for (String value : values) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.OVERFLOW, value);
+        }
+        
+        // Add guaranteed overflow values
+        if ("string".equals(paramType)) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.OVERFLOW, "A".repeat(10000)); // Very long string
+        } else if (paramType.contains("int")) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.OVERFLOW, Integer.MAX_VALUE);
+        }
+    }
+    
+    /**
+     * Generate empty inputs
+     */
+    private void generateEmptyInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        String paramType = safeStr(param.getType()).toLowerCase();
+        
+        // Empty string
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "");
+        
+        // Whitespace only
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, " ");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "   ");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "\t");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "\n");
+        
+        // Type-specific empty values
+        if ("array".equals(paramType)) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "[]");
+        } else if ("object".equals(paramType)) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "{}");
+        }
+    }
+    
+    /**
+     * Generate null inputs
+     */
+    private void generateNullInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        // Actual null
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, null);
+        
+        // String representations of null (sometimes APIs parse these)
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "NULL");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "Null");
+    }
+    
+    /**
+     * Generate special character inputs (potential injection attempts)
+     */
+    private void generateSpecialCharacterInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        String prompt = "Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
+                       "Type: " + param.getType() + "\n\n" +
+                       "Generate values with malicious or special characters:\n" +
+                       "- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--\n" +
+                       "- XSS attempts: <script>alert('XSS')</script>\n" +
+                       "- Path traversal: ../../etc/passwd\n" +
+                       "- Command injection: ; ls -la\n" +
+                       "- Special characters: !@#$%^&*(){}[]|\\:;\"'<>?,./\n\n" +
+                       "Return only the special character values, one per line:";
+        
+        String response = callLLM(prompt);
+        List<String> values = parseLines(response);
+        
+        for (String value : values) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, value);
+        }
+        
+        // Add guaranteed special character values
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, "' OR '1'='1");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, "<script>alert('test')</script>");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, "../../../etc/passwd");
+    }
+    
+    /**
+     * Generate boundary violation inputs
+     */
+    private void generateBoundaryViolationInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        String prompt = "Generate 3-5 BOUNDARY VIOLATION values for parameter '" + param.getName() + "'.\n" +
+                       "Type: " + param.getType() + "\n" +
+                       "Description: " + safeStr(param.getDescription()) + "\n\n" +
+                       "Generate values that are JUST OUTSIDE valid boundaries:\n" +
+                       "- If minLength is 5, provide length 4\n" +
+                       "- If maxValue is 100, provide 101\n" +
+                       "- If range is 1-10, provide 0 or 11\n" +
+                       "- Off-by-one errors\n\n" +
+                       "Return only the boundary violation values, one per line:";
+        
+        String response = callLLM(prompt);
+        List<String> values = parseLines(response);
+        
+        for (String value : values) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION, value);
+        }
+        
+        // Add common boundary violations
+        String paramType = safeStr(param.getType()).toLowerCase();
+        if (paramType.contains("int") || paramType.contains("number")) {
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION, -1);
+            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION, 0);
+        }
     }
 
     /**
@@ -178,6 +492,23 @@ public class ZeroShotLLMGenerator {
         
         // Clear introduction with context
         promptBuilder.append("You are an API testing assistant that generates realistic parameter values.\n\n");
+        
+        // API Context (if available)
+        String apiName = safeStr(param.getApiName());
+        if (!apiName.isEmpty()) {
+            promptBuilder.append("API Context:\n");
+            promptBuilder.append("- API Endpoint: ").append(apiName).append("\n");
+            
+            String serviceName = safeStr(param.getServiceName());
+            if (!serviceName.isEmpty()) {
+                promptBuilder.append("- Service: ").append(serviceName).append("\n");
+            }
+            
+            if (param.getAllParameterNames() != null && !param.getAllParameterNames().isEmpty()) {
+                promptBuilder.append("- All Parameters in this API: ").append(String.join(", ", param.getAllParameterNames())).append("\n");
+            }
+            promptBuilder.append("\n");
+        }
         
         // Parameter details
         promptBuilder.append("Parameter Information:\n");
@@ -203,7 +534,8 @@ public class ZeroShotLLMGenerator {
         
         String regex = safeStr(param.getRegex());
         if (!regex.isEmpty()) {
-            promptBuilder.append("- Pattern: ").append(regex).append("\n");
+            promptBuilder.append("- Pattern/Regex: ").append(regex).append("\n");
+            promptBuilder.append("  (Your generated values MUST match this pattern)\n");
         }
         
         // Clear task instructions with emphasis on formatting
