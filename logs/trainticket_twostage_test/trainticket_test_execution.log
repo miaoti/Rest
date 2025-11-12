@@ -2977,3 +2977,1070 @@ Value2
 Value3
 
 Now generate your 5 values, one per line:
+2025-11-12 13:37:03 INFO  stdout:36 - [LLM] Successfully generated content: Moscow
+Saint Petersburg
+Novosibirsk
+Yekaterinburg
+Kazan
+2025-11-12 13:37:03 INFO  stdout:36 - *** LLM Raw output: Moscow
+Saint Petersburg
+Novosibirsk
+Yekaterinburg
+Kazan
+2025-11-12 13:37:03 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → from = shanghai (from 15 options)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → from (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → from = beijing ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → from (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → from = wuhan ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → from (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → from = hangzhou ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → from (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → from = xian ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → from (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → from = tianjin ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → from (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: from (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: from (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → from (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → from = guangzhou ✅
+2025-11-12 13:37:03 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'from': 15 smart values generated
+2025-11-12 13:37:03 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'from': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = TS-789012 ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = ADMIN-345678 ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = ROUTE-901234 ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = SYSTEM-567890 ✅
+2025-11-12 13:37:03 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = AR-123456 ✅
+2025-11-12 13:37:03 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'id': 15 smart values generated
+2025-11-12 13:37:03 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'id': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:03 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:03 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:03 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:37:03 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: price
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:37:07 INFO  stdout:36 - [LLM] Successfully generated content: 1250.50
+890.00
+2100.75
+560.25
+1500.00
+2025-11-12 13:37:07 INFO  stdout:36 - *** LLM Raw output: 1250.50
+890.00
+2100.75
+560.25
+1500.00
+2025-11-12 13:37:07 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → price = 1250.50 (from 5 options)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → price (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → price = 890.00 ✅
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → price (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → price = 2100.75 ✅
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → price (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → price = 560.25 ✅
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → price (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: price (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - *** Found cached value for: price (type: string)
+2025-11-12 13:37:07 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'price': 15 smart values generated
+2025-11-12 13:37:07 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'price': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:07 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:07 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:07 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:37:07 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: seatClass
+- Location: formData
+- Data Type: integer
+- Required: No (optional)
+- Format: int32
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:37:12 INFO  stdout:36 - [LLM] Successfully generated content: 1
+2
+3
+4
+5
+2025-11-12 13:37:12 INFO  stdout:36 - *** LLM Raw output: 1
+2
+3
+4
+5
+2025-11-12 13:37:12 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → seatClass = 1 (from 5 options)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatClass (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatClass = 2 ✅
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatClass (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatClass = 3 ✅
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatClass (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatClass = 4 ✅
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatClass (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatClass = 5 ✅
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatClass (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatClass = 1 ✅
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatClass (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:12 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatClass (howMany=5)
+2025-11-12 13:37:12 INFO  stdout:36 - *** Found cached value for: seatClass (type: integer)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatClass (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatClass = 2 ✅
+2025-11-12 13:37:12 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'seatClass': 15 smart values generated
+2025-11-12 13:37:12 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'seatClass': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:12 INFO  SmartInputFetcher:209 - 🔍 Parameter 'seatNumber' has 3 existing mappings
+2025-11-12 13:37:12 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/orderservice/order for parameter 'seatNumber'
+2025-11-12 13:37:12 INFO  SmartInputFetcher:476 - 🔄 Starting DIRECT VALUE EXTRACTION for parameter 'seatNumber'
+2025-11-12 13:37:12 INFO  SmartInputFetcher:3208 - Response schema too long (16273 chars), truncating to 581 chars for parameter 'seatNumber'
+2025-11-12 13:37:12 INFO  SmartInputFetcher:486 - 🧠 Calling LLM for DIRECT VALUE EXTRACTION (not JSONPath) for parameter 'seatNumber'
+2025-11-12 13:37:23 INFO  SmartInputFetcher:516 - ✅ LLM extracted ACTUAL VALUE 'FirstClass-30' for parameter 'seatNumber' (not JSONPath)
+2025-11-12 13:37:23 INFO  SmartInputFetcher:520 - 🔧 Formatted value 'FirstClass-30' → 'FirstClass-30' for parameter 'seatNumber'
+2025-11-12 13:37:23 INFO  SmartInputFetcher:3208 - Response schema too long (16273 chars), truncating to 1500 chars for parameter 'seatNumber'
+2025-11-12 13:37:34 INFO  SmartInputFetcher:1447 - 🔍 Need 10 values but only have 1, generating additional values using semantic similarity
+2025-11-12 13:37:34 INFO  SmartInputFetcher:1886 - 🧠 Generating 9 additional values for parameter 'seatNumber' using semantic similarity
+2025-11-12 13:37:42 INFO  SmartInputFetcher:1898 - ✅ Generated 9 additional semantic values for parameter 'seatNumber': [FirstClass-35, FirstClass-34, FirstClass-33]
+2025-11-12 13:37:42 INFO  SmartInputFetcher:427 - ✅ Smart Fetch Success: seatNumber = 'FirstClass-30' (from ts-order-service)
+2025-11-12 13:37:42 INFO  SmartInputFetcher:173 - Smart Fetch → seatNumber = FirstClass-30 ✅
+2025-11-12 13:37:42 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:42 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:42 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:37:42 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: seatNumber
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:37:48 INFO  stdout:36 - [LLM] Successfully generated content: 12A
+25B
+7C
+32D
+18E
+2025-11-12 13:37:48 INFO  stdout:36 - *** LLM Raw output: 12A
+25B
+7C
+32D
+18E
+2025-11-12 13:37:48 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → seatNumber = FirstClass-35 (from 15 options)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatNumber = FirstClass-34 ✅
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → seatNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → seatNumber = FirstClass-33 ✅
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → seatNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: seatNumber (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - *** Found cached value for: seatNumber (type: string)
+2025-11-12 13:37:48 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'seatNumber': 15 smart values generated
+2025-11-12 13:37:48 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'seatNumber': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:48 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:48 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:48 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:37:48 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: status
+- Location: formData
+- Data Type: integer
+- Required: No (optional)
+- Format: int32
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:37:51 INFO  stdout:36 - [LLM] Successfully generated content: 1
+2
+3
+4
+5
+2025-11-12 13:37:51 INFO  stdout:36 - *** LLM Raw output: 1
+2
+3
+4
+5
+2025-11-12 13:37:51 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → status = 1 (from 5 options)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → status (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → status = 2 ✅
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → status (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → status = 3 ✅
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → status (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → status = 4 ✅
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → status (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: status (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - *** Found cached value for: status (type: integer)
+2025-11-12 13:37:51 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'status': 15 smart values generated
+2025-11-12 13:37:51 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'status': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:51 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:51 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:51 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:37:51 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: to
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:37:55 INFO  stdout:36 - [LLM] Successfully generated content: Moscow
+Saint Petersburg
+Novosibirsk
+Yekaterinburg
+Kazan
+2025-11-12 13:37:55 INFO  stdout:36 - *** LLM Raw output: Moscow
+Saint Petersburg
+Novosibirsk
+Yekaterinburg
+Kazan
+2025-11-12 13:37:55 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → to = Moscow (from 5 options)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Saint Petersburg ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Novosibirsk ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Yekaterinburg ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:55 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:55 INFO  stdout:36 - *** Found cached value for: to (type: string)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:55 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:55 INFO  stdout:36 - *** Found cached value for: to (type: string)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Kazan ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Moscow ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:55 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:55 INFO  stdout:36 - *** Found cached value for: to (type: string)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Saint Petersburg ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:55 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:55 INFO  stdout:36 - *** Found cached value for: to (type: string)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:55 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:55 INFO  stdout:36 - *** Found cached value for: to (type: string)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Novosibirsk ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → to (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → to = Yekaterinburg ✅
+2025-11-12 13:37:55 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → to (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:37:55 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: to (howMany=5)
+2025-11-12 13:37:55 INFO  stdout:36 - *** Found cached value for: to (type: string)
+2025-11-12 13:37:55 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'to': 15 smart values generated
+2025-11-12 13:37:55 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'to': 15 total values (smart + LLM + fallback)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → trainNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:37:55 INFO  SmartInputFetcher:209 - 🔍 Parameter 'trainNumber' has 3 existing mappings
+2025-11-12 13:37:55 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/order/query for parameter 'trainNumber'
+2025-11-12 13:37:55 WARN  SmartInputFetcher:410 - ❌ API call failed with HTTP 404: http://129.62.148.112:32677/api/v1/order/query
+2025-11-12 13:37:55 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/route/query for parameter 'trainNumber'
+2025-11-12 13:37:55 WARN  SmartInputFetcher:410 - ❌ API call failed with HTTP 404: http://129.62.148.112:32677/api/v1/route/query
+2025-11-12 13:37:55 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/trainservice/trains for parameter 'trainNumber'
+2025-11-12 13:37:55 INFO  SmartInputFetcher:476 - 🔄 Starting DIRECT VALUE EXTRACTION for parameter 'trainNumber'
+2025-11-12 13:37:55 INFO  SmartInputFetcher:3208 - Response schema too long (843 chars), truncating to 580 chars for parameter 'trainNumber'
+2025-11-12 13:37:55 INFO  SmartInputFetcher:486 - 🧠 Calling LLM for DIRECT VALUE EXTRACTION (not JSONPath) for parameter 'trainNumber'
+2025-11-12 13:38:05 WARN  SmartInputFetcher:1553 - ❌ Numeric parameter 'trainnumber' contains no digits: 'GaoTieOne,GaoTieTwo'
+2025-11-12 13:38:05 WARN  SmartInputFetcher:511 - ❌ LLM response 'GaoTieOne,GaoTieTwo' is invalid for parameter 'trainNumber', using fallback
+2025-11-12 13:38:11 INFO  SmartInputFetcher:648 - 📋 No suitable values found in API response, asking LLM to generate meaningful value for parameter 'trainNumber'
+2025-11-12 13:38:11 INFO  SmartInputFetcher:3440 - 🧠 Asking LLM to generate meaningful value for parameter 'trainNumber'
+2025-11-12 13:38:17 INFO  SmartInputFetcher:3483 - ✅ LLM generated meaningful value 'G1237' for parameter 'trainNumber'
+2025-11-12 13:38:17 INFO  SmartInputFetcher:651 - ✅ LLM generated meaningful value 'G1237' for parameter 'trainNumber'
+2025-11-12 13:38:30 INFO  SmartInputFetcher:1439 - 📋 Extracted 7 diverse values for parameter 'trainNumber': [G1237, DongCheOne, GaoTieOne, TeKuai, ZhiDa]
+2025-11-12 13:38:30 INFO  SmartInputFetcher:1447 - 🔍 Need 10 values but only have 7, generating additional values using semantic similarity
+2025-11-12 13:38:30 INFO  SmartInputFetcher:1886 - 🧠 Generating 3 additional values for parameter 'trainNumber' using semantic similarity
+2025-11-12 13:38:37 INFO  SmartInputFetcher:1898 - ✅ Generated 3 additional semantic values for parameter 'trainNumber': [Z2468, G5678, D1357]
+2025-11-12 13:38:37 INFO  SmartInputFetcher:427 - ✅ Smart Fetch Success: trainNumber = 'G1237' (from ts-train-service)
+2025-11-12 13:38:37 INFO  SmartInputFetcher:173 - Smart Fetch → trainNumber = G1237 ✅
+2025-11-12 13:38:37 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:37 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:37 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:38:37 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: trainNumber
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:38:43 INFO  stdout:36 - [LLM] Successfully generated content: G1234
+ICE 567
+TGV 890
+S12345
+EC 6789
+2025-11-12 13:38:43 INFO  stdout:36 - *** LLM Raw output: G1234
+ICE 567
+TGV 890
+S12345
+EC 6789
+2025-11-12 13:38:43 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → trainNumber = DongCheOne (from 15 options)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → trainNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → trainNumber = GaoTieOne ✅
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → trainNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → trainNumber = TeKuai ✅
+2025-11-12 13:38:43 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → trainNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → trainNumber = ZhiDa ✅
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → trainNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → trainNumber = KuaiSu ✅
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → trainNumber (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → trainNumber = GaoTieTwo ✅
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → trainNumber (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: trainNumber (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - *** Found cached value for: trainNumber (type: string)
+2025-11-12 13:38:43 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'trainNumber': 15 smart values generated
+2025-11-12 13:38:43 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'trainNumber': 15 total values (smart + LLM + fallback)
+2025-11-12 13:38:43 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:43 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:43 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:38:43 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: travelDate
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate valid date/time values in appropriate format.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:38:49 INFO  stdout:36 - [LLM] Successfully generated content: 2023-12-25
+2024-01-15
+2023-06-30
+2024-07-20
+2023-11-10
+2025-11-12 13:38:49 INFO  stdout:36 - *** LLM Raw output: 2023-12-25
+2024-01-15
+2023-06-30
+2024-07-20
+2023-11-10
+2025-11-12 13:38:49 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → travelDate = 2023-12-25 (from 5 options)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → travelDate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → travelDate = 2024-01-15 ✅
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → travelDate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → travelDate = 2023-06-30 ✅
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelDate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelDate (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - *** Found cached value for: travelDate (type: string)
+2025-11-12 13:38:49 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'travelDate': 15 smart values generated
+2025-11-12 13:38:49 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'travelDate': 15 total values (smart + LLM + fallback)
+2025-11-12 13:38:49 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:49 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:49 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:38:49 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminorderservice/adminorder
+- Service: ts-admin-order-service
+- All Parameters in this API: accountId, boughtDate, coachNumber, contactsDocumentNumber, contactsName, differenceMoney, documentType, from, id, price, seatClass, seatNumber, status, to, trainNumber, travelDate, travelTime
+
+Parameter Information:
+- Name: travelTime
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate valid date/time values in appropriate format.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:38:54 INFO  stdout:36 - [LLM] Successfully generated content: 08:30:00
+14:15:00
+22:45:00
+00:00:00
+12:00:00
+2025-11-12 13:38:54 INFO  stdout:36 - *** LLM Raw output: 08:30:00
+14:15:00
+22:45:00
+00:00:00
+12:00:00
+2025-11-12 13:38:54 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → travelTime = 08:30:00 (from 5 options)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → travelTime (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → travelTime = 14:15:00 ✅
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → travelTime (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → travelTime = 22:45:00 ✅
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → travelTime (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:38:54 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: travelTime (howMany=5)
+2025-11-12 13:38:54 INFO  stdout:36 - *** Found cached value for: travelTime (type: string)
+2025-11-12 13:38:54 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'travelTime': 15 smart values generated
+2025-11-12 13:38:54 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'travelTime': 15 total values (smart + LLM + fallback)
+2025-11-12 13:38:54 INFO  MultiServiceTestCaseGenerator:1590 - Generated parameter pool for 'POST__api_v1_adminorderservice_adminorder' with 17 parameters
+2025-11-12 13:38:54 INFO  MultiServiceTestCaseGenerator:1581 - Generating shared parameters for root API: POST__api_v1_adminbasicservice_adminbasic_prices (scenarios: 1)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → basicPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:38:54 INFO  SmartInputFetcher:209 - 🔍 Parameter 'basicPriceRate' has 3 existing mappings
+2025-11-12 13:38:54 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/order/query for parameter 'basicPriceRate'
+2025-11-12 13:38:54 WARN  SmartInputFetcher:410 - ❌ API call failed with HTTP 404: http://129.62.148.112:32677/api/v1/order/query
+2025-11-12 13:38:54 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/priceservice/prices for parameter 'basicPriceRate'
+2025-11-12 13:38:57 INFO  SmartInputFetcher:476 - 🔄 Starting DIRECT VALUE EXTRACTION for parameter 'basicPriceRate'
+2025-11-12 13:38:57 INFO  SmartInputFetcher:3208 - Response schema too long (1685 chars), truncating to 577 chars for parameter 'basicPriceRate'
+2025-11-12 13:38:57 INFO  SmartInputFetcher:486 - 🧠 Calling LLM for DIRECT VALUE EXTRACTION (not JSONPath) for parameter 'basicPriceRate'
+2025-11-12 13:39:08 INFO  SmartInputFetcher:516 - ✅ LLM extracted ACTUAL VALUE '0.38,0.5' for parameter 'basicPriceRate' (not JSONPath)
+2025-11-12 13:39:08 INFO  SmartInputFetcher:520 - 🔧 Formatted value '0.38,0.5' → '1.0' for parameter 'basicPriceRate'
+2025-11-12 13:39:08 INFO  SmartInputFetcher:3208 - Response schema too long (1685 chars), truncating to 1500 chars for parameter 'basicPriceRate'
+2025-11-12 13:39:15 INFO  SmartInputFetcher:1439 - 📋 Extracted 3 diverse values for parameter 'basicPriceRate': [0.38, 0.38,0.5, 0.5]
+2025-11-12 13:39:15 INFO  SmartInputFetcher:1447 - 🔍 Need 10 values but only have 3, generating additional values using semantic similarity
+2025-11-12 13:39:15 INFO  SmartInputFetcher:1886 - 🧠 Generating 7 additional values for parameter 'basicPriceRate' using semantic similarity
+2025-11-12 13:39:22 INFO  SmartInputFetcher:1898 - ✅ Generated 7 additional semantic values for parameter 'basicPriceRate': [1.0, 0.15, 0.25]
+2025-11-12 13:39:22 INFO  SmartInputFetcher:427 - ✅ Smart Fetch Success: basicPriceRate = '1.0' (from ts-price-service)
+2025-11-12 13:39:22 INFO  SmartInputFetcher:173 - Smart Fetch → basicPriceRate = 1.0 ✅
+2025-11-12 13:39:22 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:22 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:22 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:39:22 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminbasicservice/adminbasic/prices
+- Service: ts-admin-basic-info-service
+- All Parameters in this API: basicPriceRate, firstClassPriceRate, id, routeId, trainType
+
+Parameter Information:
+- Name: basicPriceRate
+- Location: formData
+- Data Type: number
+- Required: No (optional)
+- Format: double
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:39:29 INFO  stdout:36 - [LLM] Successfully generated content: 12.50
+25.75
+8.25
+15.00
+30.00
+2025-11-12 13:39:29 INFO  stdout:36 - *** LLM Raw output: 12.50
+25.75
+8.25
+15.00
+30.00
+2025-11-12 13:39:29 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → basicPriceRate = 0.38 (from 14 options)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → basicPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → basicPriceRate = 0.5 ✅
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → basicPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → basicPriceRate = 1.0 ✅
+2025-11-12 13:39:29 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → basicPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → basicPriceRate = 0.15 ✅
+2025-11-12 13:39:29 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → basicPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → basicPriceRate = 0.25 ✅
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → basicPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: basicPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - *** Found cached value for: basicPriceRate (type: number)
+2025-11-12 13:39:29 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'basicPriceRate': 15 smart values generated
+2025-11-12 13:39:29 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'basicPriceRate': 15 total values (smart + LLM + fallback)
+2025-11-12 13:39:29 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:29 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:29 INFO  stdout:36 - [LLM] Calling LLM service with model type: OLLAMA
+2025-11-12 13:39:29 INFO  stdout:36 - [LLM] User prompt: You are an API testing assistant that generates realistic parameter values.
+
+API Context:
+- API Endpoint: POST /api/v1/adminbasicservice/adminbasic/prices
+- Service: ts-admin-basic-info-service
+- All Parameters in this API: basicPriceRate, firstClassPriceRate, id, routeId, trainType
+
+Parameter Information:
+- Name: firstClassPriceRate
+- Location: formData
+- Data Type: number
+- Required: No (optional)
+- Format: double
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Domain Guidance: Generate realistic numeric values appropriate for the context.
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+2025-11-12 13:39:34 INFO  stdout:36 - [LLM] Successfully generated content: 150.50
+275.00
+99.99
+420.25
+180.75
+2025-11-12 13:39:34 INFO  stdout:36 - *** LLM Raw output: 150.50
+275.00
+99.99
+420.25
+180.75
+2025-11-12 13:39:34 INFO  SmartInputFetcher:1107 - LLM (Fallback, Rotated) → firstClassPriceRate = 150.5 (from 5 options)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → firstClassPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → firstClassPriceRate = 275.0 ✅
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → firstClassPriceRate (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → firstClassPriceRate = 99.99 ✅
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → firstClassPriceRate (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: firstClassPriceRate (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: firstClassPriceRate (type: number)
+2025-11-12 13:39:34 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'firstClassPriceRate': 15 smart values generated
+2025-11-12 13:39:34 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'firstClassPriceRate': 15 total values (smart + LLM + fallback)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = TS-789012 ✅
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = ADMIN-345678 ✅
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → id (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:166 - 🔄 Using diverse cached value → id = ROUTE-901234 ✅
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:185 - 🤖 LLM Decision → id (random: {:.3f} >= {:.1f}%)
+2025-11-12 13:39:34 INFO  stdout:36 - *** ZeroShotLLMGenerator.generateParameterValues called for: id (howMany=5)
+2025-11-12 13:39:34 INFO  stdout:36 - *** Found cached value for: id (type: string)
+2025-11-12 13:39:34 INFO  MultiServiceTestCaseGenerator:1681 - Smart Fetch Pool → parameter 'id': 15 smart values generated
+2025-11-12 13:39:34 INFO  MultiServiceTestCaseGenerator:1716 - Generated shared pool for parameter 'id': 15 total values (smart + LLM + fallback)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:157 - 🎯 Smart Fetch Decision → routeId (random: {:.3f} < {:.1f}%)
+2025-11-12 13:39:34 INFO  SmartInputFetcher:209 - 🔍 Parameter 'routeId' has 3 existing mappings
+2025-11-12 13:39:34 INFO  SmartInputFetcher:390 - 🌐 API Call: GET http://129.62.148.112:32677/api/v1/admintravelservice/admintravel for parameter 'routeId'
+2025-11-12 13:39:34 INFO  SmartInputFetcher:476 - 🔄 Starting DIRECT VALUE EXTRACTION for parameter 'routeId'
+2025-11-12 13:39:34 INFO  SmartInputFetcher:3208 - Response schema too long (6490 chars), truncating to 584 chars for parameter 'routeId'
+2025-11-12 13:39:34 INFO  SmartInputFetcher:486 - 🧠 Calling LLM for DIRECT VALUE EXTRACTION (not JSONPath) for parameter 'routeId'
+2025-11-12 13:39:49 INFO  SmartInputFetcher:516 - ✅ LLM extracted ACTUAL VALUE '92708982-77af-4318-be25-57ccb0ff69ad' for parameter 'routeId' (not JSONPath)
+2025-11-12 13:39:49 INFO  SmartInputFetcher:520 - 🔧 Formatted value '92708982-77af-4318-be25-57ccb0ff69ad' → '92708982-77af-4318-be25-57ccb0ff69ad' for parameter 'routeId'
+2025-11-12 13:39:49 INFO  SmartInputFetcher:3208 - Response schema too long (6490 chars), truncating to 1500 chars for parameter 'routeId'
+2025-11-12 13:39:49 WARN  SmartInputFetcher:1468 - Multiple value extraction prompt too long (2186 chars), using fallback

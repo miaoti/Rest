@@ -273,16 +273,16 @@ flowchart TD
     A --> B7[SPECIAL_CHARACTERS]
     A --> B8[BOUNDARY_VIOLATION]
     
-    B1 --> C1[Wrong data type<br/>String param gets Integer 55]
-    B2 --> C2[Pattern violation<br/>Email without @ symbol]
-    B3 --> C3[Meaningless value<br/>Age = -5, impossible date]
-    B4 --> C4[Exceeds limits<br/>10000 char string, MAX_INT]
-    B5 --> C5[Empty values<br/>Empty string, whitespace, []<br/>ONLY for REQUIRED params]
-    B6 --> C6[Null values<br/>null, 'null', 'NULL'<br/>ONLY for REQUIRED params]
-    B7 --> C7[Injection attempts<br/>SQL injection, XSS, traversal]
-    B8 --> C8[Boundary errors<br/>Off-by-one, min-1, max+1]
+    B1 --> C1["Wrong data type: String param gets Integer 55"]
+    B2 --> C2["Pattern violation: Email without @ symbol"]
+    B3 --> C3["Meaningless value: Age = -5, impossible date"]
+    B4 --> C4["Exceeds limits: 10000 char string, MAX_INT"]
+    B5 --> C5["Empty values: Empty string, whitespace, empty array. ONLY for REQUIRED params"]
+    B6 --> C6["Null values: null, 'null', 'NULL'. ONLY for REQUIRED params"]
+    B7 --> C7["Injection attempts: SQL injection, XSS, traversal"]
+    B8 --> C8["Boundary errors: Off-by-one, min-1, max+1"]
     
-    Note1[* Empty/Null inputs are VALID for optional parameters<br/>They are only generated for required parameters]
+    Note1["* Empty/Null inputs are VALID for optional parameters. They are only generated for required parameters"]
 ```
 
 **Important: Optional Parameter Handling**
