@@ -2102,6 +2102,26 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                               .replaceAll("_+", "_")
                                               .replaceAll("^_|_$", "");
             
+            // Windows path limit is 260 chars. Account for:
+            // - Base path (e.g., "src/test/java/trainticket_twostage_test/")
+            // - Timestamp (e.g., "TrainTicketTwoStageTest_1762921209504/")
+            // - Test variant suffix (e.g., "_123")
+            // - File extension (".java")
+            // Safe limit for class name: ~100 characters
+            final int MAX_CLASS_NAME_LENGTH = 100;
+            
+            if (apiName.length() > MAX_CLASS_NAME_LENGTH) {
+                // Truncate and add hash to maintain uniqueness
+                String truncated = apiName.substring(0, MAX_CLASS_NAME_LENGTH - 9); // Leave room for hash
+                int hash = apiName.hashCode();
+                // Use positive hash value for consistency
+                String hashSuffix = String.format("_%08X", hash & 0xFFFFFFFF);
+                apiName = truncated + hashSuffix;
+                
+                log.warn("⚠️  API name truncated due to length: {} -> {} (original length: {})", 
+                         path, apiName, apiName.length() + (apiName.length() - MAX_CLASS_NAME_LENGTH));
+            }
+            
             return apiName;
         }
         
