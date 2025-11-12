@@ -207,11 +207,11 @@ flowchart TD
        - Example: String param gets `"AAAA..."` (1000+ characters)
        - Example: Number param gets `9999999999` (beyond max)
        - Example: Path param gets `tripId_1234567890_1234567890_...` (very long)
-    5. **EMPTY_INPUT**: Empty values (⚠️ ONLY for REQUIRED params)
+    5. **EMPTY_INPUT**: Empty values ( !ONLY for REQUIRED params)
        - Example: Required string gets `""` (empty string)
        - Example: Required string gets `"   "` (whitespace only)
        - Example: Required array gets `[]` (empty array)
-    6. **NULL_INPUT**: Null values (⚠️ ONLY for REQUIRED params)
+    6. **NULL_INPUT**: Null values ( !ONLY for REQUIRED params)
        - Example: Required param gets `null` (actual null)
        - Example: Required param gets `"null"` (string "null")
        - Example: Required param gets `"NULL"` (string "NULL")
@@ -277,8 +277,8 @@ flowchart TD
     B2 --> C2[Pattern violation<br/>Email without @ symbol]
     B3 --> C3[Meaningless value<br/>Age = -5, impossible date]
     B4 --> C4[Exceeds limits<br/>10000 char string, MAX_INT]
-    B5 --> C5[Empty values<br/>Empty string, whitespace, []<br/>⚠️ ONLY for REQUIRED params]
-    B6 --> C6[Null values<br/>null, 'null', 'NULL'<br/>⚠️ ONLY for REQUIRED params]
+    B5 --> C5[Empty values<br/>Empty string, whitespace, []<br/>ONLY for REQUIRED params]
+    B6 --> C6[Null values<br/>null, 'null', 'NULL'<br/>ONLY for REQUIRED params]
     B7 --> C7[Injection attempts<br/>SQL injection, XSS, traversal]
     B8 --> C8[Boundary errors<br/>Off-by-one, min-1, max+1]
     
