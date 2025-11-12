@@ -1,0 +1,1859 @@
+################################################################################
+# LLM COMMUNICATION LOG
+# Session ID: LLM-1762916858700-1
+# Started: 2025-11-11 21:07:38.723
+# Configuration:
+#   - Include Response Time: true
+#   - Include Content: true
+#   - Include Metadata: true
+#   - Max Content Length: 10000
+#   - Log Level: INFO
+################################################################################
+
+================================================================================
+🚀 LLM REQUEST #1
+================================================================================
+Timestamp: 2025-11-11 21:08:24.158
+Session ID: LLM-1762916858700-1
+Request ID: 1
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"trip":{"id":"0619d664-7683-4f53-91e0-9d5a16ecbf00","tripId":{"type":"Z","number":"1234"},"trainTypeName":"ZhiDa","routeId":"0b23bd3e-876a-4af3-b920-c50a90c90b04","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 09:51:52","endTime":"2013-05-04 15:51:52"},"trainType":{"id":"9dc4643b-dd1d-4617-bc70-93f376bad1ba","name":"ZhiDa","economyClass":2147483647,"confortClass":2147483647,"averageSpeed":120},"route":{"id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","stations":["shanghai","nanjing","shijiazhuang","taiyuan"],"distances":[0,350,1000,1300],"startStation":"shanghai","endStation":"taiyuan"}}],"status":1}
+
+Target Parameter: distanceList (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #1
+Timestamp: 2025-11-11 21:09:00.472
+Status: ✅ SUCCESS
+Response Time: 36331 ms
+📊 Resource Usage During Generation: System CPU: avg=17.3%, max=91.4% | System Memory: avg=90.4%, max=100.0% (31.7 GB/31.7 GB) | ollama.exe Process: max=43.0 MB | Samples: 73 over 36354ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+0,350,1000,1300
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #2
+================================================================================
+Timestamp: 2025-11-11 21:09:00.520
+Session ID: LLM-1762916858700-1
+Request ID: 2
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'status' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #2
+Timestamp: 2025-11-11 21:09:03.617
+Status: ✅ SUCCESS
+Response Time: 3097 ms
+📊 Resource Usage During Generation: System CPU: avg=16.7%, max=25.9% | System Memory: avg=89.3%, max=90.6% (28.7 GB/31.7 GB) | ollama.exe Process: max=64.0 MB | Samples: 6 over 3098ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'status' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #3
+================================================================================
+Timestamp: 2025-11-11 21:09:03.618
+Session ID: LLM-1762916858700-1
+Request ID: 3
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'msg' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #3
+Timestamp: 2025-11-11 21:09:06.199
+Status: ✅ SUCCESS
+Response Time: 2581 ms
+📊 Resource Usage During Generation: System CPU: avg=12.7%, max=25.1% | System Memory: avg=85.6%, max=87.7% (27.8 GB/31.7 GB) | ollama.exe Process: max=81.3 MB | Samples: 5 over 2582ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'msg' (typically
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #4
+================================================================================
+Timestamp: 2025-11-11 21:09:06.200
+Session ID: LLM-1762916858700-1
+Request ID: 4
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'data' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #4
+Timestamp: 2025-11-11 21:09:08.787
+Status: ✅ SUCCESS
+Response Time: 2587 ms
+📊 Resource Usage During Generation: System CPU: avg=17.6%, max=27.3% | System Memory: avg=79.9%, max=80.0% (25.3 GB/31.7 GB) | ollama.exe Process: max=81.4 MB | Samples: 5 over 2588ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'data' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #5
+================================================================================
+Timestamp: 2025-11-11 21:09:08.788
+Session ID: LLM-1762916858700-1
+Request ID: 5
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'trip' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #5
+Timestamp: 2025-11-11 21:09:11.381
+Status: ✅ SUCCESS
+Response Time: 2593 ms
+📊 Resource Usage During Generation: System CPU: avg=13.0%, max=19.8% | System Memory: avg=80.0%, max=80.0% (25.3 GB/31.7 GB) | ollama.exe Process: max=87.0 MB | Samples: 5 over 2593ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'trip' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #6
+================================================================================
+Timestamp: 2025-11-11 21:09:11.381
+Session ID: LLM-1762916858700-1
+Request ID: 6
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'id' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #6
+Timestamp: 2025-11-11 21:09:13.907
+Status: ✅ SUCCESS
+Response Time: 2526 ms
+📊 Resource Usage During Generation: System CPU: avg=13.2%, max=22.4% | System Memory: avg=80.0%, max=80.1% (25.4 GB/31.7 GB) | ollama.exe Process: max=82.2 MB | Samples: 5 over 2526ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'id' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #7
+================================================================================
+Timestamp: 2025-11-11 21:09:13.908
+Session ID: LLM-1762916858700-1
+Request ID: 7
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'tripid' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #7
+Timestamp: 2025-11-11 21:09:16.468
+Status: ✅ SUCCESS
+Response Time: 2560 ms
+📊 Resource Usage During Generation: System CPU: avg=10.8%, max=26.5% | System Memory: avg=80.0%, max=80.0% (25.4 GB/31.7 GB) | ollama.exe Process: max=85.8 MB | Samples: 5 over 2561ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'tripid' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #8
+================================================================================
+Timestamp: 2025-11-11 21:09:16.469
+Session ID: LLM-1762916858700-1
+Request ID: 8
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'type' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #8
+Timestamp: 2025-11-11 21:09:19.055
+Status: ✅ SUCCESS
+Response Time: 2586 ms
+📊 Resource Usage During Generation: System CPU: avg=13.0%, max=24.3% | System Memory: avg=80.1%, max=80.1% (25.4 GB/31.7 GB) | ollama.exe Process: max=89.6 MB | Samples: 5 over 2586ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'type' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #9
+================================================================================
+Timestamp: 2025-11-11 21:09:19.055
+Session ID: LLM-1762916858700-1
+Request ID: 9
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'number' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #9
+Timestamp: 2025-11-11 21:09:21.655
+Status: ✅ SUCCESS
+Response Time: 2600 ms
+📊 Resource Usage During Generation: System CPU: avg=16.0%, max=24.1% | System Memory: avg=80.1%, max=80.1% (25.4 GB/31.7 GB) | ollama.exe Process: max=85.9 MB | Samples: 5 over 2600ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'number' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #10
+================================================================================
+Timestamp: 2025-11-11 21:09:21.655
+Session ID: LLM-1762916858700-1
+Request ID: 10
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'traintypename' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #10
+Timestamp: 2025-11-11 21:09:24.431
+Status: ✅ SUCCESS
+Response Time: 2776 ms
+📊 Resource Usage During Generation: System CPU: avg=13.0%, max=23.6% | System Memory: avg=80.1%, max=80.2% (25.4 GB/31.7 GB) | ollama.exe Process: max=73.6 MB | Samples: 6 over 2776ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'traintypename
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #11
+================================================================================
+Timestamp: 2025-11-11 21:09:24.431
+Session ID: LLM-1762916858700-1
+Request ID: 11
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'routeid' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #11
+Timestamp: 2025-11-11 21:09:27.062
+Status: ✅ SUCCESS
+Response Time: 2631 ms
+📊 Resource Usage During Generation: System CPU: avg=13.9%, max=22.6% | System Memory: avg=80.2%, max=80.3% (25.5 GB/31.7 GB) | ollama.exe Process: max=75.5 MB | Samples: 5 over 2632ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'routeid' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #12
+================================================================================
+Timestamp: 2025-11-11 21:09:27.063
+Session ID: LLM-1762916858700-1
+Request ID: 12
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'stationsname' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #12
+Timestamp: 2025-11-11 21:09:29.660
+Status: ✅ SUCCESS
+Response Time: 2597 ms
+📊 Resource Usage During Generation: System CPU: avg=12.8%, max=24.1% | System Memory: avg=80.4%, max=80.4% (25.5 GB/31.7 GB) | ollama.exe Process: max=75.5 MB | Samples: 5 over 2598ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'stationsname' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #13
+================================================================================
+Timestamp: 2025-11-11 21:09:29.661
+Session ID: LLM-1762916858700-1
+Request ID: 13
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'starttime' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #13
+Timestamp: 2025-11-11 21:09:32.180
+Status: ✅ SUCCESS
+Response Time: 2519 ms
+📊 Resource Usage During Generation: System CPU: avg=11.6%, max=23.4% | System Memory: avg=80.3%, max=80.4% (25.5 GB/31.7 GB) | ollama.exe Process: max=80.7 MB | Samples: 5 over 2520ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'starttime' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #14
+================================================================================
+Timestamp: 2025-11-11 21:09:32.181
+Session ID: LLM-1762916858700-1
+Request ID: 14
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'endtime' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #14
+Timestamp: 2025-11-11 21:09:34.759
+Status: ✅ SUCCESS
+Response Time: 2578 ms
+📊 Resource Usage During Generation: System CPU: avg=13.5%, max=24.7% | System Memory: avg=80.3%, max=80.4% (25.5 GB/31.7 GB) | ollama.exe Process: max=86.3 MB | Samples: 5 over 2578ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'endtime' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #15
+================================================================================
+Timestamp: 2025-11-11 21:09:34.760
+Session ID: LLM-1762916858700-1
+Request ID: 15
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'traintype' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #15
+Timestamp: 2025-11-11 21:09:37.399
+Status: ✅ SUCCESS
+Response Time: 2639 ms
+📊 Resource Usage During Generation: System CPU: avg=17.2%, max=26.2% | System Memory: avg=80.4%, max=80.4% (25.5 GB/31.7 GB) | ollama.exe Process: max=83.2 MB | Samples: 5 over 2639ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'traintype'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #16
+================================================================================
+Timestamp: 2025-11-11 21:09:37.399
+Session ID: LLM-1762916858700-1
+Request ID: 16
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'id' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #16
+Timestamp: 2025-11-11 21:09:39.988
+Status: ✅ SUCCESS
+Response Time: 2589 ms
+📊 Resource Usage During Generation: System CPU: avg=14.1%, max=22.8% | System Memory: avg=81.1%, max=81.3% (25.8 GB/31.7 GB) | ollama.exe Process: max=86.9 MB | Samples: 5 over 2589ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'id' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #17
+================================================================================
+Timestamp: 2025-11-11 21:09:39.988
+Session ID: LLM-1762916858700-1
+Request ID: 17
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'name' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #17
+Timestamp: 2025-11-11 21:09:42.513
+Status: ✅ SUCCESS
+Response Time: 2525 ms
+📊 Resource Usage During Generation: System CPU: avg=16.8%, max=24.0% | System Memory: avg=81.0%, max=81.0% (25.7 GB/31.7 GB) | ollama.exe Process: max=77.6 MB | Samples: 5 over 2525ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'name' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #18
+================================================================================
+Timestamp: 2025-11-11 21:09:42.513
+Session ID: LLM-1762916858700-1
+Request ID: 18
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'economyclass' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #18
+Timestamp: 2025-11-11 21:09:45.105
+Status: ✅ SUCCESS
+Response Time: 2592 ms
+📊 Resource Usage During Generation: System CPU: avg=16.6%, max=25.8% | System Memory: avg=81.0%, max=81.0% (25.7 GB/31.7 GB) | ollama.exe Process: max=81.8 MB | Samples: 5 over 2592ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'economyclass'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #19
+================================================================================
+Timestamp: 2025-11-11 21:09:45.105
+Session ID: LLM-1762916858700-1
+Request ID: 19
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'confortclass' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #19
+Timestamp: 2025-11-11 21:09:47.716
+Status: ✅ SUCCESS
+Response Time: 2611 ms
+📊 Resource Usage During Generation: System CPU: avg=12.5%, max=25.8% | System Memory: avg=81.2%, max=81.2% (25.7 GB/31.7 GB) | ollama.exe Process: max=78.8 MB | Samples: 5 over 2612ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'confortclass'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #20
+================================================================================
+Timestamp: 2025-11-11 21:09:47.717
+Session ID: LLM-1762916858700-1
+Request ID: 20
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'averagespeed' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #20
+Timestamp: 2025-11-11 21:09:50.346
+Status: ✅ SUCCESS
+Response Time: 2629 ms
+📊 Resource Usage During Generation: System CPU: avg=13.1%, max=19.7% | System Memory: avg=81.2%, max=81.3% (25.8 GB/31.7 GB) | ollama.exe Process: max=83.1 MB | Samples: 5 over 2630ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'averagespeed'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #21
+================================================================================
+Timestamp: 2025-11-11 21:09:50.347
+Session ID: LLM-1762916858700-1
+Request ID: 21
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'route' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #21
+Timestamp: 2025-11-11 21:09:52.854
+Status: ✅ SUCCESS
+Response Time: 2507 ms
+📊 Resource Usage During Generation: System CPU: avg=14.4%, max=24.8% | System Memory: avg=81.5%, max=81.6% (25.9 GB/31.7 GB) | ollama.exe Process: max=80.6 MB | Samples: 5 over 2507ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'route' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #22
+================================================================================
+Timestamp: 2025-11-11 21:09:52.855
+Session ID: LLM-1762916858700-1
+Request ID: 22
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'id' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #22
+Timestamp: 2025-11-11 21:09:55.413
+Status: ✅ SUCCESS
+Response Time: 2559 ms
+📊 Resource Usage During Generation: System CPU: avg=12.3%, max=23.7% | System Memory: avg=81.7%, max=81.7% (25.9 GB/31.7 GB) | ollama.exe Process: max=86.6 MB | Samples: 5 over 2560ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'id' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #23
+================================================================================
+Timestamp: 2025-11-11 21:09:55.414
+Session ID: LLM-1762916858700-1
+Request ID: 23
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'stations' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #23
+Timestamp: 2025-11-11 21:09:57.978
+Status: ✅ SUCCESS
+Response Time: 2563 ms
+📊 Resource Usage During Generation: System CPU: avg=12.1%, max=23.4% | System Memory: avg=81.7%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=80.4 MB | Samples: 5 over 2564ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'stations' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #24
+================================================================================
+Timestamp: 2025-11-11 21:09:57.978
+Session ID: LLM-1762916858700-1
+Request ID: 24
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'distances' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #24
+Timestamp: 2025-11-11 21:10:00.552
+Status: ✅ SUCCESS
+Response Time: 2574 ms
+📊 Resource Usage During Generation: System CPU: avg=16.4%, max=24.4% | System Memory: avg=81.7%, max=81.7% (25.9 GB/31.7 GB) | ollama.exe Process: max=83.4 MB | Samples: 5 over 2574ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'distances' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #25
+================================================================================
+Timestamp: 2025-11-11 21:10:00.552
+Session ID: LLM-1762916858700-1
+Request ID: 25
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'startstation' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #25
+Timestamp: 2025-11-11 21:10:03.098
+Status: ✅ SUCCESS
+Response Time: 2546 ms
+📊 Resource Usage During Generation: System CPU: avg=13.9%, max=23.3% | System Memory: avg=81.7%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=82.1 MB | Samples: 5 over 2546ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'startstation' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #26
+================================================================================
+Timestamp: 2025-11-11 21:10:03.098
+Session ID: LLM-1762916858700-1
+Request ID: 26
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'endstation' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #26
+Timestamp: 2025-11-11 21:10:05.665
+Status: ✅ SUCCESS
+Response Time: 2567 ms
+📊 Resource Usage During Generation: System CPU: avg=10.6%, max=25.5% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=85.4 MB | Samples: 5 over 2567ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'endstation' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #27
+================================================================================
+Timestamp: 2025-11-11 21:10:05.665
+Session ID: LLM-1762916858700-1
+Request ID: 27
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'trip' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #27
+Timestamp: 2025-11-11 21:10:08.217
+Status: ✅ SUCCESS
+Response Time: 2552 ms
+📊 Resource Usage During Generation: System CPU: avg=17.0%, max=21.3% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=88.2 MB | Samples: 5 over 2553ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'trip' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #28
+================================================================================
+Timestamp: 2025-11-11 21:10:08.218
+Session ID: LLM-1762916858700-1
+Request ID: 28
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'id' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #28
+Timestamp: 2025-11-11 21:10:10.754
+Status: ✅ SUCCESS
+Response Time: 2536 ms
+📊 Resource Usage During Generation: System CPU: avg=14.3%, max=22.8% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=82.9 MB | Samples: 5 over 2536ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'id' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #29
+================================================================================
+Timestamp: 2025-11-11 21:10:10.754
+Session ID: LLM-1762916858700-1
+Request ID: 29
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'tripid' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #29
+Timestamp: 2025-11-11 21:10:13.312
+Status: ✅ SUCCESS
+Response Time: 2558 ms
+📊 Resource Usage During Generation: System CPU: avg=13.5%, max=24.7% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=87.1 MB | Samples: 5 over 2558ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'tripid' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #30
+================================================================================
+Timestamp: 2025-11-11 21:10:13.313
+Session ID: LLM-1762916858700-1
+Request ID: 30
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'type' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #30
+Timestamp: 2025-11-11 21:10:15.880
+Status: ✅ SUCCESS
+Response Time: 2568 ms
+📊 Resource Usage During Generation: System CPU: avg=14.5%, max=25.7% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=82.0 MB | Samples: 5 over 2567ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'type' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #31
+================================================================================
+Timestamp: 2025-11-11 21:10:15.880
+Session ID: LLM-1762916858700-1
+Request ID: 31
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'number' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #31
+Timestamp: 2025-11-11 21:10:18.408
+Status: ✅ SUCCESS
+Response Time: 2528 ms
+📊 Resource Usage During Generation: System CPU: avg=13.8%, max=24.7% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=84.3 MB | Samples: 5 over 2529ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'number' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #32
+================================================================================
+Timestamp: 2025-11-11 21:10:18.409
+Session ID: LLM-1762916858700-1
+Request ID: 32
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'traintypename' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #32
+Timestamp: 2025-11-11 21:10:21.155
+Status: ✅ SUCCESS
+Response Time: 2746 ms
+📊 Resource Usage During Generation: System CPU: avg=12.3%, max=22.1% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=83.4 MB | Samples: 6 over 2746ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'traintypename
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #33
+================================================================================
+Timestamp: 2025-11-11 21:10:21.155
+Session ID: LLM-1762916858700-1
+Request ID: 33
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'routeid' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #33
+Timestamp: 2025-11-11 21:10:23.699
+Status: ✅ SUCCESS
+Response Time: 2544 ms
+📊 Resource Usage During Generation: System CPU: avg=14.4%, max=23.0% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=85.5 MB | Samples: 5 over 2545ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'routeid' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #34
+================================================================================
+Timestamp: 2025-11-11 21:10:23.700
+Session ID: LLM-1762916858700-1
+Request ID: 34
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'stationsname' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #34
+Timestamp: 2025-11-11 21:10:26.262
+Status: ✅ SUCCESS
+Response Time: 2562 ms
+📊 Resource Usage During Generation: System CPU: avg=11.7%, max=25.1% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=87.7 MB | Samples: 5 over 2562ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'stationsname' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #35
+================================================================================
+Timestamp: 2025-11-11 21:10:26.263
+Session ID: LLM-1762916858700-1
+Request ID: 35
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'starttime' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #35
+Timestamp: 2025-11-11 21:10:28.824
+Status: ✅ SUCCESS
+Response Time: 2561 ms
+📊 Resource Usage During Generation: System CPU: avg=14.6%, max=28.4% | System Memory: avg=81.8%, max=81.8% (25.9 GB/31.7 GB) | ollama.exe Process: max=83.6 MB | Samples: 5 over 2562ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'starttime' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #36
+================================================================================
+Timestamp: 2025-11-11 21:10:28.825
+Session ID: LLM-1762916858700-1
+Request ID: 36
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'endtime' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #36
+Timestamp: 2025-11-11 21:10:31.374
+Status: ✅ SUCCESS
+Response Time: 2549 ms
+📊 Resource Usage During Generation: System CPU: avg=17.9%, max=27.5% | System Memory: avg=81.8%, max=81.9% (25.9 GB/31.7 GB) | ollama.exe Process: max=83.7 MB | Samples: 5 over 2550ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'endtime' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #37
+================================================================================
+Timestamp: 2025-11-11 21:10:31.375
+Session ID: LLM-1762916858700-1
+Request ID: 37
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'traintype' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #37
+Timestamp: 2025-11-11 21:10:33.912
+Status: ✅ SUCCESS
+Response Time: 2537 ms
+📊 Resource Usage During Generation: System CPU: avg=13.1%, max=24.2% | System Memory: avg=81.9%, max=81.9% (26.0 GB/31.7 GB) | ollama.exe Process: max=83.7 MB | Samples: 5 over 2538ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'traintype'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #38
+================================================================================
+Timestamp: 2025-11-11 21:10:33.913
+Session ID: LLM-1762916858700-1
+Request ID: 38
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'id' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #38
+Timestamp: 2025-11-11 21:10:36.413
+Status: ✅ SUCCESS
+Response Time: 2500 ms
+📊 Resource Usage During Generation: System CPU: avg=17.2%, max=26.3% | System Memory: avg=81.9%, max=81.9% (26.0 GB/31.7 GB) | ollama.exe Process: max=87.1 MB | Samples: 5 over 2501ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'id' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #39
+================================================================================
+Timestamp: 2025-11-11 21:10:36.414
+Session ID: LLM-1762916858700-1
+Request ID: 39
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'name' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #39
+Timestamp: 2025-11-11 21:10:38.984
+Status: ✅ SUCCESS
+Response Time: 2570 ms
+📊 Resource Usage During Generation: System CPU: avg=14.8%, max=19.3% | System Memory: avg=81.9%, max=82.0% (26.0 GB/31.7 GB) | ollama.exe Process: max=81.7 MB | Samples: 5 over 2571ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'name' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #40
+================================================================================
+Timestamp: 2025-11-11 21:10:38.985
+Session ID: LLM-1762916858700-1
+Request ID: 40
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'economyclass' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #40
+Timestamp: 2025-11-11 21:10:41.574
+Status: ✅ SUCCESS
+Response Time: 2589 ms
+📊 Resource Usage During Generation: System CPU: avg=17.5%, max=22.0% | System Memory: avg=82.0%, max=82.0% (26.0 GB/31.7 GB) | ollama.exe Process: max=84.8 MB | Samples: 5 over 2590ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'economyclass'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #41
+================================================================================
+Timestamp: 2025-11-11 21:10:41.575
+Session ID: LLM-1762916858700-1
+Request ID: 41
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'confortclass' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #41
+Timestamp: 2025-11-11 21:10:44.114
+Status: ✅ SUCCESS
+Response Time: 2539 ms
+📊 Resource Usage During Generation: System CPU: avg=13.8%, max=21.3% | System Memory: avg=82.0%, max=82.0% (26.0 GB/31.7 GB) | ollama.exe Process: max=83.3 MB | Samples: 5 over 2540ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'confortclass'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #42
+================================================================================
+Timestamp: 2025-11-11 21:10:44.115
+Session ID: LLM-1762916858700-1
+Request ID: 42
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'averagespeed' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #42
+Timestamp: 2025-11-11 21:10:46.739
+Status: ✅ SUCCESS
+Response Time: 2624 ms
+📊 Resource Usage During Generation: System CPU: avg=16.2%, max=28.7% | System Memory: avg=82.4%, max=82.7% (26.2 GB/31.7 GB) | ollama.exe Process: max=77.9 MB | Samples: 5 over 2625ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'averagespeed'
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #43
+================================================================================
+Timestamp: 2025-11-11 21:10:46.740
+Session ID: LLM-1762916858700-1
+Request ID: 43
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'route' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #43
+Timestamp: 2025-11-11 21:10:49.282
+Status: ✅ SUCCESS
+Response Time: 2542 ms
+📊 Resource Usage During Generation: System CPU: avg=13.4%, max=23.6% | System Memory: avg=82.7%, max=82.7% (26.2 GB/31.7 GB) | ollama.exe Process: max=78.0 MB | Samples: 5 over 2543ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The field 'route' is not
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #44
+================================================================================
+Timestamp: 2025-11-11 21:10:49.283
+Session ID: LLM-1762916858700-1
+Request ID: 44
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'id' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #44
+Timestamp: 2025-11-11 21:10:51.804
+Status: ✅ SUCCESS
+Response Time: 2521 ms
+📊 Resource Usage During Generation: System CPU: avg=15.0%, max=24.8% | System Memory: avg=82.8%, max=82.8% (26.2 GB/31.7 GB) | ollama.exe Process: max=80.9 MB | Samples: 5 over 2521ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'id' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #45
+================================================================================
+Timestamp: 2025-11-11 21:10:51.804
+Session ID: LLM-1762916858700-1
+Request ID: 45
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'stations' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #45
+Timestamp: 2025-11-11 21:10:54.448
+Status: ✅ SUCCESS
+Response Time: 2644 ms
+📊 Resource Usage During Generation: System CPU: avg=14.9%, max=25.7% | System Memory: avg=82.8%, max=82.8% (26.3 GB/31.7 GB) | ollama.exe Process: max=83.1 MB | Samples: 5 over 2645ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO
+
+The JSON field 'stations' is
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #46
+================================================================================
+Timestamp: 2025-11-11 21:10:54.449
+Session ID: LLM-1762916858700-1
+Request ID: 46
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=10, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Determine if JSON fields are semantically relevant for parameter extraction. Be precise and consider naming patterns, semantic similarity, and data types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Determine if the JSON field 'distances' is relevant for extracting values for parameter 'distancelist' (type: string).
+
+Consider semantic similarity, naming patterns, and data types.
+Examples of relevant matches:
+- Field 'stationName' is relevant for parameter 'endStation'
+- Field 'trainId' is relevant for parameter 'trainNumber'
+- Field 'seatType' is relevant for parameter 'seatClass'
+- Field 'userId' is relevant for parameter 'loginId'
+
+Respond with 'YES' if relevant, 'NO' if not relevant.
+--------------------------------------------------------------------------------

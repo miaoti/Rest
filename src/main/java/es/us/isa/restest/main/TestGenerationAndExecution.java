@@ -384,14 +384,15 @@ public class TestGenerationAndExecution {
 				// 5. Get the recorded workflows from the trace file
                                 List<WorkflowScenario> scenarios =
                                                 TraceWorkflowExtractor.extractScenarios(TraceFile);
-                                scenarios = WorkflowScenarioUtils.deduplicateBySteps(scenarios);
-
+                                
 				// 5.5. Register root APIs with their tree structures in the registry
+				// ⚠️ IMPORTANT: Register BEFORE deduplication to capture ALL trace patterns
 				String registryPath = readParameterValue("root.api.registry.path");
 				if (registryPath != null && !registryPath.isEmpty()) {
 					logger.info("Initializing Root API Registry at: {}", registryPath);
 					RootApiRegistry registry = new RootApiRegistry(registryPath);
 					
+					logger.info("Registering {} scenarios (BEFORE deduplication) to capture all trace patterns", scenarios.size());
 					registry.registerRootApisFromScenarios(scenarios);
 					registry.saveRegistry();
 					
@@ -409,6 +410,11 @@ public class TestGenerationAndExecution {
 				} else {
 					logger.warn("Root API Registry path not configured. Set 'root.api.registry.path' property to enable registry.");
 				}
+				
+				// 5.6. NOW deduplicate scenarios for test generation (to avoid redundant tests)
+				logger.info("Deduplicating scenarios for test generation (to avoid redundant tests)...");
+				scenarios = WorkflowScenarioUtils.deduplicateBySteps(scenarios);
+				logger.info("After deduplication: {} unique scenarios will generate test cases", scenarios.size());
 
 
 				// Pass configuration parameters as system properties for the generator

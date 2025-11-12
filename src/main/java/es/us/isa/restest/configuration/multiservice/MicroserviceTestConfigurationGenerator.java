@@ -168,6 +168,7 @@ public class MicroserviceTestConfigurationGenerator {
         tp.setMinLength(apiParam.getMinLength());
         tp.setMaxLength(apiParam.getMaxLength());
         tp.setExample(apiParam.getExample());
+        tp.setRequired(apiParam.getRequired());
 
         List<ValueGenerator> gens = new ArrayList<>();
         gens.add(createDefaultGenerator(apiParam));
@@ -346,6 +347,7 @@ public class MicroserviceTestConfigurationGenerator {
                         if (tp.getMax()        != null) p.put("maximum",    tp.getMax());
                         if (tp.getMinLength()  != null) p.put("minLength",  tp.getMinLength());
                         if (tp.getMaxLength()  != null) p.put("maxLength",  tp.getMaxLength());
+                        if (tp.getRequired()   != null) p.put("required",   tp.getRequired());
 
                         // ▼ Example conversion: turn any Jackson ArrayNode/ObjectNode into plain Java
                         Object example = tp.getExample();

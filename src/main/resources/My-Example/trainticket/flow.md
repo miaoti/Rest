@@ -10,12 +10,12 @@ flowchart TD
     E --> F[Load multi service YAML to serviceConfigs]
     F --> G[Build serviceSpecs map]
     G --> H[Extract scenarios from traces]
-    H --> I[Deduplicate scenarios]
-    I --> J{root api registry path set}
-    J -->|Yes| K[Init RootApiRegistry and register trees]
+    H --> J{root api registry path set}
+    J -->|Yes| K[Init RootApiRegistry and register ALL scenarios]
     J -->|No| L[Skip registry]
-    K --> M
-    L --> M
+    K --> I[Deduplicate scenarios for test generation]
+    L --> I
+    I --> M[After deduplication: unique scenarios for tests]
     M[Propagate MST properties]
     M --> M1[testsperoperation or test variants per scenario]
     M --> M2[mst generate only first step]
@@ -45,6 +45,27 @@ flowchart TD
     X --> Y
     Y --> AA[End]
 ```
+
+**Critical Design Decision: Registry Before Deduplication**
+
+The MST flow registers **ALL scenarios** to the Root API Registry BEFORE deduplication:
+
+1. **Extract scenarios from traces** → Get all workflow patterns from Jaeger
+2. **Register ALL scenarios** → Root API Registry learns from every trace (even duplicates)
+   - Why? Because different traces with the same root API may have different execution patterns, timings, or data flows
+   - The registry benefits from seeing all variations to build a comprehensive understanding
+3. **Then deduplicate scenarios** → Remove scenarios with the same ROOT API for test generation
+   - Why? To avoid generating redundant test cases that would waste resources
+   - **Deduplication is based on ROOT API ONLY** (HTTP method + path of first business API call)
+   - Different downstream workflows (success vs failure traces) are treated as duplicates if they share the same root API
+
+**Example:**
+- 2 traces both start with `POST /api/v1/adminorder` (same root API)
+  - Trace 1: Admin order success → downstream calls (station, route, database)
+  - Trace 2: Admin order failure → error handling calls
+- Both are registered in the Root API Registry (learning from both success and failure patterns)
+- But only 1 scenario generates test cases (avoiding redundant tests for the same root API)
+- Result: 15 test cases instead of 30 (2 × 15)
 
 ### MST Test Case and Input Generation (MultiServiceTestCaseGenerator)
 
@@ -207,8 +228,8 @@ flowchart TD
     A --> B2[REGEX_MISMATCH]
     A --> B3[SEMANTIC_MISMATCH]
     A --> B4[OVERFLOW]
-    A --> B5[EMPTY_INPUT]
-    A --> B6[NULL_INPUT]
+    A --> B5[EMPTY_INPUT *]
+    A --> B6[NULL_INPUT *]
     A --> B7[SPECIAL_CHARACTERS]
     A --> B8[BOUNDARY_VIOLATION]
     
@@ -216,11 +237,18 @@ flowchart TD
     B2 --> C2[Pattern violation<br/>Email without @ symbol]
     B3 --> C3[Meaningless value<br/>Age = -5, impossible date]
     B4 --> C4[Exceeds limits<br/>10000 char string, MAX_INT]
-    B5 --> C5[Empty values<br/>Empty string, whitespace, []]
-    B6 --> C6[Null values<br/>null, 'null', 'NULL']
+    B5 --> C5[Empty values<br/>Empty string, whitespace, []<br/>⚠️ ONLY for REQUIRED params]
+    B6 --> C6[Null values<br/>null, 'null', 'NULL'<br/>⚠️ ONLY for REQUIRED params]
     B7 --> C7[Injection attempts<br/>SQL injection, XSS, traversal]
     B8 --> C8[Boundary errors<br/>Off-by-one, min-1, max+1]
+    
+    Note1[* Empty/Null inputs are VALID for optional parameters<br/>They are only generated for required parameters]
 ```
+
+**Important: Optional Parameter Handling**
+- **EMPTY_INPUT** and **NULL_INPUT** are only generated for **required parameters** (`required: true`)
+- For **optional parameters** (`required: false` or not specified), null/empty values are **valid** and should NOT be used for negative testing
+- This ensures negative tests only target true violations, not legitimate optional parameter behavior
 
 ### Smart Input Fetching Flow (SmartInputFetcher)
 

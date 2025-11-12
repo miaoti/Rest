@@ -198,6 +198,7 @@ public class DefaultTestConfigurationGenerator {
 				TestParameter testParam = new TestParameter();
 				testParam.setName(param.getName());
 				testParam.setIn(param.getIn());
+				testParam.setRequired(param.getRequired());
 
 				// Set default weight for optional parameters
 				if (param.getRequired() == null || !param.getRequired())
@@ -240,8 +241,13 @@ public class DefaultTestConfigurationGenerator {
 					propertyParam.setName(property.getKey());
 				}
 
-				if (required == null || !required || schema.getRequired() == null
-						|| !schema.getRequired().contains(property.getKey()))
+				// Determine if this property is required
+				boolean isPropertyRequired = required != null && required 
+						&& schema.getRequired() != null 
+						&& schema.getRequired().contains(property.getKey());
+				propertyParam.setRequired(isPropertyRequired);
+				
+				if (!isPropertyRequired)
 					propertyParam.setWeight(0.5f);
 
 				propertyParam.setIn(in);

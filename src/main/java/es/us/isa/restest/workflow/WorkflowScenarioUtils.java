@@ -13,9 +13,10 @@ public class WorkflowScenarioUtils {
         Pattern.compile("^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+(.+)$", Pattern.CASE_INSENSITIVE);
 
     /**
-     * Deduplicate scenarios based on the sequence of HTTP method and path
-     * observed in each scenario. Provides detailed logging about which scenarios
-     * are duplicates and which are kept for test generation.
+     * Deduplicate scenarios based on the ROOT API ONLY (first business API call).
+     * Different workflow patterns (success vs failure) with the same root API
+     * are considered duplicates for test generation, but all are registered
+     * to the Root API Registry for learning purposes.
      */
     public static List<WorkflowScenario> deduplicateBySteps(List<WorkflowScenario> scenarios) {
         if (scenarios == null || scenarios.isEmpty()) {
@@ -25,19 +26,22 @@ public class WorkflowScenarioUtils {
 
         log.info("=== SCENARIO DEDUPLICATION ANALYSIS ===");
         log.info("Starting with {} scenarios from traces", scenarios.size());
+        log.info("Deduplication strategy: Root API only (ignoring downstream workflow differences)");
         
         Map<String, ScenarioGroup> signatureGroups = new LinkedHashMap<>();
         
-        // Group scenarios by their step signature
+        // Group scenarios by their ROOT API signature only
         for (int i = 0; i < scenarios.size(); i++) {
             WorkflowScenario scenario = scenarios.get(i);
-            String signature = buildSignature(scenario);
+            String rootSignature = buildRootApiSignature(scenario);
+            String fullSignature = buildSignature(scenario);
             
-            log.info("Scenario {} (from traces: {}): signature = {}", 
-                     i + 1, scenario.getTraceIds(), signature);
+            log.info("Scenario {} (from traces: {}): root API = {}", 
+                     i + 1, scenario.getTraceIds(), rootSignature);
+            log.debug("  Full workflow: {}", fullSignature);
             
-            ScenarioGroup group = signatureGroups.computeIfAbsent(signature, 
-                k -> new ScenarioGroup(signature));
+            ScenarioGroup group = signatureGroups.computeIfAbsent(rootSignature, 
+                k -> new ScenarioGroup(rootSignature));
             group.addScenario(scenario, i + 1);
         }
         
@@ -51,29 +55,30 @@ public class WorkflowScenarioUtils {
             uniqueScenarios.add(representative);
             
             if (group.size() == 1) {
-                log.info("✓ UNIQUE: Scenario {} will generate tests (no duplicates)", 
-                         group.getRepresentativeIndex());
+                log.info("✓ UNIQUE: Scenario {} will generate tests (no duplicates for root API: {})", 
+                         group.getRepresentativeIndex(), group.getSignature());
             } else {
                 int duplicatesCount = group.size() - 1;
                 totalDuplicatesEliminated += duplicatesCount;
                 
-                log.info("✓ KEPT: Scenario {} as representative for {} identical scenarios", 
+                log.info("✓ KEPT: Scenario {} as representative for {} scenarios with same root API", 
                          group.getRepresentativeIndex(), group.size());
-                log.info("  → Steps: {}", formatStepsForLogging(representative));
-                log.info("  → Traces included: {}", representative.getTraceIds());
+                log.info("  → Root API: {}", group.getSignature());
+                log.info("  → Representative workflow: {}", formatStepsForLogging(representative));
+                log.info("  → Combined traces: {}", representative.getTraceIds());
                 
                 StringBuilder duplicateInfo = new StringBuilder();
                 duplicateInfo.append("✗ ELIMINATED: Scenarios ");
                 group.getDuplicateIndices().stream()
                      .forEach(idx -> duplicateInfo.append(idx).append(" "));
-                duplicateInfo.append("(identical step sequences)");
+                duplicateInfo.append("(same root API, different downstream workflows)");
                 log.info(duplicateInfo.toString());
                 
                 // Show trace details for eliminated scenarios
                 for (Integer duplicateIdx : group.getDuplicateIndices()) {
                     WorkflowScenario duplicate = group.getScenarioByIndex(duplicateIdx);
-                    log.debug("    Eliminated scenario {} had traces: {}", 
-                             duplicateIdx, duplicate.getTraceIds());
+                    log.info("    Scenario {} traces: {} - workflow: {}", 
+                             duplicateIdx, duplicate.getTraceIds(), formatStepsForLogging(duplicate));
                 }
             }
         }
@@ -129,7 +134,22 @@ public class WorkflowScenarioUtils {
         }
     }
 
-    // Build a unique signature string from ordered steps
+    // Build a signature from ROOT API only (first step)
+    private static String buildRootApiSignature(WorkflowScenario sc) {
+        List<WorkflowStep> steps = flatten(sc);
+        if (steps.isEmpty()) {
+            return "EMPTY_SCENARIO";
+        }
+        
+        // Get the first step (root API)
+        WorkflowStep rootStep = steps.get(0);
+        String verb = httpMethod(rootStep);
+        String path = httpPath(rootStep);
+        
+        return verb + " " + path;
+    }
+    
+    // Build a unique signature string from ordered steps (full workflow)
     private static String buildSignature(WorkflowScenario sc) {
         StringBuilder sb = new StringBuilder();
         List<WorkflowStep> steps = flatten(sc);

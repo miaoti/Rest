@@ -383,8 +383,16 @@ public class ZeroShotLLMGenerator {
     
     /**
      * Generate empty inputs
+     * ONLY for REQUIRED parameters - optional parameters can legitimately be empty
      */
     private void generateEmptyInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        // Skip empty inputs for optional parameters - they are valid!
+        if (param.getRequired() == null || !param.getRequired()) {
+            System.out.println("⚠️  Skipping EMPTY_INPUT generation for optional parameter: " + param.getName());
+            return;
+        }
+        
+        System.out.println("✅ Generating EMPTY_INPUT for required parameter: " + param.getName());
         String paramType = safeStr(param.getType()).toLowerCase();
         
         // Empty string
@@ -406,8 +414,17 @@ public class ZeroShotLLMGenerator {
     
     /**
      * Generate null inputs
+     * ONLY for REQUIRED parameters - optional parameters can legitimately be null
      */
     private void generateNullInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+        // Skip null inputs for optional parameters - they are valid!
+        if (param.getRequired() == null || !param.getRequired()) {
+            System.out.println("⚠️  Skipping NULL_INPUT generation for optional parameter: " + param.getName());
+            return;
+        }
+        
+        System.out.println("✅ Generating NULL_INPUT for required parameter: " + param.getName());
+        
         // Actual null
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, null);
         
@@ -521,6 +538,11 @@ public class ZeroShotLLMGenerator {
         
         promptBuilder.append("- Location: ").append(safeStr(param.getInLocation())).append("\n");
         promptBuilder.append("- Data Type: ").append(safeStr(param.getType())).append("\n");
+        
+        // Add required/optional information
+        if (param.getRequired() != null) {
+            promptBuilder.append("- Required: ").append(param.getRequired() ? "Yes (mandatory)" : "No (optional)").append("\n");
+        }
         
         String format = safeStr(param.getFormat());
         if (!format.isEmpty()) {

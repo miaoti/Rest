@@ -464,12 +464,12 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         faultyValueSet = false;
                                     } else {
                                         val = convertObjectToString(invalidValue, p.getType());
-                                        tc.addFaultyParameter(p.getName(), val);
+                                    tc.addFaultyParameter(p.getName(), val);
                                         faultyValueSet = true;
                                         log.info("✅ Negative Test (Round-Robin) → {} = {} (type: {}, intentionally invalid) - LOCKED", 
                                                 p.getName(), val, invalidValue.getClass().getSimpleName());
-                                    }
-                                } else {
+                                }
+                            } else {
                                     // Random mode - can repeat
                                     invalidValue = pool.getRandomValue(random);
                                     if (invalidValue == null) {
@@ -783,6 +783,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         info.setSchemaType(p.getType());
         info.setSchemaExample(p.getExample() != null ? p.getExample().toString() : "");
         info.setRegex(p.getPattern());
+        info.setRequired(p.getRequired());
         return info;
     }
     
@@ -1930,7 +1931,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         // Default to string
         return "string";
     }
-    
+
     /**
      * Generate a faulty parameter pool for a specific root API using the first scenario as reference
      * Returns Map of parameter name to InvalidInputPool (with 8 fault types)

@@ -12,6 +12,7 @@ public class ParameterInfo {
 
     private String schemaType;
     private String schemaExample;
+    private Boolean required;
     
     // Additional context for better LLM generation
     private String apiName;           // e.g., "POST /api/v1/adminorder"
@@ -36,6 +37,8 @@ public class ParameterInfo {
     public void setSchemaType(String schemaType) { this.schemaType = schemaType; }
     public String getSchemaExample() { return schemaExample; }
     public void setSchemaExample(String schemaExample) { this.schemaExample = schemaExample; }
+    public Boolean getRequired() { return required; }
+    public void setRequired(Boolean required) { this.required = required; }
     
     public String getApiName() { return apiName; }
     public void setApiName(String apiName) { this.apiName = apiName; }
@@ -55,6 +58,7 @@ public class ParameterInfo {
                 ", description='" + description + '\'' +
                 ", schemaType='" + schemaType + '\'' +
                 ", schemaExample='" + schemaExample + '\'' +
+                ", required=" + required +
                 ", apiName='" + apiName + '\'' +
                 ", serviceName='" + serviceName + '\'' +
                 ", allParameterNames=" + allParameterNames +

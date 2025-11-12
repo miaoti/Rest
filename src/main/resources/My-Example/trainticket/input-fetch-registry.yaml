@@ -4,10 +4,10 @@ lastUpdated:
 - 2025
 - 11
 - 11
-- 14
-- 43
-- 42
-- 376771000
+- 22
+- 4
+- 55
+- 24356300
 parameterMappings:
   loginId:
   - endpoint: "/api/v1/user/query"
@@ -1426,34 +1426,6 @@ parameterErrors:
       - 239105200
       additionalInfo: null
   /api/v1/adminorderservice/adminorder:
-    accountId:
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Data truncation: Data too long for column 'account_id' at row\
-        \ 1"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "accountId"
-      timestamp:
-      - 2025
-      - 11
-      - 4
-      - 16
-      - 38
-      - 48
-      - 569553100
-      additionalInfo: null
-    - errorType: "NULL_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "accountId"
-      timestamp:
-      - 2025
-      - 11
-      - 4
-      - 16
-      - 11
-      - 26
-      - 19304200
-      additionalInfo: null
     travelTime:
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1467,76 +1439,6 @@ parameterErrors:
       - 30
       - 20
       - 298116500
-      additionalInfo: null
-    coachNumber:
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"123"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "coachNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 10
-      - 14
-      - 28
-      - 55
-      - 346955500
-      additionalInfo: null
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "coachNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 10
-      - 13
-      - 31
-      - 7
-      - 386677800
-      additionalInfo: null
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"-10000000000\": Overflow: numeric value (-10000000000) out of range\
-        \ of Integer..."
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "coachNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 10
-      - 15
-      - 54
-      - 12
-      - 58032300
-      additionalInfo: null
-    - errorType: "FORMAT_ERROR"
-      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"\"coachNumber\"\": not a valid Integer value"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "coachNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 5
-      - 14
-      - 1
-      - 59
-      - 534546000
-      additionalInfo: null
-    - errorType: "FORMAT_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "coachNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 10
-      - 15
-      - 31
-      - 24
-      - 232536700
       additionalInfo: null
     documentType:
     - errorType: "NULL_ERROR"
@@ -1631,11 +1533,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 10
-      - 17
+      - 11
       - 16
-      - 10
-      - 938296400
+      - 26
+      - 52
+      - 447038600
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1659,10 +1561,177 @@ parameterErrors:
       - 2025
       - 11
       - 11
-      - 14
+      - 16
+      - 26
       - 43
+      - 734266200
+      additionalInfo: null
+    contactsDocumentNumber:
+    - errorType: "NULL_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "contactsDocumentNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 3
+      - 15
+      - 59
+      - 9
+      - 919727500
+      additionalInfo: null
+    contactsName:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "contactsName"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 16
+      - 25
+      - 21
+      - 138716800
+      additionalInfo: null
+    differenceMoney:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "differenceMoney"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 15
       - 42
-      - 365669100
+      - 58
+      - 272641100
+      additionalInfo: null
+    seatNumber:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 17
+      - 16
+      - 2
+      - 476157900
+      additionalInfo: null
+    accountId:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'account_id' at row\
+        \ 1"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 38
+      - 48
+      - 569553100
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 11
+      - 4
+      - 16
+      - 11
+      - 26
+      - 19304200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 16
+      - 25
+      - 47
+      - 540964800
+      additionalInfo: null
+    coachNumber:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"123"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 14
+      - 28
+      - 55
+      - 346955500
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 13
+      - 31
+      - 7
+      - 386677800
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"-10000000000\": Overflow: numeric value (-10000000000) out of range\
+        \ of Integer..."
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 15
+      - 54
+      - 12
+      - 58032300
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"\"coachNumber\"\": not a valid Integer value"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 5
+      - 14
+      - 1
+      - 59
+      - 534546000
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 10
+      - 15
+      - 31
+      - 24
+      - 232536700
       additionalInfo: null
     travelDate:
     - errorType: "FORMAT_ERROR"
@@ -1691,20 +1760,6 @@ parameterErrors:
       - 29
       - 51
       - 156069300
-      additionalInfo: null
-    contactsDocumentNumber:
-    - errorType: "NULL_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "contactsDocumentNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 3
-      - 15
-      - 59
-      - 9
-      - 919727500
       additionalInfo: null
     boughtDate:
     - errorType: "FORMAT_ERROR"
@@ -1831,20 +1886,6 @@ parameterErrors:
       - 26
       - 901070800
       additionalInfo: null
-    seatNumber:
-    - errorType: "FORMAT_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "seatNumber"
-      timestamp:
-      - 2025
-      - 11
-      - 10
-      - 17
-      - 16
-      - 2
-      - 476157900
-      additionalInfo: null
     status:
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1921,12 +1962,12 @@ parameterErrors:
       parameterName: "distances"
       timestamp:
       - 2025
-      - 9
-      - 16
-      - 18
-      - 24
-      - 43
-      - 619308200
+      - 11
+      - 11
+      - 22
+      - 2
+      - 17
+      - 48701100
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1954,6 +1995,73 @@ parameterErrors:
       - 23
       - 27
       - 69110800
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distanceList"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 22
+      - 1
+      - 15
+      - 820850000
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distanceList"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 17
+      - 10
+      - 20
+      - 484215700
+      additionalInfo: null
+    startStation:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "startStation"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 21
+      - 42
+      - 1
+      - 254240700
+      additionalInfo: null
+    stations:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "stations"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 17
+      - 42
+      - 10
+      - 366431100
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "stations"
+      timestamp:
+      - 2025
+      - 11
+      - 11
+      - 17
+      - 8
+      - 1
+      - 672882600
       additionalInfo: null
     body:
     - errorType: "CONSTRAINT_ERROR"

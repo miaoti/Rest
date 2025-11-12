@@ -19,6 +19,7 @@ public class TestParameter {
     private Integer minLength;
     private Integer maxLength;
     private Object example;
+    private Boolean required;
     // ────────────────────────────────────────────────
 
     public String getName() { return name; }
@@ -63,5 +64,8 @@ public class TestParameter {
 
     public Object getExample() { return example; }
     public void setExample(Object example) { this.example = example; }
+
+    public Boolean getRequired() { return required; }
+    public void setRequired(Boolean required) { this.required = required; }
     // ────────────────────────────────────────────────
 }
