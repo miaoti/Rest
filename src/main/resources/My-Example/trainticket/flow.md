@@ -191,11 +191,51 @@ flowchart TD
   - ONE invalid param per test, cycling through all params
   - For each param, cycles through all 8 fault types and their values
   - NO REPETITION until all invalid values exhausted
-  - Test 1: paramA=TYPE_MISMATCH(55)
-  - Test 2: paramB=REGEX_MISMATCH("invalid@format")
-  - Test 3: paramA=SEMANTIC_MISMATCH(-5)
-  - Test 4: paramC=OVERFLOW("AAAA...")
-  - ... continues until all invalid values used
+  - **All 8 Fault Types (with examples)**:
+    1. **TYPE_MISMATCH**: Wrong data type
+       - Example: String param gets `Integer(55)` or `Boolean(true)`
+       - Example: Number param gets `"not_a_number"` or `Boolean(false)`
+    2. **REGEX_MISMATCH**: Pattern violation
+       - Example: Email param gets `"invalid@format"` (missing domain)
+       - Example: Phone param gets `"123"` (wrong format)
+       - Example: Date param gets `"not-a-date"` (invalid format)
+    3. **SEMANTIC_MISMATCH**: Meaningless/impossible value
+       - Example: Age param gets `-5` (negative age)
+       - Example: Birthdate param gets `"2050-01-01"` (future date)
+       - Example: Status param gets `"INVALID_STATUS"` (not in enum)
+    4. **OVERFLOW**: Exceeds limits
+       - Example: String param gets `"AAAA..."` (1000+ characters)
+       - Example: Number param gets `9999999999` (beyond max)
+       - Example: Path param gets `tripId_1234567890_1234567890_...` (very long)
+    5. **EMPTY_INPUT**: Empty values (⚠️ ONLY for REQUIRED params)
+       - Example: Required string gets `""` (empty string)
+       - Example: Required string gets `"   "` (whitespace only)
+       - Example: Required array gets `[]` (empty array)
+    6. **NULL_INPUT**: Null values (⚠️ ONLY for REQUIRED params)
+       - Example: Required param gets `null` (actual null)
+       - Example: Required param gets `"null"` (string "null")
+       - Example: Required param gets `"NULL"` (string "NULL")
+    7. **SPECIAL_CHARACTERS**: Injection attempts
+       - Example: SQL injection: `"' OR '1'='1"`
+       - Example: XSS attack: `"<script>alert('XSS')</script>"`
+       - Example: Path traversal: `"../../../etc/passwd"`
+       - Example: Command injection: `"; rm -rf /"`
+    8. **BOUNDARY_VIOLATION**: Off-by-one errors
+       - Example: Min=1 param gets `0` (min-1)
+       - Example: Max=100 param gets `101` (max+1)
+       - Example: MinLength=5 param gets `"abcd"` (length 4)
+       - Example: MaxLength=10 param gets `"12345678901"` (length 11)
+  - **Example Round-Robin Sequence**:
+    - Test 1: paramA=TYPE_MISMATCH(Integer(55))
+    - Test 2: paramB=REGEX_MISMATCH("invalid@format")
+    - Test 3: paramA=SEMANTIC_MISMATCH(-5)
+    - Test 4: paramC=OVERFLOW("AAAA..." (1000 chars))
+    - Test 5: paramA=EMPTY_INPUT("")  (if paramA is required)
+    - Test 6: paramB=NULL_INPUT(null)  (if paramB is required)
+    - Test 7: paramA=SPECIAL_CHARACTERS("' OR '1'='1")
+    - Test 8: paramC=BOUNDARY_VIOLATION(0)  (if min=1)
+    - Test 9: paramA=TYPE_MISMATCH(Boolean(true))  (next value for paramA)
+    - ... continues until all invalid values exhausted
   - When exhausted: generates positive tests
   
 - **Random** (faulty.round-robin=false):
