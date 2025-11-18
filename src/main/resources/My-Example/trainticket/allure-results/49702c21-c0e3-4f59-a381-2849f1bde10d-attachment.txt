@@ -1,0 +1,1 @@
+{"distanceList":123,"endStation":"New York Penn Station","id":"AR-12345","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

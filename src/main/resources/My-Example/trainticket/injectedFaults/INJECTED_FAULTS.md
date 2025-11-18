@@ -8,13 +8,13 @@ This document records all injected faults across microservices for black-box tes
 
 ### 1. INVALID_CONTACTS_NAME_FAULT
 
-**API:** `POST /api/v1/adminorderservice/adminorder`
+**API:** `POST /api/v1/adminorderservice/adminorder` AND `PUT /api/v1/adminorderservice/adminorder`
 
-**Description:** Rejects order creation when `contactsName` is null, empty, or purely numeric.
+**Description:** Rejects order creation/updates when `contactsName` is null, empty, or purely numeric.
 
 **Trigger Conditions:**
-- `contactsName` is null or empty string
-- `contactsName` contains only digits (e.g., "12345")
+- `contactsName` is null, empty, or contains only whitespace
+- `contactsName` contains only digits after trimming whitespace (e.g., "12345", " 999 ")
 
 **Sample Input:**
 ```json
@@ -29,6 +29,7 @@ This document records all injected faults across microservices for black-box tes
 ```
 
 **Sample Output:**
+- **HTTP Status Code:** 400 Bad Request
 ```json
 {
   "status": 0,
@@ -46,13 +47,13 @@ This document records all injected faults across microservices for black-box tes
 
 ### 2. INVALID_SEAT_NUMBER_FAULT
 
-**API:** `PUT /api/v1/adminorderservice/adminorder`
+**API:** `POST /api/v1/adminorderservice/adminorder` AND `PUT /api/v1/adminorderservice/adminorder`
 
-**Description:** Rejects order updates when `seatNumber` doesn't follow the required format (digits followed by uppercase letter).
+**Description:** Rejects order creation/updates when `seatNumber` doesn't follow the required format (digits followed by uppercase letter).
 
 **Trigger Conditions:**
-- `seatNumber` is null or empty
-- `seatNumber` doesn't match pattern `^\d+[A-Z]$` (e.g., "5a", "A5", "5", "AB")
+- `seatNumber` is null, empty, or contains only whitespace
+- `seatNumber` doesn't match pattern `^\d+[A-Z]$` after trimming (e.g., "5a", "A5", "5", "AB", " ")
 
 **Sample Input:**
 ```json
@@ -90,9 +91,9 @@ This document records all injected faults across microservices for black-box tes
 **Description:** Rejects order deletion when `orderId` length is outside the valid range (10-50 characters).
 
 **Trigger Conditions:**
-- `orderId` is null or empty
-- `orderId` length < 10 characters
-- `orderId` length > 50 characters
+- `orderId` is null, empty, or contains only whitespace
+- `orderId` length < 10 characters after trimming
+- `orderId` length > 50 characters after trimming
 
 **Sample Input:**
 ```
@@ -162,7 +163,7 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 **Description:** Rejects price creation when routeId is null or empty.
 
 **Trigger Conditions:**
-- `routeId` is null or empty string
+- `routeId` is null, empty, or contains only whitespace
 
 **Sample Input:**
 ```json
@@ -198,8 +199,8 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 **Description:** Rejects travel plan request when station names are null or empty.
 
 **Trigger Conditions:**
-- `startPlace` is null or empty
-- `endPlace` is null or empty
+- `startPlace` is null, empty, or contains only whitespace
+- `endPlace` is null, empty, or contains only whitespace
 
 **Sample Input:**
 ```json
@@ -225,20 +226,21 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 
 ---
 
-### 7. SAME_STATION_FAULT (Travel Plan)
+### 7. INVALID_STATION_LENGTH_FAULT (Travel Plan)
 
 **API:** `POST /api/v1/travelplanservice/travelPlan/minStation`
 
-**Description:** Rejects travel plan when start and end stations are the same.
+**Description:** Rejects travel plan when station name length is outside valid range.
 
 **Trigger Conditions:**
-- `startPlace` equals `endPlace` (case-insensitive)
+- `startPlace` length < 2 or > 50 characters after trimming
+- `endPlace` length < 2 or > 50 characters after trimming
 
 **Sample Input:**
 ```json
 {
-  "startPlace": "Shanghai",
-  "endPlace": "shanghai",
+  "startPlace": "A",
+  "endPlace": "Beijing",
   "departureTime": "2025-11-01"
 }
 ```
@@ -247,12 +249,12 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 ```json
 {
   "status": 0,
-  "msg": "Travel plan request rejected: startPlace and endPlace cannot be the same",
+  "msg": "Travel plan request rejected: startPlace length must be between 2 and 50 characters",
   "data": {
     "isInjected": true,
-    "faultName": "SAME_STATION_FAULT",
-    "message": "Travel plan request rejected: startPlace and endPlace cannot be the same",
-    "details": "Station: Shanghai"
+    "faultName": "INVALID_STATION_LENGTH_FAULT",
+    "message": "Travel plan request rejected: startPlace length must be between 2 and 50 characters",
+    "details": "startPlace: 'A', Length: 1"
   }
 }
 ```
@@ -261,20 +263,21 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 
 ## ts-travel-service
 
-### 8. SAME_STATION_FAULT (Trip Query)
+### 8. INVALID_STATION_LENGTH_FAULT (Trip Query)
 
 **API:** `POST /api/v1/travelservice/trips/left`
 
-**Description:** Rejects trip query when start and end stations are the same.
+**Description:** Rejects trip query when station name length is outside valid range.
 
 **Trigger Conditions:**
-- `startPlace` equals `endPlace` (case-insensitive)
+- `startPlace` length < 2 or > 50 characters after trimming
+- `endPlace` length < 2 or > 50 characters after trimming
 
 **Sample Input:**
 ```json
 {
-  "startPlace": "Beijing",
-  "endPlace": "beijing",
+  "startPlace": "B",
+  "endPlace": "Beijing",
   "departureTime": "2025-11-01"
 }
 ```
@@ -283,33 +286,33 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 ```json
 {
   "status": 0,
-  "msg": "Trip query rejected: startPlace and endPlace cannot be the same",
+  "msg": "Trip query rejected: startPlace length must be between 2 and 50 characters",
   "data": {
     "isInjected": true,
-    "faultName": "SAME_STATION_FAULT",
-    "message": "Trip query rejected: startPlace and endPlace cannot be the same",
-    "details": "Station: Beijing"
+    "faultName": "INVALID_STATION_LENGTH_FAULT",
+    "message": "Trip query rejected: startPlace length must be between 2 and 50 characters",
+    "details": "startPlace: 'B', Length: 1"
   }
 }
 ```
 
 ---
 
-### 9. PAST_DATE_FAULT
+### 9. INVALID_YEAR_RANGE_FAULT
 
 **API:** `POST /api/v1/travelservice/trips/left`
 
-**Description:** Rejects trip query when departure date is in the past.
+**Description:** Rejects trip query when departure year is outside valid range (2000-2100).
 
 **Trigger Conditions:**
-- `departureTime` is a date before today
+- `departureTime` year < 2000 or year > 2100
 
 **Sample Input:**
 ```json
 {
   "startPlace": "Shanghai",
   "endPlace": "Beijing",
-  "departureTime": "2020-01-01"
+  "departureTime": "1999-12-31"
 }
 ```
 
@@ -317,12 +320,12 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 ```json
 {
   "status": 0,
-  "msg": "Trip query rejected: departureTime cannot be in the past",
+  "msg": "Trip query rejected: departureTime year must be between 2000 and 2100",
   "data": {
     "isInjected": true,
-    "faultName": "PAST_DATE_FAULT",
-    "message": "Trip query rejected: departureTime cannot be in the past",
-    "details": "2020-01-01"
+    "faultName": "INVALID_YEAR_RANGE_FAULT",
+    "message": "Trip query rejected: departureTime year must be between 2000 and 2100",
+    "details": "Year: 1999"
   }
 }
 ```
@@ -372,8 +375,8 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 **Description:** Rejects login when username format is invalid.
 
 **Trigger Conditions:**
-- `username` is null or empty
-- `username` length < 4 or > 20 characters
+- `username` is null, empty, or contains only whitespace
+- `username` length < 4 or > 20 characters after trimming
 
 **Sample Input:**
 ```json
@@ -406,7 +409,7 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 **Description:** Rejects login when password is too short.
 
 **Trigger Conditions:**
-- `password` is null or length < 6 characters
+- `password` is null or length < 6 characters (whitespace is NOT trimmed for passwords)
 
 **Sample Input:**
 ```json
@@ -441,7 +444,7 @@ DELETE /api/v1/adminorderservice/adminorder/short123/G1234
 **Description:** Rejects trip deletion when tripId format is invalid.
 
 **Trigger Conditions:**
-- `tripId` is null or empty
+- `tripId` is null, empty, or contains only whitespace
 
 **Sample Input:**
 ```
@@ -470,7 +473,7 @@ DELETE /api/v1/admintravelservice/admintravel/
 **Description:** Rejects trip deletion when tripId length is invalid.
 
 **Trigger Conditions:**
-- `tripId` length < 4 or > 20 characters
+- `tripId` length < 4 or > 20 characters after trimming
 
 **Sample Input:**
 ```
@@ -503,7 +506,7 @@ DELETE /api/v1/admintravelservice/admintravel/G12
 
 **Trigger Conditions:**
 - `stationList` is null or empty
-- Number of stations < 2
+- Number of stations < 2 (individual station names are not trimmed, but empty entries are still invalid)
 
 **Sample Input:**
 ```json
@@ -531,14 +534,15 @@ DELETE /api/v1/admintravelservice/admintravel/G12
 
 ---
 
-### 16. DUPLICATE_STATIONS_FAULT
+### 16. INVALID_STATION_NAME_LENGTH_FAULT
 
 **API:** `POST /api/v1/adminrouteservice/adminroute`
 
-**Description:** Rejects route creation when station list contains duplicates.
+**Description:** Rejects route creation when individual station name length is outside valid range.
 
 **Trigger Conditions:**
-- `stationList` contains duplicate stations (case-insensitive)
+- Any station name in `stationList` is null, empty, or contains only whitespace
+- Any station name length < 2 or > 50 characters after trimming
 
 **Sample Input:**
 ```json
@@ -546,7 +550,7 @@ DELETE /api/v1/admintravelservice/admintravel/G12
   "id": "route-123",
   "startStation": "Shanghai",
   "endStation": "Beijing",
-  "stationList": "Shanghai,Beijing,shanghai"
+  "stationList": "Shanghai,X,Beijing"
 }
 ```
 
@@ -554,12 +558,12 @@ DELETE /api/v1/admintravelservice/admintravel/G12
 ```json
 {
   "status": 0,
-  "msg": "Route creation rejected: station list cannot contain duplicate stations",
+  "msg": "Route creation rejected: each station name must be between 2 and 50 characters",
   "data": {
     "isInjected": true,
-    "faultName": "DUPLICATE_STATIONS_FAULT",
-    "message": "Route creation rejected: station list cannot contain duplicate stations",
-    "details": "Total stations: 3, Unique stations: 2"
+    "faultName": "INVALID_STATION_NAME_LENGTH_FAULT",
+    "message": "Route creation rejected: each station name must be between 2 and 50 characters",
+    "details": "Station: 'X', Length: 1"
   }
 }
 ```
@@ -569,9 +573,15 @@ DELETE /api/v1/admintravelservice/admintravel/G12
 ## Detection Guidelines
 
 All injected faults can be identified by:
-1. **Response status:** `0` (failure)
-2. **Response data contains:** `"isInjected": true`
-3. **Response data contains:** Specific `faultName` field
+1. **HTTP Status Code:** `400 Bad Request` (instead of 200)
+2. **Response status:** `0` (failure) in the response body
+3. **Response data contains:** `"isInjected": true`
+4. **Response data contains:** Specific `faultName` field
+
+**Important:** When an injected fault is triggered, the API returns:
+- HTTP 400 status code (not HTTP 200)
+- Application-level status of 0 in the response body
+- The `data` field contains fault injection details with `"isInjected": true`
 
 These characteristics distinguish injected faults from genuine system errors, enabling black-box testing tools to accurately detect and report them.
 
@@ -589,8 +599,8 @@ These characteristics distinguish injected faults from genuine system errors, en
 **Total Fault Types:** 16
 
 **Injected APIs:**
-1. POST /api/v1/adminorderservice/adminorder
-2. PUT /api/v1/adminorderservice/adminorder
+1. POST /api/v1/adminorderservice/adminorder (validates contactsName and seatNumber)
+2. PUT /api/v1/adminorderservice/adminorder (validates contactsName and seatNumber)
 3. DELETE /api/v1/adminorderservice/adminorder/{orderId}/{trainNumber}
 4. POST /api/v1/adminbasicservice/adminbasic/prices
 5. POST /api/v1/travelplanservice/travelPlan/minStation

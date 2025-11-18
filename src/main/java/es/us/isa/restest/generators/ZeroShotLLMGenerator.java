@@ -3,6 +3,8 @@ package es.us.isa.restest.generators;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.llm.LLMService;
@@ -154,7 +156,8 @@ public class ZeroShotLLMGenerator {
     private void generateTypeMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
         
-        String prompt = "Generate 3-5 TYPE MISMATCH invalid values for parameter '" + param.getName() + "'.\n" +
+        String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
+                       "Generate 3-5 TYPE MISMATCH invalid values for parameter '" + param.getName() + "'.\n" +
                        "Expected type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values of WRONG TYPE that would cause type validation errors.\n" +
@@ -199,6 +202,8 @@ public class ZeroShotLLMGenerator {
         }
         
         String type = parts[0].trim().toLowerCase();
+        // 🔥 FIX: Strip leading numbers/dots (e.g., "3integer" -> "integer", "1. integer" -> "integer")
+        type = type.replaceAll("^[0-9.\\s]+", "");
         String value = parts[1].trim();
         
         // Parse based on specified type
@@ -299,7 +304,8 @@ public class ZeroShotLLMGenerator {
             return;
         }
         
-        String prompt = "Generate 3-5 values that DO NOT MATCH this regex pattern for parameter '" + param.getName() + "':\n" +
+        String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
+                       "Generate 3-5 values that DO NOT MATCH this regex pattern for parameter '" + param.getName() + "':\n" +
                        "Pattern: " + param.getRegex() + "\n" +
                        "Expected type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
@@ -320,7 +326,8 @@ public class ZeroShotLLMGenerator {
      * Generate semantically invalid inputs
      */
     private void generateSemanticMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        String prompt = "Generate 3-5 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
+        String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
+                       "Generate 3-5 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.\n" +
@@ -346,7 +353,8 @@ public class ZeroShotLLMGenerator {
     private void generateOverflowInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
         
-        String prompt = "Generate 3-5 OVERFLOW values for parameter '" + param.getName() + "'.\n" +
+        String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
+                       "Generate 3-5 OVERFLOW values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that EXCEED expected limits:\n";
@@ -438,7 +446,8 @@ public class ZeroShotLLMGenerator {
      * Generate special character inputs (potential injection attempts)
      */
     private void generateSpecialCharacterInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        String prompt = "Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
+        String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
+                       "Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n\n" +
                        "Generate values with malicious or special characters:\n" +
                        "- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--\n" +
@@ -465,7 +474,8 @@ public class ZeroShotLLMGenerator {
      * Generate boundary violation inputs
      */
     private void generateBoundaryViolationInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        String prompt = "Generate 3-5 BOUNDARY VIOLATION values for parameter '" + param.getName() + "'.\n" +
+        String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
+                       "Generate 3-5 BOUNDARY VIOLATION values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that are JUST OUTSIDE valid boundaries:\n" +
@@ -508,7 +518,8 @@ public class ZeroShotLLMGenerator {
         StringBuilder promptBuilder = new StringBuilder();
         
         // Clear introduction with context
-        promptBuilder.append("You are an API testing assistant that generates realistic parameter values.\n\n");
+        promptBuilder.append("You are an API testing assistant that generates realistic parameter values.\n");
+        promptBuilder.append("Current Date/Time: ").append(getCurrentTimestamp()).append("\n\n");
         
         // API Context (if available)
         String apiName = safeStr(param.getApiName());
@@ -577,11 +588,16 @@ public class ZeroShotLLMGenerator {
             promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
             promptBuilder.append("- Consider common use cases and edge cases\n\n");
             
-            // Context-specific guidance based on parameter name/type
-            String guidance = getContextualGuidance(param);
-            if (!guidance.isEmpty()) {
-                promptBuilder.append("Domain Guidance: ").append(guidance).append("\n\n");
-            }
+            promptBuilder.append("Intelligent Value Generation Guidelines:\n");
+            promptBuilder.append("• Analyze the parameter name, type, description, and format to understand its purpose\n");
+            promptBuilder.append("• For temporal parameters (dates, times, timestamps): If the parameter suggests future events\n");
+            promptBuilder.append("  (e.g., 'departure', 'arrival', 'booking', 'scheduled', 'planned'), generate values AFTER\n");
+            promptBuilder.append("  the Current Date/Time (use realistic near-future: 1-30 days ahead)\n");
+            promptBuilder.append("• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)\n");
+            promptBuilder.append("• For location/place parameters: Use realistic, specific names appropriate to the domain\n");
+            promptBuilder.append("• For numeric parameters: Use realistic ranges appropriate to the context\n");
+            promptBuilder.append("• For string parameters: Consider typical business domain values, not generic placeholders\n");
+            promptBuilder.append("• Ensure generated values would pass typical validation rules\n\n");
             
             promptBuilder.append("Example Format (for 3 values):\n");
             promptBuilder.append("[\"New York Penn Station\", \"Los Angeles Union Station\", \"Chicago Union Station\"]\n\n");
@@ -600,11 +616,16 @@ public class ZeroShotLLMGenerator {
             promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
             promptBuilder.append("- Consider common use cases and edge cases\n\n");
             
-            // Context-specific guidance based on parameter name/type
-            String guidance = getContextualGuidance(param);
-            if (!guidance.isEmpty()) {
-                promptBuilder.append("Domain Guidance: ").append(guidance).append("\n\n");
-            }
+            promptBuilder.append("Intelligent Value Generation Guidelines:\n");
+            promptBuilder.append("• Analyze the parameter name, type, description, and format to understand its purpose\n");
+            promptBuilder.append("• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events\n");
+            promptBuilder.append("  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),\n");
+            promptBuilder.append("  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)\n");
+            promptBuilder.append("• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)\n");
+            promptBuilder.append("• For location/place parameters: Use realistic, specific names appropriate to the domain\n");
+            promptBuilder.append("• For numeric parameters: Use realistic ranges appropriate to the context\n");
+            promptBuilder.append("• For string parameters: Consider typical business domain values, not generic placeholders\n");
+            promptBuilder.append("• Ensure generated values would pass typical validation rules\n\n");
             
             promptBuilder.append("Example Format (for 3 values):\n");
             promptBuilder.append("Value1\n");
@@ -618,42 +639,13 @@ public class ZeroShotLLMGenerator {
     }
     
     /**
-     * Provide context-specific guidance based on parameter characteristics
+     * DEPRECATED: Replaced by intelligent prompt engineering in buildPrompt()
+     * This hardcoded approach has been removed in favor of letting the LLM intelligently
+     * interpret parameter context from the comprehensive prompt instructions.
      */
+    @Deprecated
     private String getContextualGuidance(ParameterInfo param) {
-        String name = safeStr(param.getName()).toLowerCase();
-        String type = safeStr(param.getType()).toLowerCase();
-        
-        // Station/location related
-        if (name.contains("station") || name.contains("location") || name.contains("place")) {
-            return "Generate realistic station/location names like train stations, bus stops, or landmarks.";
-        }
-        
-        // ID related
-        if (name.contains("id") && (name.contains("login") || name.contains("user"))) {
-            return "Generate realistic user login IDs/usernames with mix of letters and numbers.";
-        }
-        
-        // Date/time related
-        if (name.contains("date") || name.contains("time") || type.contains("date")) {
-            return "Generate valid date/time values in appropriate format.";
-        }
-        
-        // List related
-        if (name.contains("list") || type.contains("array")) {
-            return "Generate single values that would be elements in a list, not the entire list.";
-        }
-        
-        // Password related
-        if (name.contains("password") || name.contains("pass")) {
-            return "Generate realistic password patterns with appropriate complexity.";
-        }
-        
-        // Number related
-        if (type.contains("int") || type.contains("number")) {
-            return "Generate realistic numeric values appropriate for the context.";
-        }
-        
+        // No longer needed - intelligent guidelines are now built into the main prompt
         return "";
     }
 
@@ -720,6 +712,14 @@ public class ZeroShotLLMGenerator {
 
     // Legacy method removed - response parsing now handled by unified LLM service
 
+    /**
+     * Get current date/time in human-readable format for LLM prompts.
+     */
+    private String getCurrentTimestamp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm:ss a z");
+        return ZonedDateTime.now().format(formatter);
+    }
+    
     /**
      * Escape quotes or backslashes so we can embed user text in JSON.
      */

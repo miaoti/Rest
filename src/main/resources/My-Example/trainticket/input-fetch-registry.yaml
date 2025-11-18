@@ -3,12 +3,58 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 11
-- 11
+- 17
 - 22
-- 4
-- 55
-- 24356300
+- 11
+- 12
+- 517186800
 parameterMappings:
+  departureTime:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 11
+    - 17
+    - 13
+    - 52
+    - 10
+    - 229889400
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 11
+    - 17
+    - 13
+    - 52
+    - 28
+    - 19944500
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/routeservice/routes"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 11
+    - 17
+    - 13
+    - 52
+    - 39
+    - 697154100
+    successRate: 0.0
+    description: null
   loginId:
   - endpoint: "/api/v1/user/query"
     method: "GET"
@@ -32,13 +78,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 16
-    - 56
-    - 1
-    - 55906500
-    successRate: 0.1
+    - 13
+    - 18
+    - 40
+    - 18
+    - 852184500
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/no_good_match/query"
     method: "GET"
@@ -47,12 +93,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 16
-    - 52
-    - 17
-    - 291190300
+    - 13
+    - 18
+    - 39
+    - 28
+    - 699891400
     successRate: 0.0
     description: null
   trainType:
@@ -155,13 +201,13 @@ parameterMappings:
     priority: 7
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 56
-    - 56
-    - 700082200
-    successRate: 0.1
+    - 13
+    - 18
+    - 43
+    - 45
+    - 45246400
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/user/query"
     method: "GET"
@@ -170,12 +216,12 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 55
-    - 26
-    - 659585500
+    - 13
+    - 18
+    - 42
+    - 50
+    - 445197700
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/no_good_match/query"
@@ -185,12 +231,58 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 55
-    - 26
-    - 646077700
+    - 13
+    - 18
+    - 42
+    - 50
+    - 431027900
+    successRate: 0.0
+    description: null
+  tripId:
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 19
+    - 38
+    - 51
+    - 987366800
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 19
+    - 38
+    - 57
+    - 3907700
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order/{orderId}"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 19
+    - 39
+    - 2
+    - 471780700
     successRate: 0.0
     description: null
   body:
@@ -277,13 +369,13 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 5
-    - 23
-    - 23199100
-    successRate: 0.1
+    - 12
+    - 13
+    - 36
+    - 12
+    - 77013900
+    successRate: 0.19
     description: null
   seatNumber:
   - endpoint: "/api/v1/travel/query"
@@ -323,13 +415,13 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 25
-    - 0
-    - 304938800
-    successRate: 0.1
+    - 13
+    - 18
+    - 46
+    - 28
+    - 843527000
+    successRate: 0.271
     description: null
   coachNumber:
   - endpoint: "/api/v1/travel/query"
@@ -415,13 +507,13 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
+    - 13
+    - 19
+    - 37
     - 22
-    - 31
-    - 29
-    - 30578100
-    successRate: 0.0
+    - 684493900
+    successRate: 0.19
     description: null
   price:
   - endpoint: "/api/v1/priceservice/prices"
@@ -553,13 +645,13 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
     - 13
-    - 51
-    - 708747600
-    successRate: 0.1
+    - 18
+    - 45
+    - 13
+    - 973327900
+    successRate: 0.271
     description: null
   startStation:
   - endpoint: "/api/v1/stationservice/stations"
@@ -569,13 +661,13 @@ parameterMappings:
     priority: 7
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 17
-    - 22
-    - 42
-    - 148483300
-    successRate: 0.1
+    - 13
+    - 18
+    - 40
+    - 55
+    - 941487000
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/route/query"
     method: "GET"
@@ -584,12 +676,12 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 16
-    - 58
-    - 10
-    - 952352400
+    - 13
+    - 18
+    - 40
+    - 26
+    - 810521200
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/order/query"
@@ -599,12 +691,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 16
-    - 58
-    - 10
-    - 936681500
+    - 13
+    - 18
+    - 40
+    - 26
+    - 795052400
     successRate: 0.0
     description: null
   id:
@@ -653,6 +745,52 @@ parameterMappings:
     - 803196400
     successRate: 0.1
     description: null
+  startPlace:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 11
+    - 12
+    - 13
+    - 50
+    - 37
+    - 946508100
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 11
+    - 12
+    - 13
+    - 50
+    - 42
+    - 659142600
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 11
+    - 12
+    - 13
+    - 50
+    - 47
+    - 338004800
+    successRate: 0.0
+    description: null
   distances:
   - endpoint: "/api/v1/routeservice/routes"
     method: "GET"
@@ -661,12 +799,12 @@ parameterMappings:
     priority: 7
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 38
-    - 11
-    - 219141500
+    - 13
+    - 18
+    - 39
+    - 4
+    - 622729300
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/orderservice/order"
@@ -676,12 +814,12 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 36
-    - 41
-    - 127247000
+    - 13
+    - 18
+    - 38
+    - 30
+    - 426700200
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travel/query"
@@ -691,12 +829,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 34
-    - 28
-    - 277670400
+    - 13
+    - 18
+    - 37
+    - 51
+    - 575965400
     successRate: 0.0
     description: null
   travelTime:
@@ -722,13 +860,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 57
-    - 21
-    - 89428800
-    successRate: 0.1
+    - 13
+    - 19
+    - 7
+    - 48
+    - 670216700
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/orderservice/order/{travelDate}/{trainNumber}"
     method: "GET"
@@ -737,12 +875,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 53
-    - 53
-    - 183197500
+    - 13
+    - 19
+    - 6
+    - 55
+    - 208457600
     successRate: 0.0
     description: null
   endStation:
@@ -814,13 +952,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 1
-    - 43
-    - 865845800
-    successRate: 0.1
+    - 13
+    - 18
+    - 31
+    - 47
+    - 239851600
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/route/query"
     method: "GET"
@@ -829,12 +967,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 19
-    - 58
-    - 10
-    - 985668400
+    - 13
+    - 18
+    - 23
+    - 27
+    - 524586900
     successRate: 0.0
     description: null
   firstClassPriceRate:
@@ -891,13 +1029,13 @@ parameterMappings:
     priority: 7
     lastUsed:
     - 2025
-    - 8
     - 11
+    - 13
     - 18
-    - 5
-    - 53
-    - 34747300
-    successRate: 0.1
+    - 42
+    - 10
+    - 278001500
+    successRate: 0.271
     description: null
   - endpoint: "/api/v1/travel/query"
     method: "GET"
@@ -906,12 +1044,12 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 17
-    - 43
-    - 4
-    - 366841600
+    - 12
+    - 13
+    - 34
+    - 27
+    - 181346600
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/route/query"
@@ -921,12 +1059,58 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 17
-    - 43
-    - 4
-    - 353570300
+    - 13
+    - 18
+    - 41
+    - 40
+    - 114119700
+    successRate: 0.0
+    description: null
+  endPlace:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 19
+    - 37
+    - 53
+    - 175918000
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 19
+    - 38
+    - 28
+    - 585494700
+    successRate: 0.1
+    description: null
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 19
+    - 38
+    - 2
+    - 971714900
     successRate: 0.0
     description: null
   differenceMoney:
@@ -998,13 +1182,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
+    - 12
+    - 13
+    - 39
     - 22
-    - 26
-    - 2
-    - 533043200
-    successRate: 0.1
+    - 971419100
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/order/query"
     method: "GET"
@@ -1013,12 +1197,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 22
-    - 24
-    - 32
-    - 488206300
+    - 12
+    - 13
+    - 38
+    - 54
+    - 279104900
     successRate: 0.0
     description: null
   accountId:
@@ -1044,13 +1228,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 46
-    - 48
-    - 108146200
-    successRate: 0.1
+    - 12
+    - 13
+    - 35
+    - 22
+    - 681723000
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/orderservice/order/security/{checkDate}/{accountId}"
     method: "GET"
@@ -1059,12 +1243,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 20
-    - 42
-    - 51
-    - 72754900
+    - 12
+    - 13
+    - 34
+    - 52
+    - 565654600
     successRate: 0.0
     description: null
   travelDate:
@@ -1090,13 +1274,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 50
-    - 30
-    - 706817600
-    successRate: 0.1
+    - 13
+    - 19
+    - 6
+    - 35
+    - 85044600
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/admin-travel/query"
     method: "GET"
@@ -1105,12 +1289,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 46
-    - 38
-    - 669338700
+    - 13
+    - 18
+    - 47
+    - 23
+    - 237664300
     successRate: 0.0
     description: null
   boughtDate:
@@ -1213,13 +1397,13 @@ parameterMappings:
     priority: 7
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 43
-    - 36
-    - 909455900
-    successRate: 0.1
+    - 12
+    - 13
+    - 38
+    - 37
+    - 146768700
+    successRate: 0.19
     description: null
   - endpoint: "/api/v1/route/query"
     method: "GET"
@@ -1228,12 +1412,12 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 40
-    - 16
-    - 823234400
+    - 12
+    - 13
+    - 37
+    - 55
+    - 335476600
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/order/query"
@@ -1243,12 +1427,12 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2025
-    - 8
     - 11
-    - 21
-    - 40
-    - 16
-    - 808727600
+    - 12
+    - 13
+    - 37
+    - 55
+    - 320450100
     successRate: 0.0
     description: null
   to:
@@ -1409,6 +1593,21 @@ cache:
   maxEntries: 1000
   ttlSeconds: 300
 parameterErrors:
+  /api/v1/routeservice/routes/beijing/guangzhou:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/guangzhou"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 6
+      - 7
+      - 355697200
+      additionalInfo: null
   /api/v1/orderOtherService/orderOther/admin:
     accountId:
     - errorType: "CONSTRAINT_ERROR"
@@ -1424,6 +1623,94 @@ parameterErrors:
       - 1
       - 41
       - 239105200
+      additionalInfo: null
+  /api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 1
+      - 45
+      - 961320200
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 4
+      - 9
+      - 275314900
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijingrailwaystation/berlinhauptbahnhof:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/berlinhauptbahnhof"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 6
+      - 55
+      - 351558000
+      additionalInfo: null
+  /api/v1/routeplanservice/routePlan/minStopStations:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 0
+      - 13
+      - 867604200
+      additionalInfo: null
+  /api/v1/routeservice/routes/shenzhen/invalid_value_missing_endplace:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shenzhen/invalid_value_missing_endplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 3
+      - 18
+      - 560174100
+      additionalInfo: null
+  /api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation:
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 2
+      - 53
+      - 805663900
       additionalInfo: null
   /api/v1/adminorderservice/adminorder:
     travelTime:
@@ -1533,11 +1820,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
-      - 16
-      - 26
+      - 17
+      - 21
       - 52
-      - 447038600
+      - 38
+      - 73800200
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1560,11 +1847,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
-      - 16
-      - 26
+      - 17
+      - 21
+      - 52
       - 43
-      - 734266200
+      - 30100400
       additionalInfo: null
     contactsDocumentNumber:
     - errorType: "NULL_ERROR"
@@ -1580,6 +1867,19 @@ parameterErrors:
       - 9
       - 919727500
       additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "contactsDocumentNumber"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 53
+      - 38
+      - 317323600
+      additionalInfo: null
     contactsName:
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1594,6 +1894,19 @@ parameterErrors:
       - 21
       - 138716800
       additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "contactsName"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 53
+      - 12
+      - 587919900
+      additionalInfo: null
     differenceMoney:
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -1602,11 +1915,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
-      - 15
-      - 42
-      - 58
-      - 272641100
+      - 12
+      - 14
+      - 45
+      - 24
+      - 6712400
       additionalInfo: null
     seatNumber:
     - errorType: "FORMAT_ERROR"
@@ -1657,11 +1970,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
-      - 16
-      - 25
-      - 47
-      - 540964800
+      - 12
+      - 14
+      - 42
+      - 20
+      - 816333400
       additionalInfo: null
     coachNumber:
     - errorType: "TYPE_MISMATCH"
@@ -1700,11 +2013,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 10
-      - 15
-      - 54
-      - 12
-      - 58032300
+      - 17
+      - 21
+      - 51
+      - 13
+      - 566700000
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1727,11 +2040,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 10
-      - 15
-      - 31
-      - 24
-      - 232536700
+      - 17
+      - 21
+      - 51
+      - 18
+      - 342414000
       additionalInfo: null
     travelDate:
     - errorType: "FORMAT_ERROR"
@@ -1741,11 +2054,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 4
-      - 16
-      - 32
-      - 35
-      - 240288700
+      - 12
+      - 14
+      - 42
+      - 42
+      - 956629300
       additionalInfo: null
     '"documentType"':
     - errorType: "FORMAT_ERROR"
@@ -1812,11 +2125,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
+      - 12
+      - 14
+      - 44
       - 4
-      - 16
-      - 34
-      - 4
-      - 865949800
+      - 331638900
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1858,6 +2171,19 @@ parameterErrors:
       - 2
       - 15
       - 739873400
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatClass"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 51
+      - 56
+      - 440242600
       additionalInfo: null
     trainNumber:
     - errorType: "FORMAT_ERROR"
@@ -1963,11 +2289,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
-      - 22
-      - 2
       - 17
-      - 48701100
+      - 20
+      - 15
+      - 58
+      - 732659200
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1981,6 +2307,87 @@ parameterErrors:
       - 25
       - 19
       - 346067100
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distances"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 55
+      - 10
+      - 377934300
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distances"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 20
+      - 19
+      - 41
+      - 797893900
+      additionalInfo: null
+    endStation:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "endStation"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 50
+      - 36
+      - 882896200
+      additionalInfo: null
+    loginId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "loginId"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 51
+      - 14
+      - 158384100
+      additionalInfo: null
+    stationList:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "stationList"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 47
+      - 34
+      - 98904200
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "stationList"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 20
+      - 32
+      - 48
+      - 749074300
       additionalInfo: null
     distanceList:
     - errorType: "CONSTRAINT_ERROR"
@@ -2003,11 +2410,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
-      - 22
-      - 1
-      - 15
-      - 820850000
+      - 17
+      - 21
+      - 55
+      - 56
+      - 27925400
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2016,11 +2423,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
       - 17
-      - 10
-      - 20
-      - 484215700
+      - 19
+      - 49
+      - 45
+      - 669828100
       additionalInfo: null
     startStation:
     - errorType: "VALIDATION_ERROR"
@@ -2036,6 +2443,19 @@ parameterErrors:
       - 1
       - 254240700
       additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "JSON parse error: (was java"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "startStation"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 48
+      - 47
+      - 275455800
+      additionalInfo: null
     stations:
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2044,11 +2464,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
       - 17
-      - 42
-      - 10
-      - 366431100
+      - 19
+      - 47
+      - 32
+      - 322207800
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2057,11 +2477,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 11
       - 17
+      - 19
+      - 46
       - 8
-      - 1
-      - 672882600
+      - 223743300
       additionalInfo: null
     body:
     - errorType: "CONSTRAINT_ERROR"
@@ -2076,4 +2496,457 @@ parameterErrors:
       - 22
       - 50
       - 992547900
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/shanghai:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/shanghai"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 2
+      - 48
+      - 949158200
+      additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/beijing:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 0
+      - 46
+      - 722640400
+      additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/newyorkpennstation:
+    startPlace:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/newyorkpennstation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 6
+      - 33
+      - 193198700
+      additionalInfo: null
+  /api/v1/routeservice/routes/hangzhou/beijing:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/hangzhou/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 4
+      - 22
+      - 3190200
+      additionalInfo: null
+  /api/v1/travelservice/trips/left:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 6
+      - 54
+      - 38041800
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 14
+      - 1
+      - 32
+      - 745572000
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 19
+      - 19
+      - 37
+      - 431752300
+      additionalInfo: null
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 11
+      - 12
+      - 504014200
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 9
+      - 20
+      - 393718300
+      additionalInfo: null
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 14
+      - 1
+      - 7
+      - 838435200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 16
+      - 23
+      - 2
+      - 552741300
+      additionalInfo: null
+  /api/v1/travelplanservice/travelPlan/minStation:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 2
+      - 23
+      - 764751900
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 22
+      - 5
+      - 45
+      - 329402600
+      additionalInfo: null
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 5
+      - 11
+      - 602458400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 58
+      - 51
+      - 539942600
+      additionalInfo: null
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 5
+      - 37
+      - 495241200
+      additionalInfo: null
+  /api/v1/adminbasicservice/adminbasic/prices:
+    basicPriceRate:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 35
+      - 32
+      - 914054000
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
+        \ String \"INVALID_VALUE_MISSING_basicPriceRate\": not a valid Double value"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 35
+      - 39
+      - 718029500
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 46
+      - 5
+      - 553112000
+      additionalInfo: null
+    routeId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 37
+      - 33
+      - 455458900
+      additionalInfo: null
+    trainType:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 47
+      - 22
+      - 106212600
+      additionalInfo: null
+    firstClassPriceRate:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 34
+      - 55
+      - 511332000
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
+        \ String \"INVALID_VALUE_MISSING_firstClassPriceRate\": not a valid Double\
+        \ value"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 35
+      - 2
+      - 605696900
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 45
+      - 22
+      - 514740000
+      additionalInfo: null
+    id:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 45
+      - 44
+      - 313399900
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/berlinhauptbahnhof:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/berlinhauptbahnhof"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 6
+      - 10
+      - 938149800
+      additionalInfo: null
+  /api/v1/priceservice/prices:
+    routeId:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 50
+      - 25
+      - 169161900
+      additionalInfo: null
+    trainType:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-RT-12345' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 14
+      - 39
+      - 53
+      - 869258100
+      additionalInfo: null
+    id:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 11
+      - 17
+      - 21
+      - 44
+      - 58
+      - 638689500
+      additionalInfo: null
+  /api/v1/routeservice/routes/chengdu/invalid_value_missing_endplace:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/chengdu/invalid_value_missing_endplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 2
+      - 4
+      - 291301500
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 11
+      - 51
+      - 496733700
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 4
+      - 29
+      - 266428900
       additionalInfo: null

@@ -207,6 +207,18 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         initializeParameterRotation(rootApiKey);
         log.info("Parameter rotation initialized with {} parameters: {}", parameterRotation.size(), parameterRotation);
         
+        // FIX: Skip negative tests for GET methods without parameters (nothing to make invalid)
+        if (parameterRotation.isEmpty()) {
+            String httpMethod = getFirstApiHttpMethod(sc);
+            if ("GET".equalsIgnoreCase(httpMethod)) {
+                log.info("⚠️ Skipping negative tests for GET method without parameters (nothing to invalidate)");
+                faultyVariantIndices.clear(); // Remove all negative test indices
+                faultyCount = 0;
+            } else {
+                log.warn("⚠️ No parameters found for {} method. Negative tests will have no invalid inputs.", httpMethod);
+            }
+        }
+        
         // Determine scenario identifier based on first API call
             String firstApiName = getFirstApiOperationName(sc);
         String scenarioId;
@@ -283,8 +295,36 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                  }
             }
             
+            // FIX: If marked as negative but no faulty parameters were actually set, convert to positive test
+            // Also check if faulty parameters contain error markers (INVALID_VALUE_MISSING_, VAL_)
+            boolean hasValidInvalidParams = false;
+            if (isFaultyVariant && !tc.getFaultyParameters().isEmpty()) {
+                // Check if any faulty parameter has a real invalid value (not an error marker)
+                for (String faultyParam : tc.getFaultyParameters()) {
+                    // Format is "paramName=value"
+                    String value = faultyParam.contains("=") ? faultyParam.substring(faultyParam.indexOf("=") + 1) : faultyParam;
+                    if (value != null && 
+                        !value.startsWith("INVALID_VALUE_MISSING_") && 
+                        !value.startsWith("VAL_") &&
+                        !value.startsWith("STEP1_")) {
+                        hasValidInvalidParams = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (isFaultyVariant && (tc.getFaultyParameters().isEmpty() || !hasValidInvalidParams)) {
+                log.warn("⚠️ Test variant {} was marked as NEGATIVE but no valid invalid parameters were set (pool exhausted or fallback used). Converting to POSITIVE test.", (v + 1));
+                tc.setFaulty(false);
+                tc.getFaultyParameters().clear(); // Clear error markers
+                // Update test name to remove "negative" prefix
+                String correctedName = tc.getOperationId().replace("test_negative_", "test_");
+                tc.setOperationId(correctedName);
+                log.info("✅ Renamed test from {} to {} (now POSITIVE)", testName, correctedName);
+            }
+            
             // DEBUG: Log invalid parameters
-            if (isFaultyVariant) {
+            if (tc.getFaulty()) {
                 log.info("🔴 NEGATIVE TEST: {} has {} invalid parameters: {}", 
                         tc.getOperationId(), tc.getFaultyParameters().size(), tc.getFaultyParameters());
             }
@@ -463,8 +503,16 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         // Mark as not faulty variant - will generate positive test instead
                                         faultyValueSet = false;
                                     } else {
-                                        val = convertObjectToString(invalidValue, p.getType());
-                                    tc.addFaultyParameter(p.getName(), val);
+                                        // 🔥 FIX: For TYPE_MISMATCH, preserve the actual type (Integer, Boolean, etc.)
+                                        // For body/formData params, store in typedVal; for path/query/header, convert to string
+                                        if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
+                                            typedVal = invalidValue; // Keep typed (Integer 123, not "123")
+                                            val = convertObjectToString(invalidValue, p.getType()); // String for logging/tracking
+                                        } else {
+                                            // Path/query/header params must be strings (URL construction)
+                                            val = convertObjectToString(invalidValue, p.getType());
+                                        }
+                                        tc.addFaultyParameter(p.getName(), val);
                                         faultyValueSet = true;
                                         log.info("✅ Negative Test (Round-Robin) → {} = {} (type: {}, intentionally invalid) - LOCKED", 
                                                 p.getName(), val, invalidValue.getClass().getSimpleName());
@@ -476,7 +524,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         log.warn("⚠️ No invalid values in pool for '{}'", p.getName());
                                         faultyValueSet = false;
                                     } else {
-                                        val = convertObjectToString(invalidValue, p.getType());
+                                        // 🔥 FIX: For TYPE_MISMATCH, preserve the actual type (Integer, Boolean, etc.)
+                                        // For body/formData params, store in typedVal; for path/query/header, convert to string
+                                        if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
+                                            typedVal = invalidValue; // Keep typed (Integer 123, not "123")
+                                            val = convertObjectToString(invalidValue, p.getType()); // String for logging/tracking
+                                        } else {
+                                            // Path/query/header params must be strings (URL construction)
+                                            val = convertObjectToString(invalidValue, p.getType());
+                                        }
                                         tc.addFaultyParameter(p.getName(), val);
                                         faultyValueSet = true;
                                         log.info("✅ Negative Test (Random) → {} = {} (type: {}, intentionally invalid) - LOCKED", 
@@ -527,7 +583,18 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         // Skip LLM generation for negative test parameters that failed to get invalid value
                         if (!faultyValueSet && !isTargetNegativeParam && val == null && typedVal == null) {
                             List<String> vals = llmGen.generateParameterValues(info);
-                            String llmValue = vals.isEmpty() ? "LLM_EMPTY_" + p.getName() : vals.get(0);
+                            // 🔄 FIX: Rotate through cached values instead of always using first value
+                            String llmValue;
+                            if (vals.isEmpty()) {
+                                llmValue = "LLM_EMPTY_" + p.getName();
+                            } else if (vals.size() == 1) {
+                                llmValue = vals.get(0);
+                            } else {
+                                // Rotate through the cached values using variant index
+                                int rotationIndex = (variantIndex % vals.size());
+                                llmValue = vals.get(rotationIndex);
+                                log.debug("🔄 Rotated to LLM value [{}] for '{}' (Step 1): {}", rotationIndex, p.getName(), llmValue);
+                            }
                             // Convert to proper type for body/formData params, keep as string for path/query/header
                             if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                 typedVal = convertStringToTypedValue(llmValue, p);
@@ -541,11 +608,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             }
                         }
                         
-                        // If this is a negative test parameter but no invalid value was set, log warning
+                        // If this is a negative test parameter but no invalid value was set, DON'T use error fallback
                         if (isTargetNegativeParam && !faultyValueSet && val == null) {
-                            log.error("❌ CRITICAL: Negative test parameter '{}' failed to get invalid value from pool. This test will be invalid!", p.getName());
-                            // Use a fallback to prevent test generation failure
-                            val = "INVALID_VALUE_MISSING_" + p.getName();
+                            log.error("❌ CRITICAL: Negative test parameter '{}' failed to get invalid value from pool. Skipping this parameter for negative testing.", p.getName());
+                            // DON'T add error fallback - this will cause test to be converted to positive later
+                            // val remains null, will trigger conversion to positive test
                         }
                     } else {
                         if (!faultyValueSet) {
@@ -621,7 +688,18 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         // Fall back to traditional LLM generation if smart fetching didn't work
                         if (val == null && typedVal == null) {
                             List<String> vals = llmGen.generateParameterValues(info);
-                            String llmValue = vals.isEmpty() ? "LLM_EMPTY" : vals.get(0);
+                            // 🔄 FIX: Rotate through cached values instead of always using first value
+                            String llmValue;
+                            if (vals.isEmpty()) {
+                                llmValue = "LLM_EMPTY";
+                            } else if (vals.size() == 1) {
+                                llmValue = vals.get(0);
+                            } else {
+                                // Rotate through the cached values using variant index
+                                int rotationIndex = (variantIndex % vals.size());
+                                llmValue = vals.get(rotationIndex);
+                                log.debug("🔄 Rotated to LLM value [{}] for '{}': {}", rotationIndex, p.getName(), llmValue);
+                            }
                             // Convert to proper type for body/formData params, keep as string for path/query/header
                             if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                 typedVal = convertStringToTypedValue(llmValue, p);
@@ -638,9 +716,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
                     /* 3e. Error handling for negative test parameters without invalid values */
                     if (val == null && isTargetNegativeParam) {
-                        log.error("❌ CRITICAL: Negative test parameter '{}' in step {} has no invalid value. This should not happen!", 
+                        log.error("❌ CRITICAL: Negative test parameter '{}' in step {} has no invalid value. Skipping for negative testing.", 
                                 p.getName(), stepNumber);
-                        val = "INVALID_VALUE_MISSING_STEP" + stepNumber + "_" + p.getName();
+                        // DON'T add error fallback - let it remain null to trigger positive test conversion
                     }
                     
                     /* 3f. Ultimate fallback ---------------------------------------- */
@@ -648,11 +726,19 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 }
 
                 /* 3e. Store in correct container ----------------------------------- */
+                // Skip parameters with null values (e.g., failed negative test params that will trigger test conversion)
+                if (val == null && typedVal == null) {
+                    log.warn("⚠️ Skipping parameter '{}' - no value available (will trigger test type conversion if needed)", p.getName());
+                    continue;
+                }
+                
                 // Use typedVal for body params (already converted), val for path/query/header (strings)
                 switch (p.getIn().toLowerCase(Locale.ROOT)) {
                     case "path":
                         pathParams.put(p.getName(), val); // Path params must be strings for URL construction
-                        resolvedPath = resolvedPath.replace("{"+p.getName()+"}", val);
+                        if (val != null) {
+                            resolvedPath = resolvedPath.replace("{"+p.getName()+"}", val);
+                        }
                         break;
                     case "query":
                         queryParams.put(p.getName(), val); // Query params must be strings for URL construction
@@ -1345,6 +1431,62 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 return apiName;
             }
         }
+        return null;
+    }
+    
+    /**
+     * Get HTTP method of the first business API operation
+     */
+    private String getFirstApiHttpMethod(WorkflowScenario scenario) {
+        for (WorkflowStep rootStep : scenario.getRootSteps()) {
+            String httpMethod = findFirstBusinessApiHttpMethod(rootStep);
+            if (httpMethod != null) {
+                return httpMethod;
+            }
+        }
+        return "UNKNOWN";
+    }
+    
+    /**
+     * Recursively search for HTTP method of the first business API (not login/auth)
+     */
+    private String findFirstBusinessApiHttpMethod(WorkflowStep step) {
+        String opName = step.getOperationName();
+        String serviceName = step.getServiceName();
+        
+        // Skip login/auth related operations
+        if (opName != null && serviceName != null) {
+            String opLower = opName.toLowerCase();
+            String serviceLower = serviceName.toLowerCase();
+            
+            if (opLower.contains("login") || opLower.contains("auth") || 
+                serviceLower.contains("login") || serviceLower.contains("auth") ||
+                opLower.contains("signin") || opLower.contains("token")) {
+                // Skip login/auth, continue to children
+            } else {
+                // Extract HTTP method from operation name
+                Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
+                if (httpMatcher.matches()) {
+                    return httpMatcher.group(1).toUpperCase();
+                }
+                
+                // Try service-prefixed format
+                Pattern servicePattern = Pattern.compile(".*?\\s+(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+.+$", Pattern.CASE_INSENSITIVE);
+                Matcher serviceMatcher = servicePattern.matcher(opName);
+                if (serviceMatcher.matches()) {
+                    return serviceMatcher.group(1).toUpperCase();
+                }
+            }
+        }
+        
+        // Recursively search children
+        for (WorkflowStep child : step.getChildren()) {
+            String result = findFirstBusinessApiHttpMethod(child);
+            if (result != null) {
+                return result;
+            }
+        }
+        
         return null;
     }
     
@@ -2232,7 +2374,17 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 // Fall back to traditional LLM generation if smart fetching didn't work
                 if (additionalValue == null) {
                     List<String> vals = llmGen.generateParameterValues(info);
-                    additionalValue = vals.isEmpty() ? "LLM_EMPTY_" + i : vals.get(0);
+                    // 🔄 FIX: Rotate through cached values instead of always using first value
+                    if (vals.isEmpty()) {
+                        additionalValue = "LLM_EMPTY_" + i;
+                    } else if (vals.size() == 1) {
+                        additionalValue = vals.get(0);
+                    } else {
+                        // Rotate through the cached values using array element index
+                        int rotationIndex = (i % vals.size());
+                        additionalValue = vals.get(rotationIndex);
+                        log.debug("🔄 Rotated to LLM value [{}] for array '{}' element {}: {}", rotationIndex, arrayParam.getName(), i, additionalValue);
+                    }
                     log.debug("LLM (Array Fallback) → {} = {}", arrayParam.getName(), additionalValue);
                 }
             }

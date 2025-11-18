@@ -1,18 +1,18 @@
 {
   "metadata": {
     "total_faults": 16,
-    "generated_at": "Mon Oct 27 15:15:35 CDT 2025",
+    "generated_at": "Mon Nov 17 15:51:25 CST 2025",
     "version": "1.0"
   },
   "injected_faults": [
     {
       "service": "ts-admin-order-service",
-      "api": "POST /api/v1/adminorderservice/adminorder",
+      "api": "POST /api/v1/adminorderservice/adminorder` AND `PUT /api/v1/adminorderservice/adminorder",
       "faultName": "INVALID_CONTACTS_NAME_FAULT"
     },
     {
       "service": "ts-admin-order-service",
-      "api": "PUT /api/v1/adminorderservice/adminorder",
+      "api": "POST /api/v1/adminorderservice/adminorder` AND `PUT /api/v1/adminorderservice/adminorder",
       "faultName": "INVALID_SEAT_NUMBER_FAULT"
     },
     {
@@ -38,17 +38,17 @@
     {
       "service": "ts-travel-plan-service",
       "api": "POST /api/v1/travelplanservice/travelPlan/minStation",
-      "faultName": "SAME_STATION_FAULT (Travel Plan)"
+      "faultName": "INVALID_STATION_LENGTH_FAULT (Travel Plan)"
     },
     {
       "service": "ts-travel-service",
       "api": "POST /api/v1/travelservice/trips/left",
-      "faultName": "SAME_STATION_FAULT (Trip Query)"
+      "faultName": "INVALID_STATION_LENGTH_FAULT (Trip Query)"
     },
     {
       "service": "ts-travel-service",
       "api": "POST /api/v1/travelservice/trips/left",
-      "faultName": "PAST_DATE_FAULT"
+      "faultName": "INVALID_YEAR_RANGE_FAULT"
     },
     {
       "service": "ts-travel-service",
@@ -83,7 +83,7 @@
     {
       "service": "ts-admin-route-service",
       "api": "POST /api/v1/adminrouteservice/adminroute",
-      "faultName": "DUPLICATE_STATIONS_FAULT"
+      "faultName": "INVALID_STATION_NAME_LENGTH_FAULT"
     }
   ]
 }

@@ -144,7 +144,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                 if (allureReport) {
                     pw.println("import io.qameta.allure.Allure;");
-                    pw.println("import io.qameta.allure.restassured.AllureRestAssured;");
+                    // AllureRestAssured filter removed - causes duplicate request logging
+                    // pw.println("import io.qameta.allure.restassured.AllureRestAssured;");
                     pw.println("import io.qameta.allure.model.Status;");
                 }
                 pw.println();
@@ -161,7 +162,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
                     pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
                     pw.println();
-                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters) {");
+                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
@@ -173,24 +174,25 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            if (start < 0) start = 0;");
                     pw.println("            ");
                     pw.println("            // Try multiple query strategies to find traces");
+                    pw.println("            // 🔥 FIX: Query gateway services FIRST to get complete distributed traces");
+                    pw.println("            // Gateway traces include all downstream service spans, but backend traces may not include gateway spans");
                     pw.println("            String[] queryUrls = {");
-                    pw.println("                // Strategy 1: Exact time window with operation (most specific)");
-                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=50&service=\" + svcEncoded + \"&operation=\" + opEncoded + \"&start=\" + start + \"&end=\" + end,");
-                    pw.println("                // Strategy 2: Time window with method only");
-                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=50&service=\" + svcEncoded + \"&operation=\" + URLEncoder.encode(method, StandardCharsets.UTF_8) + \"&start=\" + start + \"&end=\" + end,");
-                    pw.println("                // Strategy 3: Service in time window");
-                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=100&service=\" + svcEncoded + \"&start=\" + start + \"&end=\" + end,");
-                    pw.println("                // Strategy 4: Recent traces with lookback");
-                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=100&lookback=\" + JAEGER_LOOKBACK + \"&service=\" + svcEncoded,");
-                    pw.println("                // Strategy 5: ts-gateway-service (where HTTP calls are usually traced)");
+                    pw.println("                // Strategy 1: ts-gateway-service with time window (PRIORITY - contains full distributed trace)");
                     pw.println("                JAEGER_BASE_URL + \"/traces?limit=100&service=ts-gateway-service&start=\" + start + \"&end=\" + end,");
+                    pw.println("                // Strategy 2: ts-gateway-service with method (more specific)");
                     pw.println("                JAEGER_BASE_URL + \"/traces?limit=50&service=ts-gateway-service&operation=\" + URLEncoder.encode(method, StandardCharsets.UTF_8) + \"&start=\" + start + \"&end=\" + end,");
-                    pw.println("                // Strategy 6: Other common gateway services");
+                    pw.println("                // Strategy 3: Other common gateway services");
                     pw.println("                JAEGER_BASE_URL + \"/traces?limit=100&service=gateway-service&start=\" + start + \"&end=\" + end,");
                     pw.println("                JAEGER_BASE_URL + \"/traces?limit=100&service=api-gateway&start=\" + start + \"&end=\" + end,");
-                    pw.println("                // Strategy 7: Broad search for any traces with API calls");
+                    pw.println("                // Strategy 4: Broad search for any traces with API calls");
                     pw.println("                JAEGER_BASE_URL + \"/traces?limit=200&start=\" + start + \"&end=\" + end,");
-                    pw.println("                // Strategy 8: Very broad recent search");
+                    pw.println("                // Strategy 5: Target service with exact operation (fallback if gateway not found)");
+                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=50&service=\" + svcEncoded + \"&operation=\" + opEncoded + \"&start=\" + start + \"&end=\" + end,");
+                    pw.println("                // Strategy 6: Target service with method only");
+                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=50&service=\" + svcEncoded + \"&operation=\" + URLEncoder.encode(method, StandardCharsets.UTF_8) + \"&start=\" + start + \"&end=\" + end,");
+                    pw.println("                // Strategy 7: Target service in time window");
+                    pw.println("                JAEGER_BASE_URL + \"/traces?limit=100&service=\" + svcEncoded + \"&start=\" + start + \"&end=\" + end,");
+                    pw.println("                // Strategy 8: Recent traces with lookback (last resort)");
                     pw.println("                JAEGER_BASE_URL + \"/traces?limit=200&lookback=\" + JAEGER_LOOKBACK");
                     pw.println("            };");
                     pw.println("            ");
@@ -470,13 +472,38 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                String errorReport = TraceErrorAnalyzer.generateErrorReport(errorAnalysis);");
                     pw.println("                ");
                     pw.println("                if (errorAnalysis.hasErrors()) {");
+                    pw.println("                    // Trace contains technical errors (error=true tags)");
                     pw.println("                    analyzeAndRecordParameterErrors(globalBestTrace, stepParameters);");
                     pw.println("                    String intelligentAnalysis = TraceErrorAnalyzer.generateIntelligentAnalysis(errorAnalysis, globalBestTrace);");
                     pw.println("                    if (intelligentAnalysis != null && !intelligentAnalysis.trim().isEmpty()) {");
                     pw.println("                        Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS\", \"text/plain\", intelligentAnalysis);");
                     pw.println("                    }");
                     pw.println("                    Allure.addAttachment(\"🔗 API Call Trace (FAILED)\", \"text/plain\", traceTable);");
+                    pw.println("                } else if (isStepFailed) {");
+                    pw.println("                    // Test failed but trace has no technical errors - likely business logic validation failure");
+                    pw.println("                    StringBuilder analysisMsg = new StringBuilder();");
+                    pw.println("                    analysisMsg.append(\"═══════════════════════════════════════════════════════════════════════\\n\");");
+                    pw.println("                    analysisMsg.append(\"🔍 ROOT CAUSE ANALYSIS\\n\");");
+                    pw.println("                    analysisMsg.append(\"═══════════════════════════════════════════════════════════════════════\\n\\n\");");
+                    pw.println("                    analysisMsg.append(\"**ANALYSIS STATUS:**\\n\");");
+                    pw.println("                    analysisMsg.append(\"The distributed trace for this failed test execution was successfully retrieved,\\n\");");
+                    pw.println("                    analysisMsg.append(\"however, it does not contain any technical error indicators (error tags).\\n\\n\");");
+                    pw.println("                    analysisMsg.append(\"**LIKELY CAUSE:**\\n\");");
+                    pw.println("                    analysisMsg.append(\"This failure is most likely due to business logic validation rather than\\n\");");
+                    pw.println("                    analysisMsg.append(\"a technical error. The service processed the request successfully but\\n\");");
+                    pw.println("                    analysisMsg.append(\"rejected it based on application-level validation rules (e.g., invalid\\n\");");
+                    pw.println("                    analysisMsg.append(\"business state, constraint violations, or semantic validation failures).\\n\\n\");");
+                    pw.println("                    analysisMsg.append(\"**RECOMMENDATIONS:**\\n\");");
+                    pw.println("                    analysisMsg.append(\"• Review the response body in the '📥 Response' section for validation error messages\\n\");");
+                    pw.println("                    analysisMsg.append(\"• Check the HTTP status code (e.g., 400 Bad Request, 422 Unprocessable Entity)\\n\");");
+                    pw.println("                    analysisMsg.append(\"• Examine the '🔗 API Call Trace' section to identify which service rejected the request\\n\");");
+                    pw.println("                    analysisMsg.append(\"• Verify input parameters against business rules and constraints\\n\");");
+                    pw.println("                    analysisMsg.append(\"• Consult the API documentation for validation requirements\\n\\n\");");
+                    pw.println("                    analysisMsg.append(\"For detailed trace information, see the '📈 Raw Trace Data' section below.\\n\");");
+                    pw.println("                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS\", \"text/plain\", analysisMsg.toString());");
+                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace (FAILED)\", \"text/plain\", traceTable);");
                     pw.println("                } else {");
+                    pw.println("                    // Test succeeded and trace has no errors");
                     pw.println("                    Allure.addAttachment(\"🔗 API Call Trace (SUCCESS)\", \"text/plain\", traceTable);");
                     pw.println("                }");
                     pw.println("                Allure.addAttachment(\"📊 Trace Summary\", \"text/plain\", traceSummary);");
@@ -961,7 +988,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 if (allureReport) {
                     pw.println("        // Configure Allure results directory");
                     pw.println("        System.setProperty(\"allure.results.directory\", \"target/allure-results\");");
-                    pw.println("        RestAssured.filters(new AllureRestAssured());");
+                    pw.println("        // ⚠️ AllureRestAssured filter disabled - causes duplicate request logging");
+                    pw.println("        // We use manual, controlled attachments instead for cleaner reports");
+                    pw.println("        // RestAssured.filters(new AllureRestAssured());");
                 }
                 pw.println("    }");
                 pw.println();
@@ -1094,7 +1123,10 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         
                         // Generate hierarchical step number if available from the generator
                         String stepNumber = "Step " + stepIdx;
-                        String expectedStatusDisplay = scenario.getFaulty() ? "4XX/5XX error" : String.valueOf(step.getExpectedStatus());
+                        // For negative tests, show that we expect anything OTHER than the normal expected status
+                        String expectedStatusDisplay = scenario.getFaulty() 
+                                ? "!= " + step.getExpectedStatus() + " (any error)" 
+                                : String.valueOf(step.getExpectedStatus());
                         String stepTitle = stepNumber + ": "
                                 + step.getServiceName() + " "
                                 + verb.toUpperCase() + " " + step.getPath()
@@ -1194,6 +1226,10 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                if (!shouldSkip) {");
                             pw.println("                    System.out.println(\"▶️ EXECUTING: " + escape(stepTitle) + " (dependency analysis passed)\");");
                             
+                            // 🔥 FIX: Declare Response variable OUTSIDE try block for catch block accessibility
+                            pw.println("                    Response stepResponse" + stepIdx + " = null;");
+                            pw.println("                    ");
+                            
                             // Execute the step
                             pw.println("                    try {");
                             pw.println("                        RequestSpecification req = RestAssured.given();");
@@ -1206,7 +1242,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        String requestBody" + stepIdx + " = \"" + escape(requestBody) + "\";");
                                 pw.println("                        req = req.body(requestBody" + stepIdx + ");");
                                 pw.println("                        ");
-                                pw.println("                        // Add request details as single attachment");
+                                pw.println("                        // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)");
                                 pw.println("                        Allure.addAttachment(\"📤 Request Body\", \"application/json\", requestBody" + stepIdx + ");");
                             }
                             
@@ -1234,18 +1270,28 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        allStepParameters.put(\"body\", \"" + escape(requestBody) + "\");");
                             }
                             
-                            pw.println("                        Response stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
+                            pw.println("                        // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases");
+                            pw.println("                        stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
                             pw.println("                               .then().log().ifValidationFails()");
-                            
-                            // For negative tests, expect 4XX or 5XX error codes instead of the OpenAPI expected status
-                            if (scenario.getFaulty()) {
-                                pw.println("                               // Negative test: expect error code (4XX or 5XX), not success code");
-                                pw.println("                               .statusCode(org.hamcrest.Matchers.greaterThanOrEqualTo(400))");
-                            } else {
-                            pw.println("                               .statusCode(" + step.getExpectedStatus() + ")");
-                            }
-                            
                             pw.println("                               .extract().response();");
+                            pw.println("                        ");
+                            pw.println("                        // Now validate status code based on expected status from configuration");
+                            pw.println("                        int actualStatusCode" + stepIdx + " = stepResponse" + stepIdx + ".getStatusCode();");
+                            pw.println("                        int expectedStatusCode" + stepIdx + " = " + step.getExpectedStatus() + ";");
+                            
+                            // For negative tests: PASS if actual != expected (any deviation is valid for negative tests)
+                            // For positive tests: PASS only if actual == expected
+                            if (scenario.getFaulty()) {
+                                pw.println("                        // Negative test: PASS if status != expected (anything unexpected is valid)");
+                                pw.println("                        if (actualStatusCode" + stepIdx + " == expectedStatusCode" + stepIdx + ") {");
+                                pw.println("                            throw new AssertionError(\"Negative test failed: Expected status != \" + expectedStatusCode" + stepIdx + " + \", but got: \" + actualStatusCode" + stepIdx + ");");
+                                pw.println("                        }");
+                            } else {
+                                pw.println("                        // Positive test: PASS only if status == expected");
+                                pw.println("                        if (actualStatusCode" + stepIdx + " != expectedStatusCode" + stepIdx + ") {");
+                                pw.println("                            throw new AssertionError(\"Expected status code \" + expectedStatusCode" + stepIdx + " + \", but got: \" + actualStatusCode" + stepIdx + ");");
+                                pw.println("                        }");
+                            }
                             pw.println("                        ");
                             
                             // 🔍 FAULT DETECTION: Inject fault detection code for root API (step 1 = first business API)
@@ -1289,11 +1335,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            // Single success status parameter");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (\" + actualStatus + \" in \" + responseTime + \"ms)\");");
                             pw.println("                            ");
-                            pw.println("                            // Single response attachment (avoid duplication)");
+                            pw.println("                            // Add response as attachment (AllureRestAssured filter disabled to avoid duplication)");
                             pw.println("                            Allure.addAttachment(\"📥 Response (\" + actualStatus + \")\", \"application/json\", responseBody);");
                             pw.println("                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)");
                             pw.println("                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
-                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters);");
+                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false);");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
                             pw.println("                        }");
@@ -1302,6 +1348,20 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                    } catch (Throwable t) {");
                         pw.println("                        stepResults.put(" + stepIdx + ", false);");
                         pw.println("                        System.out.println(\"❌ " + escape(stepTitle) + " - FAILED: \" + t.getMessage());");
+                        pw.println("                        ");
+                        pw.println("                        // 🔥 CRITICAL: Capture response body for failed requests (response was extracted before assertion)");
+                        pw.println("                        String failedResponseBody = null;");
+                        pw.println("                        int failedStatusCode = -1;");
+                        pw.println("                        long failedResponseTime = -1;");
+                        pw.println("                        try {");
+                        pw.println("                            if (stepResponse" + stepIdx + " != null) {");
+                        pw.println("                                failedResponseBody = stepResponse" + stepIdx + ".getBody().asString();");
+                        pw.println("                                failedStatusCode = stepResponse" + stepIdx + ".getStatusCode();");
+                        pw.println("                                failedResponseTime = stepResponse" + stepIdx + ".getTime();");
+                        pw.println("                            }");
+                        pw.println("                        } catch (Exception respEx) {");
+                        pw.println("                            failedResponseBody = \"Unable to capture response: \" + respEx.getMessage();");
+                        pw.println("                        }");
                         pw.println("                        ");
                         pw.println("                        // ❌ FAILURE: Enhanced failure reporting with detailed analysis");
                         pw.println("                        String errorType = t.getClass().getSimpleName();");
@@ -1326,11 +1386,25 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                        }");
                         pw.println("                        ");
                         pw.println("                        // Enhanced failure parameters");
-                        pw.println("                        Allure.parameter(\"🎯 Result\", \"❌ FAILED (\" + errorType + \")\");");
+                        pw.println("                        String resultMsg = \"❌ FAILED (\" + errorType;");
+                        pw.println("                        if (failedStatusCode >= 0) {");
+                        pw.println("                            resultMsg += \", status: \" + failedStatusCode;");
+                        pw.println("                        }");
+                        pw.println("                        if (failedResponseTime >= 0) {");
+                        pw.println("                            resultMsg += \", \" + failedResponseTime + \"ms\";");
+                        pw.println("                        }");
+                        pw.println("                        resultMsg += \")\";");
+                        pw.println("                        Allure.parameter(\"🎯 Result\", resultMsg);");
                         pw.println("                        Allure.parameter(\"🔍 Failure Reason\", failureReason);");
                         pw.println("                        Allure.parameter(\"🏢 Failed Service\", \"" + escape(step.getServiceName()) + "\");");
                         pw.println("                        Allure.parameter(\"📡 Failed Method\", \"" + verb.toUpperCase() + "\");");
                         pw.println("                        Allure.parameter(\"🔗 Failed Endpoint\", \"" + escape(step.getPath()) + "\");");
+                        pw.println("                        ");
+                        pw.println("                        // 🔥 CRITICAL: Attach response body for failed requests");
+                        pw.println("                        if (failedResponseBody != null) {");
+                        pw.println("                            String responseTitle = \"📥 Response (\" + failedStatusCode + \")\";");
+                        pw.println("                            Allure.addAttachment(responseTitle, \"application/json\", failedResponseBody);");
+                        pw.println("                        }");
                         pw.println("                        ");
                         pw.println("                        // Comprehensive error details");
                         pw.println("                        StringBuilder errorDetails = new StringBuilder();");
@@ -1364,7 +1438,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         // Remove detailed failure analysis - replaced by intelligent analysis
                         pw.println("                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)");
                         pw.println("                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
-                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters);");
+                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true);");
                         pw.println("                        ");
                         pw.println("                        // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure");
                         pw.println("                        throw new RuntimeException(\"" + escape(stepTitle) + " failed: \" + failureReason + \" (\" + errorType + \")\", t);");

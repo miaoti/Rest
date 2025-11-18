@@ -97,6 +97,8 @@ public class OpenAPIParameter {
         this.type = s.getType();
         this.format = s.getFormat();
         this.pattern = s.getPattern();
+        // 🔥 FIX: Extract description from schema
+        this.description = s.getDescription();
         this.enumValues = s.getEnum();
         if ("array".equals(type)) {
             this.enumValues = (List<String>) ((ArraySchema) s).getItems().getEnum();
@@ -106,8 +108,16 @@ public class OpenAPIParameter {
         this.minLength = s.getMinLength();
         this.maxLength = s.getMaxLength();
 
-        // If there's an example in the schema, store it
-        this.example = s.getExample();
+        // 🔥 FIX: If there's an example in the schema, preserve it as string if it's a date format
+        // to avoid Date object serialization (e.g., '2025-11-01' -> 2025-11-01T00:00:00Z)
+        Object exampleValue = s.getExample();
+        if (exampleValue != null && "date".equals(this.format) && exampleValue instanceof java.util.Date) {
+            // Convert Date object back to simple date string format
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+            this.example = sdf.format((java.util.Date) exampleValue);
+        } else {
+            this.example = exampleValue;
+        }
     }
 
     // ---------- GETTERS / SETTERS ----------

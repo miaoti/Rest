@@ -1,0 +1,771 @@
+{
+  "data": [
+    {
+      "traceID": "21c2d15fadf991232cf478a173edf84f",
+      "spans": [
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "a51d1cebbd3dc883",
+          "operationName": "AdminRouteController.addRoute",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "21c2d15fadf991232cf478a173edf84f",
+              "spanID": "4edac014a07e346f"
+            }
+          ],
+          "startTime": 1763430414647346,
+          "duration": 363,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.spring-webmvc-3.1"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "http-nio-16113-exec-8"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 70
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            },
+            {
+              "key": "otel.status_code",
+              "type": "string",
+              "value": "ERROR"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [
+            {
+              "timestamp": 1763430414647701,
+              "fields": [
+                {
+                  "key": "event",
+                  "type": "string",
+                  "value": "exception"
+                },
+                {
+                  "key": "exception.message",
+                  "type": "string",
+                  "value": "JSON parse error: (was java.lang.UnsupportedOperationException); nested exception is com.fasterxml.jackson.databind.JsonMappingException: (was java.lang.UnsupportedOperationException) (through reference chain: edu.fudan.common.entity.RouteInfo[\"distances\"]-\u003Ejava.util.Arrays$ArrayList[1])"
+                },
+                {
+                  "key": "exception.stacktrace",
+                  "type": "string",
+                  "value": "org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: (was java.lang.UnsupportedOperationException); nested exception is com.fasterxml.jackson.databind.JsonMappingException: (was java.lang.UnsupportedOperationException) (through reference chain: edu.fudan.common.entity.RouteInfo[\"distances\"]-\u003Ejava.util.Arrays$ArrayList[1])\n\tat org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:285)\n\tat org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.read(AbstractJackson2HttpMessageConverter.java:243)\n\tat org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodArgumentResolver.readWithMessageConverters(AbstractMessageConverterMethodArgumentResolver.java:205)\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.readWithMessageConverters(RequestResponseBodyMethodProcessor.java:158)\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor.resolveArgument(RequestResponseBodyMethodProcessor.java:131)\n\tat org.springframework.web.method.support.HandlerMethodArgumentResolverComposite.resolveArgument(HandlerMethodArgumentResolverComposite.java:121)\n\tat org.springframework.web.method.support.InvocableHandlerMethod.getMethodArgumentValues(InvocableHandlerMethod.java:167)\n\tat org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:134)\n\tat org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105)\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:878)\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:792)\n\tat org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)\n\tat org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)\n\tat org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)\n\tat org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)\n\tat org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:652)\n\tat org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:733)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)\n\tat org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:126)\n\tat org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:90)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:118)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:158)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat edu.fudan.common.security.jwt.JWTFilter.doFilterInternal(JWTFilter.java:27)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:92)\n\tat org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:77)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)\n\tat org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)\n\tat org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)\n\tat org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)\n\tat org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.springframework.web.servlet.v3_1.OpenTelemetryHandlerMappingFilter.doFilter(OpenTelemetryHandlerMappingFilter.java:83)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:97)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\n\tat org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)\n\tat org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)\n\tat org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:542)\n\tat org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:143)\n\tat org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)\n\tat org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)\n\tat org.apache.catalina.valves.RemoteIpValve.invoke(RemoteIpValve.java:764)\n\tat org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:357)\n\tat org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:374)\n\tat org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)\n\tat org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:893)\n\tat org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1707)\n\tat org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)\n\tat java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)\n\tat org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)\n\tat java.lang.Thread.run(Thread.java:750)\nCaused by: com.fasterxml.jackson.databind.JsonMappingException: (was java.lang.UnsupportedOperationException) (through reference chain: edu.fudan.common.entity.RouteInfo[\"distances\"]-\u003Ejava.util.Arrays$ArrayList[1])\n\tat com.fasterxml.jackson.databind.JsonMappingException.wrapWithPath(JsonMappingException.java:397)\n\tat com.fasterxml.jackson.databind.JsonMappingException.wrapWithPath(JsonMappingException.java:368)\n\tat com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer.deserialize(StringCollectionDeserializer.java:212)\n\tat com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer.deserialize(StringCollectionDeserializer.java:21)\n\tat com.fasterxml.jackson.databind.deser.impl.SetterlessProperty.deserializeAndSet(SetterlessProperty.java:134)\n\tat com.fasterxml.jackson.databind.deser.BeanDeserializer.deserializeFromObject(BeanDeserializer.java:371)\n\tat com.fasterxml.jackson.databind.deser.BeanDeserializer.deserialize(BeanDeserializer.java:164)\n\tat com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:4526)\n\tat com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3521)\n\tat org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter.readJavaType(AbstractJackson2HttpMessageConverter.java:274)\n\t... 93 more\nCaused by: java.lang.UnsupportedOperationException\n\tat java.util.AbstractList.add(AbstractList.java:148)\n\tat java.util.AbstractList.add(AbstractList.java:108)\n\tat com.fasterxml.jackson.databind.deser.std.StringCollectionDeserializer.deserialize(StringCollectionDeserializer.java:194)\n\t... 100 more\n"
+                },
+                {
+                  "key": "exception.type",
+                  "type": "string",
+                  "value": "org.springframework.http.converter.HttpMessageNotReadableException"
+                }
+              ]
+            }
+          ],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "4edac014a07e346f",
+          "operationName": "POST /api/v1/adminrouteservice/adminroute",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "21c2d15fadf991232cf478a173edf84f",
+              "spanID": "d6a6f16b1043e63a"
+            }
+          ],
+          "startTime": 1763430414646000,
+          "duration": 3493,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.tomcat-7.0"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "net.host.port",
+              "type": "int64",
+              "value": 16113
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/api/v1/adminrouteservice/adminroute"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int64",
+              "value": 400
+            },
+            {
+              "key": "net.sock.peer.port",
+              "type": "int64",
+              "value": 38020
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.scheme",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 70
+            },
+            {
+              "key": "net.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "net.protocol.name",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "http.target",
+              "type": "string",
+              "value": "/api/v1/adminrouteservice/adminroute"
+            },
+            {
+              "key": "net.sock.peer.addr",
+              "type": "string",
+              "value": "10.244.2.69"
+            },
+            {
+              "key": "user_agent.original",
+              "type": "string",
+              "value": "Apache-HttpClient/4.5.3 (Java/11.0.27)"
+            },
+            {
+              "key": "net.host.name",
+              "type": "string",
+              "value": "10.244.2.54"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "http-nio-16113-exec-8"
+            },
+            {
+              "key": "http.request_content_length",
+              "type": "int64",
+              "value": 350
+            },
+            {
+              "key": "http.client_ip",
+              "type": "string",
+              "value": "10.244.2.95"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": [
+            "clock skew adjustment disabled; not applying calculated delta of -490.459µs"
+          ]
+        },
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "640a6ac7d81564c8",
+          "operationName": "OnCommittedResponseWrapper.sendError",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "21c2d15fadf991232cf478a173edf84f",
+              "spanID": "4edac014a07e346f"
+            }
+          ],
+          "startTime": 1763430414647758,
+          "duration": 47,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.servlet-3.0"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "code.function",
+              "type": "string",
+              "value": "sendError"
+            },
+            {
+              "key": "code.namespace",
+              "type": "string",
+              "value": "org.springframework.security.web.util.OnCommittedResponseWrapper"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "http-nio-16113-exec-8"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 70
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "db6ff9b4c348e7bc",
+          "operationName": "BasicErrorController.error",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "21c2d15fadf991232cf478a173edf84f",
+              "spanID": "4edac014a07e346f"
+            }
+          ],
+          "startTime": 1763430414648669,
+          "duration": 529,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.spring-webmvc-3.1"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "http-nio-16113-exec-8"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 70
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [],
+          "processID": "p1",
+          "warnings": null
+        },
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "d073a690d2188ed6",
+          "operationName": "POST /*",
+          "references": [],
+          "startTime": 1763430414643000,
+          "duration": 6597,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.tomcat-7.0"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "net.sock.host.addr",
+              "type": "string",
+              "value": "10.244.2.69"
+            },
+            {
+              "key": "net.host.port",
+              "type": "int64",
+              "value": 18888
+            },
+            {
+              "key": "http.route",
+              "type": "string",
+              "value": "/*"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int64",
+              "value": 400
+            },
+            {
+              "key": "net.sock.peer.port",
+              "type": "int64",
+              "value": 50042
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "http.scheme",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 66
+            },
+            {
+              "key": "net.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "net.protocol.name",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "http.target",
+              "type": "string",
+              "value": "/api/v1/adminrouteservice/adminroute"
+            },
+            {
+              "key": "net.sock.peer.addr",
+              "type": "string",
+              "value": "10.244.2.95"
+            },
+            {
+              "key": "user_agent.original",
+              "type": "string",
+              "value": "Apache-HttpClient/4.5.3 (Java/11.0.27)"
+            },
+            {
+              "key": "net.host.name",
+              "type": "string",
+              "value": "ts-gateway-service"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "http-nio-18888-exec-3"
+            },
+            {
+              "key": "http.request_content_length",
+              "type": "int64",
+              "value": 350
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "server"
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [],
+          "processID": "p2",
+          "warnings": null
+        },
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "70f614fc8f17b48d",
+          "operationName": "FilteringWebHandler.handle",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "21c2d15fadf991232cf478a173edf84f",
+              "spanID": "d073a690d2188ed6"
+            }
+          ],
+          "startTime": 1763430414643431,
+          "duration": 5893,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.spring-webflux-5.0"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "http-nio-18888-exec-3"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 66
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "internal"
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [],
+          "processID": "p2",
+          "warnings": null
+        },
+        {
+          "traceID": "21c2d15fadf991232cf478a173edf84f",
+          "spanID": "d6a6f16b1043e63a",
+          "operationName": "POST",
+          "references": [
+            {
+              "refType": "CHILD_OF",
+              "traceID": "21c2d15fadf991232cf478a173edf84f",
+              "spanID": "d073a690d2188ed6"
+            }
+          ],
+          "startTime": 1763430414645312,
+          "duration": 3887,
+          "tags": [
+            {
+              "key": "otel.library.name",
+              "type": "string",
+              "value": "io.opentelemetry.netty-4.1"
+            },
+            {
+              "key": "otel.library.version",
+              "type": "string",
+              "value": "1.30.0-alpha"
+            },
+            {
+              "key": "net.peer.port",
+              "type": "int64",
+              "value": 16113
+            },
+            {
+              "key": "user_agent.original",
+              "type": "string",
+              "value": "Apache-HttpClient/4.5.3 (Java/11.0.27)"
+            },
+            {
+              "key": "net.peer.name",
+              "type": "string",
+              "value": "10.244.2.54"
+            },
+            {
+              "key": "http.status_code",
+              "type": "int64",
+              "value": 400
+            },
+            {
+              "key": "net.transport",
+              "type": "string",
+              "value": "ip_tcp"
+            },
+            {
+              "key": "thread.name",
+              "type": "string",
+              "value": "reactor-http-epoll-3"
+            },
+            {
+              "key": "http.method",
+              "type": "string",
+              "value": "POST"
+            },
+            {
+              "key": "thread.id",
+              "type": "int64",
+              "value": 198
+            },
+            {
+              "key": "http.request_content_length",
+              "type": "int64",
+              "value": 350
+            },
+            {
+              "key": "net.protocol.version",
+              "type": "string",
+              "value": "1.1"
+            },
+            {
+              "key": "http.url",
+              "type": "string",
+              "value": "http://10.244.2.54:16113/api/v1/adminrouteservice/adminroute"
+            },
+            {
+              "key": "net.protocol.name",
+              "type": "string",
+              "value": "http"
+            },
+            {
+              "key": "span.kind",
+              "type": "string",
+              "value": "client"
+            },
+            {
+              "key": "otel.status_code",
+              "type": "string",
+              "value": "ERROR"
+            },
+            {
+              "key": "error",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "key": "internal.span.format",
+              "type": "string",
+              "value": "proto"
+            }
+          ],
+          "logs": [],
+          "processID": "p2",
+          "warnings": null
+        }
+      ],
+      "processes": {
+        "p1": {
+          "serviceName": "ts-admin-route-service",
+          "tags": [
+            {
+              "key": "container.id",
+              "type": "string",
+              "value": "be696b56ea2de5a746543c45a453fb4d12dda8668741b81943fab7d81ee7aefe"
+            },
+            {
+              "key": "host.arch",
+              "type": "string",
+              "value": "amd64"
+            },
+            {
+              "key": "host.name",
+              "type": "string",
+              "value": "ts-admin-route-service-7bfcbd64ff-wqwlp"
+            },
+            {
+              "key": "k8s.pod.ip",
+              "type": "string",
+              "value": "10.244.2.54"
+            },
+            {
+              "key": "os.description",
+              "type": "string",
+              "value": "Linux 5.14.0-362.24.1.el9_3.x86_64"
+            },
+            {
+              "key": "os.type",
+              "type": "string",
+              "value": "linux"
+            },
+            {
+              "key": "process.command_line",
+              "type": "string",
+              "value": "/opt/java/openjdk/bin/java -javaagent:/otel/opentelemetry-javaagent.jar -Xmx200m -jar /app/ts-admin-route-service-1.0.jar"
+            },
+            {
+              "key": "process.executable.path",
+              "type": "string",
+              "value": "/opt/java/openjdk/bin/java"
+            },
+            {
+              "key": "process.pid",
+              "type": "int64",
+              "value": 7
+            },
+            {
+              "key": "process.runtime.description",
+              "type": "string",
+              "value": "Temurin OpenJDK 64-Bit Server VM 25.472-b08"
+            },
+            {
+              "key": "process.runtime.name",
+              "type": "string",
+              "value": "OpenJDK Runtime Environment"
+            },
+            {
+              "key": "process.runtime.version",
+              "type": "string",
+              "value": "1.8.0_472-b08"
+            },
+            {
+              "key": "telemetry.auto.version",
+              "type": "string",
+              "value": "1.30.0"
+            },
+            {
+              "key": "telemetry.sdk.language",
+              "type": "string",
+              "value": "java"
+            },
+            {
+              "key": "telemetry.sdk.name",
+              "type": "string",
+              "value": "opentelemetry"
+            },
+            {
+              "key": "telemetry.sdk.version",
+              "type": "string",
+              "value": "1.30.1"
+            }
+          ]
+        },
+        "p2": {
+          "serviceName": "ts-gateway-service",
+          "tags": [
+            {
+              "key": "container.id",
+              "type": "string",
+              "value": "f1ec9528c464ee793b85d95c7f330156de6f5a83ef40514278266295d729002d"
+            },
+            {
+              "key": "host.arch",
+              "type": "string",
+              "value": "amd64"
+            },
+            {
+              "key": "host.name",
+              "type": "string",
+              "value": "ts-gateway-service-76fcdd74d8-5lt8m"
+            },
+            {
+              "key": "k8s.pod.ip",
+              "type": "string",
+              "value": "10.244.2.69"
+            },
+            {
+              "key": "os.description",
+              "type": "string",
+              "value": "Linux 5.14.0-362.24.1.el9_3.x86_64"
+            },
+            {
+              "key": "os.type",
+              "type": "string",
+              "value": "linux"
+            },
+            {
+              "key": "process.command_line",
+              "type": "string",
+              "value": "/opt/java/openjdk/bin/java -javaagent:/otel/opentelemetry-javaagent.jar -Xmx1024m -jar /app/ts-gateway-service-1.0.jar"
+            },
+            {
+              "key": "process.executable.path",
+              "type": "string",
+              "value": "/opt/java/openjdk/bin/java"
+            },
+            {
+              "key": "process.pid",
+              "type": "int64",
+              "value": 7
+            },
+            {
+              "key": "process.runtime.description",
+              "type": "string",
+              "value": "Temurin OpenJDK 64-Bit Server VM 25.472-b08"
+            },
+            {
+              "key": "process.runtime.name",
+              "type": "string",
+              "value": "OpenJDK Runtime Environment"
+            },
+            {
+              "key": "process.runtime.version",
+              "type": "string",
+              "value": "1.8.0_472-b08"
+            },
+            {
+              "key": "telemetry.auto.version",
+              "type": "string",
+              "value": "1.30.0"
+            },
+            {
+              "key": "telemetry.sdk.language",
+              "type": "string",
+              "value": "java"
+            },
+            {
+              "key": "telemetry.sdk.name",
+              "type": "string",
+              "value": "opentelemetry"
+            },
+            {
+              "key": "telemetry.sdk.version",
+              "type": "string",
+              "value": "1.30.1"
+            }
+          ]
+        }
+      },
+      "warnings": null
+    }
+  ],
+  "total": 0,
+  "limit": 0,
+  "offset": 0,
+  "errors": null
+}
