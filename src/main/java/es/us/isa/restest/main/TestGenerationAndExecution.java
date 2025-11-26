@@ -68,7 +68,7 @@ public class TestGenerationAndExecution {
 
 	// Properties file with configuration settings
 	private static String propertiesFilePath = "src/main/resources/My-Example/trainticket-demo.properties";
-	private static String TraceFile = "src\\main\\resources\\My-Example\\trainticket\\tests\\";
+	private static String TraceFile = "src\\main\\resources\\My-Example\\trainticket\\traces\\";
 
 	private static List<String> argsList;								// List containing args
 
@@ -774,7 +774,11 @@ public class TestGenerationAndExecution {
 			// Jaeger trace fetching properties
 			"jaeger.enabled",
 			"jaeger.base.url",
-			"jaeger.lookback"
+			"jaeger.lookback",
+			// LLM response validation properties (soft error detection)
+			"llm.response.validation.enabled",
+			"llm.response.validation.only.2xx",
+			"llm.response.validation.include.rca"
 		};
 		
 		int configuredCount = 0;
@@ -816,6 +820,16 @@ public class TestGenerationAndExecution {
 			logger.info("   - Gemini API Key: {}", geminiApiKey.equals("not set") ? "not set" : "configured");
 			logger.info("   - Ollama Enabled: {}", ollamaEnabled);
 			logger.info("   - Ollama Model: {}", ollamaModel);
+			
+			// Log LLM response validation settings (soft error detection)
+			String llmValidationEnabled = System.getProperty("llm.response.validation.enabled", "false");
+			String llmValidationOnly2xx = System.getProperty("llm.response.validation.only.2xx", "true");
+			String llmValidationRca = System.getProperty("llm.response.validation.include.rca", "true");
+			
+			logger.info("🔍 LLM Response Validation (Soft Error Detection):");
+			logger.info("   - Enabled: {}", llmValidationEnabled);
+			logger.info("   - Only 2XX responses: {}", llmValidationOnly2xx);
+			logger.info("   - Include RCA in reports: {}", llmValidationRca);
 			
 			if ("true".equals(enabled)) {
 				logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");

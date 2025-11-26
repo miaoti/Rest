@@ -1,0 +1,1843 @@
+################################################################################
+# LLM COMMUNICATION LOG
+# Session ID: LLM-1763680166041-1
+# Started: 2025-11-20 17:09:26.056
+# Configuration:
+#   - Include Response Time: true
+#   - Include Content: true
+#   - Include Metadata: true
+#   - Max Content Length: 10000
+#   - Log Level: INFO
+################################################################################
+
+================================================================================
+🚀 LLM REQUEST #1
+================================================================================
+Timestamp: 2025-11-20 17:10:20.146
+Session ID: LLM-1763680166041-1
+Request ID: 1
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Thursday, November 20, 2025 at 5:10:20 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/adminrouteservice/adminroute
+- Service: ts-admin-route-service
+- All Parameters in this API: distanceList, endStation, id, loginId, startStation, stationList
+
+Parameter Information:
+- Name: distanceList
+- Description: Comma-separated list of distances (e.g., "12.5,8.2,15.7")
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+- Example: 12.5,8.2,15.7,22.1,5.9
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #1
+Timestamp: 2025-11-20 17:11:18.157
+Status: ✅ SUCCESS
+Response Time: 58018 ms
+📊 Resource Usage During Generation: System CPU: avg=9.8%, max=93.9% | System Memory: avg=90.1%, max=100.0% (31.7 GB/31.7 GB) | ollama.exe Process: max=37.3 MB | Samples: 116 over 58042ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+15.2,22.8,30.1,18.5,25.7
+8.9,12.3,9.6,14.2,11.8
+35.4,28.1,42.6,31.9,26.3
+5.7,7.2,4.8,6.9,8.4
+20.1,16.5,23.8,19.3,17.6
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #2
+================================================================================
+Timestamp: 2025-11-20 17:11:18.176
+Session ID: LLM-1763680166041-1
+Request ID: 2
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Thursday, November 20, 2025 at 5:11:18 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/adminrouteservice/adminroute
+- Service: ts-admin-route-service
+- All Parameters in this API: distanceList, endStation, id, loginId, startStation, stationList
+
+Parameter Information:
+- Name: endStation
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #2
+Timestamp: 2025-11-20 17:11:27.044
+Status: ✅ SUCCESS
+Response Time: 8868 ms
+📊 Resource Usage During Generation: System CPU: avg=4.3%, max=8.5% | System Memory: avg=77.3%, max=79.6% (25.2 GB/31.7 GB) | ollama.exe Process: max=55.4 MB | Samples: 18 over 8869ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+New York Penn Station
+Los Angeles Union Station
+Chicago O'Hare International Airport
+Miami International Airport
+Denver Union Station
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #3
+================================================================================
+Timestamp: 2025-11-20 17:11:27.473
+Session ID: LLM-1763680166041-1
+Request ID: 3
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Thursday, November 20, 2025 at 5:11:27 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/adminrouteservice/adminroute
+- Service: ts-admin-route-service
+- All Parameters in this API: distanceList, endStation, id, loginId, startStation, stationList
+
+Parameter Information:
+- Name: id
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #3
+Timestamp: 2025-11-20 17:11:36.817
+Status: ✅ SUCCESS
+Response Time: 9344 ms
+📊 Resource Usage During Generation: System CPU: avg=4.0%, max=6.8% | System Memory: avg=73.3%, max=76.0% (24.1 GB/31.7 GB) | ollama.exe Process: max=71.3 MB | Samples: 19 over 9345ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+AR-12345
+TS-67890
+ADMIN-11223
+ROUTE-44556
+STATION-77889
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #4
+================================================================================
+Timestamp: 2025-11-20 17:11:36.825
+Session ID: LLM-1763680166041-1
+Request ID: 4
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Thursday, November 20, 2025 at 5:11:36 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/adminrouteservice/adminroute
+- Service: ts-admin-route-service
+- All Parameters in this API: distanceList, endStation, id, loginId, startStation, stationList
+
+Parameter Information:
+- Name: loginId
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #4
+Timestamp: 2025-11-20 17:11:45.812
+Status: ✅ SUCCESS
+Response Time: 8987 ms
+📊 Resource Usage During Generation: System CPU: avg=3.9%, max=8.8% | System Memory: avg=72.3%, max=72.4% (22.9 GB/31.7 GB) | ollama.exe Process: max=63.5 MB | Samples: 18 over 8988ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+admin_user_001
+service_manager_123
+operator_login_456
+supervisor_access
+admin_panel_user
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #5
+================================================================================
+Timestamp: 2025-11-20 17:11:45.975
+Session ID: LLM-1763680166041-1
+Request ID: 5
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Thursday, November 20, 2025 at 5:11:45 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/adminrouteservice/adminroute
+- Service: ts-admin-route-service
+- All Parameters in this API: distanceList, endStation, id, loginId, startStation, stationList
+
+Parameter Information:
+- Name: startStation
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #5
+Timestamp: 2025-11-20 17:11:54.649
+Status: ✅ SUCCESS
+Response Time: 8674 ms
+📊 Resource Usage During Generation: System CPU: avg=3.5%, max=6.8% | System Memory: avg=72.8%, max=73.0% (23.1 GB/31.7 GB) | ollama.exe Process: max=63.7 MB | Samples: 17 over 8674ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+Chicago Union Station
+New York Penn Station
+Los Angeles Union Station
+Boston South Station
+Miami Central Station
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #6
+================================================================================
+Timestamp: 2025-11-20 17:11:54.740
+Session ID: LLM-1763680166041-1
+Request ID: 6
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Thursday, November 20, 2025 at 5:11:54 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/adminrouteservice/adminroute
+- Service: ts-admin-route-service
+- All Parameters in this API: distanceList, endStation, id, loginId, startStation, stationList
+
+Parameter Information:
+- Name: stationList
+- Description: Comma-separated list of station names (e.g., "Shanghai,Beijing,Nanjing")
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+- Example: Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #6
+Timestamp: 2025-11-20 17:12:05.452
+Status: ✅ SUCCESS
+Response Time: 10712 ms
+📊 Resource Usage During Generation: System CPU: avg=5.7%, max=10.7% | System Memory: avg=73.9%, max=74.8% (23.7 GB/31.7 GB) | ollama.exe Process: max=67.7 MB | Samples: 22 over 10713ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+New York Penn Station,Grand Central Terminal,Times Square Station
+Los Angeles Union Station,Disneyland Resort Station,Universal Studios Station
+Chicago Union Station,Metra Station,Chicago O'Hare Airport Station
+San Francisco Station,Caltrain Station,Mission Bay Station
+Boston South Station,Back Bay Station,Porter Station
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #7
+================================================================================
+Timestamp: 2025-11-20 17:12:05.491
+Session ID: LLM-1763680166041-1
+Request ID: 7
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:12:05 PM CST
+
+Generate 3-5 TYPE MISMATCH invalid values for parameter 'distanceList'.
+Expected type: string
+Description: Comma-separated list of distances (e.g., "12.5,8.2,15.7")
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #7
+Timestamp: 2025-11-20 17:12:12.838
+Status: ✅ SUCCESS
+Response Time: 7347 ms
+📊 Resource Usage During Generation: System CPU: avg=4.2%, max=9.7% | System Memory: avg=75.2%, max=75.4% (23.9 GB/31.7 GB) | ollama.exe Process: max=75.1 MB | Samples: 15 over 7347ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+integer:123
+boolean:true
+array:[1,2,3]
+object:{"key":"value"}
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #8
+================================================================================
+Timestamp: 2025-11-20 17:12:12.840
+Session ID: LLM-1763680166041-1
+Request ID: 8
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:12:12 PM CST
+
+Generate 3-5 SEMANTICALLY INVALID values for parameter 'distanceList'.
+Type: string
+Description: Comma-separated list of distances (e.g., "12.5,8.2,15.7")
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+Examples:
+- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)
+- Email parameter: invalid format (missing @, no domain)
+- Date parameter: impossible dates (Feb 30, Month 13)
+- Country code: non-existent codes (ZZZ, XXX)
+- Phone number: wrong format or length
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #8
+Timestamp: 2025-11-20 17:12:20.356
+Status: ✅ SUCCESS
+Response Time: 7515 ms
+📊 Resource Usage During Generation: System CPU: avg=5.4%, max=8.5% | System Memory: avg=76.1%, max=76.5% (24.3 GB/31.7 GB) | ollama.exe Process: max=75.2 MB | Samples: 15 over 7516ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12.5,8.2,15.7
+0,0,0
+100,200,300
+5.5,5.5,5.5
+-10,-20,-30
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #9
+================================================================================
+Timestamp: 2025-11-20 17:12:20.357
+Session ID: LLM-1763680166041-1
+Request ID: 9
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:12:20 PM CST
+
+Generate 3-5 OVERFLOW values for parameter 'distanceList'.
+Type: string
+Description: Comma-separated list of distances (e.g., "12.5,8.2,15.7")
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #9
+Timestamp: 2025-11-20 17:12:34.678
+Status: ✅ SUCCESS
+Response Time: 14321 ms
+📊 Resource Usage During Generation: System CPU: avg=7.2%, max=11.8% | System Memory: avg=76.4%, max=76.5% (24.3 GB/31.7 GB) | ollama.exe Process: max=78.8 MB | Samples: 29 over 14321ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12.5,8.2,15.7,20.1,25.3,30.2,35.8,40.6,45.9,50.4,55.1,60.7,65.3,70.9,75.2,80.8,85.4,90.1,95.6,100.3,105.7,110.2,115.8,120.4,125.9,130.6,135.1,140.8,145.3,150.7,155.2,160.9,165.4,170.1,175.6,180.3,185
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #10
+================================================================================
+Timestamp: 2025-11-20 17:12:34.678
+Session ID: LLM-1763680166041-1
+Request ID: 10
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:12:34 PM CST
+
+Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'distanceList'.
+Type: string
+
+Generate values with malicious or special characters:
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #10
+Timestamp: 2025-11-20 17:12:42.923
+Status: ✅ SUCCESS
+Response Time: 8245 ms
+📊 Resource Usage During Generation: System CPU: avg=4.9%, max=9.4% | System Memory: avg=76.2%, max=76.5% (24.2 GB/31.7 GB) | ollama.exe Process: max=70.8 MB | Samples: 17 over 8246ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+' OR '1'='1
+<script>alert('XSS')</script>
+../../etc/passwd
+; ls -la
+!@#$%^&*(){}[]|\:;"'<>,./
+'; DROP TABLE--
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #11
+================================================================================
+Timestamp: 2025-11-20 17:12:42.925
+Session ID: LLM-1763680166041-1
+Request ID: 11
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:12:42 PM CST
+
+Generate 3-5 BOUNDARY VIOLATION values for parameter 'distanceList'.
+Type: string
+Description: Comma-separated list of distances (e.g., "12.5,8.2,15.7")
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #11
+Timestamp: 2025-11-20 17:12:56.556
+Status: ✅ SUCCESS
+Response Time: 13631 ms
+📊 Resource Usage During Generation: System CPU: avg=6.9%, max=10.7% | System Memory: avg=76.4%, max=76.5% (24.2 GB/31.7 GB) | ollama.exe Process: max=72.9 MB | Samples: 27 over 13632ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+12.5,8.2,15.7,20.1,25.3,30.5,35.7,40.9,45.2,50.4,55.6,60.8,65.1,70.3,75.5,80.7,85.9,90.2,95.4,100.6,105.8,110.1,115.3,120.5,125.7,130.9,135.2,140.4,145.6,150.8,155.1,160.3,165.5,170.7,175.9,180.2,185
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #12
+================================================================================
+Timestamp: 2025-11-20 17:12:56.559
+Session ID: LLM-1763680166041-1
+Request ID: 12
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:12:56 PM CST
+
+Generate 3-5 TYPE MISMATCH invalid values for parameter 'endStation'.
+Expected type: string
+Description: 
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #12
+Timestamp: 2025-11-20 17:13:02.954
+Status: ✅ SUCCESS
+Response Time: 6395 ms
+📊 Resource Usage During Generation: System CPU: avg=5.8%, max=9.4% | System Memory: avg=77.1%, max=77.7% (24.6 GB/31.7 GB) | ollama.exe Process: max=74.6 MB | Samples: 13 over 6396ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+integer:123
+boolean:true
+array:[1,2,3]
+object:{"key":"value"}
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #13
+================================================================================
+Timestamp: 2025-11-20 17:13:02.957
+Session ID: LLM-1763680166041-1
+Request ID: 13
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:02 PM CST
+
+Generate 3-5 SEMANTICALLY INVALID values for parameter 'endStation'.
+Type: string
+Description: 
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+Examples:
+- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)
+- Email parameter: invalid format (missing @, no domain)
+- Date parameter: impossible dates (Feb 30, Month 13)
+- Country code: non-existent codes (ZZZ, XXX)
+- Phone number: wrong format or length
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #13
+Timestamp: 2025-11-20 17:13:08.751
+Status: ✅ SUCCESS
+Response Time: 5794 ms
+📊 Resource Usage During Generation: System CPU: avg=5.0%, max=8.4% | System Memory: avg=77.7%, max=77.8% (24.7 GB/31.7 GB) | ollama.exe Process: max=74.8 MB | Samples: 12 over 5796ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+Invalid station name with special characters
+Impossible station code with numbers
+Non-existent station with spaces
+Invalid station name with symbols
+Impossible station with only vowels
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #14
+================================================================================
+Timestamp: 2025-11-20 17:13:08.753
+Session ID: LLM-1763680166041-1
+Request ID: 14
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:08 PM CST
+
+Generate 3-5 OVERFLOW values for parameter 'endStation'.
+Type: string
+Description: 
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #14
+Timestamp: 2025-11-20 17:13:13.992
+Status: ✅ SUCCESS
+Response Time: 5238 ms
+📊 Resource Usage During Generation: System CPU: avg=5.3%, max=9.2% | System Memory: avg=77.8%, max=77.9% (24.7 GB/31.7 GB) | ollama.exe Process: max=74.8 MB | Samples: 11 over 5239ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #15
+================================================================================
+Timestamp: 2025-11-20 17:13:13.993
+Session ID: LLM-1763680166041-1
+Request ID: 15
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:13 PM CST
+
+Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'endStation'.
+Type: string
+
+Generate values with malicious or special characters:
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #15
+Timestamp: 2025-11-20 17:13:22.513
+Status: ✅ SUCCESS
+Response Time: 8520 ms
+📊 Resource Usage During Generation: System CPU: avg=5.6%, max=10.7% | System Memory: avg=78.2%, max=78.6% (24.9 GB/31.7 GB) | ollama.exe Process: max=77.0 MB | Samples: 17 over 8520ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+' OR '1'='1
+<script>alert('XSS')</script>
+../../etc/passwd
+; ls -la
+!@#$%^&*(){}[]|\:;"'<>?,./
+' OR 1=1--
+ UNION SELECT NULL--
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #16
+================================================================================
+Timestamp: 2025-11-20 17:13:22.514
+Session ID: LLM-1763680166041-1
+Request ID: 16
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:22 PM CST
+
+Generate 3-5 BOUNDARY VIOLATION values for parameter 'endStation'.
+Type: string
+Description: 
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #16
+Timestamp: 2025-11-20 17:13:36.793
+Status: ✅ SUCCESS
+Response Time: 14279 ms
+📊 Resource Usage During Generation: System CPU: avg=7.8%, max=12.9% | System Memory: avg=77.8%, max=78.7% (24.9 GB/31.7 GB) | ollama.exe Process: max=77.0 MB | Samples: 29 over 14280ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+endStation
+endStatio
+endStation1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #17
+================================================================================
+Timestamp: 2025-11-20 17:13:36.796
+Session ID: LLM-1763680166041-1
+Request ID: 17
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:36 PM CST
+
+Generate 3-5 TYPE MISMATCH invalid values for parameter 'id'.
+Expected type: string
+Description: 
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #17
+Timestamp: 2025-11-20 17:13:43.147
+Status: ✅ SUCCESS
+Response Time: 6351 ms
+📊 Resource Usage During Generation: System CPU: avg=4.5%, max=8.4% | System Memory: avg=78.1%, max=78.3% (24.8 GB/31.7 GB) | ollama.exe Process: max=68.8 MB | Samples: 13 over 6352ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+integer:123
+boolean:true
+array:[1,2,3]
+object:{"key":"value"}
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #18
+================================================================================
+Timestamp: 2025-11-20 17:13:43.149
+Session ID: LLM-1763680166041-1
+Request ID: 18
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:43 PM CST
+
+Generate 3-5 SEMANTICALLY INVALID values for parameter 'id'.
+Type: string
+Description: 
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+Examples:
+- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)
+- Email parameter: invalid format (missing @, no domain)
+- Date parameter: impossible dates (Feb 30, Month 13)
+- Country code: non-existent codes (ZZZ, XXX)
+- Phone number: wrong format or length
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #18
+Timestamp: 2025-11-20 17:13:48.463
+Status: ✅ SUCCESS
+Response Time: 5314 ms
+📊 Resource Usage During Generation: System CPU: avg=4.3%, max=7.5% | System Memory: avg=78.3%, max=78.5% (24.9 GB/31.7 GB) | ollama.exe Process: max=67.8 MB | Samples: 11 over 5316ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+invalid
+123abc
+test123
+a
+hello world
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #19
+================================================================================
+Timestamp: 2025-11-20 17:13:48.466
+Session ID: LLM-1763680166041-1
+Request ID: 19
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:48 PM CST
+
+Generate 3-5 OVERFLOW values for parameter 'id'.
+Type: string
+Description: 
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #19
+Timestamp: 2025-11-20 17:13:53.631
+Status: ✅ SUCCESS
+Response Time: 5165 ms
+📊 Resource Usage During Generation: System CPU: avg=4.5%, max=8.5% | System Memory: avg=78.4%, max=78.4% (24.8 GB/31.7 GB) | ollama.exe Process: max=67.8 MB | Samples: 10 over 5166ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+id=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #20
+================================================================================
+Timestamp: 2025-11-20 17:13:53.632
+Session ID: LLM-1763680166041-1
+Request ID: 20
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:13:53 PM CST
+
+Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'id'.
+Type: string
+
+Generate values with malicious or special characters:
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #20
+Timestamp: 2025-11-20 17:14:01.346
+Status: ✅ SUCCESS
+Response Time: 7714 ms
+📊 Resource Usage During Generation: System CPU: avg=5.8%, max=10.1% | System Memory: avg=78.0%, max=78.3% (24.8 GB/31.7 GB) | ollama.exe Process: max=70.8 MB | Samples: 16 over 7714ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+' OR '1'='1
+<script>alert('XSS')</script>
+../../etc/passwd
+; ls -la
+!@#$%^&*(){}[]|\:;"'<>,./
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #21
+================================================================================
+Timestamp: 2025-11-20 17:14:01.348
+Session ID: LLM-1763680166041-1
+Request ID: 21
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:14:01 PM CST
+
+Generate 3-5 BOUNDARY VIOLATION values for parameter 'id'.
+Type: string
+Description: 
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #21
+Timestamp: 2025-11-20 17:14:15.602
+Status: ✅ SUCCESS
+Response Time: 14254 ms
+📊 Resource Usage During Generation: System CPU: avg=7.9%, max=12.9% | System Memory: avg=78.3%, max=78.5% (24.9 GB/31.7 GB) | ollama.exe Process: max=79.5 MB | Samples: 29 over 14255ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+id
+1234
+123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #22
+================================================================================
+Timestamp: 2025-11-20 17:14:15.605
+Session ID: LLM-1763680166041-1
+Request ID: 22
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:14:15 PM CST
+
+Generate 3-5 TYPE MISMATCH invalid values for parameter 'loginId'.
+Expected type: string
+Description: 
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #22
+Timestamp: 2025-11-20 17:14:22.034
+Status: ✅ SUCCESS
+Response Time: 6429 ms
+📊 Resource Usage During Generation: System CPU: avg=4.5%, max=8.9% | System Memory: avg=78.7%, max=78.7% (24.9 GB/31.7 GB) | ollama.exe Process: max=72.7 MB | Samples: 13 over 6431ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+integer:123
+boolean:true
+array:[1,2,3]
+object:{"key":"value"}
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #23
+================================================================================
+Timestamp: 2025-11-20 17:14:22.036
+Session ID: LLM-1763680166041-1
+Request ID: 23
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:14:22 PM CST
+
+Generate 3-5 SEMANTICALLY INVALID values for parameter 'loginId'.
+Type: string
+Description: 
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+Examples:
+- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)
+- Email parameter: invalid format (missing @, no domain)
+- Date parameter: impossible dates (Feb 30, Month 13)
+- Country code: non-existent codes (ZZZ, XXX)
+- Phone number: wrong format or length
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #23
+Timestamp: 2025-11-20 17:14:28.883
+Status: ✅ SUCCESS
+Response Time: 6847 ms
+📊 Resource Usage During Generation: System CPU: avg=5.3%, max=11.7% | System Memory: avg=78.7%, max=78.8% (25.0 GB/31.7 GB) | ollama.exe Process: max=74.1 MB | Samples: 14 over 6847ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+invalid_login
+test_login
+admin123
+user@domain
+1234567890123456789012345678901234567890
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #24
+================================================================================
+Timestamp: 2025-11-20 17:14:28.884
+Session ID: LLM-1763680166041-1
+Request ID: 24
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:14:28 PM CST
+
+Generate 3-5 OVERFLOW values for parameter 'loginId'.
+Type: string
+Description: 
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #24
+Timestamp: 2025-11-20 17:14:41.629
+Status: ✅ SUCCESS
+Response Time: 12745 ms
+📊 Resource Usage During Generation: System CPU: avg=7.3%, max=10.7% | System Memory: avg=78.5%, max=78.8% (25.0 GB/31.7 GB) | ollama.exe Process: max=72.7 MB | Samples: 26 over 12745ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+loginId_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890abcdefghijklmnopqrstuvwxyz_1000_characters_following_this_pattern_1234567890
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #25
+================================================================================
+Timestamp: 2025-11-20 17:14:41.631
+Session ID: LLM-1763680166041-1
+Request ID: 25
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:14:41 PM CST
+
+Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'loginId'.
+Type: string
+
+Generate values with malicious or special characters:
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #25
+Timestamp: 2025-11-20 17:14:49.682
+Status: ✅ SUCCESS
+Response Time: 8051 ms
+📊 Resource Usage During Generation: System CPU: avg=4.7%, max=8.7% | System Memory: avg=79.0%, max=79.3% (25.1 GB/31.7 GB) | ollama.exe Process: max=73.6 MB | Samples: 16 over 8052ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+' OR '1'='1
+<script>alert('XSS')</script>
+../../etc/passwd
+; ls -la
+!@#$%^&*(){}[]|\:;"'<>?,./
+'; DROP TABLE--
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #26
+================================================================================
+Timestamp: 2025-11-20 17:14:49.684
+Session ID: LLM-1763680166041-1
+Request ID: 26
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:14:49 PM CST
+
+Generate 3-5 BOUNDARY VIOLATION values for parameter 'loginId'.
+Type: string
+Description: 
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #26
+Timestamp: 2025-11-20 17:15:03.801
+Status: ✅ SUCCESS
+Response Time: 14118 ms
+📊 Resource Usage During Generation: System CPU: avg=6.6%, max=10.4% | System Memory: avg=79.0%, max=79.2% (25.1 GB/31.7 GB) | ollama.exe Process: max=73.9 MB | Samples: 28 over 14118ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+loginId
+loginI
+loginId12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #27
+================================================================================
+Timestamp: 2025-11-20 17:15:03.803
+Session ID: LLM-1763680166041-1
+Request ID: 27
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:03 PM CST
+
+Generate 3-5 TYPE MISMATCH invalid values for parameter 'startStation'.
+Expected type: string
+Description: 
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #27
+Timestamp: 2025-11-20 17:15:10.258
+Status: ✅ SUCCESS
+Response Time: 6455 ms
+📊 Resource Usage During Generation: System CPU: avg=3.8%, max=6.9% | System Memory: avg=79.1%, max=79.2% (25.1 GB/31.7 GB) | ollama.exe Process: max=76.2 MB | Samples: 13 over 6456ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+integer:123
+boolean:true
+array:[1,2,3]
+object:{"key":"value"}
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #28
+================================================================================
+Timestamp: 2025-11-20 17:15:10.260
+Session ID: LLM-1763680166041-1
+Request ID: 28
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:10 PM CST
+
+Generate 3-5 SEMANTICALLY INVALID values for parameter 'startStation'.
+Type: string
+Description: 
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+Examples:
+- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)
+- Email parameter: invalid format (missing @, no domain)
+- Date parameter: impossible dates (Feb 30, Month 13)
+- Country code: non-existent codes (ZZZ, XXX)
+- Phone number: wrong format or length
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #28
+Timestamp: 2025-11-20 17:15:23.846
+Status: ✅ SUCCESS
+Response Time: 13586 ms
+📊 Resource Usage During Generation: System CPU: avg=8.0%, max=12.3% | System Memory: avg=79.3%, max=79.6% (25.2 GB/31.7 GB) | ollama.exe Process: max=80.9 MB | Samples: 27 over 13587ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+startStation
+endStation
+station
+12345
+ABC123
+station_name
+invalid_station
+00000
+TEST_STATION
+station123
+INVALID
+station_name_123
+000000
+STATION_NAME
+station-name
+station.name
+station_name_
+_station
+station_name
+station_name_
+station_name_123
+station_name_456
+station_name_789
+station_name_000
+station_name_999
+station_name_111
+station_name_222
+station_name_333
+station_name_444
+station_name_555
+station_name_666
+station_name_777
+station_name_888
+station_name_999
+station_name_0000
+station_name_1111
+station_name_2222
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #29
+================================================================================
+Timestamp: 2025-11-20 17:15:23.847
+Session ID: LLM-1763680166041-1
+Request ID: 29
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:23 PM CST
+
+Generate 3-5 OVERFLOW values for parameter 'startStation'.
+Type: string
+Description: 
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #29
+Timestamp: 2025-11-20 17:15:29.610
+Status: ✅ SUCCESS
+Response Time: 5763 ms
+📊 Resource Usage During Generation: System CPU: avg=5.3%, max=9.1% | System Memory: avg=79.4%, max=79.4% (25.2 GB/31.7 GB) | ollama.exe Process: max=73.2 MB | Samples: 12 over 5763ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+startStation_1000_characters___________________________________________________
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #30
+================================================================================
+Timestamp: 2025-11-20 17:15:29.611
+Session ID: LLM-1763680166041-1
+Request ID: 30
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:29 PM CST
+
+Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'startStation'.
+Type: string
+
+Generate values with malicious or special characters:
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #30
+Timestamp: 2025-11-20 17:15:37.614
+Status: ✅ SUCCESS
+Response Time: 8003 ms
+📊 Resource Usage During Generation: System CPU: avg=4.5%, max=10.4% | System Memory: avg=79.3%, max=79.5% (25.2 GB/31.7 GB) | ollama.exe Process: max=73.0 MB | Samples: 16 over 8003ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+' OR '1'='1
+<script>alert('XSS')</script>
+../../etc/passwd
+; ls -la
+!@#$%^&*(){}[]|\:;"'<>,./
+DROP TABLE users--
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #31
+================================================================================
+Timestamp: 2025-11-20 17:15:37.615
+Session ID: LLM-1763680166041-1
+Request ID: 31
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:37 PM CST
+
+Generate 3-5 BOUNDARY VIOLATION values for parameter 'startStation'.
+Type: string
+Description: 
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #31
+Timestamp: 2025-11-20 17:15:51.688
+Status: ✅ SUCCESS
+Response Time: 14073 ms
+📊 Resource Usage During Generation: System CPU: avg=6.6%, max=10.7% | System Memory: avg=79.0%, max=79.1% (25.1 GB/31.7 GB) | ollama.exe Process: max=73.0 MB | Samples: 28 over 14073ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+startStation
+startStations
+startStation1234567890
+startStation12345678901234567890
+startStation1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #32
+================================================================================
+Timestamp: 2025-11-20 17:15:51.690
+Session ID: LLM-1763680166041-1
+Request ID: 32
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:51 PM CST
+
+Generate 3-5 TYPE MISMATCH invalid values for parameter 'stationList'.
+Expected type: string
+Description: Comma-separated list of station names (e.g., "Shanghai,Beijing,Nanjing")
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #32
+Timestamp: 2025-11-20 17:15:58.395
+Status: ✅ SUCCESS
+Response Time: 6705 ms
+📊 Resource Usage During Generation: System CPU: avg=4.4%, max=8.2% | System Memory: avg=79.1%, max=79.1% (25.1 GB/31.7 GB) | ollama.exe Process: max=73.2 MB | Samples: 14 over 6706ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+integer:123
+boolean:true
+array:[1,2,3]
+object:{"key":"value"}
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #33
+================================================================================
+Timestamp: 2025-11-20 17:15:58.397
+Session ID: LLM-1763680166041-1
+Request ID: 33
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:15:58 PM CST
+
+Generate 3-5 SEMANTICALLY INVALID values for parameter 'stationList'.
+Type: string
+Description: Comma-separated list of station names (e.g., "Shanghai,Beijing,Nanjing")
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+Examples:
+- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)
+- Email parameter: invalid format (missing @, no domain)
+- Date parameter: impossible dates (Feb 30, Month 13)
+- Country code: non-existent codes (ZZZ, XXX)
+- Phone number: wrong format or length
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #33
+Timestamp: 2025-11-20 17:16:12.848
+Status: ✅ SUCCESS
+Response Time: 14451 ms
+📊 Resource Usage During Generation: System CPU: avg=7.3%, max=10.9% | System Memory: avg=79.1%, max=79.9% (25.3 GB/31.7 GB) | ollama.exe Process: max=75.4 MB | Samples: 29 over 14452ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+Invalid station names that are semantically meaningless
+Non-existent station names like "Atlantis,Hyperion,Zenith"
+Station names with invalid characters such as "Station@123,Test#456"
+Impossible station combinations like "New York,London,Paris,Tokyo,Stockholm,Berlin,Rome,Moscow,Seoul,Shanghai,Beijing,Guangzhou,Hong Kong,Singapore,Kuala Lumpur,Jakarta,Bangkok,Delhi,Mumbai,Chicago,Los Angeles,Seattle,San Francisco,Washington D.C.,Boston,Atlanta,Chicago,Miami,New Orleans,Denver,Phoenix,Las Vegas,Portland,Salt Lake City,Albuquerque,El Paso,Phoenix,Tucson,Flagstaff,Grand Canyon,Death Valley,Yosemite,North Dakota,South Dakota,West Virginia,Vermont,New Hampshire,Maine,Connecticut,Rhode Island,Massachusetts,New York,New Jersey,Philadelphia,Pitt
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #34
+================================================================================
+Timestamp: 2025-11-20 17:16:12.849
+Session ID: LLM-1763680166041-1
+Request ID: 34
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:16:12 PM CST
+
+Generate 3-5 OVERFLOW values for parameter 'stationList'.
+Type: string
+Description: Comma-separated list of station names (e.g., "Shanghai,Beijing,Nanjing")
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #34
+Timestamp: 2025-11-20 17:16:26.742
+Status: ✅ SUCCESS
+Response Time: 13893 ms
+📊 Resource Usage During Generation: System CPU: avg=7.6%, max=11.8% | System Memory: avg=79.7%, max=80.3% (25.4 GB/31.7 GB) | ollama.exe Process: max=67.3 MB | Samples: 28 over 13894ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+Shanghai,Beijing,Nanjing,Guangzhou,Shenzhen,Chengdu,Chongqing,Tianjin,Harbin,Shenyang,Dalian,Qingdao,Weifang,Hangzhou,Suzhou,Nanjing,Changsha,Hefei,Fuzhou,Xiamen,Kunming,Lhasa,Guiyang,Nanning,Haikou,Shantou,Shenzhen,Chengdu,Chongqing,Tianjin,Harbin,Shenyang,Dalian,Qingdao,Weifang,Hangzhou,Suzhou,Nanjing,Changsha,Hefei,Fuzhou,Xiamen,Kunming,Lhasa,Guiyang,Nanning,Haikou,Shantou,Shenzhen,Chengdu,Chongqing,Tianjin,Harbin,Shenyang,Dalian,Qingdao,Weifang,Hangzhou,Suzhou,Nanjing,Changsha,Hef
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #35
+================================================================================
+Timestamp: 2025-11-20 17:16:26.744
+Session ID: LLM-1763680166041-1
+Request ID: 35
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:16:26 PM CST
+
+Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'stationList'.
+Type: string
+
+Generate values with malicious or special characters:
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #35
+Timestamp: 2025-11-20 17:16:34.870
+Status: ✅ SUCCESS
+Response Time: 8126 ms
+📊 Resource Usage During Generation: System CPU: avg=4.2%, max=8.8% | System Memory: avg=79.9%, max=80.0% (25.3 GB/31.7 GB) | ollama.exe Process: max=79.6 MB | Samples: 16 over 8127ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+' OR '1'='1
+<script>alert('XSS')</script>
+../../etc/passwd
+; ls -la
+!@#$%^&*(){}[]|\:;"'<>,./
+'; DROP TABLE--
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #36
+================================================================================
+Timestamp: 2025-11-20 17:16:34.871
+Session ID: LLM-1763680166041-1
+Request ID: 36
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Thursday, November 20, 2025 at 5:16:34 PM CST
+
+Generate 3-5 BOUNDARY VIOLATION values for parameter 'stationList'.
+Type: string
+Description: Comma-separated list of station names (e.g., "Shanghai,Beijing,Nanjing")
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #36
+Timestamp: 2025-11-20 17:16:49.783
+Status: ✅ SUCCESS
+Response Time: 14912 ms
+📊 Resource Usage During Generation: System CPU: avg=7.0%, max=11.7% | System Memory: avg=79.4%, max=79.7% (25.3 GB/31.7 GB) | ollama.exe Process: max=74.1 MB | Samples: 30 over 14913ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+Shanghai,Beijing
+Shanghai,Beijing,Nanjing,Shanghai
+A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
+123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012
+--------------------------------------------------------------------------------
+================================================================================
+

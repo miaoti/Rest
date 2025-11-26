@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 11
-- 17
-- 22
-- 11
-- 12
-- 517186800
+- 21
+- 19
+- 37
+- 1
+- 190926600
 parameterMappings:
   departureTime:
   - endpoint: "/api/v1/travelservice/trips"
@@ -1682,6 +1682,33 @@ parameterErrors:
       - 13
       - 867604200
       additionalInfo: null
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 21
+      - 19
+      - 33
+      - 35
+      - 118046600
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 21
+      - 19
+      - 35
+      - 29
+      - 570879500
+      additionalInfo: null
   /api/v1/routeservice/routes/shenzhen/invalid_value_missing_endplace:
     endPlace:
     - errorType: "VALIDATION_ERROR"
@@ -1696,6 +1723,21 @@ parameterErrors:
       - 3
       - 18
       - 560174100
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/newyork:
+    startPlace:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/newyork"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 21
+      - 19
+      - 35
+      - 55
+      - 534766200
       additionalInfo: null
   /api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation:
     startPlace:
@@ -1847,11 +1889,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 17
       - 21
-      - 52
-      - 43
-      - 30100400
+      - 19
+      - 26
+      - 16
+      - 231715000
       additionalInfo: null
     contactsDocumentNumber:
     - errorType: "NULL_ERROR"
@@ -1901,11 +1943,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 17
       - 21
-      - 53
-      - 12
-      - 587919900
+      - 19
+      - 26
+      - 54
+      - 422598000
       additionalInfo: null
     differenceMoney:
     - errorType: "TYPE_MISMATCH"
@@ -2383,11 +2425,24 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
+      - 21
       - 17
-      - 20
-      - 32
-      - 48
-      - 749074300
+      - 53
+      - 2
+      - 153923300
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "stationList"
+      timestamp:
+      - 2025
+      - 11
+      - 21
+      - 16
+      - 22
+      - 9
+      - 10411100
       additionalInfo: null
     distanceList:
     - errorType: "CONSTRAINT_ERROR"
@@ -2410,11 +2465,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 17
       - 21
-      - 55
-      - 56
-      - 27925400
+      - 19
+      - 30
+      - 20
+      - 85056400
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2455,6 +2510,19 @@ parameterErrors:
       - 48
       - 47
       - 275455800
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "startStation"
+      timestamp:
+      - 2025
+      - 11
+      - 21
+      - 19
+      - 32
+      - 18
+      - 867420900
       additionalInfo: null
     stations:
     - errorType: "VALIDATION_ERROR"
@@ -2674,11 +2742,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 17
-      - 22
-      - 5
-      - 45
-      - 329402600
+      - 21
+      - 19
+      - 37
+      - 1
+      - 175014400
       additionalInfo: null
     startPlace:
     - errorType: "VALIDATION_ERROR"
@@ -2827,11 +2895,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 11
-      - 17
       - 21
-      - 45
+      - 19
       - 22
-      - 514740000
+      - 57
+      - 15928200
       additionalInfo: null
     id:
     - errorType: "FORMAT_ERROR"
@@ -2863,6 +2931,20 @@ parameterErrors:
       - 938149800
       additionalInfo: null
   /api/v1/priceservice/prices:
+    basicPriceRate:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 11
+      - 21
+      - 19
+      - 24
+      - 14
+      - 692093900
+      additionalInfo: null
     routeId:
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"

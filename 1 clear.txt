@@ -1,0 +1,800 @@
+    1  clear
+    2  whoami
+    3  pwd
+    4  ls -la
+    5  sys
+    6  sysinfo
+    7  helo
+    8  help
+    9  clr
+   10  clear
+   11  uname
+   12  uname -s
+   13  lscpu
+   14  free -m
+   15  lsblk
+   16  cd ..
+   17  ls
+   18  cd tingshuo_miao2/
+   19  cd ..
+   20  ls
+   21  ls -la
+   22  java -version
+   23  docker -version
+   24  docker -v
+   25  docker ps
+   26  sudo docker ps
+   27  ls -la
+   28  cd $HOME
+   29  cd ..
+   30  ls
+   31  cd tingshuo_miao2/
+   32  cd asifimtiaz_shaafi1/
+   33  git -version
+   34  git --version
+   35  git clone git@github.com:cloudhubs/train-ticket.git
+   36  ssh-keygen -t ed25519 -C "shaafi.20994@gmail.com"
+   37  mkdir dev
+   38  cd dev/
+   39  git clone git@github.com:cloudhubs/train-ticket.git
+   40  cat ../.ssh/id_ed25519.pub
+   41  git clone git@github.com:cloudhubs/train-ticket.git
+   42  cd train-ticket/
+   43  mvn clean package -Dmaven.test.skip=true
+   44  sudo docker compose build
+   45  docker login shaafi20
+   46  sudo docker compose build
+   47  docker user
+   48  docker --help
+   49  docker login
+   50  sudo docker compose build
+   51  docker-ratelimit-source
+   52  TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token)
+   53  docker login --with-registry-auth
+   54  docker login -- with-registry-auth
+   55  sudo dnf install jq
+   56  TOKEN=$(curl "https://auth.docker.io/token?service=registry.docker.io&scope=repository:ratelimitpreview/test:pull" | jq -r .token)
+   57  curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest
+   58  curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest
+   59  sudo docker compose build
+   60  sudo docker login
+   61  sudo docker compose build
+   62  nginx -version
+   63  make -version
+   64  wget https://openresty.org/package/rhel/openresty2.repo
+   65  sudo mv openresty2.repo /etc/yum.repos.d/openresty.repo
+   66  sudo yum check-update
+   67  sudo yum install openresty
+   68  curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/lat
+   69  curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest
+   70  clear
+   71  sudo docker compose build
+   72  git branch
+   73  curl --head -H "Authorization: Bearer $TOKEN" https://registry-1.docker.io/v2/ratelimitpreview/test/manifests/latest
+   74  make deploy DeployArgs="--with-tracing"
+   75  sudo deploy DeployArgs="--with-tracing"
+   76  sudo make deploy
+   77  helm
+   78  kubectl
+   79  sed
+   80  clear
+   81  nacos
+   82  git clone https://github.com/alibaba/nacos.git
+   83  cd ..
+   84  git clone https://github.com/alibaba/nacos.git
+   85  cd nacos/
+   86  mvn -Prelease-nacos -Dmaven.test.skip=true clean install -U
+   87  ls -al distribution/target/
+   88  cd distribution/target/nacos-server-$version/nacos/bin
+   89  cd distribution/target/nacos-server-2.4.0/nacos/bin
+   90  cd distribution/target/nacos-server-2.4.0-SNAPSHOT/nacos/bin
+   91  ls
+   92  cd ..
+   93  cd ../../..
+   94  cd ..
+   95  ls
+   96  cd ../train-ticket/
+   97  make deploy DeployArgs="--with-tracing --with-monitoring"
+   98  sudo make deploy DeployArgs="--with-tracing --with-monitoring"
+   99  sudo helm
+  100  helm
+  101  sudo curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+  102  sudo chmod 700 get_helm.sh
+  103  sudo ./get_helm.sh
+  104  sudo helm -v
+  105  helm
+  106  history
+  107  history -d 37
+  108  history
+  109  history -d 48
+  110  history
+  111  exit
+  112  kubectl
+  113  kubectl cluster-info
+  114  kubectl cluster-info dump
+  115  systemctl status kubelet
+  116  journalctl -u kubelet
+  117  systemctl status kubelet
+  118  sudo yum install kubelet kubectl
+  119  sudo systemctl enable kubelet
+  120  sudo systemctl start kubelet
+  121  sudo systemctl status kubelet
+  122  kubectl cluster-info dump
+  123  sudo systemctl status kubelet
+  124  cat /etc/kubernetes/kubelet.conf
+  125  journalctl -xe -u kubelet
+  126  sudo journalctl -xe -u kubelet
+  127  /usr/bin/kubelet
+  128  kubelet
+  129  sudo yum remove kubelet kubectl
+  130  sudo yum install kubelet kubectl
+  131  kubectl config-info
+  132  kubectl cluster-info dump
+  133  sudo systemctl status k3s
+  134  cd dev/train-ticket/
+  135  ls
+  136  sudo make deploy  DeployArgs="--with-tracing --with-monitoring"
+  137  clear
+  138  kind create cluster
+  139  cd
+  140  ls -la
+  141  minikube start
+  142  kubectl get pods
+  143  history
+  144  free -m
+  145  exit
+  146  ls
+  147  info
+  148  history
+  149  lscup
+  150  lscpu
+  151  ls
+  152  cd dev/
+  153  cd train-ticket/
+  154  ls
+  155  make deploy DeployArgs="--with-tracing --with-monitoring"
+  156  sudo make deploy DeployArgs="--with-tracing --with-monitoring"
+  157  make reset-deploy
+  158  sudo make reset-deploy
+  159  sudo docker ps
+  160  clear
+  161  sudo make deploy DeployArgs="--with-tracing --with-monitoring"
+  162  free
+  163  ps
+  164  ps -aux
+  165  free
+  166  gc
+  167  free
+  168  watch free
+  169  docker ps
+  170  sudo docker ps
+  171  sudo docker rm --force 37c
+  172  sudo docker ps
+  173  free
+  174  pwd
+  175  make reset-deploy
+  176  sudo make reset-deploy
+  177  sudo kubectl get pods
+  178  kubectl describe pod nacosdb-mysql-0
+  179  sudo kubectl describe pod nacosdb-mysql-0
+  180  lscpu
+  181  ls
+  182  ls -la
+  183  cd .docker
+  184  ls
+  185  cat config.json
+  186  sudo docker update --memory "40g"
+  187  sudo docker run radondb/percona:5.7.34
+  188  docker ps
+  189  sudo docker ps
+  190  ls
+  191  docker run -it python:3.11-slim bash
+  192  sudo docker run -it python:3.11-slim bash
+  193  docker ps -a
+  194  sudo docker ps -a
+  195  docker rm 174
+  196  sudo docker rm 174
+  197  docker rm 174
+  198  ls
+  199  cd ~
+  200  mkdir test
+  201  cd test/
+  202  vi Dockerfile
+  203  sudo docker run -it python:3.11-slim bash
+  204  sudo docker ps -a
+  205  sudo docker rm 4ee
+  206  vi Dockerfile
+  207  sudo docker build -t test .
+  208  docker run test
+  209  sudo docker run test
+  210  vi Dockerfile
+  211  sudo docker build -t test .
+  212  sudo docker run test
+  213  vi Dockerfile
+  214  sudo docker build -t test .
+  215  sudo docker run test
+  216  vi Dockerfile
+  217  sudo docker build -t test .
+  218  sudo docker run test
+  219  ls
+  220  vi kube.yml
+  221  sudp kubectl get pods
+  222  sudo kubectl get pods
+  223  watch ubectl get pods
+  224  watch sudo kubectl get pods
+  225  sudo kubectl get pods
+  226  sudo kubectl apply kube.yml
+  227  sudo kubectl apply -f kube.yml
+  228  sudo kubectl get pods
+  229  docker image
+  230  docker images
+  231  sudo docker images
+  232  vi kube.yml
+  233  sudo kubectl apply -f kube.yml
+  234  sudo kubectl get pods
+  235  kubectl images
+  236  sudo kubectl help
+  237  sudo kubectl get images
+  238  sudo kubectl get pods
+  239  sudo kubectl get services
+  240  sudo kubectl delete pod -e
+  241  sudo kubectl delete pod -a
+  242  sudo kubectl delete -a
+  243  sudo kubectl delete pods -a
+  244  sudo kubectl remove pods -a
+  245  sudo kubectl get services
+  246  sudo kubectl delete services bb-entrypoint
+  247  sudo kubectl get deployments
+  248  sudo kubectl delete deployments  bb-demo
+  249  sudo kubectl get pods
+  250  vi kube.yml
+  251  kind get clusters
+  252  sudo kind get clusters
+  253  sudo kind remove cluster kind
+  254  sudo kind delete cluster kind
+  255  sudo kind delete clusters kind
+  256  sudo kind get clusters
+  257  sudo kind get nodes
+  258  sudo rm /usr/local/bin/kind
+  259  yum list installed
+  260  yum list installed | grep docker
+  261  history | grep install
+  262  docker -v
+  263  which docker
+  264  sudo yum uninstall docker
+  265  sudo dnf uninstall docker
+  266  sudo yum remove docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  267  yum list intalled
+  268  yum list installed
+  269  yum list installed | grep kube
+  270  sudo yum remove kubeadm kubectl kubelet kubernetes
+  271  sudo yum remove kubeadm kubectl kubelet kubernetes-cni
+  272  yum list installed | grep kube
+  273  yum list installed | grep docker\
+  274  yum list installed | grep docker
+  275  kvm
+  276  kvm-ok
+  277  modprobe kvm
+  278  sudo modprobe kvm
+  279  kvm-ok
+  280  sudo kvm-ok
+  281  lsmod | grep kvm
+  282  dnf search gnome
+  283  yum grouplist
+  284  dnf sudo subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+  285  sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+  286  sudo dnf install pass
+  287  sudo dnf install gnome-terminal
+  288  sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+  289  wget https://desktop.docker.com/linux/main/amd64/145265/docker-desktop-4.29.0-x86_64.rpm
+  290  ls
+  291  sudo dnf install docker-desktop-4.29.0-x86_64.rpm
+  292  sudo dnf install qemu
+  293  sudo dnf install qemu-
+  294  sudo dnf install qemu-kvm
+  295  history | grep docker
+  296  sudo yum install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+  297  docker ps
+  298  sudo docker ps
+  299  sudo shutdown -r -t 0
+  300  sudo sysinfo
+  301  sudo docker ps
+  302  sudo systemctl start docker
+  303  sudo docker --version
+  304  sudo docker
+  305  history | grep kube
+  306  sudo yum install kubectl kubelet kubernetes-cni
+  307  curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+  308  ls
+  309  sudo install minikube-linux-amd64 /usr/local/bin/minikube && rm minikube-linux-amd64
+  310  minikube
+  311  minikube start
+  312  sudo minikube start
+  313  minikube start --driver=docker
+  314  sudo usermod -aG docker $USER && newgrp docker
+  315  docker ps
+  316  minikube start
+  317  minikube start --insecure-registry
+  318  minikube start --insecure-registry 1
+  319  eval $(minikube docker-env)
+  320  cd dev/train-ticket/
+  321  sudo make deploy DeployArgs="--with-tracing --with-monitoring"
+  322  kubectl get pods
+  323  kubectl get nodes
+  324  helm version
+  325  kubectl get node
+  326  kubectl version
+  327  history | grep kube
+  328  yum installed | grep kube
+  329  yum listinstalled | grep kube
+  330  yum list installed | grep kube
+  331  kubectl get node
+  332  docker ps
+  333  sudo make deploy DeployArgs="--with-tracing --with-monitoring"
+  334  ls
+  335  cd ~/test/
+  336  ;s
+  337  ls
+  338  kubectl apply -f kube.yml
+  339  kubectl get pods
+  340  docker build -t test .
+  341  kubectl get pods
+  342  kubectl delete pod bb-demo-5bbfcf4985-554dh
+  343  kubectl get pods
+  344  free
+  345  kubectl get pods
+  346  free
+  347  kubectl get pods
+  348  kubectl get deployments
+  349  free
+  350  helm
+  351  helm show
+  352  free
+  353  kubectl get deployments
+  354  kubectl get pods
+  355  kubectl delete deployment bb-demo
+  356  helm repo add openebs https://openebs.github.io/charts
+  357  helm repo update
+  358  helm install openebs --namespace openebs openebs/openebs --create-namespace
+  359  free
+  360  kubectl get pods
+  361  free
+  362  minikube
+  363  minikube status
+  364  minikube kubeclt get pods
+  365  minikube kubectl -- get pods
+  366  minikube kubeclt get pods
+  367  kubectl get pods
+  368  minikube stop
+  369  minikube config view vm-driver
+  370  minikube stop
+  371  sudo shutdown -r -t 0
+  372  clear
+  373  sudo sysinfo
+  374  clear
+  375  minikube status
+  376  systemctl start docker.service
+  377  sudo systemctl start docker.service
+  378  minikube status
+  379  minikube start
+  380  minikube config view vm-driver
+  381  minikube config view
+  382  minikube config
+  383  minikube config cpus
+  384  minikube config view cpus
+  385  minikube config view memory
+  386  minikube config defaults
+  387  minikube config get defaults
+  388  minikube config view defaults
+  389  minikube config defaults memory
+  390  minikube config defaults cpus
+  391  minikube config defaults -h
+  392  minikube config defaults -h driver
+  393  minikube config cpus defaults
+  394  minikube config defaults cpus
+  395  minikube config get cpus
+  396  minikube config set cpus 10
+  397  minikube config set memory 36
+  398  minikube delete
+  399  minikube start
+  400  python
+  401  minikube config set memory 36864
+  402  minikube delete
+  403  minikube start
+  404  helm repo add openebs https://openebs.github.io/charts
+  405  helm repo update
+  406  helm install openebs --namespace openebs openebs/openebs --create-namespace
+  407  helm ls -n openebs
+  408  kubectl get pods
+  409  kubectl get nodes
+  410  eval $(minikube docker-env)
+  411  cd dev/train-ticket/
+  412  sudo make deploy DeployArgs="--with-tracing --with-monitoring"
+  413  kubectl get namespace
+  414  kubectl get pods
+  415  exit
+  416  cat /etc/ssh/sshd_config
+  417  sudo cat /etc/ssh/sshd_config
+  418  sudo vi /etc/ssh/sshd_config
+  419  resudo sshd -t
+  420  sudo sshd -t
+  421  sudo systemctl restart sshd
+  422  ls
+  423  sudo systemctl restart sshd
+  424  exit
+  425  sudo
+  426  sudo -h
+  427  sudo whoami
+  428  clear
+  429  docker ps
+  430  minikube status
+  431  minikube start
+  432  history | grep system
+  433  systemctl start docker
+  434  sudo systemctl start docker
+  435  minikube status
+  436  minikube start
+  437  minikube
+  438  minikube stop
+  439  minikube delete
+  440  minikube start
+  441  ls
+  442  cd dev/train-ticket/
+  443  ls
+  444  git log
+  445  git fetch -p
+  446  git statys
+  447  git status
+  448  git diff
+  449  git status
+  450  git get_helm.sh
+  451  git checkout -- docker-compose.yml
+  452  git checkout -B fix-deployment-stuck-mysql origin/fix-deployment-stuck-mysql
+  453  make deploy DeployArgs="--with-tracing --with-monitoring"
+  454  make reset-deploy
+  455  set -o xtrace
+  456  make deploy DeployArgs="--with-tracing --with-monitoring"
+  457  make reset-deploy
+  458  helm uninstall tsdb
+  459  make deploy DeployArgs="--with-tracing --with-monitoring"
+  460  make reset-deploy
+  461  helm uninstall tsdb
+  462  make deploy DeployArgs="--with-tracing --with-monitoring"
+  463  make reset-deploy
+  464  helm uninstall tsdb
+  465  systemctl get docker
+  466  systemctl show docker
+  467  set +o xtrace
+  468  systemctl show docker
+  469  vi ~/.bashrc
+  470  source ~/.bashrc
+  471  make deploy DeployArgs="--with-tracing --with-monitoring"
+  472  vi hack/deploy/deploy.sh
+  473  kubectl get services
+  474  sudo sshd -t
+  475  curl localhost:32677
+  476  curl http://localhost:32677
+  477  curl http://localhost:30005
+  478  sudo lsof -i:30005
+  479  sudo lsof -i:32677
+  480  sudo lsof -i:30005
+  481  sudo lsof -i:32677
+  482  docker ps
+  483  kubectl get services
+  484  minikube service ts-ui-dashboard --url
+  485  curl http://192.168.49.2:32677
+  486  curl http://localhost:32677
+  487  curl http://192.168.49.2:32677
+  488  kubectl get svc
+  489  curl http://192.168.49.2:32677
+  490  ip -all
+  491  ip all
+  492  ip -a
+  493  ip address
+  494  minikube tunnel --help
+  495  minikube tunnel --bind-address='*'
+  496  minikube tunnel
+  497  kubectl get svc
+  498  minikube tunnel --help
+  499  minikube tunnel -c=true
+  500  minikube tunnel
+  501  curl  http://192.168.49.2:32677
+  502  python
+  503  python -m http.server .
+  504  python -m http.server
+  505  kubectl get svc
+  506  curl  http://192.168.49.2:32677
+  507  kubectl get svc
+  508  curl  http://192.168.49.2:30005
+  509  kubectl get svc
+  510  iptables -t nat -A PREROUTING -p tcp -d 129.62.148.112 --dport 30005 -j DNAT --to 192.168.49.2:30005
+  511  sudo iptables -t nat -A PREROUTING -p tcp -d 129.62.148.112 --dport 30005 -j DNAT --to 192.168.49.2:30005
+  512  sudo iptables -A FORWARD -p tcp -d 192.168.49.2 --dport 8080 -j ACCEPT
+  513  sudo sysctl net.ipv4.ip_forward=1
+  514  curl 129.62.148.112:30005
+  515  curl 192.168.49.2:30005
+  516  curl 129.62.148.112:30005
+  517  sudo iptables -P INPUT DROP  # drop every INPUT
+  518  sudo iptables -P FORWARD DROP    # drop every FORWARD
+  519  sudo iptables -A INPUT -i lo -j ACCEPT   # accept loopback-INPUT
+  520  sudo iptables -A INPUT -i br-e1e888ced688 -j ACCEPT # accept br-e1e888ced688 INPUT
+  521  sudo iptables -t nat -A POSTROUTING -o ens192 -j MASQUERADE   # NAT-Translation
+  522  sudo iptables -A FORWARD -i br-e1e888ced688 -j ACCEPT   # accept FORWARD-Traffic from br-e1e888ced688
+  523  sudo iptables -A FORWARD -i ens192 -o br-e1e888ced688 -m state --state ESTABLISHED,RELATED -j ACCEPT # accept FORWARD-Traffic as reply for existing connections
+  524  sudo iptables -A INPUT -i ens192 -m state --state ESTABLISHED,RELATED -j ACCEPT # allow the local computer to access the internet
+  525  sudo iptables -A INPUT -i ens192 -p icmp --icmp-type echo-request -j ACCEPT # allow pings on ens192
+  526  sudo echo "1" > /proc/sys/net/ipv4/ip_forward
+  527  curl http://192.168.49.2:3005
+  528  curl http://192.168.49.2:30005
+  529  curl http://129.62.148.112:30005
+  530  iptables -L
+  531  sudo iptables -L
+  532  sudo cat /etc/iptables.firewall.rules
+  533  cat  /etc/sysconfig/iptables
+  534  sudo cat  /etc/sysconfig/iptables
+  535  sudo iptables -L
+  536  sudo iptables
+  537  sudo iptables -h
+  538  sudo iptables
+  539  sudo iptables -L
+  540  sudo iptables -c
+  541  sudo iptables -c FORWARD -i br-e1e888ced688 -j ACCEPT
+  542  sudo iptables -c "FORWARD -i br-e1e888ced688 -j ACCEPT"
+  543  sudo iptables -c
+  544  sudo iptables -L
+  545  sudo iptables -A FORWARD -i br-e1e888ced688 -j ACCEPT
+  546  sudo iptables -L
+  547  sudo iptables -L | grep FOR
+  548  sudo iptables --list --help
+  549  echo "1" | sudo tee /proc/sys/net/ipv4/ip_forward
+  550  cat /proc/sys/net/ipv4/ip_forward
+  551  iptables-save
+  552  sudo iptables-save
+  553  sudo iptables -L
+  554  sudo iptables-save
+  555  cat /etc/firewalld/
+  556  curl http://129.62.148.112:30005
+  557  curl 192.168.49.2:30005
+  558  curl localhost:30005
+  559  curl 129.62.148.112:30005
+  560  echo 1 > /proc/sys/net/ipv4/ip_forward
+  561  sudo echo 1 > /proc/sys/net/ipv4/ip_forward
+  562  cat /proc/sys/net/ipv4/ip_forward
+  563  sudo iptables -A FORWARD -i ens192 -o br-e1e888ced688 -j ACCEPT
+  564  sudo iptables -A FORWARD -i br-e1e888ced688 -o ens192 -m state --state ESTABLISHED,RELATED -j ACCEPT
+  565  sudo iptables -t nat -A POSTROUTING -o br-e1e888ced688 -j MASQUERADE
+  566  kubetcl get pods
+  567  kubetctl get pods
+  568  kubectl get pods
+  569  curl 192.168.49.2:30005
+  570  curl 192.168.49.2:32677
+  571  ip -address
+  572  ip address
+  573  clear
+  574  sudo whoami
+  575  clear
+  576  minikube status
+  577  minikube start
+  578  free
+  579  watch free
+  580  ps -aux
+  581  kubectl get pods
+  582  watch kubectl get pods
+  583  free
+  584  watch kubectl get pods
+  585  cd dev/train-ticket/
+  586  helm list
+  587  watch kubectl get pods
+  588  vim hack/deploy/utils.sh
+  589  vi hack/deploy/utils.sh
+  590  helm list
+  591  kubectl rollout status statefulset/tsdb-mysql -n default
+  592  vi hack/deploy/utils.sh
+  593  cat hack/deploy/utils.sh | grep svc
+  594  cat hack/deploy/deploy.sh | grep svc
+  595  vi hack/deploy/deploy.sh
+  596  ls
+  597  cd hack/deploy/
+  598  ;s
+  599  ls
+  600  cat gen-mysql-secret.sh
+  601  vi deploy.sh
+  602  vi utils.sh
+  603  vim deploy.sh
+  604  vi deploy.sh
+  605  vi utils.sh
+  606  ls
+  607  kubectl get pods
+  608  kubectl describe pod nacosdb-mysql-0 | grep role
+  609  kubectl describe pod tsdb-mysql-0 | grep role
+  610  vi utils.sh
+  611  vi gen-mysql-secret.sh
+  612  vi utils.sh
+  613  vi gen-mysql-secret.sh
+  614  vi deploy.sh
+  615  vi utils.sh
+  616  vi gen-mysql-secret.sh
+  617  set -o xtrace
+  618  watch kubectl get pods
+  619  helm list
+  620  helm uninstall tsdb -n default
+  621  watch kubectl get pods
+  622  helm list
+  623  vi deploy.sh
+  624  watch kubectl get pods
+  625  set +o xtrace
+  626  cat deployment/kubernetes-manifests/quickstart-k8s/yamls/secret.yaml
+  627  rm deployment/kubernetes-manifests/quickstart-k8s/yamls/secret.yaml
+  628  vi gen-mysql-secret.sh
+  629  rm deployment/kubernetes-manifests/quickstart-k8s/yamls/secret.yaml > /dev/null 2>&1
+  630  vi gen-mysql-secret.sh
+  631  echo "" > deployment/kubernetes-manifests/quickstart-k8s/yamls/secret.yaml
+  632  touch deployment/kubernetes-manifests/quickstart-k8s/yamls/secret.yaml
+  633  cd ../../
+  634  rm deployment/kubernetes-manifests/quickstart-k8s/yamls/secret.yaml
+  635  cd deployment/kubernetes-manifests/quickstart-k8s/yamls/
+  636  ls -l
+  637  cd ../../
+  638  cd ../
+  639  sudo chmod -R 777 .
+  640  ll
+  641  ll deployment/kubernetes-manifests/quickstart-k8s/yamls/
+  642  cd ...
+  643   helm list
+  644  watch kubectl get pods
+  645  git diff
+  646  watch kubectl get pods
+  647  sudo sshd -t
+  648  curl localhost:32677
+  649  curl http://192.168.49.2:32677
+  650  curl http://localhost:32677
+  651  kubectl get svc
+  652  curl http://0.0.0.0:8000/
+  653  curl http://localhost:8000/
+  654  curl http://0.0.0.0:8000/
+  655  curl http://localhost:8000/
+  656  curl http://0.0.0.0:8000/
+  657  curl http://localhost:8000/
+  658  curl http://0.0.0.0:8000/
+  659  ip --address
+  660  ip address
+  661  iptables -A FORWARD -i ens192 -o br-e1e888ced688 -j ACCEPT
+  662  iptables -A FORWARD -i br-e1e888ced688 -o ens192 -m state --state ESTABLISHED,RELATED -j ACCEPT
+  663  iptables -t nat -A POSTROUTING -o br-e1e888ced688 -j MASQUERADE
+  664  sudo iptables -A FORWARD -i ens192 -o br-e1e888ced688 -j ACCEPT
+  665  sudo iptables -A FORWARD -i br-e1e888ced688 -o ens192 -m state --state ESTABLISHED,RELATED -j ACCEPT
+  666  sudo iptables -t nat -A POSTROUTING -o br-e1e888ced688 -j MASQUERADE
+  667  sudo iptables -A FORWARD -i ens192 -o br-e1e888ced688 -j ACCEPT
+  668  sudo iptables -A FORWARD -i br-e1e888ced688 -o ens192 -m state --state ESTABLISHED,RELATED -j ACCEPT
+  669  sudo iptables -t nat -A POSTROUTING -o br-e1e888ced688 -j MASQUERADE
+  670  curl http://192.168.49.2:32677
+  671  history | grep 12
+  672  history | grep curl
+  673  curl 129.62.148.112:30005
+  674  iptables
+  675  iptables -L
+  676  sudo iptables -L
+  677  iptables-save
+  678  sudo iptables-save
+  679  vi /etc/ssh/ssh_config
+  680  firefox
+  681  sudo vi /etc/ssh/ssh_config
+  682  sudo vi /etc/ssh/sshd_config
+  683  sudo systemctl restart sshd
+  684  sysctl fs.inotify.max_queued_events
+  685  sysctl fs.inotify.max_user_
+  686  sysctl fs.inotify.max_user_instances
+  687  sysctl fs.inotify.max_user_watches
+  688  minikube
+  689  minikube stop
+  690  docker ps
+  691  sudo docker ps
+  692  minikube status
+  693  docker
+  694  docker stop
+  695  docker ps
+  696  doker restart
+  697  docker restart
+  698  sudo systemctl restart docker
+  699  docker ps
+  700  minikube
+  701  docker ps
+  702  minikube status
+  703  minikube start
+  704  ls
+  705  clr
+  706  clear
+  707  ls
+  708  cd dev/train-ticket/
+  709  cd ..
+  710  ls
+  711  cd train-ticket/
+  712  ls
+  713  docker ps
+  714  watch kubectl get pods
+  715  minikube status
+  716  minikube delete
+  717  minikube start
+  718  make deploy DeployArgs="--with-tracing --with-monitoring"
+  719  git branch
+  720  make reset-deploy
+  721  git status
+  722  git stash -m "running the fix branch"
+  723  git status
+  724  git checkout origin set-open-telemetry
+  725  git checkout origin/set-open-telemetry
+  726  git switch origin/set-open-telemetry
+  727  git branch
+  728  git fetch
+  729  git branch
+  730  git switch set-open-telemetry
+  731  git branch
+  732  make deploy DeployArgs="--with-tracing --with-monitoring"
+  733  make reset-deploy
+  734  minikube delete
+  735  minikube start
+  736  ls -la
+  737  watch kubectl get pods
+  738  docker ps -a
+  739  docker image -a
+  740  docker image
+  741  docker list
+  742  kubectl status
+  743  kubeclt status
+  744  kubectl
+  745  kubectl get services
+  746  docker image ls
+  747  docker image ls -a
+  748  docker container ls
+  749  docker container ls -a
+  750  watch kubectl get pods
+  751  watch kubectl get services
+  752  kubectl get services
+  753  kubectl get pods
+  754  watch kubectl get pods
+  755  kubectl get services
+  756  watch kubectl get pods
+  757  kubectl describe jaeger-5c5d74b479-jbm5h
+  758  kubectl describe pod jaeger-5c5d74b479-jbm5h
+  759  watch kubectl get pods
+  760  cd dev/train-ticket/
+  761  ls
+  762  kubectl get pods
+  763  minikube status -a
+  764  kubectl get pods -a
+  765  kubectl get pods all
+  766  sudo chmod 777 ./deployment
+  767  sudo chmod 777 deployment
+  768  sudo chmod 777 -R deployment
+  769  sudo chmod -R 777  deployment
+  770  make deploy DeployArgs="--with-tracing --with-monitoring"
+  771  ls
+  772  make reset-deploy
+  773  make deploy Namespace=trainTicket DeployArgs="--with-tracing --with-monitoring"
+  774  make reset-deploy
+  775  make reset-deploy Namespace=trainTicket
+  776  kubectl get pods -a
+  777  kubectl get pods -help
+  778  kubectl get pods --help
+  779  kubectl get pods -A
+  780  make deploy DeployArgs="--with-tracing --with-monitoring"
+  781  kubectl get pods
+  782  kubectl get services
+  783  kubectl get pods
+  784  kubectl get services
+  785  kubectl get pods
+  786  kubectl get services
+  787  exit
+  788  kubectl get pods
+  789  kubectl get services
+  790  kubectl get pods
+  791  kubectl get services
+  792  kubectl port-forward service/jaeger-query        --address 129.62.148.112 30005:16686 &
+  793  kubectl port-forward service/jaeger-query        --address 129.62.148.112 32195:16685 &
+  794  kubectl port-forward service/nacos               --address 129.62.148.112 30794:8848 &
+  795  kubectl port-forward service/nacos               --address 129.62.148.112 30252:7848 &
+  796  kubectl port-forward service/ts-gateway-service  --address 129.62.148.112 30467:18888 &
+  797* kubectl port-forward service/ts-ui-dashboard     --address 129.62.148.112 32677:8080
+  798  clear
+  799  kubectl get services
+  800  history

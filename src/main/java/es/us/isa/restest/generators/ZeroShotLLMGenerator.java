@@ -771,4 +771,120 @@ public class ZeroShotLLMGenerator {
     private String safeStr(String s) {
         return (s == null ? "" : s);
     }
+
+    /**
+     * Validate a 2XX response to detect "soft errors" - cases where the API returns 200 OK
+     * but includes error information in the response body.
+     * 
+     * @param statusCode HTTP status code
+     * @param responseBody Response body as string
+     * @param serviceName Name of the service
+     * @param method HTTP method (GET, POST, etc.)
+     * @param path API path
+     * @return ValidationResult containing isFailed flag and RCA explanation
+     */
+    public ValidationResult validateResponse(int statusCode, String responseBody, String serviceName, String method, String path) {
+        // Build system prompt (instructions and criteria)
+        StringBuilder systemPrompt = new StringBuilder();
+        systemPrompt.append("You are an API testing expert analyzing response data.\n\n");
+        systemPrompt.append("ANALYSIS CRITERIA:\n");
+        systemPrompt.append("A response is considered FAILED if it contains ANY of:\n");
+        systemPrompt.append("1. Explicit failure indicators:\n");
+        systemPrompt.append("   - status: 0 or status: false or status: \"error\" or status: \"failed\"\n");
+        systemPrompt.append("   - success: false\n");
+        systemPrompt.append("   - error: true or hasError: true\n");
+        systemPrompt.append("   - Any field explicitly indicating failure\n\n");
+        systemPrompt.append("2. Error messages:\n");
+        systemPrompt.append("   - Fields named: error, errorMessage, msg, message, errorMsg containing non-empty error text\n");
+        systemPrompt.append("   - Exception information or stack traces\n\n");
+        systemPrompt.append("3. Data validation:\n");
+        systemPrompt.append("   - data field is null or empty when data is expected\n");
+        systemPrompt.append("   - Empty result arrays when results are expected\n\n");
+        systemPrompt.append("4. Business logic errors:\n");
+        systemPrompt.append("   - Validation error messages (e.g., \"invalid parameters\", \"not found\", \"unauthorized\")\n");
+        systemPrompt.append("   - Constraint violation messages\n\n");
+        systemPrompt.append("IMPORTANT:\n");
+        systemPrompt.append("- If the response looks successful with valid data, return FAILED=false\n");
+        systemPrompt.append("- Only return FAILED=true if there are clear error indicators\n");
+        systemPrompt.append("- Be specific about WHY it failed in your root cause analysis\n\n");
+        systemPrompt.append("OUTPUT FORMAT (exactly 2 lines):\n");
+        systemPrompt.append("FAILED: true|false\n");
+        systemPrompt.append("RCA: <detailed root cause analysis explaining why this is a failure or success>\n");
+        
+        // Build user prompt (actual task with API details and response)
+        StringBuilder userPrompt = new StringBuilder();
+        userPrompt.append("TASK: Determine if this API call actually FAILED despite returning a success status code.\n\n");
+        userPrompt.append("API Details:\n");
+        userPrompt.append("- Service: ").append(serviceName).append("\n");
+        userPrompt.append("- Endpoint: ").append(method).append(" ").append(path).append("\n");
+        userPrompt.append("- HTTP Status Code: ").append(statusCode).append("\n\n");
+        userPrompt.append("Response Body:\n");
+        userPrompt.append("```json\n");
+        userPrompt.append(responseBody).append("\n");
+        userPrompt.append("```\n\n");
+        userPrompt.append("Examples:\n");
+        userPrompt.append("Example 1 (Soft Error):\n");
+        userPrompt.append("Response: {\"status\":0,\"msg\":\"start station not in list\",\"data\":null}\n");
+        userPrompt.append("FAILED: true\n");
+        userPrompt.append("RCA: API returned status=0 indicating failure. Error message states 'start station not in list', and data field is null. This is a business logic validation failure.\n\n");
+        userPrompt.append("Example 2 (Success):\n");
+        userPrompt.append("Response: {\"status\":1,\"msg\":\"Success\",\"data\":{\"id\":123,\"name\":\"Route A\"}}\n");
+        userPrompt.append("FAILED: false\n");
+        userPrompt.append("RCA: API returned status=1 indicating success. Response contains valid data with id and name fields. No error indicators present.\n\n");
+        userPrompt.append("Now analyze the response above and provide your answer:\n");
+
+        try {
+            // Call LLM service with higher token limit for detailed analysis
+            String llmResponse = llmService.generateText(systemPrompt.toString(), userPrompt.toString(), 500, 0.3);
+            
+            // Parse response
+            boolean isFailed = false;
+            String rca = "";
+            
+            String[] lines = llmResponse.split("\\r?\\n");
+            for (String line : lines) {
+                String trimmed = line.trim();
+                if (trimmed.startsWith("FAILED:")) {
+                    String failedValue = trimmed.substring("FAILED:".length()).trim().toLowerCase();
+                    isFailed = failedValue.equals("true");
+                } else if (trimmed.startsWith("RCA:")) {
+                    rca = trimmed.substring("RCA:".length()).trim();
+                }
+            }
+            
+            return new ValidationResult(isFailed, rca, llmResponse);
+            
+        } catch (Exception e) {
+            System.err.println("⚠️ Failed to validate response with LLM: " + e.getMessage());
+            // Return non-failed by default to avoid false positives
+            return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
+        }
+    }
+
+    /**
+     * Result of LLM response validation
+     */
+    public static class ValidationResult {
+        private final boolean failed;
+        private final String rca;
+        private final String rawLlmResponse;
+
+        public ValidationResult(boolean failed, String rca, String rawLlmResponse) {
+            this.failed = failed;
+            this.rca = rca;
+            this.rawLlmResponse = rawLlmResponse;
+        }
+
+        public boolean isFailed() {
+            return failed;
+        }
+
+        public String getRca() {
+            return rca;
+        }
+
+        public String getRawLlmResponse() {
+            return rawLlmResponse;
+        }
+    }
 }

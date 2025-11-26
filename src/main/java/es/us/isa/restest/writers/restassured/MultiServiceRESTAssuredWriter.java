@@ -476,9 +476,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                    analyzeAndRecordParameterErrors(globalBestTrace, stepParameters);");
                     pw.println("                    String intelligentAnalysis = TraceErrorAnalyzer.generateIntelligentAnalysis(errorAnalysis, globalBestTrace);");
                     pw.println("                    if (intelligentAnalysis != null && !intelligentAnalysis.trim().isEmpty()) {");
-                    pw.println("                        Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS\", \"text/plain\", intelligentAnalysis);");
+                    pw.println("                        Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Based on Trace)\", \"text/plain\", intelligentAnalysis);");
                     pw.println("                    }");
-                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace (FAILED)\", \"text/plain\", traceTable);");
+                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace\", \"text/plain\", traceTable);");
                     pw.println("                } else if (isStepFailed) {");
                     pw.println("                    // Test failed but trace has no technical errors - likely business logic validation failure");
                     pw.println("                    StringBuilder analysisMsg = new StringBuilder();");
@@ -500,11 +500,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                    analysisMsg.append(\"• Verify input parameters against business rules and constraints\\n\");");
                     pw.println("                    analysisMsg.append(\"• Consult the API documentation for validation requirements\\n\\n\");");
                     pw.println("                    analysisMsg.append(\"For detailed trace information, see the '📈 Raw Trace Data' section below.\\n\");");
-                    pw.println("                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS\", \"text/plain\", analysisMsg.toString());");
-                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace (FAILED)\", \"text/plain\", traceTable);");
+                    pw.println("                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Based on Trace)\", \"text/plain\", analysisMsg.toString());");
+                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace\", \"text/plain\", traceTable);");
                     pw.println("                } else {");
                     pw.println("                    // Test succeeded and trace has no errors");
-                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace (SUCCESS)\", \"text/plain\", traceTable);");
+                    pw.println("                    Allure.addAttachment(\"🔗 API Call Trace\", \"text/plain\", traceTable);");
                     pw.println("                }");
                     pw.println("                Allure.addAttachment(\"📊 Trace Summary\", \"text/plain\", traceSummary);");
                     pw.println("                Allure.addAttachment(\"📈 Raw Trace Data\", \"application/json\", globalBestTrace.toString());");
@@ -1292,6 +1292,73 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                            throw new AssertionError(\"Expected status code \" + expectedStatusCode" + stepIdx + " + \", but got: \" + actualStatusCode" + stepIdx + ");");
                                 pw.println("                        }");
                             }
+                            pw.println("                        ");
+                            
+                            // 🤖 LLM RESPONSE VALIDATION: Check for "soft errors" (200 OK with error in body)
+                            pw.println("                        // 🤖 LLM RESPONSE VALIDATION: Detect soft errors in 2XX responses");
+                            pw.println("                        boolean llmValidationEnabled = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
+                            pw.println("                        boolean only2xx = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
+                            pw.println("                        boolean includeRca = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
+                            pw.println("                        ");
+                            pw.println("                        if (llmValidationEnabled && (!only2xx || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
+                            pw.println("                            try {");
+                            pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
+                            pw.println("                                ");
+                            pw.println("                                // Create LLM validator instance");
+                            pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
+                            pw.println("                                ");
+                            pw.println("                                // Validate response");
+                            pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult = ");
+                            pw.println("                                    llmValidator.validateResponse(");
+                            pw.println("                                        actualStatusCode" + stepIdx + ",");
+                            pw.println("                                        validationBody,");
+                            pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
+                            pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
+                            pw.println("                                        \"" + escape(step.getPath()) + "\"");
+                            pw.println("                                    );");
+                            pw.println("                                ");
+                            pw.println("                                System.out.println(\"🤖 LLM Validation: Failed=\" + validationResult.isFailed() + \", RCA: \" + validationResult.getRca());");
+                            pw.println("                                ");
+                            pw.println("                                // Attach LLM analysis to Allure report");
+                            pw.println("                                if (includeRca) {");
+                            pw.println("                                    StringBuilder llmReport = new StringBuilder();");
+                            pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\");");
+                            pw.println("                                    llmReport.append(\"🤖 INTELLIGENT ANALYSIS (Based on Response)\\n\");");
+                            pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\\n\");");
+                            pw.println("                                    llmReport.append(\"Analysis Result: \").append(validationResult.isFailed() ? \"❌ SOFT ERROR DETECTED\" : \"✅ VALID SUCCESS\").append(\"\\n\\n\");");
+                            pw.println("                                    llmReport.append(\"Root Cause Analysis:\\n\");");
+                            pw.println("                                    llmReport.append(validationResult.getRca()).append(\"\\n\");");
+                            pw.println("                                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Based on Response)\", \"text/plain\", llmReport.toString());");
+                            pw.println("                                }");
+                            pw.println("                                ");
+                            pw.println("                                // Apply validation logic based on test type");
+                            if (scenario.getFaulty()) {
+                                // Negative test
+                                pw.println("                                // Negative test logic:");
+                                pw.println("                                // - If LLM says FAILED: PASS (we expected an error)");
+                                pw.println("                                // - If LLM says SUCCESS: FAIL (we expected an error but got success)");
+                                pw.println("                                if (!validationResult.isFailed()) {");
+                                pw.println("                                    throw new AssertionError(\"Negative test failed: Expected error but LLM validated response as successful. RCA: \" + validationResult.getRca());");
+                                pw.println("                                }");
+                                pw.println("                                System.out.println(\"✅ Negative test PASSED: LLM detected soft error as expected\");");
+                            } else {
+                                // Positive test
+                                pw.println("                                // Positive test logic:");
+                                pw.println("                                // - If LLM says FAILED: FAIL (we expected success but got soft error)");
+                                pw.println("                                // - If LLM says SUCCESS: PASS (as expected)");
+                                pw.println("                                if (validationResult.isFailed()) {");
+                                pw.println("                                    throw new AssertionError(\"Positive test failed: Expected success but LLM detected soft error. RCA: \" + validationResult.getRca());");
+                                pw.println("                                }");
+                                pw.println("                                System.out.println(\"✅ Positive test PASSED: LLM validated response as successful\");");
+                            }
+                            pw.println("                                ");
+                            pw.println("                            } catch (AssertionError ae) {");
+                            pw.println("                                throw ae; // Re-throw assertion errors");
+                            pw.println("                            } catch (Exception llmEx) {");
+                            pw.println("                                System.err.println(\"⚠️ LLM validation failed: \" + llmEx.getMessage());");
+                            pw.println("                                // Don't fail the test due to LLM validation errors");
+                            pw.println("                            }");
+                            pw.println("                        }");
                             pw.println("                        ");
                             
                             // 🔍 FAULT DETECTION: Inject fault detection code for root API (step 1 = first business API)
