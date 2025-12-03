@@ -44,6 +44,9 @@ public class InvalidInputPool {
         valuesByType.get(type).add(value);
     }
     
+    // Track which type the last value came from (for logging)
+    private InvalidInputType lastSelectedType = null;
+    
     /**
      * Get the next unused invalid input in round-robin fashion
      * Rotates through types, then through values within each type
@@ -64,6 +67,9 @@ public class InvalidInputPool {
                     usedIndices.add(i);
                     Object value = values.get(i);
                     
+                    // Track which type this value came from
+                    lastSelectedType = currentType;
+                    
                     // Move to next type for next call
                     currentTypeIndex = (currentTypeIndex + 1) % typeRotation.size();
                     
@@ -77,7 +83,15 @@ public class InvalidInputPool {
         }
         
         // All values exhausted
+        lastSelectedType = null;
         return null;
+    }
+    
+    /**
+     * Get the invalid type of the last selected value (for logging)
+     */
+    public InvalidInputType getLastSelectedType() {
+        return lastSelectedType;
     }
     
     /**

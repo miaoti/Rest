@@ -384,7 +384,7 @@ public class TestGenerationAndExecution {
 				// 5. Get the recorded workflows from the trace file
                                 List<WorkflowScenario> scenarios =
                                                 TraceWorkflowExtractor.extractScenarios(TraceFile);
-                                
+
 				// 5.5. Register root APIs with their tree structures in the registry
 				// ⚠️ IMPORTANT: Register BEFORE deduplication to capture ALL trace patterns
 				String registryPath = readParameterValue("root.api.registry.path");
@@ -446,6 +446,19 @@ public class TestGenerationAndExecution {
 				if (faultyRoundRobin != null) {
 					System.setProperty("faulty.round-robin", faultyRoundRobin);
 					logger.info("MST faulty round-robin mode: {}", faultyRoundRobin);
+				}
+				
+				// Pass negative input generation mode (llm/hardcode) to MST generator
+				String negativeInputMode = readParameterValue("negative.input.generation.mode");
+				if (negativeInputMode != null) {
+					System.setProperty("negative.input.generation.mode", negativeInputMode);
+					logger.info("MST negative input generation mode: {} ({})", negativeInputMode,
+							"llm".equalsIgnoreCase(negativeInputMode) ? 
+									"LLM-generated context-aware inputs" : "Deterministic hardcoded inputs");
+				} else {
+					// Default to hardcode mode for faster execution
+					System.setProperty("negative.input.generation.mode", "hardcode");
+					logger.info("MST negative input generation mode: hardcode (default - faster, deterministic)");
 				}
 
 				// 7. Instantiate the generator
@@ -1279,6 +1292,7 @@ public class TestGenerationAndExecution {
 	
 	/**
 	 * Fallback to Maven compilation if direct compilation fails
+	 * 🔧 FIX: Compile BOTH main and test classes to ensure all dependencies are available
 	 */
 	private static boolean fallbackMavenCompilation() {
 		try {
@@ -1286,12 +1300,14 @@ public class TestGenerationAndExecution {
 			String baseDir = System.getProperty("user.dir");
 			
 			// Use Maven with optimized settings for speed
+			// IMPORTANT: Use "compile test-compile" to ensure main classes are compiled first
 			ProcessBuilder pb = new ProcessBuilder();
 			
 			// Handle Windows command formatting
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("win")) {
-				pb.command("cmd.exe", "/c", "mvn", "test-compile", 
+				// 🔧 FIX: Added "compile" before "test-compile" to ensure main classes are built
+				pb.command("cmd.exe", "/c", "mvn", "compile", "test-compile", 
 					"-q",                    // Quiet mode
 					"-T", "1C",             // Use 1 thread per CPU core
 					"-Djacoco.skip=true",   // Skip JaCoCo
@@ -1301,7 +1317,7 @@ public class TestGenerationAndExecution {
 					"-DskipTests=true"      // Skip tests
 				);
 			} else {
-				pb.command("mvn", "test-compile", 
+				pb.command("mvn", "compile", "test-compile", 
 					"-q", "-T", "1C", "-Djacoco.skip=true", 
 					"-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true", 
 					"-Dcheckstyle.skip=true", "-DskipTests=true");

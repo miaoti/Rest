@@ -331,12 +331,16 @@ public class ZeroShotLLMGenerator {
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.\n" +
+                       "If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.\n" +
                        "Examples:\n" +
-                       "- Age parameter: negative numbers (-5, -100), impossibly high (999, 500)\n" +
-                       "- Email parameter: invalid format (missing @, no domain)\n" +
-                       "- Date parameter: impossible dates (Feb 30, Month 13)\n" +
-                       "- Country code: non-existent codes (ZZZ, XXX)\n" +
-                       "- Phone number: wrong format or length\n\n" +
+                       "- Age parameter: -5, 999, -100\n" +
+                       "- Email parameter: invalid@, nodomain, test@@test\n" +
+                       "- Date parameter: 2025-02-30, 2025-13-01\n" +
+                       "- Country code: ZZZ, XXX, 999\n" +
+                       "- Station list: NonExistent1,NonExistent2, InvalidStation,FakeCity\n\n" +
+                       "OUTPUT FORMAT: Return ONLY the raw values, one per line. Do NOT include parameter names or quotes.\n" +
+                       "WRONG: stationList=\"value\"\n" +
+                       "RIGHT: value\n\n" +
                        "Return only the semantically invalid values, one per line:";
         
         String response = callLLM(prompt);
@@ -449,7 +453,8 @@ public class ZeroShotLLMGenerator {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
                        "Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n\n" +
-                       "Generate values with malicious or special characters:\n" +
+                       "Generate values with malicious or special characters\n" +
+                       "Down here are some examples of special characters and injection attempts. Generate values that can fit into the parameter type and context as provided.\n" +
                        "- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--\n" +
                        "- XSS attempts: <script>alert('XSS')</script>\n" +
                        "- Path traversal: ../../etc/passwd\n" +
@@ -719,7 +724,7 @@ public class ZeroShotLLMGenerator {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy 'at' h:mm:ss a z");
         return ZonedDateTime.now().format(formatter);
     }
-    
+
     /**
      * Escape quotes or backslashes so we can embed user text in JSON.
      */
@@ -762,10 +767,148 @@ public class ZeroShotLLMGenerator {
         for (String line : arr) {
             String trimmed = line.trim();
             if (!trimmed.isEmpty()) {
-                lines.add(trimmed);
+                // 🔥 FIX: Filter out explanatory/header text that LLM sometimes adds
+                // Skip lines that look like explanations or headers
+                if (isExplanatoryText(trimmed)) {
+                    System.out.println("⚠️ Skipping explanatory line: " + trimmed.substring(0, Math.min(50, trimmed.length())) + "...");
+                    continue;
+                }
+                
+                // Strip surrounding quotes if present
+                String cleaned = stripQuotes(trimmed);
+                
+                // Skip empty after cleaning
+                if (!cleaned.isEmpty()) {
+                    lines.add(cleaned);
+                }
             }
         }
         return lines;
+    }
+    
+    /**
+     * Detect if a line is explanatory text rather than an actual value.
+     * LLM often adds introductory sentences before the values.
+     */
+    private boolean isExplanatoryText(String line) {
+        String lower = line.toLowerCase();
+        
+        // Lines ending with colon are usually headers
+        if (line.endsWith(":")) {
+            return true;
+        }
+        
+        // Common introductory phrases
+        String[] explanatoryPatterns = {
+            "here are", "here is", "following are", "following is",
+            "invalid", "example", "these are", "below are",
+            "the values", "values that", "values for",
+            "syntactically", "semantically", "meaningless",
+            "i'll generate", "i will generate", "let me",
+            "note:", "note that", "please note",
+            "generate", "providing", "output:"
+        };
+        
+        for (String pattern : explanatoryPatterns) {
+            if (lower.startsWith(pattern) || lower.contains(pattern + " ")) {
+                return true;
+            }
+        }
+        
+        // Lines that are too long to be a simple value (likely explanations)
+        // Unless they look like actual overflow test values (repeated chars)
+        if (line.length() > 200 && !isLikelyOverflowValue(line)) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Check if a long string is likely an intentional overflow test value
+     * (repeated characters, long random strings, etc.)
+     */
+    private boolean isLikelyOverflowValue(String line) {
+        // Check for repeated character patterns (like "AAAAA..." or "XXXXX...")
+        if (line.length() > 100) {
+            char first = line.charAt(0);
+            int sameCharCount = 0;
+            for (int i = 0; i < Math.min(50, line.length()); i++) {
+                if (line.charAt(i) == first) {
+                    sameCharCount++;
+                }
+            }
+            // If more than 80% of first 50 chars are the same, it's likely overflow
+            if (sameCharCount > 40) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Strip surrounding quotes and parameter name prefixes from a value.
+     * Handles formats like:
+     * - "value" → value
+     * - 'value' → value
+     * - paramName="value" → value
+     * - paramName='value' → value
+     * 
+     * IMPORTANT: Does NOT strip quotes from SQL injection values like ' OR '1'='1
+     */
+    private String stripQuotes(String value) {
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        
+        String cleaned = value.trim();
+        
+        // Handle paramName="value" or paramName='value' format ONLY if:
+        // 1. The part before '=' looks like a valid parameter name (letters, digits, underscores)
+        // 2. The value after '=' is quoted
+        // This prevents breaking SQL injection values like: ' OR '1'='1
+        if (cleaned.contains("=")) {
+            int eqIndex = cleaned.indexOf("=");
+            if (eqIndex > 0 && eqIndex < cleaned.length() - 1) {
+                String beforeEq = cleaned.substring(0, eqIndex).trim();
+                String afterEq = cleaned.substring(eqIndex + 1).trim();
+                
+                // Only strip if beforeEq is a valid identifier (alphanumeric + underscore, starts with letter)
+                // AND afterEq is quoted
+                boolean isValidParamName = beforeEq.matches("^[a-zA-Z][a-zA-Z0-9_]*$");
+                boolean afterIsQuoted = (afterEq.startsWith("\"") && afterEq.endsWith("\"")) ||
+                                        (afterEq.startsWith("'") && afterEq.endsWith("'"));
+                
+                if (isValidParamName && afterIsQuoted) {
+                    // Strip the param name and the outer quotes
+                    cleaned = afterEq.substring(1, afterEq.length() - 1);
+                    return cleaned;
+                }
+            }
+        }
+        
+        // Strip surrounding double quotes (only if BOTH start and end with quotes)
+        if (cleaned.length() >= 2 && cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
+            // Check this isn't a value that legitimately contains quotes (like JSON)
+            String inner = cleaned.substring(1, cleaned.length() - 1);
+            // Only strip if inner doesn't contain unescaped quotes that would indicate it's not simple quoting
+            if (!inner.contains("\"") || inner.contains("\\\"")) {
+                return inner;
+            }
+        }
+        
+        // Strip surrounding single quotes (only if BOTH start and end with quotes)
+        // BUT NOT for SQL injection values that have internal structure
+        if (cleaned.length() >= 2 && cleaned.startsWith("'") && cleaned.endsWith("'")) {
+            String inner = cleaned.substring(1, cleaned.length() - 1);
+            // Don't strip if this looks like SQL injection (contains ' OR, ' AND, '=, etc.)
+            if (!inner.contains("'") && !inner.toUpperCase().contains(" OR ") && 
+                !inner.toUpperCase().contains(" AND ") && !inner.contains("=")) {
+                return inner;
+            }
+        }
+        
+        return cleaned;
     }
 
     private String safeStr(String s) {

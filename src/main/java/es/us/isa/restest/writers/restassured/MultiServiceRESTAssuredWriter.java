@@ -1124,13 +1124,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         // Generate hierarchical step number if available from the generator
                         String stepNumber = "Step " + stepIdx;
                         // For negative tests, show that we expect anything OTHER than the normal expected status
+                        // Use simpler format without nested parentheses to avoid Java string literal issues
                         String expectedStatusDisplay = scenario.getFaulty() 
-                                ? "!= " + step.getExpectedStatus() + " (any error)" 
+                                ? "not " + step.getExpectedStatus() 
                                 : String.valueOf(step.getExpectedStatus());
                         String stepTitle = stepNumber + ": "
                                 + step.getServiceName() + " "
                                 + verb.toUpperCase() + " " + step.getPath()
-                                + " (expect " + expectedStatusDisplay + ")";
+                                + " [expect " + expectedStatusDisplay + "]";
 
                         pw.println("        // " + escape(stepTitle));
                         
@@ -1677,7 +1678,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     }
     
     private static String escape(String s) {
-        return s == null ? "" : s.replace("\\", "\\\\").replace("\"", "\\\"");
+        if (s == null) return "";
+        return s.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 
     /**

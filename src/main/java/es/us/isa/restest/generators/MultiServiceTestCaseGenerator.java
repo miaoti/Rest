@@ -503,6 +503,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         // Mark as not faulty variant - will generate positive test instead
                                         faultyValueSet = false;
                                     } else {
+                                        // Get the invalid type that was selected for logging
+                                        String invalidTypeName = pool.getLastSelectedType() != null 
+                                                ? pool.getLastSelectedType().getDisplayName() 
+                                                : "Unknown";
+                                        
                                         // 🔥 FIX: For TYPE_MISMATCH, preserve the actual type (Integer, Boolean, etc.)
                                         // For body/formData params, store in typedVal; for path/query/header, convert to string
                                         if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
@@ -514,8 +519,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         }
                                         tc.addFaultyParameter(p.getName(), val);
                                         faultyValueSet = true;
-                                        log.info("✅ Negative Test (Round-Robin) → {} = {} (type: {}, intentionally invalid) - LOCKED", 
-                                                p.getName(), val, invalidValue.getClass().getSimpleName());
+                                        log.info("✅ Negative Test (Round-Robin) → {} = {} [InvalidType: {}] (javaType: {}) - LOCKED", 
+                                                p.getName(), 
+                                                val.length() > 50 ? val.substring(0, 50) + "..." : val, 
+                                                invalidTypeName,
+                                                invalidValue.getClass().getSimpleName());
                                 }
                             } else {
                                     // Random mode - can repeat
@@ -536,7 +544,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         tc.addFaultyParameter(p.getName(), val);
                                         faultyValueSet = true;
                                         log.info("✅ Negative Test (Random) → {} = {} (type: {}, intentionally invalid) - LOCKED", 
-                                                p.getName(), val, invalidValue.getClass().getSimpleName());
+                                                p.getName(), 
+                                                val.length() > 50 ? val.substring(0, 50) + "..." : val, 
+                                                invalidValue.getClass().getSimpleName());
                                     }
                                 }
                             } else {

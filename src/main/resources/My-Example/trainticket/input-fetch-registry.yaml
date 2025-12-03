@@ -2,12 +2,12 @@
 version: "1.0"
 lastUpdated:
 - 2025
-- 11
-- 21
-- 19
-- 37
-- 1
-- 190926600
+- 12
+- 2
+- 17
+- 48
+- 54
+- 713859700
 parameterMappings:
   departureTime:
   - endpoint: "/api/v1/travelservice/trips"
@@ -2383,12 +2383,12 @@ parameterErrors:
       parameterName: "endStation"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 14
-      - 50
-      - 36
-      - 882896200
+      - 2
+      - 17
+      - 4
+      - 4
+      - 466336100
       additionalInfo: null
     loginId:
     - errorType: "VALIDATION_ERROR"
@@ -2397,12 +2397,12 @@ parameterErrors:
       parameterName: "loginId"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 14
-      - 51
-      - 14
-      - 158384100
+      - 2
+      - 17
+      - 2
+      - 15
+      - 571970800
       additionalInfo: null
     stationList:
     - errorType: "VALIDATION_ERROR"
@@ -2411,12 +2411,12 @@ parameterErrors:
       parameterName: "stationList"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 14
-      - 47
-      - 34
-      - 98904200
+      - 2
+      - 17
+      - 48
+      - 11
+      - 100108200
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -2424,12 +2424,12 @@ parameterErrors:
       parameterName: "stationList"
       timestamp:
       - 2025
-      - 11
-      - 21
-      - 17
-      - 53
+      - 12
       - 2
-      - 153923300
+      - 17
+      - 48
+      - 54
+      - 710200600
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2437,12 +2437,12 @@ parameterErrors:
       parameterName: "stationList"
       timestamp:
       - 2025
-      - 11
+      - 12
+      - 2
+      - 17
+      - 47
       - 21
-      - 16
-      - 22
-      - 9
-      - 10411100
+      - 887726500
       additionalInfo: null
     distanceList:
     - errorType: "CONSTRAINT_ERROR"
@@ -2464,12 +2464,12 @@ parameterErrors:
       parameterName: "distanceList"
       timestamp:
       - 2025
-      - 11
-      - 21
-      - 19
-      - 30
-      - 20
-      - 85056400
+      - 12
+      - 2
+      - 17
+      - 46
+      - 29
+      - 747786800
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2491,12 +2491,12 @@ parameterErrors:
       parameterName: "startStation"
       timestamp:
       - 2025
-      - 11
-      - 11
-      - 21
-      - 42
-      - 1
-      - 254240700
+      - 12
+      - 2
+      - 17
+      - 4
+      - 49
+      - 18699500
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "JSON parse error: (was java"
