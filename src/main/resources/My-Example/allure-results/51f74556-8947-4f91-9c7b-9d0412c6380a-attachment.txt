@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The ts-admin-basic-info-service fails during AdminBasicInfoController.addPrice operation when attempting to deserialize JSON payload. The specific error occurs at `adminbasic.entity.PriceInfo["basicPriceRate"]` where string value "abc" cannot be converted to double type, causing `HttpMessageNotReadableException`.
+
+**FIX:**
+Validate and sanitize input data in ts-gateway-service before forwarding to ts-admin-basic-info-service. Ensure numeric fields like `basicPriceRate` contain valid numeric values or implement proper error handling with validation annotations (e.g., @Min, @Max) in the PriceInfo entity to reject invalid string inputs before deserialization.

@@ -1,0 +1,1 @@
+{"departureTime":"2025-10-31","endPlace":"<img src=x onerror=alert('XSS')>","startPlace":"New York"}

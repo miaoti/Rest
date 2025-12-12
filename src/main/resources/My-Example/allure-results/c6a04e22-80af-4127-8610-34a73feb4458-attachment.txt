@@ -1,0 +1,1 @@
+{"distanceList":"600","endStation":"Harvard Station","id":"SERVICE-2025-001","loginId":"route_operator_456","startStation":"Boston South Station","stationList":"Boston South Station,Back Bay Station,Harvard Station,Chicago Union Station,Seattle Station"}

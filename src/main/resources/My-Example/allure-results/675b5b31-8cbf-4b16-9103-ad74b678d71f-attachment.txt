@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"start or end station not include in stationList.","data":null}
+Enhanced Parameters: {endStation=Boston South Station, stationList=Boston South Station,Back Bay Station,Harvard Station,Chicago Union Station,Seattle Station, startStation=Back Bay Station}

@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Create success","data":{"id":"SERVICE-2025-001","trainType":"nonexistentRailway","routeId":"RT-12345","basicPriceRate":125.5,"firstClassPriceRate":110.75}}
+Enhanced Parameters: {basicPriceRate=0, firstClassPriceRate=-10}

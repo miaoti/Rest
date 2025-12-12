@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status indicating client request error during interaction with `ts-admin-route-service` or `ts-station-service`.
+
+**FIX:** Validate request payload format and required fields before forwarding to downstream services. Implement proper input validation and error handling in `ts-gateway-service` to prevent malformed requests from causing 400 errors.

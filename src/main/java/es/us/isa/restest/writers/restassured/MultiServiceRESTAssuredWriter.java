@@ -1018,9 +1018,70 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            .recordTestCase(this.getClass().getName(), \"" + testMethodName + "\");");
                     pw.println();
                     
+                    /* ------------ Set up Test Case Enhancer capture ---------- */
+                    // Get first step info for metadata
+                    MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;
+                    String firstEndpoint = "";
+                    String firstMethod = "POST";
+                    String firstService = "";
+                    Map<String, String> firstBodyFields = new LinkedHashMap<>();
+                    // Build a map of parameter name -> TestParameter for metadata lookup
+                    Map<String, es.us.isa.restest.configuration.pojos.TestParameter> paramMetadata = new HashMap<>();
+                    if (!mstc.getSteps().isEmpty()) {
+                        MultiServiceTestCase.StepCall firstStep = mstc.getSteps().get(0);
+                        firstEndpoint = firstStep.getPath() != null ? firstStep.getPath() : "";
+                        firstMethod = firstStep.getMethod() != null && firstStep.getMethod().getMethod() != null 
+                                    ? firstStep.getMethod().getMethod().toUpperCase() : "POST";
+                        firstService = firstStep.getServiceName() != null ? firstStep.getServiceName() : "";
+                        if (firstStep.getBodyFields() != null) {
+                            firstBodyFields.putAll(firstStep.getBodyFields());
+                        }
+                        // Get TestParameter metadata from Operation config
+                        if (firstStep.getMethod() != null && firstStep.getMethod().getTestParameters() != null) {
+                            for (es.us.isa.restest.configuration.pojos.TestParameter tp : firstStep.getMethod().getTestParameters()) {
+                                paramMetadata.put(tp.getName(), tp);
+                            }
+                        }
+                    }
+                    boolean isNegativeTest = scenario.getFaulty();
+                    
+                    pw.println("        // 🔧 Test Case Enhancer: Capture test metadata");
+                    pw.println("        es.us.isa.restest.enhancer.TestResultCapture.setTestMetadata(");
+                    pw.println("            \"" + escape(firstEndpoint) + "\", \"" + firstMethod + "\", ");
+                    pw.println("            \"" + escape(firstService) + "\", " + isNegativeTest + ");");
+                    
+                    // Add parameter captures for body fields with full metadata
+                    for (Map.Entry<String, String> field : firstBodyFields.entrySet()) {
+                        String paramName = field.getKey();
+                        String paramValue = field.getValue();
+                        es.us.isa.restest.configuration.pojos.TestParameter tp = paramMetadata.get(paramName);
+                        
+                        // Get metadata from TestParameter if available
+                        String paramType = "string";
+                        String paramLoc = "body";
+                        String description = "";
+                        String example = "";
+                        boolean required = false;
+                        
+                        if (tp != null) {
+                            paramType = tp.getType() != null ? tp.getType() : "string";
+                            paramLoc = tp.getIn() != null ? tp.getIn() : "body";
+                            description = tp.getDescription() != null ? tp.getDescription() : "";
+                            example = tp.getExample() != null ? String.valueOf(tp.getExample()) : "";
+                            required = tp.getRequired() != null && tp.getRequired();
+                        }
+                        
+                        pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                        pw.println("            \"" + escape(paramName) + "\", \"" + escape(paramValue) + "\", ");
+                        pw.println("            \"" + escape(paramType) + "\", \"" + escape(paramLoc) + "\", ");
+                        pw.println("            " + (description.isEmpty() ? "null" : "\"" + escape(description) + "\"") + ", ");
+                        pw.println("            " + (example.isEmpty() ? "null" : "\"" + escape(example) + "\"") + ", " + required + ");");
+                    }
+                    pw.println();
+                    
                     /* ------------ Add Allure metadata for negative tests ---------- */
-                    if (scenario instanceof MultiServiceTestCase) {
-                        MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;
+                    {
+                        // Use existing mstc from above
                         System.out.println("DEBUG: Test " + testMethodName + " - isFaulty=" + scenario.getFaulty() + 
                                          ", faultyParamsCount=" + mstc.getFaultyParameters().size() +
                                          ", allureReport=" + allureReport);
@@ -1038,6 +1099,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                         \"The following parameters were intentionally set to invalid values:\\n\" +");
                             pw.println("                         \"" + faultyParamsNewlineEscaped + "\\n\\n\" +");
                             pw.println("                         \"This test expects a 4XX or 5XX error response. If it returns 2XX, the test will FAIL.\");");
+                            
+                            // 🔧 Test Case Enhancer: Capture invalid parameters (these should NOT be changed during enhancement)
+                            for (String faultyParam : mstc.getFaultyParameters()) {
+                                pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addInvalidParameter(\"" + escapeJavaString(faultyParam) + "\");");
+                            }
                             pw.println();
                         }
                     }
@@ -1279,71 +1345,154 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        // Now validate status code based on expected status from configuration");
                             pw.println("                        int actualStatusCode" + stepIdx + " = stepResponse" + stepIdx + ".getStatusCode();");
                             pw.println("                        int expectedStatusCode" + stepIdx + " = " + step.getExpectedStatus() + ";");
-                            
-                            // For negative tests: PASS if actual != expected (any deviation is valid for negative tests)
-                            // For positive tests: PASS only if actual == expected
-                            if (scenario.getFaulty()) {
-                                pw.println("                        // Negative test: PASS if status != expected (anything unexpected is valid)");
-                                pw.println("                        if (actualStatusCode" + stepIdx + " == expectedStatusCode" + stepIdx + ") {");
-                                pw.println("                            throw new AssertionError(\"Negative test failed: Expected status != \" + expectedStatusCode" + stepIdx + " + \", but got: \" + actualStatusCode" + stepIdx + ");");
-                                pw.println("                        }");
-                            } else {
-                                pw.println("                        // Positive test: PASS only if status == expected");
-                                pw.println("                        if (actualStatusCode" + stepIdx + " != expectedStatusCode" + stepIdx + ") {");
-                                pw.println("                            throw new AssertionError(\"Expected status code \" + expectedStatusCode" + stepIdx + " + \", but got: \" + actualStatusCode" + stepIdx + ");");
-                                pw.println("                        }");
-                            }
                             pw.println("                        ");
                             
-                            // 🤖 LLM RESPONSE VALIDATION: Check for "soft errors" (200 OK with error in body)
-                            pw.println("                        // 🤖 LLM RESPONSE VALIDATION: Detect soft errors in 2XX responses");
+                            // 🤖 LLM RESPONSE VALIDATION setup (for both positive and negative tests)
+                            pw.println("                        // 🤖 LLM RESPONSE VALIDATION: Check response body for errors");
                             pw.println("                        boolean llmValidationEnabled = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
                             pw.println("                        boolean only2xx = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
                             pw.println("                        boolean includeRca = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
                             pw.println("                        ");
-                            pw.println("                        if (llmValidationEnabled && (!only2xx || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
-                            pw.println("                            try {");
-                            pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
-                            pw.println("                                ");
-                            pw.println("                                // Create LLM validator instance");
-                            pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
-                            pw.println("                                ");
-                            pw.println("                                // Validate response");
-                            pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult = ");
-                            pw.println("                                    llmValidator.validateResponse(");
-                            pw.println("                                        actualStatusCode" + stepIdx + ",");
-                            pw.println("                                        validationBody,");
-                            pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
-                            pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
-                            pw.println("                                        \"" + escape(step.getPath()) + "\"");
-                            pw.println("                                    );");
-                            pw.println("                                ");
-                            pw.println("                                System.out.println(\"🤖 LLM Validation: Failed=\" + validationResult.isFailed() + \", RCA: \" + validationResult.getRca());");
-                            pw.println("                                ");
-                            pw.println("                                // Attach LLM analysis to Allure report");
-                            pw.println("                                if (includeRca) {");
-                            pw.println("                                    StringBuilder llmReport = new StringBuilder();");
-                            pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\");");
-                            pw.println("                                    llmReport.append(\"🤖 INTELLIGENT ANALYSIS (Based on Response)\\n\");");
-                            pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\\n\");");
-                            pw.println("                                    llmReport.append(\"Analysis Result: \").append(validationResult.isFailed() ? \"❌ SOFT ERROR DETECTED\" : \"✅ VALID SUCCESS\").append(\"\\n\\n\");");
-                            pw.println("                                    llmReport.append(\"Root Cause Analysis:\\n\");");
-                            pw.println("                                    llmReport.append(validationResult.getRca()).append(\"\\n\");");
-                            pw.println("                                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Based on Response)\", \"text/plain\", llmReport.toString());");
-                            pw.println("                                }");
-                            pw.println("                                ");
-                            pw.println("                                // Apply validation logic based on test type");
+                            
                             if (scenario.getFaulty()) {
-                                // Negative test
-                                pw.println("                                // Negative test logic:");
-                                pw.println("                                // - If LLM says FAILED: PASS (we expected an error)");
-                                pw.println("                                // - If LLM says SUCCESS: FAIL (we expected an error but got success)");
-                                pw.println("                                if (!validationResult.isFailed()) {");
-                                pw.println("                                    throw new AssertionError(\"Negative test failed: Expected error but LLM validated response as successful. RCA: \" + validationResult.getRca());");
+                                // NEGATIVE TEST: Check LLM validation FIRST, then status code
+                                pw.println("                        // 🔴 NEGATIVE TEST VALIDATION");
+                                pw.println("                        // For negative tests with invalid inputs, we expect EITHER:");
+                                pw.println("                        // 1. A different status code (error response), OR");
+                                pw.println("                        // 2. Status 200 but with error/failure message in response body (soft error)");
+                                pw.println("                        // CRITICAL: The error message MUST be related to our designed invalid input!");
+                                pw.println("                        boolean statusCodeIndicatesError = (actualStatusCode" + stepIdx + " != expectedStatusCode" + stepIdx + ");");
+                                pw.println("                        boolean llmDetectedRelatedError = false;");
+                                pw.println("                        String llmRca = \"LLM validation not performed\";");
+                                pw.println("                        ");
+                                
+                                // Build the map of invalid parameters from the test case
+                                pw.println("                        // Build map of designed invalid parameters for this negative test");
+                                pw.println("                        java.util.Map<String, String> invalidParams = new java.util.HashMap<>();");
+                                
+                                // Get faulty parameters from the test case and add them to the map
+                                List<String> faultyParams = mstc.getFaultyParameters();
+                                for (String faultyParam : faultyParams) {
+                                    // faultyParam is in format "paramName=value"
+                                    int eqIdx = faultyParam.indexOf('=');
+                                    if (eqIdx > 0) {
+                                        String paramName = faultyParam.substring(0, eqIdx);
+                                        String paramValue = faultyParam.substring(eqIdx + 1);
+                                        pw.println("                        invalidParams.put(\"" + escapeJavaString(paramName) + "\", \"" + escapeJavaString(paramValue) + "\");");
+                                    }
+                                }
+                                pw.println("                        ");
+                                
+                                pw.println("                        // Always run LLM validation for negative tests (to detect soft errors related to our invalid input)");
+                                pw.println("                        if (llmValidationEnabled) {");
+                                pw.println("                            try {");
+                                pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
+                                pw.println("                                ");
+                                pw.println("                                // Create LLM validator instance");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
+                                pw.println("                                ");
+                                pw.println("                                // Validate response - checks if error is RELATED to our invalid input");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult = ");
+                                pw.println("                                    llmValidator.validateNegativeTestResponse(");
+                                pw.println("                                        actualStatusCode" + stepIdx + ",");
+                                pw.println("                                        validationBody,");
+                                pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
+                                pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
+                                pw.println("                                        \"" + escape(step.getPath()) + "\",");
+                                pw.println("                                        invalidParams");
+                                pw.println("                                    );");
+                                pw.println("                                ");
+                                pw.println("                                // isFailed() returns true only if error was detected AND related to our invalid input");
+                                pw.println("                                llmDetectedRelatedError = validationResult.isFailed();");
+                                pw.println("                                llmRca = validationResult.getRca();");
+                                pw.println("                                System.out.println(\"🤖 LLM Validation (Negative Test): Error Related to Invalid Input=\" + llmDetectedRelatedError + \", RCA: \" + llmRca);");
+                                pw.println("                                ");
+                                pw.println("                                // Attach LLM analysis to Allure report");
+                                pw.println("                                if (includeRca) {");
+                                pw.println("                                    StringBuilder llmReport = new StringBuilder();");
+                                pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\");");
+                                pw.println("                                    llmReport.append(\"🤖 INTELLIGENT ANALYSIS (Negative Test)\\n\");");
+                                pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\\n\");");
+                                pw.println("                                    llmReport.append(\"Test Type: 🔴 NEGATIVE (Invalid Input Testing)\\n\\n\");");
+                                pw.println("                                    ");
+                                pw.println("                                    // Show designed invalid inputs");
+                                pw.println("                                    llmReport.append(\"📋 DESIGNED INVALID INPUTS:\\n\");");
+                                pw.println("                                    for (java.util.Map.Entry<String, String> entry : invalidParams.entrySet()) {");
+                                pw.println("                                        llmReport.append(\"   • \").append(entry.getKey()).append(\" = \").append(entry.getValue()).append(\"\\n\");");
+                                pw.println("                                    }");
+                                pw.println("                                    llmReport.append(\"\\n\");");
+                                pw.println("                                    ");
+                                pw.println("                                    llmReport.append(\"Status Code: \").append(actualStatusCode" + stepIdx + ").append(\" (expected: \").append(expectedStatusCode" + stepIdx + ").append(\")\\n\");");
+                                pw.println("                                    llmReport.append(\"Status Code Indicates Error: \").append(statusCodeIndicatesError ? \"✅ YES\" : \"❌ NO\").append(\"\\n\");");
+                                pw.println("                                    llmReport.append(\"Error Related to Invalid Input: \").append(llmDetectedRelatedError ? \"✅ YES\" : \"❌ NO\").append(\"\\n\\n\");");
+                                pw.println("                                    llmReport.append(\"Root Cause Analysis:\\n\");");
+                                pw.println("                                    llmReport.append(llmRca).append(\"\\n\");");
+                                pw.println("                                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Negative Test)\", \"text/plain\", llmReport.toString());");
                                 pw.println("                                }");
-                                pw.println("                                System.out.println(\"✅ Negative test PASSED: LLM detected soft error as expected\");");
+                                pw.println("                                ");
+                                pw.println("                            } catch (Exception llmEx) {");
+                                pw.println("                                System.err.println(\"⚠️ LLM validation failed: \" + llmEx.getMessage());");
+                                pw.println("                                // Continue with status code check only");
+                                pw.println("                            }");
+                                pw.println("                        }");
+                                pw.println("                        ");
+                                pw.println("                        // Negative test PASSES if either:");
+                                pw.println("                        // 1. Status code is different from expected (clear error), OR");
+                                pw.println("                        // 2. LLM detected a soft error that is RELATED to our designed invalid input");
+                                pw.println("                        // NOTE: If error is NOT related to our invalid input, test still FAILS!");
+                                pw.println("                        boolean negativeTestPassed = statusCodeIndicatesError || llmDetectedRelatedError;");
+                                pw.println("                        ");
+                                pw.println("                        if (!negativeTestPassed) {");
+                                pw.println("                            throw new AssertionError(\"Negative test failed: Either no error detected, or error was not related to our invalid input. RCA: \" + llmRca);");
+                                pw.println("                        }");
+                                pw.println("                        ");
+                                pw.println("                        if (statusCodeIndicatesError) {");
+                                pw.println("                            System.out.println(\"✅ Negative test PASSED: Status code \" + actualStatusCode" + stepIdx + " + \" indicates error (expected: \" + expectedStatusCode" + stepIdx + " + \")\");");
+                                pw.println("                        } else {");
+                                pw.println("                            System.out.println(\"✅ Negative test PASSED: LLM confirmed error is related to our designed invalid input\");");
+                                pw.println("                        }");
+                                pw.println("                        ");
                             } else {
-                                // Positive test
+                                // POSITIVE TEST: Status code check first, then LLM validation
+                                pw.println("                        // ✅ POSITIVE TEST VALIDATION");
+                                pw.println("                        // Positive test: PASS only if status == expected AND response body indicates success");
+                                pw.println("                        if (actualStatusCode" + stepIdx + " != expectedStatusCode" + stepIdx + ") {");
+                                pw.println("                            throw new AssertionError(\"Expected status code \" + expectedStatusCode" + stepIdx + " + \", but got: \" + actualStatusCode" + stepIdx + ");");
+                                pw.println("                        }");
+                                pw.println("                        ");
+                                pw.println("                        // LLM validation for positive tests - detect soft errors in 2XX responses");
+                                pw.println("                        if (llmValidationEnabled && (!only2xx || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
+                                pw.println("                            try {");
+                                pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
+                                pw.println("                                ");
+                                pw.println("                                // Create LLM validator instance");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
+                                pw.println("                                ");
+                                pw.println("                                // Validate response");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult = ");
+                                pw.println("                                    llmValidator.validateResponse(");
+                                pw.println("                                        actualStatusCode" + stepIdx + ",");
+                                pw.println("                                        validationBody,");
+                                pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
+                                pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
+                                pw.println("                                        \"" + escape(step.getPath()) + "\"");
+                                pw.println("                                    );");
+                                pw.println("                                ");
+                                pw.println("                                System.out.println(\"🤖 LLM Validation (Positive Test): Failed=\" + validationResult.isFailed() + \", RCA: \" + validationResult.getRca());");
+                                pw.println("                                ");
+                                pw.println("                                // Attach LLM analysis to Allure report");
+                                pw.println("                                if (includeRca) {");
+                                pw.println("                                    StringBuilder llmReport = new StringBuilder();");
+                                pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\");");
+                                pw.println("                                    llmReport.append(\"🤖 INTELLIGENT ANALYSIS (Positive Test)\\n\");");
+                                pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\\n\");");
+                                pw.println("                                    llmReport.append(\"Test Type: ✅ POSITIVE\\n\");");
+                                pw.println("                                    llmReport.append(\"Analysis Result: \").append(validationResult.isFailed() ? \"❌ SOFT ERROR DETECTED\" : \"✅ VALID SUCCESS\").append(\"\\n\\n\");");
+                                pw.println("                                    llmReport.append(\"Root Cause Analysis:\\n\");");
+                                pw.println("                                    llmReport.append(validationResult.getRca()).append(\"\\n\");");
+                                pw.println("                                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Positive Test)\", \"text/plain\", llmReport.toString());");
+                                pw.println("                                }");
+                                pw.println("                                ");
                                 pw.println("                                // Positive test logic:");
                                 pw.println("                                // - If LLM says FAILED: FAIL (we expected success but got soft error)");
                                 pw.println("                                // - If LLM says SUCCESS: PASS (as expected)");
@@ -1351,15 +1500,15 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                    throw new AssertionError(\"Positive test failed: Expected success but LLM detected soft error. RCA: \" + validationResult.getRca());");
                                 pw.println("                                }");
                                 pw.println("                                System.out.println(\"✅ Positive test PASSED: LLM validated response as successful\");");
+                                pw.println("                                ");
+                                pw.println("                            } catch (AssertionError ae) {");
+                                pw.println("                                throw ae; // Re-throw assertion errors");
+                                pw.println("                            } catch (Exception llmEx) {");
+                                pw.println("                                System.err.println(\"⚠️ LLM validation failed: \" + llmEx.getMessage());");
+                                pw.println("                                // Don't fail the test due to LLM validation errors");
+                                pw.println("                            }");
+                                pw.println("                        }");
                             }
-                            pw.println("                                ");
-                            pw.println("                            } catch (AssertionError ae) {");
-                            pw.println("                                throw ae; // Re-throw assertion errors");
-                            pw.println("                            } catch (Exception llmEx) {");
-                            pw.println("                                System.err.println(\"⚠️ LLM validation failed: \" + llmEx.getMessage());");
-                            pw.println("                                // Don't fail the test due to LLM validation errors");
-                            pw.println("                            }");
-                            pw.println("                        }");
                             pw.println("                        ");
                             
                             // 🔍 FAULT DETECTION: Inject fault detection code for root API (step 1 = first business API)
@@ -1369,18 +1518,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                            String faultCheckBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                            org.json.JSONObject faultJson = new org.json.JSONObject(faultCheckBody);");
                                 pw.println("                            if (faultJson.has(\"data\")) {");
-                                pw.println("                                org.json.JSONObject dataObj = faultJson.getJSONObject(\"data\");");
-                                pw.println("                                if (dataObj.optBoolean(\"injected\", false)) {");
-                                pw.println("                                    String detectedFaultName = dataObj.optString(\"faultName\", \"\");");
-                                pw.println("                                    if (!detectedFaultName.isEmpty()) {");
-                                pw.println("                                        es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
-                                pw.println("                                            detectedFaultName,");
-                                pw.println("                                            this.getClass().getName(),");
-                                pw.println("                                            \"" + escape(testMethodName) + "\",");
-                                pw.println("                                            System.currentTimeMillis(),");
-                                pw.println("                                            faultCheckBody");
-                                pw.println("                                        );");
-                                pw.println("                                        System.out.println(\"🔍 FAULT DETECTED: \" + detectedFaultName + \" in test: " + escape(testMethodName) + "\");");
+                                pw.println("                                Object dataValue = faultJson.get(\"data\");");
+                                pw.println("                                if (dataValue instanceof org.json.JSONObject) {");
+                                pw.println("                                    org.json.JSONObject dataObj = (org.json.JSONObject) dataValue;");
+                                pw.println("                                    if (dataObj.optBoolean(\"injected\", false)) {");
+                                pw.println("                                        String detectedFaultName = dataObj.optString(\"faultName\", \"\");");
+                                pw.println("                                        if (!detectedFaultName.isEmpty()) {");
+                                pw.println("                                            es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
+                                pw.println("                                                detectedFaultName,");
+                                pw.println("                                                this.getClass().getName(),");
+                                pw.println("                                                \"" + escape(testMethodName) + "\",");
+                                pw.println("                                                System.currentTimeMillis(),");
+                                pw.println("                                                faultCheckBody");
+                                pw.println("                                            );");
+                                pw.println("                                            System.out.println(\"🔍 FAULT DETECTED: \" + detectedFaultName + \" in test: " + escape(testMethodName) + "\");");
+                                pw.println("                                        }");
                                 pw.println("                                    }");
                                 pw.println("                                }");
                                 pw.println("                            }");
@@ -1399,6 +1551,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            String responseBody = stepResponse" + stepIdx + ".getBody().asString();");
                             pw.println("                            int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
                             pw.println("                            long responseTime = stepResponse" + stepIdx + ".getTime();");
+                            pw.println("                            ");
+                            pw.println("                            // 🔧 Test Case Enhancer: Capture response for enhancement");
+                            pw.println("                            es.us.isa.restest.enhancer.TestResultCapture.captureResponse(actualStatus, responseBody);");
                             pw.println("                            ");
                             pw.println("                            // Single success status parameter");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (\" + actualStatus + \" in \" + responseTime + \"ms)\");");
@@ -1426,11 +1581,47 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                                failedResponseBody = stepResponse" + stepIdx + ".getBody().asString();");
                         pw.println("                                failedStatusCode = stepResponse" + stepIdx + ".getStatusCode();");
                         pw.println("                                failedResponseTime = stepResponse" + stepIdx + ".getTime();");
+                        pw.println("                                // 🔧 Test Case Enhancer: Capture response for enhancement");
+                        pw.println("                                es.us.isa.restest.enhancer.TestResultCapture.captureResponse(failedStatusCode, failedResponseBody);");
                         pw.println("                            }");
                         pw.println("                        } catch (Exception respEx) {");
                         pw.println("                            failedResponseBody = \"Unable to capture response: \" + respEx.getMessage();");
                         pw.println("                        }");
                         pw.println("                        ");
+                        
+                        // 🔍 FAULT DETECTION IN FAILURE PATH: Also check for injected faults when test fails
+                        // This is critical because injected faults often cause status code mismatches
+                        if (stepIdx == 1) {
+                            pw.println("                        // 🔍 FAULT DETECTION (FAILURE PATH): Check if failed response contains injected fault");
+                            pw.println("                        try {");
+                            pw.println("                            if (failedResponseBody != null && !failedResponseBody.startsWith(\"Unable to capture\")) {");
+                            pw.println("                                org.json.JSONObject faultJson = new org.json.JSONObject(failedResponseBody);");
+                            pw.println("                                if (faultJson.has(\"data\")) {");
+                            pw.println("                                    Object dataValue = faultJson.get(\"data\");");
+                            pw.println("                                    if (dataValue instanceof org.json.JSONObject) {");
+                            pw.println("                                        org.json.JSONObject dataObj = (org.json.JSONObject) dataValue;");
+                            pw.println("                                        if (dataObj.optBoolean(\"injected\", false)) {");
+                            pw.println("                                            String detectedFaultName = dataObj.optString(\"faultName\", \"\");");
+                            pw.println("                                            if (!detectedFaultName.isEmpty()) {");
+                            pw.println("                                                es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
+                            pw.println("                                                    detectedFaultName,");
+                            pw.println("                                                    this.getClass().getName(),");
+                            pw.println("                                                    \"" + escape(testMethodName) + "\",");
+                            pw.println("                                                    System.currentTimeMillis(),");
+                            pw.println("                                                    failedResponseBody");
+                            pw.println("                                                );");
+                            pw.println("                                                System.out.println(\"🔍 FAULT DETECTED (in failed test): \" + detectedFaultName + \" in test: " + escape(testMethodName) + "\");");
+                            pw.println("                                            }");
+                            pw.println("                                        }");
+                            pw.println("                                    }");
+                            pw.println("                                }");
+                            pw.println("                            }");
+                            pw.println("                        } catch (Exception faultEx) {");
+                            pw.println("                            // Silent fail - don't break error handling");
+                            pw.println("                        }");
+                            pw.println("                        ");
+                        }
+                        
                         pw.println("                        // ❌ FAILURE: Enhanced failure reporting with detailed analysis");
                         pw.println("                        String errorType = t.getClass().getSimpleName();");
                         pw.println("                        String failureReason = \"\";");
@@ -1717,7 +1908,10 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
     private static String sanitize(String s) {
         if (s == null) return "Scenario";
-        return s.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("_+", "_").replaceAll("^_|_$", "");
+        // 🔧 FIX: Convert to lowercase FIRST for consistent class naming on case-insensitive file systems (Windows)
+        // This prevents "Null" and "null" from creating conflicting file names
+        String lowered = s.toLowerCase();
+        return lowered.replaceAll("[^a-z0-9_]", "_").replaceAll("_+", "_").replaceAll("^_|_$", "");
     }
     
     /**

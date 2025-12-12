@@ -1,0 +1,40 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-route-service
+Method: POST
+Path: /api/v1/adminrouteservice/adminroute
+Operation: POST /api/v1/adminrouteservice/adminroute
+Request Start (μs): 1765477161216000
+Search Window: 1765477151216000 to 1765477191216000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1765477151216000&end=1765477191216000
+Response Status: 200
+Response Body Length: 83534
+Traces Found: 6
+Analyzing 6 traces for API calls...
+Trace 0: score=6025, APIs=5, hasTarget=true, timeDiff=649000μs, spans=11
+  Operations: POST /api/v1/adminrouteserv..., AdminRouteController.addRoute, POST, SELECT ts.station, StationRepository.findByNames, +6 more
+Trace 1: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: SELECT User, UserRepository.findByUsername, SELECT ts.auth_user, SELECT User, SELECT ts.user_roles, +7 more
+Trace 2: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: SELECT User, SELECT ts.auth_user, SELECT ts.auth_user, SELECT User, SELECT ts.user_roles, +7 more
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 4: score=1525, APIs=5, hasTarget=true, timeDiff=9850000μs, spans=11
+  Operations: POST /api/v1/adminrouteserv..., POST, AdminRouteController.addRoute, SELECT ts.station, StationController.queryForI..., +6 more
+Trace 5: score=2525, APIs=5, hasTarget=true, timeDiff=4586000μs, spans=11
+  Operations: AdminRouteController.addRoute, POST /api/v1/adminrouteserv..., POST, POST /api/v1/stationservice..., StationController.queryForI..., +6 more
+
+Selected trace 0 with score 6025 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 167f2f2a05257306b523f962f9411720
+✅ Complete trace fetched with 11 spans
+✅ Updated global best trace (score: 6025, timeDiff: 0.649s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6025, timeDiff: 0.649s)

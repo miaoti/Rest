@@ -1,0 +1,1 @@
+{"accountId":"5551234567","boughtDate":123456789,"coachNumber":12,"contactsDocumentNumber":"123456789012345678","contactsName":"John Smith","differenceMoney":"125.75","documentType":1,"from":"Shenzhen","id":"TS-2025-045","price":"1299.99","seatClass":8,"seatNumber":"12A","status":1,"to":"Beijing","trainNumber":"G1234","travelDate":"2025-12-25","travelTime":"18:05"}

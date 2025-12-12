@@ -619,7 +619,7 @@ testConfiguration:
         weight: null
         description: null
         type: string
-        required: false
+        required: true
         generators:
         - type: LLMParameterGenerator
           genParameters:

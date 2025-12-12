@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • departureTime = ; ls -la
+
+Status Code: 400 (expected: 200)
+Status Code Indicates Error: ✅ YES
+Error Related to Invalid Input: ✅ YES
+
+Root Cause Analysis:
+[INVALID INPUT CORRECTLY REJECTED] The error message "Trip query rejected: departureTime must be in format yyyy-MM-dd" directly relates to our invalid departureTime parameter. The API correctly rejected our malformed input (; ls -la) which doesn't match the required date format, and the error response even includes our invalid input in the details field, confirming it was processed and rejected for format validation.

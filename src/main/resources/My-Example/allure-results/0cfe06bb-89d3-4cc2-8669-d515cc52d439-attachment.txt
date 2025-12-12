@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurred in `ts-gateway-service` during a `POST` operation with HTTP status `400 Bad Request`. The service received an invalid request payload or malformed request structure that it could not process, resulting in immediate rejection.
+
+**FIX:**
+Validate and correct the request payload format being sent to `ts-gateway-service` endpoint. Ensure all required fields are present and properly formatted according to the service's API contract. Check for missing headers, incorrect data types, or malformed JSON structure in the request body.

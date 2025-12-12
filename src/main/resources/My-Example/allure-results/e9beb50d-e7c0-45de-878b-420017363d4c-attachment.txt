@@ -1,0 +1,12 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize JSON payload. The specific error is a `JsonMappingException` where the string `'; DROP TABLE users--"` is being passed as a `double` value for the field `firstClassPriceRate`. This is both a data validation failure and a potential SQL injection attempt.
+
+**FIX:**
+Implement input validation and sanitization in `ts-admin-basic-info-service`:
+1. Add proper validation annotations (`@Min`, `@Max`) on `firstClassPriceRate` field
+2. Add `@Valid` constraint to controller method parameter
+3. Implement custom validation to reject non-numeric inputs
+4. Add proper exception handling to return 400 with descriptive error message
+5. Sanitize input data before deserialization

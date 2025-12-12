@@ -1,0 +1,1 @@
+{"distanceList":"15.2,20.5,25.8","endStation":"Boston Station","id":"id","loginId":"admin_access_789","startStation":"San Francisco Station","stationList":"New York Penn Station,Grand Central Terminal,Times Square Station,Chicago Union Station"}

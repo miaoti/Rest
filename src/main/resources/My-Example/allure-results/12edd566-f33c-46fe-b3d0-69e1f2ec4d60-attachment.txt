@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` during a POST operation with HTTP 500 status. The service experienced an internal server error during request processing, causing the trace to fail.
+
+**FIX:**
+Examine the application logs for `ts-admin-basic-info-service` during the POST request to identify the specific exception or error causing the 500 status code. Implement proper error handling and logging to prevent the service from crashing and returning a 500 status.

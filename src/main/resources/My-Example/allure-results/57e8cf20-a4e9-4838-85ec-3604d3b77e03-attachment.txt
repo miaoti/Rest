@@ -1,0 +1,15 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: 493676298bcada1b761ee5fbb6b0dffa
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/493676298bcada1b761ee5fbb6b0dffa
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ✅ admin-basic-info GET 200(10.0ms)
+    ↳ /api/v1/adminbasicservice/adminbasic/configs
+[2] ✅ admin-basic-info GET 200(6.9ms)
+    ↳ http://10.244.0.23:15679/api/v1/configservice/configs
+  ├─[3] ✅ config GET 200(5.7ms)
+     ↳ /api/v1/configservice/configs
+████████████████████████████████████████████████████████████████████████████████████████

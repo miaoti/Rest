@@ -157,7 +157,7 @@ public class ZeroShotLLMGenerator {
         String paramType = safeStr(param.getType()).toLowerCase();
         
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
-                       "Generate 3-5 TYPE MISMATCH invalid values for parameter '" + param.getName() + "'.\n" +
+                       "Generate 5-8 TYPE MISMATCH invalid values for parameter '" + param.getName() + "'.\n" +
                        "Expected type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values of WRONG TYPE that would cause type validation errors.\n" +
@@ -305,7 +305,7 @@ public class ZeroShotLLMGenerator {
         }
         
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
-                       "Generate 3-5 values that DO NOT MATCH this regex pattern for parameter '" + param.getName() + "':\n" +
+                       "Generate 5-8 values that DO NOT MATCH this regex pattern for parameter '" + param.getName() + "':\n" +
                        "Pattern: " + param.getRegex() + "\n" +
                        "Expected type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
@@ -327,17 +327,26 @@ public class ZeroShotLLMGenerator {
      */
     private void generateSemanticMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
-                       "Generate 3-5 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
+                       "Generate 5-8 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.\n" +
-                       "If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.\n" +
+                       "IMPORTANT: Include BOTH long meaningless values AND very SHORT invalid values!\n\n" +
+                       "Categories to cover:\n" +
+                       "1. MEANINGLESS/IMPOSSIBLE values (non-existent entities)\n" +
+                       "2. VERY SHORT values (1-3 chars) that are too short to be valid\n" +
+                       "3. Single characters or digits that can't be valid\n" +
+                       "If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.\n\n" +
                        "Examples:\n" +
-                       "- Age parameter: -5, 999, -100\n" +
-                       "- Email parameter: invalid@, nodomain, test@@test\n" +
-                       "- Date parameter: 2025-02-30, 2025-13-01\n" +
-                       "- Country code: ZZZ, XXX, 999\n" +
-                       "- Station list: NonExistent1,NonExistent2, InvalidStation,FakeCity\n\n" +
+                       "- Station name: X, AB, 1, NonExistentStation, FakeCity123\n" +
+                       "- Route ID: a, 0, -, FAKE-ROUTE-999, invalid_id\n" +
+                       "- Age parameter: -5, 999, -100, 0\n" +
+                       "- Email parameter: a, @, invalid@, nodomain, test@@test\n" +
+                       "- Date parameter: 1, x, 2025-02-30, 2025-13-01\n" +
+                       "- Country code: Z, XX, ZZZ, 9, 999\n" +
+                       "- Train type: x, 1, !, InvalidType, FakeTrain\n" +
+                       "- Price rate: a, x, -, NaN, infinity\n" +
+                       "- Station list: X, NonExistent1,NonExistent2, ,InvalidStation\n\n" +
                        "OUTPUT FORMAT: Return ONLY the raw values, one per line. Do NOT include parameter names or quotes.\n" +
                        "WRONG: stationList=\"value\"\n" +
                        "RIGHT: value\n\n" +
@@ -349,6 +358,13 @@ public class ZeroShotLLMGenerator {
         for (String value : values) {
             pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, value);
         }
+        
+        // Also add some hardcoded very short semantic mismatches that LLM might miss
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "x");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "1");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "a");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "-");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "?");
     }
     
     /**
@@ -358,7 +374,7 @@ public class ZeroShotLLMGenerator {
         String paramType = safeStr(param.getType()).toLowerCase();
         
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
-                       "Generate 3-5 OVERFLOW values for parameter '" + param.getName() + "'.\n" +
+                       "Generate 5-8 OVERFLOW values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that EXCEED expected limits:\n";
@@ -394,17 +410,14 @@ public class ZeroShotLLMGenerator {
     }
     
     /**
-     * Generate empty inputs
-     * ONLY for REQUIRED parameters - optional parameters can legitimately be empty
+     * Generate empty inputs for ALL parameters (both required and optional)
+     * Even optional parameters should be tested with empty values to catch edge cases
      */
     private void generateEmptyInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        // Skip empty inputs for optional parameters - they are valid!
-        if (param.getRequired() == null || !param.getRequired()) {
-            System.out.println("⚠️  Skipping EMPTY_INPUT generation for optional parameter: " + param.getName());
-            return;
-        }
+        boolean isRequired = param.getRequired() != null && param.getRequired();
+        String requiredStatus = isRequired ? "REQUIRED" : "OPTIONAL";
         
-        System.out.println("✅ Generating EMPTY_INPUT for required parameter: " + param.getName());
+        System.out.println("✅ Generating EMPTY_INPUT for " + requiredStatus + " parameter: " + param.getName());
         String paramType = safeStr(param.getType()).toLowerCase();
         
         // Empty string
@@ -425,17 +438,14 @@ public class ZeroShotLLMGenerator {
     }
     
     /**
-     * Generate null inputs
-     * ONLY for REQUIRED parameters - optional parameters can legitimately be null
+     * Generate null inputs for ALL parameters (both required and optional)
+     * Even optional parameters should be tested with null values to catch edge cases
      */
     private void generateNullInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        // Skip null inputs for optional parameters - they are valid!
-        if (param.getRequired() == null || !param.getRequired()) {
-            System.out.println("⚠️  Skipping NULL_INPUT generation for optional parameter: " + param.getName());
-            return;
-        }
+        boolean isRequired = param.getRequired() != null && param.getRequired();
+        String requiredStatus = isRequired ? "REQUIRED" : "OPTIONAL";
         
-        System.out.println("✅ Generating NULL_INPUT for required parameter: " + param.getName());
+        System.out.println("✅ Generating NULL_INPUT for " + requiredStatus + " parameter: " + param.getName());
         
         // Actual null
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, null);
@@ -443,7 +453,7 @@ public class ZeroShotLLMGenerator {
         // String representations of null (sometimes APIs parse these)
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "NULL");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "Null");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");
     }
     
     /**
@@ -451,7 +461,7 @@ public class ZeroShotLLMGenerator {
      */
     private void generateSpecialCharacterInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
-                       "Generate 3-5 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
+                       "Generate 5-8 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n\n" +
                        "Generate values with malicious or special characters\n" +
                        "Down here are some examples of special characters and injection attempts. Generate values that can fit into the parameter type and context as provided.\n" +
@@ -480,7 +490,7 @@ public class ZeroShotLLMGenerator {
      */
     private void generateBoundaryViolationInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
-                       "Generate 3-5 BOUNDARY VIOLATION values for parameter '" + param.getName() + "'.\n" +
+                       "Generate 5-8 BOUNDARY VIOLATION values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
                        "Generate values that are JUST OUTSIDE valid boundaries:\n" +
@@ -1000,6 +1010,152 @@ public class ZeroShotLLMGenerator {
         } catch (Exception e) {
             System.err.println("⚠️ Failed to validate response with LLM: " + e.getMessage());
             // Return non-failed by default to avoid false positives
+            return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
+        }
+    }
+
+    /**
+     * Validate a response for NEGATIVE tests - check if the error is related to the designed invalid inputs.
+     * For a negative test to PASS, the error message must be about the specific invalid parameter we intentionally set.
+     * 
+     * @param statusCode HTTP status code
+     * @param responseBody Response body as string
+     * @param serviceName Name of the service
+     * @param method HTTP method (GET, POST, etc.)
+     * @param path API path
+     * @param invalidParameters Map of parameter name to invalid value that was intentionally set
+     * @return ValidationResult containing isFailed flag (true = error related to invalid input) and RCA explanation
+     */
+    public ValidationResult validateNegativeTestResponse(int statusCode, String responseBody, 
+            String serviceName, String method, String path, java.util.Map<String, String> invalidParameters) {
+        
+        // Build system prompt for negative test validation
+        StringBuilder systemPrompt = new StringBuilder();
+        systemPrompt.append("You are an API testing expert validating NEGATIVE TEST results.\n\n");
+        systemPrompt.append("CONTEXT: This is a NEGATIVE test where we INTENTIONALLY sent INVALID inputs to test error handling.\n");
+        systemPrompt.append("The test PASSES (returns FAILED=true) if the API correctly rejected our invalid input.\n");
+        systemPrompt.append("The test FAILS (returns FAILED=false) if the API accepted the invalid input or the error is unrelated.\n\n");
+        
+        systemPrompt.append("DESIGNED INVALID INPUTS:\n");
+        if (invalidParameters == null || invalidParameters.isEmpty()) {
+            systemPrompt.append("  (No specific invalid parameters provided)\n");
+        } else {
+            for (java.util.Map.Entry<String, String> entry : invalidParameters.entrySet()) {
+                systemPrompt.append("  - Parameter '").append(entry.getKey()).append("' was set to INVALID value: ");
+                String value = entry.getValue();
+                if (value != null && value.length() > 100) {
+                    value = value.substring(0, 100) + "...";
+                }
+                systemPrompt.append(value).append("\n");
+            }
+        }
+        systemPrompt.append("\n");
+        
+        systemPrompt.append("VALIDATION CRITERIA:\n");
+        systemPrompt.append("Return FAILED=true (test PASSES) if:\n");
+        systemPrompt.append("1. The response contains an error message that SPECIFICALLY mentions or relates to one of the designed invalid parameters\n");
+        systemPrompt.append("2. The error message indicates validation failure for the invalid input we sent\n");
+        systemPrompt.append("3. The response shows the API correctly rejected our invalid data\n\n");
+        
+        systemPrompt.append("Return FAILED=false (test FAILS) if:\n");
+        systemPrompt.append("1. The response shows SUCCESS (API accepted our invalid input - this is BAD!)\n");
+        systemPrompt.append("2. The error is about something UNRELATED to our invalid parameters (e.g., authentication, server error)\n");
+        systemPrompt.append("3. The error message doesn't mention or relate to the parameters we made invalid\n\n");
+        
+        systemPrompt.append("OUTPUT FORMAT (exactly 3 lines):\n");
+        systemPrompt.append("FAILED: true|false\n");
+        systemPrompt.append("RELATED_TO_INVALID_INPUT: true|false\n");
+        systemPrompt.append("RCA: <explanation of whether the error is about our designed invalid input>\n");
+        
+        // Build user prompt
+        StringBuilder userPrompt = new StringBuilder();
+        userPrompt.append("TASK: Determine if this API response correctly rejected our DESIGNED INVALID INPUT.\n\n");
+        userPrompt.append("API Details:\n");
+        userPrompt.append("- Service: ").append(serviceName).append("\n");
+        userPrompt.append("- Endpoint: ").append(method).append(" ").append(path).append("\n");
+        userPrompt.append("- HTTP Status Code: ").append(statusCode).append("\n\n");
+        
+        userPrompt.append("Designed Invalid Parameters:\n");
+        if (invalidParameters != null && !invalidParameters.isEmpty()) {
+            for (java.util.Map.Entry<String, String> entry : invalidParameters.entrySet()) {
+                userPrompt.append("  - ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+            }
+        } else {
+            userPrompt.append("  (General negative test)\n");
+        }
+        userPrompt.append("\n");
+        
+        userPrompt.append("Response Body:\n");
+        userPrompt.append("```json\n");
+        userPrompt.append(responseBody).append("\n");
+        userPrompt.append("```\n\n");
+        
+        userPrompt.append("Examples:\n");
+        userPrompt.append("Example 1 (Error is about our invalid input - TEST PASSES):\n");
+        userPrompt.append("Invalid Parameter: basicPriceRate = -100\n");
+        userPrompt.append("Response: {\"status\":0,\"msg\":\"Invalid price rate: must be positive\"}\n");
+        userPrompt.append("FAILED: true\n");
+        userPrompt.append("RELATED_TO_INVALID_INPUT: true\n");
+        userPrompt.append("RCA: The error message 'Invalid price rate' directly relates to our invalid basicPriceRate parameter. The API correctly rejected our negative price value.\n\n");
+        
+        userPrompt.append("Example 2 (Error is UNRELATED to our invalid input - TEST FAILS):\n");
+        userPrompt.append("Invalid Parameter: basicPriceRate = -100\n");
+        userPrompt.append("Response: {\"status\":0,\"msg\":\"Authentication token expired\"}\n");
+        userPrompt.append("FAILED: false\n");
+        userPrompt.append("RELATED_TO_INVALID_INPUT: false\n");
+        userPrompt.append("RCA: The error is about authentication, NOT about our invalid basicPriceRate. This is an unrelated error so the negative test FAILS.\n\n");
+        
+        userPrompt.append("Example 3 (API accepted invalid input - TEST FAILS):\n");
+        userPrompt.append("Invalid Parameter: stationName = \"\" (empty string)\n");
+        userPrompt.append("Response: {\"status\":1,\"msg\":\"Success\",\"data\":{\"id\":123}}\n");
+        userPrompt.append("FAILED: false\n");
+        userPrompt.append("RELATED_TO_INVALID_INPUT: false\n");
+        userPrompt.append("RCA: The API accepted our empty station name without error. The invalid input was NOT rejected, so the negative test FAILS.\n\n");
+        
+        userPrompt.append("Now analyze the response above and provide your answer:\n");
+
+        try {
+            // Call LLM service
+            String llmResponse = llmService.generateText(systemPrompt.toString(), userPrompt.toString(), 500, 0.3);
+            
+            // Parse response
+            boolean isFailed = false;
+            boolean relatedToInvalidInput = false;
+            String rca = "";
+            
+            String[] lines = llmResponse.split("\\r?\\n");
+            for (String line : lines) {
+                String trimmed = line.trim();
+                if (trimmed.startsWith("FAILED:")) {
+                    String failedValue = trimmed.substring("FAILED:".length()).trim().toLowerCase();
+                    isFailed = failedValue.equals("true");
+                } else if (trimmed.startsWith("RELATED_TO_INVALID_INPUT:")) {
+                    String relatedValue = trimmed.substring("RELATED_TO_INVALID_INPUT:".length()).trim().toLowerCase();
+                    relatedToInvalidInput = relatedValue.equals("true");
+                } else if (trimmed.startsWith("RCA:")) {
+                    rca = trimmed.substring("RCA:".length()).trim();
+                }
+            }
+            
+            // For negative tests: both conditions must be true for the test to pass
+            // The error must exist AND be related to our invalid input
+            boolean negativeTestPassed = isFailed && relatedToInvalidInput;
+            
+            // Enhance RCA with context
+            String enhancedRca = rca;
+            if (!relatedToInvalidInput && isFailed) {
+                enhancedRca = "[ERROR NOT RELATED TO INVALID INPUT] " + rca;
+            } else if (!isFailed) {
+                enhancedRca = "[NO ERROR DETECTED - INVALID INPUT ACCEPTED] " + rca;
+            } else {
+                enhancedRca = "[INVALID INPUT CORRECTLY REJECTED] " + rca;
+            }
+            
+            return new ValidationResult(negativeTestPassed, enhancedRca, llmResponse);
+            
+        } catch (Exception e) {
+            System.err.println("⚠️ Failed to validate negative test response with LLM: " + e.getMessage());
+            // Return non-failed by default (negative test fails if we can't validate)
             return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
         }
     }

@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` receiving POST request with malformed payload resulting in HTTP 400 status code.
+
+**FIX:** Validate incoming POST request payload format and implement proper error handling with descriptive error messages to prevent malformed requests from reaching the service endpoint.

@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` where JSON deserialization fails. The controller expects a `double` value for `basicPriceRate` field in `PriceInfo` entity, but receives a boolean `true` value instead, causing `HttpMessageNotReadableException`.
+
+**FIX:**
+Validate and correct the JSON payload sent to `ts-admin-basic-info-service` endpoint. Ensure the `basicPriceRate` field contains a numeric value (double) rather than boolean `true`. The gateway service should validate request payloads before forwarding to downstream services.

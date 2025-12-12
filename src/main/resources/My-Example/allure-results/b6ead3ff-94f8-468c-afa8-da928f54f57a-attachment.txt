@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"start or end station not include in stationList.","data":null}
+Enhanced Parameters: {endStation=Chicago O'Hare Airport Station, stationList=Chicago Union Station,Metra Station,Chicago O'Hare Airport Station, startStation=Chicago Union Station}

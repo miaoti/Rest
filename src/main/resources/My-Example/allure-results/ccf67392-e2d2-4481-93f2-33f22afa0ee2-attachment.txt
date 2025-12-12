@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-route-plan-service` at `RoutePlanController.getMinStopStations` due to `java.lang.IllegalArgumentException: Not enough variable values available to expand '"key"'` in `RoutePlanServiceImpl.searchMinStopStations` at line 169. The service attempts to expand a template string with insufficient variable values, likely from a configuration or request parameter.
+
+**FIX:**
+Validate input parameters and configuration variables before string template expansion in `RoutePlanServiceImpl.searchMinStopStations` at line 169. Ensure all required variables for the template `"key"` are properly provided from upstream service `ts-travel-plan-service` or configuration sources.

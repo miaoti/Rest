@@ -1,0 +1,1 @@
+{"accountId":"1234567890","boughtDate":"2025-12-15","coachNumber":12350,"contactsDocumentNumber":"789123456078912345","contactsName":"John Smith","differenceMoney":"100.00","documentType":1,"from":"Beijing","id":"AR-2025-001","price":"1299.99","seatClass":1,"seatNumber":"FirstClass-39","status":1,"to":"Beijing","trainNumber":"C9012","travelDate":"2013-05-06","travelTime":123}

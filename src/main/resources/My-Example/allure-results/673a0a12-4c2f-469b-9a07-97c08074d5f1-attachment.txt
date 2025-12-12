@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** 
+The failure occurs in `ts-admin-order-service` during `AdminOrderController.addOrder` when attempting to deserialize JSON payload. The `seatClass` field contains string value "9999999999" which exceeds Integer range (-2147483648 to 2147483647), causing `HttpMessageNotReadableException` during JSON parsing.
+
+**FIX:**
+Update the `Order` entity's `seatClass` field type from `Integer` to `Long` in `ts-admin-order-service` to accommodate the large numeric value, and ensure the corresponding database column is also updated to support `BIGINT` type.

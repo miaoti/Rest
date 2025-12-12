@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-route-plan-service` at `RoutePlanServiceImpl.searchMinStopStations()` method on line 178, where a `NullPointerException` is thrown due to an unhandled null reference when processing route planning logic.
+
+**FIX:**
+Add null validation for the `stations` parameter or the `station` object being accessed in `RoutePlanServiceImpl.java:178` before invoking methods on it. The specific null reference must be identified and handled with appropriate null checks or default values to prevent the exception.

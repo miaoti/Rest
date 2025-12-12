@@ -1,0 +1,1 @@
+{"distanceList":"12.5,8.2,15.7,20.1,25.3","endStation":"Boston South Station","id":"AR-2025-001","loginId":"admin_user_001","startStation":"Back Bay Station","stationList":"Boston South Station,Back Bay Station,Harvard Station,Chicago Union Station,Seattle Station"}

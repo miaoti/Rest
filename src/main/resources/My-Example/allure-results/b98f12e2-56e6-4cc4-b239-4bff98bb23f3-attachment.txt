@@ -1,0 +1,1 @@
+{"distanceList":"15.2","endStation":"Disneyland Resort Station","id":"AR-2025-001","loginId":"admin_user_001","startStation":"Los Angeles Union Station","stationList":"Los Angeles Union Station,Disneyland Resort Station,Pasadena Station,Chicago Union Station,Seattle Station"}

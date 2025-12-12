@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"67de454d-849b-4309-a1f5-cc3f0a20e0ca","boughtDate":"2026-01-10","travelDate":"2025-12-25","travelTime":"08:30","accountId":"1234567890","contact...
+Enhanced Parameters: {travelTime=08:30, documentType=1, contactsDocumentNumber=123456789012345678, contactsName=microservice_test, differenceMoney=150.00, seatNumber=12A, accountId=1234567890, coachNumber=12, travelDate=2025-12-25, boughtDate=2025-12-20, price=1299.99, seatClass=1, from=Guangzhou, id=AR-2025-001, trainNumber=G1234, status=5}

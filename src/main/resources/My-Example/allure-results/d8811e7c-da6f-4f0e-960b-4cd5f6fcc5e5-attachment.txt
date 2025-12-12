@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` receiving POST request with malformed payload or invalid request parameters, resulting in HTTP 400 Bad Request error during span execution.
+
+**FIX:** Validate incoming POST request payload structure and required fields in `ts-gateway-service` before processing, ensuring all expected parameters are present and correctly formatted according to API specification.

@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request resulting in a `400` Bad Request error due to a malformed JSON payload sent as part of the `RouteInfo` object’s `distances` field.
-
-**FIX:** Investigate the JSON payload being sent by `ts-gateway-service` to the `ts-admin-route-service`. The `distances` field is attempting to deserialize a `java.util.ArrayList<java.lang.Object>` from a JSON string, which is not a valid JSON representation of an ArrayList.  The payload needs to be corrected to a valid JSON representation of the `distances` array.

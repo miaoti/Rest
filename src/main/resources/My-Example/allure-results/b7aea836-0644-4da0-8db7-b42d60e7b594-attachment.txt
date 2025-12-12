@@ -1,0 +1,3 @@
+Original Status: 400
+Original Response: {"status":0,"msg":"Order creation rejected: seatNumber must follow format like '5A' or '10B' (digits followed by uppercase letter)","data":{"faultName":"INVALID_SEAT_NUMBER_FAULT","message":"Order cre...
+Enhanced Parameters: {seatNumber=37A}

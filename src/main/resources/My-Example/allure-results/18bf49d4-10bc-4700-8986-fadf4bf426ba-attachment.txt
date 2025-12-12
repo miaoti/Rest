@@ -1,0 +1,1 @@
+{"distanceList":"15.2","endStation":"Seattle Station","id":"AR-2025-001","loginId":"route_operator_456","startStation":"Chicago Union Station","stationList":"Shanghai,Beijing,Nanjing,Guangzhou,Shenzhen"}

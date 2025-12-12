@@ -1,0 +1,1 @@
+{"accountId":"1112223333","boughtDate":"2025-12-15","coachNumber":"-999","contactsDocumentNumber":"12345678901234567","contactsName":"Maria Garcia","differenceMoney":"150.00","documentType":1,"from":"Beijing","id":"AR-2025-001","price":"1299.99","seatClass":3,"seatNumber":"12A","status":1,"to":"Hangzhou","trainNumber":"G1234","travelDate":"2025-11-20","travelTime":"08:30"}

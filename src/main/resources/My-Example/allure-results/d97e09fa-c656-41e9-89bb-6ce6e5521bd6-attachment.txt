@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: a53495c5d7eccfb98dd527a0fbb97f1a
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/a53495c5d7eccfb98dd527a0fbb97f1a
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ✅ admin-order GET 200(35.5ms)
+    ↳ /api/v1/adminorderservice/adminorder
+[2] ✅ admin-order GET 200(8.1ms)
+    ↳ http://10.244.0.36:12031/api/v1/orderservice/order
+  ├─[3] ✅ order GET 200(6.8ms)
+     ↳ /api/v1/orderservice/order
+[4] ✅ admin-order GET 200(17.1ms)
+    ↳ http://10.244.0.35:12032/api/v1/orderOtherService/orderOther
+  ├─[5] ✅ order-other GET 200(15.3ms)
+     ↳ /api/v1/orderOtherService/orderOther
+████████████████████████████████████████████████████████████████████████████████████████

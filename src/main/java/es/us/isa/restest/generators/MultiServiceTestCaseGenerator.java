@@ -488,7 +488,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             log.info("🔴 NEGATIVE TEST: Making parameter '{}' invalid (target param)", p.getName());
                             
                             // Use invalid value from faulty pool
-                            String rootApiKey = getRootApiKeyForCurrentStep(tc);
+                            // 🔥 FIX: Build rootApiKey directly from current step's verb and route
+                            // instead of using getRootApiKeyForCurrentStep which can return wrong key
+                            String rootApiKey = verb.toUpperCase() + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
+                            log.debug("Looking up faulty pool with key: '{}' (verb={}, route={})", rootApiKey, verb, route);
                             Map<String, es.us.isa.restest.inputs.InvalidInputPool> faultyPool = faultyParameterPools.get(rootApiKey);
                             
                             if (faultyPool != null && faultyPool.containsKey(p.getName())) {
@@ -517,7 +520,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                             // Path/query/header params must be strings (URL construction)
                                             val = convertObjectToString(invalidValue, p.getType());
                                         }
-                                        tc.addFaultyParameter(p.getName(), val);
+                                    tc.addFaultyParameter(p.getName(), val);
                                         faultyValueSet = true;
                                         log.info("✅ Negative Test (Round-Robin) → {} = {} [InvalidType: {}] (javaType: {}) - LOCKED", 
                                                 p.getName(), 
@@ -618,11 +621,47 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             }
                         }
                         
-                        // If this is a negative test parameter but no invalid value was set, DON'T use error fallback
-                        if (isTargetNegativeParam && !faultyValueSet && val == null) {
-                            log.error("❌ CRITICAL: Negative test parameter '{}' failed to get invalid value from pool. Skipping this parameter for negative testing.", p.getName());
-                            // DON'T add error fallback - this will cause test to be converted to positive later
-                            // val remains null, will trigger conversion to positive test
+                        // 🔥 FIX: If negative test parameter failed to get invalid value, get a VALID value instead
+                        // This ensures the parameter is included when test converts to positive
+                        if (isTargetNegativeParam && !faultyValueSet && val == null && typedVal == null) {
+                            log.warn("⚠️ Negative test parameter '{}' failed to get invalid value. Getting valid value instead (test will convert to positive).", p.getName());
+                            
+                            // Try smart fetch to get a valid value
+                            if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
+                                try {
+                                    String smartFetchValue = smartFetcher.fetchSmartInput(info);
+                                    if (smartFetchValue != null && !smartFetchValue.trim().isEmpty()) {
+                                        if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
+                                            typedVal = convertStringToTypedValue(smartFetchValue, p);
+                                            val = smartFetchValue;
+                                            log.info("Smart Fetch (Fallback for failed negative) → {} {} = {} (type: {}) ✅", 
+                                                    service, p.getName(), typedVal, typedVal.getClass().getSimpleName());
+                                        } else {
+                                            val = smartFetchValue;
+                                            log.info("Smart Fetch (Fallback for failed negative) → {} {} = {} ✅", 
+                                                    service, p.getName(), val);
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    log.warn("Smart fetch fallback failed for '{}': {}", p.getName(), e.getMessage());
+                                }
+                            }
+                            
+                            // Try LLM if smart fetch didn't work
+                            if (val == null && typedVal == null) {
+                                List<String> vals = llmGen.generateParameterValues(info);
+                                String llmValue = vals.isEmpty() ? "FALLBACK_" + p.getName() : vals.get(variantIndex % Math.max(1, vals.size()));
+                                if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
+                                    typedVal = convertStringToTypedValue(llmValue, p);
+                                    val = llmValue;
+                                    log.info("LLM (Fallback for failed negative) → {} {} = {} (type: {})", 
+                                            service, p.getName(), typedVal, typedVal.getClass().getSimpleName());
+                                } else {
+                                    val = llmValue;
+                                    log.info("LLM (Fallback for failed negative) → {} {} = {}", 
+                                            service, p.getName(), val);
+                                }
+                            }
                         }
                     } else {
                         if (!faultyValueSet) {
@@ -747,7 +786,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     case "path":
                         pathParams.put(p.getName(), val); // Path params must be strings for URL construction
                         if (val != null) {
-                            resolvedPath = resolvedPath.replace("{"+p.getName()+"}", val);
+                        resolvedPath = resolvedPath.replace("{"+p.getName()+"}", val);
                         }
                         break;
                     case "query":

@@ -1,0 +1,1 @@
+{"distanceList":"8.9","endStation":"Harvard Station","id":"AR-2025-001","loginId":"' OR '1'='1","startStation":"Boston South Station","stationList":"Boston South Station,Back Bay Station,Harvard Station"}

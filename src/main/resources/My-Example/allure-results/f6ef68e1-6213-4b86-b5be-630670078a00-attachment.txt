@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status indicating client request error during travel service integration.
+
+**FIX:** Validate and correct request payload format being sent from `ts-gateway-service` to `ts-travel-service` endpoint, ensuring all required fields and data types match service contract specifications.

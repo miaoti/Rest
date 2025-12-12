@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: 54d9a45cac73165908c83761cb24ef37
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/54d9a45cac73165908c83761cb24ef37
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ✅ travel POST 200(16.7ms)
+    ↳ /api/v1/travelservice/trips/left
+[2] ✅ travel POST 200(11.2ms)
+    ↳ http://10.244.0.21:15680/api/v1/basicservice/basic/travels
+  ├─[3] ✅ basic POST 200(9.8ms)
+     ↳ /api/v1/basicservice/basic/travels
+[4] ✅ basic POST 200(6.3ms)
+    ↳ http://10.244.0.47:12345/api/v1/stationservice/stations/idlist
+  ├─[5] ✅ station POST 200(4.6ms)
+     ↳ /api/v1/stationservice/stations/idlist
+████████████████████████████████████████████████████████████████████████████████████████

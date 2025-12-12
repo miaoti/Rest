@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-route-plan-service` at `RoutePlanServiceImpl.searchMinStopStations()` method, line 178, due to a `NullPointerException` when processing the `getMinStopStations` endpoint. The HTTP status 0 indicates the request failed before reaching the network layer, suggesting an unhandled null reference in the service logic.
+
+**FIX:**
+Add null validation for the input parameter or object reference at line 178 in `RoutePlanServiceImpl.java` before calling `searchMinStopStations()`. Specifically, check if the `routePlanRequest` or `station` object being processed is null and handle appropriately with early return or proper initialization.

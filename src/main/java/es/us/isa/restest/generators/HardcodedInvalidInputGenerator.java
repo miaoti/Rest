@@ -254,7 +254,7 @@ public class HardcodedInvalidInputGenerator {
         // String representations of null (sometimes APIs parse these)
         pool.addValue(InvalidInputType.NULL_INPUT, "null");
         pool.addValue(InvalidInputType.NULL_INPUT, "NULL");
-        pool.addValue(InvalidInputType.NULL_INPUT, "Null");
+        pool.addValue(InvalidInputType.NULL_INPUT, "null");
         pool.addValue(InvalidInputType.NULL_INPUT, "nil");
         pool.addValue(InvalidInputType.NULL_INPUT, "undefined");
         pool.addValue(InvalidInputType.NULL_INPUT, "None");

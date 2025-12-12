@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"start or end station not include in stationList.","data":null}
+Enhanced Parameters: {endStation=Seattle Center Station, stationList=Seattle King Street Station,Seattle Center Station,Pike Place Market Station,New York Penn Station, startStation=Seattle King Street Station}

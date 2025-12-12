@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"76fd2a4d-a8f6-4be1-ba5f-fc34140085f4","boughtDate":"2025-12-15","travelDate":"2025-12-25","travelTime":"10:20","accountId":"1234567890","contact...
+Enhanced Parameters: {travelTime=10:20, documentType=1, contactsDocumentNumber=123456789012345678, contactsName=cache_manager, seatNumber=25B, accountId=1234567890, travelDate=2025-12-25, price=1299.99, seatClass=1, boughtDate=2025-12-15, from=Beijing, to=Shanghai, trainNumber=G1234, status=1}

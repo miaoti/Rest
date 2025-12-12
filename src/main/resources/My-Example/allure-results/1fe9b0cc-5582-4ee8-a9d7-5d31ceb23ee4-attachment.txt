@@ -1,0 +1,1 @@
+{"basicPriceRate":125.5,"firstClassPriceRate":125.5,"id":"'; DROP TABLE--","routeId":"RT-12345","trainType":"Express"}

@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** 
+The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize JSON payload. The specific error is a `JsonMappingException` where the string value "active" is being passed where an integer is expected for the `status` field in the `Order` entity.
+
+**FIX:** 
+Update the client making the POST request to `ts-gateway-service` to send an integer value (e.g., 1 or 0) instead of the string "active" for the `status` field in the Order entity JSON payload.

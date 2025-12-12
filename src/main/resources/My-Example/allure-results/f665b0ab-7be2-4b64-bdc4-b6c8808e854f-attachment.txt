@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The trace fails at `ts-route-plan-service` in `RoutePlanServiceImpl.searchMinStopStations()` at line 178, where a `NullPointerException` occurs due to an unhandled null reference during route planning computation.
+
+**FIX:**
+Add null validation for the object reference at line 178 in `RoutePlanServiceImpl.java` before invoking methods on the potentially null object. The specific variable causing the NPE must be identified and initialized or checked for null before use.

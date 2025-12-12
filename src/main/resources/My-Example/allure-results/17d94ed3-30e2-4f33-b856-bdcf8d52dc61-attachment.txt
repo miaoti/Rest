@@ -1,0 +1,32 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel-service
+Method: POST
+Path: /api/v1/travelservice/trips/left
+Operation: POST /api/v1/travelservice/trips/left
+Request Start (μs): 1765484054400000
+Search Window: 1765484044400000 to 1765484084400000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1765484044400000&end=1765484084400000
+Response Status: 200
+Response Body Length: 40979
+Traces Found: 2
+Analyzing 2 traces for API calls...
+Trace 0: score=6035, APIs=7, hasTarget=true, timeDiff=469000μs, spans=18
+  Operations: POST, FilteringWebHandler.handle, POST /*, SELECT ts.station, StationController.queryForI..., +13 more
+Trace 1: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: SELECT ts.user_roles, UserRepository.findByUsername, SELECT User, SELECT ts.auth_user, SELECT User, +7 more
+
+Selected trace 0 with score 6035 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 2b28ec7551766a1ff2989f38ac937336
+✅ Complete trace fetched with 18 spans
+✅ Updated global best trace (score: 6035, timeDiff: 0.469s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6035, timeDiff: 0.469s)

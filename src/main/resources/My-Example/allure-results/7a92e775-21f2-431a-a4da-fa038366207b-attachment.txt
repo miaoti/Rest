@@ -1,0 +1,1 @@
+{"basicPriceRate":"[1,2,3]","firstClassPriceRate":110.75,"id":"AR-2025-001","routeId":"92708982-77af-4318-be25-57ccb0ff69b1","trainType":"Shinkansen"}

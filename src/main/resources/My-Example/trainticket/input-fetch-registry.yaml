@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2025
 - 12
-- 2
-- 17
-- 48
-- 54
-- 713859700
+- 12
+- 13
+- 30
+- 12
+- 418939700
 parameterMappings:
   departureTime:
   - endpoint: "/api/v1/travelservice/trips"
@@ -1608,50 +1608,6 @@ parameterErrors:
       - 7
       - 355697200
       additionalInfo: null
-  /api/v1/orderOtherService/orderOther/admin:
-    accountId:
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Data truncation: Data too long for column 'account_id' at row\
-        \ 1"
-      apiEndpoint: "/api/v1/orderOtherService/orderOther/admin"
-      parameterName: "accountId"
-      timestamp:
-      - 2025
-      - 11
-      - 5
-      - 14
-      - 1
-      - 41
-      - 239105200
-      additionalInfo: null
-  /api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof:
-    startPlace:
-    - errorType: "NULL_ERROR"
-      errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof"
-      parameterName: "startPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 15
-      - 1
-      - 45
-      - 961320200
-      additionalInfo: null
-    - errorType: "VALIDATION_ERROR"
-      errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof"
-      parameterName: "startPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 15
-      - 4
-      - 9
-      - 275314900
-      additionalInfo: null
   /api/v1/routeservice/routes/beijingrailwaystation/berlinhauptbahnhof:
     departureTime:
     - errorType: "FORMAT_ERROR"
@@ -1667,47 +1623,35 @@ parameterErrors:
       - 55
       - 351558000
       additionalInfo: null
-  /api/v1/routeplanservice/routePlan/minStopStations:
+  /api/v1/routeservice/routes/guangzhou/hangzhou:
     departureTime:
     - errorType: "FORMAT_ERROR"
       errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      apiEndpoint: "/api/v1/routeservice/routes/guangzhou/hangzhou"
       parameterName: "departureTime"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 22
-      - 0
-      - 13
-      - 867604200
+      - 12
+      - 12
+      - 6
+      - 28
+      - 40
+      - 540139200
       additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/guangzhou:
     startPlace:
-    - errorType: "NULL_ERROR"
-      errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
-      parameterName: "startPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 21
-      - 19
-      - 33
-      - 35
-      - 118046600
-      additionalInfo: null
-    - errorType: "CONSTRAINT_ERROR"
+    - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/guangzhou"
       parameterName: "startPlace"
       timestamp:
       - 2025
-      - 11
-      - 21
-      - 19
-      - 35
-      - 29
-      - 570879500
+      - 12
+      - 12
+      - 7
+      - 30
+      - 7
+      - 822102600
       additionalInfo: null
   /api/v1/routeservice/routes/shenzhen/invalid_value_missing_endplace:
     endPlace:
@@ -1725,6 +1669,20 @@ parameterErrors:
       - 560174100
       additionalInfo: null
   /api/v1/routeservice/routes/newyork/newyork:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/newyork"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 11
+      - 8
+      - 925792300
+      additionalInfo: null
     startPlace:
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 500)"
@@ -1732,27 +1690,53 @@ parameterErrors:
       parameterName: "startPlace"
       timestamp:
       - 2025
+      - 12
       - 11
-      - 21
-      - 19
-      - 35
-      - 55
-      - 534766200
+      - 13
+      - 32
+      - 54
+      - 707839800
       additionalInfo: null
-  /api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation:
-    startPlace:
     - errorType: "VALIDATION_ERROR"
-      errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/newyork"
       parameterName: "startPlace"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 15
-      - 2
-      - 53
-      - 805663900
+      - 10
+      - 22
+      - 47
+      - 17
+      - 84368100
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/newyork"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 24
+      - 19
+      - 747693000
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/impossibleendpoint:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/impossibleendpoint"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 16
+      - 41
+      - 679084600
       additionalInfo: null
   /api/v1/adminorderservice/adminorder:
     travelTime:
@@ -1762,12 +1746,26 @@ parameterErrors:
       parameterName: "travelTime"
       timestamp:
       - 2025
+      - 12
       - 11
-      - 10
-      - 15
-      - 30
-      - 20
-      - 298116500
+      - 11
+      - 1
+      - 31
+      - 12803300
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'travel_time' at row\
+        \ 1"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "travelTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 5
+      - 13
+      - 53
+      - 370947200
       additionalInfo: null
     documentType:
     - errorType: "NULL_ERROR"
@@ -1792,12 +1790,12 @@ parameterErrors:
       parameterName: "documentType"
       timestamp:
       - 2025
-      - 11
-      - 3
-      - 16
-      - 18
       - 12
-      - 89574600
+      - 12
+      - 11
+      - 59
+      - 19
+      - 367475000
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1861,12 +1859,12 @@ parameterErrors:
       parameterName: "documentType"
       timestamp:
       - 2025
+      - 12
+      - 12
       - 11
-      - 17
-      - 21
-      - 52
-      - 38
-      - 73800200
+      - 41
+      - 5
+      - 841243500
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -1888,12 +1886,27 @@ parameterErrors:
       parameterName: "documentType"
       timestamp:
       - 2025
+      - 12
+      - 12
       - 11
-      - 21
-      - 19
-      - 26
-      - 16
-      - 231715000
+      - 59
+      - 30
+      - 286144900
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
+        \ String \"9999999999\": Overflow: numeric value (9999999999) out of range\
+        \ of Integer..."
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "documentType"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 5
+      - 14
+      - 46
+      - 406195900
       additionalInfo: null
     contactsDocumentNumber:
     - errorType: "NULL_ERROR"
@@ -1915,12 +1928,52 @@ parameterErrors:
       parameterName: "contactsDocumentNumber"
       timestamp:
       - 2025
+      - 12
       - 11
-      - 17
-      - 21
-      - 53
-      - 38
-      - 317323600
+      - 10
+      - 51
+      - 42
+      - 815475400
+      additionalInfo: null
+    - errorType: "LENGTH_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "contactsDocumentNumber"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 10
+      - 45
+      - 29
+      - 133750200
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "contactsDocumentNumber"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 49
+      - 30
+      - 865821600
+      additionalInfo: null
+    '"seatClass"':
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "\"seatClass\""
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 47
+      - 5
+      - 288278700
       additionalInfo: null
     contactsName:
     - errorType: "VALIDATION_ERROR"
@@ -1929,12 +1982,12 @@ parameterErrors:
       parameterName: "contactsName"
       timestamp:
       - 2025
+      - 12
+      - 12
+      - 12
       - 11
-      - 11
-      - 16
-      - 25
-      - 21
-      - 138716800
+      - 39
+      - 666599600
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -1942,12 +1995,12 @@ parameterErrors:
       parameterName: "contactsName"
       timestamp:
       - 2025
+      - 12
+      - 12
       - 11
-      - 21
-      - 19
-      - 26
-      - 54
-      - 422598000
+      - 42
+      - 22
+      - 585186900
       additionalInfo: null
     differenceMoney:
     - errorType: "TYPE_MISMATCH"
@@ -1963,6 +2016,19 @@ parameterErrors:
       - 24
       - 6712400
       additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "differenceMoney"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 41
+      - 16
+      - 458664300
+      additionalInfo: null
     seatNumber:
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1970,12 +2036,25 @@ parameterErrors:
       parameterName: "seatNumber"
       timestamp:
       - 2025
-      - 11
-      - 10
-      - 17
-      - 16
-      - 2
-      - 476157900
+      - 12
+      - 12
+      - 5
+      - 28
+      - 4
+      - 76679000
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "seatNumber"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 12
+      - 46
+      - 282106000
       additionalInfo: null
     accountId:
     - errorType: "CONSTRAINT_ERROR"
@@ -1985,12 +2064,12 @@ parameterErrors:
       parameterName: "accountId"
       timestamp:
       - 2025
-      - 11
+      - 12
+      - 10
       - 4
-      - 16
-      - 38
-      - 48
-      - 569553100
+      - 47
+      - 21
+      - 22759400
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -1998,12 +2077,12 @@ parameterErrors:
       parameterName: "accountId"
       timestamp:
       - 2025
-      - 11
-      - 4
-      - 16
-      - 11
+      - 12
+      - 12
+      - 12
+      - 13
       - 26
-      - 19304200
+      - 649433000
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2017,6 +2096,19 @@ parameterErrors:
       - 42
       - 20
       - 816333400
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 11
+      - 18
+      - 18
+      - 688718800
       additionalInfo: null
     coachNumber:
     - errorType: "TYPE_MISMATCH"
@@ -2054,12 +2146,12 @@ parameterErrors:
       parameterName: "coachNumber"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 21
-      - 51
+      - 12
+      - 12
+      - 12
+      - 3
       - 13
-      - 566700000
+      - 897522800
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -2081,12 +2173,53 @@ parameterErrors:
       parameterName: "coachNumber"
       timestamp:
       - 2025
+      - 12
+      - 12
+      - 12
+      - 3
+      - 23
+      - 970319000
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "coachNumber"
+      timestamp:
+      - 2025
+      - 12
       - 11
-      - 17
-      - 21
-      - 51
-      - 18
-      - 342414000
+      - 11
+      - 19
+      - 1
+      - 614881200
+      additionalInfo: null
+    '"contactsDocumentNumber"':
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "\"contactsDocumentNumber\""
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 20
+      - 54
+      - 8
+      - 327817600
+      additionalInfo: null
+    '"to"':
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "\"to\""
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 4
+      - 40
+      - 46
+      - 940424900
       additionalInfo: null
     travelDate:
     - errorType: "FORMAT_ERROR"
@@ -2095,12 +2228,52 @@ parameterErrors:
       parameterName: "travelDate"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 14
-      - 42
-      - 42
-      - 956629300
+      - 11
+      - 10
+      - 41
+      - 58
+      - 694538600
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "travelDate"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 10
+      - 59
+      - 43
+      - 482180800
+      additionalInfo: null
+    price:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'price' at row 1"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "price"
+      timestamp:
+      - 2025
+      - 12
+      - 9
+      - 21
+      - 20
+      - 53
+      - 803903400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'price' at row 1"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "price"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 5
+      - 46
+      - 876290700
       additionalInfo: null
     '"documentType"':
     - errorType: "FORMAT_ERROR"
@@ -2139,12 +2312,12 @@ parameterErrors:
       parameterName: "seatClass"
       timestamp:
       - 2025
-      - 11
-      - 4
-      - 16
-      - 36
-      - 50
-      - 330458000
+      - 12
+      - 12
+      - 12
+      - 6
+      - 40
+      - 287427800
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2166,12 +2339,12 @@ parameterErrors:
       parameterName: "seatClass"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 14
-      - 44
-      - 4
-      - 331638900
+      - 12
+      - 11
+      - 46
+      - 54
+      - 838469300
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2179,12 +2352,12 @@ parameterErrors:
       parameterName: "seatClass"
       timestamp:
       - 2025
-      - 11
-      - 4
-      - 16
-      - 41
-      - 52
-      - 488052400
+      - 12
+      - 12
+      - 12
+      - 6
+      - 51
+      - 274887500
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -2220,12 +2393,40 @@ parameterErrors:
       parameterName: "seatClass"
       timestamp:
       - 2025
+      - 12
+      - 12
+      - 5
+      - 2
+      - 36
+      - 907009600
+      additionalInfo: null
+    from:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "from"
+      timestamp:
+      - 2025
+      - 12
       - 11
-      - 17
-      - 21
-      - 51
-      - 56
-      - 440242600
+      - 10
+      - 57
+      - 50
+      - 205044900
+      additionalInfo: null
+    to:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "to"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 10
+      - 58
+      - 58
+      - 507062300
       additionalInfo: null
     trainNumber:
     - errorType: "FORMAT_ERROR"
@@ -2254,20 +2455,34 @@ parameterErrors:
       - 26
       - 901070800
       additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "trainNumber"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 4
+      - 47
+      - 53
+      - 781551200
+      additionalInfo: null
     status:
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"true\": not a valid Integer value"
+        \ String \"9999999999\": Overflow: numeric value (9999999999) out of range\
+        \ of Integer..."
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "status"
       timestamp:
       - 2025
-      - 11
-      - 4
-      - 16
-      - 27
-      - 19
-      - 257633400
+      - 12
+      - 12
+      - 12
+      - 9
+      - 29
+      - 375798100
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2288,12 +2503,12 @@ parameterErrors:
       parameterName: "status"
       timestamp:
       - 2025
+      - 12
       - 11
-      - 5
-      - 14
-      - 0
-      - 39
-      - 825407000
+      - 11
+      - 23
+      - 59
+      - 582911900
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -2308,6 +2523,19 @@ parameterErrors:
       - 0
       - 43
       - 539253200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminorderservice/adminorder"
+      parameterName: "status"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 9
+      - 41
+      - 621353100
       additionalInfo: null
   /api/v1/adminrouteservice/adminroute:
     distances:
@@ -2384,11 +2612,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
-      - 2
-      - 17
-      - 4
-      - 4
-      - 466336100
+      - 10
+      - 16
+      - 59
+      - 11
+      - 812054400
       additionalInfo: null
     loginId:
     - errorType: "VALIDATION_ERROR"
@@ -2398,11 +2626,50 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
-      - 2
+      - 12
+      - 12
+      - 54
+      - 7
+      - 592493500
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "loginId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 47
       - 17
+      - 597473600
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "loginId"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 1
+      - 53
+      - 849332300
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "loginId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 59
       - 2
-      - 15
-      - 571970800
+      - 703991200
       additionalInfo: null
     stationList:
     - errorType: "VALIDATION_ERROR"
@@ -2412,11 +2679,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
+      - 12
+      - 13
       - 2
-      - 17
-      - 48
-      - 11
-      - 100108200
+      - 57
+      - 405383500
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -2425,11 +2692,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
-      - 2
-      - 17
-      - 48
-      - 54
-      - 710200600
+      - 12
+      - 13
+      - 5
+      - 26
+      - 806608300
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2438,11 +2705,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
-      - 2
-      - 17
-      - 47
-      - 21
-      - 887726500
+      - 12
+      - 12
+      - 54
+      - 48
+      - 443839700
       additionalInfo: null
     distanceList:
     - errorType: "CONSTRAINT_ERROR"
@@ -2465,11 +2732,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
-      - 2
-      - 17
-      - 46
-      - 29
-      - 747786800
+      - 12
+      - 13
+      - 14
+      - 6
+      - 295293000
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2477,12 +2744,25 @@ parameterErrors:
       parameterName: "distanceList"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 19
-      - 49
-      - 45
-      - 669828100
+      - 12
+      - 12
+      - 13
+      - 0
+      - 26
+      - 806821900
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "distanceList"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 56
+      - 14
+      - 950390500
       additionalInfo: null
     startStation:
     - errorType: "VALIDATION_ERROR"
@@ -2492,11 +2772,11 @@ parameterErrors:
       timestamp:
       - 2025
       - 12
-      - 2
-      - 17
-      - 4
-      - 49
-      - 18699500
+      - 9
+      - 18
+      - 10
+      - 8
+      - 711761300
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "JSON parse error: (was java"
@@ -2523,6 +2803,46 @@ parameterErrors:
       - 32
       - 18
       - 867420900
+      additionalInfo: null
+    id:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 58
+      - 1
+      - 445581500
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 11
+      - 53
+      - 5
+      - 826536400
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminrouteservice/adminroute"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 37
+      - 5
+      - 896871100
       additionalInfo: null
     stations:
     - errorType: "VALIDATION_ERROR"
@@ -2565,6 +2885,226 @@ parameterErrors:
       - 50
       - 992547900
       additionalInfo: null
+  /api/v1/routeservice/routes/newyork/chengdu:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/chengdu"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 41
+      - 42
+      - 800484500
+      additionalInfo: null
+  /api/v1/routeservice/routes/null/hangzhou:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/null/hangzhou"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 59
+      - 42
+      - 756637400
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/beijing:
+    departureTime:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 18
+      - 35
+      - 262815200
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 19
+      - 22
+      - 620888600
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 19
+      - 56
+      - 727284800
+      additionalInfo: null
+  /api/v1/routeservice/routes/../../../etc/passwd/newyork:
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/routeservice/routes/../../../etc/passwd/newyork"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 14
+      - 15
+      - 155769600
+      additionalInfo: null
+  /api/v1/admintravelservice/admintravel/../../etc/passwd:
+    url:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/admintravelservice/admintravel/../../etc/passwd"
+      parameterName: "url"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 19
+      - 20
+      - 17
+      - 159596400
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/wuhan:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/wuhan"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 38
+      - 19
+      - 145628300
+      additionalInfo: null
+  /api/v1/routeservice/routes/%5B1,2,3%5D/beijing:
+    startPlace:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/%5B1,2,3%5D/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 1
+      - 55
+      - 199396400
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/null:
+    endPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/null"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 0
+      - 28
+      - 574099300
+      additionalInfo: null
+  /api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation:
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/tokyostation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 2
+      - 53
+      - 805663900
+      additionalInfo: null
+  /api/v1/routeservice/routes/chicago/newyork:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/chicago/newyork"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 30
+      - 49
+      - 518054500
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/seattle:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/seattle"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 9
+      - 22
+      - 6
+      - 31
+      - 275969500
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/newyorkcity:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/newyorkcity"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 5
+      - 46
+      - 34
+      - 527109200
+      additionalInfo: null
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/newyorkcity"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 6
+      - 17
+      - 43
+      - 103980200
+      additionalInfo: null
   /api/v1/routeservice/routes/beijing/shanghai:
     departureTime:
     - errorType: "FORMAT_ERROR"
@@ -2580,21 +3120,6 @@ parameterErrors:
       - 48
       - 949158200
       additionalInfo: null
-  /api/v1/routeservice/routes/shanghai/beijing:
-    departureTime:
-    - errorType: "FORMAT_ERROR"
-      errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeservice/routes/shanghai/beijing"
-      parameterName: "departureTime"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 22
-      - 0
-      - 46
-      - 722640400
-      additionalInfo: null
   /api/v1/routeservice/routes/shanghai/newyorkpennstation:
     startPlace:
     - errorType: "FORMAT_ERROR"
@@ -2609,6 +3134,51 @@ parameterErrors:
       - 6
       - 33
       - 193198700
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/%3Cscript%3Ealert('xss')%3C/script%3E:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/%3Cscript%3Ealert('xss')%3C/script%3E"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 49
+      - 1
+      - 526574800
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/beijing:
+    departureTime:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 43
+      - 0
+      - 451064300
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/xian:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/xian"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 8
+      - 48
+      - 277013500
       additionalInfo: null
   /api/v1/routeservice/routes/hangzhou/beijing:
     startPlace:
@@ -2633,12 +3203,12 @@ parameterErrors:
       parameterName: "departureTime"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 22
-      - 6
-      - 54
-      - 38041800
+      - 12
+      - 12
+      - 13
+      - 25
+      - 26
+      - 965516900
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2646,12 +3216,12 @@ parameterErrors:
       parameterName: "departureTime"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 14
-      - 1
-      - 32
-      - 745572000
+      - 12
+      - 12
+      - 13
+      - 28
+      - 21
+      - 997085400
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -2659,12 +3229,12 @@ parameterErrors:
       parameterName: "departureTime"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 19
-      - 19
-      - 37
-      - 431752300
+      - 12
+      - 12
+      - 13
+      - 24
+      - 2
+      - 361517300
       additionalInfo: null
     startPlace:
     - errorType: "VALIDATION_ERROR"
@@ -2673,12 +3243,12 @@ parameterErrors:
       parameterName: "startPlace"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 22
-      - 11
       - 12
-      - 504014200
+      - 12
+      - 13
+      - 26
+      - 7
+      - 363576300
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2686,12 +3256,25 @@ parameterErrors:
       parameterName: "startPlace"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 22
-      - 9
-      - 20
-      - 393718300
+      - 12
+      - 12
+      - 8
+      - 1
+      - 7
+      - 470362900
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 8
+      - 6
+      - 5
+      - 461283400
       additionalInfo: null
     endPlace:
     - errorType: "VALIDATION_ERROR"
@@ -2700,12 +3283,12 @@ parameterErrors:
       parameterName: "endPlace"
       timestamp:
       - 2025
-      - 11
-      - 17
-      - 14
-      - 1
-      - 7
-      - 838435200
+      - 12
+      - 12
+      - 13
+      - 19
+      - 57
+      - 814605600
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -2713,12 +3296,1353 @@ parameterErrors:
       parameterName: "endPlace"
       timestamp:
       - 2025
+      - 12
+      - 12
+      - 8
+      - 6
+      - 44
+      - 416248300
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 8
+      - 1
+      - 58
+      - 363416700
+      additionalInfo: null
+  /api/v1/routeservice/routes/startplace/beijing:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/startplace/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 50
+      - 36
+      - 982993900
+      additionalInfo: null
+  /api/v1/routeservice/routes/miami/endplace:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/miami/endplace"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 35
+      - 58
+      - 713245800
+      additionalInfo: null
+  /api/v1/routeservice/routes/seattle/newyork:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/seattle/newyork"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 21
+      - 40
+      - 732019600
+      additionalInfo: null
+  /api/v1/admintravelservice/admintravel/%27%3B%20DROP%20TABLE--:
+    tripId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%3B\""
+      apiEndpoint: "/api/v1/admintravelservice/admintravel/%27%3B%20DROP%20TABLE--"
+      parameterName: "tripId"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 19
+      - 19
+      - 11
+      - 670551900
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/berlinhauptbahnhof:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/berlinhauptbahnhof"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 6
+      - 10
+      - 938149800
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/nanjing:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/nanjing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 6
+      - 28
+      - 208098500
+      additionalInfo: null
+  /api/v1/routeservice/routes/chengdu/invalid_value_missing_endplace:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/chengdu/invalid_value_missing_endplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 2
+      - 4
+      - 291301500
+      additionalInfo: null
+  /api/v1/routeservice/routes/123/newyork:
+    startPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/123/newyork"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 24
+      - 57
+      - 165975500
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 11
+      - 51
+      - 496733700
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/ab:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/ab"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 56
+      - 6
+      - 821205500
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/'or'1'='1:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/'or'1'='1"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 33
+      - 35
+      - 902984800
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/shenzhen:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/shenzhen"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 26
+      - 43
+      - 439148000
+      additionalInfo: null
+  /api/v1/admintravelservice/admintravel/%3B%20ls%20-la:
+    tripId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%3B\""
+      apiEndpoint: "/api/v1/admintravelservice/admintravel/%3B%20ls%20-la"
+      parameterName: "tripId"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 19
+      - 23
+      - 7
+      - 989231900
+      additionalInfo: null
+  /api/v1/admintravelservice/admintravel/%27%3B%20EXEC%20xp_cmdshell%28%27dir%27%29--:
+    tripId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%3B\""
+      apiEndpoint: "/api/v1/admintravelservice/admintravel/%27%3B%20EXEC%20xp_cmdshell%28%27dir%27%29--"
+      parameterName: "tripId"
+      timestamp:
+      - 2025
+      - 12
+      - 9
+      - 19
+      - 19
+      - 8
+      - 765398400
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%3B\""
+      apiEndpoint: "/api/v1/admintravelservice/admintravel/%27%3B%20EXEC%20xp_cmdshell%28%27dir%27%29--"
+      parameterName: "tripId"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 1
+      - 37
+      - 49
+      - 542304400
+      additionalInfo: null
+  /api/v1/routeservice/routes/%3Cscript%3Ealert('xss')%3C/script%3E/beijing:
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/%3Cscript%3Ealert('xss')%3C/script%3E/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 48
+      - 15
+      - 556757800
+      additionalInfo: null
+  /api/v1/routeplanservice/routePlan/minStopStations:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 16
+      - 48
+      - 819028400
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 33
+      - 21
+      - 248403300
+      additionalInfo: null
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 27
+      - 13
+      - 501364300
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 46
+      - 22
+      - 657905200
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 37
+      - 32
+      - 932334900
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 29
+      - 26
+      - 952213300
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 15
+      - 53
+      - 257568500
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 48
+      - 43
+      - 489128400
+      additionalInfo: null
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 38
+      - 20
+      - 696113300
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 23
+      - 25
+      - 792101800
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 5
+      - 40
+      - 919177900
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 51
+      - 46
+      - 638481400
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Not enough variable values available to expand '\"key\"'"
+      apiEndpoint: "/api/v1/routeplanservice/routePlan/minStopStations"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 1
+      - 5
+      - 142294300
+      additionalInfo: null
+  /api/v1/orderservice/order/admin:
+    accountId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'account_id' at row\
+        \ 1"
+      apiEndpoint: "/api/v1/orderservice/order/admin"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 12
+      - 2
+      - 21
+      - 487084000
+      additionalInfo: null
+    travelTime:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'travel_time' at row\
+        \ 1"
+      apiEndpoint: "/api/v1/orderservice/order/admin"
+      parameterName: "travelTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 58
+      - 27
+      - 115202900
+      additionalInfo: null
+    price:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'price' at row 1"
+      apiEndpoint: "/api/v1/orderservice/order/admin"
+      parameterName: "price"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 5
+      - 21
+      - 8
+      - 414491000
+      additionalInfo: null
+    contactsDocumentNumber:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/orderservice/order/admin"
+      parameterName: "contactsDocumentNumber"
+      timestamp:
+      - 2025
+      - 12
+      - 9
+      - 21
+      - 17
+      - 17
+      - 202331000
+      additionalInfo: null
+  /api/v1/routeservice/routes/miami/newyork:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/miami/newyork"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 30
+      - 32
+      - 891661600
+      additionalInfo: null
+  /api/v1/routeservice/routes/chicago/%3Cscript%3Ealert('xss')%3C/script%3E:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/chicago/%3Cscript%3Ealert('xss')%3C/script%3E"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 47
+      - 13
+      - 704063500
+      additionalInfo: null
+  /api/v1/routeservice/routes/nullvalue/newyork:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/nullvalue/newyork"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 50
+      - 59
+      - 361347700
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/'unionselectnull--:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/'unionselectnull--"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 10
+      - 21
+      - 897276300
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/%7Ccat/etc/passwd:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/%7Ccat/etc/passwd"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 29
+      - 46
+      - 487446200
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/wrongplace:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/wrongplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 54
+      - 0
+      - 242879200
+      additionalInfo: null
+  /api/v1/adminbasicservice/adminbasic/prices:
+    basicPriceRate:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 22
+      - 11
+      - 486393500
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
+        \ String \"INVALID_VALUE_MISSING_basicPriceRate\": not a valid Double value"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 18
+      - 16
+      - 358512000
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 10
+      - 58
+      - 42
+      - 156595500
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 18
+      - 7
+      - 462101700
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize instance of `double` out\
+        \ of VALUE_TRUE token"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 9
+      - 57
+      - 39
+      - 645029900
+      additionalInfo: null
+    routeId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 11
+      - 37
+      - 529196400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-92708982-77af-4318-be25-57ccb0ff69ad'\
+        \ for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 19
+      - 1
+      - 160184100
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 7
+      - 15
+      - 907497700
+      additionalInfo: null
+    trainType:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'null-5f3a1b7c-4d8e-9f2a-1b3c-4d5e6f7a8b9c' for\
+        \ key 'route_type_idx'"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 15
+      - 54
+      - 705477100
+      additionalInfo: null
+    firstClassPriceRate:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 4
+      - 17
+      - 606133000
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
+        \ String \"INVALID_VALUE_MISSING_firstClassPriceRate\": not a valid Double\
+        \ value"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 20
+      - 39
+      - 932220500
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 23
+      - 58
+      - 608588900
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 20
+      - 30
+      - 223838700
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize instance of `double` out\
+        \ of VALUE_TRUE token"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 10
+      - 12
+      - 27
+      - 609712700
+      additionalInfo: null
+    id:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 4
+      - 36
+      - 23
+      - 483155800
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'id' at row 1"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 10
+      - 7
+      - 7
+      - 46320400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Regional-RT-12345' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 21
+      - 25
+      - 984527300
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'id' at row 1"
+      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 4
+      - 8
+      - 19
+      - 672167500
+      additionalInfo: null
+  /api/v1/priceservice/prices:
+    basicPriceRate:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "basicPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 4
+      - 21
+      - 45
+      - 522714000
+      additionalInfo: null
+    routeId:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-92708982-77af-4318-be25-57ccb0ff69ae'\
+        \ for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 26
+      - 42
+      - 55790700
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 19
+      - 14
+      - 21
+      - 520003400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 4
+      - 25
+      - 37
+      - 414127300
+      additionalInfo: null
+    trainType:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-92708982-77af-4318-be25-57ccb0ff6' for\
+        \ key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 36
+      - 16
+      - 714906200
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'trainType_2000_characters-RT-98765' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 23
+      - 14
+      - 449648100
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'InvalidTrainType-invalid-route-id' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "trainType"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 24
+      - 39
+      - 713864100
+      additionalInfo: null
+    firstClassPriceRate:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "firstClassPriceRate"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 4
+      - 30
+      - 49
+      - 185398000
+      additionalInfo: null
+    id:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'Express-92708982-77af-4318-be25-57ccb0ff69ad'\
+        \ for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 26
+      - 17
+      - 82140200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 4
+      - 8
+      - 7
+      - 964530900
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Data truncation: Data too long for column 'id' at row 1"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 19
+      - 32
+      - 3
+      - 589308900
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'id' at row 1"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 11
+      - 10
+      - 13
+      - 435593100
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'trainType-RT-12345' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "id"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 10
+      - 56
+      - 34
+      - 42813300
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 4
+      - 29
+      - 266428900
+      additionalInfo: null
+  /api/v1/routeservice/routes/fakecity/chengdu:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fakecity/chengdu"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 40
+      - 2
+      - 158646900
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/!@:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/!@"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 21
+      - 20
+      - 364599200
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/true:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/true"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 34
+      - 56
+      - 962298000
+      additionalInfo: null
+  /api/v1/stationservice/stations/idlist:
+    loginId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/stationservice/stations/idlist"
+      parameterName: "loginId"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 11
+      - 58
+      - 3
+      - 632755200
+      additionalInfo: null
+    stationList:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/stationservice/stations/idlist"
+      parameterName: "stationList"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 5
+      - 14
+      - 8
+      - 354499300
+      additionalInfo: null
+    distanceList:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/stationservice/stations/idlist"
+      parameterName: "distanceList"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 13
+      - 7
+      - 11
+      - 404967000
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/stationservice/stations/idlist"
+      parameterName: "distanceList"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 5
+      - 26
+      - 35
+      - 127223000
+      additionalInfo: null
+  /api/v1/orderOtherService/orderOther/admin:
+    accountId:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'account_id' at row\
+        \ 1"
+      apiEndpoint: "/api/v1/orderOtherService/orderOther/admin"
+      parameterName: "accountId"
+      timestamp:
+      - 2025
+      - 11
+      - 5
+      - 14
+      - 1
+      - 41
+      - 239105200
+      additionalInfo: null
+    price:
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Data truncation: Data too long for column 'price' at row 1"
+      apiEndpoint: "/api/v1/orderOtherService/orderOther/admin"
+      parameterName: "price"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 20
+      - 34
+      - 31
+      - 785347800
+      additionalInfo: null
+  /api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 1
+      - 45
+      - 961320200
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 11
+      - 12
+      - 15
+      - 4
+      - 9
+      - 275314900
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/chicago:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/chicago"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 5
+      - 43
+      - 46
+      - 740540600
+      additionalInfo: null
+  /api/v1/routeservice/routes/startplac/newyork:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/startplac/newyork"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 12
+      - 46
+      - 27
+      - 106694200
+      additionalInfo: null
+  /api/v1/routeservice/routes/!@:
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/!@"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 18
+      - 17
+      - 708423500
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/!@"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 4
+      - 57
+      - 955127000
+      additionalInfo: null
+  /api/v1/routeservice/routes/seattle/beijing:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/seattle/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 1
+      - 16
+      - 806540300
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/123:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/123"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 21
+      - 1
+      - 292256800
+      additionalInfo: null
+  /api/v1/routeservice/routes/123/beijing:
+    startPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/123/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 20
+      - 12
+      - 311180300
+      additionalInfo: null
+  /api/v1/routeservice/routes/fakelocation123/beijing:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fakelocation123/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 22
+      - 36
+      - 968741600
+      additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/beijing:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
       - 11
       - 17
-      - 16
-      - 23
+      - 22
+      - 0
+      - 46
+      - 722640400
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/../../etc/passwd:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/../../etc/passwd"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
       - 2
-      - 552741300
+      - 46
+      - 767108200
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/%5B1,2,3%5D:
+    endPlace:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/%5B1,2,3%5D"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 22
+      - 5
+      - 0
+      - 562822700
       additionalInfo: null
   /api/v1/travelplanservice/travelPlan/minStation:
     departureTime:
@@ -2741,294 +4665,253 @@ parameterErrors:
       parameterName: "departureTime"
       timestamp:
       - 2025
-      - 11
-      - 21
-      - 19
-      - 37
+      - 12
+      - 12
+      - 7
+      - 26
       - 1
-      - 175014400
-      additionalInfo: null
-    startPlace:
-    - errorType: "VALIDATION_ERROR"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
-      parameterName: "startPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 15
-      - 5
-      - 11
-      - 602458400
-      additionalInfo: null
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
-      parameterName: "startPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 21
-      - 58
-      - 51
-      - 539942600
-      additionalInfo: null
-    endPlace:
-    - errorType: "VALIDATION_ERROR"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
-      parameterName: "endPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 15
-      - 5
-      - 37
-      - 495241200
-      additionalInfo: null
-  /api/v1/adminbasicservice/adminbasic/prices:
-    basicPriceRate:
-    - errorType: "FORMAT_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "basicPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 14
-      - 35
-      - 32
-      - 914054000
+      - 781941500
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
-      errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
-        \ String \"INVALID_VALUE_MISSING_basicPriceRate\": not a valid Double value"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "basicPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 14
-      - 35
-      - 39
-      - 718029500
-      additionalInfo: null
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "basicPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 21
-      - 46
-      - 5
-      - 553112000
-      additionalInfo: null
-    routeId:
-    - errorType: "VALIDATION_ERROR"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "routeId"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 14
-      - 37
-      - 33
-      - 455458900
-      additionalInfo: null
-    trainType:
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "trainType"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 21
-      - 47
-      - 22
-      - 106212600
-      additionalInfo: null
-    firstClassPriceRate:
-    - errorType: "VALIDATION_ERROR"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "firstClassPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 14
-      - 34
-      - 55
-      - 511332000
-      additionalInfo: null
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
-        \ String \"INVALID_VALUE_MISSING_firstClassPriceRate\": not a valid Double\
-        \ value"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "firstClassPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 14
-      - 35
-      - 2
-      - 605696900
-      additionalInfo: null
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "Unknown (HTTP 400)"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "firstClassPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 21
-      - 19
-      - 22
-      - 57
-      - 15928200
-      additionalInfo: null
-    id:
-    - errorType: "FORMAT_ERROR"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/adminbasicservice/adminbasic/prices"
-      parameterName: "id"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 21
-      - 45
-      - 44
-      - 313399900
-      additionalInfo: null
-  /api/v1/routeservice/routes/beijing/berlinhauptbahnhof:
-    startPlace:
-    - errorType: "NULL_ERROR"
       errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeservice/routes/beijing/berlinhauptbahnhof"
-      parameterName: "startPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 15
-      - 6
-      - 10
-      - 938149800
-      additionalInfo: null
-  /api/v1/priceservice/prices:
-    basicPriceRate:
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/priceservice/prices"
-      parameterName: "basicPriceRate"
-      timestamp:
-      - 2025
-      - 11
-      - 21
-      - 19
-      - 24
-      - 14
-      - 692093900
-      additionalInfo: null
-    routeId:
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"
-      apiEndpoint: "/api/v1/priceservice/prices"
-      parameterName: "routeId"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 21
-      - 50
-      - 25
-      - 169161900
-      additionalInfo: null
-    trainType:
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Duplicate entry 'Express-RT-12345' for key 'route_type_idx'"
-      apiEndpoint: "/api/v1/priceservice/prices"
-      parameterName: "trainType"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 14
-      - 39
-      - 53
-      - 869258100
-      additionalInfo: null
-    id:
-    - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Duplicate entry 'Express-US-Route-001' for key 'route_type_idx'"
-      apiEndpoint: "/api/v1/priceservice/prices"
-      parameterName: "id"
-      timestamp:
-      - 2025
-      - 11
-      - 17
-      - 21
-      - 44
-      - 58
-      - 638689500
-      additionalInfo: null
-  /api/v1/routeservice/routes/chengdu/invalid_value_missing_endplace:
-    endPlace:
-    - errorType: "VALIDATION_ERROR"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/routeservice/routes/chengdu/invalid_value_missing_endplace"
-      parameterName: "endPlace"
-      timestamp:
-      - 2025
-      - 11
-      - 12
-      - 15
-      - 2
-      - 4
-      - 291301500
-      additionalInfo: null
-  /api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon:
-    departureTime:
-    - errorType: "FORMAT_ERROR"
-      errorReason: "java. lang"
-      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
       parameterName: "departureTime"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 15
-      - 11
-      - 51
-      - 496733700
+      - 12
+      - 6
+      - 52
+      - 12
+      - 608293400
       additionalInfo: null
-  /api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 56
+      - 52
+      - 643735300
+      additionalInfo: null
+    startPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 9
+      - 15
+      - 298839400
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 25
+      - 44
+      - 743104900
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 12
+      - 46
+      - 129607500
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Not enough variable values available to expand '\"key\"'"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 6
+      - 54
+      - 858751000
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 2
+      - 37
+      - 502198500
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 52
+      - 57
+      - 878677800
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 11
+      - 26
+      - 493573100
+      additionalInfo: null
     endPlace:
     - errorType: "VALIDATION_ERROR"
-      errorReason: "Unknown (HTTP 500)"
-      apiEndpoint: "/api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
       parameterName: "endPlace"
       timestamp:
       - 2025
-      - 11
       - 12
-      - 15
-      - 4
-      - 29
-      - 266428900
+      - 12
+      - 6
+      - 58
+      - 14
+      - 942313300
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 5
+      - 28
+      - 531414200
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Not enough variable values available to expand '\"key\"'"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 7
+      - 39
+      - 290426600
+      additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 46
+      - 39
+      - 151192300
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 12
+      - 8
+      - 233374500
+      additionalInfo: null
+  /api/v1/routeservice/routes/startplace/shanghai:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/startplace/shanghai"
+      parameterName: "startPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 10
+      - 21
+      - 48
+      - 38
+      - 772866100
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/hangzhou:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/hangzhou"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 6
+      - 47
+      - 26
+      - 115115300
+      additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 500)"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/hangzhou"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 7
+      - 25
+      - 32
+      - 868134300
+      additionalInfo: null
+  /api/v1/routeservice/routes/newyork/../config.xml:
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL was not normalized"
+      apiEndpoint: "/api/v1/routeservice/routes/newyork/../config.xml"
+      parameterName: "endPlace"
+      timestamp:
+      - 2025
+      - 12
+      - 11
+      - 13
+      - 14
+      - 58
+      - 906722400
       additionalInfo: null

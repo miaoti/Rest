@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Create success","data":{"id":"' OR '1'='1","trainType":"HighSpeed","routeId":"RT-12345","basicPriceRate":89.99,"firstClassPriceRate":89.99}}
+Enhanced Parameters: {basicPriceRate=0, firstClassPriceRate=0}

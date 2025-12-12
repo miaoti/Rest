@@ -1,0 +1,1 @@
+{"distanceList":"15.2","endStation":"NONEXISTENT_LOCATION","id":"AR-2025-001","loginId":"route_operator_456","startStation":"Chicago Union Station","stationList":"Boston South Station,Back Bay Station,Harvard Station"}

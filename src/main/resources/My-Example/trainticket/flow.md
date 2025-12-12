@@ -24,6 +24,7 @@ flowchart TD
     M --> M5[llm response validation properties]
     M --> M6[jaeger trace fetching properties]
     M --> M7[negative.input.generation.mode: llm or hardcode]
+    M --> M8[test.enhancer.enabled/rounds/skip.5xx]
     M1 --> N[Create MST generator use LLM]
     M2 --> N
     M3 --> N
@@ -698,4 +699,137 @@ flowchart TD
   - Provides detailed RCA in Allure reports
   - Gracefully handles LLM failures (doesn't break test execution)
 
+---
+
+## Test Case Enhancer
+
+### Overview
+
+The Test Case Enhancer is a post-execution feature that analyzes failed test cases and uses LLM to suggest improved parameter values based on API error responses.
+
+### Flow Diagram
+
+```mermaid
+flowchart TD
+    A[Test Generation Complete] --> B{Enhancer Enabled?}
+    B -->|No| C[Standard Single Execution]
+    B -->|Yes| D[Round 0: Initial Execution]
+    D --> E[Collect Failed Tests]
+    E --> F{Any Enhanceable Failures?}
+    F -->|No| G[Done - All Tests Passed]
+    F -->|Yes| H{Skip 5xx Errors?}
+    H -->|Yes| I[Filter out 5xx errors]
+    H -->|No| J[Include all failures]
+    I --> K[Send to LLM for Enhancement]
+    J --> K
+    K --> L[Parse LLM Response]
+    L --> M[Regenerate Test Files]
+    M --> N[Recompile Tests]
+    N --> O{More Rounds?}
+    O -->|Yes| P[Round N: Execute Enhanced Tests]
+    P --> E
+    O -->|No| Q[Final Round: Execute with Allure]
+    Q --> R[Generate Final Report]
+    C --> R
+```
+
+### Configuration Properties
+
+```properties
+# Test Case Enhancer Settings
+test.enhancer.enabled=true         # Enable/disable the enhancer
+test.enhancer.rounds=1             # Number of enhancement rounds (1-5 recommended)
+test.enhancer.skip.5xx=true        # Skip 5xx errors (server bugs, not input issues)
+```
+
+### Enhancement Process
+
+1. **Test Execution (Round 0)**
+   - Execute all generated tests
+   - Collect failures via `FailedTestCollector`
+   - Store test context: parameters, response, status code
+
+2. **Failure Analysis**
+   - Filter out non-enhanceable failures (5xx if configured)
+   - Prepare context for LLM (JSON format with all parameter details)
+
+3. **LLM Enhancement**
+   - Send failed test context to LLM
+   - LLM analyzes error response and suggests improved parameter values
+   - Parse structured response with new values and reasoning
+
+4. **Test Regeneration**
+   - Locate original test file
+   - Replace parameter values with LLM suggestions
+   - Add Allure enhancement markers
+
+5. **Re-Execution**
+   - Recompile modified tests
+   - Execute enhanced tests
+   - Repeat for configured number of rounds
+
+6. **Final Reporting**
+   - Final round saves results to Allure
+   - Enhanced tests marked with "ENHANCED" label
+   - Original failure info attached
+
+### LLM Prompt Format
+
+```json
+{
+  "testName": "test_POST_1_5",
+  "endpoint": "/api/v1/travelservice/trips",
+  "method": "POST",
+  "isNegativeTest": false,
+  "actualStatus": 400,
+  "responseMessage": "{\"status\":0,\"msg\":\"Invalid station name\"}",
+  "parameters": [
+    {"name": "startPlace", "value": "InvalidCity", "type": "string", "location": "body", "description": "..."},
+    {"name": "endPlace", "value": "Beijing", "type": "string", "location": "body", "description": "..."}
+  ]
+}
+```
+
+### LLM Response Format
+
+```json
+{
+  "enhancedParameters": [
+    {"name": "startPlace", "value": "Shanghai"},
+    {"name": "endPlace", "value": "Beijing"}
+  ],
+  "reasoning": "Changed startPlace to a valid Chinese city name based on error message"
+}
+```
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|---------------|
+| `TestCaseEnhancer` | Main enhancement logic, LLM interaction |
+| `FailedTestCollector` | JUnit RunListener, collects failures |
+| `FailedTestResult` | Data model for failed test context |
+| `ParameterSnapshot` | Data model for parameter state |
+| `TestFileRegenerator` | Modifies test files with new values |
+| `TestResultCapture` | ThreadLocal for runtime response capture |
+
+### Allure Report Integration
+
+Enhanced tests appear in Allure with:
+- Label: `enhancement = ENHANCED`
+- Attachment: "Original Failure" with status, response, and enhanced parameters
+
+### Output Files
+
+Enhancement data saved to:
+```
+target/enhancer/{testId}/
+  round-0/
+    failed-tests.json
+    enhancement-results.json
+  round-1/
+    failed-tests.json
+    enhancement-results.json
+  ...
+```
 

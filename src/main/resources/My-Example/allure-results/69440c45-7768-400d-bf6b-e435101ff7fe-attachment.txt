@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"AR-2025-001","trainType":"[1,2,3]","routeId":"92708982-77af-4318-be25-57ccb0ff69b0","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

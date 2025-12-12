@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-basic-info-service.AdminBasicInfoController.addPrice` fails due to JSON deserialization error when processing `PriceInfo.basicPriceRate` field. The input value `'; DROP TABLE--` cannot be converted to Double type, causing `HttpMessageNotReadableException`.
+
+**FIX:** Implement input validation and sanitization for `basicPriceRate` field in `PriceInfo` entity to reject invalid numeric values before deserialization, or add proper exception handling with meaningful error responses.

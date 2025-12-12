@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"AR-2025-001","trainType":"trainType_value_exceeding_maximum_length_limitation_of_one_thousand_characters_or_more_than_what_is_normally_expected_for_this_parameter_field_in_the_system","routeId":"RT-12345","basicPriceRate":150.75,"firstClassPriceRate":125.5}}

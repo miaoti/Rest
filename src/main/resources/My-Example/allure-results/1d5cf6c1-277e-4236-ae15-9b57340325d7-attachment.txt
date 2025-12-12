@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-route-service` at operation `GET /*` with HTTP 403 status due to `RequestRejectedException` thrown by Spring Security firewall. The exact error is "The request was rejected because the URL was not normalized" indicating malformed URL handling in the security filter chain.
+
+**FIX:**
+Configure Spring Security's `HttpFirewall` to use `StrictHttpFirewall` with `setAllowUrlEncodedPercent(true)` and `setAllowUrlEncodedSlash(true)` to properly handle encoded URLs, or implement custom URL normalization in the gateway service before forwarding requests to `ts-route-service`.

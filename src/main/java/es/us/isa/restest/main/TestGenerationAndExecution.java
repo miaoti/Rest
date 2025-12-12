@@ -61,6 +61,14 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+// Test Case Enhancer imports
+import es.us.isa.restest.enhancer.FailedTestCollector;
+import es.us.isa.restest.enhancer.FailedTestResult;
+import es.us.isa.restest.enhancer.TestCaseEnhancer;
+import es.us.isa.restest.enhancer.TestFileRegenerator;
+import es.us.isa.restest.enhancer.TestResultCapture;
+import es.us.isa.restest.llm.LLMService;
+
 /*
  * This class show the basic workflow of test case generation -> test case execution -> test reporting
  */
@@ -206,9 +214,26 @@ public class TestGenerationAndExecution {
 			if (executeTestCases) {
 				logger.info("Executing generated test cases");
 				logger.info("ISOLATION: Only executing tests from current run (timestamp: {})", id);
+				
 				// For MST mode, find the actual generated test classes and execute them individually
 				String actualPackageName = packageName + "." + className;
-				executeGeneratedTestsWithJUnit(actualPackageName, className);
+				
+				// Check if Test Case Enhancer is enabled
+				boolean enhancerEnabled = Boolean.parseBoolean(System.getProperty("test.enhancer.enabled", "false"));
+				int enhancerRounds = Integer.parseInt(System.getProperty("test.enhancer.rounds", "1"));
+				boolean skip5xx = Boolean.parseBoolean(System.getProperty("test.enhancer.skip.5xx", "true"));
+				
+				if (enhancerEnabled) {
+					logger.info("═══════════════════════════════════════════════════════════════════════════");
+					logger.info("🔧 TEST CASE ENHANCER ENABLED - {} enhancement round(s) configured", enhancerRounds);
+					logger.info("═══════════════════════════════════════════════════════════════════════════");
+					
+					// Execute with enhancement loop
+					executeWithEnhancement(actualPackageName, className, enhancerRounds, skip5xx, id);
+				} else {
+					// Standard single execution
+					executeGeneratedTestsWithJUnit(actualPackageName, className);
+				}
 				
 				// Generate Allure report using the existing AllureReportManager
 				if (allureReports && reportManager != null) {
@@ -791,7 +816,23 @@ public class TestGenerationAndExecution {
 			// LLM response validation properties (soft error detection)
 			"llm.response.validation.enabled",
 			"llm.response.validation.only.2xx",
-			"llm.response.validation.include.rca"
+			"llm.response.validation.include.rca",
+			// LLM communication logging properties
+			"llm.communication.logging.enabled",
+			"llm.communication.logging.dir",
+			"llm.communication.logging.file.prefix",
+			"llm.communication.logging.include.response.time",
+			"llm.communication.logging.include.content",
+			"llm.communication.logging.include.metadata",
+			"llm.communication.logging.level",
+			"llm.communication.logging.max.content.length",
+			// LLM resource monitoring properties
+			"llm.resource.monitoring.enabled",
+			"llm.resource.monitoring.interval.ms",
+			// Test Case Enhancer properties
+			"test.enhancer.enabled",
+			"test.enhancer.rounds",
+			"test.enhancer.skip.5xx"
 		};
 		
 		int configuredCount = 0;
@@ -1045,6 +1086,339 @@ public class TestGenerationAndExecution {
 		} catch (Exception e) {
 			logger.error("Error executing test classes", e);
 		}
+	}
+	
+	/**
+	 * Execute tests with enhancement loop.
+	 * 
+	 * Flow:
+	 * 1. Execute initial tests (Round 0)
+	 * 2. Collect failed tests
+	 * 3. Send to LLM for enhancement suggestions
+	 * 4. Regenerate test files with enhanced values
+	 * 5. Re-execute enhanced tests
+	 * 6. Repeat for configured number of rounds
+	 */
+	private static void executeWithEnhancement(String fullPackageName, String className, 
+											   int enhancerRounds, boolean skip5xx, String testId) {
+		logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
+		logger.info("║              TEST CASE ENHANCER - MULTI-ROUND EXECUTION                     ║");
+		logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+		logger.info("║  Rounds: {}                                                                  ║", enhancerRounds);
+		logger.info("║  Skip 5xx: {}                                                               ║", skip5xx);
+		logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+		
+		String enhancerOutputDir = "target/enhancer/" + testId;
+		
+		try {
+			// Initialize LLM service for enhancement
+			Map<String, String> llmProperties = new HashMap<>();
+			for (String key : System.getProperties().stringPropertyNames()) {
+				if (key.startsWith("llm.") || key.startsWith("smart.")) {
+					llmProperties.put(key, System.getProperty(key));
+				}
+			}
+			LLMService llmService = LLMService.getInstance(llmProperties);
+			TestCaseEnhancer enhancer = new TestCaseEnhancer(llmService);
+			TestFileRegenerator regenerator = new TestFileRegenerator();
+			
+			// Track overall statistics
+			int totalEnhanced = 0;
+			int totalImproved = 0;  // Tests that passed after enhancement
+			
+			for (int round = 0; round <= enhancerRounds; round++) {
+				boolean isFinalRound = (round == enhancerRounds);
+				
+				logger.info("═══════════════════════════════════════════════════════════════════════════");
+				logger.info("🔄 EXECUTION ROUND {} of {} {}", round, enhancerRounds, 
+						isFinalRound ? "(FINAL - Results saved to Allure)" : "(Enhancement round)");
+				logger.info("═══════════════════════════════════════════════════════════════════════════");
+				
+				// Create collector for this round
+				FailedTestCollector collector = new FailedTestCollector(round, skip5xx, enhancerOutputDir);
+				
+				// Execute tests with collector
+				Result result = executeTestsWithCollector(fullPackageName, className, collector, isFinalRound);
+				
+				if (result == null) {
+					logger.error("Test execution failed in round {}", round);
+					break;
+				}
+				
+				// Log round results
+				logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
+				logger.info("║  ROUND {} RESULTS                                                            ║", round);
+				logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+				logger.info("║  Tests Run: {}                                                               ║", result.getRunCount());
+				logger.info("║  Failures: {}                                                                ║", result.getFailureCount());
+				logger.info("║  Enhanceable Failures: {}                                                    ║", collector.getFailedTestCount());
+				logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+				
+				// If this is the final round or no failures to enhance, we're done
+				if (isFinalRound) {
+					logger.info("✅ Final round complete. Results saved to Allure.");
+					break;
+				}
+				
+				if (collector.getFailedTestCount() == 0) {
+					logger.info("🎉 No enhanceable failures found! Skipping remaining enhancement rounds.");
+					break;
+				}
+				
+				// Enhance failed tests
+				logger.info("🔧 Enhancing {} failed tests with LLM...", collector.getFailedTestCount());
+				List<FailedTestResult> failedTests = collector.getFailedTests();
+				List<TestCaseEnhancer.EnhancementResult> enhancementResults = enhancer.enhanceBatch(failedTests);
+				
+				// Save enhancement results
+				enhancer.saveEnhancementResults(enhancementResults, enhancerOutputDir, round);
+				
+				// Regenerate test files with enhanced values
+				int regenerated = 0;
+				for (int i = 0; i < enhancementResults.size(); i++) {
+					TestCaseEnhancer.EnhancementResult enhancement = enhancementResults.get(i);
+					if (!enhancement.isSuccess()) {
+						continue;
+					}
+					
+					FailedTestResult originalFailure = failedTests.get(i);
+					String testFilePath = findTestFilePath(fullPackageName, className, 
+							originalFailure.getTestClassName(), originalFailure.getTestMethodName());
+					
+					if (testFilePath != null) {
+						boolean success = regenerator.regenerateTestFile(
+								testFilePath,
+								originalFailure.getTestMethodName(),
+								enhancement.getEnhancedParameters(),
+								originalFailure
+						);
+						if (success) {
+							regenerated++;
+							totalEnhanced++;
+						}
+					}
+				}
+				
+				logger.info("📝 Regenerated {} test files with enhanced values", regenerated);
+				
+				// Recompile for next round
+				if (regenerated > 0) {
+					logger.info("🔨 Recompiling test classes for next round...");
+					boolean compiled = compileTestClasses();
+					if (!compiled) {
+						logger.error("Compilation failed after enhancement. Stopping.");
+						break;
+					}
+				}
+			}
+			
+			// Final summary
+			logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
+			logger.info("║              TEST CASE ENHANCER - FINAL SUMMARY                             ║");
+			logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+			logger.info("║  Total Tests Enhanced: {}                                                    ║", totalEnhanced);
+			logger.info("║  Enhanced Tests Info: See target/enhancer/{}                                 ║", testId);
+			logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+			
+		} catch (Exception e) {
+			logger.error("Error during enhancement loop: {}", e.getMessage(), e);
+			// Fall back to standard execution
+			logger.info("Falling back to standard execution without enhancement...");
+			executeGeneratedTestsWithJUnit(fullPackageName, className);
+		}
+	}
+	
+	/**
+	 * Execute tests with a FailedTestCollector to gather failure information.
+	 */
+	private static Result executeTestsWithCollector(String fullPackageName, String className,
+													FailedTestCollector collector, boolean isFinalRound) {
+		try {
+			// Clean and setup
+			cleanOldCompiledTestClasses(fullPackageName);
+			setupAllureForIntelliJ();
+			
+			// For non-final rounds, clear Allure results to avoid accumulating intermediate results
+			if (!isFinalRound) {
+				clearAllureResults();
+			}
+			
+			// Find test class directory
+			String baseDir = System.getProperty("user.dir");
+			String packagePath = fullPackageName.replace('.', '/');
+			File testClassDir = new File(baseDir + "/src/test/java/" + packagePath);
+			
+			List<String> testClassNames = findTestClassNames(testClassDir, fullPackageName);
+			
+			if (testClassNames.isEmpty()) {
+				logger.error("No test classes found in package: {}", fullPackageName);
+				return null;
+			}
+			
+			// Compile tests
+			if (!compileTestClasses()) {
+				logger.error("Test compilation failed");
+				return null;
+			}
+			
+			// Add to classpath
+			addTestClassesToClasspath();
+			
+			// 🔧 CRITICAL FIX: Create a fresh ClassLoader for each round
+			// The JVM caches loaded classes, so we need a new ClassLoader to pick up
+			// changes from recompiled test files during enhancement rounds
+			File testClassesDir = new File(baseDir, "target/test-classes");
+			java.net.URL[] urls = new java.net.URL[] { testClassesDir.toURI().toURL() };
+			
+			// Create isolated ClassLoader that loads from test-classes first
+			java.net.URLClassLoader freshClassLoader = new java.net.URLClassLoader(
+				urls, 
+				TestGenerationAndExecution.class.getClassLoader()
+			) {
+				// Override loadClass to force loading from our URLs first for test classes
+				@Override
+				public Class<?> loadClass(String name) throws ClassNotFoundException {
+					// For test classes in our package, try to load fresh from URL first
+					if (name.startsWith(fullPackageName)) {
+						try {
+							// First check if class file exists in our test-classes
+							String classFile = name.replace('.', '/') + ".class";
+							java.net.URL resource = findResource(classFile);
+							if (resource != null) {
+								// Load fresh by reading the bytes directly
+								try (java.io.InputStream is = resource.openStream()) {
+									byte[] bytes = is.readAllBytes();
+									return defineClass(name, bytes, 0, bytes.length);
+								}
+							}
+						} catch (Exception e) {
+							// Fall through to parent
+						}
+					}
+					return super.loadClass(name);
+				}
+			};
+			
+			logger.debug("Created fresh ClassLoader for test execution to pick up recompiled classes");
+			
+			// Load test classes with the fresh ClassLoader
+			List<Class<?>> testClasses = new ArrayList<>();
+			for (String testClassName : testClassNames) {
+				try {
+					Class<?> testClass = freshClassLoader.loadClass(testClassName);
+					testClasses.add(testClass);
+					logger.debug("Loaded test class: {} (fresh)", testClassName);
+				} catch (ClassNotFoundException e) {
+					logger.error("Could not load test class: {} - {}", testClassName, e.getMessage());
+				}
+			}
+			
+			if (testClasses.isEmpty()) {
+				logger.error("No test classes could be loaded");
+				return null;
+			}
+			
+			// Create JUnit runner
+			JUnitCore junit = new JUnitCore();
+			
+			// ALWAYS add AllureJunit4 listener - required for Allure lifecycle management
+			// The generated tests use Allure.step(), Allure.parameter(), etc. which need
+			// an active Allure test context to avoid "no test case running" errors
+			AllureJunit4 allureListener = new AllureJunit4();
+			junit.addListener(allureListener);
+			
+			// Add our collector
+			junit.addListener(collector);
+			
+			// Add console listener
+			junit.addListener(new RunListener() {
+				@Override
+				public void testStarted(Description description) {
+					logger.debug("Starting: {}", description.getMethodName());
+				}
+				
+				@Override
+				public void testFailure(Failure failure) {
+					logger.debug("Failed: {} - {}", failure.getDescription().getMethodName(), 
+							failure.getMessage() != null ? failure.getMessage().substring(0, Math.min(100, failure.getMessage().length())) : "");
+				}
+			});
+			
+			// Execute
+			Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
+			Result result = junit.run(testClasses.toArray(new Class[0]));
+			Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
+			
+			return result;
+			
+		} catch (Exception e) {
+			logger.error("Error executing tests with collector: {}", e.getMessage());
+			return null;
+		}
+	}
+	
+	/**
+	 * Find all test class names in a directory.
+	 */
+	private static List<String> findTestClassNames(File testClassDir, String packageName) {
+		List<String> testClassNames = new ArrayList<>();
+		
+		if (!testClassDir.exists() || !testClassDir.isDirectory()) {
+			return testClassNames;
+		}
+		
+		// Look for .java files directly in the package directory
+		File[] javaFiles = testClassDir.listFiles((dir, name) -> name.endsWith(".java"));
+		if (javaFiles != null && javaFiles.length > 0) {
+			for (File javaFile : javaFiles) {
+				testClassNames.add(packageName + "." + javaFile.getName().replace(".java", ""));
+			}
+		}
+		
+		// Check subdirectories
+		File[] classDirs = testClassDir.listFiles(File::isDirectory);
+		if (classDirs != null) {
+			for (File classDir : classDirs) {
+				File[] subJavaFiles = classDir.listFiles((dir, name) -> name.endsWith(".java"));
+				if (subJavaFiles != null) {
+					for (File javaFile : subJavaFiles) {
+						testClassNames.add(packageName + "." + classDir.getName() + "." + 
+								javaFile.getName().replace(".java", ""));
+					}
+				}
+			}
+		}
+		
+		return testClassNames;
+	}
+	
+	/**
+	 * Find the path to a test file given class and method names.
+	 */
+	private static String findTestFilePath(String packageName, String className, 
+										   String testClassName, String testMethodName) {
+		String baseDir = System.getProperty("user.dir");
+		String packagePath = packageName.replace('.', '/');
+		
+		// The test class might be directly in the package or in a subdirectory
+		// Try direct path first
+		String directPath = baseDir + "/src/test/java/" + packagePath + "/" + 
+				testClassName.substring(testClassName.lastIndexOf('.') + 1) + ".java";
+		File directFile = new File(directPath);
+		if (directFile.exists()) {
+			return directPath;
+		}
+		
+		// Try with full class path
+		String fullClassPath = testClassName.replace('.', '/');
+		String fullPath = baseDir + "/src/test/java/" + fullClassPath + ".java";
+		File fullFile = new File(fullPath);
+		if (fullFile.exists()) {
+			return fullPath;
+		}
+		
+		logger.warn("Could not find test file for class: {}", testClassName);
+		return null;
 	}
 	
 	/**
@@ -1437,6 +1811,31 @@ public class TestGenerationAndExecution {
 		} catch (Exception e) {
 			logger.error("Failed to add test classes to classpath: {}", e.getMessage());
 			return false;
+		}
+	}
+	
+	/**
+	 * Clear Allure results between enhancement rounds.
+	 * This ensures only the final round's results are persisted.
+	 */
+	private static void clearAllureResults() {
+		try {
+			String baseDir = System.getProperty("user.dir");
+			File allureResultsDir = new File(baseDir, "target/allure-results");
+			if (allureResultsDir.exists()) {
+				File[] files = allureResultsDir.listFiles();
+				if (files != null) {
+					int deleted = 0;
+					for (File file : files) {
+						if (file.isFile() && file.delete()) {
+							deleted++;
+						}
+					}
+					logger.debug("Cleared {} Allure result files (intermediate round)", deleted);
+				}
+			}
+		} catch (Exception e) {
+			logger.warn("Could not clear Allure results: {}", e.getMessage());
 		}
 	}
 	

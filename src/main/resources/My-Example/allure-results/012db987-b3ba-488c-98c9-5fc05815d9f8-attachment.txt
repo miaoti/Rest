@@ -1,0 +1,36 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-travel-service
+Method: DELETE
+Path: /api/v1/admintravelservice/admintravel/TRIP-321654
+Operation: DELETE /api/v1/admintravelservice/admintravel/TRIP-321654
+Request Start (μs): 1765437145459000
+Search Window: 1765437135459000 to 1765437175459000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1765437135459000&end=1765437175459000
+Response Status: 200
+Response Body Length: 53367
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: SELECT ts.auth_user, SELECT User, SELECT User, SELECT ts.auth_user, SELECT ts.user_roles, +7 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=6025, APIs=5, hasTarget=true, timeDiff=689000μs, spans=12
+  Operations: DELETE, DELETE /*, FilteringWebHandler.handle, SELECT Trip, SELECT ts.trip2, +7 more
+Trace 3: score=1525, APIs=5, hasTarget=true, timeDiff=9977000μs, spans=12
+  Operations: DELETE, FilteringWebHandler.handle, DELETE /*, TripRepository.findByTripId, Transaction.commit, +7 more
+
+Selected trace 2 with score 6025 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 90795b93e0d1c5376ed2b289d6d78207
+✅ Complete trace fetched with 12 spans
+✅ Updated global best trace (score: 6025, timeDiff: 0.689s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6025, timeDiff: 0.689s)

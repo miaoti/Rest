@@ -1,0 +1,1 @@
+{"accountId":"5551234567","boughtDate":"2026-01-15","coachNumber":12353,"contactsDocumentNumber":"123456789012345678","contactsName":"fdse_service","differenceMoney":"175.50","documentType":"abc","from":"Beijing","id":"AR-2025-001","price":"1299.99","seatClass":1,"seatNumber":"12A","status":1,"to":"Beijing","trainNumber":"G1234","travelDate":"2025-12-25","travelTime":"18:05"}

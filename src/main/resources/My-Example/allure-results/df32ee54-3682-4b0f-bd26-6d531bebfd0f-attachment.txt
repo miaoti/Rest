@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • to = nonexistent
+
+Status Code: 400 (expected: 200)
+Status Code Indicates Error: ✅ YES
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The error message is about seatNumber format validation, not about the 'to' parameter that we intentionally made invalid. The API rejected the request due to an invalid seat number format, which is unrelated to our designed invalid 'to' parameter value of 'nonexistent'. The error does not mention or relate to the 'to' parameter we sent.

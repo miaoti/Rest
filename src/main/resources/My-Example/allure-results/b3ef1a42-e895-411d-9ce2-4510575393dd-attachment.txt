@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-price-service` during `INSERT ts.price_config` operation due to a duplicate entry violation on the `route_type_idx` unique constraint. The SQL exception `java.sql.SQLIntegrityConstraintViolationException` is thrown when attempting to insert a record with primary key 'Express-92708982-77af-4318-be25-57ccb0ff6' that already exists in the database.
+
+**FIX:**
+Implement idempotent insert logic in `ts-price-service` to check for existing records before insertion, or modify the application code to handle the `SQLIntegrityConstraintViolationException` by catching it and returning appropriate success response when the record already exists.

@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Create success","data":{"id":"AR-2025-001","trainType":"Regional","routeId":"<script>alert('XSS')</script>","basicPriceRate":150.75,"firstClassPriceRate":125.5}}
+Enhanced Parameters: {basicPriceRate=150.75, trainType=Regional, firstClassPriceRate=125.5, id=AR-2025-001}

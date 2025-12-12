@@ -1,0 +1,114 @@
+================================================================================
+                    FAULT DETECTION SUMMARY REPORT
+================================================================================
+
+Experiment:         trainticket_twostage_test_1765406433408
+Generated:          2025-12-10 17:07:08
+Tracking Started:   2025-12-10 16:40:33
+Total Test Cases:   10
+
+================================================================================
+FAULT COVERAGE SUMMARY
+================================================================================
+
+Total Injected Faults:    10
+Detected Faults:          1 (10.0%)
+Undetected Faults:        9 (90.0%)
+
+Detection Progress:
+[█████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] 10.0%
+
+================================================================================
+DETECTED FAULTS (1)
+================================================================================
+
+1. INSUFFICIENT_STATIONS_FAULT
+   Service:       ts-admin-route-service
+   API:           POST /api/v1/adminrouteservice/adminroute
+   Detections:    5 time(s)
+
+   Detection #1:
+     Test Class:  trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1
+     Test Method: test_negative_POST_1_10
+     Timestamp:   2025-12-10 16:58:58
+
+   Detection #2:
+     Test Class:  trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1
+     Test Method: test_POST_1_8
+     Timestamp:   2025-12-10 16:59:53
+
+   Detection #3:
+     Test Class:  trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1
+     Test Method: test_negative_POST_1_4
+     Timestamp:   2025-12-10 17:01:01
+
+   Detection #4:
+     Test Class:  trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1
+     Test Method: test_negative_POST_1_10
+     Timestamp:   2025-12-10 17:03:28
+
+   Detection #5:
+     Test Class:  trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1
+     Test Method: test_negative_POST_1_4
+     Timestamp:   2025-12-10 17:05:57
+
+--------------------------------------------------------------------------------
+
+================================================================================
+UNDETECTED FAULTS (9)
+================================================================================
+
+1. INVALID_CONTACTS_NAME_FAULT
+   Service:       ts-admin-order-service
+   API:           POST /api/v1/adminorderservice/adminorder` AND `PUT /api/v1/adminorderservice/adminorder
+
+2. INVALID_PRICE_RATE_FAULT
+   Service:       ts-admin-basic-info-service
+   API:           POST /api/v1/adminbasicservice/adminbasic/prices
+
+3. INVALID_ROUTE_ID_FAULT
+   Service:       ts-admin-basic-info-service
+   API:           POST /api/v1/adminbasicservice/adminbasic/prices
+
+4. INVALID_SEAT_NUMBER_FAULT
+   Service:       ts-admin-order-service
+   API:           POST /api/v1/adminorderservice/adminorder` AND `PUT /api/v1/adminorderservice/adminorder
+
+5. INVALID_STATION_LENGTH_FAULT (Travel Plan)
+   Service:       ts-travel-plan-service
+   API:           POST /api/v1/travelplanservice/travelPlan/minStation
+
+6. INVALID_STATION_NAME_FAULT
+   Service:       ts-travel-plan-service
+   API:           POST /api/v1/travelplanservice/travelPlan/minStation
+
+7. INVALID_STATION_NAME_LENGTH_FAULT
+   Service:       ts-admin-route-service
+   API:           POST /api/v1/adminrouteservice/adminroute
+
+8. INVALID_TRIP_ID_FORMAT_FAULT
+   Service:       ts-admin-travel-service
+   API:           DELETE /api/v1/admintravelservice/admintravel/{tripId}
+
+9. INVALID_TRIP_ID_LENGTH_FAULT
+   Service:       ts-admin-travel-service
+   API:           DELETE /api/v1/admintravelservice/admintravel/{tripId}
+
+================================================================================
+TEST CASES EXECUTED (10)
+================================================================================
+
+1. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_POST_1_3
+2. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_POST_1_7
+3. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_POST_1_8
+4. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_1
+5. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_10
+6. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_2
+7. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_4
+8. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_5
+9. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_6
+10. trainticket_twostage_test.TrainTicketTwoStageTest_1765406433408.post_api_v1_adminrouteservice_adminroute_1.test_negative_POST_1_9
+
+================================================================================
+                          END OF REPORT
+================================================================================

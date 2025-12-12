@@ -1,0 +1,1 @@
+{"basicPriceRate":200.0,"firstClassPriceRate":120.0,"id":"TS-2025-045","routeId":"92708982-77af-4318-be25-57ccb0ff69af","trainType":"trainType1234567890"}

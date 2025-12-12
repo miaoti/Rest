@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-route-plan-service` at `RoutePlanController.getMinStopStations` operation. The NullPointerException originates from `RoutePlanServiceImpl.searchMinStopStations` method at line 178, indicating a null reference being accessed during route planning logic execution.
+
+**FIX:**
+Add null validation checks before accessing objects in `RoutePlanServiceImpl.searchMinStopStations` method at line 178. Specifically, identify and validate all potentially null inputs, references, or intermediate objects that could cause the NullPointerException during min stop station search algorithm execution.

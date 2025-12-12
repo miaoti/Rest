@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** 
+The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize JSON payload. The specific error is `HttpMessageNotReadableException` caused by `InvalidFormatException` where string value "abc" cannot be deserialized to required `int` type for `documentType` field in `Order` entity.
+
+**FIX:** 
+Validate and correct the `documentType` field in the POST request payload sent from `ts-gateway-service` to ensure it contains valid integer values instead of string "abc". The gateway service must sanitize input data before forwarding to the order service.

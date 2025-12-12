@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • trainType = trainType_value_exceeding_maximum_length_limitation_of_one_thousand_characters_or_more_than_what_is_normally_expected_for_this_parameter_field_in_the_system
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API returned HTTP status 200 with a success message "Create success" and actually included the invalid trainType value in the response data, which means it accepted the invalid input instead of rejecting it. The response shows no validation error related to the trainType parameter length limitation, indicating the negative test fails because the API did not properly reject the invalid data.

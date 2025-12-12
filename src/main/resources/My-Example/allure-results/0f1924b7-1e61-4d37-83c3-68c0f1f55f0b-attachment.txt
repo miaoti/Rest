@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-travel-plan-service` during a POST operation with HTTP 500 status. The service encountered an unhandled exception during request processing, causing the operation to fail.
+
+**FIX:**
+Add proper error handling and logging to `ts-travel-plan-service` POST endpoint to catch and handle exceptions gracefully. Implement structured error responses and ensure all potential failure points in the request processing pipeline are protected with try-catch blocks.

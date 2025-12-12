@@ -1,0 +1,1 @@
+{"status":0,"msg":"Route creation rejected: each station name must be between 2 and 50 characters","data":{"faultName":"INVALID_STATION_NAME_LENGTH_FAULT","message":"Route creation rejected: each station name must be between 2 and 50 characters","details":"Station: '2', Length: 1","injected":true}}

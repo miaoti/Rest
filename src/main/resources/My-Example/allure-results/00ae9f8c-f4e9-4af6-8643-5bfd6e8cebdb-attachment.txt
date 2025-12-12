@@ -1,0 +1,1 @@
+{"distanceList":"15.2","endStation":"Miami Beach Transit Center","id":"[1,2,3]","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":"Seattle King Street Station,Seattle Center Station,Pike Place Market Station"}

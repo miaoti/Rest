@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize JSON data. The `documentType` field contains the malicious string "' OR 1=1--" which cannot be converted to an integer type, causing a `com.fasterxml.jackson.databind.exc.InvalidFormatException`.
+
+**FIX:** Implement input validation and sanitization for the `documentType` field in the Order entity to reject malformed or malicious input before deserialization, or add proper exception handling with meaningful error responses.

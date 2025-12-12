@@ -1,0 +1,1 @@
+{"basicPriceRate":125.5,"firstClassPriceRate":75.25,"id":"AR-2025-001","routeId":"RT-67890","trainType":"Express"}

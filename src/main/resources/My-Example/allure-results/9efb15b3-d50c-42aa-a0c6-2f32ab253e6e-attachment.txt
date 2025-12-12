@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` receiving invalid POST request payload resulting in 400 Bad Request error during travel service integration.
+
+**FIX:** Validate and sanitize incoming request payload format in `ts-gateway-service` before forwarding to `ts-travel-service` to ensure compliance with expected API schema.

@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"start or end station not include in stationList.","data":null}
+Enhanced Parameters: {endStation=Times Square Station, stationList=New York Penn Station,Grand Central Terminal,Times Square Station,Chicago Union Station,Seattle Station, startStation=New York Penn Station}

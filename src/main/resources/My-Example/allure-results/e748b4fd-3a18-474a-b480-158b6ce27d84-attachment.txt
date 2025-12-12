@@ -1,0 +1,1 @@
+{"distanceList":"35.1","endStation":"Times Square Station","id":"AR-2025-001","loginId":"admin_user_001","startStation":"New York Penn Station","stationList":"New York Penn Station,Grand Central Terminal,Times Square Station,Chicago Union Station,Seattle Station"}

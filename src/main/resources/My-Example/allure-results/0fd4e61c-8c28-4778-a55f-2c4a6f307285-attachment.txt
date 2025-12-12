@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"0bb101fc-78d9-424a-8101-30013a28072e","boughtDate":"2025-12-15","travelDate":"2025-12-25","travelTime":"08:30","accountId":"1112223333","contact...
+Enhanced Parameters: {accountId=1112223333, travelDate=2025-12-25, contactsDocumentNumber=123456789012345678, from=Beijing, to=Shanghai}

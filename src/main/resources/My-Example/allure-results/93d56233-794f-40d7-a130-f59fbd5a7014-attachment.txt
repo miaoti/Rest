@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when processing a POST request. The JSON payload contains a `coachNumber` field with value "9999999999", which exceeds the Integer range (-2147483648 to 2147483647). Jackson deserialization throws `InvalidFormatException` when attempting to convert the string to an Integer.
+
+**FIX:**
+Change the `coachNumber` field type from `Integer` to `Long` in the `Order` entity class to accommodate the large numeric value, and update the corresponding JSON schema validation to accept long integers.

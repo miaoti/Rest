@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • trainNumber = ' OR '1'='1
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API accepted the invalid trainNumber input and returned a successful response with the malicious value "' OR '1'='1" stored in the data field. Since the API did not reject the invalid input but instead processed it as if it were valid, this represents a security vulnerability where SQL injection attempts are not being properly validated or sanitized. The response shows the API accepted our invalid input rather than rejecting it.

@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • boughtDate = ' OR '1'='1 --
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API response shows a successful operation with HTTP status 200 and message "Add new Order Success", indicating that the invalid boughtDate parameter was accepted instead of being rejected. The response even includes the malicious SQL injection value in the data field, confirming the API failed to validate the input properly. This is a clear case where the API accepted invalid input, making the negative test fail.

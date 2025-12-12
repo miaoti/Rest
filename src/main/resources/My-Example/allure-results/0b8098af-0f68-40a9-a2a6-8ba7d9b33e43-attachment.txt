@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • trainType = ' OR '1'='1
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API returned HTTP status 200 with a successful response, indicating it accepted the invalid trainType parameter value "' OR '1'='1" without rejection. The response shows "Create success" and includes the malicious input in the data field, which means the API failed to validate or reject the SQL injection attempt. This represents a security vulnerability where invalid input was not properly filtered or rejected.

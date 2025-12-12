@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload containing `<script>alert('XSS')</script>` as a `double` type for the field `firstClassPriceRate`. The Jackson deserializer throws `InvalidFormatException` because the string value is not a valid double.
+
+**FIX:**
+Implement input validation and sanitization in `AdminBasicInfoController.addPrice` to reject or sanitize non-numeric values before deserialization. Add proper exception handling to return HTTP 400 with descriptive error message for invalid numeric inputs.

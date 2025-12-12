@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-travel-plan-service` during a POST operation with HTTP 500 status. The service failed to process the request, causing downstream propagation to `ts-route-service` and another unspecified service, resulting in 3 total failed spans.
+
+**FIX:**
+Investigate `ts-travel-plan-service` POST endpoint implementation for unhandled exceptions or data processing failures. Check error logs for specific exception details and ensure proper error handling and validation of incoming request data.

@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The primary failure occurs in `ts-price-service` during `UPDATE ts.price_config` operation with `java.sql.SQLIntegrityConstraintViolationException` due to duplicate entry 'Express-RT-12345' for key 'route_type_idx'. The secondary failure in `ts-gateway-service` is a propagated 500 error from the first failure.
+
+**FIX:**
+Implement duplicate detection and handling in `ts-price-service` before executing the UPDATE operation. Add a pre-check query to verify if the route type entry already exists, and either skip the operation or use UPSERT logic to handle existing records gracefully.

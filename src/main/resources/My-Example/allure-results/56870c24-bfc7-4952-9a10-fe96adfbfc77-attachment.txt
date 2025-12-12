@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurred in `ts-route-service` at operation `GET /api/v1/routeservice/routes/{routeId}/` with HTTP 403 status due to `RequestRejectedException` caused by malicious string ";". The exception was thrown by Spring Security's firewall rejecting the request containing potentially malicious input.
+
+**FIX:**
+Implement proper input validation and sanitization in `ts-route-service` to handle semicolon characters in routeId parameters, or configure Spring Security's firewall to allow legitimate semicolon usage in the URL path.

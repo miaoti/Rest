@@ -1,0 +1,34 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-order-service
+Method: GET
+Path: /api/v1/adminorderservice/adminorder
+Operation: GET /api/v1/adminorderservice/adminorder
+Request Start (μs): 1765452153778000
+Search Window: 1765452143778000 to 1765452183778000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1765452143778000&end=1765452183778000
+Response Status: 200
+Response Body Length: 44378
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=6035, APIs=7, hasTarget=true, timeDiff=471000μs, spans=19
+  Operations: Transaction.commit, SELECT Order, SELECT ts.orders_other, OrderOtherController.findAl..., GET /api/v1/orderOtherServi..., +14 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: POST /*, POST, FilteringWebHandler.handle, SELECT User, SELECT User, +7 more
+
+Selected trace 0 with score 6035 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: ca5ef072b884d161268450ad0ef4afdb
+✅ Complete trace fetched with 19 spans
+✅ Updated global best trace (score: 6035, timeDiff: 0.471s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6035, timeDiff: 0.471s)

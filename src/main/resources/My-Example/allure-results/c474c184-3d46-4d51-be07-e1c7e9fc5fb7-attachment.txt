@@ -1,0 +1,10 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** 
+`ts-price-service` fails during `UPDATE ts.price_config` with `java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'Intercity-RT-12345' for key 'route_type_idx'` - primary key constraint violation when attempting to insert/update record with duplicate route_type value.
+
+**FIX:** 
+Add duplicate detection logic in `ts-price-service` before executing `UPDATE ts.price_config` operation. Implement either:
+1. Pre-check existence of route_type before update
+2. Use UPSERT/ON DUPLICATE KEY UPDATE SQL syntax
+3. Add proper error handling to return 409 Conflict instead of 500 Internal Server Error

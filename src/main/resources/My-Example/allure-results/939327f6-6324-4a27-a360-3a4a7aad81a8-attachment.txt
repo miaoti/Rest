@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-price-service` fails during `UPDATE ts.price_config` with `SQLIntegrityConstraintViolationException` due to duplicate entry 'Express-RT-12345' for key 'route_type_idx', indicating a data integrity constraint violation.
+
+**FIX:** Implement duplicate detection and handling in `ts-price-service` before executing the UPDATE operation. Add pre-check logic to verify if the record already exists with the same route type index, or modify the database constraint to allow updates of existing records instead of throwing duplicate entry error.

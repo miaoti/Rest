@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-basic-info-service` fails in `AdminBasicInfoController.addPrice` when attempting to deserialize JSON field `firstClassPriceRate` from string "[1,2,3]" to `double` type. The Jackson deserializer cannot convert the array string to a double value.
+
+**FIX:** Update the API contract to either:
+1. Change `firstClassPriceRate` field type from `double` to `List<Double>` in `PriceInfo` entity, or
+2. Modify the client to send a single numeric value instead of array "[1,2,3]" for `firstClassPriceRate` field

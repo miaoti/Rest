@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` during a POST operation with HTTP 500 status. The service endpoint handling this POST request is throwing an unhandled exception, causing the service to crash and return a 500 error.
+
+**FIX:**
+Add proper exception handling to the POST endpoint in `ts-admin-basic-info-service` to catch and log the specific error, then return an appropriate HTTP 500 response with error details. The underlying cause of the 500 error must be identified and resolved (likely a null pointer exception, database connection issue, or validation failure).

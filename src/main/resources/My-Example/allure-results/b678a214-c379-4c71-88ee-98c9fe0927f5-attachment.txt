@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize JSON payload. The specific error is a `JsonMappingException` where the string `"' OR 1=1--"` (SQL injection attempt) is being passed as a value for an `int` field `status`, causing `HttpMessageNotReadableException`.
+
+**FIX:**
+Implement input validation and sanitization in `ts-admin-order-service` to reject malformed JSON payloads before deserialization. Add proper `@Valid` annotations with `@Min`/`@Max` constraints on the `status` field, and configure `spring.jackson.deserialization.fail-on-unknown-properties=true` to reject unexpected fields. Additionally, implement proper SQL injection detection and rejection at the gateway level.
