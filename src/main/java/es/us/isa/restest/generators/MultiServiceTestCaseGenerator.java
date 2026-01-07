@@ -786,7 +786,20 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     case "path":
                         pathParams.put(p.getName(), val); // Path params must be strings for URL construction
                         if (val != null) {
-                        resolvedPath = resolvedPath.replace("{"+p.getName()+"}", val);
+                            // 🔥 FIX: URL-encode path parameter values for proper handling of whitespace and special characters
+                            // This is critical for EMPTY_INPUT testing where values like " ", "\t", "\n" must be encoded
+                            String encodedVal;
+                            try {
+                                encodedVal = java.net.URLEncoder.encode(val, java.nio.charset.StandardCharsets.UTF_8)
+                                        .replace("+", "%20"); // URLEncoder uses + for space, but URL paths need %20
+                            } catch (Exception e) {
+                                log.warn("Failed to URL-encode path parameter '{}' value '{}': {}", p.getName(), val, e.getMessage());
+                                encodedVal = val; // Fall back to original value
+                            }
+                            resolvedPath = resolvedPath.replace("{"+p.getName()+"}", encodedVal);
+                            if (!val.equals(encodedVal)) {
+                                log.debug("Path parameter '{}' URL-encoded: '{}' -> '{}'", p.getName(), val, encodedVal);
+                            }
                         }
                         break;
                     case "query":

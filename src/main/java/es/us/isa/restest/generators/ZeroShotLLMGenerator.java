@@ -451,9 +451,11 @@ public class ZeroShotLLMGenerator {
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, null);
         
         // String representations of null (sometimes APIs parse these)
+        // NOTE: Only use lowercase "null" to avoid class name conflicts on case-insensitive filesystems
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "NULL");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "Null");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "undefined");
+        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "nil");
     }
     
     /**
@@ -926,6 +928,86 @@ public class ZeroShotLLMGenerator {
     }
 
     /**
+     * Truncate response body for LLM validation prompts.
+     * Large responses (e.g., GET /adminorder with thousands of records) can overwhelm the LLM.
+     * This method:
+     * 1. Limits total length to MAX_RESPONSE_BODY_LENGTH chars
+     * 2. For JSON arrays, shows first few + last few elements with [...] indicator
+     * 
+     * @param responseBody The original response body
+     * @return Truncated version suitable for LLM prompt
+     */
+    private static final int MAX_RESPONSE_BODY_LENGTH = 10000; // Max chars for response body in LLM prompts
+    
+    private String truncateResponseForLLM(String responseBody) {
+        if (responseBody == null || responseBody.isEmpty()) {
+            return "(empty response)";
+        }
+        
+        // If already within limit, return as-is
+        if (responseBody.length() <= MAX_RESPONSE_BODY_LENGTH) {
+            return responseBody;
+        }
+        
+        // Try to intelligently truncate JSON arrays
+        String trimmed = responseBody.trim();
+        if (trimmed.contains("\"data\":[") && trimmed.contains("]")) {
+            // This looks like a JSON response with a data array
+            try {
+                // Find the data array boundaries
+                int dataStart = trimmed.indexOf("\"data\":[");
+                if (dataStart >= 0) {
+                    int arrayStart = dataStart + 7; // Position after "data":[
+                    
+                    // Count array elements to provide context
+                    int bracketCount = 0;
+                    int elementCount = 0;
+                    for (int i = arrayStart; i < trimmed.length(); i++) {
+                        char c = trimmed.charAt(i);
+                        if (c == '{') {
+                            if (bracketCount == 0) elementCount++;
+                            bracketCount++;
+                        } else if (c == '}') bracketCount--;
+                        else if (c == ']' && bracketCount == 0) break;
+                    }
+                    
+                    // Build truncated version showing metadata + count
+                    StringBuilder truncated = new StringBuilder();
+                    truncated.append("{\n  \"_truncation_note\": \"Response truncated for LLM analysis. Original had ~");
+                    truncated.append(elementCount).append(" elements in data array.\",\n");
+                    
+                    // Include first 3000 chars to show structure
+                    int previewLength = Math.min(3000, trimmed.length());
+                    truncated.append("  \"_preview_start\": ");
+                    truncated.append(trimmed.substring(0, previewLength));
+                    
+                    // Add ellipsis and ending
+                    truncated.append("\n  ... [TRUNCATED ").append(responseBody.length() - previewLength).append(" chars] ...\n");
+                    
+                    // Include last 500 chars to show closing structure
+                    if (trimmed.length() > 500) {
+                        truncated.append("  \"_preview_end\": ...");
+                        truncated.append(trimmed.substring(trimmed.length() - 500));
+                    }
+                    truncated.append("\n}");
+                    
+                    return truncated.toString();
+                }
+            } catch (Exception e) {
+                // Fall through to simple truncation
+            }
+        }
+        
+        // Simple truncation: first 8000 + last 1500 chars
+        StringBuilder truncated = new StringBuilder();
+        truncated.append(responseBody.substring(0, 8000));
+        truncated.append("\n\n... [TRUNCATED ").append(responseBody.length() - 9500).append(" chars] ...\n\n");
+        truncated.append(responseBody.substring(responseBody.length() - 1500));
+        
+        return truncated.toString();
+    }
+
+    /**
      * Validate a 2XX response to detect "soft errors" - cases where the API returns 200 OK
      * but includes error information in the response body.
      * 
@@ -973,7 +1055,18 @@ public class ZeroShotLLMGenerator {
         userPrompt.append("- HTTP Status Code: ").append(statusCode).append("\n\n");
         userPrompt.append("Response Body:\n");
         userPrompt.append("```json\n");
-        userPrompt.append(responseBody).append("\n");
+        
+        // 🔥 SMART FIX: JSON-aware truncation that preserves ALL root-level fields
+        // Simple truncation could miss error indicators at the end (e.g., {"status":1, "data":[...], "failed":true})
+        // This approach: parse JSON, keep all root fields, only truncate/summarize data arrays
+        final int MAX_RESPONSE_BODY_SIZE = 16 * 1024; // 16KB threshold
+        if (responseBody != null && responseBody.length() > MAX_RESPONSE_BODY_SIZE) {
+            String processedBody = smartTruncateJsonResponse(responseBody, MAX_RESPONSE_BODY_SIZE);
+            userPrompt.append(processedBody);
+        } else {
+            userPrompt.append(responseBody).append("\n");
+        }
+        
         userPrompt.append("```\n\n");
         userPrompt.append("Examples:\n");
         userPrompt.append("Example 1 (Soft Error):\n");
@@ -1087,7 +1180,16 @@ public class ZeroShotLLMGenerator {
         
         userPrompt.append("Response Body:\n");
         userPrompt.append("```json\n");
-        userPrompt.append(responseBody).append("\n");
+        
+        // 🔥 Use same smart JSON truncation logic to preserve all root-level error fields
+        final int MAX_RESPONSE_BODY_SIZE = 16 * 1024; // 16KB max
+        if (responseBody != null && responseBody.length() > MAX_RESPONSE_BODY_SIZE) {
+            String processedBody = smartTruncateJsonResponse(responseBody, MAX_RESPONSE_BODY_SIZE);
+            userPrompt.append(processedBody);
+        } else {
+            userPrompt.append(responseBody).append("\n");
+        }
+        
         userPrompt.append("```\n\n");
         
         userPrompt.append("Examples:\n");
@@ -1117,6 +1219,12 @@ public class ZeroShotLLMGenerator {
         try {
             // Call LLM service
             String llmResponse = llmService.generateText(systemPrompt.toString(), userPrompt.toString(), 500, 0.3);
+            
+            // Handle null response from LLM
+            if (llmResponse == null || llmResponse.trim().isEmpty()) {
+                System.err.println("⚠️ LLM returned null/empty response for negative test validation");
+                return new ValidationResult(false, "LLM returned empty response - validation skipped", "");
+            }
             
             // Parse response
             boolean isFailed = false;
@@ -1154,10 +1262,116 @@ public class ZeroShotLLMGenerator {
             return new ValidationResult(negativeTestPassed, enhancedRca, llmResponse);
             
         } catch (Exception e) {
-            System.err.println("⚠️ Failed to validate negative test response with LLM: " + e.getMessage());
+            // Better error handling with exception type
+            String errorMsg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+            System.err.println("⚠️ Failed to validate negative test response with LLM: " + errorMsg);
+            e.printStackTrace(); // Print stack trace for debugging
             // Return non-failed by default (negative test fails if we can't validate)
-            return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
+            return new ValidationResult(false, "LLM validation failed: " + errorMsg, "");
         }
+    }
+
+    /**
+     * 🔥 Smart JSON truncation that preserves ALL root-level fields for error detection.
+     * 
+     * Problem: Simple truncation could miss error indicators at the end of the response.
+     * Example: {"status":1, "data":[...100KB...], "failed":true, "error":"timeout"}
+     *          Simple truncation would cut off "failed" and "error"!
+     * 
+     * Solution: Parse JSON and keep all root-level fields, only truncate/summarize data arrays.
+     */
+    private String smartTruncateJsonResponse(String responseBody, int maxSize) {
+        try {
+            // Try to parse as JSON object using Gson (already in project dependencies)
+            com.google.gson.JsonParser parser = new com.google.gson.JsonParser();
+            com.google.gson.JsonElement element = parser.parse(responseBody);
+            
+            if (element.isJsonObject()) {
+                com.google.gson.JsonObject jsonObject = element.getAsJsonObject();
+                
+                // Build a summary that includes ALL root-level fields
+                StringBuilder summary = new StringBuilder();
+                summary.append("{\n");
+                
+                // Collect all fields - preserve primitives, truncate arrays
+                java.util.List<String> preservedFields = new java.util.ArrayList<>();
+                java.util.List<String> truncatedArrays = new java.util.ArrayList<>();
+                
+                for (java.util.Map.Entry<String, com.google.gson.JsonElement> entry : jsonObject.entrySet()) {
+                    String key = entry.getKey();
+                    com.google.gson.JsonElement value = entry.getValue();
+                    
+                    if (value.isJsonArray()) {
+                        com.google.gson.JsonArray arr = value.getAsJsonArray();
+                        int arraySize = arr.size();
+                        
+                        // Show first 3 items + summary
+                        StringBuilder arraySummary = new StringBuilder();
+                        arraySummary.append("  \"").append(key).append("\": [");
+                        
+                        if (arraySize > 0) {
+                            int itemsToShow = Math.min(3, arraySize);
+                            for (int i = 0; i < itemsToShow; i++) {
+                                if (i > 0) arraySummary.append(",");
+                                String itemStr = arr.get(i).toString();
+                                if (itemStr.length() > 200) {
+                                    itemStr = itemStr.substring(0, 200) + "...}";
+                                }
+                                arraySummary.append("\n    ").append(itemStr);
+                            }
+                            if (arraySize > itemsToShow) {
+                                arraySummary.append(",\n    /* ... ").append(arraySize - itemsToShow)
+                                           .append(" more items (").append(arraySize).append(" total) ... */");
+                            }
+                            arraySummary.append("\n  ]");
+                        } else {
+                            arraySummary.append("]");
+                        }
+                        truncatedArrays.add(arraySummary.toString());
+                        
+                    } else if (value.isJsonObject() && value.toString().length() > 500) {
+                        // Truncate large nested objects but show structure
+                        String objStr = value.toString();
+                        preservedFields.add("  \"" + key + "\": " + objStr.substring(0, 500) + "... /* truncated */}");
+                        
+                    } else {
+                        // Preserve all primitive values - CRITICAL for error detection!
+                        preservedFields.add("  \"" + key + "\": " + value.toString());
+                    }
+                }
+                
+                // Output: first all preserved fields, then truncated arrays
+                boolean first = true;
+                for (String field : preservedFields) {
+                    if (!first) summary.append(",\n");
+                    summary.append(field);
+                    first = false;
+                }
+                for (String arr : truncatedArrays) {
+                    if (!first) summary.append(",\n");
+                    summary.append(arr);
+                    first = false;
+                }
+                
+                summary.append("\n}");
+                summary.append("\n/* NOTE: Response was ").append(responseBody.length())
+                       .append(" bytes. All root-level fields preserved, only data arrays summarized. */\n");
+                
+                return summary.toString();
+            }
+            
+        } catch (Exception e) {
+            // JSON parsing failed, fall back to simple truncation
+            System.err.println("⚠️ JSON-aware truncation failed, using simple truncation: " + e.getMessage());
+        }
+        
+        // Fallback: simple truncation at JSON boundary
+        String truncated = responseBody.substring(0, Math.min(maxSize, responseBody.length()));
+        int lastCloseBrace = truncated.lastIndexOf("},");
+        if (lastCloseBrace > maxSize / 2) {
+            truncated = truncated.substring(0, lastCloseBrace + 1);
+        }
+        return truncated + "\n... [TRUNCATED - Original size: " + responseBody.length() + " bytes]\n";
     }
 
     /**

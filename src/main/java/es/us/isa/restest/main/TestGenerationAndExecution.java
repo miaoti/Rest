@@ -98,6 +98,7 @@ public class TestGenerationAndExecution {
 	private static Integer timeDelay; 									// Delay between requests in seconds (-1 for no delay)
 	private static String generator; 									// Generator (RT: Random testing, CBT:Constraint-based testing)
 	private static Boolean logToFile;									// If 'true', log messages will be printed to external files
+	private static long testGenerationStartTime = 0;					// Timestamp when test generation started (used for file filtering)
 	private static boolean executeTestCases;							// If 'false', test cases will be generated but not executed
 	private static boolean allureReports;								// If 'true', Allure reports will be generated
 	private static boolean checkTestCases;								// If 'true', test cases will be checked with OASValidator before executing them
@@ -171,6 +172,11 @@ public class TestGenerationAndExecution {
 			// MST mode: generate once and write multiple files
 			logger.info("Running MST mode - generating multi-service test files");
 			logger.info("ISOLATION MODE: Each run will generate and execute only newly generated tests");
+			
+			// 🔥 FIX: Store the start timestamp BEFORE test generation begins
+			// This is used to filter which test files to compile/execute (instead of hardcoded 5 minutes)
+			testGenerationStartTime = System.currentTimeMillis();
+			logger.info("Test generation start timestamp: {} (will be used for file filtering)", testGenerationStartTime);
 			
 			// Generate unique test class name
 			String id = IDGenerator.generateTimeId();
@@ -1549,13 +1555,47 @@ public class TestGenerationAndExecution {
 			compilerArgs.addAll(options);
 			compilerArgs.addAll(fileNames);
 			
-			// Run compilation
-			int result = compiler.run(null, null, null, compilerArgs.toArray(new String[0]));
+			// 🔧 FIX: Capture compiler output to detect compilation errors
+			java.io.ByteArrayOutputStream errorStream = new java.io.ByteArrayOutputStream();
+			java.io.PrintStream errorPrintStream = new java.io.PrintStream(errorStream);
 			
-			if (result == 0) {
+			// Run compilation with error capture
+			int result = compiler.run(null, errorPrintStream, errorPrintStream, compilerArgs.toArray(new String[0]));
+			
+			// Check for any error output even if result is 0
+			String errorOutput = errorStream.toString();
+			if (!errorOutput.isEmpty()) {
+				logger.warn("Compilation output:\n{}", errorOutput);
+			}
+			
+			// Verify all class files were actually created
+			int compiledCount = 0;
+			int failedCount = 0;
+			for (File javaFile : javaFiles) {
+				String className = javaFile.getName().replace(".java", ".class");
+				String relativePath = javaFile.getAbsolutePath()
+					.replace(testSourceDir.getAbsolutePath(), "")
+					.replace(".java", ".class");
+				File classFile = new File(testClassesDir.getAbsolutePath() + relativePath);
+				if (classFile.exists()) {
+					compiledCount++;
+				} else {
+					failedCount++;
+					logger.error("❌ Failed to compile: {} (no .class file found at {})", 
+						javaFile.getName(), classFile.getAbsolutePath());
+				}
+			}
+			
+			logger.info("Compilation summary: {} compiled, {} failed out of {} total", 
+				compiledCount, failedCount, javaFiles.size());
+			
+			if (result == 0 && failedCount == 0) {
 				long duration = System.currentTimeMillis() - startTime;
 				logger.info("✅ Fast compilation of newly generated tests completed successfully in {} ms", duration);
 				return true;
+			} else if (failedCount > 0) {
+				logger.error("❌ Some files failed to compile ({} failures). Falling back to Maven...", failedCount);
+				return fallbackMavenCompilation();
 			} else {
 				logger.error("❌ Fast compilation failed with exit code: {}", result);
 				logger.info("Falling back to Maven compilation...");
@@ -1569,8 +1609,12 @@ public class TestGenerationAndExecution {
 	}
 	
 	/**
-	 * ENHANCED: Find only newly generated Java files based on recent modification time
+	 * ENHANCED: Find only newly generated Java files based on generation start time
 	 * This prevents old test files from being included in compilation
+	 * 
+	 * 🔥 FIX: Uses testGenerationStartTime instead of hardcoded 5 minutes
+	 * This ensures ALL files generated in the current run are included,
+	 * even if test generation takes hours!
 	 */
 	private static List<File> findNewlyGeneratedJavaFiles(File dir) {
 		List<File> javaFiles = new ArrayList<>();
@@ -1578,8 +1622,19 @@ public class TestGenerationAndExecution {
 			return javaFiles;
 		}
 		
-		// Only look for files modified in the last 5 minutes (indicating recent generation)
-		long cutoffTime = System.currentTimeMillis() - (5 * 60 * 1000); // 5 minutes ago
+		// 🔥 FIX: Use the stored generation start time, or fallback to 2 hours ago if not set
+		// This ensures we include all files generated during this run, regardless of how long it took
+		long cutoffTime;
+		if (testGenerationStartTime > 0) {
+			// Use the actual start time (minus 1 second buffer for file system timing)
+			cutoffTime = testGenerationStartTime - 1000;
+			logger.debug("Using test generation start time as cutoff: {} ({}ms ago)", 
+				cutoffTime, System.currentTimeMillis() - cutoffTime);
+		} else {
+			// Fallback: 2 hours ago (much safer than 5 minutes)
+			cutoffTime = System.currentTimeMillis() - (2 * 60 * 60 * 1000);
+			logger.warn("testGenerationStartTime not set, using 2-hour fallback cutoff");
+		}
 		
 		findRecentJavaFiles(dir, javaFiles, cutoffTime);
 		
@@ -1589,6 +1644,9 @@ public class TestGenerationAndExecution {
 			for (File file : javaFiles) {
 				logger.info("  - {}", file.getAbsolutePath());
 			}
+		} else {
+			logger.warn("No recently generated Java files found! Cutoff time: {} ({}ms ago)", 
+				cutoffTime, System.currentTimeMillis() - cutoffTime);
 		}
 		
 		return javaFiles;

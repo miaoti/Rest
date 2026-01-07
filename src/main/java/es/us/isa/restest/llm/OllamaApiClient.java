@@ -91,10 +91,12 @@ public class OllamaApiClient {
                 
                 requestBody.put("messages", messages);
                 
-                // Add options for temperature and other parameters
+                // Add options for temperature (NOT num_predict - it causes empty content with qwen3 models)
+                // 🔥 FIX: Removed num_predict option because it causes message.content to be empty
+                // with qwen3:8b and similar models that use thinking mode
                 JSONObject options = new JSONObject();
                 options.put("temperature", temperature);
-                options.put("num_predict", Math.min(maxTokens, 512)); // Limit tokens for efficiency
+                // NOT adding num_predict - it breaks content generation
                 requestBody.put("options", options);
                 
                 logger.debug("[Ollama API] Request URL: {}", url);

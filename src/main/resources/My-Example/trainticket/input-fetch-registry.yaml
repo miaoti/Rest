@@ -5,9 +5,9 @@ lastUpdated:
 - 12
 - 12
 - 13
-- 30
-- 12
-- 418939700
+- 58
+- 35
+- 968706700
 parameterMappings:
   departureTime:
   - endpoint: "/api/v1/travelservice/trips"
@@ -3206,9 +3206,9 @@ parameterErrors:
       - 12
       - 12
       - 13
-      - 25
-      - 26
-      - 965516900
+      - 58
+      - 35
+      - 942953100
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3219,9 +3219,9 @@ parameterErrors:
       - 12
       - 12
       - 13
-      - 28
-      - 21
-      - 997085400
+      - 43
+      - 37
+      - 13385900
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -3236,6 +3236,19 @@ parameterErrors:
       - 2
       - 361517300
       additionalInfo: null
+    - errorType: "NULL_ERROR"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/travelservice/trips/left"
+      parameterName: "departureTime"
+      timestamp:
+      - 2025
+      - 12
+      - 12
+      - 13
+      - 42
+      - 15
+      - 336104300
+      additionalInfo: null
     startPlace:
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3246,9 +3259,9 @@ parameterErrors:
       - 12
       - 12
       - 13
-      - 26
-      - 7
-      - 363576300
+      - 49
+      - 11
+      - 113023300
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3258,10 +3271,10 @@ parameterErrors:
       - 2025
       - 12
       - 12
-      - 8
-      - 1
-      - 7
-      - 470362900
+      - 13
+      - 45
+      - 32
+      - 670021200
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3271,10 +3284,10 @@ parameterErrors:
       - 2025
       - 12
       - 12
-      - 8
-      - 6
-      - 5
-      - 461283400
+      - 13
+      - 50
+      - 34
+      - 96074900
       additionalInfo: null
     endPlace:
     - errorType: "VALIDATION_ERROR"
@@ -3286,9 +3299,9 @@ parameterErrors:
       - 12
       - 12
       - 13
-      - 19
-      - 57
-      - 814605600
+      - 40
+      - 37
+      - 748630500
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3298,10 +3311,10 @@ parameterErrors:
       - 2025
       - 12
       - 12
-      - 8
-      - 6
-      - 44
-      - 416248300
+      - 13
+      - 51
+      - 13
+      - 262169100
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3311,10 +3324,10 @@ parameterErrors:
       - 2025
       - 12
       - 12
-      - 8
-      - 1
-      - 58
-      - 363416700
+      - 13
+      - 46
+      - 24
+      - 948910000
       additionalInfo: null
   /api/v1/routeservice/routes/startplace/beijing:
     startPlace:

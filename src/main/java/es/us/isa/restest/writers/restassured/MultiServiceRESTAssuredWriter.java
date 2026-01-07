@@ -1079,6 +1079,43 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     }
                     pw.println();
                     
+                    /* ------------ Add Allure suite grouping labels for normalized API path ---------- */
+                    // 🔥 FIX: Group tests by API Method + Template Path (not by resolved path with param values)
+                    // This ensures all tests for DELETE /api/v1/admintravelservice/admintravel/{tripId} 
+                    // are grouped together regardless of the tripId value
+                    if (allureReport && !mstc.getSteps().isEmpty()) {
+                        MultiServiceTestCase.StepCall firstStepForSuite = mstc.getSteps().get(0);
+                        String templatePath = "";
+                        String httpMethodForSuite = firstMethod; // Already computed above
+                        
+                        // Get template path from Operation (contains {placeholders} instead of actual values)
+                        if (firstStepForSuite.getMethod() != null && firstStepForSuite.getMethod().getTestPath() != null) {
+                            templatePath = firstStepForSuite.getMethod().getTestPath();
+                        } else {
+                            // Fallback: reconstruct template path from pathParams keys
+                            templatePath = firstEndpoint;
+                            if (firstStepForSuite.getPathParams() != null) {
+                                for (Map.Entry<String, String> pathParam : firstStepForSuite.getPathParams().entrySet()) {
+                                    String paramValue = pathParam.getValue();
+                                    if (paramValue != null && !paramValue.isEmpty()) {
+                                        // Replace the actual value with placeholder
+                                        templatePath = templatePath.replace(paramValue, "{" + pathParam.getKey() + "}");
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Create normalized suite identifier: "METHOD /template/path"
+                        String normalizedSuite = httpMethodForSuite + " " + templatePath;
+                        String serviceSuite = firstService;
+                        
+                        pw.println("        // 🎯 Allure Suite Grouping: Normalize by API template (not by resolved path values)");
+                        pw.println("        Allure.label(\"parentSuite\", \"" + escape(serviceSuite) + "\");");
+                        pw.println("        Allure.label(\"suite\", \"" + escape(normalizedSuite) + "\");");
+                        pw.println("        Allure.label(\"subSuite\", \"" + escape(testMethodName) + "\");");
+                        pw.println();
+                    }
+                    
                     /* ------------ Add Allure metadata for negative tests ---------- */
                     {
                         // Use existing mstc from above
