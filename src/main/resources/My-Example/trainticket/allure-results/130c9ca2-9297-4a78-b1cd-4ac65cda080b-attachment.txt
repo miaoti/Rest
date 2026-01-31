@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • from = fake
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API returned HTTP 200 status code with a success response indicating "Order already exist", which means the invalid 'from' parameter value 'fake' was accepted instead of being rejected. The response does not contain any error message related to the invalid input parameter, and the API failed to properly validate the input, making this a failed negative test.

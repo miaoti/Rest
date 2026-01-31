@@ -67,7 +67,9 @@ import es.us.isa.restest.enhancer.FailedTestResult;
 import es.us.isa.restest.enhancer.TestCaseEnhancer;
 import es.us.isa.restest.enhancer.TestFileRegenerator;
 import es.us.isa.restest.enhancer.TestResultCapture;
+import es.us.isa.restest.enhancer.StatusCodeExplorationEnhancer;
 import es.us.isa.restest.llm.LLMService;
+import es.us.isa.restest.testcases.MultiServiceTestCase;
 
 /*
  * This class show the basic workflow of test case generation -> test case execution -> test reporting
@@ -81,6 +83,12 @@ public class TestGenerationAndExecution {
 	private static List<String> argsList;								// List containing args
 
 	private static Integer numTestCases;
+	
+	// Store generated MST test cases for status code exploration (available during enhancement)
+	private static List<MultiServiceTestCase> generatedMSTTestCases = new ArrayList<>();
+	
+	// Store the writer for generating exploration tests during enhancement
+	private static MultiServiceRESTAssuredWriter mstWriter = null;
 	// Number of test cases per operation
 	private static String OAISpecPath; 									// Path to OAS specification file
 	private static OpenAPISpecification spec; 							// OAS specification
@@ -198,6 +206,8 @@ public class TestGenerationAndExecution {
 			if (writer instanceof MultiServiceRESTAssuredWriter) {
 				((MultiServiceRESTAssuredWriter) writer).setClassName(className);
 				((MultiServiceRESTAssuredWriter) writer).setTestId(id);
+				// Store writer for status code exploration during enhancement
+				mstWriter = (MultiServiceRESTAssuredWriter) writer;
 			}
 			
 			// Generate test cases
@@ -205,6 +215,15 @@ public class TestGenerationAndExecution {
 			Timer.startCounting(Timer.TestStep.TEST_SUITE_GENERATION);
 			Collection<TestCase> testCases = generator.generate();
 			Timer.stopCounting(Timer.TestStep.TEST_SUITE_GENERATION);
+			
+			// Store MST test cases for status code exploration (used during enhancement)
+			generatedMSTTestCases.clear();
+			for (TestCase tc : testCases) {
+				if (tc instanceof MultiServiceTestCase) {
+					generatedMSTTestCases.add((MultiServiceTestCase) tc);
+				}
+			}
+			logger.info("📋 Stored {} MST test cases for status code exploration", generatedMSTTestCases.size());
 			
 			// Pass test cases to the statistic report manager (CSV writing, coverage)
 			if (statsReportManager != null) {
@@ -838,7 +857,11 @@ public class TestGenerationAndExecution {
 			// Test Case Enhancer properties
 			"test.enhancer.enabled",
 			"test.enhancer.rounds",
-			"test.enhancer.skip.5xx"
+			"test.enhancer.skip.5xx",
+			// Status Code Exploration properties
+			"status.code.exploration.enabled",
+			"status.code.exploration.max.per.test",
+			"status.code.exploration.max.per.round"
 		};
 		
 		int configuredCount = 0;
@@ -1116,6 +1139,23 @@ public class TestGenerationAndExecution {
 		
 		String enhancerOutputDir = "target/enhancer/" + testId;
 		
+		// Check if status code exploration is enabled
+		boolean statusCodeExplorationEnabled = Boolean.parseBoolean(
+			System.getProperty("status.code.exploration.enabled", "false"));
+		int maxExplorationPerTest = Integer.parseInt(
+			System.getProperty("status.code.exploration.max.per.test", "3"));
+		int maxExplorationPerRound = Integer.parseInt(
+			System.getProperty("status.code.exploration.max.per.round", "20"));
+		
+		if (statusCodeExplorationEnabled) {
+			logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
+			logger.info("║              STATUS CODE EXPLORATION ENABLED                                ║");
+			logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+			logger.info("║  Max per test: {}                                                            ║", maxExplorationPerTest);
+			logger.info("║  Max per round: {}                                                           ║", maxExplorationPerRound);
+			logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+		}
+		
 		try {
 			// Initialize LLM service for enhancement
 			Map<String, String> llmProperties = new HashMap<>();
@@ -1127,6 +1167,15 @@ public class TestGenerationAndExecution {
 			LLMService llmService = LLMService.getInstance(llmProperties);
 			TestCaseEnhancer enhancer = new TestCaseEnhancer(llmService);
 			TestFileRegenerator regenerator = new TestFileRegenerator();
+			
+			// Initialize StatusCodeExplorationEnhancer if enabled
+			StatusCodeExplorationEnhancer statusCodeEnhancer = null;
+			if (statusCodeExplorationEnabled) {
+				statusCodeEnhancer = new StatusCodeExplorationEnhancer(llmService);
+				statusCodeEnhancer.setMaxExplorationTestsPerOriginal(maxExplorationPerTest);
+				statusCodeEnhancer.setMaxExplorationTestsPerRound(maxExplorationPerRound);
+				logger.info("✅ StatusCodeExplorationEnhancer initialized");
+			}
 			
 			// Track overall statistics
 			int totalEnhanced = 0;
@@ -1159,6 +1208,140 @@ public class TestGenerationAndExecution {
 				logger.info("║  Failures: {}                                                                ║", result.getFailureCount());
 				logger.info("║  Enhanceable Failures: {}                                                    ║", collector.getFailedTestCount());
 				logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+				
+				// Status Code Exploration: Run after round 0 to discover and create exploration tests
+				if (round == 0 && statusCodeExplorationEnabled && statusCodeEnhancer != null) {
+					logger.info("═══════════════════════════════════════════════════════════════════════════");
+					logger.info("🔍 RUNNING STATUS CODE EXPLORATION PHASE");
+					logger.info("═══════════════════════════════════════════════════════════════════════════");
+					
+					// Build execution results from captured test data
+					Map<String, StatusCodeExplorationEnhancer.TestExecutionResult> explorationResults = 
+						buildExplorationResults(collector, result);
+					
+					if (!explorationResults.isEmpty()) {
+						logger.info("📊 Built {} execution results for status code exploration", 
+							explorationResults.size());
+						
+						// Log status code coverage summary
+						logStatusCodeCoverage(explorationResults);
+						
+						// Check if we have stored test cases and writer for full exploration
+						if (!generatedMSTTestCases.isEmpty() && mstWriter != null) {
+							logger.info("═══════════════════════════════════════════════════════════════════════════");
+							logger.info("🔬 STATUS CODE EXPLORATION (Efficient Mode)");
+							logger.info("═══════════════════════════════════════════════════════════════════════════");
+							logger.info("Processing {} original test cases for exploration", generatedMSTTestCases.size());
+							
+							// STEP 1: Get ALL exploration suggestions from LLM (ONE call per test case)
+							StatusCodeExplorationEnhancer.ExplorationResult explorationOutcome = 
+								statusCodeEnhancer.exploreEfficient(generatedMSTTestCases, explorationResults);
+							
+							List<MultiServiceTestCase> explorationTests = explorationOutcome.getExplorationTests();
+							
+							if (!explorationTests.isEmpty()) {
+								logger.info("🎯 Created {} exploration tests", explorationTests.size());
+								
+								// STEP 2: Write ALL tests (original + exploration) and execute exploration tests
+								try {
+									// Add exploration tests to our collection
+									int originalCount = generatedMSTTestCases.size();
+									generatedMSTTestCases.addAll(explorationTests);
+									
+									// Write ALL test cases (original + exploration)
+									List<TestCase> allTestCases = new ArrayList<>(generatedMSTTestCases);
+									mstWriter.write(allTestCases);
+									logger.info("📝 Wrote {} total tests ({} original + {} exploration)", 
+										allTestCases.size(), originalCount, explorationTests.size());
+									
+									// Compile
+									boolean compiled = compileTestClasses();
+									if (!compiled) {
+										logger.warn("⚠️ Compilation failed for exploration tests");
+									} else {
+										logger.info("✅ Compilation successful");
+										
+										// STEP 3: Execute ALL tests (only exploration tests are new)
+										logger.info("🚀 Executing tests (exploration tests will run)...");
+										
+										TestResultCapture.enableCapture();
+										FailedTestCollector explorationCollector = new FailedTestCollector(
+											round, skip5xx, enhancerOutputDir);
+										
+										// Execute with skipAllureClean=true to preserve results
+										Result execResult = executeTestsWithCollector(
+											fullPackageName, className, explorationCollector, true, true);
+										
+										if (execResult != null) {
+											logger.info("✅ Execution complete: {} tests run, {} failures",
+												execResult.getRunCount(), execResult.getFailureCount());
+											
+											// STEP 4: Record exploration results to update round-robin
+											Map<String, Integer> explorationResultsMap = new HashMap<>();
+											Map<String, FailedTestResult> capturedResults = TestResultCapture.getResultsSnapshot();
+											
+											for (MultiServiceTestCase exploreTest : explorationTests) {
+												String exploreTestId = exploreTest.getOperationId();
+												String apiKey = getApiKeyFromTest(exploreTest);
+												int targetStatus = exploreTest.getTargetStatusCode();
+												int actualStatus = -1;
+												
+												// Find the actual status from captured results
+												for (Map.Entry<String, FailedTestResult> entry : capturedResults.entrySet()) {
+													if (entry.getKey().contains(exploreTestId) || 
+														exploreTestId.contains(entry.getKey().replaceAll(".*\\.", ""))) {
+														actualStatus = entry.getValue().getActualStatusCode();
+														break;
+													}
+												}
+												
+												// Record result
+												if (actualStatus > 0 && apiKey != null) {
+													if (actualStatus == targetStatus) {
+														// SUCCESS: Remove from round-robin
+														statusCodeEnhancer.getTracker().markTriggered(apiKey, targetStatus);
+														logger.info("   ✅ {} triggered target {} - REMOVED from round-robin", 
+															exploreTestId, targetStatus);
+													} else {
+														// FAILED: Move to end of round-robin
+														statusCodeEnhancer.getTracker().moveToEndOfRoundRobin(apiKey, targetStatus);
+														logger.info("   ❌ {} got {} instead of {} - MOVED to end", 
+															exploreTestId, actualStatus, targetStatus);
+													}
+													
+													// Also record actual status (might discover new codes)
+													if (actualStatus != targetStatus) {
+														statusCodeEnhancer.getTracker().markTriggered(apiKey, actualStatus);
+													}
+												}
+											}
+											
+											logger.info("📊 All tests are now in Allure report");
+										}
+									}
+								} catch (Exception e) {
+									logger.error("Error in exploration: {}", e.getMessage(), e);
+								}
+								
+								// Log coverage summary
+								logger.info("📊 Status Code Coverage: {}", explorationOutcome.getCoverageSummary());
+							} else {
+								logger.info("✅ No exploration tests created - all status codes covered or no candidates");
+							}
+						} else {
+							logger.info("⚠️ Skipping exploration: MST test cases={}, writer={}",
+								generatedMSTTestCases.size(), mstWriter != null ? "available" : "null");
+						}
+						
+						// Start new round for the exploration enhancer
+						statusCodeEnhancer.startNewRound();
+						
+						// Clear captured results now that exploration is done
+						TestResultCapture.clearResults();
+					} else {
+						logger.info("⚠️ No execution results available for status code exploration");
+					}
+				}
 				
 				// If this is the final round or no failures to enhance, we're done
 				if (isFinalRound) {
@@ -1236,16 +1419,31 @@ public class TestGenerationAndExecution {
 	
 	/**
 	 * Execute tests with a FailedTestCollector to gather failure information.
+	 * @param skipAllureClean if true, skip Allure setup/cleaning (for exploration tests that should add to existing results)
 	 */
 	private static Result executeTestsWithCollector(String fullPackageName, String className,
 													FailedTestCollector collector, boolean isFinalRound) {
+		return executeTestsWithCollector(fullPackageName, className, collector, isFinalRound, false);
+	}
+	
+	/**
+	 * Execute tests with a FailedTestCollector to gather failure information.
+	 * @param skipAllureClean if true, skip Allure setup/cleaning (for exploration tests that should add to existing results)
+	 */
+	private static Result executeTestsWithCollector(String fullPackageName, String className,
+													FailedTestCollector collector, boolean isFinalRound,
+													boolean skipAllureClean) {
 		try {
 			// Clean and setup
 			cleanOldCompiledTestClasses(fullPackageName);
-			setupAllureForIntelliJ();
+			
+			// Only setup Allure (which cleans) if not skipping
+			if (!skipAllureClean) {
+				setupAllureForIntelliJ();
+			}
 			
 			// For non-final rounds, clear Allure results to avoid accumulating intermediate results
-			if (!isFinalRound) {
+			if (!isFinalRound && !skipAllureClean) {
 				clearAllureResults();
 			}
 			
@@ -1509,6 +1707,20 @@ public class TestGenerationAndExecution {
 				testClassesDir.mkdirs();
 			}
 			
+			// 🔧 FIX: Check if main classes are compiled - required for test compilation
+			// If target/classes doesn't exist or is empty, fall back to Maven which will compile both
+			if (!mainClassesDir.exists() || mainClassesDir.list() == null || mainClassesDir.list().length == 0) {
+				logger.info("Main classes not found in target/classes. Using Maven to compile both main and test classes...");
+				return fallbackMavenCompilation();
+			}
+			
+			// Verify essential main classes exist (spot check)
+			File testCaseClass = new File(mainClassesDir, "es/us/isa/restest/testcases/MultiServiceTestCase.class");
+			if (!testCaseClass.exists()) {
+				logger.info("Essential main classes not compiled. Using Maven to compile both main and test classes...");
+				return fallbackMavenCompilation();
+			}
+			
 			// ENHANCED: Only find Java files in the newly generated test directories
 			List<File> javaFiles = findNewlyGeneratedJavaFiles(testSourceDir);
 			if (javaFiles.isEmpty()) {
@@ -1738,20 +1950,20 @@ public class TestGenerationAndExecution {
 			// Handle Windows command formatting
 			String os = System.getProperty("os.name").toLowerCase();
 			if (os.contains("win")) {
-				// 🔧 FIX: Added "compile" before "test-compile" to ensure main classes are built
+				// 🔧 FIX: Removed "-Dmaven.test.skip=true" which was skipping test COMPILATION
+				// Keep "-DskipTests=true" to skip test EXECUTION but still compile tests
 				pb.command("cmd.exe", "/c", "mvn", "compile", "test-compile", 
 					"-q",                    // Quiet mode
 					"-T", "1C",             // Use 1 thread per CPU core
 					"-Djacoco.skip=true",   // Skip JaCoCo
-					"-Dmaven.test.skip=true", // Skip test execution
 					"-Dmaven.javadoc.skip=true", // Skip JavaDoc
 					"-Dcheckstyle.skip=true",    // Skip CheckStyle
-					"-DskipTests=true"      // Skip tests
+					"-DskipTests=true"      // Skip test execution (but still compile)
 				);
 			} else {
 				pb.command("mvn", "compile", "test-compile", 
 					"-q", "-T", "1C", "-Djacoco.skip=true", 
-					"-Dmaven.test.skip=true", "-Dmaven.javadoc.skip=true", 
+					"-Dmaven.javadoc.skip=true", 
 					"-Dcheckstyle.skip=true", "-DskipTests=true");
 			}
 			
@@ -1970,5 +2182,167 @@ public class TestGenerationAndExecution {
 		ctx.setConfigLocation(file.toURI());
 		ctx.reconfigure();
 	}
-
+	
+	/**
+	 * Build exploration results from test execution data.
+	 * Extracts status codes and response information from captured test results.
+	 */
+	private static Map<String, StatusCodeExplorationEnhancer.TestExecutionResult> buildExplorationResults(
+			FailedTestCollector collector, Result junitResult) {
+		
+		Map<String, StatusCodeExplorationEnhancer.TestExecutionResult> results = new HashMap<>();
+		
+		try {
+			// Get all captured results from TestResultCapture using snapshot (preserves results)
+			Map<String, FailedTestResult> capturedMap = TestResultCapture.getResultsSnapshot();
+			
+			if (capturedMap != null && !capturedMap.isEmpty()) {
+				logger.info("📊 Processing {} captured test results for status code exploration", 
+					capturedMap.size());
+				
+				for (Map.Entry<String, FailedTestResult> entry : capturedMap.entrySet()) {
+					String testKey = entry.getKey();
+					FailedTestResult captured = entry.getValue();
+					String testName = captured.getTestMethodName();
+					
+					StatusCodeExplorationEnhancer.TestExecutionResult explorationResult = 
+						new StatusCodeExplorationEnhancer.TestExecutionResult();
+					explorationResult.setTestName(testName);
+					explorationResult.setActualStatusCode(captured.getActualStatusCode());
+					explorationResult.setResponseBody(captured.getResponseBody());
+					explorationResult.setPassed(captured.isEnhanceable()); // 5xx = not enhanceable = server error
+					explorationResult.setErrorMessage(captured.getErrorMessage());
+					
+					// Extract API key from captured data
+					String apiKey = captured.getHttpMethod() + " " + captured.getEndpoint();
+					explorationResult.setApiKey(apiKey);
+					
+					results.put(testName, explorationResult);
+				}
+			} else {
+				logger.info("No TestResultCapture results. Using FailedTestCollector data only.");
+			}
+			
+			// Also include failed tests from collector (may have different/additional info)
+			for (FailedTestResult failed : collector.getFailedTests()) {
+				String testName = failed.getTestMethodName();
+				if (!results.containsKey(testName)) {
+					StatusCodeExplorationEnhancer.TestExecutionResult explorationResult = 
+						new StatusCodeExplorationEnhancer.TestExecutionResult();
+					explorationResult.setTestName(testName);
+					explorationResult.setActualStatusCode(failed.getActualStatusCode());
+					explorationResult.setResponseBody(failed.getResponseBody());
+					explorationResult.setPassed(false);
+					explorationResult.setErrorMessage(failed.getErrorMessage());
+					
+					String apiKey = failed.getHttpMethod() + " " + failed.getEndpoint();
+					explorationResult.setApiKey(apiKey);
+					
+					results.put(testName, explorationResult);
+				}
+			}
+			
+		} catch (Exception e) {
+			logger.error("Error building exploration results: {}", e.getMessage(), e);
+		}
+		
+		return results;
+	}
+	
+	/**
+	 * Extract API key (HTTP method + path) from a MultiServiceTestCase.
+	 */
+	private static String getApiKeyFromTest(MultiServiceTestCase test) {
+		if (test == null || test.getSteps().isEmpty()) return null;
+		MultiServiceTestCase.StepCall step = test.getSteps().get(0);
+		return step.getMethod().toString() + " " + step.getPath();
+	}
+	
+	/**
+	 * Extract API key (HTTP method + path) from test name.
+	 * Test names typically follow pattern: test_METHOD_operationId_variant
+	 */
+	private static String extractApiKeyFromTestName(String testName) {
+		if (testName == null) return "UNKNOWN";
+		
+		// Try to extract method from test name patterns like test_POST_1_1, test_negative_GET_1_2
+		String upper = testName.toUpperCase();
+		for (String method : new String[]{"GET", "POST", "PUT", "DELETE", "PATCH"}) {
+			if (upper.contains("_" + method + "_")) {
+				return method + " /api/unknown"; // We don't have path info from just the test name
+			}
+		}
+		
+		return "UNKNOWN " + testName;
+	}
+	
+	/**
+	 * Log status code coverage summary from execution results.
+	 */
+	private static void logStatusCodeCoverage(
+			Map<String, StatusCodeExplorationEnhancer.TestExecutionResult> results) {
+		
+		// Group by status code to get coverage overview
+		Map<Integer, Integer> statusCodeCounts = new HashMap<>();
+		Map<String, Set<Integer>> apiStatusCodes = new HashMap<>();
+		
+		for (StatusCodeExplorationEnhancer.TestExecutionResult result : results.values()) {
+			int statusCode = result.getActualStatusCode();
+			statusCodeCounts.merge(statusCode, 1, Integer::sum);
+			
+			String apiKey = result.getApiKey();
+			if (apiKey != null) {
+				apiStatusCodes.computeIfAbsent(apiKey, k -> new HashSet<>()).add(statusCode);
+			}
+		}
+		
+		logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
+		logger.info("║              STATUS CODE COVERAGE SUMMARY                                   ║");
+		logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+		logger.info("║  Total Tests Analyzed: {}                                                    ║", results.size());
+		logger.info("║  Unique Status Codes: {}                                                     ║", statusCodeCounts.size());
+		logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+		
+		// Log status code distribution
+		statusCodeCounts.entrySet().stream()
+			.sorted(Map.Entry.comparingByKey())
+			.forEach(entry -> {
+				String category = getStatusCodeCategory(entry.getKey());
+				logger.info("║  {} ({}): {} occurrences                                               ║", 
+					entry.getKey(), category, entry.getValue());
+			});
+		
+		logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+		logger.info("║  APIs with Multiple Status Codes:                                           ║");
+		
+		apiStatusCodes.entrySet().stream()
+			.filter(e -> e.getValue().size() > 1)
+			.forEach(entry -> {
+				logger.info("║  - {}: {}                                                  ║", 
+					truncateApiKey(entry.getKey(), 30), entry.getValue());
+			});
+		
+		logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+	}
+	
+	/**
+	 * Get human-readable category for a status code.
+	 */
+	private static String getStatusCodeCategory(int statusCode) {
+		if (statusCode >= 200 && statusCode < 300) return "Success";
+		if (statusCode >= 300 && statusCode < 400) return "Redirect";
+		if (statusCode >= 400 && statusCode < 500) return "Client Error";
+		if (statusCode >= 500) return "Server Error";
+		return "Unknown";
+	}
+	
+	/**
+	 * Truncate API key for display.
+	 */
+	private static String truncateApiKey(String apiKey, int maxLen) {
+		if (apiKey == null) return "null";
+		if (apiKey.length() <= maxLen) return apiKey;
+		return apiKey.substring(0, maxLen - 3) + "...";
+	}
+	
 }

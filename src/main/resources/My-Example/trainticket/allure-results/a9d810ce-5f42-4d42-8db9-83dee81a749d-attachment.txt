@@ -1,0 +1,1 @@
+{"accountId":"acc-345678","boughtDate":"2026-01-08","coachNumber":12,"contactsDocumentNumber":"ABC123456","contactsName":"Maria Garcia","differenceMoney":"150.00","documentType":1,"from":"Shanghai","id":"AR-2026-001","price":"1299.99","seatClass":1,"seatNumber":"33A","status":1,"to":"Beijing","trainNumber":"G1234","travelDate":"2026-01-25","travelTime":"08:30:00"}

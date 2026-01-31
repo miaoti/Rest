@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurred in `ts-gateway-service` during a `POST` operation with HTTP status `400 Bad Request`. This indicates a client-side validation error where the request payload failed validation rules enforced by the gateway service.
+
+**FIX:**
+Validate and correct the request payload format being sent to `ts-gateway-service` POST endpoint. Ensure all required fields are present and conform to expected data types/schema before transmission.

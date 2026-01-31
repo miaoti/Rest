@@ -40,13 +40,32 @@ public class TestResultCapture {
     
     /**
      * Disable result capture and return all captured results.
+     * NOTE: Results are NOT cleared - call clearResults() when done with exploration.
      */
     public static Map<String, FailedTestResult> disableCaptureAndGetResults() {
         captureEnabled = false;
         Map<String, FailedTestResult> results = new ConcurrentHashMap<>(capturedResults);
-        capturedResults.clear();
+        // Don't clear here - results needed for status code exploration
         log.info("Test result capture DISABLED. Captured {} results", results.size());
         return results;
+    }
+    
+    /**
+     * Get a snapshot of captured results without modifying state.
+     * Use this for status code exploration after disableCaptureAndGetResults().
+     */
+    public static Map<String, FailedTestResult> getResultsSnapshot() {
+        return new ConcurrentHashMap<>(capturedResults);
+    }
+    
+    /**
+     * Explicitly clear all captured results.
+     * Call this after status code exploration is complete.
+     */
+    public static void clearResults() {
+        int count = capturedResults.size();
+        capturedResults.clear();
+        log.debug("Cleared {} captured results", count);
     }
     
     /**

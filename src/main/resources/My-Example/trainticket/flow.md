@@ -25,6 +25,7 @@ flowchart TD
     M --> M6[jaeger trace fetching properties]
     M --> M7[negative.input.generation.mode: llm or hardcode]
     M --> M8[test.enhancer.enabled/rounds/skip.5xx]
+    M --> M9[status.code.exploration.enabled and auth/LLM discovery]
     M1 --> N[Create MST generator use LLM]
     M2 --> N
     M3 --> N
@@ -32,6 +33,8 @@ flowchart TD
     M5 --> N
     M6 --> N
     M7 --> N
+    M8 --> N
+    M9 --> N
     N --> O[Configure MST writer]
     O --> P[Run generator]
     P --> Q[Set stats test cases]
@@ -588,6 +591,15 @@ flowchart TD
   - Invalid array structures (null, empty, wrong type)
   - Arrays with invalid elements (null elements, wrong-type elements)
 
+**Status Code Exploration (Smart Coverage):**
+- status.code.exploration.enabled: enable LLM-driven status code discovery and exploration tests (default: false)
+- status.code.exploration.max.per.test: max exploration tests to create per original test per round (default: 3)
+- status.code.exploration.max.per.round: max exploration tests total per round (default: 20)
+- status.code.auth.invalid.token: invalid token string for 401 Unauthorized exploration
+- status.code.auth.expired.token: expired JWT token for auth testing
+- status.code.auth.guest.user/password: guest credentials for 403 Forbidden testing
+- status.code.auth.restricted.user/password: restricted user credentials for 403 testing
+
 **Execution & Reporting:**
 - allure.report: generate Allure report after execution
 - experiment.execute: execute tests vs only generate
@@ -832,4 +844,100 @@ target/enhancer/{testId}/
     enhancement-results.json
   ...
 ```
+
+---
+
+## Smart Status Code Exploration
+
+### Overview
+
+Smart Status Code Exploration improves coverage by discovering all possible HTTP status codes per API (via LLM and OpenAPI), tracking which codes were actually triggered during execution, and generating dedicated **exploration tests** to trigger previously untriggered codes (e.g. 401, 403, 404, 409).
+
+**Main components:**
+- **LLMStatusCodeDiscovery**: After the first test run, uses LLM to infer possible status codes per operation (success, client errors, auth, not-found, conflict, etc.).
+- **StatusCodeCoverageTracker**: Records which status codes were observed per operation and which remain untriggered.
+- **StatusCodeTarget**: Holds a target code, targeting strategy (e.g. invalid auth, wrong ID), and optional LLM-suggested inputs.
+- **AuthManipulationStrategy**: Produces auth-related scenarios (token invalidation, multi-user) for 401/403.
+- **StatusCodeExplorationEnhancer**: Integrates with the Test Case Enhancer; asks LLM whether a test is a good candidate for a target code, and creates new test cases for untriggered codes.
+
+### Flow Diagram
+
+```mermaid
+flowchart TD
+    A[Round 0: Execute Generated Tests] --> B[Capture actual status per operation]
+    B --> C{status.code.exploration.enabled?}
+    C -->|No| Z[Continue standard enhancer]
+    C -->|Yes| D[LLMStatusCodeDiscovery: discover possible codes per API]
+    D --> E[StatusCodeCoverageTracker: mark triggered vs untriggered]
+    E --> F[For each untriggered code create StatusCodeTarget]
+    F --> G[Auth codes? Apply AuthManipulationStrategy]
+    G --> H[StatusCodeExplorationEnhancer: generate new tests]
+    H --> I[LLM: is existing test good candidate for target code?]
+    I -->|Yes| J[Reuse and set target status on test]
+    I -->|No| K[LLM: suggest inputs to trigger target code]
+    K --> L[Create new MultiServiceTestCase with targetStatusCode]
+    L --> M[Mark test as exploration test]
+    M --> N[Regenerate test files and recompile]
+    N --> O[Next round: run tests; tracker updates]
+    O --> P[Repeat until rounds exhausted or coverage satisfied]
+    P --> Z
+```
+
+### StatusCodeTarget and Discovery
+
+- **StatusCodeTarget**: Combines `statusCode` (e.g. 401, 404), `strategy` (e.g. `INVALID_AUTH`, `NOT_FOUND`), and optional `suggestedInputs` from the LLM.
+- **LLMStatusCodeDiscovery**: Runs once after the first execution. For each operation, calls the LLM with OpenAPI operation info and domain (e.g. “train ticket”) to list possible status codes and brief reasons. Results are stored and used to build targets for untriggered codes.
+
+### StatusCodeCoverageTracker
+
+- **Role**: Tracks, per operation (e.g. by method + path), which status codes have been triggered in any run and which are still missing.
+- **Input**: Actual status codes from test execution (via writer/collector).
+- **Output**: Sets of “triggered” vs “untriggered” codes per operation, driving which StatusCodeTargets the enhancer creates.
+
+### AuthManipulationStrategy
+
+Used when the target code is auth-related (e.g. 401, 403):
+
+- **token_invalidation**: Generate or reuse a scenario where the token is expired/invalid so the API returns 401/403.
+- **multi_user**: Use a different user (e.g. different credentials or role) so the API returns 403 Forbidden.
+- Configurable via `status.code.exploration.auth.strategy` (`token_invalidation`, `multi_user`, or `both`).
+
+### StatusCodeExplorationEnhancer Workflow
+
+1. **After first run**: Tracker knows triggered vs untriggered codes; discovery has suggested possible codes per API.
+2. **For each untriggered code**: Build a StatusCodeTarget (with strategy and optional suggested inputs). For auth codes, apply AuthManipulationStrategy.
+3. **Candidate check**: For existing tests (e.g. from enhancer), optionally ask LLM whether the test is a good candidate to trigger a given target code. If yes, set that test’s target status and mark as exploration test.
+4. **New tests**: If no suitable existing test, ask LLM for inputs that would trigger the target code; create new MultiServiceTestCase with `targetStatusCode` and mark as exploration test.
+5. **Cap**: Respect `status.code.exploration.max.new.tests.per.operation` and `status.code.exploration.skip.5xx` when creating exploration tests.
+6. **Regeneration**: New/updated exploration tests are written by the same writer, recompiled, and run in the next round; tracker is updated from new results.
+
+### MultiServiceTestCase and Writer
+
+- **MultiServiceTestCase**: Can carry `targetStatusCode` and an “exploration test” flag so the writer and reporting know the test is meant to trigger a specific code.
+- **MultiServiceRESTAssuredWriter**: For exploration tests, validates response against `targetStatusCode` (test passes if actual status equals target). Exploration tests are reported in Allure (e.g. label or parameter indicating “Status Code Exploration” and the target code).
+
+### Configuration Summary
+
+| Property | Purpose |
+|----------|---------|
+| status.code.exploration.enabled | Master switch for status code discovery and exploration tests |
+| status.code.exploration.max.per.test | Max exploration tests to create per original test per round (default: 3) |
+| status.code.exploration.max.per.round | Max exploration tests total per round (prevents test explosion, default: 20) |
+| status.code.auth.invalid.token | Invalid token to use for 401 Unauthorized exploration |
+| status.code.auth.expired.token | Expired JWT token for auth testing |
+| status.code.auth.guest.user/password | Guest credentials for 403 Forbidden testing |
+| status.code.auth.restricted.user/password | Restricted user credentials for 403 testing |
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|----------------|
+| LLMStatusCodeDiscovery | Discovers possible status codes per API via LLM (and OpenAPI) after first run |
+| StatusCodeCoverageTracker | Tracks triggered vs untriggered status codes per operation |
+| StatusCodeTarget | Holds target code, strategy, and optional suggested inputs |
+| AuthManipulationStrategy | Produces token invalidation and multi-user scenarios for auth codes |
+| StatusCodeExplorationEnhancer | Creates/reuses tests for untriggered codes; uses LLM for candidate check and input suggestions |
+| ZeroShotLLMGenerator | Extended with status code discovery and exploration candidate evaluation prompts |
+| MultiServiceTestCase | Carries targetStatusCode and exploration-test flag |
+| MultiServiceRESTAssuredWriter | Validates exploration tests against target code; reports in Allure |
 

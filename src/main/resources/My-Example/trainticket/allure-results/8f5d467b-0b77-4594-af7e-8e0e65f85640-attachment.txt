@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"4700cd87-f019-48e3-afd7-25aac2ecb4ba","boughtDate":"2026-03-10","travelDate":"2026-01-15","travelTime":"test793","accountId":"acc-789012","conta...
+Enhanced Parameters: {coachNumber=12, documentType=1, seatClass=2, price=1299.99}

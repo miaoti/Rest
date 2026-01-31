@@ -1,0 +1,9 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The error occurs in `ts-admin-order-service` during `AdminOrderController.addOrder` operation. The service receives a JSON payload where the `documentType` field contains string value "abc" but the expected type is `int`. The Jackson deserialization fails with `InvalidFormatException` when trying to convert "abc" to Integer.
+
+**FIX:**
+1. Validate input data type in `ts-gateway-service` before forwarding to `ts-admin-order-service`
+2. Update `ts-admin-order-service` to include proper input validation and error handling for `documentType` field
+3. Add JSON schema validation or DTO validation annotations to prevent invalid data from reaching the service layer

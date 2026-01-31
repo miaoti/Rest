@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status during request processing, executing in 2.884ms.
+
+**FIX:** Inspect request payload validation logic in `ts-gateway-service` POST endpoint for malformed data, missing required fields, or invalid content-type headers causing client error response.

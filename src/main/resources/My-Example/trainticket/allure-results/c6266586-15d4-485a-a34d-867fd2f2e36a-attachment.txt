@@ -1,0 +1,15 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: 7f8ba1ef0d16bf3eb3eba1126a1eda88
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/7f8ba1ef0d16bf3eb3eba1126a1eda88
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ❌ admin-route POST 400(239.2ms)
+    ↳ /api/v1/adminrouteservice/adminroute
+[2] ✅ admin-route POST 200(15.1ms)
+    ↳ http://10.244.0.47:12345/api/v1/stationservice/stations/idlist
+  ├─[3] ✅ station POST 200(11.4ms)
+     ↳ /api/v1/stationservice/stations/idlist
+████████████████████████████████████████████████████████████████████████████████████████

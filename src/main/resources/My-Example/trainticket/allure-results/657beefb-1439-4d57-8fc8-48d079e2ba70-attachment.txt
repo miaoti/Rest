@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: 8240cb505e2e12317d8f45a2893e38c6
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/8240cb505e2e12317d8f45a2893e38c6
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ❌ travel-plan POST 500(43.7ms)
+    ↳ /api/v1/travelplanservice/travelPlan/minStation
+[2] ❌ travel-plan POST 500(36.6ms)
+    ↳ http://10.244.0.42:14578/api/v1/routeplanservice/routePlan/minStopStations
+  ├─[3] ❌ route-plan POST 500(35.5ms)
+     ↳ /api/v1/routeplanservice/routePlan/minStopStations
+[4] ❌ route-plan GET 404(21.8ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/%3Cscript%3Ealert('xss')%3C/script%3E/newyorkcity
+  ├─[5] ❌ route GET 404(21.1ms)
+     ↳ /api/v1/routeservice/routes/%3Cscript%3Ealert('xss')%3C/script%3E/newyorkcity
+████████████████████████████████████████████████████████████████████████████████████████

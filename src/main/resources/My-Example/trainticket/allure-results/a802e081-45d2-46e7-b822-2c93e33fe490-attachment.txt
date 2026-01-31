@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • departureTime = {"key":"value"}
+
+Status Code: 400 (expected: 200)
+Status Code Indicates Error: ✅ YES
+Error Related to Invalid Input: ✅ YES
+
+Root Cause Analysis:
+[INVALID INPUT CORRECTLY REJECTED] The error message "Trip query rejected: departureTime must be in format yyyy-MM-dd" directly relates to our invalid departureTime parameter. The API correctly rejected our invalid JSON object input for departureTime, indicating it properly validated the date format requirement. The error includes our invalid input value "{\"key\":\"value\"}" in the details field, confirming the validation failure was for the specific parameter we designed to be invalid.

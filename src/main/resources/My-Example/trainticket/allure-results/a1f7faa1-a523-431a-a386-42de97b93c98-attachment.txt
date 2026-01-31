@@ -1,0 +1,1 @@
+{"accountId":"acc-123456","boughtDate":"test362","coachNumber":12,"contactsDocumentNumber":"ABC123456","contactsName":"Maria Garcia","differenceMoney":"150.00","documentType":1,"from":"Guangzhou","id":"AR-2026-002","price":"1299.99","seatClass":1,"seatNumber":"15B","status":1,"to":"Beijing","trainNumber":"G5678","travelDate":"2026-02-05","travelTime":"jinan"}

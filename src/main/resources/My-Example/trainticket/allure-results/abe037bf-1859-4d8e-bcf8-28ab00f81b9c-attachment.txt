@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Success","data":{"id":"5deb877b-beee-4c9b-b707-74bc0e8d4931","boughtDate":"2026-01-08","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-567890","contactsName":"Joh...
+Enhanced Parameters: {accountId=acc-123456, contactsDocumentNumber=XYZ789012, price=0.00}

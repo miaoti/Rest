@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is a `JsonMappingException` where the JSON parser encounters a boolean `true` value where it expects a `double` type for the `basicPriceRate` field in `PriceInfo` entity.
+
+**FIX:**
+Validate and correct the JSON payload structure sent from `ts-gateway-service` to `ts-admin-basic-info-service`. Ensure the `basicPriceRate` field in the request body contains a numeric value (double) rather than a boolean value. Update the client sending the request to properly serialize the price rate as a numeric type.

@@ -650,6 +650,18 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            for (int i = 0; i < spans.length(); i++) {");
                     pw.println("                JSONObject span = spans.getJSONObject(i);");
                     pw.println("                if (isApiCall(span)) {");
+                    pw.println("                    String serviceName = getServiceName(span, processes);");
+                    pw.println("                    ");
+                    pw.println("                    // Filter out gateway services to match the API Call Hierarchy display");
+                    pw.println("                    boolean isGateway = serviceName.toLowerCase().contains(\"gateway\") || ");
+                    pw.println("                                       serviceName.toLowerCase().contains(\"proxy\") ||");
+                    pw.println("                                       serviceName.toLowerCase().equals(\"gateway-service\") ||");
+                    pw.println("                                       serviceName.toLowerCase().equals(\"ts-gateway-service\") ||");
+                    pw.println("                                       serviceName.toLowerCase().equals(\"api-gateway\");");
+                    pw.println("                    if (isGateway) {");
+                    pw.println("                        continue; // Skip gateway services in statistics");
+                    pw.println("                    }");
+                    pw.println("                    ");
                     pw.println("                    totalApis++;");
                     pw.println("                    String[] httpInfo = extractHttpInfo(span);");
                     pw.println("                    String status = httpInfo[2];");
@@ -657,7 +669,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                    if (status.startsWith(\"2\")) successApis++;");
                     pw.println("                    else if (status.startsWith(\"4\") || status.startsWith(\"5\")) errorApis++;");
                     pw.println("                    ");
-                    pw.println("                    services.add(getServiceName(span, processes));");
+                    pw.println("                    services.add(serviceName);");
                     pw.println("                    ");
                     pw.println("                    long duration = span.optLong(\"duration\", 0L);");
                     pw.println("                    if (duration > 0) {");
@@ -1109,10 +1121,13 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         String normalizedSuite = httpMethodForSuite + " " + templatePath;
                         String serviceSuite = firstService;
                         
+                        // Create a clean, short subSuite label instead of the full test method name
+                        String cleanSubSuite = createCleanSubSuiteLabel(mstc, testMethodName);
+                        
                         pw.println("        // 🎯 Allure Suite Grouping: Normalize by API template (not by resolved path values)");
                         pw.println("        Allure.label(\"parentSuite\", \"" + escape(serviceSuite) + "\");");
                         pw.println("        Allure.label(\"suite\", \"" + escape(normalizedSuite) + "\");");
-                        pw.println("        Allure.label(\"subSuite\", \"" + escape(testMethodName) + "\");");
+                        pw.println("        Allure.label(\"subSuite\", \"" + escape(cleanSubSuite) + "\");");
                         pw.println();
                     }
                     
@@ -1140,6 +1155,38 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             // 🔧 Test Case Enhancer: Capture invalid parameters (these should NOT be changed during enhancement)
                             for (String faultyParam : mstc.getFaultyParameters()) {
                                 pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addInvalidParameter(\"" + escapeJavaString(faultyParam) + "\");");
+                            }
+                            pw.println();
+                        }
+                    }
+                    
+                    /* ------------ Add Allure metadata for status code exploration tests ---------- */
+                    {
+                        if (allureReport && mstc.isStatusCodeExplorationTest()) {
+                            int targetCode = mstc.getTargetStatusCode();
+                            String targetDescription = mstc.getTargetStatusCodeDescription();
+                            
+                            System.out.println("DEBUG: Adding exploration test metadata for: " + testMethodName + " targeting " + targetCode);
+                            pw.println("        // 🎯 STATUS CODE EXPLORATION TEST METADATA");
+                            pw.println("        Allure.parameter(\"🎯 Test Type\", \"STATUS CODE EXPLORATION\");");
+                            pw.println("        Allure.parameter(\"🔍 Target Status Code\", \"" + targetCode + "\");");
+                            pw.println("        Allure.parameter(\"📊 Target Category\", \"" + escapeJavaString(targetDescription) + "\");");
+                            pw.println("        Allure.label(\"coverage_type\", \"STATUS_CODE\");");
+                            pw.println("        Allure.label(\"target_status\", \"" + targetCode + "\");");
+                            pw.println("        Allure.description(\"**🎯 This is a STATUS CODE EXPLORATION test.**\\n\\n\" +");
+                            pw.println("                         \"This test was automatically generated to explore HTTP status code coverage.\\n\" +");
+                            pw.println("                         \"Target: **" + targetCode + " " + escapeJavaString(targetDescription) + "**\\n\\n\" +");
+                            pw.println("                         \"The test parameters have been modified to attempt triggering this specific status code.\");");
+                            pw.println();
+                            
+                            // Handle auth manipulation for 401/403 exploration
+                            es.us.isa.restest.auth.AuthManipulationStrategy.AuthConfig authConfig = mstc.getAuthManipulation();
+                            if (authConfig != null && !authConfig.isAuthEnabled()) {
+                                pw.println("        // 🔐 Auth manipulation: REMOVE_AUTH for status code exploration");
+                                pw.println("        Allure.parameter(\"🔐 Auth Manipulation\", \"" + authConfig.getManipulationType().getDescription() + "\");");
+                            } else if (authConfig != null && authConfig.getToken() != null) {
+                                pw.println("        // 🔐 Auth manipulation: Using modified token");
+                                pw.println("        Allure.parameter(\"🔐 Auth Manipulation\", \"" + authConfig.getManipulationType().getDescription() + "\");");
                             }
                             pw.println();
                         }
@@ -1227,10 +1274,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         // Generate hierarchical step number if available from the generator
                         String stepNumber = "Step " + stepIdx;
                         // For negative tests, show that we expect anything OTHER than the normal expected status
+                        // For exploration tests, show the target status code
                         // Use simpler format without nested parentheses to avoid Java string literal issues
-                        String expectedStatusDisplay = scenario.getFaulty() 
-                                ? "not " + step.getExpectedStatus() 
-                                : String.valueOf(step.getExpectedStatus());
+                        String expectedStatusDisplay;
+                        if (mstc.isStatusCodeExplorationTest() && mstc.getTargetStatusCode() > 0) {
+                            expectedStatusDisplay = String.valueOf(mstc.getTargetStatusCode()) + " (exploration)";
+                        } else if (scenario.getFaulty()) {
+                            expectedStatusDisplay = "not " + step.getExpectedStatus();
+                        } else {
+                            expectedStatusDisplay = String.valueOf(step.getExpectedStatus());
+                        }
                         String stepTitle = stepNumber + ": "
                                 + step.getServiceName() + " "
                                 + verb.toUpperCase() + " " + step.getPath()
@@ -1903,6 +1956,75 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
             case "delete": case "patch": return true;
             default: return false;
         }
+    }
+    
+    /**
+     * Create a clean, short subSuite label for Allure grouping.
+     * Instead of the full test method name, creates a simple identifier.
+     * 
+     * Examples:
+     * - "test_POST_1_1" → "Test 1"
+     * - "test_negative_POST_1_2" → "Negative Test 2"
+     * - "test_POST_1_1_explore_400" → "Explore 400"
+     */
+    private static String createCleanSubSuiteLabel(MultiServiceTestCase mstc, String testMethodName) {
+        // For exploration tests, show the target status code
+        if (mstc.isStatusCodeExplorationTest()) {
+            int targetStatus = mstc.getTargetStatusCode();
+            if (targetStatus > 0) {
+                return "Explore " + targetStatus;
+            }
+            // Fallback: extract from test name
+            if (testMethodName.contains("_explore_")) {
+                int idx = testMethodName.lastIndexOf("_explore_");
+                String suffix = testMethodName.substring(idx + 9);
+                // Handle retry suffix: _explore_400_retry1 -> 400
+                int underscoreIdx = suffix.indexOf('_');
+                if (underscoreIdx > 0) {
+                    suffix = suffix.substring(0, underscoreIdx);
+                }
+                return "Explore " + suffix;
+            }
+        }
+        
+        // For negative tests
+        if (mstc.getFaulty()) {
+            // Extract variant number from test name
+            String variantNum = extractVariantNumber(testMethodName);
+            return "Negative Test " + variantNum;
+        }
+        
+        // For regular positive tests
+        String variantNum = extractVariantNumber(testMethodName);
+        return "Test " + variantNum;
+    }
+    
+    /**
+     * Extract variant number from test method name.
+     * e.g., "test_POST_1_2" → "2", "test_negative_GET_1_3" → "3"
+     */
+    private static String extractVariantNumber(String testMethodName) {
+        if (testMethodName == null || testMethodName.isEmpty()) return "1";
+        
+        // Try to extract the last number from the name
+        // Pattern: test_METHOD_X_Y where Y is the variant
+        String[] parts = testMethodName.split("_");
+        if (parts.length >= 2) {
+            // Get the last numeric part
+            for (int i = parts.length - 1; i >= 0; i--) {
+                String part = parts[i];
+                // Skip known suffixes
+                if (part.equals("explore") || part.startsWith("retry")) continue;
+                // Check if it's a number
+                try {
+                    Integer.parseInt(part);
+                    return part;
+                } catch (NumberFormatException e) {
+                    // Not a number, continue
+                }
+            }
+        }
+        return "1"; // Default
     }
     
     private static String escape(String s) {

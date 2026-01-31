@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-route-plan-service` failing GET operation with 404 status, indicating requested resource not found.
+
+**FIX:** Verify and correct the route plan endpoint path configuration in `ts-route-plan-service` to match expected resource location, or validate that the resource being requested actually exists at the specified endpoint.

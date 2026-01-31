@@ -1,0 +1,1 @@
+{"status":0,"msg":"Price creation rejected: firstClassPriceRate must be positive","data":{"faultName":"INVALID_PRICE_RATE_FAULT","message":"Price creation rejected: firstClassPriceRate must be positive","details":"firstClassPriceRate: -1.00","injected":true}}

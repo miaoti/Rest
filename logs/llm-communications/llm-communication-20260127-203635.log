@@ -1,0 +1,2229 @@
+################################################################################
+# LLM COMMUNICATION LOG
+# Session ID: LLM-1769567795547-1
+# Started: 2026-01-27 20:36:35.595
+# Configuration:
+#   - Include Response Time: true
+#   - Include Content: true
+#   - Include Metadata: true
+#   - Max Content Length: Unlimited
+#   - Log Level: INFO
+################################################################################
+
+================================================================================
+🚀 LLM REQUEST #1
+================================================================================
+Timestamp: 2026-01-27 20:38:04.793
+Session ID: LLM-1769567795547-1
+Request ID: 1
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:04 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/travelplanservice/travelPlan/minStation
+- Service: ts-travel-plan-service
+- All Parameters in this API: departureTime, endPlace, startPlace
+
+Parameter Information:
+- Name: departureTime
+- Description: Date in format yyyy-MM-dd (e.g., 2025-11-01)
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+- Format: date
+- Example: 2025-10-31
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #1
+Timestamp: 2026-01-27 20:38:08.299
+Status: ❌ FAILED
+Response Time: 3521 ms
+📊 Resource Usage During Generation: System CPU: avg=7.1%, max=11.1% | System Memory: avg=89.2%, max=91.4% (29.0 GB/31.7 GB) | ollama.exe Process: max=46.6 MB | Samples: 7 over 3520ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #2
+================================================================================
+Timestamp: 2026-01-27 20:38:08.626
+Session ID: LLM-1769567795547-1
+Request ID: 2
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"6404a935-ba9d-4725-b667-dee66f1b4636","tripId":{"type":"Z","number":"1234"},"trainTypeName":"ZhiDa","routeId":"0b23bd3e-876a-4af3-b920-c50a90c90b04","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 09:51:52","endTime":"2013-05-04 15:51:52"}],"status":1}
+
+Target Parameter: endPlace (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #2
+Timestamp: 2026-01-27 20:38:11.433
+Status: ❌ FAILED
+Response Time: 2806 ms
+📊 Resource Usage During Generation: System CPU: avg=13.2%, max=17.7% | System Memory: avg=89.1%, max=91.0% (28.8 GB/31.7 GB) | ollama.exe Process: max=47.5 MB | Samples: 6 over 2807ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #3
+================================================================================
+Timestamp: 2026-01-27 20:38:11.446
+Session ID: LLM-1769567795547-1
+Request ID: 3
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=50, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a test data generator. Generate realistic test values based on parameter information. Return only the actual value, never JSONPath expressions or explanations.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a realistic test value for the following parameter:
+
+Parameter Name: endPlace
+Parameter Type: string
+Schema Type: string
+
+Based on the parameter name and type, generate a realistic test value.
+Single Value Examples:
+- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'
+- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'
+- For 'userId' (string): 'user123' or 'john.doe'
+- For 'trainNumber' (string): 'G1237' or 'D2468'
+- For 'price' (number): '150.50' or '89.99'
+- For 'distance' (number): '350' or '1200'
+- For 'date' (string): '2024-12-25' or '2024-01-15'
+- For 'time' (string): '14:30' or '09:15'
+
+Respond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').
+Do NOT include quotes, explanations, or JSONPath expressions.
+If you cannot generate a suitable value: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #3
+Timestamp: 2026-01-27 20:38:13.221
+Status: ❌ FAILED
+Response Time: 1775 ms
+📊 Resource Usage During Generation: System CPU: avg=11.9%, max=17.7% | System Memory: avg=87.8%, max=90.3% (28.6 GB/31.7 GB) | ollama.exe Process: max=47.1 MB | Samples: 4 over 1777ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #4
+================================================================================
+Timestamp: 2026-01-27 20:38:13.223
+Session ID: LLM-1769567795547-1
+Request ID: 4
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=20, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a test data generator. Generate realistic values based on parameter semantics and schema types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a single realistic value for this parameter:
+
+Parameter name: endPlace
+Schema type: string
+
+Instructions:
+1. Generate ONE realistic value that matches the parameter semantics
+2. For distance values, include units (like "10 miles", "25 km")
+3. For string types, return a realistic string value
+4. For boolean types, return 'true' or 'false'
+5. Return ONLY the value, no explanation
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #4
+Timestamp: 2026-01-27 20:38:14.937
+Status: ❌ FAILED
+Response Time: 1714 ms
+📊 Resource Usage During Generation: System CPU: avg=10.7%, max=13.2% | System Memory: avg=87.4%, max=90.0% (28.5 GB/31.7 GB) | ollama.exe Process: max=46.3 MB | Samples: 4 over 1715ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #5
+================================================================================
+Timestamp: 2026-01-27 20:38:14.938
+Session ID: LLM-1769567795547-1
+Request ID: 5
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=30, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a minimal test data generator. Generate the simplest realistic value for the given parameter.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a minimal realistic value for this parameter:
+
+Parameter name: endPlace
+Schema type: string
+Required format: String value
+Example format: "text"
+
+Instructions:
+1. Generate a realistic value based on the parameter name
+2. Consider what this parameter might represent in a real system
+3. Return ONLY the value in the correct format, no explanation
+4. For arrays, return a JSON array
+5. For strings, do not include quotes (they will be added automatically)
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #5
+Timestamp: 2026-01-27 20:38:16.550
+Status: ❌ FAILED
+Response Time: 1612 ms
+📊 Resource Usage During Generation: System CPU: avg=10.3%, max=13.2% | System Memory: avg=86.6%, max=88.3% (28.0 GB/31.7 GB) | ollama.exe Process: max=46.8 MB | Samples: 3 over 1612ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #6
+================================================================================
+Timestamp: 2026-01-27 20:38:16.557
+Session ID: LLM-1769567795547-1
+Request ID: 6
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'endPlace' (type: string).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"6404a935-ba9d-4725-b667-dee66f1b4636","tripId":{"type":"Z","number":"1234"},"trainTypeName":"ZhiDa","routeId":"0b23bd3e-876a-4af3-b920-c50a90c90b04","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 09:51:52","endTime":"2013-05-04 15:51:52"},{"id":"182de0d5-5145-4247-8bae-3acd7b9b736a","tripId":{"type":"Z","number":"1235"},"trainTypeName":"ZhiDa","routeId":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 11:31:52","endTime":"2013-05-04 17:51:52"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #6
+Timestamp: 2026-01-27 20:38:18.387
+Status: ❌ FAILED
+Response Time: 1830 ms
+📊 Resource Usage During Generation: System CPU: avg=18.3%, max=27.6% | System Memory: avg=87.4%, max=90.0% (28.5 GB/31.7 GB) | ollama.exe Process: max=48.1 MB | Samples: 4 over 1830ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #7
+================================================================================
+Timestamp: 2026-01-27 20:38:18.388
+Session ID: LLM-1769567795547-1
+Request ID: 7
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'endPlace' (type: string).
+
+Existing values:
+- en2396
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #7
+Timestamp: 2026-01-27 20:38:20.229
+Status: ❌ FAILED
+Response Time: 1842 ms
+📊 Resource Usage During Generation: System CPU: avg=17.3%, max=26.3% | System Memory: avg=87.4%, max=90.3% (28.6 GB/31.7 GB) | ollama.exe Process: max=49.4 MB | Samples: 4 over 1843ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #8
+================================================================================
+Timestamp: 2026-01-27 20:38:20.252
+Session ID: LLM-1769567795547-1
+Request ID: 8
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:20 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/travelplanservice/travelPlan/minStation
+- Service: ts-travel-plan-service
+- All Parameters in this API: departureTime, endPlace, startPlace
+
+Parameter Information:
+- Name: endPlace
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #8
+Timestamp: 2026-01-27 20:38:22.394
+Status: ❌ FAILED
+Response Time: 2143 ms
+📊 Resource Usage During Generation: System CPU: avg=36.7%, max=45.4% | System Memory: avg=87.1%, max=89.4% (28.3 GB/31.7 GB) | ollama.exe Process: max=44.5 MB | Samples: 4 over 2144ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #9
+================================================================================
+Timestamp: 2026-01-27 20:38:22.537
+Session ID: LLM-1769567795547-1
+Request ID: 9
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"6404a935-ba9d-4725-b667-dee66f1b4636","tripId":{"type":"Z","number":"1234"},"trainTypeName":"ZhiDa","routeId":"0b23bd3e-876a-4af3-b920-c50a90c90b04","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 09:51:52","endTime":"2013-05-04 15:51:52"}],"status":1}
+
+Target Parameter: startPlace (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #9
+Timestamp: 2026-01-27 20:38:24.737
+Status: ❌ FAILED
+Response Time: 2200 ms
+📊 Resource Usage During Generation: System CPU: avg=35.1%, max=45.4% | System Memory: avg=87.2%, max=89.4% (28.3 GB/31.7 GB) | ollama.exe Process: max=49.7 MB | Samples: 4 over 2201ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #10
+================================================================================
+Timestamp: 2026-01-27 20:38:24.750
+Session ID: LLM-1769567795547-1
+Request ID: 10
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=50, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a test data generator. Generate realistic test values based on parameter information. Return only the actual value, never JSONPath expressions or explanations.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a realistic test value for the following parameter:
+
+Parameter Name: startPlace
+Parameter Type: string
+Schema Type: string
+
+Based on the parameter name and type, generate a realistic test value.
+Single Value Examples:
+- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'
+- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'
+- For 'userId' (string): 'user123' or 'john.doe'
+- For 'trainNumber' (string): 'G1237' or 'D2468'
+- For 'price' (number): '150.50' or '89.99'
+- For 'distance' (number): '350' or '1200'
+- For 'date' (string): '2024-12-25' or '2024-01-15'
+- For 'time' (string): '14:30' or '09:15'
+
+Respond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').
+Do NOT include quotes, explanations, or JSONPath expressions.
+If you cannot generate a suitable value: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #10
+Timestamp: 2026-01-27 20:38:27.016
+Status: ❌ FAILED
+Response Time: 2266 ms
+📊 Resource Usage During Generation: System CPU: avg=43.3%, max=48.6% | System Memory: avg=87.3%, max=89.3% (28.3 GB/31.7 GB) | ollama.exe Process: max=50.0 MB | Samples: 4 over 2266ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #11
+================================================================================
+Timestamp: 2026-01-27 20:38:27.016
+Session ID: LLM-1769567795547-1
+Request ID: 11
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=20, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a test data generator. Generate realistic values based on parameter semantics and schema types.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a single realistic value for this parameter:
+
+Parameter name: startPlace
+Schema type: string
+
+Instructions:
+1. Generate ONE realistic value that matches the parameter semantics
+2. For distance values, include units (like "10 miles", "25 km")
+3. For string types, return a realistic string value
+4. For boolean types, return 'true' or 'false'
+5. Return ONLY the value, no explanation
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #11
+Timestamp: 2026-01-27 20:38:29.279
+Status: ❌ FAILED
+Response Time: 2262 ms
+📊 Resource Usage During Generation: System CPU: avg=43.1%, max=56.5% | System Memory: avg=88.2%, max=91.0% (28.8 GB/31.7 GB) | ollama.exe Process: max=50.4 MB | Samples: 5 over 2263ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #12
+================================================================================
+Timestamp: 2026-01-27 20:38:29.279
+Session ID: LLM-1769567795547-1
+Request ID: 12
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=30, temperature=0.10
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a minimal test data generator. Generate the simplest realistic value for the given parameter.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a minimal realistic value for this parameter:
+
+Parameter name: startPlace
+Schema type: string
+Required format: String value
+Example format: "text"
+
+Instructions:
+1. Generate a realistic value based on the parameter name
+2. Consider what this parameter might represent in a real system
+3. Return ONLY the value in the correct format, no explanation
+4. For arrays, return a JSON array
+5. For strings, do not include quotes (they will be added automatically)
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #12
+Timestamp: 2026-01-27 20:38:31.641
+Status: ❌ FAILED
+Response Time: 2362 ms
+📊 Resource Usage During Generation: System CPU: avg=44.4%, max=49.1% | System Memory: avg=87.9%, max=90.5% (28.7 GB/31.7 GB) | ollama.exe Process: max=46.8 MB | Samples: 5 over 2362ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #13
+================================================================================
+Timestamp: 2026-01-27 20:38:31.661
+Session ID: LLM-1769567795547-1
+Request ID: 13
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'startPlace' (type: string).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"6404a935-ba9d-4725-b667-dee66f1b4636","tripId":{"type":"Z","number":"1234"},"trainTypeName":"ZhiDa","routeId":"0b23bd3e-876a-4af3-b920-c50a90c90b04","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 09:51:52","endTime":"2013-05-04 15:51:52"},{"id":"182de0d5-5145-4247-8bae-3acd7b9b736a","tripId":{"type":"Z","number":"1235"},"trainTypeName":"ZhiDa","routeId":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","startStationName":"shanghai","stationsName":"nanjing","terminalStationName":"beijing","startTime":"2013-05-04 11:31:52","endTime":"2013-05-04 17:51:52"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #13
+Timestamp: 2026-01-27 20:38:33.935
+Status: ❌ FAILED
+Response Time: 2274 ms
+📊 Resource Usage During Generation: System CPU: avg=45.7%, max=50.7% | System Memory: avg=88.2%, max=91.1% (28.9 GB/31.7 GB) | ollama.exe Process: max=50.7 MB | Samples: 5 over 2274ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #14
+================================================================================
+Timestamp: 2026-01-27 20:38:33.935
+Session ID: LLM-1769567795547-1
+Request ID: 14
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'startPlace' (type: string).
+
+Existing values:
+- sta4603
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #14
+Timestamp: 2026-01-27 20:38:36.352
+Status: ❌ FAILED
+Response Time: 2417 ms
+📊 Resource Usage During Generation: System CPU: avg=47.0%, max=55.3% | System Memory: avg=88.2%, max=90.8% (28.8 GB/31.7 GB) | ollama.exe Process: max=50.6 MB | Samples: 5 over 2417ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #15
+================================================================================
+Timestamp: 2026-01-27 20:38:36.353
+Session ID: LLM-1769567795547-1
+Request ID: 15
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an API testing assistant that generates realistic parameter values.
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:36 PM CST
+
+API Context:
+- API Endpoint: POST /api/v1/travelplanservice/travelPlan/minStation
+- Service: ts-travel-plan-service
+- All Parameters in this API: departureTime, endPlace, startPlace
+
+Parameter Information:
+- Name: startPlace
+- Location: formData
+- Data Type: string
+- Required: No (optional)
+
+Task: Generate 5 realistic test values for this parameter.
+
+CRITICAL FORMATTING REQUIREMENT:
+You MUST return exactly 5 separate lines.
+Each line contains exactly ONE value.
+Press ENTER after each value.
+Do NOT put multiple values on the same line.
+
+Content Requirements:
+- Values should be appropriate for the parameter type and context
+- Generate diverse, realistic examples that an API might actually receive
+- Consider common use cases and edge cases
+
+Intelligent Value Generation Guidelines:
+• Analyze the parameter name, type, description, and format to understand its purpose
+• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events
+  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),
+  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)
+• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)
+• For location/place parameters: Use realistic, specific names appropriate to the domain
+• For numeric parameters: Use realistic ranges appropriate to the context
+• For string parameters: Consider typical business domain values, not generic placeholders
+• Ensure generated values would pass typical validation rules
+
+Example Format (for 3 values):
+Value1
+Value2
+Value3
+
+Now generate your 5 values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #15
+Timestamp: 2026-01-27 20:38:38.615
+Status: ❌ FAILED
+Response Time: 2262 ms
+📊 Resource Usage During Generation: System CPU: avg=38.6%, max=55.3% | System Memory: avg=87.7%, max=89.5% (28.4 GB/31.7 GB) | ollama.exe Process: max=47.6 MB | Samples: 4 over 2262ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #16
+================================================================================
+Timestamp: 2026-01-27 20:38:38.630
+Session ID: LLM-1769567795547-1
+Request ID: 16
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:38 PM CST
+
+Generate 5-8 TYPE MISMATCH invalid values for parameter 'departureTime'.
+Expected type: string
+Description: Date in format yyyy-MM-dd (e.g., 2025-11-01)
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #16
+Timestamp: 2026-01-27 20:38:40.931
+Status: ❌ FAILED
+Response Time: 2301 ms
+📊 Resource Usage During Generation: System CPU: avg=41.0%, max=49.5% | System Memory: avg=88.6%, max=91.4% (29.0 GB/31.7 GB) | ollama.exe Process: max=48.7 MB | Samples: 5 over 2302ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #17
+================================================================================
+Timestamp: 2026-01-27 20:38:40.933
+Session ID: LLM-1769567795547-1
+Request ID: 17
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:40 PM CST
+
+Generate 5-8 SEMANTICALLY INVALID values for parameter 'departureTime'.
+Type: string
+Description: Date in format yyyy-MM-dd (e.g., 2025-11-01)
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+IMPORTANT: Include BOTH long meaningless values AND very SHORT invalid values!
+
+Categories to cover:
+1. MEANINGLESS/IMPOSSIBLE values (non-existent entities)
+2. VERY SHORT values (1-3 chars) that are too short to be valid
+3. Single characters or digits that can't be valid
+If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.
+
+Examples:
+- Station name: X, AB, 1, NonExistentStation, FakeCity123
+- Route ID: a, 0, -, FAKE-ROUTE-999, invalid_id
+- Age parameter: -5, 999, -100, 0
+- Email parameter: a, @, invalid@, nodomain, test@@test
+- Date parameter: 1, x, 2025-02-30, 2025-13-01
+- Country code: Z, XX, ZZZ, 9, 999
+- Train type: x, 1, !, InvalidType, FakeTrain
+- Price rate: a, x, -, NaN, infinity
+- Station list: X, NonExistent1,NonExistent2, ,InvalidStation
+
+OUTPUT FORMAT: Return ONLY the raw values, one per line. Do NOT include parameter names or quotes.
+WRONG: stationList="value"
+RIGHT: value
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #17
+Timestamp: 2026-01-27 20:38:43.368
+Status: ❌ FAILED
+Response Time: 2435 ms
+📊 Resource Usage During Generation: System CPU: avg=47.6%, max=51.8% | System Memory: avg=88.5%, max=91.3% (28.9 GB/31.7 GB) | ollama.exe Process: max=46.7 MB | Samples: 5 over 2435ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #18
+================================================================================
+Timestamp: 2026-01-27 20:38:43.369
+Session ID: LLM-1769567795547-1
+Request ID: 18
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:43 PM CST
+
+Generate 5-8 OVERFLOW values for parameter 'departureTime'.
+Type: string
+Description: Date in format yyyy-MM-dd (e.g., 2025-11-01)
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #18
+Timestamp: 2026-01-27 20:38:46.259
+Status: ❌ FAILED
+Response Time: 2890 ms
+📊 Resource Usage During Generation: System CPU: avg=63.5%, max=70.8% | System Memory: avg=88.7%, max=91.5% (29.0 GB/31.7 GB) | ollama.exe Process: max=49.2 MB | Samples: 6 over 2891ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #19
+================================================================================
+Timestamp: 2026-01-27 20:38:46.268
+Session ID: LLM-1769567795547-1
+Request ID: 19
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:46 PM CST
+
+Generate 5-8 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'departureTime'.
+Type: string
+
+Generate values with malicious or special characters
+Down here are some examples of special characters and injection attempts. Generate values that can fit into the parameter type and context as provided.
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #19
+Timestamp: 2026-01-27 20:38:48.707
+Status: ❌ FAILED
+Response Time: 2439 ms
+📊 Resource Usage During Generation: System CPU: avg=50.2%, max=62.5% | System Memory: avg=89.0%, max=91.5% (29.0 GB/31.7 GB) | ollama.exe Process: max=47.2 MB | Samples: 5 over 2439ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #20
+================================================================================
+Timestamp: 2026-01-27 20:38:48.709
+Session ID: LLM-1769567795547-1
+Request ID: 20
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:48 PM CST
+
+Generate 5-8 BOUNDARY VIOLATION values for parameter 'departureTime'.
+Type: string
+Description: Date in format yyyy-MM-dd (e.g., 2025-11-01)
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #20
+Timestamp: 2026-01-27 20:38:51.189
+Status: ❌ FAILED
+Response Time: 2481 ms
+📊 Resource Usage During Generation: System CPU: avg=53.7%, max=62.9% | System Memory: avg=88.8%, max=90.8% (28.8 GB/31.7 GB) | ollama.exe Process: max=47.1 MB | Samples: 5 over 2481ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #21
+================================================================================
+Timestamp: 2026-01-27 20:38:51.191
+Session ID: LLM-1769567795547-1
+Request ID: 21
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:51 PM CST
+
+Generate 5-8 TYPE MISMATCH invalid values for parameter 'endPlace'.
+Expected type: string
+Description: 
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #21
+Timestamp: 2026-01-27 20:38:53.996
+Status: ❌ FAILED
+Response Time: 2805 ms
+📊 Resource Usage During Generation: System CPU: avg=48.5%, max=57.1% | System Memory: avg=89.4%, max=92.4% (29.3 GB/31.7 GB) | ollama.exe Process: max=49.1 MB | Samples: 6 over 2806ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #22
+================================================================================
+Timestamp: 2026-01-27 20:38:53.998
+Session ID: LLM-1769567795547-1
+Request ID: 22
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:53 PM CST
+
+Generate 5-8 SEMANTICALLY INVALID values for parameter 'endPlace'.
+Type: string
+Description: 
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+IMPORTANT: Include BOTH long meaningless values AND very SHORT invalid values!
+
+Categories to cover:
+1. MEANINGLESS/IMPOSSIBLE values (non-existent entities)
+2. VERY SHORT values (1-3 chars) that are too short to be valid
+3. Single characters or digits that can't be valid
+If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.
+
+Examples:
+- Station name: X, AB, 1, NonExistentStation, FakeCity123
+- Route ID: a, 0, -, FAKE-ROUTE-999, invalid_id
+- Age parameter: -5, 999, -100, 0
+- Email parameter: a, @, invalid@, nodomain, test@@test
+- Date parameter: 1, x, 2025-02-30, 2025-13-01
+- Country code: Z, XX, ZZZ, 9, 999
+- Train type: x, 1, !, InvalidType, FakeTrain
+- Price rate: a, x, -, NaN, infinity
+- Station list: X, NonExistent1,NonExistent2, ,InvalidStation
+
+OUTPUT FORMAT: Return ONLY the raw values, one per line. Do NOT include parameter names or quotes.
+WRONG: stationList="value"
+RIGHT: value
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #22
+Timestamp: 2026-01-27 20:38:56.906
+Status: ❌ FAILED
+Response Time: 2908 ms
+📊 Resource Usage During Generation: System CPU: avg=64.0%, max=74.6% | System Memory: avg=89.2%, max=91.7% (29.1 GB/31.7 GB) | ollama.exe Process: max=47.2 MB | Samples: 6 over 2909ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #23
+================================================================================
+Timestamp: 2026-01-27 20:38:56.908
+Session ID: LLM-1769567795547-1
+Request ID: 23
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:56 PM CST
+
+Generate 5-8 OVERFLOW values for parameter 'endPlace'.
+Type: string
+Description: 
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #23
+Timestamp: 2026-01-27 20:38:59.931
+Status: ❌ FAILED
+Response Time: 3023 ms
+📊 Resource Usage During Generation: System CPU: avg=68.5%, max=73.8% | System Memory: avg=88.9%, max=91.4% (29.0 GB/31.7 GB) | ollama.exe Process: max=47.9 MB | Samples: 6 over 3024ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #24
+================================================================================
+Timestamp: 2026-01-27 20:38:59.933
+Session ID: LLM-1769567795547-1
+Request ID: 24
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:38:59 PM CST
+
+Generate 5-8 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'endPlace'.
+Type: string
+
+Generate values with malicious or special characters
+Down here are some examples of special characters and injection attempts. Generate values that can fit into the parameter type and context as provided.
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #24
+Timestamp: 2026-01-27 20:39:02.789
+Status: ❌ FAILED
+Response Time: 2856 ms
+📊 Resource Usage During Generation: System CPU: avg=64.3%, max=70.5% | System Memory: avg=89.1%, max=91.7% (29.1 GB/31.7 GB) | ollama.exe Process: max=47.6 MB | Samples: 6 over 2856ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #25
+================================================================================
+Timestamp: 2026-01-27 20:39:02.790
+Session ID: LLM-1769567795547-1
+Request ID: 25
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:39:02 PM CST
+
+Generate 5-8 BOUNDARY VIOLATION values for parameter 'endPlace'.
+Type: string
+Description: 
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #25
+Timestamp: 2026-01-27 20:39:05.683
+Status: ❌ FAILED
+Response Time: 2893 ms
+📊 Resource Usage During Generation: System CPU: avg=63.9%, max=70.4% | System Memory: avg=89.1%, max=91.9% (29.1 GB/31.7 GB) | ollama.exe Process: max=48.7 MB | Samples: 6 over 2893ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #26
+================================================================================
+Timestamp: 2026-01-27 20:39:05.684
+Session ID: LLM-1769567795547-1
+Request ID: 26
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:39:05 PM CST
+
+Generate 5-8 TYPE MISMATCH invalid values for parameter 'startPlace'.
+Expected type: string
+Description: 
+
+Generate values of WRONG TYPE that would cause type validation errors.
+Examples:
+- If expecting string, provide: integer 123, boolean true, array [1,2,3]
+- If expecting integer, provide: string 'abc', boolean false, object {}
+- If expecting boolean, provide: string 'yes', integer 1, array []
+
+IMPORTANT: Provide actual type-mismatched values, not string representations.
+Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object
+Examples: integer:999, string:notANumber, boolean:true, null:null
+Return only the values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #26
+Timestamp: 2026-01-27 20:39:08.246
+Status: ❌ FAILED
+Response Time: 2562 ms
+📊 Resource Usage During Generation: System CPU: avg=54.5%, max=61.0% | System Memory: avg=89.1%, max=91.5% (29.0 GB/31.7 GB) | ollama.exe Process: max=45.8 MB | Samples: 5 over 2562ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #27
+================================================================================
+Timestamp: 2026-01-27 20:39:08.248
+Session ID: LLM-1769567795547-1
+Request ID: 27
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:39:08 PM CST
+
+Generate 5-8 SEMANTICALLY INVALID values for parameter 'startPlace'.
+Type: string
+Description: 
+
+Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.
+IMPORTANT: Include BOTH long meaningless values AND very SHORT invalid values!
+
+Categories to cover:
+1. MEANINGLESS/IMPOSSIBLE values (non-existent entities)
+2. VERY SHORT values (1-3 chars) that are too short to be valid
+3. Single characters or digits that can't be valid
+If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.
+
+Examples:
+- Station name: X, AB, 1, NonExistentStation, FakeCity123
+- Route ID: a, 0, -, FAKE-ROUTE-999, invalid_id
+- Age parameter: -5, 999, -100, 0
+- Email parameter: a, @, invalid@, nodomain, test@@test
+- Date parameter: 1, x, 2025-02-30, 2025-13-01
+- Country code: Z, XX, ZZZ, 9, 999
+- Train type: x, 1, !, InvalidType, FakeTrain
+- Price rate: a, x, -, NaN, infinity
+- Station list: X, NonExistent1,NonExistent2, ,InvalidStation
+
+OUTPUT FORMAT: Return ONLY the raw values, one per line. Do NOT include parameter names or quotes.
+WRONG: stationList="value"
+RIGHT: value
+
+Return only the semantically invalid values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #27
+Timestamp: 2026-01-27 20:39:10.951
+Status: ❌ FAILED
+Response Time: 2704 ms
+📊 Resource Usage During Generation: System CPU: avg=50.8%, max=67.8% | System Memory: avg=89.3%, max=91.3% (28.9 GB/31.7 GB) | ollama.exe Process: max=47.6 MB | Samples: 5 over 2706ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #28
+================================================================================
+Timestamp: 2026-01-27 20:39:10.955
+Session ID: LLM-1769567795547-1
+Request ID: 28
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:39:10 PM CST
+
+Generate 5-8 OVERFLOW values for parameter 'startPlace'.
+Type: string
+Description: 
+
+Generate values that EXCEED expected limits:
+- Very long strings (1000+ characters)
+- Strings with repeated characters (AAAA...)
+- Maximum length violations
+
+Return only the overflow values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #28
+Timestamp: 2026-01-27 20:39:13.952
+Status: ❌ FAILED
+Response Time: 2997 ms
+📊 Resource Usage During Generation: System CPU: avg=65.9%, max=69.3% | System Memory: avg=89.4%, max=92.0% (29.2 GB/31.7 GB) | ollama.exe Process: max=49.3 MB | Samples: 6 over 2997ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #29
+================================================================================
+Timestamp: 2026-01-27 20:39:13.952
+Session ID: LLM-1769567795547-1
+Request ID: 29
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:39:13 PM CST
+
+Generate 5-8 values with SPECIAL CHARACTERS or INJECTION attempts for parameter 'startPlace'.
+Type: string
+
+Generate values with malicious or special characters
+Down here are some examples of special characters and injection attempts. Generate values that can fit into the parameter type and context as provided.
+- SQL injection attempts: ' OR '1'='1, '; DROP TABLE--
+- XSS attempts: <script>alert('XSS')</script>
+- Path traversal: ../../etc/passwd
+- Command injection: ; ls -la
+- Special characters: !@#$%^&*(){}[]|\:;"'<>?,./
+
+Return only the special character values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #29
+Timestamp: 2026-01-27 20:39:16.834
+Status: ❌ FAILED
+Response Time: 2882 ms
+📊 Resource Usage During Generation: System CPU: avg=67.7%, max=74.0% | System Memory: avg=89.5%, max=92.2% (29.2 GB/31.7 GB) | ollama.exe Process: max=47.7 MB | Samples: 6 over 2882ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #30
+================================================================================
+Timestamp: 2026-01-27 20:39:16.835
+Session ID: LLM-1769567795547-1
+Request ID: 30
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an AI system that generates parameter values for API testing. CRITICAL: When asked to generate N values, you MUST return exactly N lines. Each line contains exactly one value. Use line breaks between values. Do NOT put multiple values on the same line separated by spaces or commas. Do NOT add explanations, numbering, or extra formatting.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Current Date/Time: Tuesday, January 27, 2026 at 8:39:16 PM CST
+
+Generate 5-8 BOUNDARY VIOLATION values for parameter 'startPlace'.
+Type: string
+Description: 
+
+Generate values that are JUST OUTSIDE valid boundaries:
+- If minLength is 5, provide length 4
+- If maxValue is 100, provide 101
+- If range is 1-10, provide 0 or 11
+- Off-by-one errors
+
+Return only the boundary violation values, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #30
+Timestamp: 2026-01-27 20:39:19.758
+Status: ❌ FAILED
+Response Time: 2924 ms
+📊 Resource Usage During Generation: System CPU: avg=72.3%, max=77.7% | System Memory: avg=89.5%, max=92.2% (29.2 GB/31.7 GB) | ollama.exe Process: max=48.1 MB | Samples: 6 over 2924ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #31
+================================================================================
+Timestamp: 2026-01-27 20:39:31.840
+Session ID: LLM-1769567795547-1
+Request ID: 31
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-route-plan-service
+Operation: RoutePlanController.getMinStopStations
+HTTP Status: 0
+Duration: 9.529ms
+
+EXCEPTION TYPE: java.lang.NullPointerException
+
+STACK TRACE (first few lines):
+java.lang.NullPointerException
+at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178)
+at plan.controller.RoutePlanController.getMinStopStations(RoutePlanController.java:45)
+
+TEST PARAMETERS USED:
+- body: {"departureTime":"test310","endPlace":"test395","startPlace":"test615"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #31
+Timestamp: 2026-01-27 20:39:33.980
+Status: ❌ FAILED
+Response Time: 2140 ms
+📊 Resource Usage During Generation: System CPU: avg=17.9%, max=27.5% | System Memory: avg=90.7%, max=92.0% (29.1 GB/31.7 GB) | ollama.exe Process: max=47.6 MB | Samples: 4 over 2140ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #32
+================================================================================
+Timestamp: 2026-01-27 20:39:34.033
+Session ID: LLM-1769567795547-1
+Request ID: 32
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: 909e651bfa75d66deaf4aa54ef32b393
+- Total Spans: 11
+- Error Status: FAILED
+- Root Cause Failures: 1
+- Total Failed Spans: 7
+- Propagated Failures: 6
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-route-plan-service
+- Failed Operation: RoutePlanController.getMinStopStations
+- HTTP Status: 0
+- Execution Time: 9.529ms
+- Exception Type: java.lang.NullPointerException
+- Exact Failure Location:
+  → at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-gateway-service, ts-route-plan-service, ts-travel-plan-service
+- HTTP Methods Used: POST, GET
+- API Endpoints: 5 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #32
+Timestamp: 2026-01-27 20:39:35.925
+Status: ❌ FAILED
+Response Time: 1892 ms
+📊 Resource Usage During Generation: System CPU: avg=15.4%, max=16.2% | System Memory: avg=90.1%, max=92.2% (29.2 GB/31.7 GB) | ollama.exe Process: max=49.3 MB | Samples: 4 over 1893ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #33
+================================================================================
+Timestamp: 2026-01-27 20:39:41.204
+Session ID: LLM-1769567795547-1
+Request ID: 33
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-gateway-service
+Operation: POST
+HTTP Status: 500
+Duration: 16.972ms
+
+TEST PARAMETERS USED:
+- body: {"departureTime":"test310","endPlace":"en2396","startPlace":"test615"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #33
+Timestamp: 2026-01-27 20:39:43.366
+Status: ❌ FAILED
+Response Time: 2162 ms
+📊 Resource Usage During Generation: System CPU: avg=12.2%, max=14.0% | System Memory: avg=89.7%, max=92.1% (29.2 GB/31.7 GB) | ollama.exe Process: max=47.3 MB | Samples: 4 over 2162ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #34
+================================================================================
+Timestamp: 2026-01-27 20:39:43.366
+Session ID: LLM-1769567795547-1
+Request ID: 34
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-route-plan-service
+Operation: RoutePlanController.getMinStopStations
+HTTP Status: 0
+Duration: 7.574ms
+
+EXCEPTION TYPE: java.lang.NullPointerException
+
+STACK TRACE (first few lines):
+java.lang.NullPointerException
+at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178)
+at plan.controller.RoutePlanController.getMinStopStations(RoutePlanController.java:45)
+
+TEST PARAMETERS USED:
+- body: {"departureTime":"test310","endPlace":"en2396","startPlace":"test615"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #34
+Timestamp: 2026-01-27 20:39:45.606
+Status: ❌ FAILED
+Response Time: 2240 ms
+📊 Resource Usage During Generation: System CPU: avg=18.3%, max=20.1% | System Memory: avg=90.4%, max=93.0% (29.5 GB/31.7 GB) | ollama.exe Process: max=50.5 MB | Samples: 5 over 2240ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #35
+================================================================================
+Timestamp: 2026-01-27 20:39:45.623
+Session ID: LLM-1769567795547-1
+Request ID: 35
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: 9362163bd19ffaee1a8381573733fb21
+- Total Spans: 7
+- Error Status: FAILED
+- Root Cause Failures: 2
+- Total Failed Spans: 4
+- Propagated Failures: 2
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-gateway-service
+- Failed Operation: POST
+- HTTP Status: 500
+- Execution Time: 16.972ms
+
+Root Cause #2:
+- Failed Service: ts-route-plan-service
+- Failed Operation: RoutePlanController.getMinStopStations
+- HTTP Status: 0
+- Execution Time: 7.574ms
+- Exception Type: java.lang.NullPointerException
+- Exact Failure Location:
+  → at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-gateway-service, ts-route-plan-service
+- HTTP Methods Used: POST, GET
+- API Endpoints: 4 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #35
+Timestamp: 2026-01-27 20:39:47.636
+Status: ❌ FAILED
+Response Time: 2013 ms
+📊 Resource Usage During Generation: System CPU: avg=16.6%, max=19.9% | System Memory: avg=89.9%, max=92.3% (29.3 GB/31.7 GB) | ollama.exe Process: max=47.1 MB | Samples: 4 over 2013ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #36
+================================================================================
+Timestamp: 2026-01-27 20:39:49.816
+Session ID: LLM-1769567795547-1
+Request ID: 36
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=500, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert validating NEGATIVE TEST results.
+
+CONTEXT: This is a NEGATIVE test where we INTENTIONALLY sent INVALID inputs to test error handling.
+The test PASSES (returns FAILED=true) if the API correctly rejected our invalid input.
+The test FAILS (returns FAILED=false) if the API accepted the invalid input or the error is unrelated.
+
+DESIGNED INVALID INPUTS:
+  - Parameter 'departureTime' was set to INVALID value: 12345
+
+VALIDATION CRITERIA:
+Return FAILED=true (test PASSES) if:
+1. The response contains an error message that SPECIFICALLY mentions or relates to one of the designed invalid parameters
+2. The error message indicates validation failure for the invalid input we sent
+3. The response shows the API correctly rejected our invalid data
+
+Return FAILED=false (test FAILS) if:
+1. The response shows SUCCESS (API accepted our invalid input - this is BAD!)
+2. The error is about something UNRELATED to our invalid parameters (e.g., authentication, server error)
+3. The error message doesn't mention or relate to the parameters we made invalid
+
+OUTPUT FORMAT (exactly 3 lines):
+FAILED: true|false
+RELATED_TO_INVALID_INPUT: true|false
+RCA: <explanation of whether the error is about our designed invalid input>
+
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+TASK: Determine if this API response correctly rejected our DESIGNED INVALID INPUT.
+
+API Details:
+- Service: ts-travel-plan-service
+- Endpoint: POST /api/v1/travelplanservice/travelPlan/minStation
+- HTTP Status Code: 500
+
+Designed Invalid Parameters:
+  - departureTime: 12345
+
+Response Body:
+```json
+{"timestamp":"2026-01-28T02:39:50.177+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/travelplanservice/travelPlan/minStation"}
+```
+
+Examples:
+Example 1 (Error is about our invalid input - TEST PASSES):
+Invalid Parameter: basicPriceRate = -100
+Response: {"status":0,"msg":"Invalid price rate: must be positive"}
+FAILED: true
+RELATED_TO_INVALID_INPUT: true
+RCA: The error message 'Invalid price rate' directly relates to our invalid basicPriceRate parameter. The API correctly rejected our negative price value.
+
+Example 2 (Error is UNRELATED to our invalid input - TEST FAILS):
+Invalid Parameter: basicPriceRate = -100
+Response: {"status":0,"msg":"Authentication token expired"}
+FAILED: false
+RELATED_TO_INVALID_INPUT: false
+RCA: The error is about authentication, NOT about our invalid basicPriceRate. This is an unrelated error so the negative test FAILS.
+
+Example 3 (API accepted invalid input - TEST FAILS):
+Invalid Parameter: stationName = "" (empty string)
+Response: {"status":1,"msg":"Success","data":{"id":123}}
+FAILED: false
+RELATED_TO_INVALID_INPUT: false
+RCA: The API accepted our empty station name without error. The invalid input was NOT rejected, so the negative test FAILS.
+
+Now analyze the response above and provide your answer:
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #36
+Timestamp: 2026-01-27 20:39:52.142
+Status: ❌ FAILED
+Response Time: 2326 ms
+📊 Resource Usage During Generation: System CPU: avg=20.5%, max=27.8% | System Memory: avg=90.8%, max=93.0% (29.5 GB/31.7 GB) | ollama.exe Process: max=48.7 MB | Samples: 5 over 2326ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #37
+================================================================================
+Timestamp: 2026-01-27 20:39:55.174
+Session ID: LLM-1769567795547-1
+Request ID: 37
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-route-plan-service
+Operation: RoutePlanController.getMinStopStations
+HTTP Status: 0
+Duration: 6.638ms
+
+EXCEPTION TYPE: java.lang.NullPointerException
+
+STACK TRACE (first few lines):
+java.lang.NullPointerException
+at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178)
+at plan.controller.RoutePlanController.getMinStopStations(RoutePlanController.java:45)
+
+TEST PARAMETERS USED:
+- body: {"departureTime":12345,"endPlace":"test395","startPlace":"sta4603"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #37
+Timestamp: 2026-01-27 20:39:56.767
+Status: ❌ FAILED
+Response Time: 1594 ms
+📊 Resource Usage During Generation: System CPU: avg=5.1%, max=12.7% | System Memory: avg=90.4%, max=92.0% (29.1 GB/31.7 GB) | ollama.exe Process: max=46.6 MB | Samples: 3 over 1594ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #38
+================================================================================
+Timestamp: 2026-01-27 20:39:56.779
+Session ID: LLM-1769567795547-1
+Request ID: 38
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: f2de2bba78de59e17f6e51bfae4fb36f
+- Total Spans: 27
+- Error Status: FAILED
+- Root Cause Failures: 1
+- Total Failed Spans: 7
+- Propagated Failures: 6
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-route-plan-service
+- Failed Operation: RoutePlanController.getMinStopStations
+- HTTP Status: 0
+- Execution Time: 6.638ms
+- Exception Type: java.lang.NullPointerException
+- Exact Failure Location:
+  → at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-route-plan-service, ts-travel-plan-service, ts-route-service, ts-gateway-service
+- HTTP Methods Used: POST, GET
+- API Endpoints: 6 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #38
+Timestamp: 2026-01-27 20:39:58.827
+Status: ❌ FAILED
+Response Time: 2048 ms
+📊 Resource Usage During Generation: System CPU: avg=23.1%, max=40.5% | System Memory: avg=90.9%, max=93.2% (29.5 GB/31.7 GB) | ollama.exe Process: max=47.8 MB | Samples: 4 over 2048ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #39
+================================================================================
+Timestamp: 2026-01-27 20:40:01.011
+Session ID: LLM-1769567795547-1
+Request ID: 39
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=500, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert validating NEGATIVE TEST results.
+
+CONTEXT: This is a NEGATIVE test where we INTENTIONALLY sent INVALID inputs to test error handling.
+The test PASSES (returns FAILED=true) if the API correctly rejected our invalid input.
+The test FAILS (returns FAILED=false) if the API accepted the invalid input or the error is unrelated.
+
+DESIGNED INVALID INPUTS:
+  - Parameter 'startPlace' was set to INVALID value: 12345
+
+VALIDATION CRITERIA:
+Return FAILED=true (test PASSES) if:
+1. The response contains an error message that SPECIFICALLY mentions or relates to one of the designed invalid parameters
+2. The error message indicates validation failure for the invalid input we sent
+3. The response shows the API correctly rejected our invalid data
+
+Return FAILED=false (test FAILS) if:
+1. The response shows SUCCESS (API accepted our invalid input - this is BAD!)
+2. The error is about something UNRELATED to our invalid parameters (e.g., authentication, server error)
+3. The error message doesn't mention or relate to the parameters we made invalid
+
+OUTPUT FORMAT (exactly 3 lines):
+FAILED: true|false
+RELATED_TO_INVALID_INPUT: true|false
+RCA: <explanation of whether the error is about our designed invalid input>
+
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+TASK: Determine if this API response correctly rejected our DESIGNED INVALID INPUT.
+
+API Details:
+- Service: ts-travel-plan-service
+- Endpoint: POST /api/v1/travelplanservice/travelPlan/minStation
+- HTTP Status Code: 500
+
+Designed Invalid Parameters:
+  - startPlace: 12345
+
+Response Body:
+```json
+{"timestamp":"2026-01-28T02:40:01.378+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/travelplanservice/travelPlan/minStation"}
+```
+
+Examples:
+Example 1 (Error is about our invalid input - TEST PASSES):
+Invalid Parameter: basicPriceRate = -100
+Response: {"status":0,"msg":"Invalid price rate: must be positive"}
+FAILED: true
+RELATED_TO_INVALID_INPUT: true
+RCA: The error message 'Invalid price rate' directly relates to our invalid basicPriceRate parameter. The API correctly rejected our negative price value.
+
+Example 2 (Error is UNRELATED to our invalid input - TEST FAILS):
+Invalid Parameter: basicPriceRate = -100
+Response: {"status":0,"msg":"Authentication token expired"}
+FAILED: false
+RELATED_TO_INVALID_INPUT: false
+RCA: The error is about authentication, NOT about our invalid basicPriceRate. This is an unrelated error so the negative test FAILS.
+
+Example 3 (API accepted invalid input - TEST FAILS):
+Invalid Parameter: stationName = "" (empty string)
+Response: {"status":1,"msg":"Success","data":{"id":123}}
+FAILED: false
+RELATED_TO_INVALID_INPUT: false
+RCA: The API accepted our empty station name without error. The invalid input was NOT rejected, so the negative test FAILS.
+
+Now analyze the response above and provide your answer:
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #39
+Timestamp: 2026-01-27 20:40:03.457
+Status: ❌ FAILED
+Response Time: 2446 ms
+📊 Resource Usage During Generation: System CPU: avg=44.8%, max=53.4% | System Memory: avg=91.2%, max=93.6% (29.7 GB/31.7 GB) | ollama.exe Process: max=47.5 MB | Samples: 5 over 2446ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #40
+================================================================================
+Timestamp: 2026-01-27 20:40:06.489
+Session ID: LLM-1769567795547-1
+Request ID: 40
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-route-plan-service
+Operation: RoutePlanController.getMinStopStations
+HTTP Status: 0
+Duration: 7.762ms
+
+EXCEPTION TYPE: java.lang.NullPointerException
+
+STACK TRACE (first few lines):
+java.lang.NullPointerException
+at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178)
+at plan.controller.RoutePlanController.getMinStopStations(RoutePlanController.java:45)
+
+TEST PARAMETERS USED:
+- body: {"departureTime":"test310","endPlace":"test395","startPlace":12345}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #40
+Timestamp: 2026-01-27 20:40:09.149
+Status: ❌ FAILED
+Response Time: 2660 ms
+📊 Resource Usage During Generation: System CPU: avg=51.3%, max=56.6% | System Memory: avg=91.0%, max=93.1% (29.5 GB/31.7 GB) | ollama.exe Process: max=47.1 MB | Samples: 5 over 2660ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #41
+================================================================================
+Timestamp: 2026-01-27 20:40:09.173
+Session ID: LLM-1769567795547-1
+Request ID: 41
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: 5e9ba214ef681443a094cb98d9c2a1c3
+- Total Spans: 27
+- Error Status: FAILED
+- Root Cause Failures: 1
+- Total Failed Spans: 7
+- Propagated Failures: 6
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-route-plan-service
+- Failed Operation: RoutePlanController.getMinStopStations
+- HTTP Status: 0
+- Execution Time: 7.762ms
+- Exception Type: java.lang.NullPointerException
+- Exact Failure Location:
+  → at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-travel-plan-service, ts-route-service, ts-gateway-service, ts-route-plan-service
+- HTTP Methods Used: POST, GET
+- API Endpoints: 6 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #41
+Timestamp: 2026-01-27 20:40:11.651
+Status: ❌ FAILED
+Response Time: 2478 ms
+📊 Resource Usage During Generation: System CPU: avg=54.6%, max=63.9% | System Memory: avg=91.1%, max=93.7% (29.7 GB/31.7 GB) | ollama.exe Process: max=49.4 MB | Samples: 5 over 2478ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #42
+================================================================================
+Timestamp: 2026-01-27 20:40:13.897
+Session ID: LLM-1769567795547-1
+Request ID: 42
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=500, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert validating NEGATIVE TEST results.
+
+CONTEXT: This is a NEGATIVE test where we INTENTIONALLY sent INVALID inputs to test error handling.
+The test PASSES (returns FAILED=true) if the API correctly rejected our invalid input.
+The test FAILS (returns FAILED=false) if the API accepted the invalid input or the error is unrelated.
+
+DESIGNED INVALID INPUTS:
+  - Parameter 'endPlace' was set to INVALID value: 12345
+
+VALIDATION CRITERIA:
+Return FAILED=true (test PASSES) if:
+1. The response contains an error message that SPECIFICALLY mentions or relates to one of the designed invalid parameters
+2. The error message indicates validation failure for the invalid input we sent
+3. The response shows the API correctly rejected our invalid data
+
+Return FAILED=false (test FAILS) if:
+1. The response shows SUCCESS (API accepted our invalid input - this is BAD!)
+2. The error is about something UNRELATED to our invalid parameters (e.g., authentication, server error)
+3. The error message doesn't mention or relate to the parameters we made invalid
+
+OUTPUT FORMAT (exactly 3 lines):
+FAILED: true|false
+RELATED_TO_INVALID_INPUT: true|false
+RCA: <explanation of whether the error is about our designed invalid input>
+
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+TASK: Determine if this API response correctly rejected our DESIGNED INVALID INPUT.
+
+API Details:
+- Service: ts-travel-plan-service
+- Endpoint: POST /api/v1/travelplanservice/travelPlan/minStation
+- HTTP Status Code: 500
+
+Designed Invalid Parameters:
+  - endPlace: 12345
+
+Response Body:
+```json
+{"timestamp":"2026-01-28T02:40:14.262+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/travelplanservice/travelPlan/minStation"}
+```
+
+Examples:
+Example 1 (Error is about our invalid input - TEST PASSES):
+Invalid Parameter: basicPriceRate = -100
+Response: {"status":0,"msg":"Invalid price rate: must be positive"}
+FAILED: true
+RELATED_TO_INVALID_INPUT: true
+RCA: The error message 'Invalid price rate' directly relates to our invalid basicPriceRate parameter. The API correctly rejected our negative price value.
+
+Example 2 (Error is UNRELATED to our invalid input - TEST FAILS):
+Invalid Parameter: basicPriceRate = -100
+Response: {"status":0,"msg":"Authentication token expired"}
+FAILED: false
+RELATED_TO_INVALID_INPUT: false
+RCA: The error is about authentication, NOT about our invalid basicPriceRate. This is an unrelated error so the negative test FAILS.
+
+Example 3 (API accepted invalid input - TEST FAILS):
+Invalid Parameter: stationName = "" (empty string)
+Response: {"status":1,"msg":"Success","data":{"id":123}}
+FAILED: false
+RELATED_TO_INVALID_INPUT: false
+RCA: The API accepted our empty station name without error. The invalid input was NOT rejected, so the negative test FAILS.
+
+Now analyze the response above and provide your answer:
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #42
+Timestamp: 2026-01-27 20:40:16.279
+Status: ❌ FAILED
+Response Time: 2382 ms
+📊 Resource Usage During Generation: System CPU: avg=45.5%, max=54.6% | System Memory: avg=91.3%, max=94.2% (29.8 GB/31.7 GB) | ollama.exe Process: max=47.1 MB | Samples: 5 over 2383ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #43
+================================================================================
+Timestamp: 2026-01-27 20:40:19.335
+Session ID: LLM-1769567795547-1
+Request ID: 43
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing expert. Analyze API failures to identify which parameter caused the issue.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this API failure to determine if it's caused by an input parameter:
+
+FAILED API CALL:
+Service: ts-route-plan-service
+Operation: RoutePlanController.getMinStopStations
+HTTP Status: 0
+Duration: 6.827ms
+
+EXCEPTION TYPE: java.lang.NullPointerException
+
+STACK TRACE (first few lines):
+java.lang.NullPointerException
+at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178)
+at plan.controller.RoutePlanController.getMinStopStations(RoutePlanController.java:45)
+
+TEST PARAMETERS USED:
+- body: {"departureTime":"test310","endPlace":12345,"startPlace":"test615"}
+
+
+Task: Determine if this error is caused by a specific input parameter.
+
+If YES, respond with:
+PARAMETER_ERROR: YES
+PARAMETER: <parameter_name>
+ERROR_TYPE: <category>
+
+If NO (system error, network issue, etc.), respond with:
+PARAMETER_ERROR: NO
+
+Categories: VALIDATION_ERROR, TYPE_MISMATCH, FORMAT_ERROR, NULL_ERROR, CONSTRAINT_ERROR
+Respond ONLY in the specified format.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #43
+Timestamp: 2026-01-27 20:40:22.017
+Status: ❌ FAILED
+Response Time: 2682 ms
+📊 Resource Usage During Generation: System CPU: avg=55.5%, max=64.2% | System Memory: avg=91.2%, max=93.2% (29.5 GB/31.7 GB) | ollama.exe Process: max=49.5 MB | Samples: 5 over 2682ms
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #44
+================================================================================
+Timestamp: 2026-01-27 20:40:22.039
+Session ID: LLM-1769567795547-1
+Request ID: 44
+Model Type: OLLAMA
+Model Name: qwen3-coder:30b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a microservice debugging expert. Analyze traces and provide direct technical insights.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Analyze this microservice distributed trace error:
+
+TRACE OVERVIEW:
+- Trace ID: 83c007c1ba1eddfe6f2a4dfc33511683
+- Total Spans: 27
+- Error Status: FAILED
+- Root Cause Failures: 1
+- Total Failed Spans: 7
+- Propagated Failures: 6
+
+EXACT FAILURE POINTS:
+Root Cause #1:
+- Failed Service: ts-route-plan-service
+- Failed Operation: RoutePlanController.getMinStopStations
+- HTTP Status: 0
+- Execution Time: 6.827ms
+- Exception Type: java.lang.NullPointerException
+- Exact Failure Location:
+  → at plan.service.RoutePlanServiceImpl.searchMinStopStations(RoutePlanServiceImpl.java:178) ← THIS IS WHERE IT FAILED
+
+SERVICE INTERACTION CONTEXT:
+- Services Involved: ts-route-plan-service, ts-travel-plan-service, ts-route-service, ts-gateway-service
+- HTTP Methods Used: POST, GET
+- API Endpoints: 6 unique endpoints
+
+Provide concise technical analysis:
+ROOT CAUSE: Exact failing operation and reason
+FIX: Specific action needed
+
+Be direct and technical. No conversational language.
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #44
+Timestamp: 2026-01-27 20:40:24.674
+Status: ❌ FAILED
+Response Time: 2634 ms
+📊 Resource Usage During Generation: System CPU: avg=54.5%, max=61.5% | System Memory: avg=91.2%, max=93.3% (29.6 GB/31.7 GB) | ollama.exe Process: max=47.5 MB | Samples: 5 over 2635ms
+================================================================================
+

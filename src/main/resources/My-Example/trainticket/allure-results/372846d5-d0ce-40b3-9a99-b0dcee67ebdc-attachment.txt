@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status indicating client request error during interaction with `ts-admin-basic-info-service`.
+
+**FIX:** Validate and correct request payload format/parameters being sent from `ts-gateway-service` to `ts-admin-basic-info-service` endpoint, ensuring compliance with expected API contract and data validation rules.

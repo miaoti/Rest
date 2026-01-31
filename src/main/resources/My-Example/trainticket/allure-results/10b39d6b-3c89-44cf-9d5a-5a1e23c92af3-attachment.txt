@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • trainType = ' OR '1'='1
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API accepted the invalid trainType parameter value "' OR '1'='1" and returned a successful response with status 200. The response shows the invalid input was stored in the data field without any validation error, indicating the API failed to reject the malicious input. This is a security vulnerability as the API did not properly validate or sanitize the input parameter.

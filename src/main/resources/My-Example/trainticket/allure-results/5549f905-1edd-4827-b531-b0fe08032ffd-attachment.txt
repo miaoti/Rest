@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-route-plan-service` at `RoutePlanServiceImpl.searchMinStopStations()` method, line 178, due to a `NullPointerException` when attempting to access a null object reference.
+
+**FIX:**
+Add null validation checks for object references accessed in `RoutePlanServiceImpl.searchMinStopStations()` method before line 178, specifically examining the object graph that leads to the null pointer exception.

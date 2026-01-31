@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is a `com.fasterxml.jackson.databind.exc.InvalidFormatException` where the system tries to convert the string `'; DROP TABLE users--"` into a `double` type for the field `basicPriceRate`, which fails due to invalid numeric format.
+
+**FIX:** Implement input validation and sanitization in `ts-admin-basic-info-service` to reject malformed numeric values before deserialization. Add proper exception handling to return HTTP 400 errors with descriptive messages for invalid payload data, and consider using `@Valid` annotations with appropriate constraints on the `PriceInfo` entity fields.

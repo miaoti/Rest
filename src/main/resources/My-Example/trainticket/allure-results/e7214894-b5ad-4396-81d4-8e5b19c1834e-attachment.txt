@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurred in `ts-gateway-service` during a `POST` operation with HTTP status `400 Bad Request`. The service received invalid request payload or headers that caused the gateway to reject the request before forwarding it to `ts-admin-order-service`.
+
+**FIX:**
+Validate and correct the request payload format or headers being sent to `ts-gateway-service` from the client. Ensure all required fields are present and properly formatted according to the gateway's API contract.

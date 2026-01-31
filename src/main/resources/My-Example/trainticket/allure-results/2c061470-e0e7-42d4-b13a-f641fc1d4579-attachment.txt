@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-price-service` during `UPDATE ts.price_config` operation where MySQL throws `Data truncation: Data too long for column 'train_type' at row 1` exception. The `train_type` column has insufficient storage capacity for the data being inserted.
+
+**FIX:**
+Increase the column size of `train_type` in the `ts.price_config` table to accommodate the incoming data length, or validate and truncate the input data in `ts-price-service` before database insertion.

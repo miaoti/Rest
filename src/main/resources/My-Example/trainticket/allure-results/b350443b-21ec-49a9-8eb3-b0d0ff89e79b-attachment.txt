@@ -1,0 +1,8 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** The failure occurs in `ts-admin-basic-info-service` during `AdminBasicInfoController.addPrice` operation when attempting to deserialize a JSON payload. The specific error is a `JsonMappingException` where the string value "Null" is being passed where a `double` type is expected for the field `firstClassPriceRate`.
+
+**FIX:** 
+1. Validate input data in `ts-gateway-service` before forwarding to `ts-admin-basic-info-service`
+2. Replace string "Null" with proper null value or numeric value in the JSON payload
+3. Add input validation and error handling in `ts-admin-basic-info-service` to gracefully handle invalid numeric values

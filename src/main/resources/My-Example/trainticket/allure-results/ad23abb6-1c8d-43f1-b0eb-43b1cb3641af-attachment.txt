@@ -1,0 +1,34 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-basic-info-service
+Method: POST
+Path: /api/v1/adminbasicservice/adminbasic/prices
+Operation: POST /api/v1/adminbasicservice/adminbasic/prices
+Request Start (μs): 1767939883450000
+Search Window: 1767939873450000 to 1767939913450000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1767939873450000&end=1767939913450000
+Response Status: 200
+Response Body Length: 39434
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=6025, APIs=5, hasTarget=true, timeDiff=805000μs, spans=16
+  Operations: PriceConfigRepository.findById, SELECT ts.price_config, Session.find price.entity.P..., Transaction.commit, Session.merge price.entity...., +11 more
+Trace 2: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: SELECT ts.auth_user, SELECT ts.user_roles, SELECT User, SELECT ts.auth_user, UserController.getToken, +7 more
+
+Selected trace 1 with score 6025 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 7f9ec2489dc6da9ad4e153049f7c95d4
+✅ Complete trace fetched with 16 spans
+✅ Updated global best trace (score: 6025, timeDiff: 0.805s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6025, timeDiff: 0.805s)

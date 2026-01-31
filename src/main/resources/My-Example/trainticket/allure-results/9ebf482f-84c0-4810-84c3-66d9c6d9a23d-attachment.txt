@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurred in `ts-gateway-service` during a POST operation with HTTP status 400, indicating client-side request validation error. The service rejected the request payload or headers, causing the trace to fail.
+
+**FIX:**
+Inspect the request payload and headers being sent to `ts-gateway-service` POST endpoint. Validate that all required fields are present and formatted correctly according to the service's API contract. Check for missing authentication tokens, invalid JSON structure, or incorrect content-type headers that would cause the 400 error.

@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"AR-2026-001","trainType":"trainType1234567890","routeId":"RT-12345-INVALID","basicPriceRate":89.99,"firstClassPriceRate":150.75}}

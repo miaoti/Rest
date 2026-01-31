@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The trace fails at `ts-route-plan-service` in `RoutePlanServiceImpl.searchMinStopStations()` at line 178, where a `NullPointerException` occurs. This is the primary failure point causing the 500 error in `ts-gateway-service`.
+
+**FIX:**
+Add null validation for the object reference at line 178 in `RoutePlanServiceImpl.java` before invoking methods or accessing fields on the potentially null object. The specific variable causing the NPE must be identified and handled with appropriate null checks or initialization.

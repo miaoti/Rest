@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"864b0bf9-86fe-4a40-85a7-071402ef471d","trainType":"Express","routeId":"RT-12345-INVALID","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

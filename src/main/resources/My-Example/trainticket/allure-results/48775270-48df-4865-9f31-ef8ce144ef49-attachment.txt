@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-order-service` fails in `AdminOrderController.addOrder` due to JSON deserialization error when parsing `Order.status` field. The client sends string value "abc" where integer is expected, causing `HttpMessageNotReadableException` with `InvalidFormatException`.
+
+**FIX:** Validate and sanitize `status` field input in `ts-gateway-service` before forwarding to `ts-admin-order-service`. Ensure `status` is converted to valid integer format or implement proper input validation at gateway level to prevent malformed JSON from reaching downstream service.

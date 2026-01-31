@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Success","data":{"id":"1aacc799-48de-49c9-8334-f90c89ef788b","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"1200","accountId":"acc-789012","contactsName":"John Sm...
+Enhanced Parameters: {from=Shanghai, to=Guangzhou, trainNumber=T123}

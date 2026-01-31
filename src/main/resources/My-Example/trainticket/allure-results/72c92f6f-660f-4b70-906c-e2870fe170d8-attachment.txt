@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status code during travel plan request processing.
+
+**FIX:** Validate and correct request payload format in `ts-gateway-service` POST endpoint to meet `ts-travel-plan-service` API contract requirements.

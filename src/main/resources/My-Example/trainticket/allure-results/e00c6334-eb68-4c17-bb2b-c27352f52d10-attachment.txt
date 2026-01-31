@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"ROUTE-2026-003","trainType":"null","routeId":"RT-12345-INVALID","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

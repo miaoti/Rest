@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • routeId = ' OR '1'='1
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API returned HTTP status 200 with a successful response indicating "Create success" and even included the invalid routeId value in the response data. This shows the API accepted the malicious SQL injection input instead of rejecting it, which means the negative test fails because the invalid input was not properly validated and rejected.

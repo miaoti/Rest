@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-order-service` during `AdminOrderController.addOrder` operation. The JSON payload contains a `documentType` field with value "9999999999", which exceeds the Integer range (-2147483648 to 2147483647). Jackson deserialization throws `InvalidFormatException` when attempting to convert the string to an Integer.
+
+**FIX:**
+Change the `documentType` field in the `Order` entity from `Integer` to `Long` type to accommodate the large numeric value, and update the corresponding JSON schema validation to accept long integers.

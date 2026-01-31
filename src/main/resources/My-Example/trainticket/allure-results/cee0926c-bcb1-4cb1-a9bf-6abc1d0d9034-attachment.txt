@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status indicating client request error during gateway validation.
+
+**FIX:** Validate and sanitize incoming request payload format in `ts-gateway-service` before forwarding to `ts-travel-service` to ensure proper JSON structure and required fields.

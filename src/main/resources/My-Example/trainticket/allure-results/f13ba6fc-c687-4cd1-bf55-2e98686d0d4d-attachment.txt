@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-order-service` during `AdminOrderController.addOrder` operation when attempting to deserialize JSON payload. The specific error is a `JsonMappingException` where the string value "abc" cannot be converted to an integer type for the `seatClass` field in the `Order` entity.
+
+**FIX:**
+Validate and sanitize input data in `ts-gateway-service` before forwarding to `ts-admin-order-service`. The `seatClass` field must be validated to ensure it contains only numeric values or implement proper input validation and error handling in `ts-admin-order-service` to reject malformed requests with appropriate HTTP 400 responses.

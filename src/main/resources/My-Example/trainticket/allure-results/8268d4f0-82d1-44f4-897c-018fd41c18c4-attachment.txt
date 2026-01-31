@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON field `firstClassPriceRate` of type `double`. The input value `'; DROP TABLE users--"` is not a valid double, causing a `JsonMappingException` during deserialization.
+
+**FIX:**
+Implement input validation and sanitization in `ts-admin-basic-info-service` to reject invalid numeric values before deserialization. Add proper exception handling to return HTTP 400 with descriptive error message when invalid data is received.

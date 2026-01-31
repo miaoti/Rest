@@ -1,0 +1,1 @@
+{"accountId":"acc-789013","boughtDate":"2026-01-15","coachNumber":12,"contactsDocumentNumber":"ABC123457","contactsName":"Robert Johnson","differenceMoney":"","documentType":2,"from":"Shenzhen","id":"AR-2026-002","price":"1399.99","seatClass":1,"seatNumber":"12A","status":1,"to":"Beijing","trainNumber":"G1235","travelDate":"2026-01-15","travelTime":"shijiazhuang"}

@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-travel-service` during DELETE operation `/api/v1/admintravelservice/admintravel/{tripId}` with HTTP 403 status. The exact error is `RequestRejectedException` thrown by Spring Security firewall due to URL containing malicious string "%25" (URL-encoded percent sign). The exception originates from `ThreadPoolExecutor.runWorker` when processing the request.
+
+**FIX:**
+Configure Spring Security's `HttpFirewall` to permit requests containing encoded characters by implementing custom `StrictHttpFirewall` with `setAllowUrlEncodedPercent(true)` and `setAllowUrlEncodedSlash(true)` to allow proper URL decoding while maintaining security.

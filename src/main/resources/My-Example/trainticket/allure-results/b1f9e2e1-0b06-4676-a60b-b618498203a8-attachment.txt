@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"start or end station not include in stationList.","data":null}
+Enhanced Parameters: {endStation=Union Station, distanceList=12.5,8.2,15.7,22.1,5.9, startStation=Grand Central Terminal}

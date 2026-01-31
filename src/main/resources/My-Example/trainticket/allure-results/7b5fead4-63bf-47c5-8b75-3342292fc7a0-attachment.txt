@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-order-service` fails in `AdminOrderController.addOrder` when deserializing JSON payload. The `status` field contains string value `"9999999999"` which exceeds Integer range (-2147483648 to 2147483647), causing `HttpMessageNotReadableException` during Jackson deserialization.
+
+**FIX:** Change `Order.status` field type from `Integer` to `Long` in `edu.fudan.common.entity.Order` class to accommodate large numeric values, or validate and constrain input values to Integer range before processing.

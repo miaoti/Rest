@@ -1,0 +1,19 @@
+🎯 TRACE SUMMARY
+═══════════════
+
+📊 API Call Statistics:
+   Total API Calls: 5
+   ✅ Successful: 5
+   ❌ Failed: 0
+   🏢 Services Involved: 3
+
+⏱️ Performance Metrics:
+   Total Duration: 69.3ms
+   Average Duration: 13.9ms
+   Fastest Call: 9.1ms
+   Slowest Call: 19.0ms
+
+🏢 Services in Trace:
+   • ts-config-service
+   • ts-gateway-service
+   • ts-admin-basic-info-service

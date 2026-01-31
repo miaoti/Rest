@@ -1,0 +1,34 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-user-service
+Method: GET
+Path: /api/v1/userservice/users
+Operation: GET /api/v1/userservice/users
+Request Start (μs): 1767937210924000
+Search Window: 1767937200924000 to 1767937240924000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1767937200924000&end=1767937240924000
+Response Status: 200
+Response Body Length: 30495
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=6015, APIs=3, hasTarget=true, timeDiff=755000μs, spans=9
+  Operations: GET, GET /*, FilteringWebHandler.handle, GET /api/v1/userservice/users, Transaction.commit, +4 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: SELECT ts.auth_user, SELECT User, SELECT User, SELECT ts.auth_user, SELECT ts.user_roles, +7 more
+
+Selected trace 0 with score 6015 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: ef71ccfc2d50f9165d5c06ec44d5a8f5
+✅ Complete trace fetched with 9 spans
+✅ Updated global best trace (score: 6015, timeDiff: 0.755s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6015, timeDiff: 0.755s)

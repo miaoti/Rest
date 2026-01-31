@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"AR-2026-001","trainType":"","routeId":"RT-99999","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

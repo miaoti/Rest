@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Create success","data":{"id":"b74613a5-16f9-4759-9de0-3aadd6cc51f2","trainType":"Express","routeId":"RT-67890","basicPriceRate":125.5,"firstClassPriceRate":9.999999999E9}}
+Enhanced Parameters: {routeId=RT-12345, id=jinan-001}

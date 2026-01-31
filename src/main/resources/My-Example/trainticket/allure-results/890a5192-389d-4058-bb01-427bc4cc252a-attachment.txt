@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurs in `ts-admin-order-service` during `AdminOrderController.addOrder` when attempting to deserialize JSON payload. The `coachNumber` field contains string value "9999999999" which exceeds Integer range (-2147483648 to 2147483647), causing `HttpMessageNotReadableException` during JSON parsing.
+
+**FIX:**
+Change the `coachNumber` field type from `Integer` to `Long` in the `Order` entity class to accommodate the large numeric value, then recompile and redeploy the `ts-admin-order-service`.

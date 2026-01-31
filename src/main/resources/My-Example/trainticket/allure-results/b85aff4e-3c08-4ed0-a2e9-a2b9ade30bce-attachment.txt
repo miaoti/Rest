@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** 
+The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is `HttpMessageNotReadableException` caused by Jackson failing to convert the string "[1,2,3]" to a `double` type for the field `basicPriceRate`.
+
+**FIX:** 
+Modify the `PriceInfo` entity to change the `basicPriceRate` field type from `Double` to `List<Double>` or `double[]` to match the incoming JSON array format, or update the client sending the request to provide a single numeric value instead of an array.

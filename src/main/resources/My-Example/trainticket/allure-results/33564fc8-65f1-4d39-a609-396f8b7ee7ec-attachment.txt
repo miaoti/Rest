@@ -1,0 +1,1 @@
+{"timestamp":"2026-01-09T06:55:43.141+00:00","status":400,"error":"Bad Request","message":"","path":"/api/v1/adminbasicservice/adminbasic/prices"}

@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` fails on DELETE operation with HTTP 405 (Method Not Allowed) indicating the gateway does not support DELETE requests for the requested endpoint.
+
+**FIX:** Configure the gateway service to properly handle DELETE requests for the travel service endpoint, either by implementing the missing DELETE route or updating the gateway's routing configuration to forward DELETE requests to the appropriate backend service.

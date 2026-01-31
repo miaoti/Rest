@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • trainType = null
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API accepted the invalid input (trainType = null) and returned a success status with "Create success" message. The response shows trainType as "null" string in the data instead of rejecting the null value, which means the invalid input was not properly validated and rejected. This is a failure of the negative test since the API should have rejected the null trainType parameter.

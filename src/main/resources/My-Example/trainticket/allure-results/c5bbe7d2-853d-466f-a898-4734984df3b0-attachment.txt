@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing DELETE operation with HTTP 400 status during `DELETE` request processing.
+
+**FIX:** Validate DELETE request payload format and required parameters in `ts-gateway-service` before forwarding to `ts-admin-travel-service`. The gateway is rejecting malformed requests rather than proxying them, indicating insufficient input validation or malformed request handling in the gateway service.

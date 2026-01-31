@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Create success","data":{"id":"AR-2026-001","trainType":"","routeId":"RT-11111","basicPriceRate":125.5,"firstClassPriceRate":125.5}}
+Enhanced Parameters: {routeId=RT-99999}

@@ -1,0 +1,1 @@
+{"distanceList":"5.5","endStation":"Suburban Station","id":"AR-2026-001","loginId":"1","startStation":"Downtown Station","stationList":"Downtown Station,Midtown Station,Uptown Station,Suburban Station,Rural Station"}

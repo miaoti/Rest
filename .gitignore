@@ -55,7 +55,7 @@ src/main/resources/ml/model.onnx
 src/main/resources/My-Example/trainticket/traces/traces-1759191634608.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192358887.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192396059.json
-src/main/resources/My-Example/trainticket/traces/traces-1759192426876.json
+src/main/resources/My-Example/trainticket/tests/traces-1759192426876.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192441410.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192455981.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192477682.json

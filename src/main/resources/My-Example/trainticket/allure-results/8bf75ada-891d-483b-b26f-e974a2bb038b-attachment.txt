@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-price-service` fails during `UPDATE ts.price_config` with `SQLIntegrityConstraintViolationException` due to duplicate entry 'Express-RT-12345' in 'route_type_idx' index.
+
+**FIX:** Implement idempotent update logic in `ts-price-service` to check for existing record before insert or use `ON DUPLICATE KEY UPDATE` MySQL syntax to handle concurrent duplicate entries gracefully.

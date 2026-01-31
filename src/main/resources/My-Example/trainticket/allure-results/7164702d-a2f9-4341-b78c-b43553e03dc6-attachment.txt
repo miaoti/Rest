@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-basic-info-service` fails in `AdminBasicInfoController.addPrice` when attempting to deserialize JSON payload containing string value "abc" into `double` type field `basicPriceRate`. The deserialization error occurs during POST request processing.
+
+**FIX:** Validate input data type in `PriceInfo` entity or add proper request validation to ensure `basicPriceRate` field receives numeric values only, rejecting non-numeric inputs with 400 Bad Request response.

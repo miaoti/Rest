@@ -1,0 +1,15 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: 8f8e8f5a95733f9e73ae55a067462cc5
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/8f8e8f5a95733f9e73ae55a067462cc5
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ✅ admin-travel DELETE 200(13.8ms)
+    ↳ /api/v1/admintravelservice/admintravel/fake_trip_xyz_123
+[2] ✅ admin-travel DELETE 200(7.9ms)
+    ↳ http://10.244.0.53:16346/api/v1/travel2service/trips/fake_trip_xyz_123
+  ├─[3] ✅ travel2 DELETE 200(5.2ms)
+     ↳ /api/v1/travel2service/trips/fake_trip_xyz_123
+████████████████████████████████████████████████████████████████████████████████████████

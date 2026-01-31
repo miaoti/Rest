@@ -1,0 +1,1 @@
+{"accountId":"acc-789012","boughtDate":"2025-01-01","coachNumber":8,"contactsDocumentNumber":"ABC123456","contactsName":"John Smith","differenceMoney":"0.00","documentType":1,"from":"Shanghai","id":"taiyuan","price":123,"seatClass":2,"seatNumber":"25B","status":1,"to":"Guangzhou","trainNumber":"G1234","travelDate":"2025-01-01","travelTime":"08:30:00"}

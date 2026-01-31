@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"2c1365da-53cf-4c12-b84c-22d28b603745","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"shijiazhuang","accountId":"acc-789012","...
+Enhanced Parameters: {accountId=acc-789013, price=1399.99, contactsDocumentNumber=ABC123457, id=AR-2026-002, trainNumber=G1235}

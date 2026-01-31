@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import es.us.isa.restest.auth.AuthManipulationStrategy;
 import es.us.isa.restest.configuration.pojos.Operation;
 import io.swagger.v3.oas.models.PathItem.HttpMethod;
 
@@ -47,6 +48,17 @@ public class MultiServiceTestCase extends TestCase {
     
     /* track faulty parameters for Allure reporting */
     private final List<String> faultyParameters = new ArrayList<>();
+    
+    /* -------- status code exploration fields -------- */
+    
+    /** Flag indicating this test was created for status code exploration */
+    private boolean isStatusCodeExplorationTest = false;
+    
+    /** Target status code this exploration test is trying to trigger (-1 = not targeting specific code) */
+    private int targetStatusCode = -1;
+    
+    /** Auth manipulation configuration for this test (null = use default auth) */
+    private AuthManipulationStrategy.AuthConfig authManipulation = null;
 
     /** Add a step (request/response) to the workflow. */
     public void addStepCall(StepCall step) {
@@ -72,6 +84,69 @@ public class MultiServiceTestCase extends TestCase {
     /** Get list of faulty parameters for reporting */
     public List<String> getFaultyParameters() {
         return faultyParameters;
+    }
+    
+    /* -------- status code exploration methods -------- */
+    
+    /** 
+     * Mark this test as a status code exploration test.
+     * Exploration tests are created to trigger specific HTTP status codes.
+     */
+    public void setStatusCodeExplorationTest(boolean isExplorationTest) {
+        this.isStatusCodeExplorationTest = isExplorationTest;
+    }
+    
+    /** Check if this test is a status code exploration test */
+    public boolean isStatusCodeExplorationTest() {
+        return isStatusCodeExplorationTest;
+    }
+    
+    /**
+     * Set the target status code this test is trying to trigger.
+     * @param statusCode The HTTP status code to target (e.g., 404, 401, 409)
+     */
+    public void setTargetStatusCode(int statusCode) {
+        this.targetStatusCode = statusCode;
+    }
+    
+    /** Get the target status code (-1 if not targeting specific code) */
+    public int getTargetStatusCode() {
+        return targetStatusCode;
+    }
+    
+    /**
+     * Set auth manipulation configuration for this test.
+     * Used for testing 401/403 status codes.
+     */
+    public void setAuthManipulation(AuthManipulationStrategy.AuthConfig authConfig) {
+        this.authManipulation = authConfig;
+    }
+    
+    /** Get auth manipulation configuration (null = use default auth) */
+    public AuthManipulationStrategy.AuthConfig getAuthManipulation() {
+        return authManipulation;
+    }
+    
+    /**
+     * Get a description of the target status code for Allure reporting.
+     */
+    public String getTargetStatusCodeDescription() {
+        if (!isStatusCodeExplorationTest || targetStatusCode < 0) {
+            return "Default";
+        }
+        
+        String category;
+        if (targetStatusCode >= 200 && targetStatusCode < 300) {
+            category = "Success";
+        } else if (targetStatusCode >= 400 && targetStatusCode < 500) {
+            category = "Client Error";
+        } else if (targetStatusCode >= 500 && targetStatusCode < 600) {
+            category = "Server Error";
+        } else {
+            category = "Other";
+        }
+        
+        return targetStatusCode + " " + category;
     }
 
 

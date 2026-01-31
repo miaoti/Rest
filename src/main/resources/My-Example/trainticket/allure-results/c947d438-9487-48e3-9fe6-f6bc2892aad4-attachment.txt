@@ -1,0 +1,1 @@
+{"accountId":"acc-789012","boughtDate":"2026-01-15","coachNumber":12,"contactsDocumentNumber":"ABC123456","contactsName":"FakeName123","differenceMoney":"75.25","documentType":1,"from":"Shanghai","id":"AR-2026-001","price":"899.00","seatClass":2,"seatNumber":"05A","status":1,"to":"Guangzhou","trainNumber":"G1234","travelDate":"2026-02-20","travelTime":"08:30:00"}

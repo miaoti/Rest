@@ -1,0 +1,1 @@
+{"distanceList":"5.5","endStation":"Harbor View Station","id":"AR-2026-001","loginId":"login","startStation":"Waterfront Station","stationList":"Waterfront Station,Harbor View Station,Marina Bay Station,Coastal Plaza Station,Seaside Terminal"}

@@ -1,0 +1,1 @@
+{"basicPriceRate":125.5,"firstClassPriceRate":"x","id":"TS-ADM-007","routeId":"RT-12345","trainType":"Regional"}

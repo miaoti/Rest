@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • status = -999999
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API returned HTTP 200 status code with a success message "Add new Order Success" and actually included the invalid status value (-999999) in the response data, which means it accepted the invalid input instead of rejecting it. This is a failure of the negative test because the API should have rejected the invalid status value rather than accepting it.

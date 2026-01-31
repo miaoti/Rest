@@ -1,0 +1,1 @@
+{"timestamp":"2026-01-09T10:03:03.875+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/travelplanservice/travelPlan/minStation"}

@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing DELETE operation with HTTP 400 status due to malformed request payload or missing required parameters during travel service administration endpoint access.
+
+**FIX:** Validate and sanitize DELETE request payload in `ts-gateway-service` before forwarding to `ts-admin-travel-service`, ensuring all required parameters are present and properly formatted according to API specification.

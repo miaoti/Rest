@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-order-service.AdminOrderController.addOrder` fails due to JSON deserialization error when processing `seatClass` field. The value "9999999999" exceeds Integer range (-2147483648 to 2147483647), causing `HttpMessageNotReadableException`.
+
+**FIX:** Change `seatClass` field type from `Integer` to `Long` in `Order` entity class to accommodate large numeric values. Update Jackson deserialization configuration if needed.

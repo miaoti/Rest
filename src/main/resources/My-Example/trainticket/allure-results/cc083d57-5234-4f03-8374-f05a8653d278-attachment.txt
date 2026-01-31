@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • departureTime = <script>alert('XSS')</script>
+
+Status Code: 400 (expected: 200)
+Status Code Indicates Error: ✅ YES
+Error Related to Invalid Input: ✅ YES
+
+Root Cause Analysis:
+[INVALID INPUT CORRECTLY REJECTED] The error message specifically mentions "departureTime must be in format yyyy-MM-dd" which directly relates to our invalid departureTime parameter. Although the error message shows the injected XSS payload in the details field, the core validation error is about the date format, indicating the API correctly rejected the invalid input format rather than accepting it.

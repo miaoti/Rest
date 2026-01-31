@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-basic-info-service` fails in `AdminBasicInfoController.addPrice` due to JSON deserialization error when processing `PriceInfo.basicPriceRate` field. The incoming value "Null" cannot be converted to double type.
+
+**FIX:** Validate and sanitize input data in `ts-admin-basic-info-service` to ensure `basicPriceRate` is either a valid numeric string or null before deserialization. Implement proper null checking and type conversion logic in the controller or DTO layer.

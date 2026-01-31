@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"c7ddfe49-750b-40d4-beaf-85521141faab","boughtDate":"2026-01-15","travelDate":"2026-02-05","travelTime":"08:30:00","accountId":"acc-901234","cont...
+Enhanced Parameters: {seatClass=1, price=500.00, from=Beijing, to=Shanghai, trainNumber=G1234}

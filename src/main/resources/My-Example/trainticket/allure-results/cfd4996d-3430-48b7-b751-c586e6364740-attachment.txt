@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • departureTime = ../../etc/passwd
+
+Status Code: 400 (expected: 200)
+Status Code Indicates Error: ✅ YES
+Error Related to Invalid Input: ✅ YES
+
+Root Cause Analysis:
+[INVALID INPUT CORRECTLY REJECTED] The error message specifically mentions "departureTime must be in format yyyy-MM-dd" and includes the invalid input "../../etc/passwd" in the details field, directly correlating with our designed invalid parameter. The API correctly rejected our invalid date format input.

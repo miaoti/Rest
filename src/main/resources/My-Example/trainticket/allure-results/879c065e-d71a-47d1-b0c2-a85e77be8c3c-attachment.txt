@@ -1,0 +1,34 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel-plan-service
+Method: POST
+Path: /api/v1/travelplanservice/travelPlan/minStation
+Operation: POST /api/v1/travelplanservice/travelPlan/minStation
+Request Start (μs): 1767953295861000
+Search Window: 1767953285861000 to 1767953325861000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1767953285861000&end=1767953325861000
+Response Status: 200
+Response Body Length: 78490
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=15, APIs=3, hasTarget=false, timeDiff=N/A, spans=12
+  Operations: POST, FilteringWebHandler.handle, POST /*, SELECT ts.auth_user, SELECT ts.auth_user, +7 more
+Trace 1: score=6025, APIs=5, hasTarget=true, timeDiff=601000μs, spans=10
+  Operations: TravelPlanController.getByM..., POST, BasicErrorController.error, POST /api/v1/travelplanserv..., POST, +5 more
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 1 with score 6025 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 7df9d744ff67742032b3b8f1cf136f94
+✅ Complete trace fetched with 10 spans
+✅ Updated global best trace (score: 6025, timeDiff: 0.601s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6025, timeDiff: 0.601s)

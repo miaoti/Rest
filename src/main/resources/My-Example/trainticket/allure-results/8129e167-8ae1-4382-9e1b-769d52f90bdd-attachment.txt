@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"9e06b2a8-fc5e-486f-b467-00cb2a87efab","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"1300","accountId":"acc-789012","contacts...
+Enhanced Parameters: {accountId=acc-123456, contactsDocumentNumber=XYZ789012, from=Shanghai, to=Guangzhou, trainNumber=D5678, seatNumber=25B}

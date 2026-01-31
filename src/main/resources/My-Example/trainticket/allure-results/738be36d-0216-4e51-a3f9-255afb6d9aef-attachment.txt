@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status during request processing.
+
+**FIX:** Inspect request payload validation logic in `ts-gateway-service` POST endpoint to identify and resolve invalid request data causing 400 error.

@@ -1,1 +1,0 @@
-{"status":1,"msg":"login success","data":{"userId":"82a060b0-30a8-4fcd-91d2-9afb708c8a2b","username":"admin","token":"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGVzIjpbIlJPTEVfQURNSU4iXSwiaWQiOiI4MmEwNjBiMC0zMGE4LTRmY2QtOTFkMi05YWZiNzA4YzhhMmIiLCJpYXQiOjE3NjM0MzMxNDAsImV4cCI6MTc2MzQzNjc0MH0.fG-yuit6pznCXctJaE1cNT3AYb-u4nY2brue6lhK7e8"}}

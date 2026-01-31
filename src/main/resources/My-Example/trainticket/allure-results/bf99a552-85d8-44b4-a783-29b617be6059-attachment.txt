@@ -1,0 +1,1 @@
+{"distanceList":"15.2","endStation":"[1,2,3]","id":"AR-2026-001","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":"Airport Terminal A,Airport Terminal B,Airport Terminal C,Airport Terminal D,Airport Terminal E"}

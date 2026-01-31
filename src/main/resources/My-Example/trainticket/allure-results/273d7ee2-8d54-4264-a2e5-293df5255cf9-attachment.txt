@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**
+The failure occurred in `ts-travel-plan-service` during a POST operation with HTTP 500 status. The service experienced an internal server error during request processing, causing the trace to fail.
+
+**FIX:**
+Investigate and resolve the internal server error in `ts-travel-plan-service` POST endpoint implementation. Check service logs for detailed exception stack traces and ensure proper error handling and validation logic is in place.

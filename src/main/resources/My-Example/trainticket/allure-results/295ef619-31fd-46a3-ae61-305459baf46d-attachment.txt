@@ -1,0 +1,99 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: f670c5657aaafa2b420c32b3241a3ce4
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/f670c5657aaafa2b420c32b3241a3ce4
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ✅ admin-travel GET 200(80.2ms)
+    ↳ /api/v1/admintravelservice/admintravel
+[2] ✅ admin-travel GET 200(36.9ms)
+    ↳ http://10.244.0.52:12346/api/v1/travelservice/admin_trip
+  ├─[3] ✅ travel GET 200(31.6ms)
+     ↳ /api/v1/travelservice/admin_trip
+[4] ✅ travel GET 200(4.1ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad
+  ├─[5] ✅ route GET 200(2.7ms)
+     ↳ /api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad
+[6] ✅ travel GET 200(3.9ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/GaoTieOne
+  ├─[7] ✅ train GET 200(2.8ms)
+     ↳ /api/v1/trainservice/trains/byName/GaoTieOne
+[8] ✅ travel GET 200(2.2ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d
+  ├─[9] ✅ route GET 200(2.1ms)
+     ↳ /api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d
+[10] ✅ travel GET 200(1.8ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/GaoTieOne
+  ├─[11] ✅ train GET 200(1.8ms)
+     ↳ /api/v1/trainservice/trains/byName/GaoTieOne
+[12] ✅ travel GET 200(2.0ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f
+  ├─[13] ✅ route GET 200(1.9ms)
+     ↳ /api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f
+[14] ✅ travel GET 200(1.6ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/GaoTieOne
+  ├─[15] ✅ train GET 200(1.6ms)
+     ↳ /api/v1/trainservice/trains/byName/GaoTieOne
+[16] ✅ travel GET 200(1.9ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917
+  ├─[17] ✅ route GET 200(1.9ms)
+     ↳ /api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917
+[18] ✅ travel GET 200(1.6ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/GaoTieTwo
+  ├─[19] ✅ train GET 200(1.6ms)
+     ↳ /api/v1/trainservice/trains/byName/GaoTieTwo
+[20] ✅ travel GET 200(1.9ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08
+  ├─[21] ✅ route GET 200(1.8ms)
+     ↳ /api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08
+[22] ✅ travel GET 200(1.6ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/DongCheOne
+  ├─[23] ✅ train GET 200(1.5ms)
+     ↳ /api/v1/trainservice/trains/byName/DongCheOne
+[24] ✅ admin-travel GET 200(35.1ms)
+    ↳ http://10.244.0.53:16346/api/v1/travel2service/admin_trip
+  ├─[25] ✅ travel2 GET 200(32.8ms)
+     ↳ /api/v1/travel2service/admin_trip
+[26] ✅ travel2 GET 200(3.9ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04
+  ├─[27] ✅ route GET 200(2.5ms)
+     ↳ /api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04
+[28] ✅ travel2 GET 200(3.4ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/ZhiDa
+  ├─[29] ✅ train GET 200(2.1ms)
+     ↳ /api/v1/trainservice/trains/byName/ZhiDa
+[30] ✅ travel2 GET 200(2.4ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52
+  ├─[31] ✅ route GET 200(2.2ms)
+     ↳ /api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52
+[32] ✅ travel2 GET 200(1.9ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/ZhiDa
+  ├─[33] ✅ train GET 200(1.7ms)
+     ↳ /api/v1/trainservice/trains/byName/ZhiDa
+[34] ✅ travel2 GET 200(2.0ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68
+  ├─[35] ✅ route GET 200(1.9ms)
+     ↳ /api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68
+[36] ✅ travel2 GET 200(1.8ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/ZhiDa
+  ├─[37] ✅ train GET 200(1.6ms)
+     ↳ /api/v1/trainservice/trains/byName/ZhiDa
+[38] ✅ travel2 GET 200(2.1ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db
+  ├─[39] ✅ route GET 200(1.9ms)
+     ↳ /api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db
+[40] ✅ travel2 GET 200(2.0ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/TeKuai
+  ├─[41] ✅ train GET 200(1.9ms)
+     ↳ /api/v1/trainservice/trains/byName/TeKuai
+[42] ✅ travel2 GET 200(2.0ms)
+    ↳ http://10.244.0.43:11178/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7
+  ├─[43] ✅ route GET 200(1.9ms)
+     ↳ /api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7
+[44] ✅ travel2 GET 200(1.7ms)
+    ↳ http://10.244.0.50:14567/api/v1/trainservice/trains/byName/KuaiSu
+  ├─[45] ✅ train GET 200(1.6ms)
+     ↳ /api/v1/trainservice/trains/byName/KuaiSu
+████████████████████████████████████████████████████████████████████████████████████████

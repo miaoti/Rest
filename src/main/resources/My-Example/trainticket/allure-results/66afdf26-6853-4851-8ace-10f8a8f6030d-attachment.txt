@@ -1,0 +1,1 @@
+{"accountId":"acc-345678","boughtDate":"2026-02-20","coachNumber":12,"contactsDocumentNumber":"ABC123456","contactsName":"Robert Johnson","differenceMoney":"150.00","documentType":"9999999999","from":"Beijing","id":"AR-2026-001","price":"1299.99","seatClass":1,"seatNumber":"12A","status":1,"to":"Beijing","trainNumber":"T3456","travelDate":"2026-01-15","travelTime":"120 minutes"}

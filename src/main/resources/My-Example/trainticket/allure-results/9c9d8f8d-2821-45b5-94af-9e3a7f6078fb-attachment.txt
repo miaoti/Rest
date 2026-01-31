@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"af1e0e48-e312-49ce-9ed8-0f3fee6f6762","boughtDate":"2026-01-15","travelDate":"","travelTime":"08:30:00","accountId":"acc-345678","contactsName":...
+Enhanced Parameters: {accountId=acc-123456, contactsDocumentNumber=ABC123456, price=599.99, from=Beijing, trainNumber=G1234, to=Guangzhou}

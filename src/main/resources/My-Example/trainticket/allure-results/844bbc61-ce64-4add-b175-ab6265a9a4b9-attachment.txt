@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:** `ts-admin-basic-info-service` fails in `AdminBasicInfoController.addPrice` due to JSON deserialization error where `VALUE_TRUE` token is provided instead of expected `double` for `firstClassPriceRate` field.
+
+**FIX:** Validate and correct input data format in client calling `ts-admin-basic-info-service` to ensure `firstClassPriceRate` is sent as numeric value, not boolean.
