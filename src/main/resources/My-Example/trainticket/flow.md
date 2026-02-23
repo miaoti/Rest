@@ -122,7 +122,7 @@ flowchart TD
     B2 --> O
     O --> P[Create StepCall and capture outputs]
     P --> Q[Update context with outputs and inputs]
-    Q --> R{first step only}
+    Q --> R{Root api only?}
     R -->|true| S[Stop traversal]
     R -->|false| T[Visit children]
     T --> G
