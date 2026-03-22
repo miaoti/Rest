@@ -91,7 +91,7 @@ flowchart TD
     H -->|No| H1[skip; visit children]
     H1 --> G
     H -->|Yes| I[Load service operation config]
-    I --> J{Is first business step}
+    I --> J{Is first step}
     J -->|Yes| K[For each parameter]
     K --> K0{Is target faulty param}
     K0 -->|Yes| K00[Use faulty value and lock]
@@ -122,7 +122,7 @@ flowchart TD
     B2 --> O
     O --> P[Create StepCall and capture outputs]
     P --> Q[Update context with outputs and inputs]
-    Q --> R{first step only}
+    Q --> R{Root api only?}
     R -->|true| S[Stop traversal]
     R -->|false| T[Visit children]
     T --> G
