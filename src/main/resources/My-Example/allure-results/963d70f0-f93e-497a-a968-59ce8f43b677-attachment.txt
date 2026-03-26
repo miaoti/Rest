@@ -1,0 +1,1 @@
+{"accountId":"acc12345","consignee":"John Doe","from":"Chicago","handleDate":"2021-09-30","id":"A123456","orderId":"ORD-1234567890","phone":"1234","targetDate":"2025-04-05T10:00:00Z","to":"Los Angeles","weight":1.2,"within":true}

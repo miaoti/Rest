@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-price-service` during `UPDATE ts.price_config` operation with `HTTP Status: 0` due to `java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'Express-RT-12345' for key 'route_type_idx'`. The exact failure point is in MySQL driver at `com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:117)`.
-
-**FIX:**
-Implement duplicate detection and handling in `ts-price-service` before executing the UPDATE operation. Add pre-check logic to verify if the route type 'Express-RT-12345' already exists in `ts.price_config` table, or modify the database constraint to allow updates instead of throwing duplicate entry error.

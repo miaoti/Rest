@@ -1,1 +1,0 @@
-{"status":0,"msg":"Order creation rejected: seatNumber must follow format like '5A' or '10B' (digits followed by uppercase letter)","data":{"faultName":"INVALID_SEAT_NUMBER_FAULT","message":"Order creation rejected: seatNumber must follow format like '5A' or '10B' (digits followed by uppercase letter)","details":"EMPTY","injected":true}}

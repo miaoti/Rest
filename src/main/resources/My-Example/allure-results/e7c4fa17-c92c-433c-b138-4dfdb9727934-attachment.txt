@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Create success","data":{"id":"31c7fbe9-566d-4335-a26e-85cb2243f9ad","trainType":"GaoTieTwo","routeId":"Route001","basicPriceRate":0.75,"firstClassPriceRate":10.99}}
+Enhanced Parameters: {basicPriceRate=-1, firstClassPriceRate=0}

@@ -1,0 +1,1 @@
+{"status":0,"msg":"Travel plan request rejected: endPlace cannot be null or empty","data":{"faultName":"INVALID_STATION_NAME_FAULT","message":"Travel plan request rejected: endPlace cannot be null or empty","details":null,"injected":true}}

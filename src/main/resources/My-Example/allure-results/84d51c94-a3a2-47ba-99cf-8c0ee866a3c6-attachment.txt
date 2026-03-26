@@ -1,0 +1,1 @@
+{"basicPriceRate":0.75,"firstClassPriceRate":120.0,"id":"56f4bae4-9964-498c-8f26-5ddb0924e428","routeId":"Route001","trainType":"TrainT"}

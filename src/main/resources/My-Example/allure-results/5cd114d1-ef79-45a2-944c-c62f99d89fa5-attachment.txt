@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"TS-2025-045","trainType":"trainType1234567890","routeId":"92708982-77af-4318-be25-57ccb0ff69af","basicPriceRate":200.0,"firstClassPriceRate":120.0}}

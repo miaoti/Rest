@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"AR-2025-001","trainType":"Express","routeId":"RT-67890","basicPriceRate":125.5,"firstClassPriceRate":75.25}}

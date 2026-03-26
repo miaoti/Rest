@@ -1,1 +1,0 @@
-{"accountId":"1234567890","boughtDate":"2025-12-10","coachNumber":12,"contactsDocumentNumber":"123456789012345678","contactsName":"John Smith","differenceMoney":"0.00","documentType":1,"from":"Shanghai","id":"AR-2025-001","price":"899.50","seatClass":1,"seatNumber":"3F","status":1,"to":"Guangzhou","trainNumber":"G1234","travelDate":"2025-12-10","travelTime":"09:30"}

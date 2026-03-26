@@ -1,1 +1,0 @@
-{"departureTime":"2023-12-28","endPlace":"shenzhen","startPlace":"[1,2,3]"}

@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"73c35945-e2ce-408a-84dd-3003d90e457d","boughtDate":"2026-01-10","travelDate":"2013-05-04","travelTime":"' OR '1'='1","accountId":"1234567890","c...
-Enhanced Parameters: {documentType=1, contactsDocumentNumber=12345678901234567, contactsName=John Smith, seatNumber=12A, accountId=1234567890, coachNumber=1234, travelDate=2023-05-04, boughtDate=2023-01-10, price=1299.99, seatClass=1, from=Beijing, trainNumber=G1234, to=Shanghai, status=1}

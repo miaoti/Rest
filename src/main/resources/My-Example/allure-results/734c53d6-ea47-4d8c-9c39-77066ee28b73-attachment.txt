@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"8a6a797f-e5c2-4033-b128-098a7e3d9a1d","boughtDate":"2025-12-15","travelDate":"' OR '1'='1--","travelTime":"08:30","accountId":"8889990000","cont...
-Enhanced Parameters: {travelTime=08:30, documentType=1, contactsDocumentNumber=123456789012345678, contactsName=fdse_microservice, differenceMoney=150.00, seatNumber=12A, accountId=8889990000, coachNumber=8, boughtDate=2025-12-15, price=599.99, seatClass=1, from=Beijing, id=AR-2025-001, to=Shanghai, trainNumber=G1234, status=1}

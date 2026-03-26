@@ -1,0 +1,1 @@
+{"accountId":false,"consignee":"John Doe","from":"","handleDate":"2026-04-15T10:30:00Z","id":"A123456","orderId":"ORD-1234567890","phone":"415-555-0199","targetDate":"2026-04-05T10:00:00Z","to":"","weight":0.5,"within":true}

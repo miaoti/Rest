@@ -1,0 +1,1 @@
+{"basicPriceRate":"```","firstClassPriceRate":10.99,"id":"A123456","routeId":"RouteXYZ123","trainType":"Luxury Coach"}

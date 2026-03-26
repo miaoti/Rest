@@ -1,0 +1,1 @@
+{"endTime":"2026-03-26T22:00:00Z","loginId":"adminUser123","routeId":"","startStationName":"Downtown Station","startTime":"2026-04-01T09:00:00Z","stationsName":"Chicago Union Station","terminalStationName":"los angeles","trainTypeName":"Express Train","tripId":"XYZ-Travel-001"}

@@ -1,1 +1,0 @@
-{"accountId":"111222333","boughtDate":"' OR '1'='1 --","coachNumber":12,"contactsDocumentNumber":"98765432109876543","contactsName":"TestCase","differenceMoney":"150.00","documentType":1,"from":"Beijing","id":"AR-2025-001","price":"1299.99","seatClass":9,"seatNumber":"12A","status":1,"to":"Beijing","trainNumber":"G1234","travelDate":"2025-12-25","travelTime":"08:30"}

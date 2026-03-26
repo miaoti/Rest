@@ -1,0 +1,1 @@
+{"departureTime":"2026-05-01","endPlace":"<script>alert('XSS')</script>","startPlace":"Chicago, IL"}

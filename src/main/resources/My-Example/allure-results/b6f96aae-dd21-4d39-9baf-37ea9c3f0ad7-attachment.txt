@@ -1,0 +1,1 @@
+{"endTime":"2026-03-27T17:45:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Short","startTime":"2026-04-01T09:00:00Z","stationsName":"Chicago Union Station","terminalStationName":"taiyuan","trainTypeName":"Express Train","tripId":"A1B2C3D4E5F6"}

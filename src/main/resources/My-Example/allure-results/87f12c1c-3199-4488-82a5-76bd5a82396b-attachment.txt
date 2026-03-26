@@ -1,0 +1,1 @@
+{"departureTime":"2025-11-01T12:34:56","endPlace":"Los Angeles","startPlace":"San Francisco"}

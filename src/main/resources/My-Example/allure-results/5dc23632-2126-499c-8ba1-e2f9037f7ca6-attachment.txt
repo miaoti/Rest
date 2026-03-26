@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"112eb752-ff9d-44ee-a95d-2f75305a5086","orderId":"ORD-9876543210","accountId":"acc12345","handleDate":"'; DROP TABLE-...
+Enhanced Parameters: {accountId=invalidAccountId, consignee=, orderId=ORD-0000000000, phone=invalidPhoneNumber, targetDate=not-a-date, weight=-1.0, from=, id=1234567890, to=}

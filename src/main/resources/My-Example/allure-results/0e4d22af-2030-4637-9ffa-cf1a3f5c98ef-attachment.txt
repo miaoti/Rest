@@ -1,0 +1,1 @@
+{"departureTime":false,"endPlace":"New York City","startPlace":"Seattle, WA"}

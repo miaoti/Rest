@@ -1,0 +1,1 @@
+{"status":1,"msg":"Update consign success","data":{"id":"5f5d9134-c415-43f8-adea-ef526ea6eaf1","orderId":"ORD-1234567890","accountId":"acc12345","handleDate":"2026-04-15T10:30:00Z","targetDate":"2026-04-05T10:00:00Z","from":"```","to":"Houston","consignee":"John Doe","phone":"+44 20 7946 0958","weight":0.5,"price":8.0}}

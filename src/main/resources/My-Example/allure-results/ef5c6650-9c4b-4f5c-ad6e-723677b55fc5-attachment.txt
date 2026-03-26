@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"e73674e6-033a-46e9-9c50-0c6eb6b296cc","boughtDate":"2025-12-15","travelDate":"2025-12-25","travelTime":"10:20","accountId":"1234567890","contact...
-Enhanced Parameters: {travelTime=10:20, documentType=1, contactsDocumentNumber=456789123045678912, contactsName=John Smith, seatNumber=12A, accountId=1234567890, coachNumber=12, travelDate=2025-12-25, boughtDate=2025-12-15, price=1299.99, seatClass=1, from=Hangzhou, id=AR-2025-001, to=Beijing, trainNumber=G1234, status=1}

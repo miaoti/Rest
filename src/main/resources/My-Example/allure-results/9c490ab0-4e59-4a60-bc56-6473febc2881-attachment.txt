@@ -1,0 +1,1 @@
+{"basicPriceRate":0.75,"firstClassPriceRate":10.99,"id":"12345-ABCDE","routeId":"Route001","trainType":"<script>alert('XSS')</script>"}

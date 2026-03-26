@@ -1,1 +1,0 @@
-{"status":0,"msg":"Route creation rejected: station list cannot be null or empty","data":{"faultName":"INSUFFICIENT_STATIONS_FAULT","message":"Route creation rejected: station list cannot be null or empty","details":null,"injected":true}}

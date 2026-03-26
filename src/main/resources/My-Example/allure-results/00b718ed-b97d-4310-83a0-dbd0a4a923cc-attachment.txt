@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` where JSON deserialization fails. The controller expects a `double` type for `basicPriceRate` field, but receives a JSON array `"[1,2,3]"` instead of a numeric value, causing `HttpMessageNotReadableException`.
-
-**FIX:**
-Update the API request payload sent to `ts-admin-basic-info-service` to provide a valid `double` value for `basicPriceRate` field instead of the array `"[1,2,3]"`. The gateway service correctly returns HTTP 400 status code indicating bad request due to invalid payload format.

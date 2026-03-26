@@ -1,0 +1,1 @@
+{"status":0,"msg":"Trip query rejected: departureTime year must be between 2000 and 2100","data":{"faultName":"INVALID_YEAR_RANGE_FAULT","message":"Trip query rejected: departureTime year must be between 2000 and 2100","details":"Year: 9999","injected":true}}

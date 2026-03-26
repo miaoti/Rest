@@ -1,0 +1,1 @@
+{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Grand Central Station","startTime":"2026-04-01T09:00:00Z","stationsName":"Grand Central Station, Union Station","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"TRIP-00789"}

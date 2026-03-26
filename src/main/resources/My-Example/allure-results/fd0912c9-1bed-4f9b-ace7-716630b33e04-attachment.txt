@@ -1,0 +1,1 @@
+{"departureTime":1674683200,"endPlace":"New York City","startPlace":"Chicago, IL"}

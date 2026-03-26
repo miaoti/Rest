@@ -1,0 +1,1 @@
+{"accountId":"client_id_1234","consignee":"Jane Smith","from":"abcd","handleDate":"2026-05-15T09:30:00Z","id":"B789012","orderId":"ORD-MYORDER456","phone":"646.555.0200 x456","targetDate":"2026-05-03T09:00:00Z","to":"Los Angeles","weight":0.5,"within":true}

@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"ROUTE-2025-007","trainType":"' OR '1'='1","routeId":"RT-12345","basicPriceRate":125.5,"firstClassPriceRate":100.0}}
-Enhanced Parameters: {basicPriceRate=125.50, routeId=RT-12345, firstClassPriceRate=100.00, id=ROUTE-2025-007}

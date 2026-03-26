@@ -1,1 +1,0 @@
-{"distanceList":true,"endStation":"Times Square Station","id":"AR-2025-001","loginId":"service_manager_123","startStation":"New York Penn Station","stationList":"New York Penn Station,Grand Central Terminal,Times Square Station"}

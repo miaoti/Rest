@@ -1,1 +1,0 @@
-{"status":0,"msg":"some station not exists","data":["New York Penn Station","Seattle Station","Chicago Union Station","Grand Central Terminal","Times Square Station"]}

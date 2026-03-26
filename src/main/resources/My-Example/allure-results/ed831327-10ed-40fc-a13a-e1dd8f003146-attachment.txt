@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurred in `ts-route-service` during operation `GET /*` with HTTP 403 status. The exact error is `RequestRejectedException` thrown due to "The request was rejected because the URL was not normalized" - indicating a security firewall rejection of malformed URL path.
-
-**FIX:**
-Configure URL normalization in Spring Security firewall settings for `ts-route-service` to allow non-normalized URLs or ensure all incoming requests have properly normalized paths before reaching the security filter chain.

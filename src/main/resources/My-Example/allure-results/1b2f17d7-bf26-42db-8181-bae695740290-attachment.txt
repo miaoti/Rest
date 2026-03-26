@@ -1,0 +1,1 @@
+{"accountId":"acc12345","boughtDate":"2026-04-01T14:30:00Z","coachNumber":460,"contactsDocumentNumber":"A123456789","contactsName":"John Doe","differenceMoney":"10.50","documentType":310,"from":"Chicago","id":"A123456","price":"10.99","seatClass":1,"seatNumber":"FirstClass-45","status":1,"to":"test281","trainNumber":"Train404","travelDate":"2026-04-01","travelTime":"02:15 PM"}

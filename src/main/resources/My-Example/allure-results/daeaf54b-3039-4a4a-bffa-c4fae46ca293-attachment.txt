@@ -1,0 +1,1 @@
+{"endTime":"23:45","loginId":"adminUser123","routeId":"Route001","startStationName":"Downtown Station","startTime":"2026-04-01T09:00:00Z","stationsName":"","terminalStationName":"Union Station","trainTypeName":"Local Train","tripId":"TRIP-00789"}

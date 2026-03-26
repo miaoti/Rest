@@ -1,0 +1,1 @@
+{"status":1,"msg":"You have consigned successfully! The price is 26.8","data":{"id":"4d885526-21e0-4d6e-bfda-e5ece145e6ad","orderId":"ORD-1234567890","accountId":"acc12345","handleDate":"2023-08-15 23:59:59","targetDate":"2026-04-05T10:00:00Z","from":"Chicago","to":"Los Angeles","consignee":"'; DROP TABLE--","phone":"415-555-0199","weight":5.7,"price":26.8}}

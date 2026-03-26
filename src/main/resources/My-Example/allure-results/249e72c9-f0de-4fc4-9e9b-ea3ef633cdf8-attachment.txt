@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-admin-basic-info-service` fails in `AdminBasicInfoController.addPrice` when attempting to deserialize JSON field `basicPriceRate` with value `"' OR '1'='1"` into a `double` type, causing `HttpMessageNotReadableException` due to invalid numeric format.
-
-**FIX:** Implement input validation and sanitization in `AdminBasicInfoController.addPrice` to reject malformed numeric values and sanitize SQL injection attempts before deserialization. Add proper exception handling to return structured 400 errors with validation messages.

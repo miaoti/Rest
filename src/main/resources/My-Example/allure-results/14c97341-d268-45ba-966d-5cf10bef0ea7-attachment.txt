@@ -1,0 +1,1 @@
+{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"de05d839-1893-4608-9ada-d9eb41231ff2","orderId":"","accountId":"","handleDate":"2026-04-15T10:30:00Z","targetDate":"2026-04-05T10:00:00Z","from":"Chicago","to":"abcde","consignee":"","phone":"","weight":0.5,"price":8.0}}

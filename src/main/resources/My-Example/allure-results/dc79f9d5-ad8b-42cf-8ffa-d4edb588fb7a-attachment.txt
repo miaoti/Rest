@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** 
-The failure occurs in `ts-admin-order-service` during `AdminOrderController.addOrder` when attempting to deserialize a JSON payload. The specific error is a `com.fasterxml.jackson.databind.exc.InvalidFormatException` where the string value "9999999999" cannot be deserialized into an `int` type due to integer overflow, as the value exceeds the maximum range of a 32-bit signed integer (-2147483648 to 2147483647). The error originates from the `status` field in the `Order` entity.
-
-**FIX:**
-Change the `status` field type in the `Order` entity from `Integer` to `Long` to accommodate the large numeric value, and update the corresponding JSON schema validation to accept larger integer values.

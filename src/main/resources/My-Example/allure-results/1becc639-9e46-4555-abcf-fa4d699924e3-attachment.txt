@@ -1,0 +1,1 @@
+{"endTime":"2026-03-26T22:00:00Z","loginId":"testAdmin789","routeId":"Route001","startStationName":"London Victoria Coach Station","startTime":"2026-04-01T09:00:00Z","stationsName":"London Victoria Coach Station","terminalStationName":"King's Cross St. Pancras","trainTypeName":"Night Train","tripId":"TRIP-00789"}

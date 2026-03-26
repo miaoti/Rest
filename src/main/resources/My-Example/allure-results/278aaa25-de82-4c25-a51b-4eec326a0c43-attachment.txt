@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"ADMIN-2025-123","trainType":"'; DROP TABLE--","routeId":"RT-12345","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

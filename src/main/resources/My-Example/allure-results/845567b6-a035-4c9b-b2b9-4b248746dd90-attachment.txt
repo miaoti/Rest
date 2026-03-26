@@ -1,0 +1,1 @@
+{"accountId":"acc12345","consignee":"John Doe","from":"Chicago","handleDate":"2026-02-20 14:00:00","id":"A123456","orderId":"ORD-MYORDER123","phone":"415-555-0199","targetDate":"2026-04-05T10:00:00Z","to":"Houston","weight":0.5,"within":true}

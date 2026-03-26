@@ -1,1 +1,0 @@
-{"timestamp":"2025-12-11T15:49:53.292+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/adminbasicservice/adminbasic/prices"}

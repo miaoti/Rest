@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurred in `ts-gateway-service` during a `POST` operation with HTTP status `400 Bad Request`. The span executed for 10.503ms and represents the only failed operation in the trace.
-
-**FIX:**
-Inspect the request payload and headers being sent to `ts-gateway-service` POST endpoint. The 400 status indicates client error - likely malformed request body, missing required fields, or invalid content-type header. Validate the request format against the expected API schema for the gateway service endpoint.

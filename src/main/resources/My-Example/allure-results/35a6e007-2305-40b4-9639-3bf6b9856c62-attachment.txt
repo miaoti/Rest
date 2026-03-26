@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Success","data":{"id":"807743c3-7238-4c90-984a-44aceda87fec","boughtDate":"2026-01-15","travelDate":"2025-12-25","travelTime":"10:20","accountId":"1234567890","contactsName":"auth_s...
-Enhanced Parameters: {travelTime=10:20, documentType=1, contactsDocumentNumber=123456789012345678, contactsName=auth_service, differenceMoney=150.00, seatNumber=12A, accountId=1234567890, coachNumber=12, travelDate=2025-12-25, boughtDate=2025-12-20, price=1299.99, seatClass=2, from=Beijing, id=ADMIN-2025-123, to=Shanghai, trainNumber=' OR '1'='1, status=1}

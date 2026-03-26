@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"9695fdf5-f44c-40a1-b243-31809d0b6243","boughtDate":"2025-12-15","travelDate":"20251210","travelTime":"10:20","accountId":"1234567890","contactsN...
-Enhanced Parameters: {contactsDocumentNumber=12345678901234567, from=Shanghai, to=Beijing, trainNumber=G123, seatNumber=12B}

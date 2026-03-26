@@ -1,0 +1,1 @@
+{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"9edb7c89-976c-4771-85dd-39d2d20ccd13","orderId":"ORD-1234567890","accountId":"abcde","handleDate":"2026-04-15T10:30:00Z","targetDate":"2026-04-05T10:00:00Z","from":"NotACity","to":"AnotherCity","consignee":"John Doe","phone":"415-555-0199","weight":0.5,"price":8.0}}

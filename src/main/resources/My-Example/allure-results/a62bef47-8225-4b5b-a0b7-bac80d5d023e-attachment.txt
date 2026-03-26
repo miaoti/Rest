@@ -1,0 +1,1 @@
+{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Midtown Terminal","startTime":"2026-04-01T09:00:00Z","stationsName":"Grand Central Station","terminalStationName":false,"trainTypeName":"Express Train","tripId":"XYZ-Travel-001"}

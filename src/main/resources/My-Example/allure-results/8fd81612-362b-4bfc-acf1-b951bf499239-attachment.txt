@@ -1,0 +1,1 @@
+{"distanceList":"9.9","endStation":"Downtown Station","id":"C345678","loginId":"adminUser123","startStation":"X","stationList":"Citi Field,Yankee Stadium,Fordham University"}

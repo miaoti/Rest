@@ -1,0 +1,1 @@
+{"endTime":"2026-03-26T22:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Downtown Station","startTime":false,"stationsName":"Chicago Union Station","terminalStationName":"new orleans","trainTypeName":"Local Train","tripId":"TRIP-00789"}

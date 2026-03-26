@@ -1,0 +1,1 @@
+{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Union Square Station","startTime":"2026-04-01T09:00:00Z","stationsName":"AB","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"A1B2C3D4E5F6"}

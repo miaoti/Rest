@@ -1,0 +1,1 @@
+{"accountId":"test_account_1234","consignee":"John Doe","from":"Chicago","handleDate":"2026-04-15T10:30:00Z","id":"B789012","orderId":"ORD-1234567890","phone":"415-555-0199","targetDate":"2025-04-10","to":"Chicago","weight":5.7,"within":"true"}

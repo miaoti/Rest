@@ -1,0 +1,1 @@
+{"basicPriceRate":"[1,2,3]","firstClassPriceRate":10.99,"id":"A123456","routeId":"Route001","trainType":"High Speed Rail"}

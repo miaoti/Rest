@@ -1,0 +1,1 @@
+{"status":1,"msg":"Update consign success","data":{"id":"d4de0827-a195-40d4-a8ac-47b7fc49bca9","orderId":"ORD-1234567890","accountId":"acc12345","handleDate":"2023-09-10","targetDate":"2026-03-30T08:45:00Z","from":"Chicago","to":"New York City","consignee":"John Doe","phone":"415-555-0199","weight":-5.0,"price":8.0}}

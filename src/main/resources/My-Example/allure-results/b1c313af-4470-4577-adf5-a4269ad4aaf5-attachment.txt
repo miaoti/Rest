@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"9851822d-e586-44b6-ac28-2fcd9c4c1fe1","boughtDate":"2025-12-15","travelDate":"2025-12-25","travelTime":"22:45","accountId":"1234567890","contact...
-Enhanced Parameters: {accountId=123456789, contactsDocumentNumber=98765432109876543, price=1650.75, trainNumber=G123, seatNumber=12B}

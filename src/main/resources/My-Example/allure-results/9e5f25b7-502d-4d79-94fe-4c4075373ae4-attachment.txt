@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-price-service` fails during `UPDATE ts.price_config` with `SQLIntegrityConstraintViolationException` due to duplicate entry 'Express-RT-12345' for unique key 'route_type_idx', occurring at `com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:117)`.
-
-**FIX:** Implement duplicate detection and handling in `ts-price-service` before executing the UPDATE operation. Add pre-validation check to verify if record exists with same route_type before attempting insert/update, or use UPSERT/ON DUPLICATE KEY UPDATE SQL syntax to handle conflicts gracefully.

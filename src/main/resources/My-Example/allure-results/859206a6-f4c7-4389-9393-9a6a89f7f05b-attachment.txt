@@ -1,0 +1,1 @@
+{"distanceList":"10.3","endStation":"Downtown Station","id":"A123456","loginId":"adminUser123","startStation":"Station A","stationList":""}

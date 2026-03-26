@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"0edcb6c5-edeb-49a0-9269-8b6488ffa623","boughtDate":"2026-01-05","travelDate":"2025-12-25","travelTime":"08:30","accountId":"1234567890","contact...
-Enhanced Parameters: {accountId=12345678901234567890, travelDate=2026-01-01, contactsDocumentNumber=12345678901234567, price=1299.99, boughtDate=2025-12-20, from=Beijing Railway Station, trainNumber=G12345, to=Shanghai Railway Station, seatNumber=12B}

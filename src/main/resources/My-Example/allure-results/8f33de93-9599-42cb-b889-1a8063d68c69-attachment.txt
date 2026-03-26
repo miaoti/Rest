@@ -1,1 +1,0 @@
-{"timestamp":"2025-12-11T15:53:02.537+00:00","status":400,"error":"Bad Request","message":"","path":"/api/v1/adminbasicservice/adminbasic/prices"}

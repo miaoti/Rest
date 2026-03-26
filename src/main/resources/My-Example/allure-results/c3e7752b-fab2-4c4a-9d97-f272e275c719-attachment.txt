@@ -1,0 +1,15 @@
+════════════════════════════════════════════════════════════════════════
+🤖 INTELLIGENT ANALYSIS (Negative Test)
+════════════════════════════════════════════════════════════════════════
+
+Test Type: 🔴 NEGATIVE (Invalid Input Testing)
+
+📋 DESIGNED INVALID INPUTS:
+   • departureTime = 2026-03-252026-03-252026-03-252026-03-252026-03-25
+
+Status Code: 200 (expected: 200)
+Status Code Indicates Error: ❌ NO
+Error Related to Invalid Input: ❌ NO
+
+Root Cause Analysis:
+[NO ERROR DETECTED - INVALID INPUT ACCEPTED] The API responded with an HTTP status code of 200 and an empty JSON array `[]`, indicating success. This means the API accepted our invalid input without returning any error message related to the designed invalid parameter 'departureTime'. Therefore, the negative test fails as the API did not reject the invalid data.

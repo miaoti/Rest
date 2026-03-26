@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-admin-basic-info-service` during a POST operation with HTTP 500 status. The service is failing to process the request, causing downstream propagation to 4 other spans.
-
-**FIX:**
-Investigate and resolve the internal server error (500) in `ts-admin-basic-info-service` POST endpoint. Check application logs for specific exception details, validate request payload handling, and ensure proper error response formatting to prevent downstream propagation.

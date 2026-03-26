@@ -1,0 +1,1 @@
+{"status":1,"msg":"You have consigned successfully! The price is 8.8","data":{"id":"32a67740-2bdf-44ea-a4e4-aca6f3735dcd","orderId":"ORD-1234567890","accountId":"admin_order_001","handleDate":"invalid-date","targetDate":"2024-10-05","from":"Miami","to":"New York City","consignee":"John Doe","phone":"415-555-0199","weight":1.2,"price":8.8}}

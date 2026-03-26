@@ -1,1 +1,0 @@
-{"departureTime":"{\"key\":\"value\"}","endPlace":"Miami","startPlace":"New York"}

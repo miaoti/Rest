@@ -1,0 +1,1 @@
+{"endTime":"","loginId":"adminUser123","routeId":"Route001","startStationName":"Downtown Station","startTime":"2026-04-01T09:00:00Z","stationsName":"Grand Central Station","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"TRIP-00789"}

@@ -1,0 +1,1 @@
+{"departureTime":"9999-99-99","endPlace":"New York City","startPlace":"Chicago, IL"}

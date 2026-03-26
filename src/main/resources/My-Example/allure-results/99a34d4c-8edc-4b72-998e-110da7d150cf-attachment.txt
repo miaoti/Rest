@@ -1,1 +1,0 @@
-{"departureTime":"2025-11-01T00:00:00Z","endPlace":"Los Angeles","startPlace":"Chicago"}

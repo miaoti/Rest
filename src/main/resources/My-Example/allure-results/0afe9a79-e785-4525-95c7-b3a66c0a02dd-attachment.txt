@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` failing DELETE operation with HTTP 400 status during trace execution.
-
-**FIX:** Review request payload validation in `ts-gateway-service` DELETE endpoint for malformed or missing required parameters that trigger 400 Bad Request response.

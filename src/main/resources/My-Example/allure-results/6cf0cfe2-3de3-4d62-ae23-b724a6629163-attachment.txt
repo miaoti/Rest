@@ -1,0 +1,1 @@
+{"accountId":"98779e1f-8cce-4435-9ff4-81411a9d9bd5","consignee":"John Doe","from":"Los Angeles","handleDate":"2026-04-15T10:30:00Z","id":"A123456","orderId":"ORD-1234567890","phone":"415-555-0199","targetDate":"2026-04-05T10:00:00Z","to":"New York City","weight":1.2,"within":false}

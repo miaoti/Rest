@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"some station not exists","data":["denton,taiyuan","Downtown Station"]}
+Enhanced Parameters: {terminalStationName=Downtown Station, stationsName=Chicago Union Station,Downtown Station}

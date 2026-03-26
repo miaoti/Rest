@@ -1,0 +1,1 @@
+{"accountId":"client_id_6789","consignee":"John Doe","from":"Chicago","handleDate":"2027-03-15 09:45:00","id":"","orderId":"ORD-1234567890","phone":"415-555-0199","targetDate":"2026-04-05T10:00:00Z","to":"Miami","weight":0.5,"within":true}

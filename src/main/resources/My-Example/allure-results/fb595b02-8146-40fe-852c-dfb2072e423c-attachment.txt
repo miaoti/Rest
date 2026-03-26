@@ -1,1 +1,0 @@
-{"departureTime":"2025-12-15","endPlace":"ImpossibleEndPoint","startPlace":"New York"}

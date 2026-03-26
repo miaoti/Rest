@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** 
-The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize the `coachNumber` field from JSON input. The input contains the string `"' OR 1=1--"` which cannot be converted to an integer type, causing a `HttpMessageNotReadableException` with `InvalidFormatException`.
-
-**FIX:** 
-Implement input validation and sanitization in `ts-admin-order-service` to reject or properly escape SQL injection attempts before deserialization. Add proper validation annotations or custom validation logic to ensure `coachNumber` field accepts only valid integer values.

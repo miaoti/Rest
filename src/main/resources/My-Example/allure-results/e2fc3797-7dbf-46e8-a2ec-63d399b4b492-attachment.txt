@@ -1,1 +1,0 @@
-{"timestamp":"2025-12-11T07:01:21.716+00:00","status":405,"error":"Method Not Allowed","message":"","path":"/api/v1/admintravelservice/admintravel/"}

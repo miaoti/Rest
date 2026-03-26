@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"2489d913-e6d2-42b3-8b4d-59ae900b9884","boughtDate":"2025-12-15","travelDate":"2013-05-05","travelTime":"08:30","accountId":"8889990000","contact...
-Enhanced Parameters: {travelTime=08:30, travelDate=2025-12-15, price=1299.99, from=Beijing, to=Shanghai}

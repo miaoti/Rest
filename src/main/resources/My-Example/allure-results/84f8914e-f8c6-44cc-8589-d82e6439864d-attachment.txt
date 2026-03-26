@@ -1,1 +1,0 @@
-{"accountId":"1234567890","boughtDate":"2025-12-20","coachNumber":12,"contactsDocumentNumber":"123456789012345678","contactsName":"auth_service","differenceMoney":"150.00","documentType":1,"from":"Beijing","id":"ADMIN-2025-123","price":"1299.99","seatClass":2,"seatNumber":"12A","status":1,"to":"Shanghai","trainNumber":"' OR '1'='1","travelDate":"2025-12-25","travelTime":"10:20"}

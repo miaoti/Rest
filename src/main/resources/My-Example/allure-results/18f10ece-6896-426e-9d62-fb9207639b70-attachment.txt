@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"1b6ca446-b7d2-4058-85f5-aec3c6816e99","trainType":"Express","routeId":"92708982-77af-4318-be25-57ccb0ff69ae","basicPriceRate":125.5,"firstClassPriceRat...
-Enhanced Parameters: {basicPriceRate=-10.0, firstClassPriceRate=-5.5}

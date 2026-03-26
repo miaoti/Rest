@@ -1,0 +1,1 @@
+{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"ea2e6fc9-9959-48df-887e-c06c5f093c79","orderId":"ORD-9876543210","accountId":"invalid_account_1234","handleDate":"2027-03-15 09:45:00","targetDate":"2025-04-10","from":"Chicago","to":"New York City","consignee":"false","phone":"415-555-0199","weight":0.5,"price":8.0}}

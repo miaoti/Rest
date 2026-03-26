@@ -1,1 +1,0 @@
-{"status":0,"msg":"Trip query rejected: departureTime must be in format yyyy-MM-dd","data":{"faultName":"INVALID_DATE_FORMAT_FAULT","message":"Trip query rejected: departureTime must be in format yyyy-MM-dd","details":"20251210","injected":true}}

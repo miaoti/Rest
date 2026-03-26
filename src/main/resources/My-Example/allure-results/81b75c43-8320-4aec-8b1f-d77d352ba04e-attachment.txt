@@ -1,0 +1,1 @@
+{"endTime":"2026-03-29T14:30:00Z","loginId":"adminUser123","routeId":"TrainRoute456","startStationName":"Downtown Station","startTime":"2026-04-01T09:00:00Z","stationsName":"Chicago Union Station","terminalStationName":"AB","trainTypeName":"Night Train","tripId":"TrainJourney1234"}

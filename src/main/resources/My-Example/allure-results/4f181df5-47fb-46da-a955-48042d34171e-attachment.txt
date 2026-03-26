@@ -1,1 +1,0 @@
-{"distanceList":"2500","endStation":"Disneyland Resort Station","id":"null","loginId":"admin_user_001","startStation":"Los Angeles Union Station","stationList":"Los Angeles Union Station,Disneyland Resort Station,Pasadena Station"}

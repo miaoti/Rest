@@ -1,0 +1,1 @@
+{"accountId":"acc12345","consignee":"Charlie Davis","from":"Chicago","handleDate":"2025-12-31T23:59:59Z","id":"A123456","orderId":"ORD-9876543210","phone":"415-555-0199","targetDate":123,"to":"New York City","weight":0.5,"within":false}

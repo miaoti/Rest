@@ -1,0 +1,1 @@
+{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Downtown Station","startTime":"'; DROP TABLE--","stationsName":"Chicago Union Station","terminalStationName":"Pennsylvania Station","trainTypeName":"Express Train","tripId":"TRIP-00789"}

@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` failing POST operation with HTTP 400 status indicating client request error (bad request). The service rejected the request due to invalid payload format, missing required fields, or invalid parameter values.
-
-**FIX:** Validate incoming POST request payload structure and required fields in `ts-gateway-service` before processing. Implement proper request validation middleware to return explicit error messages for malformed requests.

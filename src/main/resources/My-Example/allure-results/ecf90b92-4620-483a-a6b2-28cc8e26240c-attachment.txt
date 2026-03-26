@@ -1,0 +1,1 @@
+{"status":1,"msg":"Create success","data":{"id":"5d9ce4c8-08df-41bf-9c0d-4f7b828599ea","trainType":"WacoExpress","routeId":"RouteXYZ123","basicPriceRate":0.75,"firstClassPriceRate":1.0E22}}

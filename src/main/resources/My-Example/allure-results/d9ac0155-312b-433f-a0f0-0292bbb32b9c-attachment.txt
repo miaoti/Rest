@@ -1,0 +1,1 @@
+{"boughtDateEnd":"2026-04-01T09:00:00Z","boughtDateStart":"","enableBoughtDateQuery":true,"enableStateQuery":true,"enableTravelDateQuery":true,"loginId":"adminUser123","state":40,"travelDateEnd":"2026-03-30T14:30:00Z","travelDateStart":"2026-04-01T08:00:00Z"}

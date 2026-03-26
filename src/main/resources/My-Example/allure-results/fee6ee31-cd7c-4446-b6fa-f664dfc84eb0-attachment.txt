@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-price-service` during `INSERT ts.price_config` operation with `SQLIntegrityConstraintViolationException` due to duplicate entry 'Express-92708982-77af-4318-be25-57ccb0ff69ae' for unique key 'route_type_idx'.
-
-**FIX:**
-Implement idempotent insert logic in `ts-price-service` to check for existing record before insert, or modify the insert operation to use `INSERT IGNORE` or `ON DUPLICATE KEY UPDATE` to handle duplicate entries gracefully.

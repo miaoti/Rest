@@ -1,1 +1,0 @@
-{"distanceList":"2000","endStation":"AnotherNonExistentStation","id":"1234","loginId":"admin_user_001","startStation":"NonExistentStation","stationList":"New York Penn Station,Grand Central Terminal,Times Square Station"}

@@ -1,0 +1,1 @@
+{"basicPriceRate":0.75,"firstClassPriceRate":54.75,"id":"[1,2,3]","routeId":"RouteXYZ123","trainType":"GaoTieOne"}

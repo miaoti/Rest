@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":0,"msg":"some station not exists","data":["Downtown Station","Union Station"]}
+Enhanced Parameters: {terminalStationName=Paddington Station, stationsName=Baker Street, Oxford Circus, startStationName=King's Cross Station}

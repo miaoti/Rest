@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"3fe3facc-df2b-4406-a700-aa512fbb97e0","boughtDate":"2025-12-15","travelDate":"2025-11-20","travelTime":"travelTime","accountId":"1234567890","co...
-Enhanced Parameters: {accountId=123456789, contactsDocumentNumber=98765432109876543, price=1299.99, differenceMoney=150.00}

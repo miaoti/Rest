@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"ADMIN-2025-123","trainType":"Express","routeId":"RT-67890","basicPriceRate":1.0E50,"firstClassPriceRate":125.5}}
-Enhanced Parameters: {routeId=RT-00001, trainType=Local}

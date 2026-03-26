@@ -1,0 +1,1 @@
+{"accountId":"acc98765","consignee":"Jane Smith","from":"Los Angeles","handleDate":"2026-03-25T16:14:38.12345678901234567890123456789012345678901234567890","id":"B789123","orderId":"ORD-ABC123456","phone":"212.555.0123 x456","targetDate":"2026-04-10T09:00:00Z","to":"San Francisco","weight":0.5,"within":true}

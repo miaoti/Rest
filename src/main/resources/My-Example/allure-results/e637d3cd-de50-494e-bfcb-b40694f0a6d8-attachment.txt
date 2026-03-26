@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"TS-2025-045","trainType":"Express","routeId":"nonexistent_path","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

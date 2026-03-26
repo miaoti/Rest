@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** 
-The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize the `seatClass` field from JSON input. The input contains the string `"' OR 1=1--"` which cannot be converted to an integer type, causing a `HttpMessageNotReadableException` with `InvalidFormatException`.
-
-**FIX:** 
-Implement input validation and sanitization in `ts-admin-order-service` to reject invalid integer values in the `seatClass` field before deserialization. Add proper exception handling to return HTTP 400 with descriptive error message for malformed input.

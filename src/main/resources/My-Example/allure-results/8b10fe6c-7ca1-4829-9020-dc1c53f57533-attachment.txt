@@ -1,1 +1,0 @@
-{"timestamp":"2025-12-11T07:09:26.386+00:00","status":404,"error":"Not Found","message":"","path":"/api/v1/admintravelservice/admintravel/%3Cscript%3Ealert%28%27test%27%29%3C/script%3E"}

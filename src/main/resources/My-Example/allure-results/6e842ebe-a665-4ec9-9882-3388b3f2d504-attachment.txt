@@ -1,1 +1,0 @@
-{"departureTime":"[1,2,3]","endPlace":"New York","startPlace":"New York"}

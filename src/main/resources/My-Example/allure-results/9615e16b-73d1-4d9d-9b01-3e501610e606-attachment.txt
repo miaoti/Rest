@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** 
-The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is a `com.fasterxml.jackson.databind.exc.InvalidFormatException` where the string `"' OR 1=1--"` (SQL injection attempt) cannot be converted to a `double` type for the field `firstClassPriceRate`.
-
-**FIX:** 
-Implement input validation and sanitization in `ts-admin-basic-info-service` to reject malformed numeric values before deserialization. Add proper exception handling with `@ExceptionHandler` to return HTTP 400 for invalid request payloads, and validate numeric fields using `@Min`/`@Max` constraints or custom validators.

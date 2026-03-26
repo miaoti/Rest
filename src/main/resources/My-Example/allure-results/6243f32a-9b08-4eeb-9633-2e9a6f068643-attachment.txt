@@ -1,0 +1,1 @@
+{"endTime":"2026-03-25T16:19:58.000Z2026-03-25T16:19:58.000Z2026-03-25T16:19:58.000Z2026-03-25T16:19:58.000Z","loginId":"adminUser123","routeId":"Route789ABC","startStationName":"Downtown Station","startTime":"2026-03-26T17:15:00Z","stationsName":"Chicago Union Station","terminalStationName":"seattle","trainTypeName":"Express Train","tripId":"TRIP-00789"}

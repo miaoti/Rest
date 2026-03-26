@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"AR-2025-001","trainType":"Express","routeId":"routeId1234567890","basicPriceRate":89.99,"firstClassPriceRate":95.0}}
-Enhanced Parameters: {basicPriceRate=-10.0, firstClassPriceRate=-5.0}

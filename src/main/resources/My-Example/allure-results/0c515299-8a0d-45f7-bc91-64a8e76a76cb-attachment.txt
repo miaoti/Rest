@@ -1,0 +1,1 @@
+{"status":0,"msg":"Travel plan request rejected: endPlace length must be between 2 and 50 characters","data":{"faultName":"INVALID_STATION_LENGTH_FAULT","message":"Travel plan request rejected: endPlace length must be between 2 and 50 characters","details":"endPlace: '9', Length: 1","injected":true}}

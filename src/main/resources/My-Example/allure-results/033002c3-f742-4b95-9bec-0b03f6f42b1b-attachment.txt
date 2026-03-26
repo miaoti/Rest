@@ -1,0 +1,1 @@
+{"accountId":"acc12345","boughtDate":"2026-04-01T14:30:00Z","coachNumber":456,"contactsDocumentNumber":"B9876543210","contactsName":"John Doe","differenceMoney":"-5.75","documentType":100,"from":"San Francisco","id":"","price":"10.99","seatClass":1,"seatNumber":"A01","status":0,"to":"New York City","trainNumber":"Train101","travelDate":"2026-03-30","travelTime":"04:30 PM"}

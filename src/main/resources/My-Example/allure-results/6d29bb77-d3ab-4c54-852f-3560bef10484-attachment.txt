@@ -1,0 +1,1 @@
+{"accountId":"invalid_account_1234","consignee":false,"from":"Chicago","handleDate":"2027-03-15 09:45:00","id":"C345678","orderId":"ORD-9876543210","phone":"415-555-0199","targetDate":"2025-04-10","to":"New York City","weight":0.5,"within":true}

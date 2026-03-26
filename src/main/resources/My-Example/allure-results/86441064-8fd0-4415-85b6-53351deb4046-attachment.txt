@@ -1,1 +1,0 @@
-{"status":1,"msg":"Find all  config success","data":[{"name":"DirectTicketAllocationProportion","value":"0.5","description":"Allocation Proportion Of The Direct Ticket - From Start To End"}]}

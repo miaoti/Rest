@@ -1,1 +1,0 @@
-{"basicPriceRate":"0","firstClassPriceRate":90.0,"id":"AR-2025-001","routeId":"RT-11111","trainType":"Intercity"}

@@ -1,1 +1,0 @@
-{"basicPriceRate":125.5,"firstClassPriceRate":110.75,"id":"SERVICE-2025-001","routeId":"RT-12345","trainType":"nonexistentRailway"}

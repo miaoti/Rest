@@ -1,0 +1,1 @@
+{"status":0,"msg":"Order creation rejected: seatNumber cannot be null or empty","data":{"faultName":"INVALID_SEAT_NUMBER_FAULT","message":"Order creation rejected: seatNumber cannot be null or empty","details":null,"injected":true}}

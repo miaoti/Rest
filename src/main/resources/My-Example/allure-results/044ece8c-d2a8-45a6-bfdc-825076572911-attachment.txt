@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The ts-admin-order-service fails during AdminOrderController.addOrder operation when attempting to deserialize JSON payload. The specific failure occurs at `edu.fudan.common.entity.Order["seatClass"]` where a String value "abc" is passed but the system expects an Integer type. This triggers a Jackson deserialization exception: `InvalidFormatException: Cannot deserialize value of type 'int' from String "abc"`.
-
-**FIX:**
-Validate and sanitize input data in ts-gateway-service before forwarding to ts-admin-order-service. Ensure that the `seatClass` field in the Order entity is properly converted from String to Integer type or implement proper input validation and type conversion logic in the gateway service to prevent malformed data from reaching the admin service.
