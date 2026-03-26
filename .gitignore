@@ -35,6 +35,7 @@ src/test/resources/restest-test-resources/test_collection_urlencoded.postman_col
 src/main/resources/GoogleNews-vectors-negative300.bin
 src/main/resources/GoogleNews-vectors-negative300.zip
 src/main/resources/ml/model.onnx
+
 src/main/resources/My-Example/trainticket/traces
 
 stateful_data.json
