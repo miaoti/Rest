@@ -941,3 +941,219 @@ Used when the target code is auth-related (e.g. 401, 403):
 | MultiServiceTestCase | Carries targetStatusCode and exploration-test flag |
 | MultiServiceRESTAssuredWriter | Validates exploration tests against target code; reports in Allure |
 
+---
+
+## 8. Soft Error Rule Cache (Observation-Based)
+
+### Problem
+
+Every test that receives a 2XX response calls the LLM to check whether the response body
+actually indicates a business-logic failure (a "soft error"). For a typical run with
+~2400 tests across ~20 APIs, this produces ~2400 LLM calls just for validation. Most APIs
+use the same response envelope (e.g. `{"status":1,"msg":"Find all content","data":[...]}`),
+so the LLM answers the same question repeatedly.
+
+### Design Principle: Learn Only From Observation
+
+The cache **never speculates**. It only records value→meaning mappings that the LLM has
+actually confirmed by examining a real response. For example:
+
+- If the LLM sees `status=1` and says "success", the cache records: `1 → success`.
+- It does **not** guess that `0` means failure — it has never seen `0`.
+- When `status=0` is encountered later, the cache finds the value in **neither** the
+  confirmed-success nor confirmed-failure list → **cache miss** → LLM is called.
+- The LLM confirms `0` is failure → the cache adds `0 → failure` to the rule.
+- All future `status=0` responses are resolved instantly from the cache.
+
+This ensures the cache is always correct — it never makes an assumption about a value
+it hasn't observed.
+
+### Flow
+
+```mermaid
+flowchart TD
+    A[Test receives 2XX response] --> B{Cache has rule<br/>for this API?}
+    B -- No --> C["Call LLM:<br/>evaluate + identify<br/>primary field +<br/>observed value meaning"]
+    C --> D["LLM returns:<br/>FAILED/RCA +<br/>RULE_FIELD +<br/>OBSERVED_VALUE → meaning"]
+    D --> E["Create rule with<br/>ONE confirmed value"]
+    E --> F[Return result]
+
+    B -- Yes --> G{Primary field value<br/>in confirmed lists?}
+    G -- "Known success<br/>or known failure" --> H["Return cached<br/>result instantly<br/>(no LLM call)"]
+    G -- "Unknown value<br/>(neither list)" --> I["Call LLM to<br/>classify new value"]
+    I --> J["Add value to<br/>success or failure list"]
+    J --> F
+```
+
+### Concrete Example: `GET /api/v1/adminbasicservice/adminbasic/stations`
+
+**Test 1** — First call, no rule exists → LLM is called.
+
+Response:
+```json
+{"status":1, "msg":"Find all content", "data":[{"name":"denton"}, ...]}
+```
+
+LLM output:
+```
+FAILED: false
+RCA: status=1 indicates success, data contains station list
+RULE_FIELD: status
+RULE_OBSERVED_VALUE: 1
+RULE_OBSERVED_MEANING: success
+RULE_MESSAGE_FIELDS: msg
+```
+
+Cache state after Test 1:
+```
+Rule for "GET /api/v1/adminbasicservice/adminbasic/stations":
+  field: status
+  confirmed success values: [1]
+  confirmed failure values: []        ← empty, we haven't seen a failure yet
+  known patterns: ["status=1" → success]
+```
+
+**Tests 2–12** — Same `status=1` → cache hit → instant success. **No LLM calls.**
+
+**Test 13** — New value `status=0` appears:
+```json
+{"status":0, "msg":"start station not in list", "data":null}
+```
+
+Cache checks: is `0` in confirmed success? No. In confirmed failure? No.
+→ **Unknown value** → cache miss → LLM is called.
+
+LLM output:
+```
+FAILED: true
+RCA: status=0, error message "start station not in list", data is null
+RULE_FIELD: status
+RULE_OBSERVED_VALUE: 0
+RULE_OBSERVED_MEANING: failure
+RULE_MESSAGE_FIELDS: msg
+```
+
+Cache state after Test 13:
+```
+Rule for "GET /api/v1/adminbasicservice/adminbasic/stations":
+  field: status
+  confirmed success values: [1]
+  confirmed failure values: [0]       ← just learned from LLM
+  known patterns: ["status=1" → success, "status=0" → failure]
+```
+
+**Tests 14+** — `status=0` → cache hit → instant failure. `status=1` → cache hit → instant
+success. **No more LLM calls** for this API.
+
+### Hypothetical: Unexpected Value
+
+If Test 20 returns `status=-1` (never seen before):
+- Not in success list `[1]`, not in failure list `[0]` → cache miss → LLM call
+- LLM says: failure → rule updated: `confirmed failure values: [0, -1]`
+- All future `status=-1` → cache hit
+
+If Test 25 returns `status=2`:
+- Not in either list → cache miss → LLM call
+- LLM says: success (e.g. "2 means partial success") → rule updated: `confirmed success values: [1, 2]`
+
+The cache **grows incrementally** as new values are encountered. It never guesses.
+
+### Another Example: `POST /api/v1/travelservice/trips/left`
+
+**Test 1** — `{"status":1,"msg":"Success","data":[{trip results}]}`
+→ LLM: success, `RULE_FIELD=status`, `OBSERVED_VALUE=1`, `MEANING=success`
+→ Cache: `success=[1], failure=[]`
+
+**Test 2** — `{"status":1,"msg":"Success","data":[]}`  (no trips found, but valid)
+→ Cache: `status=1` is in success list → cache hit → success. **No LLM.**
+
+**Test 3** — `{"status":0,"msg":"No routes from InvalidCity","data":null}`
+→ Cache: `status=0` not in either list → cache miss → LLM call
+→ LLM: failure → Cache: `success=[1], failure=[0]`
+
+**Tests 4–120** — All responses have `status=1` or `status=0` → cache hit. **No LLM.**
+
+### Enhanced LLM Prompt
+
+Each call asks the LLM to report **only what it observes** in the current response:
+
+```
+FAILED: true|false
+RCA: <root cause analysis of THIS specific response>
+RULE_FIELD: <the primary JSON field indicating outcome, e.g. status>
+RULE_OBSERVED_VALUE: <the actual value in THIS response, e.g. 1>
+RULE_OBSERVED_MEANING: success|failure
+RULE_MESSAGE_FIELDS: <comma-separated fields carrying messages, e.g. msg,message>
+```
+
+The prompt explicitly instructs the LLM:
+> "Do NOT guess or speculate about values you have not seen.
+> Only report what you can confirm from THIS response."
+
+### Rule Structure
+
+Each cached rule for an API contains:
+
+| Field | Description |
+|-------|-------------|
+| `fieldChecks` | The primary indicator field with two growing lists: **confirmed success values** and **confirmed failure values** — only values the LLM has actually classified |
+| `failureMessageFields` | Field names that carry descriptive messages (for RCA enrichment only — never used for pass/fail decisions) |
+| `knownPatterns` | Exact response signatures already seen, mapped to their cached outcome and RCA for instant replay |
+
+### Configuration
+
+| Property | Default | Purpose |
+|----------|---------|---------|
+| `soft.error.cache.enabled` | `true` | Master switch for rule caching |
+| `soft.error.cache.path` | `target/soft-error-rule-cache.json` | File path for persisted cache |
+
+### Cache JSON Example
+
+After a run, `target/soft-error-rule-cache.json` looks like:
+
+```json
+{
+  "GET /api/v1/adminbasicservice/adminbasic/stations": {
+    "fieldChecks": [{
+      "field": "status",
+      "successValues": ["1"],
+      "failureValues": ["0"]
+    }],
+    "failureMessageFields": ["msg"],
+    "knownPatterns": [
+      {"signature": "status=1", "failed": false, "rcaTemplate": "status=1 indicates success..."},
+      {"signature": "status=0", "failed": true,  "rcaTemplate": "status=0, error in msg field..."}
+    ]
+  },
+  "POST /api/v1/travelservice/trips/left": {
+    "fieldChecks": [{
+      "field": "status",
+      "successValues": ["1"],
+      "failureValues": ["0"]
+    }],
+    "failureMessageFields": ["msg"],
+    "knownPatterns": [
+      {"signature": "status=1", "failed": false, "rcaTemplate": "..."},
+      {"signature": "status=0", "failed": true,  "rcaTemplate": "..."}
+    ]
+  }
+}
+```
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|----------------|
+| `SoftErrorRuleCache` | Singleton per-file cache: stores rules, evaluates responses against confirmed values only, persists to JSON |
+| `SoftErrorRuleCache.FieldCheck` | Holds the primary field name and two lists: confirmed success values, confirmed failure values |
+| `SoftErrorRuleCache.CachedValidationResult` | Result of a cache evaluation (hit with result, or miss requiring LLM) |
+| `ZeroShotLLMGenerator` | `validateResponseWithCache()` / `validateNegativeResponseWithCache()` — cache-aware validation; `validateResponseAndGenerateRule()` — enhanced prompt that reports only observed values |
+| `MultiServiceRESTAssuredWriter` | Generates test code that uses cached validation when `soft.error.cache.enabled=true` |
+
+### Expected Impact
+
+- LLM calls reduced from ~N per API to ~D per API, where D = number of **distinct** primary-field values (typically 2–3: e.g. `1` and `0`)
+- For a run with ~2400 tests across ~20 APIs → typically ~20–40 LLM calls instead of ~2400
+- Cache grows incrementally and is always correct — no speculation, no false positives
+- Shared across all test classes in the same JVM via singleton pattern
+

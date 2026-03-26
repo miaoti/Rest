@@ -163,6 +163,25 @@
 			<version>${restassured.version}</version>
 		</dependency>
 
+		<!-- Groovy 3.0.x: overrides the 2.5.x pulled by REST Assured 4.2.0,
+		     which fails on Java 17 (NoClassDefFoundError in vmplugin.v7.Java7).
+		     Groovy 3.0 is binary-compatible with 2.5-compiled code. -->
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>3.0.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-json</artifactId>
+			<version>3.0.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-xml</artifactId>
+			<version>3.0.19</version>
+		</dependency>
+
 		<!-- JACKSON DEPENDENCIES -->
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
 		<dependency>

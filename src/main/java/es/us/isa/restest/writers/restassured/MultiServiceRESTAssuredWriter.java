@@ -993,6 +993,13 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 if (baseURI != null && !baseURI.isEmpty()) {
                     pw.println("        RestAssured.baseURI = \"" + escape(baseURI) + "\";");
                 }
+                // Configure HTTP timeouts to prevent hanging on unresponsive endpoints
+                int connectTimeoutMs = Integer.parseInt(System.getProperty("http.connect.timeout.ms", "10000"));
+                int socketTimeoutMs  = Integer.parseInt(System.getProperty("http.socket.timeout.ms", "30000"));
+                pw.println("        RestAssured.config = RestAssured.config()");
+                pw.println("            .httpClient(io.restassured.config.HttpClientConfig.httpClientConfig()");
+                pw.println("                .setParam(\"http.connection.timeout\", " + connectTimeoutMs + ")");
+                pw.println("                .setParam(\"http.socket.timeout\", " + socketTimeoutMs + "));");
                 if (proxyHostPort != null && !proxyHostPort.isEmpty()) {
                     String[] p = proxyHostPort.split(":", 2);
                     pw.println("        RestAssured.proxy = RestAssured.proxy(\"" + p[0] + "\"," + p[1] + ");");
@@ -1442,6 +1449,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        boolean llmValidationEnabled = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
                             pw.println("                        boolean only2xx = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
                             pw.println("                        boolean includeRca = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
+                            pw.println("                        boolean softErrorCacheEnabled = Boolean.parseBoolean(System.getProperty(\"soft.error.cache.enabled\", \"true\"));");
+                            pw.println("                        String softErrorCachePath = System.getProperty(\"soft.error.cache.path\", \"target/soft-error-rule-cache.json\");");
                             pw.println("                        ");
                             
                             if (scenario.getFaulty()) {
@@ -1481,9 +1490,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                // Create LLM validator instance");
                                 pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
                                 pw.println("                                ");
-                                pw.println("                                // Validate response - checks if error is RELATED to our invalid input");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult = ");
-                                pw.println("                                    llmValidator.validateNegativeTestResponse(");
+                                pw.println("                                // Validate response -- use cache when available");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult;");
+                                pw.println("                                if (softErrorCacheEnabled) {");
+                                pw.println("                                    es.us.isa.restest.validation.SoftErrorRuleCache cache = es.us.isa.restest.validation.SoftErrorRuleCache.getInstance(softErrorCachePath);");
+                                pw.println("                                    validationResult = llmValidator.validateNegativeResponseWithCache(");
+                                pw.println("                                        actualStatusCode" + stepIdx + ",");
+                                pw.println("                                        validationBody,");
+                                pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
+                                pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
+                                pw.println("                                        \"" + escape(step.getPath()) + "\",");
+                                pw.println("                                        invalidParams,");
+                                pw.println("                                        cache");
+                                pw.println("                                    );");
+                                pw.println("                                } else {");
+                                pw.println("                                    validationResult = llmValidator.validateNegativeTestResponse(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
                                 pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
@@ -1491,6 +1512,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                        \"" + escape(step.getPath()) + "\",");
                                 pw.println("                                        invalidParams");
                                 pw.println("                                    );");
+                                pw.println("                                }");
                                 pw.println("                                ");
                                 pw.println("                                // isFailed() returns true only if error was detected AND related to our invalid input");
                                 pw.println("                                llmDetectedRelatedError = validationResult.isFailed();");
@@ -1558,15 +1580,27 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                // Create LLM validator instance");
                                 pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
                                 pw.println("                                ");
-                                pw.println("                                // Validate response");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult = ");
-                                pw.println("                                    llmValidator.validateResponse(");
+                                pw.println("                                // Validate response -- use cache when available");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult;");
+                                pw.println("                                if (softErrorCacheEnabled) {");
+                                pw.println("                                    es.us.isa.restest.validation.SoftErrorRuleCache cache = es.us.isa.restest.validation.SoftErrorRuleCache.getInstance(softErrorCachePath);");
+                                pw.println("                                    validationResult = llmValidator.validateResponseWithCache(");
+                                pw.println("                                        actualStatusCode" + stepIdx + ",");
+                                pw.println("                                        validationBody,");
+                                pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
+                                pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
+                                pw.println("                                        \"" + escape(step.getPath()) + "\",");
+                                pw.println("                                        cache");
+                                pw.println("                                    );");
+                                pw.println("                                } else {");
+                                pw.println("                                    validationResult = llmValidator.validateResponse(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
                                 pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
                                 pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
                                 pw.println("                                        \"" + escape(step.getPath()) + "\"");
                                 pw.println("                                    );");
+                                pw.println("                                }");
                                 pw.println("                                ");
                                 pw.println("                                System.out.println(\"🤖 LLM Validation (Positive Test): Failed=\" + validationResult.isFailed() + \", RCA: \" + validationResult.getRca());");
                                 pw.println("                                ");

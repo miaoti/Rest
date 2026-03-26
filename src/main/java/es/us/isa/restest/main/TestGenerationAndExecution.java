@@ -78,7 +78,8 @@ public class TestGenerationAndExecution {
 
 	// Properties file with configuration settings
 	private static String propertiesFilePath = "src/main/resources/My-Example/trainticket-demo.properties";
-	private static String TraceFile = "src\\main\\resources\\My-Example\\trainticket\\traces\\";
+	/** Directory (or file) of trace JSON/JSONL; must use / so it works on Linux/macOS (\\ is only a separator on Windows). */
+	private static String TraceFile = "src/main/resources/My-Example/trainticket/traces/";
 
 	private static List<String> argsList;								// List containing args
 
@@ -773,6 +774,10 @@ public class TestGenerationAndExecution {
 			faultyDependencyRatio = Float.parseFloat(readParameterValue("faulty.dependency.ratio"));
 		logger.info("Faulty dependency ratio: {}", faultyDependencyRatio);
 
+		if (readParameterValue("trace.file.path") != null) {
+			TraceFile = readParameterValue("trace.file.path");
+		}
+		logger.info("Trace file/directory (MST): {}", TraceFile);
 
 	}
 
@@ -861,7 +866,13 @@ public class TestGenerationAndExecution {
 			// Status Code Exploration properties
 			"status.code.exploration.enabled",
 			"status.code.exploration.max.per.test",
-			"status.code.exploration.max.per.round"
+			"status.code.exploration.max.per.round",
+			// Soft error rule cache properties
+			"soft.error.cache.enabled",
+			"soft.error.cache.path",
+			// HTTP timeout properties for REST Assured test execution
+			"http.connect.timeout.ms",
+			"http.socket.timeout.ms"
 		};
 		
 		int configuredCount = 0;

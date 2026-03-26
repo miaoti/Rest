@@ -1374,6 +1374,216 @@ public class ZeroShotLLMGenerator {
         return truncated + "\n... [TRUNCATED - Original size: " + responseBody.length() + " bytes]\n";
     }
 
+    // ======================================================================
+    // Cached soft-error validation (reduces LLM calls from N to ~1 per API)
+    // ======================================================================
+
+    /**
+     * Validate a 2XX response using the soft-error rule cache.
+     * On cache hit, returns instantly without calling the LLM.
+     * On cache miss (first call per API, or unknown pattern), calls the LLM
+     * with an enhanced prompt that both evaluates the response AND generates
+     * a reusable rule for future calls.
+     */
+    public ValidationResult validateResponseWithCache(
+            int statusCode, String responseBody,
+            String serviceName, String method, String path,
+            es.us.isa.restest.validation.SoftErrorRuleCache cache) {
+
+        String apiKey = method.toUpperCase() + " " + path;
+
+        // 1. Try cache first
+        java.util.Optional<es.us.isa.restest.validation.SoftErrorRuleCache.CachedValidationResult> cached =
+                cache.evaluate(apiKey, responseBody);
+        if (cached.isPresent()) {
+            es.us.isa.restest.validation.SoftErrorRuleCache.CachedValidationResult cr = cached.get();
+            return new ValidationResult(cr.isFailed(), cr.getRca(), "[from cache: " + cr.getMatchSource() + "]");
+        }
+
+        // 2. Cache miss -- call LLM with rule-generation prompt
+        return validateResponseAndGenerateRule(statusCode, responseBody, serviceName, method, path, cache, apiKey);
+    }
+
+    /**
+     * Validate a negative-test 2XX response using the soft-error rule cache.
+     * For negative tests the cache only handles the "is this a soft error?" part;
+     * the "is the error related to invalid input?" check still requires the LLM
+     * on the first occurrence, but the base soft-error detection is cached.
+     */
+    public ValidationResult validateNegativeResponseWithCache(
+            int statusCode, String responseBody,
+            String serviceName, String method, String path,
+            java.util.Map<String, String> invalidParameters,
+            es.us.isa.restest.validation.SoftErrorRuleCache cache) {
+
+        String apiKey = method.toUpperCase() + " " + path;
+
+        // 1. Try cache for the base soft-error detection
+        java.util.Optional<es.us.isa.restest.validation.SoftErrorRuleCache.CachedValidationResult> cached =
+                cache.evaluate(apiKey, responseBody);
+
+        if (cached.isPresent()) {
+            es.us.isa.restest.validation.SoftErrorRuleCache.CachedValidationResult cr = cached.get();
+            if (!cr.isFailed()) {
+                // Response looks successful -> negative test FAILS (invalid input was accepted)
+                return new ValidationResult(false,
+                        "[Cached Rule] [NO ERROR DETECTED - INVALID INPUT ACCEPTED] " + cr.getRca(),
+                        "[from cache: " + cr.getMatchSource() + "]");
+            }
+            // Soft error detected by cache -> negative test PASSES
+            return new ValidationResult(true,
+                    "[Cached Rule] [INVALID INPUT CORRECTLY REJECTED] " + cr.getRca(),
+                    "[from cache: " + cr.getMatchSource() + "]");
+        }
+
+        // 2. Cache miss -- call full LLM validation for negative tests
+        //    This also seeds the cache for the base soft-error rule
+        ValidationResult baseResult = validateResponseAndGenerateRule(
+                statusCode, responseBody, serviceName, method, path, cache, apiKey);
+
+        // Now delegate to the full negative-test validator for input-relatedness analysis
+        // but only if the base check detected a soft error, otherwise short-circuit
+        if (!baseResult.isFailed()) {
+            return new ValidationResult(false,
+                    "[NO ERROR DETECTED - INVALID INPUT ACCEPTED] " + baseResult.getRca(),
+                    baseResult.getRawLlmResponse());
+        }
+
+        // Base detected failure -- call the full negative validator for relatedness check
+        return validateNegativeTestResponse(statusCode, responseBody, serviceName, method, path, invalidParameters);
+    }
+
+    /**
+     * Call the LLM with an enhanced prompt that evaluates the response AND produces
+     * a reusable soft-error rule.  Stores the rule in the cache for future calls.
+     */
+    private ValidationResult validateResponseAndGenerateRule(
+            int statusCode, String responseBody,
+            String serviceName, String method, String path,
+            es.us.isa.restest.validation.SoftErrorRuleCache cache, String apiKey) {
+
+        StringBuilder systemPrompt = new StringBuilder();
+        systemPrompt.append("You are an API testing expert. You have TWO tasks:\n\n");
+        systemPrompt.append("TASK 1: Determine if this API response is a SOFT ERROR (returned 2XX but actually failed).\n");
+        systemPrompt.append("TASK 2: Identify the PRIMARY indicator field and tell us what the OBSERVED value means.\n\n");
+
+        systemPrompt.append("IMPORTANT: Only report what you can confirm from THIS response.\n");
+        systemPrompt.append("Do NOT guess or speculate about values you have not seen.\n");
+        systemPrompt.append("For example, if the response has status=1 and that means success, report that.\n");
+        systemPrompt.append("Do NOT assume what other values (like 0 or -1) would mean -- we will ask you when we see them.\n\n");
+
+        systemPrompt.append("COMMON PATTERNS (for reference, not assumption):\n");
+        systemPrompt.append("- Fields like 'status', 'code', 'success', 'error' often indicate outcome\n");
+        systemPrompt.append("- Fields like 'msg', 'message', 'error' often carry descriptive text\n");
+        systemPrompt.append("- A null 'data' field sometimes indicates failure\n\n");
+
+        systemPrompt.append("OUTPUT FORMAT (one value per line, every line required):\n");
+        systemPrompt.append("FAILED: true|false\n");
+        systemPrompt.append("RCA: <root cause analysis of THIS specific response>\n");
+        systemPrompt.append("RULE_FIELD: <the primary JSON field that indicates success/failure, e.g. status>\n");
+        systemPrompt.append("RULE_OBSERVED_VALUE: <the actual value of that field in THIS response, e.g. 1>\n");
+        systemPrompt.append("RULE_OBSERVED_MEANING: success|failure\n");
+        systemPrompt.append("RULE_MESSAGE_FIELDS: <comma-separated field names that carry descriptive messages, e.g. msg,message>\n");
+
+        StringBuilder userPrompt = new StringBuilder();
+        userPrompt.append("API: ").append(method.toUpperCase()).append(" ").append(path).append("\n");
+        userPrompt.append("Service: ").append(serviceName).append("\n");
+        userPrompt.append("HTTP Status: ").append(statusCode).append("\n\n");
+        userPrompt.append("Response Body:\n```json\n");
+
+        final int MAX_SIZE = 16 * 1024;
+        if (responseBody != null && responseBody.length() > MAX_SIZE) {
+            userPrompt.append(smartTruncateJsonResponse(responseBody, MAX_SIZE));
+        } else {
+            userPrompt.append(responseBody).append("\n");
+        }
+        userPrompt.append("```\n\n");
+        userPrompt.append("Analyze THIS response and report ONLY what you observe.\n");
+
+        try {
+            String llmResponse = llmService.generateText(systemPrompt.toString(), userPrompt.toString(), 600, 0.3);
+
+            boolean isFailed = false;
+            String rca = "";
+            String ruleField = "";
+            String observedValue = "";
+            String observedMeaning = "";
+            String ruleMessageFields = "";
+
+            if (llmResponse != null) {
+                for (String line : llmResponse.split("\\r?\\n")) {
+                    String trimmed = line.trim();
+                    if (trimmed.startsWith("FAILED:")) {
+                        isFailed = trimmed.substring("FAILED:".length()).trim().toLowerCase().equals("true");
+                    } else if (trimmed.startsWith("RCA:")) {
+                        rca = trimmed.substring("RCA:".length()).trim();
+                    } else if (trimmed.startsWith("RULE_FIELD:")) {
+                        ruleField = trimmed.substring("RULE_FIELD:".length()).trim();
+                    } else if (trimmed.startsWith("RULE_OBSERVED_VALUE:")) {
+                        observedValue = trimmed.substring("RULE_OBSERVED_VALUE:".length()).trim();
+                    } else if (trimmed.startsWith("RULE_OBSERVED_MEANING:")) {
+                        observedMeaning = trimmed.substring("RULE_OBSERVED_MEANING:".length()).trim().toLowerCase();
+                    } else if (trimmed.startsWith("RULE_MESSAGE_FIELDS:")) {
+                        ruleMessageFields = trimmed.substring("RULE_MESSAGE_FIELDS:".length()).trim();
+                    }
+                }
+            }
+
+            // Build or extend the rule with ONLY the confirmed observation
+            if (!cache.hasRule(apiKey)) {
+                es.us.isa.restest.validation.SoftErrorRuleCache.SoftErrorRule rule =
+                        new es.us.isa.restest.validation.SoftErrorRuleCache.SoftErrorRule();
+
+                if (!ruleField.isEmpty()) {
+                    es.us.isa.restest.validation.SoftErrorRuleCache.FieldCheck fc =
+                            new es.us.isa.restest.validation.SoftErrorRuleCache.FieldCheck();
+                    fc.setField(ruleField);
+                    // Only put the observed value in the confirmed list
+                    if ("failure".equals(observedMeaning)) {
+                        fc.setFailureValues(new java.util.ArrayList<>(java.util.Collections.singletonList(observedValue)));
+                        fc.setSuccessValues(new java.util.ArrayList<>());
+                    } else {
+                        fc.setSuccessValues(new java.util.ArrayList<>(java.util.Collections.singletonList(observedValue)));
+                        fc.setFailureValues(new java.util.ArrayList<>());
+                    }
+                    rule.setFieldChecks(new java.util.ArrayList<>(java.util.Collections.singletonList(fc)));
+                }
+                rule.setFailureMessageFields(splitCsv(ruleMessageFields));
+                cache.registerRule(apiKey, rule);
+            } else {
+                // Rule exists but we got here because of an unknown value -- extend it
+                if (!ruleField.isEmpty() && !observedValue.isEmpty()) {
+                    cache.addObservedValue(apiKey, ruleField, observedValue,
+                            "failure".equals(observedMeaning));
+                }
+            }
+
+            // Record the response pattern for instant future matching
+            String signature = cache.buildSignature(apiKey, responseBody);
+            if (!signature.isEmpty()) {
+                es.us.isa.restest.validation.SoftErrorRuleCache.PatternEntry pattern =
+                        new es.us.isa.restest.validation.SoftErrorRuleCache.PatternEntry(signature, isFailed, rca);
+                cache.addPattern(apiKey, pattern);
+            }
+
+            return new ValidationResult(isFailed, rca, llmResponse != null ? llmResponse : "");
+
+        } catch (Exception e) {
+            System.err.println("Failed to validate response with LLM (rule generation): " + e.getMessage());
+            return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
+        }
+    }
+
+    private static java.util.List<String> splitCsv(String csv) {
+        java.util.List<String> result = new java.util.ArrayList<>();
+        if (csv == null || csv.isEmpty()) return result;
+        for (String part : csv.split(",")) {
+            String trimmed = part.trim();
+            if (!trimmed.isEmpty()) result.add(trimmed);
+        }
+        return result;
+    }
+
     /**
      * Result of LLM response validation
      */

@@ -60,6 +60,9 @@ public class AllureAuthManager {
 
     public static void confidentialityFilter(List<String> authProperties, String allurePath) throws IOException {
         File resultsDir = new File(allurePath);
+        if (!resultsDir.isDirectory()) {
+            return;
+        }
         String[] allowedExtensions = {"html"};
 
         for (Iterator<File> it = FileUtils.iterateFiles(resultsDir, allowedExtensions, false); it.hasNext(); ) {

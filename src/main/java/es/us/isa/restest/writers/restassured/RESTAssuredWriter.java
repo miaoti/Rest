@@ -244,7 +244,13 @@ private String generateImports(String packageName) {
 					+	"\t\tSystem.setProperty(\"https.nonProxyHosts\", \"localhost|127.0.0.1\");\n\n";
 		}
 
-		content += "\t\tRestAssured.baseURI = " + "\"" + baseURI + "\";\n\n";
+		content += "\t\tRestAssured.baseURI = " + "\"" + baseURI + "\";\n";
+		int connectTimeoutMs = Integer.parseInt(System.getProperty("http.connect.timeout.ms", "10000"));
+		int socketTimeoutMs  = Integer.parseInt(System.getProperty("http.socket.timeout.ms", "30000"));
+		content += "\t\tRestAssured.config = RestAssured.config()\n"
+				+  "\t\t\t.httpClient(io.restassured.config.HttpClientConfig.httpClientConfig()\n"
+				+  "\t\t\t\t.setParam(\"http.connection.timeout\", " + connectTimeoutMs + ")\n"
+				+  "\t\t\t\t.setParam(\"http.socket.timeout\", " + socketTimeoutMs + "));\n\n";
 
 		if (logToFile) {
 			content +=	"\t\t// Configure logging\n"

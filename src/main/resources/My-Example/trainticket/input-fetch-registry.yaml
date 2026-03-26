@@ -2,57 +2,57 @@
 version: "1.0"
 lastUpdated:
 - 2026
-- 2
-- 1
-- 17
-- 44
-- 43
-- 232878600
+- 3
+- 25
+- 15
+- 30
+- 52
+- 661053136
 parameterMappings:
-  departureTime:
+  boughtDateStart:
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 24
+    - 50
+    - 151872121
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/adminorderservice/adminorder"
+    method: "GET"
+    service: "ts-admin-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 24
+    - 50
+    - 149990198
+    successRate: 0.0
+    description: null
   - endpoint: "/api/v1/travelservice/trips"
     method: "GET"
     service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 11
-    - 17
-    - 13
-    - 52
-    - 10
-    - 229889400
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/travel2service/trips"
-    method: "GET"
-    service: "ts-travel2-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 11
-    - 17
-    - 13
-    - 52
-    - 28
-    - 19944500
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/routeservice/routes"
-    method: "GET"
-    service: "ts-route-service"
-    extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
+    - 2026
+    - 3
+    - 22
     - 17
-    - 13
-    - 52
-    - 39
-    - 697154100
+    - 24
+    - 50
+    - 148064345
     successRate: 0.0
     description: null
   loginId:
@@ -62,13 +62,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 16
-    - 51
-    - 27
-    - 53115900
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 30
+    - 28
+    - 316591457
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/adminuserservice/users"
@@ -77,14 +77,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 13
+    - 2026
+    - 3
+    - 22
     - 18
-    - 40
-    - 18
-    - 852184500
-    successRate: 0.19
+    - 30
+    - 28
+    - 281680112
+    successRate: 0.171
     description: null
   - endpoint: "/api/v1/no_good_match/query"
     method: "GET"
@@ -92,13 +92,59 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
+    - 2026
+    - 3
+    - 22
     - 18
-    - 39
+    - 30
     - 28
-    - 699891400
+    - 299923050
+    successRate: 0.0
+    description: null
+  orderId:
+  - endpoint: "/api/v1/orderservice/order/{orderId}"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 32
+    - 56
+    - 263232354
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/adminorderservice/adminorder"
+    method: "GET"
+    service: "ts-admin-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 17
+    - 55
+    - 127428456
+    successRate: 0.19
+    description: null
+  - endpoint: "/api/v1/order/query"
+    method: "GET"
+    service: "ts-order-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 17
+    - 29
+    - 942985589
     successRate: 0.0
     description: null
   trainType:
@@ -123,14 +169,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 38
-    - 50
-    - 414951500
-    successRate: 0.1
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 28
+    - 9
+    - 935365480
+    successRate: 0.271
     description: null
   - endpoint: "/api/v1/route/query"
     method: "GET"
@@ -138,59 +184,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 35
-    - 29
-    - 799750900
-    successRate: 0.0
-    description: null
-  documentType:
-  - endpoint: "/api/v1/admin-user/query"
-    method: "GET"
-    service: "ts-admin-User-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 22
-    - 19
-    - 949552400
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/order/query"
-    method: "GET"
-    service: "ts-order-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 22
-    - 19
-    - 935551700
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/user/query"
-    method: "GET"
-    service: "ts-user-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 22
-    - 19
-    - 921558900
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 18
+    - 59
+    - 48260347
     successRate: 0.0
     description: null
   contactsDocumentNumber:
@@ -239,52 +239,6 @@ parameterMappings:
     - 431027900
     successRate: 0.0
     description: null
-  tripId:
-  - endpoint: "/api/v1/travelservice/trips/{tripId}"
-    method: "GET"
-    service: "ts-travel-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 38
-    - 51
-    - 987366800
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/travel2service/trips/{tripId}"
-    method: "GET"
-    service: "ts-travel2-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 38
-    - 57
-    - 3907700
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/orderservice/order/{orderId}"
-    method: "GET"
-    service: "ts-order-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 39
-    - 2
-    - 471780700
-    successRate: 0.0
-    description: null
   body:
   - endpoint: "/api/v1/admin-travel/query"
     method: "GET"
@@ -331,98 +285,6 @@ parameterMappings:
     - 160243300
     successRate: 0.0
     description: null
-  contactsName:
-  - endpoint: "/api/v1/contactservice/contacts"
-    method: "GET"
-    service: "ts-contacts-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 20
-    - 59
-    - 19
-    - 401328800
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/adminuserservice/users"
-    method: "GET"
-    service: "ts-admin-user-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 0
-    - 9
-    - 372830300
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/userservice/users"
-    method: "GET"
-    service: "ts-user-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 11
-    - 12
-    - 13
-    - 36
-    - 12
-    - 77013900
-    successRate: 0.19
-    description: null
-  seatNumber:
-  - endpoint: "/api/v1/travel/query"
-    method: "GET"
-    service: "ts-Travel-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 22
-    - 23
-    - 10000000
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/seat/query"
-    method: "GET"
-    service: "ts-seat-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 22
-    - 23
-    - 10000000
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/orderservice/order"
-    method: "GET"
-    service: "ts-order-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 46
-    - 28
-    - 843527000
-    successRate: 0.271
-    description: null
   coachNumber:
   - endpoint: "/api/v1/travel/query"
     method: "GET"
@@ -460,60 +322,60 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 20
-    - 53
-    - 13
-    - 929392500
-    successRate: 0.1
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 30
+    - 728865298
+    successRate: 0.271
     description: null
-  routeId:
-  - endpoint: "/api/v1/routeservice/routes/{routeId}"
+  enableBoughtDateQuery:
+  - endpoint: "/api/v1/orderservice/order"
     method: "GET"
-    service: "ts-route-service"
+    service: "ts-order-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
+    - 2026
+    - 3
     - 22
-    - 31
-    - 29
-    - 57114300
+    - 17
+    - 26
+    - 24
+    - 223021679
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/travel/query"
+  - endpoint: "/api/v1/travelservice/trips"
     method: "GET"
-    service: "ts-Travel-Service"
+    service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
+    - 2026
+    - 3
     - 22
-    - 31
-    - 29
-    - 46663400
+    - 17
+    - 26
+    - 24
+    - 218573235
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/waitorderservice/orders"
     method: "GET"
-    service: "ts-admin-travel-service"
+    service: "ts-wait-order-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 37
+    - 2026
+    - 3
     - 22
-    - 684493900
-    successRate: 0.19
+    - 18
+    - 31
+    - 14
+    - 302172292
+    successRate: 0.1
     description: null
   price:
   - endpoint: "/api/v1/priceservice/prices"
@@ -522,13 +384,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
+    - 2026
+    - 3
     - 22
-    - 10
-    - 28
-    - 66273500
+    - 17
+    - 16
+    - 51
+    - 951492277
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travel/query"
@@ -537,13 +399,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
+    - 2026
+    - 3
     - 22
-    - 10
-    - 28
-    - 66273500
+    - 17
+    - 16
+    - 51
+    - 948541152
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/consignpriceservice/consignprice/config"
@@ -552,60 +414,106 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
+    - 2026
+    - 3
+    - 25
     - 15
-    - 20
-    - 900806400
-    successRate: 0.1
+    - 26
+    - 1
+    - 955075406
+    successRate: 0.33661
     description: null
-  seatClass:
-  - endpoint: "/api/v1/seat/query"
+  terminalStationName:
+  - endpoint: "/api/v1/stationservice/stations"
     method: "GET"
-    service: "ts-seat-Service"
+    service: "ts-station-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 17
-    - 18
-    - 71332000
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 47
+    - 441195367
     successRate: 0.0
     description: null
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 49
+    - 897388941
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 52
+    - 660576010
+    successRate: 0.0
+    description: null
+  handleDate:
   - endpoint: "/api/v1/orderservice/order"
     method: "GET"
     service: "ts-order-service"
     extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 32
+    - 30
+    - 128561493
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 20
-    - 55
-    - 81134700
-    successRate: 0.1
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 32
+    - 31
+    - 360146875
+    successRate: 0.0
     description: null
-  - endpoint: "/api/v1/travel/query"
+  - endpoint: "/api/v1/adminorderservice/adminorder"
     method: "GET"
-    service: "ts-travel-Service"
+    service: "ts-admin-order-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 19
+    - 2026
+    - 3
     - 25
-    - 52640700
-    successRate: 0.0
+    - 15
+    - 28
+    - 30
+    - 348660328
+    successRate: 0.19
     description: null
   from:
   - endpoint: "/api/v1/travel/query"
@@ -644,14 +552,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 45
-    - 13
-    - 973327900
-    successRate: 0.271
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 51
+    - 567352316
+    successRate: 0.34390000000000004
     description: null
   startStation:
   - endpoint: "/api/v1/stationservice/stations"
@@ -660,14 +568,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 40
-    - 55
-    - 941487000
-    successRate: 0.19
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 17
+    - 22
+    - 202733123
+    successRate: 0.32851
     description: null
   - endpoint: "/api/v1/route/query"
     method: "GET"
@@ -675,13 +583,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 40
-    - 26
-    - 810521200
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 21
+    - 51
+    - 508027028
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/order/query"
@@ -690,14 +598,60 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 40
-    - 26
-    - 795052400
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 17
+    - 15
+    - 748897270
     successRate: 0.0
+    description: null
+  state:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 31
+    - 32
+    - 99189625
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 31
+    - 33
+    - 393994985
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/routeservice/routes"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 31
+    - 43
+    - 509803095
+    successRate: 0.1
     description: null
   id:
   - endpoint: "/api/v1/travel/query"
@@ -736,14 +690,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 16
-    - 50
+    - 2026
     - 3
-    - 803196400
-    successRate: 0.1
+    - 25
+    - 15
+    - 29
+    - 40
+    - 419764539
+    successRate: 0.271
     description: null
   startPlace:
   - endpoint: "/api/v1/travelservice/trips"
@@ -752,13 +706,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 11
+    - 2026
+    - 3
+    - 22
+    - 17
     - 12
-    - 13
-    - 50
-    - 37
-    - 946508100
+    - 20
+    - 894127065
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travel2service/trips"
@@ -767,13 +721,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
+    - 2026
+    - 3
+    - 22
+    - 17
     - 12
-    - 13
-    - 50
-    - 42
-    - 659142600
+    - 20
+    - 891170970
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
@@ -782,59 +736,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
+    - 2026
+    - 3
+    - 22
+    - 17
     - 12
-    - 13
-    - 50
-    - 47
-    - 338004800
-    successRate: 0.0
-    description: null
-  distances:
-  - endpoint: "/api/v1/routeservice/routes"
-    method: "GET"
-    service: "ts-route-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 39
-    - 4
-    - 622729300
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/orderservice/order"
-    method: "GET"
-    service: "ts-order-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 38
-    - 30
-    - 426700200
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/travel/query"
-    method: "GET"
-    service: "ts-travel-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 37
-    - 51
-    - 575965400
+    - 20
+    - 888154587
     successRate: 0.0
     description: null
   travelTime:
@@ -844,13 +752,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 51
-    - 50
-    - 972821000
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 20
+    - 2
+    - 67546073
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/routeservice/routes"
@@ -859,14 +767,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 7
-    - 48
-    - 670216700
-    successRate: 0.19
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 16
+    - 59
+    - 770471920
+    successRate: 0.32851
     description: null
   - endpoint: "/api/v1/orderservice/order/{travelDate}/{trainNumber}"
     method: "GET"
@@ -874,13 +782,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 6
-    - 55
-    - 208457600
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 20
+    - 2
+    - 62948060
     successRate: 0.0
     description: null
   endStation:
@@ -890,105 +798,59 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 20
-    - 38
-    - 11
-    - 264070700
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/route/query"
-    method: "GET"
-    service: "ts-route-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 20
-    - 38
-    - 11
-    - 250399100
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/order/query"
-    method: "GET"
-    service: "ts-order-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 20
-    - 38
-    - 11
-    - 236159400
-    successRate: 0.0
-    description: null
-  distanceList:
-  - endpoint: "/api/v1/order/query"
-    method: "GET"
-    service: "ts-order-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 19
-    - 52
-    - 48
-    - 378738900
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/travel2service/admin_trip"
-    method: "GET"
-    service: "ts-travel2-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 31
-    - 47
-    - 239851600
-    successRate: 0.19
-    description: null
-  - endpoint: "/api/v1/route/query"
-    method: "GET"
-    service: "ts-route-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 23
-    - 27
-    - 524586900
-    successRate: 0.0
-    description: null
-  firstClassPriceRate:
-  - endpoint: "/api/v1/priceservice/prices/{routeId}/{trainType}"
-    method: "GET"
-    service: "ts-price-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
+    - 2026
+    - 3
     - 22
-    - 41
-    - 4
-    - 261970200
+    - 17
+    - 21
+    - 5
+    - 935954740
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/route/query"
+    method: "GET"
+    service: "ts-route-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 21
+    - 5
+    - 929418495
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/order/query"
+    method: "GET"
+    service: "ts-order-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 21
+    - 5
+    - 919555982
+    successRate: 0.0
+    description: null
+  targetDate:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 28
+    - 51
+    - 741066816
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travel/query"
@@ -997,28 +859,120 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 41
-    - 4
-    - 261970200
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 28
+    - 51
+    - 741813208
     successRate: 0.0
     description: null
-  - endpoint: "/api/v1/orderservice/order"
+  - endpoint: "/api/v1/routeservice/routes"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 29
+    - 6
+    - 767052520
+    successRate: 0.1
+    description: null
+  distanceList:
+  - endpoint: "/api/v1/order/query"
+    method: "GET"
+    service: "ts-order-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 26
+    - 52
+    - 654010454
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/admin_trip"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 26
+    - 52
+    - 621078077
+    successRate: 0.171
+    description: null
+  - endpoint: "/api/v1/route/query"
+    method: "GET"
+    service: "ts-route-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 26
+    - 52
+    - 637029110
+    successRate: 0.0
+    description: null
+  weight:
+  - endpoint: "/api/v1/userservice/users"
+    method: "GET"
+    service: "ts-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 19
+    - 47
+    - 310884954
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 20
+    - 2
+    - 191149506
+    successRate: 0.1
+    description: null
+  - endpoint: "/api/v1/orderservice/order/{orderId}"
     method: "GET"
     service: "ts-order-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 42
-    - 17
-    - 904357200
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 19
+    - 52
+    - 672184828
     successRate: 0.0
     description: null
   stations:
@@ -1067,6 +1021,972 @@ parameterMappings:
     - 114119700
     successRate: 0.0
     description: null
+  differenceMoney:
+  - endpoint: "/api/v1/order/query"
+    method: "GET"
+    service: "ts-order-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 40
+    - 43910721
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/admintravelservice/admintravel"
+    method: "GET"
+    service: "ts-admin-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 40
+    - 24537237
+    successRate: 0.09000000000000001
+    description: null
+  - endpoint: "/api/v1/user/query"
+    method: "GET"
+    service: "ts-user-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 39
+    - 726762683
+    successRate: 0.0
+    description: null
+  accountId:
+  - endpoint: "/api/v1/admin-user/query"
+    method: "GET"
+    service: "ts-admin-User-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 20
+    - 40
+    - 49
+    - 118995900
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/userservice/users"
+    method: "GET"
+    service: "ts-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 11
+    - 913466220
+    successRate: 0.40951000000000004
+    description: null
+  - endpoint: "/api/v1/orderservice/order/security/{checkDate}/{accountId}"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 11
+    - 12
+    - 13
+    - 34
+    - 52
+    - 565654600
+    successRate: 0.0
+    description: null
+  enableStateQuery:
+  - endpoint: "/api/v1/adminuserservice/users"
+    method: "GET"
+    service: "ts-admin-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 31
+    - 19
+    - 29430642
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/userservice/users"
+    method: "GET"
+    service: "ts-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 18
+    - 14
+    - 331831302
+    successRate: 0.19
+    description: null
+  - endpoint: "/api/v1/user/query"
+    method: "GET"
+    service: "ts-User-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 18
+    - 8
+    - 870065931
+    successRate: 0.0
+    description: null
+  phone:
+  - endpoint: "/api/v1/userservice/users/{userName}"
+    method: "GET"
+    service: "ts-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 19
+    - 23
+    - 625036654
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/contactservice/contacts"
+    method: "GET"
+    service: "ts-contacts-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 19
+    - 33
+    - 536577845
+    successRate: 0.1
+    description: null
+  - endpoint: "/api/v1/consignservice/consigns/{consignee}"
+    method: "GET"
+    service: "ts-consign-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 19
+    - 26
+    - 307972078
+    successRate: 0.0
+    description: null
+  travelDateStart:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 31
+    - 52
+    - 931666679
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 32
+    - 10
+    - 1772000
+    successRate: 0.1
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 31
+    - 54
+    - 517868833
+    successRate: 0.0
+    description: null
+  trainNumber:
+  - endpoint: "/api/v1/trainservice/trains"
+    method: "GET"
+    service: "ts-train-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 16
+    - 37
+    - 81761177
+    successRate: 0.2539
+    description: null
+  - endpoint: "/api/v1/route/query"
+    method: "GET"
+    service: "ts-route-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 19
+    - 6
+    - 97848109
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/order/query"
+    method: "GET"
+    service: "ts-order-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 16
+    - 25
+    - 847033504
+    successRate: 0.0
+    description: null
+  trainTypeName:
+  - endpoint: "/api/v1/trainservice/trains/byName/{name}"
+    method: "GET"
+    service: "ts-train-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 21
+    - 4
+    - 934753614
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/basicservice/basic/{stationName}"
+    method: "GET"
+    service: "ts-basic-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 21
+    - 6
+    - 232121210
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/routeservice/routes"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 21
+    - 7
+    - 444997384
+    successRate: 0.0
+    description: null
+  status:
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 21
+    - 30
+    - 43
+    - 161147600
+    successRate: 0.1
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-Travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 21
+    - 29
+    - 13
+    - 126835100
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/cancelservice/cancel/refound/{orderId}"
+    method: "GET"
+    service: "ts-cancel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 21
+    - 29
+    - 13
+    - 112840700
+    successRate: 0.0
+    description: null
+  departureTime:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 11
+    - 17
+    - 13
+    - 52
+    - 10
+    - 229889400
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 11
+    - 17
+    - 13
+    - 52
+    - 28
+    - 19944500
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/routeservice/routes"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 28
+    - 7
+    - 41782150
+    successRate: 0.1
+    description: null
+  documentType:
+  - endpoint: "/api/v1/admin-user/query"
+    method: "GET"
+    service: "ts-admin-User-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 43
+    - 74313903
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/order/query"
+    method: "GET"
+    service: "ts-order-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 43
+    - 60173060
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/user/query"
+    method: "GET"
+    service: "ts-user-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 25
+    - 43
+    - 45222607
+    successRate: 0.0
+    description: null
+  stationsName:
+  - endpoint: "/api/v1/stationservice/stations/name/{stationIdForName}"
+    method: "GET"
+    service: "ts-station-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 39
+    - 968668580
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/basicservice/basic/{stationName}"
+    method: "GET"
+    service: "ts-basic-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 39
+    - 958766225
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 39
+    - 948666578
+    successRate: 0.0
+    description: null
+  tripId:
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 33
+    - 40
+    - 580731094
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 33
+    - 40
+    - 571223596
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order/{orderId}"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 33
+    - 40
+    - 560826570
+    successRate: 0.0
+    description: null
+  contactsName:
+  - endpoint: "/api/v1/contactservice/contacts"
+    method: "GET"
+    service: "ts-contacts-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 14
+    - 34
+    - 562851516
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/adminuserservice/users"
+    method: "GET"
+    service: "ts-admin-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 14
+    - 34
+    - 559421412
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/userservice/users"
+    method: "GET"
+    service: "ts-user-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 29
+    - 2
+    - 70441593
+    successRate: 0.2539
+    description: null
+  seatNumber:
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-Travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 21
+    - 22
+    - 23
+    - 10000000
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/seat/query"
+    method: "GET"
+    service: "ts-seat-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 21
+    - 22
+    - 23
+    - 10000000
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 26
+    - 35
+    - 394217614
+    successRate: 0.34390000000000004
+    description: null
+  routeId:
+  - endpoint: "/api/v1/routeservice/routes/{routeId}"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 27
+    - 56
+    - 476283059
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-Travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 27
+    - 56
+    - 465436664
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/admintravelservice/admintravel"
+    method: "GET"
+    service: "ts-admin-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 27
+    - 56
+    - 449550314
+    successRate: 0.1539
+    description: null
+  seatClass:
+  - endpoint: "/api/v1/seat/query"
+    method: "GET"
+    service: "ts-seat-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 17
+    - 22
+    - 208404338
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 17
+    - 22
+    - 204024810
+    successRate: 0.09000000000000001
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 17
+    - 22
+    - 200990220
+    successRate: 0.0
+    description: null
+  startTime:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 20
+    - 30
+    - 742357527
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 20
+    - 31
+    - 907557053
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 32
+    - 991479154
+    successRate: 0.19
+    description: null
+  distances:
+  - endpoint: "/api/v1/routeservice/routes"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 18
+    - 39
+    - 4
+    - 622729300
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 18
+    - 38
+    - 30
+    - 426700200
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 11
+    - 13
+    - 18
+    - 37
+    - 51
+    - 575965400
+    successRate: 0.0
+    description: null
+  enableTravelDateQuery:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 27
+    - 57
+    - 127152292
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 28
+    - 11
+    - 158120977
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 28
+    - 11
+    - 158654869
+    successRate: 0.0
+    description: null
+  firstClassPriceRate:
+  - endpoint: "/api/v1/priceservice/prices/{routeId}/{trainType}"
+    method: "GET"
+    service: "ts-price-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 22
+    - 41
+    - 4
+    - 261970200
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-Travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 22
+    - 41
+    - 4
+    - 261970200
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/orderservice/order"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2025
+    - 8
+    - 11
+    - 22
+    - 42
+    - 17
+    - 904357200
+    successRate: 0.0
+    description: null
+  travelDateEnd:
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 18
+    - 24
+    - 721629144
+    successRate: 0.0
+    description: null
+  - endpoint: "/api/v1/travel2service/trips"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 18
+    - 43
+    - 64903811
+    successRate: 0.1
+    description: null
+  - endpoint: "/api/v1/travel/query"
+    method: "GET"
+    service: "ts-travel-Service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 18
+    - 26
+    - 117507277
+    successRate: 0.0
+    description: null
   endPlace:
   - endpoint: "/api/v1/travelservice/trips"
     method: "GET"
@@ -1089,14 +2009,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 38
-    - 28
-    - 585494700
-    successRate: 0.1
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 15
+    - 31
+    - 248934018
+    successRate: 0.271
     description: null
   - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
     method: "GET"
@@ -1104,59 +2024,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 38
-    - 2
-    - 971714900
-    successRate: 0.0
-    description: null
-  differenceMoney:
-  - endpoint: "/api/v1/order/query"
-    method: "GET"
-    service: "ts-order-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
+    - 2026
+    - 3
     - 22
-    - 4
-    - 40
-    - 361500000
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/admintravelservice/admintravel"
-    method: "GET"
-    service: "ts-admin-travel-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 8
+    - 18
+    - 28
     - 11
-    - 22
-    - 8
-    - 15
-    - 939473600
-    successRate: 0.1
-    description: null
-  - endpoint: "/api/v1/user/query"
-    method: "GET"
-    service: "ts-user-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
-    - 5
-    - 31
-    - 432248300
+    - 19049852
     successRate: 0.0
     description: null
   basicPriceRate:
@@ -1205,52 +2079,6 @@ parameterMappings:
     - 279104900
     successRate: 0.0
     description: null
-  accountId:
-  - endpoint: "/api/v1/admin-user/query"
-    method: "GET"
-    service: "ts-admin-User-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 20
-    - 40
-    - 49
-    - 118995900
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/userservice/users"
-    method: "GET"
-    service: "ts-user-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 11
-    - 12
-    - 13
-    - 35
-    - 22
-    - 681723000
-    successRate: 0.19
-    description: null
-  - endpoint: "/api/v1/orderservice/order/security/{checkDate}/{accountId}"
-    method: "GET"
-    service: "ts-order-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 11
-    - 12
-    - 13
-    - 34
-    - 52
-    - 565654600
-    successRate: 0.0
-    description: null
   travelDate:
   - endpoint: "/api/v1/travel/query"
     method: "GET"
@@ -1258,13 +2086,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 44
-    - 58
-    - 169879300
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 16
+    - 43
+    - 301867170
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/travel2service/admin_trip"
@@ -1273,14 +2101,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 19
-    - 6
-    - 35
-    - 85044600
-    successRate: 0.19
+    - 2026
+    - 3
+    - 23
+    - 12
+    - 16
+    - 43
+    - 267992400
+    successRate: 0.171
     description: null
   - endpoint: "/api/v1/admin-travel/query"
     method: "GET"
@@ -1288,13 +2116,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 13
-    - 18
-    - 47
+    - 2026
+    - 3
     - 23
-    - 237664300
+    - 12
+    - 16
+    - 43
+    - 284857678
     successRate: 0.0
     description: null
   boughtDate:
@@ -1304,13 +2132,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 58
-    - 40
-    - 778156600
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 28
+    - 47
+    - 512212076
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/admintravelservice/admintravel"
@@ -1319,14 +2147,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 22
+    - 2026
     - 3
-    - 20
-    - 637768300
-    successRate: 0.1
+    - 22
+    - 18
+    - 28
+    - 47
+    - 494445906
+    successRate: 0.09000000000000001
     description: null
   - endpoint: "/api/v1/user/query"
     method: "GET"
@@ -1334,13 +2162,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 59
-    - 31
-    - 781534300
+    - 2026
+    - 3
+    - 22
+    - 18
+    - 28
+    - 46
+    - 724991047
     successRate: 0.0
     description: null
   stationList:
@@ -1389,50 +2217,50 @@ parameterMappings:
     - 612511100
     successRate: 0.0
     description: null
-  trainNumber:
-  - endpoint: "/api/v1/trainservice/trains"
+  endTime:
+  - endpoint: "/api/v1/travelservice/trips"
     method: "GET"
-    service: "ts-train-service"
+    service: "ts-travel-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 11
-    - 12
-    - 13
-    - 38
-    - 37
-    - 146768700
-    successRate: 0.19
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 29
+    - 54
+    - 707037219
+    successRate: 0.0
     description: null
-  - endpoint: "/api/v1/route/query"
+  - endpoint: "/api/v1/routeservice/routes"
     method: "GET"
-    service: "ts-route-Service"
+    service: "ts-route-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 12
-    - 13
-    - 37
-    - 55
-    - 335476600
-    successRate: 0.0
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 30
+    - 7
+    - 812134346
+    successRate: 0.1
     description: null
-  - endpoint: "/api/v1/order/query"
+  - endpoint: "/api/v1/orderservice/order/security/{checkDate}/{accountId}"
     method: "GET"
-    service: "ts-order-Service"
+    service: "ts-order-service"
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 11
-    - 12
-    - 13
-    - 37
-    - 55
-    - 320450100
+    - 2026
+    - 3
+    - 25
+    - 15
+    - 29
+    - 59
+    - 811598857
     successRate: 0.0
     description: null
   to:
@@ -1442,13 +2270,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 7
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 32
-    - 11
-    - 22866100
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 18
+    - 40
+    - 996573941
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/admintravelservice/admintravel"
@@ -1457,13 +2285,13 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 33
-    - 1
-    - 852914700
+    - 2026
+    - 3
+    - 22
+    - 17
+    - 18
+    - 40
+    - 993697790
     successRate: 0.0
     description: null
   - endpoint: "/api/v1/userservice/users"
@@ -1472,60 +2300,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 9
     lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 37
-    - 19
-    - 345179200
-    successRate: 0.1
-    description: null
-  status:
-  - endpoint: "/api/v1/orderservice/order"
-    method: "GET"
-    service: "ts-order-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 7
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 30
-    - 43
-    - 161147600
-    successRate: 0.1
-    description: null
-  - endpoint: "/api/v1/travel/query"
-    method: "GET"
-    service: "ts-Travel-Service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 8
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
+    - 2026
+    - 3
+    - 22
+    - 18
     - 29
-    - 13
-    - 126835100
-    successRate: 0.0
-    description: null
-  - endpoint: "/api/v1/cancelservice/cancel/refound/{orderId}"
-    method: "GET"
-    service: "ts-cancel-service"
-    extractPath: "DIRECT_EXTRACTION"
-    priority: 9
-    lastUsed:
-    - 2025
-    - 8
-    - 11
-    - 21
-    - 29
-    - 13
-    - 112840700
-    successRate: 0.0
+    - 45
+    - 967389721
+    successRate: 0.18100000000000002
     description: null
 servicePatterns:
 - pattern: ".*[Ss]tation.*"
