@@ -195,7 +195,144 @@ For parameters selected as **invalid** in a negative variant, Smart Fetch is **s
 
 ---
 
-## 7. Concrete Example (TrainTicket-style)
+## 7. Usage samples
+
+This section shows **how to turn Smart Fetch on** and **how to call it** in code, mirroring what the repo already ships (`trainticket-demo.properties`, `SmartInputFetchingDemoTest`, MST runs).
+
+### 7.1 Enable Smart Fetch in a `.properties` file (MST / `TestGenerationAndExecution`)
+
+Minimal pattern: set the master flag, percentage, paths, timeouts, cache, and point `base.url` at your gateway. The excerpt below matches the TrainTicket demo file (`src/main/resources/My-Example/trainticket-demo.properties`); adjust paths if your registry and merged OpenAPI live elsewhere.
+
+```properties
+# Master switch
+smart.input.fetch.enabled=true
+
+# Per-call probability of attempting live fetch (0.0 = always LLM path for "roll"; 1.0 = always try smart when enabled)
+smart.input.fetch.percentage=0.3
+
+smart.input.fetch.registry.path=src/main/resources/My-Example/trainticket/input-fetch-registry.yaml
+smart.input.fetch.openapi.spec.path=src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml
+
+smart.input.fetch.llm.discovery.enabled=true
+smart.input.fetch.max.candidates=5
+smart.input.fetch.discovery.timeout.ms=5000
+smart.input.fetch.cache.enabled=true
+smart.input.fetch.cache.ttl.seconds=300
+
+# Gateway / ingress (prepended to mapping endpoints)
+base.url=http://your-host:port
+
+# JWT login for protected GETs (TrainTicket-style /api/v1/users/login)
+auth.admin.username=admin
+auth.admin.password=yourPassword
+```
+
+Also ensure **LLM system properties** are set in the same file (or environment) so discovery and `fallbackToLLM` work—`passSmartInputFetchingProperties()` copies `llm.*` keys into `System` for MST.
+
+**Run:** use your usual RESTest entry point with `generator=MST` and this properties file so `passSmartInputFetchingProperties()` runs before `MultiServiceTestCaseGenerator` is created. You should see initializer logs (`SmartInputFetcher initialized…`) and, during generation, `Smart Fetch →` / `Smart Fetch Pool →` lines when the percentage gate and mappings allow it.
+
+### 7.2 Programmatic usage: `SmartInputFetcher` + `ParameterInfo`
+
+The project includes `src/test/java/SmartInputFetchingDemoTest.java` (`es.us.isa.restest.test`). It shows the typical pattern: build `SmartInputFetchConfig`, point at the registry, set `baseUrl`, then call `fetchSmartInput` with a populated `ParameterInfo`.
+
+**Configure in code (abbreviated from the demo):**
+
+```java
+SmartInputFetchConfig config = new SmartInputFetchConfig();
+config.setEnabled(true);
+config.setSmartFetchPercentage(0.7);
+config.setRegistryPath("src/main/resources/My-Example/trainticket/input-fetch-registry.yaml");
+config.setLlmDiscoveryEnabled(true);
+config.setMaxCandidates(3);
+config.setDiscoveryTimeoutMs(5000L);
+
+String baseUrl = "http://localhost:8080";
+SmartInputFetcher smartFetcher = new SmartInputFetcher(config, baseUrl);
+```
+
+**Fetch a value for one parameter:**
+
+```java
+ParameterInfo stationParam = new ParameterInfo();
+stationParam.setName("stationName");
+stationParam.setType("string");
+stationParam.setDescription("Name of the railway station");
+stationParam.setInLocation("body");
+stationParam.setSchemaExample("Beijing");
+
+String value = smartFetcher.fetchSmartInput(stationParam);
+```
+
+`fetchSmartInput` applies the **percentage gate** internally: some calls may return LLM-generated values without hitting HTTP, even when `enabled` is true.
+
+**Load the same settings from a `Map` (matches property keys):**
+
+```java
+Map<String, String> testProperties = new HashMap<>();
+testProperties.put("smart.input.fetch.enabled", "true");
+testProperties.put("smart.input.fetch.percentage", "0.8");
+testProperties.put("smart.input.fetch.registry.path", "test-registry.yaml");
+testProperties.put("smart.input.fetch.llm.discovery.enabled", "true");
+testProperties.put("smart.input.fetch.max.candidates", "5");
+
+SmartInputFetchConfig cfg = SmartInputFetchConfig.fromProperties(testProperties);
+```
+
+For MST, you normally **do not** construct the fetcher yourself: `MultiServiceTestCaseGenerator` reads `System` properties and builds `SmartInputFetcher` if `smart.input.fetch.enabled=true`.
+
+### 7.3 LLM parameter generator path (`TestDataGeneratorFactory`)
+
+If your test configuration uses **`LLMParameterGenerator`** (classic RESTest test conf, not MST), set a JVM system property so the factory swaps in the smart wrapper:
+
+```text
+-Dsmart.input.fetch.enabled=true
+-Dbase.url=http://localhost:8080
+```
+
+(plus the usual `smart.input.fetch.registry.path` etc., if not defaulted). The factory loads `SmartLLMParameterGenerator`, whose `nextValue()` delegates to `fetchSmartInput` when initialization succeeds.
+
+### 7.4 Registry YAML snippet (learned mapping)
+
+The registry persists **parameter name → list of GET sources**. Mappings discovered or saved at runtime use `extractPath: "DIRECT_EXTRACTION"` in current code paths. Example shape (from `input-fetch-registry.yaml`):
+
+```yaml
+parameterMappings:
+  loginId:
+    - endpoint: "/api/v1/user/query"
+      method: "GET"
+      service: "ts-User-service"
+      extractPath: "DIRECT_EXTRACTION"
+      priority: 7
+```
+
+Hand-editing is possible; ensure `endpoint` paths match what your gateway exposes.
+
+### 7.5 What you might see in logs
+
+When Smart Fetch runs against a live TrainTicket deployment, logs often include lines like:
+
+```text
+SmartInputFetcher initialized with config: SmartInputFetchConfig{enabled=true, smartFetchPercentage=0.30, ...}
+SmartFetchAuthManager initialized for baseUrl: http://..., username: admin
+🎯 Smart Fetch Decision → accountId (...)
+✅ Smart Fetch Success: accountId = '98779e1f-8cce-4435-9ff4-81411a9d9bd5' (from ts-user-service)
+Smart Fetch → accountId = 98779e1f-8cce-4435-9ff4-81411a9d9bd5 ✅
+Smart Fetch Pool → parameter 'departureTime': 15 smart values generated
+```
+
+If no mapping exists and discovery is off or LLM returns no services, you may see fallbacks such as `Smart Fetch → differenceMoney = ERROR (No smart sources available for parameter: differenceMoney), falling back to LLM`.
+
+### 7.6 MST-specific behavior (quick reference)
+
+| What you do | What happens |
+|-------------|----------------|
+| Set `smart.input.fetch.enabled=true` and run MST | `MultiServiceTestCaseGenerator` creates `SmartInputFetcher` at startup. |
+| Generate tests | Root-operation **shared pools** call `fetchSmartInput` up to **15× per parameter**; variants then reuse/rotate values. |
+| Per-step params | Step 1 and **independent** later-step params may call `fetchSmartInput` before LLM; **negative-test** target params skip smart fetch. |
+
+---
+
+## 8. Concrete Example (TrainTicket-style)
 
 **Scenario:** Parameter `accountId` (UUID) for a protected route.
 
@@ -216,7 +353,7 @@ For parameters selected as **invalid** in a negative variant, Smart Fetch is **s
 
 ---
 
-## 8. Dependencies Between Components (Summary)
+## 9. Dependencies Between Components (Summary)
 
 | Component | Depends on |
 |-----------|------------|
@@ -227,7 +364,7 @@ For parameters selected as **invalid** in a negative variant, Smart Fetch is **s
 
 ---
 
-## 9. Design Notes and Limitations
+## 10. Design Notes and Limitations
 
 - **Pattern discovery** is intentionally **off**; the design favors **LLM discovery + DIRECT_EXTRACTION** over JSONPath-heavy mappings.
 - **Legacy JSONPath** helpers remain in the class but the documented happy path is **direct extraction**.
@@ -237,7 +374,7 @@ For parameters selected as **invalid** in a negative variant, Smart Fetch is **s
 
 ---
 
-## 10. File Index (Implementation)
+## 11. File Index (Implementation)
 
 | File | Responsibility |
 |------|------------------|
