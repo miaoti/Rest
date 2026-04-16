@@ -37,6 +37,13 @@ public class WorkflowStep {
     private String parentSpanIdTemp;
     /** List of child steps directly triggered by this step in the workflow. */
     private final List<WorkflowStep> children = new ArrayList<>();
+    /** Tracks which output field(s) caused this step to be linked via cross-trace data dependency merge. */
+    private final Map<String, String> dataProvenance = new LinkedHashMap<>();
+    /** True when this step was originally a Root API in another trace that was merged
+     *  into this scenario via a cross-trace data dependency. */
+    private boolean mergedRoot = false;
+    /** The index (1-based) of the producer root whose output field triggered this merge, or -1 if N/A. */
+    private int producerRootIndex = -1;
 
     /**
      * Constructs a WorkflowStep with the given properties. All fields are required except parent (which
@@ -143,6 +150,37 @@ public class WorkflowStep {
     }
 
     /**
+     * Returns an unmodifiable map of data provenance entries for this step.
+     * Each entry records a field key and value that caused this step's scenario
+     * to be merged with another via cross-trace data dependency detection.
+     */
+    public Map<String, String> getDataProvenance() {
+        return Collections.unmodifiableMap(dataProvenance);
+    }
+
+    /**
+     * Records which output field caused this step to be linked into a merged scenario.
+     *
+     * @param key   the field name (e.g., "tripId") that matched across traces
+     * @param value the concrete value that was shared between producer and consumer
+     */
+    public void addProvenance(String key, String value) {
+        dataProvenance.put(key, value);
+    }
+
+    /** Returns true if this step was originally a Root API in a separate trace that was merged. */
+    public boolean isMergedRoot() { return mergedRoot; }
+
+    /** Marks this step as a merged root (was originally a Root API in another trace). */
+    public void setMergedRoot(boolean mergedRoot) { this.mergedRoot = mergedRoot; }
+
+    /** Returns the 1-based index of the producer root that triggered this merge, or -1 if N/A. */
+    public int getProducerRootIndex() { return producerRootIndex; }
+
+    /** Sets the 1-based index of the producer root that triggered this merge. */
+    public void setProducerRootIndex(int producerRootIndex) { this.producerRootIndex = producerRootIndex; }
+
+    /**
      * Adds a child step triggered by this step. This will automatically set the child's parent to this step
      * and update the child list. If the child was previously attached under a different parent, it will be removed from that parent.
      *
@@ -190,5 +228,47 @@ public class WorkflowStep {
         for (WorkflowStep c : children) {
             c.sortChildrenByStartTime();
         }
+    }
+
+    /**
+     * Creates a deep copy of this WorkflowStep and its entire child tree.
+     * The copy is structurally independent: mutating the copy (or any of its
+     * descendants) will not affect the original.
+     *
+     * <p>Used by trace decomposition to extract individual 1-Root scenarios
+     * from multi-root scenarios without aliasing problems during generation.</p>
+     *
+     * @return a new WorkflowStep tree that is a value-equal but reference-independent clone
+     */
+    public WorkflowStep deepCopy() {
+        // Copy all scalar/map fields via constructor
+        WorkflowStep copy = new WorkflowStep(
+                this.traceId,
+                this.spanId,
+                this.serviceName,
+                this.operationName,
+                this.startTime,
+                this.endTime,
+                new HashMap<>(this.inputFields),   // mutable copy of immutable map
+                new HashMap<>(this.outputFields)    // mutable copy of immutable map
+        );
+
+        // Copy merge-related metadata
+        copy.setMergedRoot(this.mergedRoot);
+        copy.setProducerRootIndex(this.producerRootIndex);
+        copy.setParentSpanIdTemp(this.parentSpanIdTemp);
+
+        // Copy data provenance entries
+        for (Map.Entry<String, String> prov : this.dataProvenance.entrySet()) {
+            copy.addProvenance(prov.getKey(), prov.getValue());
+        }
+
+        // Recursively deep-copy children and attach to the copy
+        for (WorkflowStep child : this.children) {
+            WorkflowStep childCopy = child.deepCopy();
+            copy.addChild(childCopy);   // sets parent automatically
+        }
+
+        return copy;
     }
 }

@@ -24,6 +24,10 @@ public class TestFileRegenerator {
     /**
      * Regenerate a test file with enhanced parameter values.
      * 
+     * When a failedStepIndex is available, replacements are scoped to only the
+     * code block for that specific step (delimited by step-title comments emitted
+     * by MultiServiceRESTAssuredWriter), preventing cross-step name collisions.
+     * 
      * @param testFilePath Path to the Java test file
      * @param testMethodName Name of the test method to modify
      * @param enhancedParams Map of parameter name to new value
@@ -31,7 +35,7 @@ public class TestFileRegenerator {
      * @return true if regeneration was successful
      */
     public boolean regenerateTestFile(String testFilePath, String testMethodName,
-                                      Map<String, String> enhancedParams, 
+                                      Map<String, String> enhancedParams,
                                       FailedTestResult originalFailure) {
         
         log.info("🔄 Regenerating test file: {} (method: {})", testFilePath, testMethodName);
@@ -44,11 +48,8 @@ public class TestFileRegenerator {
                 return false;
             }
             
-            // Read original content
             String content = Files.readString(path);
-            String originalContent = content;
             
-            // Find the test method
             int methodStart = findMethodStart(content, testMethodName);
             if (methodStart < 0) {
                 log.error("Could not find test method: {}", testMethodName);
@@ -62,36 +63,102 @@ public class TestFileRegenerator {
             }
             
             String methodContent = content.substring(methodStart, methodEnd);
-            String modifiedMethod = methodContent;
+            String modifiedMethod;
             
-            // Replace each parameter value
-            for (Map.Entry<String, String> param : enhancedParams.entrySet()) {
-                modifiedMethod = replaceParameterValue(modifiedMethod, param.getKey(), param.getValue());
+            int failedStep = originalFailure.getFailedStepIndex();
+            
+            // Layer B: build safe param map by stripping structurally locked dependencies
+            Map<String, String> safeParams = new LinkedHashMap<>(enhancedParams);
+            Set<String> locked = originalFailure.getLockedDependencyParams();
+            if (locked != null && !locked.isEmpty()) {
+                Iterator<String> it = safeParams.keySet().iterator();
+                while (it.hasNext()) {
+                    String paramName = it.next();
+                    if (locked.contains(paramName)) {
+                        log.warn("Pre-regex guard: stripping locked dependency '{}' from replacement map", paramName);
+                        it.remove();
+                    }
+                }
             }
             
-            // Add enhancement marker at the beginning of the method
+            if (failedStep > 0) {
+                modifiedMethod = replaceWithinStepBlock(methodContent, failedStep, safeParams);
+            } else {
+                modifiedMethod = methodContent;
+                for (Map.Entry<String, String> param : safeParams.entrySet()) {
+                    modifiedMethod = replaceParameterValue(modifiedMethod, param.getKey(), param.getValue());
+                }
+            }
+            
             modifiedMethod = addEnhancementMarker(modifiedMethod, testMethodName, 
                     originalFailure, enhancedParams);
             
-            // Reconstruct the file
             String newContent = content.substring(0, methodStart) + 
                                modifiedMethod + 
                                content.substring(methodEnd);
             
-            // Write back to file
             Files.writeString(path, newContent);
             
-            // Track enhancement
             enhancedTests.put(testFilePath + "#" + testMethodName, 
                     new EnhancementInfo(testFilePath, testMethodName, enhancedParams, originalFailure));
             
-            log.info("✅ Successfully regenerated test file");
+            log.info("✅ Successfully regenerated test file (step-fenced: {})", failedStep > 0);
             return true;
             
         } catch (IOException e) {
             log.error("Failed to regenerate test file: {}", e.getMessage());
             return false;
         }
+    }
+    
+    /**
+     * Replace parameters only within the code block belonging to the specified step.
+     * Step blocks are delimited by step-title comments emitted by the writer, e.g.:
+     * {@code // Root 1: ts-travel-service POST /api/v1/... [expect 200]}
+     * 
+     * The method finds the N-th step comment (matching the failed step's 1-based index)
+     * and scopes all regex replacements to the text between that comment and the next
+     * step comment (or end of method).
+     */
+    private String replaceWithinStepBlock(String methodContent, int targetStepIdx,
+                                          Map<String, String> enhancedParams) {
+        // Step comments follow the pattern: // <label>: <service> <VERB> <path> [expect <status>]
+        // Labels are "Root N", "Step N", or hierarchical IDs like "R1.1"
+        Pattern stepCommentPattern = Pattern.compile(
+                "^\\s*//\\s*(?:Root \\d+|Step \\d+|R\\d+(?:\\.\\d+)*):\\s+.+\\[expect .+\\]",
+                Pattern.MULTILINE
+        );
+        
+        Matcher matcher = stepCommentPattern.matcher(methodContent);
+        List<Integer> stepStarts = new ArrayList<>();
+        while (matcher.find()) {
+            stepStarts.add(matcher.start());
+        }
+        
+        if (stepStarts.isEmpty() || targetStepIdx > stepStarts.size()) {
+            log.warn("Could not find step {} boundary in method; falling back to global replacement", targetStepIdx);
+            for (Map.Entry<String, String> param : enhancedParams.entrySet()) {
+                methodContent = replaceParameterValue(methodContent, param.getKey(), param.getValue());
+            }
+            return methodContent;
+        }
+        
+        // Steps are 1-indexed; stepStarts list is 0-indexed
+        int blockStart = stepStarts.get(targetStepIdx - 1);
+        int blockEnd = (targetStepIdx < stepStarts.size())
+                ? stepStarts.get(targetStepIdx)
+                : methodContent.length();
+        
+        String before = methodContent.substring(0, blockStart);
+        String stepBlock = methodContent.substring(blockStart, blockEnd);
+        String after = methodContent.substring(blockEnd);
+        
+        for (Map.Entry<String, String> param : enhancedParams.entrySet()) {
+            stepBlock = replaceParameterValue(stepBlock, param.getKey(), param.getValue());
+        }
+        
+        log.info("   Step-fenced replacement: modified chars {}–{} (step {})", blockStart, blockEnd, targetStepIdx);
+        return before + stepBlock + after;
     }
     
     /**

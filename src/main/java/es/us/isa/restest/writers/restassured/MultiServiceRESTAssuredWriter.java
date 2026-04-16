@@ -1,6 +1,7 @@
 package es.us.isa.restest.writers.restassured;
 
 import es.us.isa.restest.configuration.pojos.Operation;
+import es.us.isa.restest.util.ConsoleProgressBar;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
 import es.us.isa.restest.util.RESTestException;
@@ -84,13 +85,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
             }
         }
 
+        ConsoleProgressBar.begin("Writing Tests", byScenario.size());
         for (Map.Entry<String, List<TestCase>> entry : byScenario.entrySet()) {
             try {
                 writeTestSuite(entry.getValue(), sanitize(entry.getKey()));
+                ConsoleProgressBar.update(entry.getKey());
         } catch (RESTestException e) {
             throw new RuntimeException("Error writing multi‑service test suite", e);
             }
         }
+        ConsoleProgressBar.complete();
     }
 
     private void writeTestSuite(Collection<TestCase> testCases, String className) throws RESTestException {
@@ -144,11 +148,50 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                 if (allureReport) {
                     pw.println("import io.qameta.allure.Allure;");
+                    pw.println("import io.qameta.allure.Epic;");
+                    pw.println("import io.qameta.allure.Feature;");
                     // AllureRestAssured filter removed - causes duplicate request logging
                     // pw.println("import io.qameta.allure.restassured.AllureRestAssured;");
                     pw.println("import io.qameta.allure.model.Status;");
                 }
                 pw.println();
+
+                /* ---------- class-level Allure annotations ---------------------- */
+                if (allureReport) {
+                    String epicLabel;
+                    String featureLabel;
+                    String classDisplayName;
+
+                    MultiServiceTestCase representative = null;
+                    for (TestCase _tc : testCases) {
+                        if (_tc instanceof MultiServiceTestCase) {
+                            representative = (MultiServiceTestCase) _tc;
+                            break;
+                        }
+                    }
+
+                    if (representative != null && !representative.getSteps().isEmpty()) {
+                        boolean isMultiRoot = representative.getSteps().stream()
+                                .filter(MultiServiceTestCase.StepCall::isTopLevelRoot).count() > 1;
+                        epicLabel = isMultiRoot ? "Integration Flow Tests" : "Baseline Tests";
+
+                        String flowPath = buildFlowPath(representative);
+                        featureLabel = representative.getSteps().get(0).getServiceName();
+                        if (featureLabel == null || featureLabel.isEmpty()) featureLabel = "Unknown Service";
+
+                        String scenarioName = representative.getScenarioName();
+                        classDisplayName = (scenarioName != null ? scenarioName : className)
+                                + " | " + flowPath;
+                    } else {
+                        epicLabel = "Baseline Tests";
+                        featureLabel = "Unknown Service";
+                        classDisplayName = className;
+                    }
+
+                    pw.println("@Epic(\"" + escape(epicLabel) + "\")");
+                    pw.println("@Feature(\"" + escape(featureLabel) + "\")");
+                    pw.println("@io.qameta.allure.junit4.DisplayName(\"" + escape(classDisplayName) + "\")");
+                }
 
                 /* ---------- class header ---------------------------------------- */
                 pw.println("public class " + className + " {");
@@ -1014,6 +1057,33 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("    }");
                 pw.println();
 
+                /* ---------- resolve dominant service for class-level grouping -- */
+                // Determine parentSuite once per class so every test method emits the
+                // same value, preventing Allure from creating a second grouping node
+                // under the Java class name when a test has 0 steps.
+                String classParentSuite = "Unknown Service";
+                String classNormalizedSuite = "";
+                for (TestCase _raw : testCases) {
+                    if (_raw instanceof MultiServiceTestCase) {
+                        MultiServiceTestCase _mstc = (MultiServiceTestCase) _raw;
+                        if (!_mstc.getSteps().isEmpty()) {
+                            MultiServiceTestCase.StepCall _first = _mstc.getSteps().get(0);
+                            if (_first.getServiceName() != null && !_first.getServiceName().isEmpty()) {
+                                classParentSuite = _first.getServiceName();
+                            }
+                            if (_first.getMethod() != null) {
+                                String _m = _first.getMethod().getMethod() != null
+                                        ? _first.getMethod().getMethod().toUpperCase() : "GET";
+                                String _p = _first.getMethod().getTestPath() != null
+                                        ? _first.getMethod().getTestPath()
+                                        : (_first.getPath() != null ? _first.getPath() : "");
+                                classNormalizedSuite = _m + " " + _p;
+                            }
+                            break;
+                        }
+                    }
+                }
+
                 /* ---------- one @Test per scenario ----------------------------- */
                 int scenarioIdx = 1;
                 for (TestCase raw : testCases) {
@@ -1038,128 +1108,68 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println();
                     
                     /* ------------ Set up Test Case Enhancer capture ---------- */
-                    // Get first step info for metadata
                     MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;
                     String firstEndpoint = "";
                     String firstMethod = "POST";
                     String firstService = "";
-                    Map<String, String> firstBodyFields = new LinkedHashMap<>();
-                    // Build a map of parameter name -> TestParameter for metadata lookup
-                    Map<String, es.us.isa.restest.configuration.pojos.TestParameter> paramMetadata = new HashMap<>();
                     if (!mstc.getSteps().isEmpty()) {
                         MultiServiceTestCase.StepCall firstStep = mstc.getSteps().get(0);
                         firstEndpoint = firstStep.getPath() != null ? firstStep.getPath() : "";
                         firstMethod = firstStep.getMethod() != null && firstStep.getMethod().getMethod() != null 
                                     ? firstStep.getMethod().getMethod().toUpperCase() : "POST";
                         firstService = firstStep.getServiceName() != null ? firstStep.getServiceName() : "";
-                        if (firstStep.getBodyFields() != null) {
-                            firstBodyFields.putAll(firstStep.getBodyFields());
-                        }
-                        // Get TestParameter metadata from Operation config
-                        if (firstStep.getMethod() != null && firstStep.getMethod().getTestParameters() != null) {
-                            for (es.us.isa.restest.configuration.pojos.TestParameter tp : firstStep.getMethod().getTestParameters()) {
-                                paramMetadata.put(tp.getName(), tp);
-                            }
-                        }
                     }
                     boolean isNegativeTest = scenario.getFaulty();
-                    
-                    pw.println("        // 🔧 Test Case Enhancer: Capture test metadata");
-                    pw.println("        es.us.isa.restest.enhancer.TestResultCapture.setTestMetadata(");
-                    pw.println("            \"" + escape(firstEndpoint) + "\", \"" + firstMethod + "\", ");
-                    pw.println("            \"" + escape(firstService) + "\", " + isNegativeTest + ");");
-                    
-                    // Add parameter captures for body fields with full metadata
-                    for (Map.Entry<String, String> field : firstBodyFields.entrySet()) {
-                        String paramName = field.getKey();
-                        String paramValue = field.getValue();
-                        es.us.isa.restest.configuration.pojos.TestParameter tp = paramMetadata.get(paramName);
-                        
-                        // Get metadata from TestParameter if available
-                        String paramType = "string";
-                        String paramLoc = "body";
-                        String description = "";
-                        String example = "";
-                        boolean required = false;
-                        
-                        if (tp != null) {
-                            paramType = tp.getType() != null ? tp.getType() : "string";
-                            paramLoc = tp.getIn() != null ? tp.getIn() : "body";
-                            description = tp.getDescription() != null ? tp.getDescription() : "";
-                            example = tp.getExample() != null ? String.valueOf(tp.getExample()) : "";
-                            required = tp.getRequired() != null && tp.getRequired();
-                        }
-                        
-                        pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
-                        pw.println("            \"" + escape(paramName) + "\", \"" + escape(paramValue) + "\", ");
-                        pw.println("            \"" + escape(paramType) + "\", \"" + escape(paramLoc) + "\", ");
-                        pw.println("            " + (description.isEmpty() ? "null" : "\"" + escape(description) + "\"") + ", ");
-                        pw.println("            " + (example.isEmpty() ? "null" : "\"" + escape(example) + "\"") + ", " + required + ");");
-                    }
                     pw.println();
                     
-                    /* ------------ Add Allure suite grouping labels for normalized API path ---------- */
-                    // 🔥 FIX: Group tests by API Method + Template Path (not by resolved path with param values)
-                    // This ensures all tests for DELETE /api/v1/admintravelservice/admintravel/{tripId} 
-                    // are grouped together regardless of the tripId value
-                    if (allureReport && !mstc.getSteps().isEmpty()) {
-                        MultiServiceTestCase.StepCall firstStepForSuite = mstc.getSteps().get(0);
-                        String templatePath = "";
-                        String httpMethodForSuite = firstMethod; // Already computed above
-                        
-                        // Get template path from Operation (contains {placeholders} instead of actual values)
-                        if (firstStepForSuite.getMethod() != null && firstStepForSuite.getMethod().getTestPath() != null) {
-                            templatePath = firstStepForSuite.getMethod().getTestPath();
+                    /* ------------ Allure Taxonomy: parentSuite / suite / subSuite + @DisplayName ---------- */
+                    if (allureReport) {
+                        String serviceSuite;
+                        String flowPath;
+                        String subSuiteLabel = createCleanSubSuiteLabel(mstc, testMethodName);
+
+                        if (!mstc.getSteps().isEmpty()) {
+                            serviceSuite = firstService.isEmpty() ? classParentSuite : firstService;
+                            flowPath = buildFlowPath(mstc);
                         } else {
-                            // Fallback: reconstruct template path from pathParams keys
-                            templatePath = firstEndpoint;
-                            if (firstStepForSuite.getPathParams() != null) {
-                                for (Map.Entry<String, String> pathParam : firstStepForSuite.getPathParams().entrySet()) {
-                                    String paramValue = pathParam.getValue();
-                                    if (paramValue != null && !paramValue.isEmpty()) {
-                                        // Replace the actual value with placeholder
-                                        templatePath = templatePath.replace(paramValue, "{" + pathParam.getKey() + "}");
-                                    }
-                                }
-                            }
+                            serviceSuite = classParentSuite;
+                            flowPath = classNormalizedSuite;
                         }
-                        
-                        // Create normalized suite identifier: "METHOD /template/path"
-                        String normalizedSuite = httpMethodForSuite + " " + templatePath;
-                        String serviceSuite = firstService;
-                        
-                        // Create a clean, short subSuite label instead of the full test method name
-                        String cleanSubSuite = createCleanSubSuiteLabel(mstc, testMethodName);
-                        
-                        pw.println("        // 🎯 Allure Suite Grouping: Normalize by API template (not by resolved path values)");
+
+                        pw.println("        // Allure Suite Taxonomy: Service -> Flow Path -> Test Variant");
                         pw.println("        Allure.label(\"parentSuite\", \"" + escape(serviceSuite) + "\");");
-                        pw.println("        Allure.label(\"suite\", \"" + escape(normalizedSuite) + "\");");
-                        pw.println("        Allure.label(\"subSuite\", \"" + escape(cleanSubSuite) + "\");");
+                        pw.println("        Allure.label(\"suite\", \"" + escape(flowPath) + "\");");
+                        pw.println("        Allure.label(\"subSuite\", \"" + escape(subSuiteLabel) + "\");");
+                        pw.println("        Allure.label(\"story\", \"" + escape(flowPath) + "\");");
                         pw.println();
                     }
                     
                     /* ------------ Add Allure metadata for negative tests ---------- */
                     {
-                        // Use existing mstc from above
-                        System.out.println("DEBUG: Test " + testMethodName + " - isFaulty=" + scenario.getFaulty() + 
-                                         ", faultyParamsCount=" + mstc.getFaultyParameters().size() +
-                                         ", allureReport=" + allureReport);
                         if (allureReport && scenario.getFaulty() && !mstc.getFaultyParameters().isEmpty()) {
-                            System.out.println("DEBUG: Adding negative test metadata for: " + String.join(", ", mstc.getFaultyParameters()));
-                            pw.println("        // 🚨 NEGATIVE TEST METADATA");
-                            pw.println("        Allure.parameter(\"🚨 Test Type\", \"NEGATIVE (Invalid Input Testing)\");");
-                            
-                            // Escape special characters for Java string literals
-                            String faultyParamsEscaped = escapeJavaString(String.join(", ", mstc.getFaultyParameters()));
+
+                            String targetRoot     = mstc.getTargetFaultRootId();
+                            String faultType      = mstc.getFaultTypeCategory();
+                            String targetRootSafe = (targetRoot != null && !targetRoot.isEmpty()) ? targetRoot : "Unknown Root";
+                            String faultTypeSafe  = (faultType  != null && !faultType.isEmpty())  ? faultType  : "UNKNOWN";
+
+                            String faultyParamsEscaped        = escapeJavaString(String.join(", ", mstc.getFaultyParameters()));
                             String faultyParamsNewlineEscaped = escapeJavaString(String.join("\\n", mstc.getFaultyParameters()));
-                            
-                            pw.println("        Allure.parameter(\"🔴 Invalid Parameters\", \"" + faultyParamsEscaped + "\");");
-                            pw.println("        Allure.description(\"**⚠️ This is a NEGATIVE test case with intentionally invalid inputs.**\\n\\n\" +");
-                            pw.println("                         \"The following parameters were intentionally set to invalid values:\\n\" +");
+
+                            pw.println("        // NEGATIVE TEST METADATA (Targeted Fault Injection)");
+                            pw.println("        Allure.parameter(\"🚨 Test Type\", \"NEGATIVE (Targeted Fault Injection)\");");
+                            pw.println("        Allure.parameter(\"🎯 Target API\", \"" + escapeJavaString(targetRootSafe) + "\");");
+                            pw.println("        Allure.parameter(\"💥 Fault Type\", \"" + escapeJavaString(faultTypeSafe) + "\");");
+                            pw.println("        Allure.parameter(\"🔴 Injected Payload\", \"" + faultyParamsEscaped + "\");");
+                            pw.println("        Allure.description(\"**⚠️ Targeted Fault Injection Test**\\n\\n\" +");
+                            pw.println("                         \"This test validates the error-handling of **" + escapeJavaString(targetRootSafe) + "** \" +");
+                            pw.println("                         \"when injected with a **" + escapeJavaString(faultTypeSafe) + "** payload, \" +");
+                            pw.println("                         \"while ensuring all preceding APIs execute successfully.\\n\\n\" +");
+                            pw.println("                         \"**Injected invalid values:**\\n\" +");
                             pw.println("                         \"" + faultyParamsNewlineEscaped + "\\n\\n\" +");
-                            pw.println("                         \"This test expects a 4XX or 5XX error response. If it returns 2XX, the test will FAIL.\");");
-                            
-                            // 🔧 Test Case Enhancer: Capture invalid parameters (these should NOT be changed during enhancement)
+                            pw.println("                         \"This test expects a 4XX or 5XX error response from the targeted API. \" +");
+                            pw.println("                         \"If it returns 2XX, the test will FAIL.\");");
+
                             for (String faultyParam : mstc.getFaultyParameters()) {
                                 pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addInvalidParameter(\"" + escapeJavaString(faultyParam) + "\");");
                             }
@@ -1278,11 +1288,19 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 ? "get"
                                 : step.getMethod().getMethod().toLowerCase();
                         
-                        // Generate hierarchical step number if available from the generator
-                        String stepNumber = "Step " + stepIdx;
-                        // For negative tests, show that we expect anything OTHER than the normal expected status
-                        // For exploration tests, show the target status code
-                        // Use simpler format without nested parentheses to avoid Java string literal issues
+                        // Use hierarchical ID from the generator (R1, R2, R1.1, etc.)
+                        String hierIdRaw = step.getHierarchicalId();
+                        String stepLabel;
+                        if (hierIdRaw != null && !hierIdRaw.isEmpty()) {
+                            if (step.isTopLevelRoot()) {
+                                stepLabel = hierIdRaw.replace("R", "Root ");
+                            } else {
+                                stepLabel = hierIdRaw;
+                            }
+                        } else {
+                            stepLabel = "Step " + stepIdx;
+                        }
+
                         String expectedStatusDisplay;
                         if (mstc.isStatusCodeExplorationTest() && mstc.getTargetStatusCode() > 0) {
                             expectedStatusDisplay = String.valueOf(mstc.getTargetStatusCode()) + " (exploration)";
@@ -1291,17 +1309,112 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         } else {
                             expectedStatusDisplay = String.valueOf(step.getExpectedStatus());
                         }
-                        String stepTitle = stepNumber + ": "
+                        String stepTitle = stepLabel + ": "
                                 + step.getServiceName() + " "
                                 + verb.toUpperCase() + " " + step.getPath()
                                 + " [expect " + expectedStatusDisplay + "]";
 
                         pw.println("        // " + escape(stepTitle));
                         
+                        // 🔧 Test Case Enhancer: Per-step metadata and parameter capture
+                        {
+                            String stepEndpoint = step.getPath() != null ? step.getPath() : "";
+                            String stepVerb = step.getMethod() != null && step.getMethod().getMethod() != null
+                                    ? step.getMethod().getMethod().toUpperCase() : "GET";
+                            String stepService = step.getServiceName() != null ? step.getServiceName() : "";
+                            
+                            pw.println("        es.us.isa.restest.enhancer.TestResultCapture.setStepMetadata(");
+                            pw.println("            " + stepIdx + ", \"" + escape(stepEndpoint) + "\", \"" + stepVerb + "\", ");
+                            pw.println("            \"" + escape(stepService) + "\", " + isNegativeTest + ");");
+                            
+                            // Collect data-injected parameter names from paramDependencies
+                            java.util.Set<String> dataInjectedParams = new java.util.HashSet<>();
+                            if (step.getParamDependencies() != null) {
+                                dataInjectedParams.addAll(step.getParamDependencies().keySet());
+                            }
+                            // Also include provenance bindings for merged-root steps
+                            if (step.isMergedRootStep() && step.getProvenanceBindings() != null) {
+                                dataInjectedParams.addAll(step.getProvenanceBindings().keySet());
+                            }
+                            
+                            // Register structurally locked params for the enhancer's post-execution filter
+                            if (!dataInjectedParams.isEmpty()) {
+                                StringBuilder lockedSetLiteral = new StringBuilder("java.util.Set.of(");
+                                boolean first = true;
+                                for (String lp : dataInjectedParams) {
+                                    if (!first) lockedSetLiteral.append(", ");
+                                    lockedSetLiteral.append("\"").append(escape(lp)).append("\"");
+                                    first = false;
+                                }
+                                lockedSetLiteral.append(")");
+                                pw.println("        es.us.isa.restest.enhancer.TestResultCapture.setLockedDependencyParams("
+                                        + stepIdx + ", " + lockedSetLiteral + ");");
+                            }
+                            
+                            // Capture body field parameters for this step
+                            Map<String, String> stepBodyFields = new LinkedHashMap<>();
+                            if (step.getBodyFields() != null) {
+                                stepBodyFields.putAll(step.getBodyFields());
+                            }
+                            Map<String, es.us.isa.restest.configuration.pojos.TestParameter> stepParamMeta = new HashMap<>();
+                            if (step.getMethod() != null && step.getMethod().getTestParameters() != null) {
+                                for (es.us.isa.restest.configuration.pojos.TestParameter tp : step.getMethod().getTestParameters()) {
+                                    stepParamMeta.put(tp.getName(), tp);
+                                }
+                            }
+                            
+                            for (Map.Entry<String, String> field : stepBodyFields.entrySet()) {
+                                String paramName = field.getKey();
+                                String paramValue = field.getValue();
+                                boolean isDI = dataInjectedParams.contains(paramName);
+                                es.us.isa.restest.configuration.pojos.TestParameter tp = stepParamMeta.get(paramName);
+                                String paramType = "string";
+                                String paramLoc = "body";
+                                String description = "";
+                                String example = "";
+                                boolean required = false;
+                                if (tp != null) {
+                                    paramType = tp.getType() != null ? tp.getType() : "string";
+                                    paramLoc = tp.getIn() != null ? tp.getIn() : "body";
+                                    description = tp.getDescription() != null ? tp.getDescription() : "";
+                                    example = tp.getExample() != null ? String.valueOf(tp.getExample()) : "";
+                                    required = tp.getRequired() != null && tp.getRequired();
+                                }
+                                pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                                pw.println("            \"" + escape(paramName) + "\", \"" + escape(paramValue) + "\", ");
+                                pw.println("            \"" + escape(paramType) + "\", \"" + escape(paramLoc) + "\", ");
+                                pw.println("            " + (description.isEmpty() ? "null" : "\"" + escape(description) + "\"") + ", ");
+                                pw.println("            " + (example.isEmpty() ? "null" : "\"" + escape(example) + "\"") + ", ");
+                                pw.println("            " + required + ", " + stepIdx + ", " + isDI + ");");
+                            }
+                            
+                            // Capture path parameters for this step
+                            if (step.getPathParams() != null) {
+                                for (Map.Entry<String, String> pp : step.getPathParams().entrySet()) {
+                                    boolean isDI = dataInjectedParams.contains(pp.getKey());
+                                    pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                                    pw.println("            \"" + escape(pp.getKey()) + "\", \"" + escape(pp.getValue()) + "\", ");
+                                    pw.println("            \"string\", \"path\", null, null, true, " + stepIdx + ", " + isDI + ");");
+                                }
+                            }
+                            
+                            // Capture query parameters for this step
+                            if (step.getQueryParams() != null) {
+                                for (Map.Entry<String, String> qp : step.getQueryParams().entrySet()) {
+                                    boolean isDI = dataInjectedParams.contains(qp.getKey());
+                                    pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                                    pw.println("            \"" + escape(qp.getKey()) + "\", \"" + escape(qp.getValue()) + "\", ");
+                                    pw.println("            \"string\", \"query\", null, null, false, " + stepIdx + ", " + isDI + ");");
+                                }
+                            }
+                            pw.println();
+                        }
+                        
                         // 🔥 CRITICAL FIX: ALWAYS create Allure step - NO conditional logic outside
                         // This ensures ALL steps appear in the Allure report regardless of dependencies
                         if (allureReport) {
                             pw.println("        // 🔥 ALWAYS create Allure step - execution decision happens INSIDE");
+                            pw.println("        { // per-step scope block — prevents variable redeclaration across steps");
                             pw.println("        ");
                             pw.println("        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces");
                             pw.println("        // This prevents tests from executing so rapidly that they find the same traces");
@@ -1324,13 +1437,37 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             // Add dependency analysis information
                             String stepDepType = getDependencyTypeString(step);
                             pw.println("                Allure.parameter(\"🔗 Dependency Type\", \"" + stepDepType + "\");");
-                            
+
+                            // Add hierarchical ID tag so it is searchable in Allure
+                            if (step.getHierarchicalId() != null && !step.getHierarchicalId().isEmpty()) {
+                                pw.println("                Allure.parameter(\"📌 Step ID\", \"" + escape(step.getHierarchicalId()) + "\");");
+                            }
+
+                            // For merged root steps, attach provenance lineage metadata
+                            if (step.isMergedRootStep() && !step.getProvenanceBindings().isEmpty()) {
+                                StringBuilder provDesc = new StringBuilder();
+                                int producerIdx = step.getProducerRootIndex();
+                                for (Map.Entry<String, String> prov : step.getProvenanceBindings().entrySet()) {
+                                    String inherited = prov.getKey() + "=" + prov.getValue();
+                                    provDesc.append("Inherited ").append(inherited)
+                                            .append(" from Root ").append(producerIdx > 0 ? producerIdx : "?")
+                                            .append("\\n");
+                                }
+                                String provString = escapeJavaString(provDesc.toString());
+                                pw.println("                Allure.parameter(\"🔗 Data Lineage\", \"Merged Root (depends on Root " + (producerIdx > 0 ? producerIdx : "?") + ")\");");
+                                pw.println("                Allure.addAttachment(\"📊 Cross-Trace Provenance\", \"text/plain\", \"" + provString + "\");");
+                            }
+
                             // Add comprehensive description
+                            String descDep = stepDepType;
+                            if (step.isMergedRootStep()) {
+                                descDep += " (Merged Root from separate trace)";
+                            }
                             pw.println("                Allure.description(\"🎯 **Testing**: " + escape(step.getServiceName()) + "\\n\" +");
                             pw.println("                                 \"📡 **Method**: " + verb.toUpperCase() + "\\n\" +");
                             pw.println("                                 \"🔗 **Path**: " + escape(step.getPath()) + "\\n\" +");
                             pw.println("                                 \"🎯 **Expected**: " + step.getExpectedStatus() + "\\n\" +");
-                            pw.println("                                 \"🔗 **Dependencies**: " + stepDepType + "\");");
+                            pw.println("                                 \"🔗 **Dependencies**: " + escape(descDep) + "\");");
                             pw.println("                ");
                             
                             // 🔥 EXECUTION DECISION INSIDE THE STEP - so it's always shown
@@ -1348,33 +1485,10 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                    skipCategory = \"🔐 AUTH_FAILED\";");
                             pw.println("                }");
                             
-                            // Check other dependencies
-                            if (!step.getParamDependencies().isEmpty()) {
-                                pw.println("                // Check data dependencies");
-                                pw.println("                else if (false"); // Start with false, then OR the conditions
-                                for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
-                                    int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                    pw.println("                    || !stepResults.getOrDefault(" + sourceStepIdx + ", false)");
-                                }
-                                pw.println("                ) {");
-                                pw.println("                    shouldSkip = true;");
-                                pw.println("                    skipReason = \"Required data from previous step(s) is not available\";");
-                                pw.println("                    skipCategory = \"📊 DATA_DEPENDENCY\";");
-                                pw.println("                }");
-                            }
-                            
-                            if (!step.getWorkflowDependencies().isEmpty()) {
-                                pw.println("                // Check workflow dependencies");
-                                pw.println("                else if (false"); // Start with false, then OR the conditions
-                                for (Integer workflowDep : step.getWorkflowDependencies()) {
-                                    pw.println("                    || !stepResults.getOrDefault(" + workflowDep + ", false)");
-                                }
-                                pw.println("                ) {");
-                                pw.println("                    shouldSkip = true;");
-                                pw.println("                    skipReason = \"Workflow predecessor step(s) failed\";");
-                                pw.println("                    skipCategory = \"🔄 WORKFLOW_DEPENDENCY\";");
-                                pw.println("                }");
-                            }
+                            // Check other dependencies — RESILIENT BYPASS MODE:
+                            // Data and workflow dependencies no longer cause skips.
+                            // If predecessors failed, fallback values are injected at
+                            // parameter wiring time. Only AUTH_FAILED can skip a step.
                             
                             pw.println("                ");
                             pw.println("                // Add execution decision as parameter");
@@ -1414,15 +1528,49 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            req = req.header(\"Authorization\", jwtType + \" \" + jwt);");
                             pw.println("                        }");
                             
-                            // Add dependency resolution for parameters
+                            // Add dependency resolution for parameters (with resilient bypass)
+                            // Uses jsonPath extraction from the producer's captured response body
                             for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
                                 String paramName = dep.getKey();
+                                String varName = sanitize(paramName);
                                 int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                pw.println("                        String " + paramName + "Value = capturedOutputs.get(" + sourceStepIdx + ");");
-                                pw.println("                        if (" + paramName + "Value != null) {");
-                                pw.println("                            allStepParameters.put(\"" + paramName + "\", " + paramName + "Value);");
+                                String sourceJsonPath = dep.getValue().sourceOutputKey;
+                                String fallback = dep.getValue().fallbackValue;
+                                if (fallback == null || fallback.isEmpty()) {
+                                    fallback = java.util.UUID.randomUUID().toString();
+                                }
+                                String escapedFallback = escape(fallback);
+                                String escapedJsonPath = escape(sourceJsonPath != null ? sourceJsonPath : "data.id");
+                                
+                                pw.println("                        String " + varName + "Value = null;");
+                                pw.println("                        if (stepResults.getOrDefault(" + sourceStepIdx + ", false)) {");
+                                pw.println("                            String producerBody = capturedOutputs.get(" + sourceStepIdx + ");");
+                                pw.println("                            if (producerBody != null) {");
+                                pw.println("                                try {");
+                                pw.println("                                    io.restassured.path.json.JsonPath jp = new io.restassured.path.json.JsonPath(producerBody);");
+                                pw.println("                                    Object extracted = jp.get(\"" + escapedJsonPath + "\");");
+                                pw.println("                                    if (extracted != null) {");
+                                pw.println("                                        " + varName + "Value = extracted.toString();");
+                                pw.println("                                        System.out.println(\"[Dependency] Extracted '\" + " + varName + "Value + \"' from step " + sourceStepIdx + " via jsonPath '" + escapedJsonPath + "'\");");
+                                pw.println("                                    }");
+                                pw.println("                                } catch (Exception jpEx) {");
+                                pw.println("                                    System.err.println(\"[Dynamic Path Finder] jsonPath '\" + \"" + escapedJsonPath + "\" + \"' extraction failed: \" + jpEx.getMessage());");
+                                pw.println("                                }");
+                                pw.println("                            }");
+                                pw.println("                            if (" + varName + "Value == null) {");
+                                pw.println("                                System.out.println(\"[Dynamic Path Finder] Failed to locate value in payload. Falling back to data.id\");");
+                                pw.println("                                " + varName + "Value = \"" + escapedFallback + "\";");
+                                pw.println("                            }");
+                                pw.println("                        } else {");
+                                pw.println("                            System.out.println(\"⚡ BYPASS: Step " + sourceStepIdx + " failed — using fallback for '" + escape(paramName) + "'\");");
+                                pw.println("                            " + varName + "Value = \"" + escapedFallback + "\";");
+                                pw.println("                            Allure.parameter(\"⚡ Bypass Mode\", \"YES — fallback for " + escape(paramName) + "\");");
+                                pw.println("                            es.us.isa.restest.enhancer.TestResultCapture.recordBypassTriggered(" + stepIdx + ");");
+                                pw.println("                        }");
+                                pw.println("                        if (" + varName + "Value != null) {");
+                                pw.println("                            allStepParameters.put(\"" + escape(paramName) + "\", " + varName + "Value);");
                                 if (step.getMethod().getMethod().equalsIgnoreCase("GET")) {
-                                    pw.println("                            req = req.queryParam(\"" + paramName + "\", " + paramName + "Value);");
+                                    pw.println("                            req = req.queryParam(\"" + escape(paramName) + "\", " + varName + "Value);");
                                 } else {
                                     pw.println("                            // Add to body if needed");
                                 }
@@ -1669,6 +1817,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        stepResults.put(" + stepIdx + ", true);");
                             pw.println("                        System.out.println(\"✅ " + escape(stepTitle) + " - SUCCESS\");");
                             
+                            // Capture response body for downstream dependency resolution via jsonPath
+                            pw.println("                        try {");
+                            pw.println("                            String fullBody" + stepIdx + " = stepResponse" + stepIdx + ".getBody().asString();");
+                            pw.println("                            if (fullBody" + stepIdx + " != null && !fullBody" + stepIdx + ".isEmpty()) {");
+                            pw.println("                                capturedOutputs.put(" + stepIdx + ", fullBody" + stepIdx + ");");
+                            pw.println("                            }");
+                            pw.println("                        } catch (Exception captureEx) {");
+                            pw.println("                            System.err.println(\"[Capture] Failed to store response body for step " + stepIdx + ": \" + captureEx.getMessage());");
+                            pw.println("                        }");
+                            pw.println("                        ");
+                            
                             // 🔥 FIX: Clean up SUCCESS reporting - single set of parameters, no duplication
                             pw.println("                        // ✅ SUCCESS: Clean success reporting without duplication");
                             pw.println("                        try {");
@@ -1676,8 +1835,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            int actualStatus = stepResponse" + stepIdx + ".getStatusCode();");
                             pw.println("                            long responseTime = stepResponse" + stepIdx + ".getTime();");
                             pw.println("                            ");
-                            pw.println("                            // 🔧 Test Case Enhancer: Capture response for enhancement");
-                            pw.println("                            es.us.isa.restest.enhancer.TestResultCapture.captureResponse(actualStatus, responseBody);");
+                            pw.println("                            // 🔧 Test Case Enhancer: Capture response for enhancement (step-aware)");
+                            pw.println("                            es.us.isa.restest.enhancer.TestResultCapture.captureStepResponse(" + stepIdx + ", actualStatus, responseBody);");
                             pw.println("                            ");
                             pw.println("                            // Single success status parameter");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (\" + actualStatus + \" in \" + responseTime + \"ms)\");");
@@ -1705,8 +1864,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                                failedResponseBody = stepResponse" + stepIdx + ".getBody().asString();");
                         pw.println("                                failedStatusCode = stepResponse" + stepIdx + ".getStatusCode();");
                         pw.println("                                failedResponseTime = stepResponse" + stepIdx + ".getTime();");
-                        pw.println("                                // 🔧 Test Case Enhancer: Capture response for enhancement");
-                        pw.println("                                es.us.isa.restest.enhancer.TestResultCapture.captureResponse(failedStatusCode, failedResponseBody);");
+                        pw.println("                                // 🔧 Test Case Enhancer: Capture response for enhancement (step-aware)");
+                        pw.println("                                es.us.isa.restest.enhancer.TestResultCapture.captureStepResponse(" + stepIdx + ", failedStatusCode, failedResponseBody);");
                         pw.println("                            }");
                         pw.println("                        } catch (Exception respEx) {");
                         pw.println("                            failedResponseBody = \"Unable to capture response: \" + respEx.getMessage();");
@@ -1858,47 +2017,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                stepResults.put(" + stepIdx + ", false);");
                             pw.println("            }");
                             pw.println("        }");
+                            pw.println("        } // end per-step scope block");
                         } else {
                             // Non-Allure version - simplified (fallback for when Allure is disabled)
                             pw.println("        // Non-Allure version - simplified execution");
                         pw.println("        MultiServiceTestCase.ExecutionDecision decision" + stepIdx + ";");
                         
                         // Generate the actual decision logic based on step's dependency configuration
-                        if (!step.getParamDependencies().isEmpty()) {
-                            pw.println("        // This step has DATA dependencies");
-                            pw.println("        boolean hasFailedDataDependency = false;");
-                            for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
-                                int sourceStepIdx = dep.getValue().sourceStepIndex;
-                                pw.println("        if (!stepResults.getOrDefault(" + sourceStepIdx + ", false)) {");
-                                pw.println("            hasFailedDataDependency = true;");
-                                pw.println("        }");
-                            }
-                            pw.println("        if (hasFailedDataDependency) {");
-                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
-                            pw.println("                MultiServiceTestCase.SkipReason.DATA_DEPENDENCY_FAILED, ");
-                            pw.println("                \"Required data from previous step(s) is not available\");");
-                            pw.println("        } else {");
-                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
-                            pw.println("        }");
-                        } else if (!step.getWorkflowDependencies().isEmpty()) {
-                            pw.println("        // This step has WORKFLOW dependencies");
-                            pw.println("        boolean hasFailedWorkflowDependency = false;");
-                            for (Integer workflowDep : step.getWorkflowDependencies()) {
-                                pw.println("        if (!stepResults.getOrDefault(" + workflowDep + ", false)) {");
-                                pw.println("            hasFailedWorkflowDependency = true;");
-                                pw.println("        }");
-                            }
-                            pw.println("        if (hasFailedWorkflowDependency) {");
-                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(false, ");
-                            pw.println("                MultiServiceTestCase.SkipReason.WORKFLOW_DEPENDENCY_FAILED, ");
-                            pw.println("                \"Workflow predecessor step(s) failed\");");
-                            pw.println("        } else {");
-                            pw.println("            decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
-                            pw.println("        }");
-                        } else {
-                            pw.println("        // This step is INDEPENDENT - always execute");
-                            pw.println("        decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
-                        }
+                        // RESILIENT BYPASS: Data/workflow dependencies no longer cause skips.
+                        // Only auth failure causes step skips in non-Allure mode.
+                        pw.println("        // Resilient mode: execute regardless of predecessor results");
+                        pw.println("        decision" + stepIdx + " = new MultiServiceTestCase.ExecutionDecision(true, null, null);");
                             
                             pw.println("        if (decision" + stepIdx + ".shouldExecute && loginSucceeded.get()) {");
                             pw.println("            System.out.println(\"✅ EXECUTING: " + escape(stepTitle) + "\");");
@@ -1993,74 +2122,106 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     }
     
     /**
-     * Create a clean, short subSuite label for Allure grouping.
-     * Instead of the full test method name, creates a simple identifier.
-     * 
+     * Create a descriptive subSuite label for Allure grouping.
+     *
      * Examples:
-     * - "test_POST_1_1" → "Test 1"
-     * - "test_negative_POST_1_2" → "Negative Test 2"
-     * - "test_POST_1_1_explore_400" → "Explore 400"
+     *   Positive test       → "[Valid] v3"
+     *   Negative test       → "[Fault: POST /order] BOUNDARY_VIOLATION (v5)"
+     *   Exploration test    → "[Explore 404]"
      */
     private static String createCleanSubSuiteLabel(MultiServiceTestCase mstc, String testMethodName) {
-        // For exploration tests, show the target status code
+        // Exploration tests
         if (mstc.isStatusCodeExplorationTest()) {
             int targetStatus = mstc.getTargetStatusCode();
             if (targetStatus > 0) {
-                return "Explore " + targetStatus;
+                return "[Explore " + targetStatus + "]";
             }
-            // Fallback: extract from test name
-            if (testMethodName.contains("_explore_")) {
+            if (testMethodName != null && testMethodName.contains("_explore_")) {
                 int idx = testMethodName.lastIndexOf("_explore_");
                 String suffix = testMethodName.substring(idx + 9);
-                // Handle retry suffix: _explore_400_retry1 -> 400
                 int underscoreIdx = suffix.indexOf('_');
                 if (underscoreIdx > 0) {
                     suffix = suffix.substring(0, underscoreIdx);
                 }
-                return "Explore " + suffix;
+                return "[Explore " + suffix + "]";
             }
         }
-        
-        // For negative tests
+
+        // Negative tests — show the targeted API path and fault type
         if (mstc.getFaulty()) {
-            // Extract variant number from test name
-            String variantNum = extractVariantNumber(testMethodName);
-            return "Negative Test " + variantNum;
+            String variant = extractVariantTag(testMethodName);
+            String faultType = mstc.getFaultTypeCategory();
+            String apiPath = mstc.getTargetFaultRootApiPath();
+
+            if (apiPath != null && !apiPath.isEmpty() && faultType != null) {
+                return "[Fault: " + apiPath + "] " + faultType + " (" + variant + ")";
+            }
+            String targetRoot = mstc.getTargetFaultRootId();
+            if (targetRoot != null && faultType != null) {
+                return "[Fault: " + targetRoot + "] " + faultType + " (" + variant + ")";
+            }
+            return "[Fault] " + variant;
         }
-        
-        // For regular positive tests
-        String variantNum = extractVariantNumber(testMethodName);
-        return "Test " + variantNum;
+
+        // Positive tests
+        return "[Valid] " + extractVariantTag(testMethodName);
+    }
+
+    /**
+     * Extract the variant tag from a flow-centric test name.
+     *   "test_positive_flow_S12_v3" → "v3"
+     *   "test_negative_flow_S12_v5_fault_Root2_OVERFLOW" → "v5"
+     * Falls back to "v1" for legacy names.
+     */
+    private static String extractVariantTag(String testMethodName) {
+        if (testMethodName == null) return "v1";
+        // Look for _vN segment
+        int vIdx = testMethodName.indexOf("_v");
+        if (vIdx >= 0) {
+            int start = vIdx + 1; // skip the underscore
+            int end = testMethodName.indexOf('_', start + 1);
+            return end > start ? testMethodName.substring(start, end) : testMethodName.substring(start);
+        }
+        // Legacy fallback: grab last numeric segment
+        String[] parts = testMethodName.split("_");
+        for (int i = parts.length - 1; i >= 0; i--) {
+            if (parts[i].equals("explore") || parts[i].startsWith("retry")) continue;
+            try { Integer.parseInt(parts[i]); return "v" + parts[i]; }
+            catch (NumberFormatException ignored) {}
+        }
+        return "v1";
     }
     
     /**
-     * Extract variant number from test method name.
-     * e.g., "test_POST_1_2" → "2", "test_negative_GET_1_3" → "3"
+     * Build a human-readable flow path from all root steps in a test case.
+     *
+     * 1-Root:  "GET /api/v1/prices"
+     * Multi:   "POST /login -> POST /order -> POST /pay"
      */
-    private static String extractVariantNumber(String testMethodName) {
-        if (testMethodName == null || testMethodName.isEmpty()) return "1";
-        
-        // Try to extract the last number from the name
-        // Pattern: test_METHOD_X_Y where Y is the variant
-        String[] parts = testMethodName.split("_");
-        if (parts.length >= 2) {
-            // Get the last numeric part
-            for (int i = parts.length - 1; i >= 0; i--) {
-                String part = parts[i];
-                // Skip known suffixes
-                if (part.equals("explore") || part.startsWith("retry")) continue;
-                // Check if it's a number
-                try {
-                    Integer.parseInt(part);
-                    return part;
-                } catch (NumberFormatException e) {
-                    // Not a number, continue
+    private static String buildFlowPath(MultiServiceTestCase tc) {
+        if (tc == null || tc.getSteps().isEmpty()) return "Empty Flow";
+
+        StringBuilder sb = new StringBuilder();
+        for (MultiServiceTestCase.StepCall step : tc.getSteps()) {
+            if (!step.isTopLevelRoot()) continue;
+
+            if (sb.length() > 0) sb.append(" -> ");
+
+            String verb = "GET";
+            String path = step.getPath() != null ? step.getPath() : "";
+            if (step.getMethod() != null) {
+                if (step.getMethod().getMethod() != null) {
+                    verb = step.getMethod().getMethod().toUpperCase();
+                }
+                if (step.getMethod().getTestPath() != null) {
+                    path = step.getMethod().getTestPath();
                 }
             }
+            sb.append(verb).append(' ').append(path);
         }
-        return "1"; // Default
+        return sb.length() > 0 ? sb.toString() : "Empty Flow";
     }
-    
+
     private static String escape(String s) {
         if (s == null) return "";
         return s.replace("\\", "\\\\")
@@ -2101,10 +2262,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
     private static String sanitize(String s) {
         if (s == null) return "Scenario";
-        // 🔧 FIX: Convert to lowercase FIRST for consistent class naming on case-insensitive file systems (Windows)
-        // This prevents "Null" and "null" from creating conflicting file names
-        String lowered = s.toLowerCase();
-        return lowered.replaceAll("[^a-z0-9_]", "_").replaceAll("_+", "_").replaceAll("^_|_$", "");
+        // Preserve casing for flow-centric names like "Flow_Scenario_12".
+        // Only strip characters that are invalid in Java identifiers.
+        return s.replaceAll("[^a-zA-Z0-9_]", "_")
+                .replaceAll("_+", "_")
+                .replaceAll("^_|_$", "");
     }
     
     /**

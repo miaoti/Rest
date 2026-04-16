@@ -222,7 +222,7 @@ public class StatusCodeExplorationEnhancer {
         // Log current coverage
         tracker.logCoverageReport();
         
-        // STEP 3: For each test case, get ALL exploration suggestions in ONE LLM call
+        // STEP 3: For each test × each step, get exploration suggestions with reachability gating
         List<MultiServiceTestCase> allExplorationTests = new ArrayList<>();
         int totalCreated = 0;
         
@@ -232,7 +232,6 @@ public class StatusCodeExplorationEnhancer {
                 break;
             }
             
-            // Skip exploration tests
             if (test.isStatusCodeExplorationTest()) {
                 continue;
             }
@@ -243,64 +242,75 @@ public class StatusCodeExplorationEnhancer {
                 continue;
             }
             
-            String apiKey = getApiKey(test);
-            
-            // Get untriggered codes for this API (from round-robin)
-            List<StatusCodeTarget> untriggeredCodes = tracker.getUntriggeredCodes(apiKey);
-            if (untriggeredCodes.isEmpty()) {
-                log.debug("All status codes already triggered/targeted for {}", apiKey);
-                continue;
-            }
-            
-            log.info("───────────────────────────────────────────────────────────────────────────");
-            log.info("📋 Test: {} (API: {})", test.getOperationId(), apiKey);
-            log.info("   Available status codes to explore: {}", untriggeredCodes.stream()
-                .map(t -> String.valueOf(t.getStatusCode())).collect(Collectors.joining(", ")));
-            
-            // ONE LLM call: Ask which status codes to explore and get ALL parameters
-            List<ExplorationSuggestion> suggestions = evaluateExplorationCandidate(test, result, untriggeredCodes);
-            
-            if (suggestions.isEmpty()) {
-                log.info("   LLM: No exploration suggested for this test");
-                continue;
-            }
-            
-            log.info("   LLM suggested {} exploration(s): {}", suggestions.size(),
-                suggestions.stream().map(s -> String.valueOf(s.getTargetStatusCode())).collect(Collectors.joining(", ")));
-            
-            // Build lookup map
-            Map<Integer, StatusCodeTarget> targetsByCode = new HashMap<>();
-            for (StatusCodeTarget target : untriggeredCodes) {
-                targetsByCode.put(target.getStatusCode(), target);
-            }
-            
-            // Generate ALL exploration tests from suggestions
-            int createdForThisTest = 0;
-            for (ExplorationSuggestion suggestion : suggestions) {
+            // Iterate every step in this test for per-step exploration
+            for (int stepIdx = 0; stepIdx < test.getSteps().size(); stepIdx++) {
                 if (totalCreated >= maxExplorationTestsPerRound) break;
-                if (createdForThisTest >= maxExplorationTestsPerOriginal) break;
                 
-                int targetCode = suggestion.getTargetStatusCode();
+                String apiKey = getApiKey(test, stepIdx);
                 
-                // Skip if already triggered or not in our list
-                if (tracker.isTriggered(apiKey, targetCode)) {
+                List<StatusCodeTarget> untriggeredCodes = tracker.getUntriggeredCodes(apiKey);
+                if (untriggeredCodes.isEmpty()) {
+                    log.debug("All status codes already triggered/targeted for {} (step {})", apiKey, stepIdx);
                     continue;
                 }
                 
-                StatusCodeTarget statusCodeTarget = targetsByCode.get(targetCode);
+                // Reachability gate: verify Steps 0..stepIdx-1 all returned 2xx
+                if (stepIdx > 0 && !isStepReachable(result, stepIdx)) {
+                    log.info("   ⏭ Step {} ({}) is NOT reachable in base test {} - skipping",
+                        stepIdx, apiKey, test.getOperationId());
+                    continue;
+                }
                 
-                // Create exploration test
-                MultiServiceTestCase explorationTest = createExplorationTest(test, suggestion, statusCodeTarget);
-                if (explorationTest != null) {
-                    allExplorationTests.add(explorationTest);
-                    // Mark as targeted (but not triggered yet - wait for execution results)
-                    tracker.markTargeted(apiKey, targetCode);
-                    totalCreated++;
-                    createdForThisTest++;
+                log.info("───────────────────────────────────────────────────────────────────────────");
+                log.info("📋 Test: {} | Step {} (API: {})", test.getOperationId(), stepIdx, apiKey);
+                log.info("   Available status codes to explore: {}", untriggeredCodes.stream()
+                    .map(t -> String.valueOf(t.getStatusCode())).collect(Collectors.joining(", ")));
+                
+                List<ExplorationSuggestion> suggestions = evaluateExplorationCandidate(
+                    test, result, untriggeredCodes, stepIdx);
+                
+                if (suggestions.isEmpty()) {
+                    log.info("   LLM: No exploration suggested for step {}", stepIdx);
+                    continue;
+                }
+                
+                // Stamp targetStepIndex onto each suggestion
+                for (ExplorationSuggestion s : suggestions) {
+                    s.setTargetStepIndex(stepIdx);
+                }
+                
+                log.info("   LLM suggested {} exploration(s): {}", suggestions.size(),
+                    suggestions.stream().map(s -> String.valueOf(s.getTargetStatusCode())).collect(Collectors.joining(", ")));
+                
+                Map<Integer, StatusCodeTarget> targetsByCode = new HashMap<>();
+                for (StatusCodeTarget target : untriggeredCodes) {
+                    targetsByCode.put(target.getStatusCode(), target);
+                }
+                
+                int createdForThisStep = 0;
+                for (ExplorationSuggestion suggestion : suggestions) {
+                    if (totalCreated >= maxExplorationTestsPerRound) break;
+                    if (createdForThisStep >= maxExplorationTestsPerOriginal) break;
                     
-                    log.info("   ✅ Created: {} targeting status {}", 
-                        explorationTest.getOperationId(), targetCode);
-                    log.info("      Parameters: {}", suggestion.parameterChanges);
+                    int targetCode = suggestion.getTargetStatusCode();
+                    
+                    if (tracker.isTriggered(apiKey, targetCode)) {
+                        continue;
+                    }
+                    
+                    StatusCodeTarget statusCodeTarget = targetsByCode.get(targetCode);
+                    
+                    MultiServiceTestCase explorationTest = createExplorationTest(test, suggestion, statusCodeTarget);
+                    if (explorationTest != null) {
+                        allExplorationTests.add(explorationTest);
+                        tracker.markTargeted(apiKey, targetCode);
+                        totalCreated++;
+                        createdForThisStep++;
+                        
+                        log.info("   ✅ Created: {} targeting status {} at step {}", 
+                            explorationTest.getOperationId(), targetCode, stepIdx);
+                        log.info("      Parameters: {}", suggestion.parameterChanges);
+                    }
                 }
             }
         }
@@ -388,88 +398,137 @@ public class StatusCodeExplorationEnhancer {
     }
     
     /**
-     * Run LLM Discovery for each unique API in the executed tests.
+     * Run LLM Discovery for each unique API across ALL steps of executed tests.
      */
     private void runDiscoveryForApis(
             List<MultiServiceTestCase> executedTests,
             Map<String, TestExecutionResult> executionResults) {
         
-        // Group tests by API
-        Map<String, List<MultiServiceTestCase>> testsByApi = new HashMap<>();
+        // (apiKey -> stepIndex that first introduced it, sampleTest)
+        Map<String, int[]> apiToStepSample = new LinkedHashMap<>();
+        Map<String, MultiServiceTestCase> apiToSampleTest = new HashMap<>();
+        Map<String, Set<Integer>> observedCodesPerApi = new HashMap<>();
+        Map<String, List<String>> sampleResponsesPerApi = new HashMap<>();
+        
         for (MultiServiceTestCase test : executedTests) {
-            String apiKey = getApiKey(test);
-            testsByApi.computeIfAbsent(apiKey, k -> new ArrayList<>()).add(test);
+            TestExecutionResult result = executionResults.get(test.getOperationId());
+            for (int s = 0; s < test.getSteps().size(); s++) {
+                String apiKey = getApiKey(test, s);
+                apiToStepSample.putIfAbsent(apiKey, new int[]{s});
+                apiToSampleTest.putIfAbsent(apiKey, test);
+                
+                if (result != null) {
+                    observedCodesPerApi.computeIfAbsent(apiKey, k -> new HashSet<>());
+                    sampleResponsesPerApi.computeIfAbsent(apiKey, k -> new ArrayList<>());
+                    
+                    // Use per-step results if available, otherwise fall back to top-level
+                    if (!result.getStepResults().isEmpty() && s < result.getStepResults().size()) {
+                        StepExecutionResult sr = result.getStepResults().get(s);
+                        observedCodesPerApi.get(apiKey).add(sr.getStatusCode());
+                        if (sr.getResponseBody() != null && sampleResponsesPerApi.get(apiKey).size() < 3) {
+                            sampleResponsesPerApi.get(apiKey).add(sr.getResponseBody());
+                        }
+                    } else if (s == 0) {
+                        observedCodesPerApi.get(apiKey).add(result.getActualStatusCode());
+                        if (result.getResponseBody() != null && sampleResponsesPerApi.get(apiKey).size() < 3) {
+                            sampleResponsesPerApi.get(apiKey).add(result.getResponseBody());
+                        }
+                    }
+                }
+            }
         }
         
-        log.info("Running LLM Discovery for {} unique APIs", testsByApi.size());
+        log.info("Running LLM Discovery for {} unique APIs (across all steps)", apiToStepSample.size());
         
-        for (Map.Entry<String, List<MultiServiceTestCase>> entry : testsByApi.entrySet()) {
+        for (Map.Entry<String, int[]> entry : apiToStepSample.entrySet()) {
             String apiKey = entry.getKey();
-            List<MultiServiceTestCase> tests = entry.getValue();
+            int stepIdx = entry.getValue()[0];
             
-            // Skip if already discovered
             if (tracker.hasApi(apiKey)) {
                 log.debug("API {} already discovered", apiKey);
                 continue;
             }
             
-            // Get sample test for API info
-            MultiServiceTestCase sampleTest = tests.get(0);
+            MultiServiceTestCase sampleTest = apiToSampleTest.get(apiKey);
+            Set<Integer> observedCodes = observedCodesPerApi.getOrDefault(apiKey, Collections.emptySet());
+            List<String> sampleResponses = sampleResponsesPerApi.getOrDefault(apiKey, Collections.emptyList());
             
-            // Collect observed status codes from execution results
-            Set<Integer> observedCodes = new HashSet<>();
-            List<String> sampleResponses = new ArrayList<>();
-            
-            for (MultiServiceTestCase test : tests) {
-                TestExecutionResult result = executionResults.get(test.getOperationId());
-                if (result != null) {
-                    observedCodes.add(result.getActualStatusCode());
-                    if (result.getResponseBody() != null && sampleResponses.size() < 3) {
-                        sampleResponses.add(result.getResponseBody());
-                    }
-                }
-            }
-            
-            // Run LLM Discovery
             String[] apiParts = apiKey.split(" ", 2);
             String httpMethod = apiParts[0];
             String path = apiParts.length > 1 ? apiParts[1] : "";
-            String serviceName = getServiceName(sampleTest);
+            String serviceName = getServiceName(sampleTest, stepIdx);
             
             List<StatusCodeTarget> discoveredCodes = discovery.discoverStatusCodes(
                 serviceName, httpMethod, path,
-                getParameterInfos(sampleTest),
+                getParameterInfos(sampleTest, stepIdx),
                 observedCodes, sampleResponses);
             
-            // Register discovered codes
             tracker.registerDiscoveredCodes(apiKey, discoveredCodes);
         }
     }
     
     /**
-     * Update triggered status codes from execution results.
+     * Update triggered status codes from execution results (including per-step granularity).
      */
     private void updateTriggeredStatusCodes(Map<String, TestExecutionResult> executionResults) {
         for (TestExecutionResult result : executionResults.values()) {
+            // Top-level (backward compat)
             String apiKey = result.getApiKey();
             if (apiKey != null && tracker.hasApi(apiKey)) {
                 tracker.markTriggered(apiKey, result.getActualStatusCode());
+            }
+            // Per-step granularity
+            for (StepExecutionResult sr : result.getStepResults()) {
+                String stepApiKey = sr.getApiKey();
+                if (stepApiKey != null && tracker.hasApi(stepApiKey) && sr.getStatusCode() > 0) {
+                    tracker.markTriggered(stepApiKey, sr.getStatusCode());
+                }
             }
         }
     }
     
     /**
-     * Ask LLM if this test is a good candidate for status code exploration.
+     * Check whether all steps before targetStepIndex returned 2xx in the base test execution.
+     */
+    private boolean isStepReachable(TestExecutionResult result, int targetStepIndex) {
+        List<StepExecutionResult> stepResults = result.getStepResults();
+        if (stepResults.isEmpty()) {
+            // No per-step data available; fall back to top-level result for step 0 only
+            return targetStepIndex == 0 ||
+                   (result.getActualStatusCode() >= 200 && result.getActualStatusCode() < 300);
+        }
+        for (int i = 0; i < targetStepIndex && i < stepResults.size(); i++) {
+            int code = stepResults.get(i).getStatusCode();
+            if (code < 200 || code >= 300) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Legacy overload for backward compatibility (targets step 0).
      */
     private List<ExplorationSuggestion> evaluateExplorationCandidate(
             MultiServiceTestCase test,
             TestExecutionResult result,
             List<StatusCodeTarget> untriggeredCodes) {
+        return evaluateExplorationCandidate(test, result, untriggeredCodes, 0);
+    }
+    
+    /**
+     * Ask LLM if this test is a good candidate for status code exploration on the given step.
+     */
+    private List<ExplorationSuggestion> evaluateExplorationCandidate(
+            MultiServiceTestCase test,
+            TestExecutionResult result,
+            List<StatusCodeTarget> untriggeredCodes,
+            int targetStepIndex) {
         
         String systemPrompt = buildExplorationSystemPrompt();
-        String userPrompt = buildExplorationUserPrompt(test, result, untriggeredCodes);
+        String userPrompt = buildExplorationUserPrompt(test, result, untriggeredCodes, targetStepIndex);
         
-        log.debug("Evaluating exploration candidate: {}", test.getOperationId());
+        log.debug("Evaluating exploration candidate: {} step {}", test.getOperationId(), targetStepIndex);
         
         String llmResponse = llmService.generateText(systemPrompt, userPrompt, maxTokens, temperature);
         
@@ -496,53 +555,103 @@ public class StatusCodeExplorationEnhancer {
                "IMPORTANT: Respond with valid JSON only. No markdown, no explanations outside JSON.";
     }
     
+    /**
+     * Legacy overload for backward compatibility (targets step 0).
+     */
     private String buildExplorationUserPrompt(
             MultiServiceTestCase test,
             TestExecutionResult result,
             List<StatusCodeTarget> untriggeredCodes) {
+        return buildExplorationUserPrompt(test, result, untriggeredCodes, 0);
+    }
+    
+    private String buildExplorationUserPrompt(
+            MultiServiceTestCase test,
+            TestExecutionResult result,
+            List<StatusCodeTarget> untriggeredCodes,
+            int targetStepIndex) {
         
         StringBuilder prompt = new StringBuilder();
         
         prompt.append("GENERATE EXPLORATION TEST CASES FOR STATUS CODE COVERAGE\n\n");
         
-        // API Information (like discovery prompt)
-        prompt.append("=== API OPERATION ===\n");
-        if (!test.getSteps().isEmpty()) {
-            MultiServiceTestCase.StepCall step = test.getSteps().get(0);
-            prompt.append("Service: ").append(step.getServiceName()).append("\n");
-            prompt.append("Method: ").append(step.getMethod()).append("\n");
-            prompt.append("Path: ").append(step.getPath()).append("\n");
+        // Multi-step sequence context: show ALL steps up to and including target
+        boolean isMultiStep = test.getSteps().size() > 1;
+        
+        if (isMultiStep) {
+            prompt.append("=== WORKFLOW SEQUENCE CONTEXT ===\n");
+            for (int s = 0; s <= targetStepIndex && s < test.getSteps().size(); s++) {
+                MultiServiceTestCase.StepCall step = test.getSteps().get(s);
+                String tag = (s == targetStepIndex) ? " ← TARGET" : " (locked)";
+                prompt.append("Step ").append(s).append(": ")
+                      .append(step.getMethod()).append(" ").append(step.getPath())
+                      .append(tag).append("\n");
+            }
+            prompt.append("\n");
+            
+            prompt.append("⚠️ THIS IS A MULTI-STEP WORKFLOW. You are targeting Step ")
+                  .append(targetStepIndex).append(". Do NOT modify parameters for Steps 0 to ")
+                  .append(targetStepIndex - 1)
+                  .append(", as they must remain valid to reach the target.\n\n");
+        }
+        
+        // Target step API information
+        prompt.append("=== TARGET API OPERATION (Step ").append(targetStepIndex).append(") ===\n");
+        if (targetStepIndex < test.getSteps().size()) {
+            MultiServiceTestCase.StepCall targetStep = test.getSteps().get(targetStepIndex);
+            prompt.append("Service: ").append(targetStep.getServiceName()).append("\n");
+            prompt.append("Method: ").append(targetStep.getMethod()).append("\n");
+            prompt.append("Path: ").append(targetStep.getPath()).append("\n");
         } else {
-            prompt.append("API: ").append(getApiKey(test)).append("\n");
+            prompt.append("API: ").append(getApiKey(test, targetStepIndex)).append("\n");
         }
         prompt.append("\n");
         
-        // Current test parameters (important for context)
-        prompt.append("=== CURRENT TEST PARAMETERS ===\n");
+        // Target step parameters
+        prompt.append("=== CURRENT TEST PARAMETERS (Step ").append(targetStepIndex).append(") ===\n");
         prompt.append("Test ID: ").append(test.getOperationId()).append("\n");
         prompt.append("Test Type: ").append(test.getFaulty() ? "NEGATIVE (invalid inputs)" : "POSITIVE (valid inputs)").append("\n");
-        if (!test.getSteps().isEmpty()) {
-            MultiServiceTestCase.StepCall step = test.getSteps().get(0);
-            if (!step.getPathParams().isEmpty()) {
-                prompt.append("Path Parameters: ").append(step.getPathParams()).append("\n");
+        if (targetStepIndex < test.getSteps().size()) {
+            MultiServiceTestCase.StepCall targetStep = test.getSteps().get(targetStepIndex);
+            if (!targetStep.getPathParams().isEmpty()) {
+                prompt.append("Path Parameters: ").append(targetStep.getPathParams()).append("\n");
             }
-            if (!step.getQueryParams().isEmpty()) {
-                prompt.append("Query Parameters: ").append(step.getQueryParams()).append("\n");
+            if (!targetStep.getQueryParams().isEmpty()) {
+                prompt.append("Query Parameters: ").append(targetStep.getQueryParams()).append("\n");
             }
-            if (step.getBody() != null && !step.getBody().isEmpty()) {
-                prompt.append("Request Body: ").append(truncate(step.getBody(), 500)).append("\n");
+            if (targetStep.getBody() != null && !targetStep.getBody().isEmpty()) {
+                prompt.append("Request Body: ").append(truncate(targetStep.getBody(), 500)).append("\n");
             }
-            if (!step.getBodyFields().isEmpty()) {
-                prompt.append("Body Fields: ").append(step.getBodyFields()).append("\n");
+            if (!targetStep.getBodyFields().isEmpty()) {
+                prompt.append("Body Fields: ").append(targetStep.getBodyFields()).append("\n");
+            }
+            
+            // Dependency protection: list dynamically injected parameters
+            if (!targetStep.getParamDependencies().isEmpty()) {
+                prompt.append("\n🚫 DYNAMICALLY INJECTED PARAMETERS (DO NOT MODIFY THESE):\n");
+                for (String depParam : targetStep.getParamDependencies().keySet()) {
+                    MultiServiceTestCase.Dependency dep = targetStep.getParamDependencies().get(depParam);
+                    prompt.append("  - ").append(depParam)
+                          .append(" (injected from Step ").append(dep.sourceStepIndex)
+                          .append(", field: ").append(dep.sourceOutputKey).append(")\n");
+                }
             }
         }
         prompt.append("\n");
         
-        // Execution result
+        // Execution result for the target step
         prompt.append("=== LAST EXECUTION RESULT ===\n");
-        prompt.append("Actual Status Code: ").append(result.getActualStatusCode()).append("\n");
-        if (result.getResponseBody() != null && !result.getResponseBody().isEmpty()) {
-            prompt.append("Response: ").append(truncate(result.getResponseBody(), 400)).append("\n");
+        if (!result.getStepResults().isEmpty() && targetStepIndex < result.getStepResults().size()) {
+            StepExecutionResult sr = result.getStepResults().get(targetStepIndex);
+            prompt.append("Actual Status Code (Step ").append(targetStepIndex).append("): ").append(sr.getStatusCode()).append("\n");
+            if (sr.getResponseBody() != null && !sr.getResponseBody().isEmpty()) {
+                prompt.append("Response: ").append(truncate(sr.getResponseBody(), 400)).append("\n");
+            }
+        } else {
+            prompt.append("Actual Status Code: ").append(result.getActualStatusCode()).append("\n");
+            if (result.getResponseBody() != null && !result.getResponseBody().isEmpty()) {
+                prompt.append("Response: ").append(truncate(result.getResponseBody(), 400)).append("\n");
+            }
         }
         prompt.append("\n");
         
@@ -572,9 +681,14 @@ public class StatusCodeExplorationEnhancer {
         prompt.append("2. For EACH status code you think can be triggered, provide:\n");
         prompt.append("   - The target status code\n");
         prompt.append("   - Your strategy to trigger it\n");
-        prompt.append("   - The EXACT parameter changes (use the suggested inputs as starting point)\n");
+        prompt.append("   - The EXACT parameter changes for Step ").append(targetStepIndex)
+              .append(" ONLY (use the suggested inputs as starting point)\n");
         prompt.append("3. You can suggest MULTIPLE status codes (recommended: 2-5 per test)\n");
-        prompt.append("4. Only suggest codes that are REALISTICALLY achievable\n\n");
+        prompt.append("4. Only suggest codes that are REALISTICALLY achievable\n");
+        if (isMultiStep) {
+            prompt.append("5. Do NOT suggest changes to dynamically injected parameters listed above\n");
+        }
+        prompt.append("\n");
         
         // Response format
         prompt.append("=== RESPONSE FORMAT (JSON ONLY) ===\n");
@@ -701,14 +815,19 @@ public class StatusCodeExplorationEnhancer {
                     paramChanges.size(), suggestion.targetStatusCode);
             }
             
-            // Apply parameter changes to the first step
-            if (!exploration.getSteps().isEmpty() && !paramChanges.isEmpty()) {
-                MultiServiceTestCase.StepCall originalStep = exploration.getSteps().get(0);
+            // Apply parameter changes to the TARGET step (not hardcoded step 0)
+            int targetIdx = suggestion.getTargetStepIndex();
+            if (targetIdx < exploration.getSteps().size() && !paramChanges.isEmpty()) {
+                MultiServiceTestCase.StepCall originalStep = exploration.getSteps().get(targetIdx);
                 
-                log.info("Applying parameter changes for status {} exploration: {}", 
-                    suggestion.targetStatusCode, paramChanges);
+                log.info("Applying parameter changes for status {} exploration at step {}: {}", 
+                    suggestion.targetStatusCode, targetIdx, paramChanges);
                 
-                // Create mutable copies of the maps
+                // Collect dependency-protected parameter names for safety filter
+                Set<String> protectedParams = originalStep.getParamDependencies() != null
+                        ? originalStep.getParamDependencies().keySet()
+                        : Collections.emptySet();
+                
                 Map<String, String> newPathParams = new LinkedHashMap<>(originalStep.getPathParams());
                 Map<String, String> newQueryParams = new LinkedHashMap<>(originalStep.getQueryParams());
                 Map<String, String> newBodyFields = new LinkedHashMap<>(originalStep.getBodyFields());
@@ -717,46 +836,45 @@ public class StatusCodeExplorationEnhancer {
                     String paramName = change.getKey();
                     String paramValue = change.getValue();
                     
+                    // Safety filter: never overwrite a dynamically injected parameter
+                    if (protectedParams.contains(paramName)) {
+                        log.info("   🛡️ Skipping protected parameter '{}' (data dependency)", paramName);
+                        continue;
+                    }
+                    
                     boolean applied = false;
                     
-                    // Try to apply to path params
                     if (newPathParams.containsKey(paramName)) {
                         newPathParams.put(paramName, paramValue);
                         log.debug("Applied {} = {} to path params", paramName, paramValue);
                         applied = true;
                     }
                     
-                    // Try to apply to query params
                     if (newQueryParams.containsKey(paramName)) {
                         newQueryParams.put(paramName, paramValue);
                         log.debug("Applied {} = {} to query params", paramName, paramValue);
                         applied = true;
                     }
                     
-                    // Try to apply to body fields
                     if (newBodyFields.containsKey(paramName)) {
                         newBodyFields.put(paramName, paramValue);
                         log.debug("Applied {} = {} to body fields", paramName, paramValue);
                         applied = true;
                     }
                     
-                    // If parameter wasn't found in existing maps, try to add to appropriate location
                     if (!applied) {
-                        // For body-based APIs (POST/PUT/PATCH), add to body fields
                         String method = originalStep.getMethod().toString().toUpperCase();
                         if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
                             newBodyFields.put(paramName, paramValue);
                             log.debug("Added {} = {} to body fields (new parameter for {})", 
                                 paramName, paramValue, method);
                         } else {
-                            // For GET/DELETE, add to query params
                             newQueryParams.put(paramName, paramValue);
                             log.debug("Added {} = {} to query params (new parameter)", paramName, paramValue);
                         }
                     }
                 }
                 
-                // Rebuild the body JSON from the modified body fields
                 String newBody = originalStep.getBody();
                 if (!newBodyFields.isEmpty()) {
                     JSONObject bodyJson = new JSONObject(newBodyFields);
@@ -764,7 +882,6 @@ public class StatusCodeExplorationEnhancer {
                     log.info("Rebuilt request body for exploration: {}", newBody);
                 }
                 
-                // Create a NEW StepCall with the modified parameters and body
                 MultiServiceTestCase.StepCall modifiedStep = new MultiServiceTestCase.StepCall(
                     originalStep.getServiceName(),
                     originalStep.getMethod(),
@@ -772,23 +889,37 @@ public class StatusCodeExplorationEnhancer {
                     newPathParams,
                     newQueryParams,
                     new LinkedHashMap<>(originalStep.getHeaders()),
-                    newBody,  // Use the newly constructed body
+                    newBody,
                     originalStep.getExpectedStatus(),
                     newBodyFields
                 );
                 
-                // Copy over other properties
                 for (String key : originalStep.getCaptureOutputKeys()) {
                     modifiedStep.addCaptureOutputKey(key);
                 }
                 
-                // Replace the first step with the modified one
-                exploration.getSteps().set(0, modifiedStep);
+                // Retain flow metadata on the modified step as well
+                for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : originalStep.getParamDependencies().entrySet()) {
+                    modifiedStep.addParamDependency(dep.getKey(), dep.getValue().sourceStepIndex, dep.getValue().sourceOutputKey);
+                }
+                for (Integer wdep : originalStep.getWorkflowDependencies()) {
+                    modifiedStep.addWorkflowDependency(wdep);
+                }
+                modifiedStep.setDependencyType(originalStep.getDependencyType());
+                modifiedStep.setHierarchicalId(originalStep.getHierarchicalId());
+                modifiedStep.setTopLevelRoot(originalStep.isTopLevelRoot());
+                modifiedStep.setMergedRootStep(originalStep.isMergedRootStep());
+                modifiedStep.setProducerRootIndex(originalStep.getProducerRootIndex());
+                for (Map.Entry<String, String> prov : originalStep.getProvenanceBindings().entrySet()) {
+                    modifiedStep.addProvenanceBinding(prov.getKey(), prov.getValue());
+                }
                 
-                log.info("Created modified step with new body: {}", newBody);
+                exploration.getSteps().set(targetIdx, modifiedStep);
+                
+                log.info("Created modified step {} with new body: {}", targetIdx, newBody);
             } else if (paramChanges.isEmpty()) {
-                log.warn("No parameter changes available for status {} exploration - test may not trigger expected status", 
-                    suggestion.targetStatusCode);
+                log.warn("No parameter changes available for status {} exploration at step {} - test may not trigger expected status", 
+                    suggestion.targetStatusCode, targetIdx);
             }
             
             // Handle auth manipulation if needed
@@ -812,14 +943,13 @@ public class StatusCodeExplorationEnhancer {
     }
     
     /**
-     * Clone a MultiServiceTestCase for modification.
+     * Clone a MultiServiceTestCase for modification, preserving all flow metadata.
      */
     private MultiServiceTestCase cloneTestCase(MultiServiceTestCase original) {
         MultiServiceTestCase clone = new MultiServiceTestCase(original.getOperationId());
         clone.setScenarioName(original.getScenarioName());
         clone.setFaulty(original.getFaulty());
         
-        // Clone steps
         for (MultiServiceTestCase.StepCall originalStep : original.getSteps()) {
             MultiServiceTestCase.StepCall clonedStep = new MultiServiceTestCase.StepCall(
                 originalStep.getServiceName(),
@@ -833,15 +963,29 @@ public class StatusCodeExplorationEnhancer {
                 new LinkedHashMap<>(originalStep.getBodyFields())
             );
             
-            // Clone capture output keys
             for (String key : originalStep.getCaptureOutputKeys()) {
                 clonedStep.addCaptureOutputKey(key);
+            }
+            
+            // Retain all 7 flow metadata fields dropped by the StepCall constructor
+            for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : originalStep.getParamDependencies().entrySet()) {
+                clonedStep.addParamDependency(dep.getKey(), dep.getValue().sourceStepIndex, dep.getValue().sourceOutputKey);
+            }
+            for (Integer wdep : originalStep.getWorkflowDependencies()) {
+                clonedStep.addWorkflowDependency(wdep);
+            }
+            clonedStep.setDependencyType(originalStep.getDependencyType());
+            clonedStep.setHierarchicalId(originalStep.getHierarchicalId());
+            clonedStep.setTopLevelRoot(originalStep.isTopLevelRoot());
+            clonedStep.setMergedRootStep(originalStep.isMergedRootStep());
+            clonedStep.setProducerRootIndex(originalStep.getProducerRootIndex());
+            for (Map.Entry<String, String> prov : originalStep.getProvenanceBindings().entrySet()) {
+                clonedStep.addProvenanceBinding(prov.getKey(), prov.getValue());
             }
             
             clone.addStepCall(clonedStep);
         }
         
-        // Clone faulty parameters
         for (String faultyParam : original.getFaultyParameters()) {
             String[] parts = faultyParam.split("=", 2);
             if (parts.length == 2) {
@@ -855,22 +999,26 @@ public class StatusCodeExplorationEnhancer {
     // Utility methods
     
     private String getApiKey(MultiServiceTestCase test) {
-        if (test.getSteps().isEmpty()) return "UNKNOWN";
-        MultiServiceTestCase.StepCall step = test.getSteps().get(0);
+        return getApiKey(test, 0);
+    }
+    
+    private String getApiKey(MultiServiceTestCase test, int stepIndex) {
+        if (stepIndex >= test.getSteps().size()) return "UNKNOWN";
+        MultiServiceTestCase.StepCall step = test.getSteps().get(stepIndex);
         String method = step.getMethod() != null ? step.getMethod().getMethod().toUpperCase() : "GET";
         return method + " " + step.getPath();
     }
     
-    private String getServiceName(MultiServiceTestCase test) {
-        if (test.getSteps().isEmpty()) return "unknown";
-        return test.getSteps().get(0).getServiceName();
+    private String getServiceName(MultiServiceTestCase test, int stepIndex) {
+        if (stepIndex >= test.getSteps().size()) return "unknown";
+        return test.getSteps().get(stepIndex).getServiceName();
     }
     
-    private List<ParameterInfo> getParameterInfos(MultiServiceTestCase test) {
+    private List<ParameterInfo> getParameterInfos(MultiServiceTestCase test, int stepIndex) {
         List<ParameterInfo> params = new ArrayList<>();
-        if (test.getSteps().isEmpty()) return params;
+        if (stepIndex >= test.getSteps().size()) return params;
         
-        MultiServiceTestCase.StepCall step = test.getSteps().get(0);
+        MultiServiceTestCase.StepCall step = test.getSteps().get(stepIndex);
         
         for (String key : step.getPathParams().keySet()) {
             ParameterInfo info = new ParameterInfo();
@@ -954,23 +1102,26 @@ public class StatusCodeExplorationEnhancer {
     // Inner classes
     
     /**
-     * Suggestion for exploring a specific status code.
+     * Suggestion for exploring a specific status code on a specific step.
      */
     public static class ExplorationSuggestion {
         private int targetStatusCode;
         private String strategy = "";
         private Map<String, String> parameterChanges = new HashMap<>();
         private boolean requiresAuthManipulation = false;
+        private int targetStepIndex = 0;
         
         public int getTargetStatusCode() { return targetStatusCode; }
         public String getStrategy() { return strategy; }
         public Map<String, String> getParameterChanges() { return parameterChanges; }
         public boolean isRequiresAuthManipulation() { return requiresAuthManipulation; }
+        public int getTargetStepIndex() { return targetStepIndex; }
+        public void setTargetStepIndex(int targetStepIndex) { this.targetStepIndex = targetStepIndex; }
         
         @Override
         public String toString() {
-            return String.format("ExplorationSuggestion{status=%d, params=%s, authManip=%s}",
-                targetStatusCode, parameterChanges, requiresAuthManipulation);
+            return String.format("ExplorationSuggestion{status=%d, step=%d, params=%s, authManip=%s}",
+                targetStatusCode, targetStepIndex, parameterChanges, requiresAuthManipulation);
         }
     }
     
@@ -998,7 +1149,7 @@ public class StatusCodeExplorationEnhancer {
     }
     
     /**
-     * Execution result for a test case.
+     * Execution result for a test case, with optional per-step granularity.
      */
     public static class TestExecutionResult {
         private String testName;
@@ -1008,6 +1159,7 @@ public class StatusCodeExplorationEnhancer {
         private boolean passed;
         private String errorMessage;
         private boolean softErrorDetected;
+        private List<StepExecutionResult> stepResults = new ArrayList<>();
         
         public TestExecutionResult() {}
         
@@ -1020,7 +1172,6 @@ public class StatusCodeExplorationEnhancer {
             this.passed = passed;
         }
         
-        // Getters and setters
         public String getTestName() { return testName; }
         public void setTestName(String testName) { this.testName = testName; }
         
@@ -1041,5 +1192,46 @@ public class StatusCodeExplorationEnhancer {
         
         public boolean isSoftErrorDetected() { return softErrorDetected; }
         public void setSoftErrorDetected(boolean softErrorDetected) { this.softErrorDetected = softErrorDetected; }
+        
+        public List<StepExecutionResult> getStepResults() { return stepResults; }
+        public void setStepResults(List<StepExecutionResult> stepResults) { this.stepResults = stepResults; }
+        public void addStepResult(StepExecutionResult sr) { this.stepResults.add(sr); }
+    }
+    
+    /**
+     * Per-step execution result within a multi-root test case.
+     */
+    public static class StepExecutionResult {
+        private int stepIndex;
+        private String apiKey;
+        private int statusCode;
+        private String responseBody;
+        private boolean success;
+        
+        public StepExecutionResult() {}
+        
+        public StepExecutionResult(int stepIndex, String apiKey, int statusCode,
+                                   String responseBody, boolean success) {
+            this.stepIndex = stepIndex;
+            this.apiKey = apiKey;
+            this.statusCode = statusCode;
+            this.responseBody = responseBody;
+            this.success = success;
+        }
+        
+        public int getStepIndex() { return stepIndex; }
+        public void setStepIndex(int stepIndex) { this.stepIndex = stepIndex; }
+        
+        public String getApiKey() { return apiKey; }
+        public void setApiKey(String apiKey) { this.apiKey = apiKey; }
+        
+        public int getStatusCode() { return statusCode; }
+        public void setStatusCode(int statusCode) { this.statusCode = statusCode; }
+        
+        public String getResponseBody() { return responseBody; }
+        public void setResponseBody(String responseBody) { this.responseBody = responseBody; }
+        
+        public boolean isSuccess() { return success; }
+        public void setSuccess(boolean success) { this.success = success; }
     }
 }

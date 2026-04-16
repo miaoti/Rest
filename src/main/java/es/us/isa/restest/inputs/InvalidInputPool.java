@@ -21,14 +21,31 @@ public class InvalidInputPool {
     private int currentTypeIndex = 0;
     private final List<InvalidInputType> typeRotation;
     
+    /**
+     * Edge-case priority: high-risk types that catch real bugs are tested first.
+     * This ordering ensures that boundary violations, overflows, and null/empty
+     * inputs (the most likely to reveal server-side validation gaps) are fired
+     * before lower-risk semantic mismatches.
+     */
+    private static final List<InvalidInputType> PRIORITIZED_TYPE_ORDER = Arrays.asList(
+            InvalidInputType.BOUNDARY_VIOLATION,
+            InvalidInputType.OVERFLOW,
+            InvalidInputType.NULL_INPUT,
+            InvalidInputType.EMPTY_INPUT,
+            InvalidInputType.SPECIAL_CHARACTERS,
+            InvalidInputType.TYPE_MISMATCH,
+            InvalidInputType.REGEX_MISMATCH,
+            InvalidInputType.SEMANTIC_MISMATCH
+    );
+
     public InvalidInputPool(String parameterName, String parameterType) {
         this.parameterName = parameterName;
         this.parameterType = parameterType;
         this.valuesByType = new EnumMap<>(InvalidInputType.class);
         this.usedIndicesByType = new EnumMap<>(InvalidInputType.class);
         
-        // Initialize type rotation order
-        this.typeRotation = new ArrayList<>(Arrays.asList(InvalidInputType.values()));
+        // Use prioritized rotation order so high-risk edge cases fire first
+        this.typeRotation = new ArrayList<>(PRIORITIZED_TYPE_ORDER);
         
         // Initialize maps for each type
         for (InvalidInputType type : InvalidInputType.values()) {
@@ -92,6 +109,24 @@ public class InvalidInputPool {
      */
     public InvalidInputType getLastSelectedType() {
         return lastSelectedType;
+    }
+
+    /**
+     * Returns {@code true} if the pool still has at least one un-yielded value
+     * remaining in the current round-robin cycle.
+     *
+     * <p>This is the correct exhaustion check to use instead of comparing the
+     * return value of {@link #getNextRoundRobin()} to {@code null}, because
+     * {@code getNextRoundRobin()} may legitimately return a stored Java
+     * {@code null} (e.g. for the {@code NULL_INPUT} fault category), which
+     * would otherwise be misinterpreted as the "pool exhausted" sentinel.
+     */
+    public boolean hasNextRoundRobin() {
+        int totalUsed = 0;
+        for (Set<Integer> used : usedIndicesByType.values()) {
+            totalUsed += used.size();
+        }
+        return totalUsed < getTotalCount();
     }
     
     /**

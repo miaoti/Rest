@@ -160,15 +160,28 @@ public class ZeroShotLLMGenerator {
                        "Generate 5-8 TYPE MISMATCH invalid values for parameter '" + param.getName() + "'.\n" +
                        "Expected type: " + param.getType() + "\n" +
                        "Description: " + safeStr(param.getDescription()) + "\n\n" +
-                       "Generate values of WRONG TYPE that would cause type validation errors.\n" +
-                       "Examples:\n" +
-                       "- If expecting string, provide: integer 123, boolean true, array [1,2,3]\n" +
-                       "- If expecting integer, provide: string 'abc', boolean false, object {}\n" +
-                       "- If expecting boolean, provide: string 'yes', integer 1, array []\n\n" +
-                       "IMPORTANT: Provide actual type-mismatched values, not string representations.\n" +
-                       "Format: TYPE:VALUE where TYPE is integer|string|boolean|null|array|object\n" +
-                       "Examples: integer:999, string:notANumber, boolean:true, null:null\n" +
-                       "Return only the values, one per line:";
+                       "Generate values of WRONG TYPE that would cause type validation errors.\n\n" +
+                       "FORMAT RULES (strictly follow):\n" +
+                       "  TYPE:VALUE  — TYPE is one of: integer|string|boolean|null|array|object\n" +
+                       "  VALUE must be a raw literal — NO quotes, NO NaN, NO undefined, NO Infinity.\n\n" +
+                       "GOOD examples (one per line):\n" +
+                       "  string:hello\n" +
+                       "  boolean:true\n" +
+                       "  integer:42\n" +
+                       "  null:null\n" +
+                       "  array:[1,2,3]\n" +
+                       "  object:{}\n\n" +
+                       "BAD examples (NEVER do this):\n" +
+                       "  integer:'123'    <- NO quotes around the number\n" +
+                       "  integer:\"abc\"   <- wrong, that is a string value, use string:abc\n" +
+                       "  integer:NaN      <- NaN is not a valid literal here\n" +
+                       "  integer:2026-03-29  <- a date is a string, use string:2026-03-29\n\n" +
+                       "What to generate for each expected type:\n" +
+                       "  integer  -> provide string and boolean values  (e.g., string:hello, boolean:false)\n" +
+                       "  string   -> provide integer and boolean values (e.g., integer:123, boolean:true)\n" +
+                       "  boolean  -> provide string and integer values  (e.g., string:yes, integer:1)\n" +
+                       "  array    -> provide string and integer values  (e.g., string:notAList, integer:0)\n\n" +
+                       "Return ONLY the values, one per line, in TYPE:VALUE format:";
         
         String response = callLLM(prompt);
         List<String> lines = parseLines(response);
@@ -188,8 +201,13 @@ public class ZeroShotLLMGenerator {
     }
     
     /**
-     * Parse typed value from LLM response (format: "type:value")
-     * Returns actual typed object (Integer, Boolean, etc.) not String
+     * Parse typed value from LLM response (format: "type:value").
+     * Returns an actual typed object (Integer, Boolean, etc.), not a String.
+     *
+     * Handles common LLM formatting mistakes:
+     *  - Single/double quotes around numeric values  ('123', "123")
+     *  - NaN / Infinity / undefined
+     *  - Date/timestamp strings given for integer fields
      */
     private Object parseTypedValue(String line, String expectedParamType) {
         if (line == null || !line.contains(":")) {
@@ -202,24 +220,53 @@ public class ZeroShotLLMGenerator {
         }
         
         String type = parts[0].trim().toLowerCase();
-        // 🔥 FIX: Strip leading numbers/dots (e.g., "3integer" -> "integer", "1. integer" -> "integer")
+        // Strip leading numbers/dots (e.g., "3integer" -> "integer", "1. integer" -> "integer")
         type = type.replaceAll("^[0-9.\\s]+", "");
         String value = parts[1].trim();
-        
+
+        // Sanitize: strip surrounding single or double quotes the LLM may add
+        if ((value.startsWith("'") && value.endsWith("'")) ||
+            (value.startsWith("\"") && value.endsWith("\""))) {
+            value = value.substring(1, value.length() - 1).trim();
+        }
+
         // Parse based on specified type
         try {
             switch (type) {
                 case "integer":
                 case "int":
-                case "number":
+                case "number": {
+                    // Guard against non-numeric tokens the LLM sometimes emits for integers
+                    if (value.equalsIgnoreCase("NaN") || value.equalsIgnoreCase("null")
+                            || value.equalsIgnoreCase("undefined")
+                            || value.equalsIgnoreCase("Infinity")
+                            || value.equalsIgnoreCase("-Infinity")) {
+                        // Fall through: return as string (it IS a type-mismatch value)
+                        return value;
+                    }
+                    // If it still looks non-numeric (contains letters/dashes in non-digit positions),
+                    // return it as a string — it serves perfectly as a type-mismatch invalid value.
+                    if (!value.matches("-?\\d+")) {
+                        return value;
+                    }
                     return Integer.parseInt(value);
+                }
                     
-                case "long":
+                case "long": {
+                    if (!value.matches("-?\\d+")) {
+                        return value;
+                    }
                     return Long.parseLong(value);
+                }
                     
                 case "double":
-                case "float":
+                case "float": {
+                    if (value.equalsIgnoreCase("NaN") || value.equalsIgnoreCase("Infinity")
+                            || value.equalsIgnoreCase("-Infinity")) {
+                        return value;
+                    }
                     return Double.parseDouble(value);
+                }
                     
                 case "boolean":
                 case "bool":
@@ -241,8 +288,8 @@ public class ZeroShotLLMGenerator {
                     return value;
             }
         } catch (Exception e) {
-            System.err.println("Failed to parse typed value: " + line + " - " + e.getMessage());
-            return value; // Return as string if parsing fails
+            // Parsing failed; return raw value as a string — still useful as a type-mismatch input
+            return value;
         }
     }
     
@@ -518,152 +565,187 @@ public class ZeroShotLLMGenerator {
     }
 
     /**
-     * Build cache key that includes parameter name, type, and location
-     * This ensures parameters with same name but different types are cached separately
+     * Build cache key that captures the full constraint signature of a parameter.
+     * Parameters sharing a name but differing in type, location, enum set, or
+     * numeric bounds are intentionally separated so each gets its own LLM batch.
      */
     private String buildCacheKey(ParameterInfo param) {
-        String name = param.getName() != null ? param.getName() : "unknown";
-        String type = param.getType() != null ? param.getType() : "unknown";
-        String location = param.getInLocation() != null ? param.getInLocation() : "unknown";
-        return name + ":" + type + ":" + location;
+        String name     = param.getName()        != null ? param.getName()        : "unknown";
+        String type     = param.getType()        != null ? param.getType()        : "unknown";
+        String location = param.getInLocation()  != null ? param.getInLocation()  : "unknown";
+        String format   = param.getFormat()      != null ? param.getFormat()      : "";
+        String enums    = param.hasEnum()
+                ? String.join(",", param.getEnumValues())
+                : "";
+        String bounds   = (param.getMinimum() != null ? param.getMinimum() : "")
+                + ".." + (param.getMaximum() != null ? param.getMaximum() : "");
+        return name + ":" + type + ":" + location + ":" + format + ":" + enums + ":" + bounds;
     }
 
     /**
-     * Build a textual prompt describing the parameter and how many examples we want.
+     * Build a structured, richly contextualised prompt for positive-value generation.
+     *
+     * <p>The prompt is split into four clearly delimited sections:
+     * <ol>
+     *   <li><b>[API Context]</b> — endpoint, service, and sibling parameter list</li>
+     *   <li><b>[Parameter Details]</b> — name, location, type, format, description, example</li>
+     *   <li><b>[Constraints]</b> — enum list, numeric bounds, length limits, regex pattern</li>
+     *   <li><b>[Instructions]</b> — strict output format rules and domain guidance</li>
+     * </ol>
      */
     private String buildPrompt(ParameterInfo param, int howMany) {
-        StringBuilder promptBuilder = new StringBuilder();
-        
-        // Clear introduction with context
-        promptBuilder.append("You are an API testing assistant that generates realistic parameter values.\n");
-        promptBuilder.append("Current Date/Time: ").append(getCurrentTimestamp()).append("\n\n");
-        
-        // API Context (if available)
-        String apiName = safeStr(param.getApiName());
-        if (!apiName.isEmpty()) {
-            promptBuilder.append("API Context:\n");
-            promptBuilder.append("- API Endpoint: ").append(apiName).append("\n");
-            
-            String serviceName = safeStr(param.getServiceName());
-            if (!serviceName.isEmpty()) {
-                promptBuilder.append("- Service: ").append(serviceName).append("\n");
-            }
-            
-            if (param.getAllParameterNames() != null && !param.getAllParameterNames().isEmpty()) {
-                promptBuilder.append("- All Parameters in this API: ").append(String.join(", ", param.getAllParameterNames())).append("\n");
-            }
-            promptBuilder.append("\n");
-        }
-        
-        // Parameter details
-        promptBuilder.append("Parameter Information:\n");
-        promptBuilder.append("- Name: ").append(safeStr(param.getName())).append("\n");
-        
-        String description = safeStr(param.getDescription());
-        if (!description.isEmpty()) {
-            promptBuilder.append("- Description: ").append(description).append("\n");
-        }
-        
-        promptBuilder.append("- Location: ").append(safeStr(param.getInLocation())).append("\n");
-        promptBuilder.append("- Data Type: ").append(safeStr(param.getType())).append("\n");
-        
-        // Add required/optional information
-        if (param.getRequired() != null) {
-            promptBuilder.append("- Required: ").append(param.getRequired() ? "Yes (mandatory)" : "No (optional)").append("\n");
-        }
-        
-        String format = safeStr(param.getFormat());
-        if (!format.isEmpty()) {
-            promptBuilder.append("- Format: ").append(format).append("\n");
-        }
-        
-        String example = safeStr(param.getSchemaExample());
-        if (!example.isEmpty()) {
-            promptBuilder.append("- Example: ").append(example).append("\n");
-        }
-        
-        String regex = safeStr(param.getRegex());
-        if (!regex.isEmpty()) {
-            promptBuilder.append("- Pattern/Regex: ").append(regex).append("\n");
-            promptBuilder.append("  (Your generated values MUST match this pattern)\n");
-        }
-        
-        // Clear task instructions with emphasis on formatting
-        promptBuilder.append("\nTask: Generate ").append(howMany).append(" realistic test values for this parameter.\n\n");
-        
+        StringBuilder p = new StringBuilder();
         String paramType = safeStr(param.getType()).toLowerCase();
-        
-        if ("array".equals(paramType)) {
-            // For array parameters, generate JSON array format
-            promptBuilder.append("CRITICAL FORMATTING REQUIREMENT:\n");
-            promptBuilder.append("You MUST return a valid JSON array containing exactly ").append(howMany).append(" values.\n");
-            promptBuilder.append("Format: [\"value1\", \"value2\", \"value3\"]\n");
-            promptBuilder.append("Do NOT add explanations, numbering, or extra formatting.\n\n");
-            
-            promptBuilder.append("Content Requirements:\n");
-            promptBuilder.append("- Values should be appropriate for the parameter type and context\n");
-            promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
-            promptBuilder.append("- Consider common use cases and edge cases\n\n");
-            
-            promptBuilder.append("Intelligent Value Generation Guidelines:\n");
-            promptBuilder.append("• Analyze the parameter name, type, description, and format to understand its purpose\n");
-            promptBuilder.append("• For temporal parameters (dates, times, timestamps): If the parameter suggests future events\n");
-            promptBuilder.append("  (e.g., 'departure', 'arrival', 'booking', 'scheduled', 'planned'), generate values AFTER\n");
-            promptBuilder.append("  the Current Date/Time (use realistic near-future: 1-30 days ahead)\n");
-            promptBuilder.append("• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)\n");
-            promptBuilder.append("• For location/place parameters: Use realistic, specific names appropriate to the domain\n");
-            promptBuilder.append("• For numeric parameters: Use realistic ranges appropriate to the context\n");
-            promptBuilder.append("• For string parameters: Consider typical business domain values, not generic placeholders\n");
-            promptBuilder.append("• Ensure generated values would pass typical validation rules\n\n");
-            
-            promptBuilder.append("Example Format (for 3 values):\n");
-            promptBuilder.append("[\"New York Penn Station\", \"Los Angeles Union Station\", \"Chicago Union Station\"]\n\n");
-            
-            promptBuilder.append("Now generate your JSON array with ").append(howMany).append(" values:");
-        } else {
-            // For non-array parameters, use line-separated format
-            promptBuilder.append("CRITICAL FORMATTING REQUIREMENT:\n");
-            promptBuilder.append("You MUST return exactly ").append(howMany).append(" separate lines.\n");
-            promptBuilder.append("Each line contains exactly ONE value.\n");
-            promptBuilder.append("Press ENTER after each value.\n");
-            promptBuilder.append("Do NOT put multiple values on the same line.\n\n");
-            
-            promptBuilder.append("Content Requirements:\n");
-            promptBuilder.append("- Values should be appropriate for the parameter type and context\n");
-            promptBuilder.append("- Generate diverse, realistic examples that an API might actually receive\n");
-            promptBuilder.append("- Consider common use cases and edge cases\n\n");
-            
-            promptBuilder.append("Intelligent Value Generation Guidelines:\n");
-            promptBuilder.append("• Analyze the parameter name, type, description, and format to understand its purpose\n");
-            promptBuilder.append("• For temporal parameters (dates, times, timestamps): If the parameter name suggests future events\n");
-            promptBuilder.append("  (e.g., contains 'departure', 'arrival', 'booking', 'scheduled', 'planned', 'start', 'end'),\n");
-            promptBuilder.append("  generate values AFTER the Current Date/Time shown above (use realistic near-future: 1-30 days ahead)\n");
-            promptBuilder.append("• For IDs/identifiers: Match expected format patterns (numeric, alphanumeric, UUID, etc.)\n");
-            promptBuilder.append("• For location/place parameters: Use realistic, specific names appropriate to the domain\n");
-            promptBuilder.append("• For numeric parameters: Use realistic ranges appropriate to the context\n");
-            promptBuilder.append("• For string parameters: Consider typical business domain values, not generic placeholders\n");
-            promptBuilder.append("• Ensure generated values would pass typical validation rules\n\n");
-            
-            promptBuilder.append("Example Format (for 3 values):\n");
-            promptBuilder.append("Value1\n");
-            promptBuilder.append("Value2\n");
-            promptBuilder.append("Value3\n\n");
-            
-            promptBuilder.append("Now generate your ").append(howMany).append(" values, one per line:");
+        boolean isArray  = "array".equals(paramType);
+
+        // ── Persona ──────────────────────────────────────────────────────────────
+        p.append("You are an expert API tester. Generate ").append(howMany)
+         .append(" distinct, highly realistic, and strictly valid values for the following API parameter.\n");
+        p.append("Current Date/Time: ").append(getCurrentTimestamp()).append("\n\n");
+
+        // ── [API Context] ────────────────────────────────────────────────────────
+        String apiName     = safeStr(param.getApiName());
+        String serviceName = safeStr(param.getServiceName());
+        boolean hasApiCtx  = !apiName.isEmpty() || !serviceName.isEmpty();
+        if (hasApiCtx) {
+            p.append("[API Context]\n");
+            if (!apiName.isEmpty())     p.append("Endpoint: ").append(apiName).append("\n");
+            if (!serviceName.isEmpty()) p.append("Service:  ").append(serviceName).append("\n");
+            if (param.getAllParameterNames() != null && !param.getAllParameterNames().isEmpty()) {
+                p.append("Sibling Parameters: ")
+                 .append(String.join(", ", param.getAllParameterNames())).append("\n");
+            }
+            p.append("\n");
         }
-        
-        return promptBuilder.toString();
-    }
-    
-    /**
-     * DEPRECATED: Replaced by intelligent prompt engineering in buildPrompt()
-     * This hardcoded approach has been removed in favor of letting the LLM intelligently
-     * interpret parameter context from the comprehensive prompt instructions.
-     */
-    @Deprecated
-    private String getContextualGuidance(ParameterInfo param) {
-        // No longer needed - intelligent guidelines are now built into the main prompt
-        return "";
+
+        // ── [Parameter Details] ──────────────────────────────────────────────────
+        p.append("[Parameter Details]\n");
+        p.append("Parameter Name: ").append(safeStr(param.getName())).append("\n");
+        p.append("Location:       ").append(safeStr(param.getInLocation())).append("\n");
+
+        // Type + format on one line: "Type: integer (int64)"
+        String typeStr = safeStr(param.getType());
+        String fmtStr  = safeStr(param.getFormat());
+        p.append("Type:           ").append(typeStr);
+        if (!fmtStr.isEmpty()) p.append(" (").append(fmtStr).append(")");
+        p.append("\n");
+
+        String desc = safeStr(param.getDescription());
+        if (!desc.isEmpty()) p.append("Description:    ").append(desc).append("\n");
+
+        String example = safeStr(param.getSchemaExample());
+        if (!example.isEmpty()) p.append("Example:        ").append(example).append("\n");
+
+        if (param.getRequired() != null) {
+            p.append("Required:       ").append(param.getRequired() ? "Yes" : "No").append("\n");
+        }
+        p.append("\n");
+
+        // ── [Constraints] ────────────────────────────────────────────────────────
+        boolean hasConstraints = param.hasEnum() || param.hasBounds()
+                || param.hasLengthConstraints() || !safeStr(param.getRegex()).isEmpty();
+        if (hasConstraints) {
+            p.append("[Constraints]\n");
+
+            if (param.hasEnum()) {
+                p.append("Allowed Values (Enum): [")
+                 .append(String.join(", ", param.getEnumValues())).append("]\n");
+                p.append("  → You MUST only use values from the Allowed Values list above.\n");
+            }
+
+            if (param.getMinimum() != null || param.getMaximum() != null) {
+                p.append("Numeric Range: ");
+                if (param.getMinimum() != null) p.append("min=").append(param.getMinimum()).append(" ");
+                if (param.getMaximum() != null) p.append("max=").append(param.getMaximum());
+                p.append("\n  → Every generated number MUST fall within this range.\n");
+            }
+
+            if (param.getMinLength() != null || param.getMaxLength() != null) {
+                p.append("String Length: ");
+                if (param.getMinLength() != null) p.append("minLength=").append(param.getMinLength()).append(" ");
+                if (param.getMaxLength() != null) p.append("maxLength=").append(param.getMaxLength());
+                p.append("\n  → Every generated string MUST satisfy this length constraint.\n");
+            }
+
+            String regex = safeStr(param.getRegex());
+            if (!regex.isEmpty()) {
+                p.append("Pattern (regex): ").append(regex).append("\n");
+                p.append("  → Every generated value MUST match this pattern.\n");
+            }
+            p.append("\n");
+        }
+
+        // ── [Instructions] ───────────────────────────────────────────────────────
+        p.append("[Instructions]\n");
+        p.append("1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.\n");
+        if (param.hasEnum()) {
+            p.append("2. Because an enum is defined, select ONLY values from the Allowed Values list.\n");
+        } else {
+            p.append("2. The values must be semantically realistic for the Endpoint context and domain.\n");
+        }
+        p.append("3. Return EXACTLY ").append(howMany).append(" values.\n");
+
+        // Type-specific generation guidance
+        p.append("4. Domain guidance:\n");
+        switch (typeStr.toLowerCase()) {
+            case "integer":
+            case "number":
+                p.append("   • Generate realistic numeric values appropriate to the business context.\n");
+                if (param.hasBounds()) {
+                    p.append("   • Stay strictly within the Numeric Range defined in Constraints.\n");
+                }
+                break;
+            case "boolean":
+                p.append("   • Output only 'true' or 'false' (lowercase, no quotes).\n");
+                break;
+            default:
+                if (!fmtStr.isEmpty()) {
+                    switch (fmtStr.toLowerCase()) {
+                        case "uuid":
+                            p.append("   • Each value must be a valid UUID v4 (e.g., 550e8400-e29b-41d4-a716-446655440000).\n");
+                            break;
+                        case "date":
+                            p.append("   • Use ISO-8601 date format: YYYY-MM-DD.\n");
+                            break;
+                        case "date-time":
+                            p.append("   • Use ISO-8601 date-time format: YYYY-MM-DDTHH:MM:SSZ.\n");
+                            break;
+                        case "email":
+                            p.append("   • Each value must be a valid email address.\n");
+                            break;
+                        default:
+                            p.append("   • Respect the '").append(fmtStr).append("' format specification.\n");
+                    }
+                }
+                // Temporal heuristic (only when no explicit format is given)
+                if (fmtStr.isEmpty()) {
+                    String nameLc = safeStr(param.getName()).toLowerCase();
+                    boolean isFutureTemporal = nameLc.contains("departure") || nameLc.contains("arrival")
+                            || nameLc.contains("booking") || nameLc.contains("scheduled")
+                            || nameLc.contains("planned") || nameLc.contains("end")
+                            || nameLc.contains("traveldate") || nameLc.contains("boughtdate");
+                    if (isFutureTemporal) {
+                        p.append("   • This is a future-oriented temporal parameter — generate dates 1-30 days AFTER the Current Date/Time.\n");
+                    }
+                }
+                break;
+        }
+
+        // ── Output format block ───────────────────────────────────────────────────
+        p.append("5. Output format:\n");
+        if (isArray) {
+            p.append("   • Return a single valid JSON array containing exactly ").append(howMany).append(" elements.\n");
+            p.append("   • Format: [\"value1\", \"value2\", ...]\n");
+            p.append("   • Do NOT use markdown code fences, bullet points, numbering, or explanations.\n\n");
+            p.append("Generate the JSON array now:");
+        } else {
+            p.append("   • Output ONLY the values, one per line.\n");
+            p.append("   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.\n");
+            p.append("   • Do NOT prefix values with hyphens, dashes, or numbers.\n\n");
+            p.append("Generate your ").append(howMany).append(" values now, one per line:");
+        }
+
+        return p.toString();
     }
 
 
@@ -672,11 +754,16 @@ public class ZeroShotLLMGenerator {
 
     private String callLLM(String prompt) {
         String systemContent =
-                "You are an AI system that generates parameter values for API testing. " +
-                        "CRITICAL: When asked to generate N values, you MUST return exactly N lines. " +
-                        "Each line contains exactly one value. Use line breaks between values. " +
-                        "Do NOT put multiple values on the same line separated by spaces or commas. " +
-                        "Do NOT add explanations, numbering, or extra formatting.";
+                "You are an expert API tester specialising in test data generation. " +
+                "Your sole task is to produce realistic, constraint-compliant values for API parameters. " +
+                "STRICT RULES: " +
+                "(1) When asked for N values, return EXACTLY N items — no more, no fewer. " +
+                "(2) For line-separated output: one value per line, nothing else on that line. " +
+                "(3) For JSON array output: a single valid JSON array, nothing else. " +
+                "(4) Never add markdown fences (```), bullet points, numbering, explanations, " +
+                "    or commentary of any kind. " +
+                "(5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. " +
+                "(6) If an enum list is provided, output ONLY values from that list.";
 
         System.out.println("[LLM] Calling LLM service with model type: " + llmService.getConfig().getModelType());
         System.out.println("[LLM] User prompt: " + prompt);
@@ -1390,7 +1477,11 @@ public class ZeroShotLLMGenerator {
             String serviceName, String method, String path,
             es.us.isa.restest.validation.SoftErrorRuleCache cache) {
 
-        String apiKey = method.toUpperCase() + " " + path;
+        String normalizedPath = normalizeToTemplate(path);
+        if (!normalizedPath.equals(path)) {
+            System.out.println("[SoftErrorCache] Normalized cache key: '" + path + "' → '" + normalizedPath + "'");
+        }
+        String apiKey = method.toUpperCase() + " " + normalizedPath;
 
         // 1. Try cache first
         java.util.Optional<es.us.isa.restest.validation.SoftErrorRuleCache.CachedValidationResult> cached =
@@ -1416,7 +1507,11 @@ public class ZeroShotLLMGenerator {
             java.util.Map<String, String> invalidParameters,
             es.us.isa.restest.validation.SoftErrorRuleCache cache) {
 
-        String apiKey = method.toUpperCase() + " " + path;
+        String normalizedPath = normalizeToTemplate(path);
+        if (!normalizedPath.equals(path)) {
+            System.out.println("[SoftErrorCache] Normalized cache key: '" + path + "' → '" + normalizedPath + "'");
+        }
+        String apiKey = method.toUpperCase() + " " + normalizedPath;
 
         // 1. Try cache for the base soft-error detection
         java.util.Optional<es.us.isa.restest.validation.SoftErrorRuleCache.CachedValidationResult> cached =
@@ -1572,6 +1667,68 @@ public class ZeroShotLLMGenerator {
             System.err.println("Failed to validate response with LLM (rule generation): " + e.getMessage());
             return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
         }
+    }
+
+    /**
+     * Normalizes a concrete URL path to a generic template by replacing dynamic
+     * path segments (UUIDs, order IDs, numeric IDs, long tokens) with "{id}".
+     * This prevents the soft-error rule cache from exploding with one entry per
+     * unique path-parameter value when the same API endpoint is tested with many
+     * different inputs.
+     *
+     * <p>If the path already contains {@code {param}} style placeholders it is
+     * returned unchanged, so OAS template paths are always safe to pass through.
+     *
+     * <p>Examples:
+     * <pre>
+     *   /api/v1/orders/ORD100260405A          → /api/v1/orders/{id}
+     *   /api/v1/execute/collected/42           → /api/v1/execute/collected/{id}
+     *   /api/v1/items/123e4567-e89b-12d3-a456-426614174000 → /api/v1/items/{id}
+     *   /api/v1/adminrouteservice/adminroute   → /api/v1/adminrouteservice/adminroute  (unchanged)
+     * </pre>
+     */
+    private static String normalizeToTemplate(String path) {
+        if (path == null || path.contains("{")) {
+            return path; // already a URI template — nothing to do
+        }
+        String result = path;
+
+        // 1. Strict RFC-4122 UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (all hex)
+        result = result.replaceAll(
+                "(?<=/)[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}(?=/|$)",
+                "{id}");
+
+        // 2. UUID-like with non-hex characters in the segments (test-generated IDs)
+        //    e.g. qrstuvwx-yz01-2345-6789-abcdef012345
+        result = result.replaceAll(
+                "(?<=/)[a-zA-Z0-9]{4,8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{6,12}(?=/|$)",
+                "{id}");
+
+        // 3. Order-ID style: 2+ UPPERCASE letters followed by 5+ digits, optional suffix
+        //    e.g. ORD100260405A, ORD20230408B, TKT12345
+        result = result.replaceAll(
+                "(?<=/)[A-Z]{2,}[0-9]{5,}[A-Za-z0-9]*(?=/|$)",
+                "{id}");
+
+        // 4. Pure numeric ID segments  e.g. /api/v1/prices/1301, /api/v1/trains/501
+        result = result.replaceAll(
+                "(?<=/)[0-9]+(?=/|$)",
+                "{id}");
+
+        // 5. Very long alphanumeric tokens (20+ chars): hashes, base64 fragments,
+        //    overflow strings, etc.
+        result = result.replaceAll(
+                "(?<=/)[a-zA-Z0-9_-]{20,}(?=/|$)",
+                "{id}");
+
+        // 6. Segments that look like account/user IDs: letters followed by 4+ trailing digits
+        //    e.g. user98765, account12345 — but NOT service-name words like "travel2service"
+        //    (those contain digits in the middle, not exclusively at the tail).
+        result = result.replaceAll(
+                "(?<=/)[a-zA-Z][a-zA-Z0-9-]*[0-9]{4,}(?=/|$)",
+                "{id}");
+
+        return result;
     }
 
     private static java.util.List<String> splitCsv(String csv) {

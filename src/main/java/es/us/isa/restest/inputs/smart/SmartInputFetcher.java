@@ -189,7 +189,10 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Fetch input from smart sources (existing APIs)
+     * Fetch input from smart sources (existing APIs).
+     * When trace-observed producer endpoints are available on the ParameterInfo,
+     * those endpoints are tried first (highest priority) before falling back
+     * to registry mappings and LLM discovery.
      */
     private String fetchFromSmartSource(ParameterInfo parameterInfo) throws Exception {
         String paramName = parameterInfo.getName();
@@ -204,17 +207,40 @@ public class SmartInputFetcher {
             }
         }
 
+        // Priority 0: Try trace-observed producer endpoints first
+        List<String> traceEndpoints = parameterInfo.getTraceProducerEndpoints();
+        if (traceEndpoints != null && !traceEndpoints.isEmpty()) {
+            log.info("Trace-aware fetch: trying {} producer endpoints observed in workflow for '{}'",
+                    traceEndpoints.size(), paramName);
+            for (String endpoint : traceEndpoints) {
+                ApiMapping traceMapping = new ApiMapping(endpoint, "trace-observed", "DIRECT_EXTRACTION");
+                traceMapping.setPriority(10);
+                try {
+                    String value = fetchFromApiMapping(traceMapping, parameterInfo);
+                    if (value != null && !value.trim().isEmpty() && isValidValueForParameter(value, parameterInfo)) {
+                        cacheValue(parameterInfo, value);
+                        log.info("Trace-Aware Fetch → {} = '{}' (from observed producer endpoint {})",
+                                paramName, value, endpoint);
+                        return value;
+                    }
+                } catch (Exception e) {
+                    log.debug("Trace-observed endpoint {} failed for '{}': {}", endpoint, paramName, e.getMessage());
+                }
+            }
+            log.info("All trace-observed endpoints exhausted for '{}', falling back to registry", paramName);
+        }
+
         // Look for existing mappings
         List<ApiMapping> mappings = registry.getMappingsForParameter(paramName);
-        log.info("🔍 Parameter '{}' has {} existing mappings", paramName, mappings.size());
+        log.info("Parameter '{}' has {} existing registry mappings", paramName, mappings.size());
 
         // If no mappings found, try to discover new ones
         if (mappings.isEmpty() && config.isLlmDiscoveryEnabled()) {
-            log.info("🚀 No existing mappings for '{}', attempting discovery...", paramName);
+            log.info("No existing mappings for '{}', attempting discovery...", paramName);
             mappings = discoverApiMappings(parameterInfo);
-            log.info("🎯 Discovery for '{}' found {} new mappings", paramName, mappings.size());
+            log.info("Discovery for '{}' found {} new mappings", paramName, mappings.size());
         } else if (mappings.isEmpty()) {
-            log.warn("❌ No mappings for '{}' and discovery is disabled", paramName);
+            log.warn("No mappings for '{}' and discovery is disabled", paramName);
         }
 
         // Try each mapping in order of score
@@ -236,7 +262,7 @@ public class SmartInputFetcher {
                                  value, paramName, mapping.getEndpoint());
                         return value;
                     } else {
-                        log.warn("❌ Rejecting invalid value '{}' for parameter '{}' from {}",
+                        log.warn("Rejecting invalid value '{}' for parameter '{}' from {}",
                                 value, paramName, mapping.getEndpoint());
                         mapping.updateSuccessRate(false);
                     }

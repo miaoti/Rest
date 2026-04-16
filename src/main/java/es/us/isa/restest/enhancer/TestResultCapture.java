@@ -5,8 +5,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -90,25 +92,57 @@ public class TestResultCapture {
         
         log.debug("Started capturing test: {}.{}", testClassName, testMethodName);
     }
+
+    /**
+     * Record that a specific step executed in bypass mode during this test.
+     * Called from the generated {@code else} branch of every fallback block.
+     *
+     * @param stepIndex the 1-based step index that activated bypass
+     */
+    public static void recordBypassTriggered(int stepIndex) {
+        if (!captureEnabled) return;
+        TestContext context = currentContext.get();
+        if (context != null) {
+            context.bypassedSteps.add(stepIndex);
+        }
+    }
     
     /**
-     * Set test metadata.
+     * Set test metadata (legacy single-step form, delegates to step 1).
      */
     public static void setTestMetadata(String endpoint, String httpMethod, 
+                                       String serviceName, boolean isNegativeTest) {
+        setStepMetadata(1, endpoint, httpMethod, serviceName, isNegativeTest);
+    }
+    
+    /**
+     * Set metadata for a specific step within a multi-root sequence test.
+     * Can be called multiple times, once per step.
+     */
+    public static void setStepMetadata(int stepIndex, String endpoint, String httpMethod,
                                        String serviceName, boolean isNegativeTest) {
         if (!captureEnabled) return;
         
         TestContext context = currentContext.get();
         if (context != null) {
+            StepContext stepCtx = new StepContext();
+            stepCtx.stepIndex = stepIndex;
+            stepCtx.endpoint = endpoint;
+            stepCtx.httpMethod = httpMethod;
+            stepCtx.serviceName = serviceName;
+            stepCtx.isNegativeTest = isNegativeTest;
+            context.stepContexts.put(stepIndex, stepCtx);
+            // Keep the latest step as the "current" for backward-compat
             context.endpoint = endpoint;
             context.httpMethod = httpMethod;
             context.serviceName = serviceName;
             context.isNegativeTest = isNegativeTest;
+            context.currentStepIndex = stepIndex;
         }
     }
     
     /**
-     * Add a parameter snapshot for the current test.
+     * Add a parameter snapshot for the current test (legacy form, delegates to step-aware version).
      */
     public static void addParameter(String name, String value, String type, 
                                    String location, String description, String example) {
@@ -116,10 +150,22 @@ public class TestResultCapture {
     }
     
     /**
-     * Add a parameter snapshot with required flag for the current test.
+     * Add a parameter snapshot with required flag (legacy form, uses current step index).
      */
     public static void addParameter(String name, String value, String type, 
                                    String location, String description, String example, boolean required) {
+        if (!captureEnabled) return;
+        TestContext context = currentContext.get();
+        int step = (context != null) ? context.currentStepIndex : 1;
+        addParameter(name, value, type, location, description, example, required, step, false);
+    }
+    
+    /**
+     * Add a parameter snapshot with full step-awareness and data-injection flag.
+     */
+    public static void addParameter(String name, String value, String type, 
+                                   String location, String description, String example,
+                                   boolean required, int stepIndex, boolean dataInjected) {
         if (!captureEnabled) return;
         
         TestContext context = currentContext.get();
@@ -132,26 +178,45 @@ public class TestResultCapture {
                     .description(description)
                     .example(example)
                     .required(required)
+                    .stepIndex(stepIndex)
+                    .dataInjected(dataInjected)
                     .build();
             context.parameters.add(param);
         }
     }
     
     /**
-     * Capture the response from a step execution.
+     * Capture the response from a step execution (legacy form, uses current step index).
      */
     public static void captureResponse(int statusCode, String responseBody) {
+        if (!captureEnabled) return;
+        TestContext context = currentContext.get();
+        int step = (context != null) ? context.currentStepIndex : 1;
+        captureStepResponse(step, statusCode, responseBody);
+    }
+    
+    /**
+     * Capture the response from a specific step execution, recording which step produced it.
+     */
+    public static void captureStepResponse(int stepIndex, int statusCode, String responseBody) {
         if (!captureEnabled) return;
         
         TestContext context = currentContext.get();
         if (context != null) {
             context.lastStatusCode = statusCode;
             context.lastResponseBody = responseBody;
+            context.lastFailedStepIndex = stepIndex;
+            StepContext stepCtx = context.stepContexts.get(stepIndex);
+            if (stepCtx != null) {
+                stepCtx.statusCode = statusCode;
+                stepCtx.responseBody = responseBody;
+            }
         }
     }
     
     /**
      * Mark the current test as failed and store the result.
+     * Resolves the failed step from the last captured response's step index.
      */
     public static void markTestFailed(String errorMessage, String failureType) {
         if (!captureEnabled) return;
@@ -164,12 +229,25 @@ public class TestResultCapture {
         
         String testKey = context.testClassName + "." + context.testMethodName;
         
+        // Resolve the failed step: use the step that last called captureResponse
+        int failedStep = context.lastFailedStepIndex;
+        StepContext failedStepCtx = context.stepContexts.get(failedStep);
+        
+        // Use per-step metadata when available, fall back to global context
+        String endpoint = (failedStepCtx != null) ? failedStepCtx.endpoint : context.endpoint;
+        String httpMethod = (failedStepCtx != null) ? failedStepCtx.httpMethod : context.httpMethod;
+        String serviceName = (failedStepCtx != null) ? failedStepCtx.serviceName : context.serviceName;
+        
+        // A step failed in bypass mode when it ran with a synthetic fallback value
+        // because an upstream producer step had already failed.
+        boolean bypassTriggered = context.bypassedSteps.contains(failedStep);
+
         FailedTestResult result = FailedTestResult.builder()
                 .testClassName(context.testClassName)
                 .testMethodName(context.testMethodName)
-                .endpoint(context.endpoint)
-                .httpMethod(context.httpMethod)
-                .serviceName(context.serviceName)
+                .endpoint(endpoint)
+                .httpMethod(httpMethod)
+                .serviceName(serviceName)
                 .negativeTest(context.isNegativeTest)
                 .invalidParameters(new ArrayList<>(context.invalidParameters))
                 .actualStatusCode(context.lastStatusCode)
@@ -178,11 +256,14 @@ public class TestResultCapture {
                 .failureType(failureType)
                 .parameters(new ArrayList<>(context.parameters))
                 .executionTimestamp(context.startTime)
+                .failedStepIndex(failedStep)
+                .lockedDependencyParams(context.lockedParamsByStep.get(failedStep))
+                .bypassTriggered(bypassTriggered)
                 .build();
         
         capturedResults.put(testKey, result);
-        log.debug("Captured failed test: {} (status: {}, enhanceable: {})", 
-                testKey, context.lastStatusCode, result.isEnhanceable());
+        log.debug("Captured failed test: {} (status: {}, failedStep: {}, enhanceable: {})", 
+                testKey, context.lastStatusCode, failedStep, result.isEnhanceable());
     }
     
     /**
@@ -213,6 +294,22 @@ public class TestResultCapture {
     }
     
     /**
+     * Register the set of structurally locked dependency parameters for a step.
+     * These are the param names from StepCall.getParamDependencies().keySet()
+     * that are JIT-wired to capturedOutputs at runtime and must never be modified.
+     *
+     * @param stepIndex the 1-based step index
+     * @param lockedParamNames parameter names wired to runtime dependencies
+     */
+    public static void setLockedDependencyParams(int stepIndex, Set<String> lockedParamNames) {
+        if (!captureEnabled) return;
+        TestContext context = currentContext.get();
+        if (context != null && lockedParamNames != null && !lockedParamNames.isEmpty()) {
+            context.lockedParamsByStep.put(stepIndex, new HashSet<>(lockedParamNames));
+        }
+    }
+    
+    /**
      * Add an invalid parameter (for negative tests).
      * These parameters are intentionally invalid and should NOT be changed during enhancement.
      */
@@ -240,6 +337,26 @@ public class TestResultCapture {
         long startTime;
         List<ParameterSnapshot> parameters = new ArrayList<>();
         List<String> invalidParameters = new ArrayList<>();
+        int currentStepIndex = 1;
+        int lastFailedStepIndex = 1;
+        java.util.Map<Integer, StepContext> stepContexts = new java.util.HashMap<>();
+        // Per-step locked dependency param names (from StepCall.getParamDependencies().keySet())
+        java.util.Map<Integer, Set<String>> lockedParamsByStep = new java.util.HashMap<>();
+        // Step indices that activated the resilient bypass (upstream producer failed)
+        Set<Integer> bypassedSteps = new HashSet<>();
+    }
+    
+    /**
+     * Per-step context within a multi-root sequence test.
+     */
+    private static class StepContext {
+        int stepIndex;
+        String endpoint;
+        String httpMethod;
+        String serviceName;
+        boolean isNegativeTest;
+        int statusCode;
+        String responseBody;
     }
 }
 

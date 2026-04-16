@@ -48,7 +48,16 @@ public class MultiServiceTestCase extends TestCase {
     
     /* track faulty parameters for Allure reporting */
     private final List<String> faultyParameters = new ArrayList<>();
-    
+
+    /** The hierarchical root ID that was targeted by the sniper fault injection (e.g. "Root 2"). */
+    private String targetFaultRootId;
+
+    /** The InvalidInputType category used for this negative test (e.g. "OVERFLOW", "BOUNDARY_VIOLATION"). */
+    private String faultTypeCategory;
+
+    /** The actual API path of the targeted fault root (e.g. "POST /api/v1/orderservice/order"). */
+    private String targetFaultRootApiPath;
+
     /* -------- status code exploration fields -------- */
     
     /** Flag indicating this test was created for status code exploration */
@@ -85,7 +94,16 @@ public class MultiServiceTestCase extends TestCase {
     public List<String> getFaultyParameters() {
         return faultyParameters;
     }
-    
+
+    public String getTargetFaultRootId() { return targetFaultRootId; }
+    public void setTargetFaultRootId(String targetFaultRootId) { this.targetFaultRootId = targetFaultRootId; }
+
+    public String getFaultTypeCategory() { return faultTypeCategory; }
+    public void setFaultTypeCategory(String faultTypeCategory) { this.faultTypeCategory = faultTypeCategory; }
+
+    public String getTargetFaultRootApiPath() { return targetFaultRootApiPath; }
+    public void setTargetFaultRootApiPath(String targetFaultRootApiPath) { this.targetFaultRootApiPath = targetFaultRootApiPath; }
+
     /* -------- status code exploration methods -------- */
     
     /** 
@@ -179,6 +197,20 @@ public class MultiServiceTestCase extends TestCase {
         /* NEW: dependency type classification */
         private DependencyType dependencyType = DependencyType.INDEPENDENT;
 
+        /** Hierarchical step ID (e.g., "R1", "R2", "R1.1", "R1.2.3"). */
+        private String hierarchicalId = "";
+        /** True if this step represents a top-level Root API (not an internal span). */
+        private boolean topLevelRoot = false;
+        /** True if this step was a Root API merged from another trace via data dependency. */
+        private boolean mergedRootStep = false;
+        /** 1-based index of the producer root this merged step depends on, or -1. */
+        private int producerRootIndex = -1;
+        /** Provenance bindings: paramKey -> concrete value inherited from the producer root. */
+        private final Map<String, String> provenanceBindings = new LinkedHashMap<>();
+
+        /** Raw response body from the trace span (for jsonPath extraction by the writer). */
+        private String traceResponseBody;
+
         public StepCall(String serviceName, Operation method, String path,
                         Map<String,String> pathParams,
                         Map<String,String> queryParams,
@@ -225,6 +257,27 @@ public class MultiServiceTestCase extends TestCase {
             paramDependencies.put(param, new Dependency(sourceStepIdx, sourceKey));
         }
         
+        /* Hierarchical naming accessors */
+        public String getHierarchicalId() { return hierarchicalId; }
+        public void setHierarchicalId(String id) { this.hierarchicalId = id; }
+
+        public boolean isTopLevelRoot() { return topLevelRoot; }
+        public void setTopLevelRoot(boolean topLevelRoot) { this.topLevelRoot = topLevelRoot; }
+
+        public boolean isMergedRootStep() { return mergedRootStep; }
+        public void setMergedRootStep(boolean mergedRootStep) { this.mergedRootStep = mergedRootStep; }
+
+        public int getProducerRootIndex() { return producerRootIndex; }
+        public void setProducerRootIndex(int idx) { this.producerRootIndex = idx; }
+
+        public Map<String, String> getProvenanceBindings() { return provenanceBindings; }
+
+        public String getTraceResponseBody() { return traceResponseBody; }
+        public void setTraceResponseBody(String body) { this.traceResponseBody = body; }
+        public void addProvenanceBinding(String key, String value) {
+            provenanceBindings.put(key, value);
+        }
+
         /* NEW: methods for enhanced dependency management */
         public void addWorkflowDependency(int stepIndex) {
             if (!workflowDependencies.contains(stepIndex)) {
@@ -281,9 +334,12 @@ public class MultiServiceTestCase extends TestCase {
     public static class Dependency {
         public final int    sourceStepIndex;
         public final String sourceOutputKey;
+        /** Pre-computed type-safe fallback value for resilient bypass when source step fails. */
+        public String fallbackValue;
         public Dependency(int idx, String key) {
             this.sourceStepIndex = idx;
             this.sourceOutputKey = key;
+            this.fallbackValue   = null;
         }
     }
     

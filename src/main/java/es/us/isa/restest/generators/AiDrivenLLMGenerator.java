@@ -20,10 +20,18 @@ public class AiDrivenLLMGenerator {
 
     /**
      * Produce candidate values for the parameter using the zero-shot approach.
+     * Uses the default count of 5.
      */
     public List<String> generateParameterValues(ParameterInfo param) {
-        // e.g. we want 5 examples
         return zeroShotLLM.generateParameterValues(param, 5);
+    }
+
+    /**
+     * Produce candidate values with a caller-specified count.
+     * Used by shared pool generation to request larger batches.
+     */
+    public List<String> generateParameterValues(ParameterInfo param, int howMany) {
+        return zeroShotLLM.generateParameterValues(param, howMany);
     }
     
     /**

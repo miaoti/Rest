@@ -190,10 +190,11 @@
 			<version>${jackson.version}</version>
 		</dependency>
 
+		<!-- DL4J retained for Word2VecTestCaseGenerator and SmartSemanticTestCaseGenerator -->
 		<dependency>
 			<groupId>org.deeplearning4j</groupId>
 			<artifactId>deeplearning4j-nlp</artifactId>
-			<version>1.0.0-M2.1</version> <!-- Example version, pick your actual version -->
+			<version>1.0.0-M2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.nd4j</groupId>

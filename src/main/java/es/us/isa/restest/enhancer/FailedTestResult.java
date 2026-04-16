@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Captures the complete context of a failed test case for enhancement.
@@ -43,6 +45,18 @@ public class FailedTestResult {
     // Parameters used in the test
     private List<ParameterSnapshot> parameters = new ArrayList<>();
     
+    // Step-level failure tracking for multi-root sequences
+    private int failedStepIndex = -1;
+    
+    // Structurally locked parameters — names from StepCall.getParamDependencies().keySet()
+    // These are JIT-wired to runtime capturedOutputs and must NEVER be modified by the enhancer.
+    private Set<String> lockedDependencyParams = new HashSet<>();
+
+    // True when the failing step executed in resilient bypass mode: it ran with a synthetic
+    // fallback value because its upstream producer step had already failed.  Enhancing such
+    // a test is meaningless — the root cause is upstream, not in this step's parameters.
+    private boolean bypassTriggered = false;
+    
     // Metadata
     private long executionTimestamp;
     private int enhancementRound;
@@ -55,10 +69,15 @@ public class FailedTestResult {
     
     /**
      * Check if this test failure is enhanceable.
-     * 5xx errors are server bugs and cannot be fixed by changing inputs.
+     * <ul>
+     *   <li>5xx errors are server bugs; changing inputs cannot fix them.</li>
+     *   <li>Bypass-triggered failures ran with a synthetic fallback value because
+     *       an upstream step had failed. The root cause is upstream; enhancing
+     *       this step's parameters is pointless.</li>
+     * </ul>
      */
     public boolean isEnhanceable() {
-        return actualStatusCode < 500;
+        return actualStatusCode < 500 && !bypassTriggered;
     }
     
     /**
@@ -200,6 +219,22 @@ public class FailedTestResult {
             return this;
         }
         
+        public Builder failedStepIndex(int failedStepIndex) {
+            result.failedStepIndex = failedStepIndex;
+            return this;
+        }
+        
+        public Builder lockedDependencyParams(Set<String> lockedDependencyParams) {
+            result.lockedDependencyParams = lockedDependencyParams != null
+                    ? new HashSet<>(lockedDependencyParams) : new HashSet<>();
+            return this;
+        }
+
+        public Builder bypassTriggered(boolean bypassTriggered) {
+            result.bypassTriggered = bypassTriggered;
+            return this;
+        }
+
         public FailedTestResult build() {
             return result;
         }
@@ -253,6 +288,17 @@ public class FailedTestResult {
     
     public String getOriginalTestFile() { return originalTestFile; }
     public void setOriginalTestFile(String originalTestFile) { this.originalTestFile = originalTestFile; }
+    
+    public int getFailedStepIndex() { return failedStepIndex; }
+    public void setFailedStepIndex(int failedStepIndex) { this.failedStepIndex = failedStepIndex; }
+    
+    public Set<String> getLockedDependencyParams() { return lockedDependencyParams; }
+    public void setLockedDependencyParams(Set<String> lockedDependencyParams) {
+        this.lockedDependencyParams = lockedDependencyParams != null ? lockedDependencyParams : new HashSet<>();
+    }
+
+    public boolean isBypassTriggered() { return bypassTriggered; }
+    public void setBypassTriggered(boolean bypassTriggered) { this.bypassTriggered = bypassTriggered; }
     
     @Override
     public String toString() {

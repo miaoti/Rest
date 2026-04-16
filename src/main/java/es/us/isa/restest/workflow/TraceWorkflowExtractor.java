@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.File;
 
 import org.json.JSONArray;
@@ -273,23 +275,18 @@ public class TraceWorkflowExtractor {
                         operation = "unknown";
                     }
                 }
-                // Start and end times (as long). These might be epoch milliseconds or nanoseconds.
+                // Start and end times (as long, microseconds since epoch).
+                // Jaeger uses startTime + duration; we compute endTime from them.
                 long startTime = -1L;
                 long endTime = -1L;
                 try {
                     if (spanObj.has("startTime")) {
-                        // Try parsing as long (JSON may store numbers as Long or even String)
                         startTime = spanObj.getLong("startTime");
                     }
                 } catch (Exception e) {
-                    // If not a straightforward long, try as string then parse
                     String startStr = spanObj.optString("startTime", null);
                     if (startStr != null) {
-                        try {
-                            startTime = Long.parseLong(startStr);
-                        } catch (NumberFormatException nfe) {
-                            // Could not parse, leave as -1
-                        }
+                        try { startTime = Long.parseLong(startStr); } catch (NumberFormatException nfe) { }
                     }
                 }
                 try {
@@ -299,12 +296,15 @@ public class TraceWorkflowExtractor {
                 } catch (Exception e) {
                     String endStr = spanObj.optString("endTime", null);
                     if (endStr != null) {
-                        try {
-                            endTime = Long.parseLong(endStr);
-                        } catch (NumberFormatException nfe) {
-                            // leave as -1
-                        }
+                        try { endTime = Long.parseLong(endStr); } catch (NumberFormatException nfe) { }
                     }
+                }
+                // Jaeger format: startTime + duration (no explicit endTime)
+                if (endTime < 0 && startTime > 0 && spanObj.has("duration")) {
+                    try {
+                        long duration = spanObj.getLong("duration");
+                        if (duration >= 0) endTime = startTime + duration;
+                    } catch (Exception ignored) { }
                 }
 
                 // Parse attributes for input/output data
@@ -384,6 +384,13 @@ public class TraceWorkflowExtractor {
                     }
                 }
 
+                // Extract ID-like path parameters from URLs into input fields.
+                // URL path IDs are inputs (the client already knew the ID), not outputs.
+                String urlForPathExtraction = httpTarget != null ? httpTarget : httpUrl;
+                if (urlForPathExtraction != null && !urlForPathExtraction.isEmpty()) {
+                    extractFieldsFromUrl(urlForPathExtraction, inputFields);
+                }
+
                 // Parse response outputs (body)
                 if (responseBody != null && !responseBody.isEmpty()) {
                     outputFields.put("http.response.body", responseBody);
@@ -442,13 +449,64 @@ public class TraceWorkflowExtractor {
                 step.sortChildrenByStartTime();
             }
 
+            // --- Compute session identifier and time bounds from spans ---
+            long minStart = Long.MAX_VALUE;
+            long maxEnd = Long.MIN_VALUE;
+            String sessionId = null;
+            for (JSONObject spanObj : spans) {
+                long st = -1L;
+                try { st = spanObj.getLong("startTime"); } catch (Exception ignored) { }
+                long dur = 0;
+                try { dur = spanObj.getLong("duration"); } catch (Exception ignored) { }
+                long en = st > 0 ? st + dur : -1L;
+
+                if (st > 0 && st < minStart) minStart = st;
+                if (en > 0 && en > maxEnd) maxEnd = en;
+
+                if (sessionId == null) {
+                    // Prefer http.client_ip; fallback to user_agent.original as a weaker signal
+                    JSONArray tags = spanObj.optJSONArray("tags");
+                    if (tags != null) {
+                        for (int ti = 0; ti < tags.length(); ti++) {
+                            JSONObject tag = tags.optJSONObject(ti);
+                            if (tag == null) continue;
+                            String key = tag.optString("key", "");
+                            if ("http.client_ip".equals(key)) {
+                                sessionId = tag.optString("value", null);
+                                break;
+                            }
+                        }
+                    }
+                    // Also check flat attributes object
+                    if (sessionId == null) {
+                        JSONObject attrs = spanObj.optJSONObject("attributes");
+                        if (attrs != null) {
+                            sessionId = attrs.optString("http.client_ip", null);
+                        }
+                    }
+                }
+            }
+            scenario.setSessionIdentifier(sessionId != null && !sessionId.isEmpty() ? sessionId : "UNKNOWN_SESSION");
+            scenario.setStartTimeMicros(minStart == Long.MAX_VALUE ? -1L : minStart);
+            scenario.setEndTimeMicros(maxEnd == Long.MIN_VALUE ? -1L : maxEnd);
+
             // Record this scenario
-            scenario.addTraceId(traceId);  // add the traceId (though addRootStep already did, this ensures even if no root was added above due to missing parent handling)
+            scenario.addTraceId(traceId);
             scenarios.add(scenario);
         }
 
-        // Merge scenarios that have cross-trace data dependencies
+        // Phase 1: Merge scenarios that have explicit cross-trace data dependencies
+        // (requires http.response.body in spans — may be a no-op if bodies are absent)
         mergeScenariosByDataDependency(scenarios);
+
+        // Phase 2: Heuristic session-based merge for traces that share the same
+        // client IP and are temporally adjacent (covers the common case where OTel
+        // does not capture response/request bodies).
+        long maxGapMicros = Long.parseLong(
+                System.getProperty("trace.merge.max.session.gap.micros", "60000000")); // 60s default
+        int maxRootsPerScenario = Integer.parseInt(
+                System.getProperty("trace.merge.max.roots.per.scenario", "10"));
+        mergeScenariosBySessionTimeWindow(scenarios, maxGapMicros, maxRootsPerScenario);
 
         return scenarios;
     }
@@ -540,13 +598,15 @@ public class TraceWorkflowExtractor {
                 // Nested object: recurse with prefix
                 extractJsonObjectFields((JSONObject) valueObj, fieldMap);
             } else if (valueObj instanceof JSONArray) {
-                // Nested array: we won't enumerate all elements, store the array as a string or first element's fields
                 JSONArray array = (JSONArray) valueObj;
-                if (array.length() > 0 && array.get(0) instanceof JSONObject) {
-                    // If array of JSON objects, we might extract from the first element as representative
-                    extractJsonObjectFields(array.getJSONObject(0), fieldMap);
-                } else {
-                    // Otherwise, store the raw array string
+                boolean hasObjects = false;
+                for (int idx = 0; idx < array.length(); idx++) {
+                    if (array.get(idx) instanceof JSONObject) {
+                        extractJsonObjectFields(array.getJSONObject(idx), fieldMap);
+                        hasObjects = true;
+                    }
+                }
+                if (!hasObjects) {
                     fieldMap.put(key, array.toString());
                 }
             } else {
@@ -555,6 +615,116 @@ public class TraceWorkflowExtractor {
             }
         }
     }
+
+    // ---- URL path-parameter extraction ----------------------------------------
+
+    private static final Pattern UUID_PATTERN = Pattern.compile(
+            "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
+    private static final Pattern LONG_ID_PATTERN = Pattern.compile("^\\d{5,}$");
+
+    private static final Map<String, String> NOUN_TO_KEY = new HashMap<>();
+    static {
+        NOUN_TO_KEY.put("orders",     "orderId");
+        NOUN_TO_KEY.put("order",      "orderId");
+        NOUN_TO_KEY.put("trips",      "tripId");
+        NOUN_TO_KEY.put("trip",       "tripId");
+        NOUN_TO_KEY.put("routes",     "routeId");
+        NOUN_TO_KEY.put("route",      "routeId");
+        NOUN_TO_KEY.put("accounts",   "accountId");
+        NOUN_TO_KEY.put("account",    "accountId");
+        NOUN_TO_KEY.put("contacts",   "contactId");
+        NOUN_TO_KEY.put("contact",    "contactId");
+        NOUN_TO_KEY.put("users",      "userId");
+        NOUN_TO_KEY.put("user",       "userId");
+        NOUN_TO_KEY.put("trains",     "trainNumber");
+        NOUN_TO_KEY.put("train",      "trainNumber");
+        NOUN_TO_KEY.put("stations",   "stationId");
+        NOUN_TO_KEY.put("station",    "stationId");
+        NOUN_TO_KEY.put("seats",      "seatId");
+        NOUN_TO_KEY.put("seat",       "seatId");
+        NOUN_TO_KEY.put("prices",     "priceId");
+        NOUN_TO_KEY.put("price",      "priceId");
+        NOUN_TO_KEY.put("configs",    "configId");
+        NOUN_TO_KEY.put("config",     "configId");
+        NOUN_TO_KEY.put("consigns",   "consignId");
+        NOUN_TO_KEY.put("consign",    "consignId");
+        NOUN_TO_KEY.put("foods",      "foodId");
+        NOUN_TO_KEY.put("food",       "foodId");
+        NOUN_TO_KEY.put("assurances", "assuranceId");
+        NOUN_TO_KEY.put("assurance",  "assuranceId");
+        NOUN_TO_KEY.put("vouchers",   "voucherId");
+        NOUN_TO_KEY.put("voucher",    "voucherId");
+        NOUN_TO_KEY.put("payments",   "paymentId");
+        NOUN_TO_KEY.put("payment",    "paymentId");
+    }
+
+    /**
+     * Extracts ID-like values from a URL path and stores them in the field map
+     * using semantically meaningful keys derived from the preceding path segment.
+     * <p>
+     * Recognised patterns:
+     * <ul>
+     *   <li>UUIDs ({@code 4d2a46c7-71cb-...})</li>
+     *   <li>Long numeric IDs (5+ digits)</li>
+     *   <li>Any value that follows a known resource noun
+     *       ({@code /orders/}, {@code /accounts/}, …)</li>
+     * </ul>
+     *
+     * @param url      the full URL or path (e.g., {@code /api/v1/orders/12345})
+     * @param fieldMap the map to populate with extracted key-value pairs
+     */
+    private static void extractFieldsFromUrl(String url, Map<String, String> fieldMap) {
+        if (url == null || url.isEmpty()) return;
+
+        // Strip scheme + authority if present (keep only the path)
+        String path = url;
+        int schemeEnd = url.indexOf("://");
+        if (schemeEnd >= 0) {
+            int pathStart = url.indexOf('/', schemeEnd + 3);
+            if (pathStart >= 0) {
+                path = url.substring(pathStart);
+            } else {
+                return; // URL has no path component
+            }
+        }
+
+        // Strip query string
+        int qMark = path.indexOf('?');
+        if (qMark >= 0) path = path.substring(0, qMark);
+
+        String[] segments = path.split("/");
+
+        for (int i = 0; i < segments.length; i++) {
+            String seg = segments[i];
+            if (seg.isEmpty()) continue;
+
+            boolean isUuid = UUID_PATTERN.matcher(seg).matches();
+            boolean isLongId = LONG_ID_PATTERN.matcher(seg).matches();
+
+            if (!isUuid && !isLongId) continue;
+
+            // Determine the key name from the preceding segment
+            String key = null;
+            if (i > 0) {
+                String prev = segments[i - 1].toLowerCase();
+                key = NOUN_TO_KEY.get(prev);
+                if (key == null && !prev.isEmpty()) {
+                    // Derive a key: strip trailing 's' for plural, append "Id"
+                    String singular = prev.endsWith("s") && prev.length() > 1
+                            ? prev.substring(0, prev.length() - 1) : prev;
+                    key = singular + "Id";
+                }
+            }
+            if (key == null) {
+                key = "pathParam_" + i;
+            }
+
+            fieldMap.put(key, seg);
+            log.debug("URL path param: {}={} (from {})", key, seg, path);
+        }
+    }
+
+    // ---- end URL path-parameter extraction ------------------------------------
 
     /**
      * Merges any scenarios in the list that have data dependencies between them.
@@ -565,72 +735,74 @@ public class TraceWorkflowExtractor {
      * @param scenarios the list of scenarios to analyze and merge as necessary
      */
     private static void mergeScenariosByDataDependency(List<WorkflowScenario> scenarios) {
-        // We use a set of keys to ignore for dependency matching to avoid trivial or common fields.
         Set<String> ignoreKeys = new HashSet<>();
         ignoreKeys.add("http.status_code");
         ignoreKeys.add("status_code");
-        ignoreKeys.add("value"); // generic or uninformative keys
+        ignoreKeys.add("value");
+        ignoreKeys.add("http.method");
+        ignoreKeys.add("http.url");
+        ignoreKeys.add("http.target");
+        ignoreKeys.add("http.path");
+        ignoreKeys.add("http.request.body");
+        ignoreKeys.add("http.response.body");
 
         boolean mergedSomething = true;
-        // Keep attempting to merge until no more merges occur in a full pass
         while (mergedSomething) {
             mergedSomething = false;
             outerLoop:
             for (int i = 0; i < scenarios.size(); i++) {
                 WorkflowScenario scenarioA = scenarios.get(i);
-                // Collect all steps from scenarioA
                 List<WorkflowStep> stepsA = collectAllSteps(scenarioA);
                 for (int j = i + 1; j < scenarios.size(); j++) {
                     WorkflowScenario scenarioB = scenarios.get(j);
                     List<WorkflowStep> stepsB = collectAllSteps(scenarioB);
-                    // Try to find any matching field dependency between scenarioA and scenarioB
+
+                    // Direction 1: output of A consumed by input of B
                     for (WorkflowStep stepA : stepsA) {
-                        // Check each output field of A
                         for (Map.Entry<String, String> outEntry : stepA.getOutputFields().entrySet()) {
                             String key = outEntry.getKey();
                             if (ignoreKeys.contains(key)) continue;
                             String value = outEntry.getValue();
                             if (value == null || value.isEmpty()) continue;
-                            // Look for the same key/value in any input of scenarioB
                             for (WorkflowStep stepB : stepsB) {
                                 String inVal = stepB.getInputFields().get(key);
-                                if (inVal != null && !inVal.isEmpty() && inVal.equals(value)) {
-                                    // Found a dependency: output from stepA matches input of stepB
-                                    log.info("Data dependency found: " + key + "=" + value
-                                            + " from " + stepA.getServiceName() + "->" + stepB.getServiceName()
-                                            + " (merging scenarios of trace " + stepA.getTraceId()
-                                            + " and trace " + stepB.getTraceId() + ")");
-                                    // Merge scenarioB into scenarioA by attaching stepB (or its root) under stepA
-                                    // Identify the root of scenarioB's trace (stepB might not be root if it's a deeper span,
-                                    // but logically the entire scenarioB will attach under scenarioA at stepA).
-                                    WorkflowStep rootB = stepB;
-                                    while (rootB.getParent() != null) {
-                                        rootB = rootB.getParent();
-                                    }
-                                    // Attach scenarioB's root to stepA
-                                    stepA.addChild(rootB);
-                                    // Merge the scenarios' metadata
-                                    scenarioA.addTraceId(stepB.getTraceId());
-                                    for (String tid : scenarioB.getTraceIds()) {
-                                        scenarioA.addTraceId(tid);
-                                    }
-                                    // Transfer any other root steps from B (if any) to scenarioA
-                                    for (WorkflowStep otherRoot : scenarioB.getRootSteps()) {
-                                        if (otherRoot != rootB) {
-                                            scenarioA.addRootStep(otherRoot);
-                                        }
-                                    }
-                                    // Remove scenarioB from the list as it is now merged into A
-                                    scenarios.remove(j);
-                                    mergedSomething = true;
-                                    // Restart merging process since list changed
-                                    break outerLoop;
+                                if (inVal == null || inVal.isEmpty() || !inVal.equals(value)) continue;
+
+                                // Temporal guard: producer must finish before consumer starts
+                                long producerEnd = stepA.getEndTime();
+                                long consumerStart = stepB.getStartTime();
+                                if (producerEnd > 0 && consumerStart > 0 && producerEnd > consumerStart) {
+                                    log.debug("Skipping merge for {}={}: producer (trace {}) ends at {} "
+                                            + "after consumer (trace {}) starts at {}",
+                                            key, value, stepA.getTraceId(), producerEnd,
+                                            stepB.getTraceId(), consumerStart);
+                                    continue;
                                 }
+
+                                log.info("Data dependency found: {}={} from {}(trace {})->{}(trace {})",
+                                        key, value,
+                                        stepA.getServiceName(), stepA.getTraceId(),
+                                        stepB.getServiceName(), stepB.getTraceId());
+
+                                WorkflowStep rootB = stepB;
+                                while (rootB.getParent() != null) {
+                                    rootB = rootB.getParent();
+                                }
+
+                                scenarioA.mergeWith(scenarioB, stepA, rootB);
+                                rootB.addProvenance(key, value);
+
+                                log.info("Merged scenario traces {} into {} via field {}={}",
+                                        scenarioB.getTraceIds(), scenarioA.getTraceIds(), key, value);
+
+                                scenarios.remove(j);
+                                mergedSomething = true;
+                                break outerLoop;
                             }
                         }
                     }
-                    // Also check the opposite direction (scenarioB outputs into scenarioA inputs)
-                    // in case the dependency is reversed.
+
+                    // Direction 2: output of B consumed by input of A (reverse dependency)
                     for (WorkflowStep stepB : stepsB) {
                         for (Map.Entry<String, String> outEntry : stepB.getOutputFields().entrySet()) {
                             String key = outEntry.getKey();
@@ -639,36 +811,103 @@ public class TraceWorkflowExtractor {
                             if (value == null || value.isEmpty()) continue;
                             for (WorkflowStep stepA : stepsA) {
                                 String inVal = stepA.getInputFields().get(key);
-                                if (inVal != null && !inVal.isEmpty() && inVal.equals(value)) {
-                                    // Found reverse dependency: output from stepB matches input of stepA
-                                    log.info("Data dependency found: " + key + "=" + value
-                                            + " from " + stepB.getServiceName() + "->" + stepA.getServiceName()
-                                            + " (merging scenarios of trace " + stepB.getTraceId()
-                                            + " and trace " + stepA.getTraceId() + ")");
-                                    // Merge scenarioA into scenarioB by attaching scenarioA's root under stepB
-                                    WorkflowStep rootA = stepA;
-                                    while (rootA.getParent() != null) {
-                                        rootA = rootA.getParent();
-                                    }
-                                    stepB.addChild(rootA);
-                                    scenarioB.addTraceId(stepA.getTraceId());
-                                    for (String tid : scenarioA.getTraceIds()) {
-                                        scenarioB.addTraceId(tid);
-                                    }
-                                    for (WorkflowStep otherRoot : scenarioA.getRootSteps()) {
-                                        if (otherRoot != rootA) {
-                                            scenarioB.addRootStep(otherRoot);
-                                        }
-                                    }
-                                    scenarios.remove(i);
-                                    mergedSomething = true;
-                                    break outerLoop;
+                                if (inVal == null || inVal.isEmpty() || !inVal.equals(value)) continue;
+
+                                long producerEnd = stepB.getEndTime();
+                                long consumerStart = stepA.getStartTime();
+                                if (producerEnd > 0 && consumerStart > 0 && producerEnd > consumerStart) {
+                                    log.debug("Skipping reverse merge for {}={}: producer (trace {}) ends at {} "
+                                            + "after consumer (trace {}) starts at {}",
+                                            key, value, stepB.getTraceId(), producerEnd,
+                                            stepA.getTraceId(), consumerStart);
+                                    continue;
                                 }
+
+                                log.info("Data dependency found (reverse): {}={} from {}(trace {})->{}(trace {})",
+                                        key, value,
+                                        stepB.getServiceName(), stepB.getTraceId(),
+                                        stepA.getServiceName(), stepA.getTraceId());
+
+                                WorkflowStep rootA = stepA;
+                                while (rootA.getParent() != null) {
+                                    rootA = rootA.getParent();
+                                }
+
+                                scenarioB.mergeWith(scenarioA, stepB, rootA);
+                                rootA.addProvenance(key, value);
+
+                                log.info("Merged scenario traces {} into {} via field {}={}",
+                                        scenarioA.getTraceIds(), scenarioB.getTraceIds(), key, value);
+
+                                scenarios.remove(i);
+                                mergedSomething = true;
+                                break outerLoop;
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Heuristic merge: groups scenarios by session identifier (client IP), sorts
+     * chronologically, and merges consecutive scenarios whose time gap is within
+     * the configured threshold into a single multi-root scenario.
+     *
+     * @param scenarios          the scenario list (modified in-place)
+     * @param maxGapMicros       maximum gap in microseconds between two consecutive
+     *                           scenarios for them to be merged (default 60 000 000 = 60s)
+     * @param maxRootsPerScenario upper bound on roots in a single merged scenario to
+     *                           avoid creating unreasonably large test cases
+     */
+    private static void mergeScenariosBySessionTimeWindow(
+            List<WorkflowScenario> scenarios, long maxGapMicros, int maxRootsPerScenario) {
+
+        // 1. Group by sessionIdentifier
+        Map<String, List<WorkflowScenario>> bySession = new HashMap<>();
+        for (WorkflowScenario sc : scenarios) {
+            bySession.computeIfAbsent(sc.getSessionIdentifier(), k -> new ArrayList<>()).add(sc);
+        }
+
+        Set<WorkflowScenario> absorbed = new HashSet<>();
+
+        for (Map.Entry<String, List<WorkflowScenario>> entry : bySession.entrySet()) {
+            String session = entry.getKey();
+            List<WorkflowScenario> group = entry.getValue();
+
+            // Skip unknown-session group to avoid false merges
+            if ("UNKNOWN_SESSION".equals(session) || group.size() < 2) continue;
+
+            // 2. Sort chronologically
+            group.sort(Comparator.comparingLong(WorkflowScenario::getStartTimeMicros));
+
+            // 3. Sliding window merge
+            WorkflowScenario accumulator = group.get(0);
+            for (int i = 1; i < group.size(); i++) {
+                WorkflowScenario next = group.get(i);
+
+                long gap = next.getStartTimeMicros() - accumulator.getEndTimeMicros();
+                boolean withinWindow = gap >= 0 && gap <= maxGapMicros;
+                boolean underLimit = accumulator.getRootSteps().size() < maxRootsPerScenario;
+
+                if (withinWindow && underLimit) {
+                    log.info("Session merge [{}]: appending trace {} (gap={}µs) → now {} roots",
+                            session, next.getTraceIds(),
+                            gap, accumulator.getRootSteps().size() + next.getRootSteps().size());
+                    accumulator.appendSequentialScenario(next);
+                    absorbed.add(next);
+                } else {
+                    accumulator = next;
+                }
+            }
+        }
+
+        // Remove absorbed scenarios from the master list
+        if (!absorbed.isEmpty()) {
+            scenarios.removeAll(absorbed);
+            log.info("Session-based merge absorbed {} single-trace scenarios into multi-root sequences",
+                    absorbed.size());
         }
     }
 

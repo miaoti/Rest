@@ -17,6 +17,8 @@ public class ParameterSnapshot {
     private String example;
     private String format;
     private boolean required;
+    private int stepIndex;
+    private boolean dataInjected;
     
     // Default constructor for JSON deserialization
     public ParameterSnapshot() {}
@@ -76,6 +78,16 @@ public class ParameterSnapshot {
             return this;
         }
         
+        public Builder stepIndex(int stepIndex) {
+            snapshot.stepIndex = stepIndex;
+            return this;
+        }
+        
+        public Builder dataInjected(boolean dataInjected) {
+            snapshot.dataInjected = dataInjected;
+            return this;
+        }
+        
         public ParameterSnapshot build() {
             return snapshot;
         }
@@ -106,6 +118,12 @@ public class ParameterSnapshot {
     public boolean isRequired() { return required; }
     public void setRequired(boolean required) { this.required = required; }
     
+    public int getStepIndex() { return stepIndex; }
+    public void setStepIndex(int stepIndex) { this.stepIndex = stepIndex; }
+    
+    public boolean isDataInjected() { return dataInjected; }
+    public void setDataInjected(boolean dataInjected) { this.dataInjected = dataInjected; }
+    
     @Override
     public String toString() {
         return "ParameterSnapshot{" +
@@ -113,6 +131,8 @@ public class ParameterSnapshot {
                 ", value='" + value + '\'' +
                 ", type='" + type + '\'' +
                 ", location='" + location + '\'' +
+                ", stepIndex=" + stepIndex +
+                ", dataInjected=" + dataInjected +
                 '}';
     }
 }

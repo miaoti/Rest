@@ -93,11 +93,20 @@ public class FailedTestCollector extends RunListener {
         for (FailedTestResult failed : capturedResults.values()) {
             // Skip 5xx errors if configured
             if (skip5xx && failed.getActualStatusCode() >= 500) {
-                log.debug("⏭️  Skipping 5xx error: {} (status: {})", 
+                log.debug("⏭️  Skipping 5xx error: {} (status: {})",
                         failed.getTestMethodName(), failed.getActualStatusCode());
                 continue;
             }
-            
+
+            // Skip bypass-triggered failures: the step ran with a synthetic fallback
+            // value because its upstream producer already failed. The root cause is
+            // upstream; enhancing this step's parameters cannot fix the flow.
+            if (failed.isBypassTriggered()) {
+                log.debug("⏭️  Skipping enhancement: {} (step ran in ⚡ Bypass Mode — upstream failure caused fallback)",
+                        failed.getTestMethodName());
+                continue;
+            }
+
             failed.setEnhancementRound(currentRound);
             failedTests.add(failed);
         }

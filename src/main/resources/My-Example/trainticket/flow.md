@@ -9,13 +9,17 @@ flowchart TD
     D --> E[Load OpenAPI spec]
     E --> F[Load multi service YAML to serviceConfigs]
     F --> G[Build serviceSpecs map]
-    G --> H[Extract scenarios from traces]
+    G --> H[Extract scenarios from traces + Phase 1/2 merging]
     H --> J{root api registry path set}
     J -->|Yes| K[Init RootApiRegistry and register ALL scenarios]
     J -->|No| L[Skip registry]
-    K --> I[Deduplicate scenarios for test generation]
+    K --> I[Create MST generator]
     L --> I
-    I --> M[After deduplication: unique scenarios for tests]
+    I --> I1[Phase 2.5: Deduplicate redundant 1-root scenarios by API key]
+    I1 --> I2[Group scenarios by root API and build shared parameter pools]
+    I2 --> I3[Phase 3: Scenario Shattering - partition by connected components]
+    I3 --> I4[Phase 4: Trace Decomposition - add missing 1-root baselines]
+    I4 --> M[After deduplication and decomposition: scenarios for test generation]
     M[Propagate MST properties]
     M --> M1[testsperoperation or test variants per scenario]
     M --> M2[mst generate only first step]
@@ -56,119 +60,483 @@ flowchart TD
     Y --> AA[End]
 ```
 
-**Critical Design Decision: Registry Before Deduplication**
+**Critical Design Decision: Registry Is Observational, Dedup Happens in the Generator**
 
-The MST flow registers **ALL scenarios** to the Root API Registry BEFORE deduplication:
+The MST flow still registers **all extracted scenarios** in the Root API Registry before generator-side filtering, but the registry itself does **not** stop code generation:
 
-1. **Extract scenarios from traces** → Get all workflow patterns from Jaeger
-2. **Register ALL scenarios** → Root API Registry learns from every trace (even duplicates)
-   - Why? Because different traces with the same root API may have different execution patterns, timings, or data flows
-   - The registry benefits from seeing all variations to build a comprehensive understanding
-3. **Then deduplicate scenarios** → Remove scenarios with the same ROOT API for test generation
-   - Why? To avoid generating redundant test cases that would waste resources
-   - **Deduplication is based on ROOT API ONLY** (HTTP method + path of first business API call)
-   - Different downstream workflows (success vs failure traces) are treated as duplicates if they share the same root API
+1. **Extract scenarios from traces** → Get workflow patterns from Jaeger after Phase 1/2 merging
+2. **Register ALL scenarios** → Root API Registry records every observed root API / tree pattern
+   - Why? The registry is an architectural catalog of what was seen in traces
+   - It can store multiple observed interaction trees per root API for auditing and analysis
+3. **Create MST generator** → The actual generation pipeline starts
+4. **Phase 2.5: Single-root scenario deduplication** → Remove redundant standalone 1-root scenarios with the same normalized API key
+   - Why? Parameterless or stateless endpoints can otherwise explode into dozens of identical `Flow_Scenario_N.java` files
+   - **Deduplication is applied only to standalone 1-root scenarios**
+   - Multi-root workflows are preserved because they may differ in downstream chains
+5. **Phase 4 decomposition reuses the same seen-set** → if a standalone 1-root scenario already covers an API, `_RT` decomposed baselines for that API are skipped
 
 **Example:**
-- 2 traces both start with `POST /api/v1/adminorder` (same root API)
-  - Trace 1: Admin order success → downstream calls (station, route, database)
-  - Trace 2: Admin order failure → error handling calls
-- Both are registered in the Root API Registry (learning from both success and failure patterns)
-- But only 1 scenario generates test cases (avoiding redundant tests for the same root API)
-- Result: 15 test cases instead of 30 (2 × 15)
+- 10 traces all contain standalone `GET /api/v1/adminbasicservice/adminbasic/stations`
+- All 10 may be recorded observationally in the registry layer
+- But Phase 2.5 keeps only the first standalone 1-root scenario for generation
+- If a multi-root flow later contains the same root API, decomposition skips emitting a duplicate `_RT` baseline
+- Result: 1 generated baseline test class for that endpoint instead of 10+
+
+### Workflow Scenario Extraction (TraceWorkflowExtractor)
+
+**Purpose**: Convert raw OpenTelemetry / Jaeger trace files (JSON/JSONL) into `WorkflowScenario` objects that the Generator can traverse. This includes extracting business data from spans and linking independent traces that share data values.
+
+```mermaid
+flowchart TD
+    A[Load trace file] --> B[Parse spans from JSON or JSONL]
+    B --> C[Build parent-child tree using parentSpanId]
+    C --> D[Identify Root API spans - HTTP entry points with no HTTP parent]
+    D --> E[For each Root span build WorkflowStep]
+    E --> F[extractJsonObjectFields from span attributes]
+    F --> F1[If value is JSONArray iterate ALL elements]
+    F1 --> F2[Recurse into each JSONObject element]
+    F2 --> F3[Populate inputFields and outputFields]
+    E --> G[extractFieldsFromUrl using http.target or http.url]
+    G --> G1[UUID pattern match e.g. orderId]
+    G --> G2[Long-int pattern match e.g. 5+ digit IDs]
+    G --> G3[Noun-to-key map: /orders/ → orderId]
+    G1 --> G4[Store in inputFields only - URL params are client inputs not produced values]
+    G2 --> G4
+    G3 --> G4
+    F3 --> H[Assemble WorkflowScenario per root span]
+    G4 --> H
+    H --> H2[Compute sessionIdentifier from http.client_ip tag]
+    H2 --> H3[Compute startTimeMicros and endTimeMicros from span startTime + duration]
+    H3 --> I[Phase 1: mergeScenariosByDataDependency - fixed-point loop]
+    I --> I2[Phase 2: mergeScenariosBySessionTimeWindow - group by IP sort by time sliding window]
+    I2 --> J[End of trace file → merged scenarios list]
+```
+
+**Span Field Extraction (`extractJsonObjectFields`):**
+- Iterates **all** elements in a `JSONArray` (previously only read index 0).
+- Recursively calls itself on any `JSONObject` element found inside an array.
+- Skips keys in `ignoreKeys`: `http.method`, `http.url`, `http.target`, `http.path`, `http.request.body`, `http.response.body` (these are structural, not business data).
+
+**URL Path Parameter Extraction (`extractFieldsFromUrl`):**
+
+| Pattern | Example URL | Key Assigned | Value |
+|---------|-------------|--------------|-------|
+| UUID after known noun | `/api/v1/orderservice/orders/47e2a130-...` | `orderId` | `47e2a130-...` |
+| UUID after unknown noun | `/api/v1/foo/47e2a130-...` | `pathId` | `47e2a130-...` |
+| Long integer (≥5 digits) after known noun | `/api/v1/accountservice/accounts/10001` | `accountId` | `10001` |
+| Long integer after unknown noun | `/api/v1/foo/10001` | `pathId` | `10001` |
+
+Noun-to-key mappings cover: `orders→orderId`, `accounts→accountId`, `trips→tripId`, `routes→routeId`, `users→userId`, `contacts→contactId`, `trains→trainId`, `stations→stationId`, `prices→priceId`, `travels→travelId`, `passengers→passengerId`.
+
+> **Bug fix (Session Merging era):** URL path parameters are stored in **`inputFields` only** — NOT in `outputFields`. URL path segments are client-supplied inputs (they identify the resource to access); they are not values *produced* by the API call. Placing them in `outputFields` was causing false-positive cross-trace producer relationships in `mergeScenariosByDataDependency`, incorrectly linking unrelated traces. The line `extractFieldsFromUrl(urlForPathExtraction, outputFields)` was removed; only `extractFieldsFromUrl(urlForPathExtraction, inputFields)` remains.
+
+---
+
+### Phase 1: Cross-Trace Data Dependency Merging (`mergeScenariosByDataDependency`)
+
+**Purpose**: Link independent `WorkflowScenario` objects from separate root API traces into a single unified scenario when they share a **matching business data value** (e.g., both traces reference the same `accountId` UUID). This implements Algorithm 1, Step 17: MERGESCENARIOS BY DATA DEPENDENCY.
+
+> **When this works:** Effective when traces contain actual business IDs in span attributes (e.g., `orderId` in query params). **Limitation:** Production OTel traces that lack `http.response.body` prevent value matching on dynamically-generated IDs. Phase 2 (Session-Based Heuristic Merging) handles this case.
+
+```mermaid
+flowchart TD
+    A[while mergedSomething - fixed-point loop] --> B[For each pair of scenarios A and B]
+    B --> C[For each outputField key=value in Scenario A root step]
+    C --> D{key in ignoreKeys?}
+    D -->|Yes| C
+    D -->|No| E[For each inputField in Scenario B root step]
+    E --> F{inVal equals value?}
+    F -->|No| E
+    F -->|Yes| G{Temporal guard: producerEnd < consumerStart?}
+    G -->|No - producer not done yet| E
+    G -->|Yes| H[scenarioA.mergeWith scenarioB stepA rootB]
+    H --> I[rootB.addProvenance key value]
+    I --> J[mergedSomething = true]
+    J --> A
+    A -->|no merges in this pass| K[Return merged scenario list]
+```
+
+**Key guards and design decisions:**
+
+| Guard | Reason |
+|-------|--------|
+| `ignoreKeys` set | Prevents merging on HTTP metadata (`http.url`, `http.method`, etc.) — these are structural, not business data |
+| Temporal guard: `producerEnd < consumerStart` | Ensures causality — the producer trace must have **finished** before the consumer trace started. Prevents false merges for concurrent traces. |
+| Fixed-point `while (mergedSomething)` loop | Handles **transitive chains**: if A→B and B→C share data, both merges are applied across multiple passes until no new merges are found. |
+| `scenarioA.mergeWith(scenarioB, stepA, rootB)` | Encapsulated merge: adds `rootB` as a child of `stepA`, transfers traceIds, rebuilds root links. |
+| `rootB.addProvenance(key, value)` | Records exactly **which field** caused the merge so the Generator can retrieve the exact value from `span.getDataProvenance()` without ambiguity. |
+
+**Data Provenance (`WorkflowStep.dataProvenance`):**
+
+A `Map<String, String>` added to `WorkflowStep` that records the key=value pair that caused a cross-trace merge for the consuming step (`rootB`). Example after merging on `accountId`:
+
+```
+rootB.dataProvenance = { "accountId" → "4d2a46c7-71cb-4cf1-b..." }
+```
+
+The Generator checks this map at **Priority 3-PROV** (before the flat context map) to ensure the consuming step uses the exact value from its proven producer, not an overwritten or rotated value from elsewhere.
+
+**Observed merge triggers in TrainTicket traces (6 out of 10 multi-trace files):**
+
+| File | Traces | Merges | Key |
+|------|--------|--------|-----|
+| `traces-1759192647565.json` | 99 | 67 | `routeId` |
+| `traces-1772605059021.json` | 11 | 16 | `accountId` |
+| `traces-1772605145922.json` | 31 | 28 | `routeId` |
+| `traces-1772605177793.json` | 26 | 28 | `routeId` |
+| `traces-1772605191379.json` | 19 | 28 | `routeId` |
+| `traces-1772605095842.json` | 154 | 36 | `orderId`, `accountId` |
+| `traces-1772605065914.json` | 2 | 1 | `accountId` (minimal test case) |
+
+---
+
+### Phase 2: Session-Based Heuristic Merging (`mergeScenariosBySessionTimeWindow`)
+
+**Motivation**: Many production OpenTelemetry traces lack `http.response.body` and `http.request.body` because instrumentation frameworks omit payload capture for performance. Without matching output-to-input values, Phase 1 cannot link traces. Phase 2 uses *session identity* (client IP) and *temporal proximity* (timestamp overlap) as heuristic evidence that two API calls were issued by the same user in the same workflow.
+
+```mermaid
+flowchart TD
+    A[scenarios list after Phase 1] --> B[Group scenarios by sessionIdentifier = http.client_ip]
+    B --> C[For each session group]
+    C --> D[Sort scenarios by startTimeMicros ascending]
+    D --> E[Set accumulator = first scenario in group]
+    E --> F[For each subsequent scenario in group]
+    F --> G{nextScenario.startTimeMicros >= accumulator.endTimeMicros?}
+    G -->|No - overlapping in time| H[Skip: concurrent traces not merged]
+    G -->|Yes - after accumulator ends| I{Gap < maxGapMicros AND accumulator.roots < maxRootsPerScenario?}
+    I -->|No - gap too large or too many roots| J[nextScenario becomes new accumulator]
+    I -->|Yes| K[accumulator.appendSequentialScenario nextScenario]
+    K --> L[Mark each transferred root as mergedRoot=true]
+    L --> M[Assign sequential producerRootIndex values]
+    M --> N[Remove absorbed scenario from master list]
+    N --> F
+    H --> F
+    J --> F
+    F -->|Group exhausted| O[Next session group]
+    O --> C
+    C -->|All groups done| P[Return merged scenarios list]
+```
+
+**`appendSequentialScenario(nextScenario)` logic:**
+1. For each `rootStep` in `nextScenario.rootSteps`, set `rootStep.mergedRoot = true` and `rootStep.producerRootIndex = existingRootCount + i`
+2. Transfer all root steps into `this.rootSteps`
+3. Transfer all `traceIds` from `nextScenario` into `this.traceIds`
+4. Set `this.endTimeMicros = max(this.endTimeMicros, nextScenario.endTimeMicros)`
+
+**Session & Time Metadata fields added to `WorkflowScenario`:**
+
+| Field | Type | Source | Purpose |
+|-------|------|--------|---------|
+| `sessionIdentifier` | String | `http.client_ip` span tag, fallback `"UNKNOWN_SESSION"` | Groups traces from the same client session |
+| `startTimeMicros` | long | min span `startTime` in trace (microseconds) | Enables chronological sorting within a session group |
+| `endTimeMicros` | long | max(`startTime + duration`) across all spans in trace | Defines the temporal boundary for gap calculation |
+
+> **`endTime` computation fix**: Jaeger spans provide `duration` but not `endTime`. The extractor now computes `endTime = startTime + duration` for each span, then takes the maximum across all spans as `scenario.endTimeMicros`.
+
+**Configuration:**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `trace.merge.max.session.gap.micros` | `60000000` (60 seconds) | Maximum time gap between end of one trace and start of the next to be considered the same session |
+| `trace.merge.max.roots.per.scenario` | `10` | Maximum number of root APIs a merged scenario may contain (prevents unbounded merging) |
+
+**"UNKNOWN_SESSION" handling**: Scenarios without a resolvable `http.client_ip` are assigned `sessionIdentifier = "UNKNOWN_SESSION"`. They are grouped together by the algorithm but treated conservatively — they can still be merged by time proximity, but since session identity is unconfirmed, the operator should consider reducing `maxRootsPerScenario` for this bucket.
+
+**Example (traces-1772605095842.json, 154 traces):**
+- Before Phase 2: 154 individual single-root scenarios (Phase 1 produced some multi-root merges but many remained single)
+- After Phase 2: ~15–20 Multi-Root Sequential Scenarios (each grouping 5–15 chronologically adjacent traces from the same client IP)
+- Each merged scenario represents a user session: e.g., Login → Search → Select Trip → Create Order → Pay
+
+---
+
+### Phase 2.5: Global Single-Root Scenario Deduplication (`deduplicateSingleRootScenarios`)
+
+**Motivation**: Even after Phase 1/2 merging, Jaeger can still leave many duplicate standalone 1-root scenarios for the exact same API. This happens when repeated clicks or page refreshes produce separate traces that are not merged into one session workflow.
+
+**Purpose**: Keep only the **first** standalone 1-root scenario per normalized API key before shared-pool generation, shattering, decomposition, and variant generation begin.
+
+```mermaid
+flowchart TD
+    A[Input scenarios after trace extraction and registry population] --> B[Initialize seenSingleRootApis set]
+    B --> C[For each WorkflowScenario sc]
+    C --> D{sc.rootSteps.size == 1?}
+    D -->|No| E[Keep multi-root scenario unchanged]
+    D -->|Yes| F[Extract normalized API key from sole root]
+    F --> G{api key already in seenSingleRootApis?}
+    G -->|No| H[Add key to seenSingleRootApis and keep scenario]
+    G -->|Yes| I[Skip redundant 1-root scenario]
+    E --> J[Build deduplicated scenario list]
+    H --> J
+    I --> J
+    J --> K[Replace original scenarios list]
+```
+
+**Key properties:**
+- Applies only to `sc.getRootSteps().size() == 1`
+- Uses the same normalized API-key extraction logic already used for root grouping
+- Preserves all multi-root scenarios because their downstream chains may be different
+- Seeds a shared `seenSingleRootApis` set that Phase 4 decomposition also consults
+
+**Effect on redundancy:**
+- 30 identical standalone traces for `GET /api/v1/adminbasicservice/adminbasic/stations`
+- Before Phase 2.5: up to 30 separate `Flow_Scenario_N.java` classes
+- After Phase 2.5: exactly 1 standalone scenario survives into generation
+
+---
+
+### Phase 3: Scenario Shattering / Partitioning (`ScenarioOptimizer`)
+
+**Motivation**: Phase 2's time-window heuristic can group APIs together that have **zero** semantic data dependencies on each other. Causes include:
+- Interleaved requests from multiple browser tabs (A → C have a dependency, B is isolated but sandwiched between them)
+- Unrelated APIs that happen to occur close in time (e.g., a background health-check and a user action)
+- Over-merging when `maxGapMicros` is too generous
+
+Testing an isolated API inside a fat sequential test case is an **anti-pattern**: a failure in step B masks execution of step C, causing flaky tests and obscuring real faults.
+
+**Solution**: Apply graph-theoretic partitioning (Weakly Connected Components) to split fat merged scenarios into smaller, semantically cohesive units — ensuring only APIs with actual data lineage are tested sequentially, while isolated APIs are decoupled back into independent 1-root test cases.
+
+```mermaid
+flowchart TD
+    A[Input: Multi-Root Scenario with N root steps] --> B{N > 1?}
+    B -->|No| Z[Pass through unchanged]
+    B -->|Yes| C[Build directed dependency graph]
+    C --> D[Nodes = root steps 0..N-1]
+    D --> E[For each pair i,j where j > i]
+    E --> F{registry.hasDirectedDependency rootJ rootI?}
+    F -->|Yes| G[Draw edge i → j]
+    F -->|No| H[No edge]
+    G --> I[Find Weakly Connected Components via Union-Find]
+    H --> I
+    I --> J{Components > 1?}
+    J -->|No| K[Scenario is fully connected - keep as-is]
+    J -->|Yes| L[Shatter into one scenario per component]
+    L --> M[Preserve chronological order within each component]
+    M --> N[Reassign mergedRoot and producerRootIndex within each partition]
+    N --> O[Replace original scenario in master list with partitions]
+```
+
+**Algorithm detail (Union-Find for Weakly Connected Components):**
+1. **Graph Construction**: For each pair of root steps `(i, j)` where `j > i`, call `SemanticDependencyRegistry.hasDirectedDependency(rootStep[j], rootStep[i])`. If true, draw a directed edge from `i → j` (producer → consumer).
+2. **Union-Find**: Initialise each node as its own component. For every edge, union the two endpoints. Path compression ensures near-constant-time operations.
+3. **Component Extraction**: Group root step indices by their component representative. Each group becomes a new `WorkflowScenario`.
+4. **Metadata Reassignment**: Within each partition, the first root step is unmarked (`mergedRoot=false`), and subsequent roots receive sequential `producerRootIndex` values starting from 1.
+
+**`hasDirectedDependency(consumerStep, producerStep)`** logic:
+1. Build normalised API keys from both steps (`method + path` from span attributes)
+2. Look up all consumer parameter bindings for the consumer's API key
+3. Return `true` if ANY binding's `producerApiKey` matches the producer step's API key
+
+**Example:**
+```
+Before shattering (1 fat scenario, 5 roots):
+  Root 0: POST /api/v1/travelservice/trips/left     (search)
+  Root 1: GET  /api/v1/stationservice/stations       (isolated - no deps)
+  Root 2: POST /api/v1/orderservice/order            (depends on Root 0 via tripId)
+  Root 3: GET  /api/v1/routeservice/routes           (isolated - no deps)
+  Root 4: POST /api/v1/inside_pay_service/inside_payment (depends on Root 2 via orderId)
+
+Dependency graph edges: 0→2 (tripId), 2→4 (orderId)
+
+Connected components:
+  Component A: {0, 2, 4} — coherent order flow
+  Component B: {1}       — isolated station lookup
+  Component C: {3}       — isolated route lookup
+
+After shattering (3 scenarios):
+  Scenario A: Root 0 → Root 1 → Root 2 (search → order → pay)
+  Scenario B: Root 0 (station lookup — independent 1-root test)
+  Scenario C: Root 0 (route lookup — independent 1-root test)
+```
+
+**Configuration:**
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `scenario.shattering.enabled` | `true` | Master switch; set to `false` to skip partitioning and keep fat merged scenarios |
+
+**Classes involved:**
+
+| Class | Responsibility |
+|-------|----------------|
+| `ScenarioOptimizer` | Orchestrates the shattering: iterates scenarios, builds graph, runs Union-Find, produces partitions |
+| `SemanticDependencyRegistry` | Provides `hasDirectedDependency()` for edge determination |
+| `MultiServiceTestCaseGenerator` | Calls `ScenarioOptimizer.optimizeScenarios()` after shared pool generation, before variant loop |
+
+---
 
 ### MST Test Case and Input Generation (MultiServiceTestCaseGenerator)
 
 ```mermaid
 flowchart TD
-    A[generate] --> B[Group scenarios by root API]
-    B --> C[Generate shared parameter pools per root API]
-    C --> D[For each scenario generateScenarioVariants]
-    D --> E[get variantCount from System properties]
-    E --> F[For each v build MultiServiceTestCase]
-    F --> G[Traverse trace tree DFS]
-    G --> H{Is span HTTP op}
-    H -->|No| H1[skip; visit children]
-    H1 --> G
-    H -->|Yes| I[Load service operation config]
-    I --> J{Is first step}
-    J -->|Yes| K[For each parameter]
-    K --> K0{Is target faulty param}
-    K0 -->|Yes| K00[Use faulty value and lock]
-    K0 -->|No| K1[Try Shared Pool first]
-    K1 -->|found| K2[Rotate through pool values]
-    K1 -->|not found| K3[Try Smart Fetch]
-    K2 --> L[Collect path/query/header/body maps]
-    K3 -->|success| L
-    K3 -->|fail or disabled| K4[LLM fallback]
-    K00 --> L
-    K4 --> L
-    J -->|No| M[For each parameter]
-    M --> M1[Check previous output dependency]
-    M1 -->|found| L
-    M1 -->|not found| M2[Check input reuse]
-    M2 -->|found| L
-    M2 -->|not found| M3[Check trace value]
-    M3 -->|found| L
-    M3 -->|not found| M4[Check Shared Pool]
-    M4 -->|found| M5[Rotate through pool values]
-    M4 -->|not found| M6[Try Smart Fetch or LLM]
-    M5 --> L
-    M6 --> L[Collect path/query/header/body maps]
-    L --> N{Body selection}
-    N -->|step one| B1[Generate body from fields]
-    N -->|step later| B2[Prefer trace body or generate]
-    B1 --> O[Expected status logic]
-    B2 --> O
-    O --> P[Create StepCall and capture outputs]
-    P --> Q[Update context with outputs and inputs]
-    Q --> R{Root api only?}
-    R -->|true| S[Stop traversal]
-    R -->|false| T[Visit children]
-    T --> G
-    S --> U[Finalize variant rename by first business API]
-    U --> V[next variant]
+    A[generate] --> B[Phase 2.5: Deduplicate standalone 1-root scenarios]
+    B --> C[Group scenarios by root API]
+    C --> D[Generate shared parameter pools per root API]
+    D --> D1[Phase 3: Scenario Shattering]
+    D1 --> D2[Phase 4: Decompose multi-root scenarios into missing 1-root baselines]
+    D2 --> E[For each scenario generateScenarioVariants]
+    E --> F[get variantCount from System properties]
+    F --> G[For each v build MultiServiceTestCase]
+    G --> H[Traverse trace tree DFS]
+    H --> I{Is span HTTP op}
+    I -->|No| I1[skip; visit children]
+    I1 --> H
+    I -->|Yes| J[Load service operation config]
+    J --> K{Is first step}
+    K -->|Yes| L[For each parameter]
+    L --> L0{Is target faulty param}
+    L0 -->|Yes| L00[Use faulty value and lock]
+    L0 -->|No| L1[Try Shared Pool first]
+    L1 -->|found| L2[Rotate through pool values]
+    L1 -->|not found| L3[Try Smart Fetch]
+    L2 --> M[Collect path/query/header/body maps]
+    L3 -->|success| M
+    L3 -->|fail or disabled| L4[LLM fallback]
+    L00 --> M
+    L4 --> M
+    K -->|No| N[For each parameter]
+    N --> N1[Check previous output dependency]
+    N1 -->|found| M
+    N1 -->|not found| N2[Check input reuse]
+    N2 -->|found| M
+    N2 -->|not found| NPROV[Check dataProvenance - Phase 1 cross-trace merge]
+    NPROV -->|found| M
+    NPROV -->|not found| NJIT[Check SemanticDependencyRegistry JIT Binding - Phase 2/3]
+    NJIT -->|found - addParamDependency emits capturedOutputs.get N| M
+    NJIT -->|not found or no prior producer in sequence| N3[Check trace value]
+    N3 -->|found| M
+    N3 -->|not found| N4[Check Shared Pool]
+    N4 -->|found| N5[Rotate through pool values]
+    N4 -->|not found| N6[Try Smart Fetch or LLM]
+    N5 --> M
+    N6 --> M[Collect path/query/header/body maps]
+    M --> O{Body selection}
+    O -->|step one| B1[Generate body from fields]
+    O -->|step later| B2[Prefer trace body or generate]
+    B1 --> P[Expected status logic]
+    B2 --> P
+    P --> Q[Create StepCall and capture outputs]
+    Q --> R[Update context with outputs and inputs]
+    R --> S{Root api only?}
+    S -->|true| T[Stop traversal]
+    S -->|false| U[Visit children]
+    U --> H
+    T --> V[Finalize variant rename by first business API]
+    V --> W[next variant]
 ```
+
+### Semantic Dependency Registry (`SemanticDependencyRegistry`)
+
+**Purpose**: Pre-compute a schema-driven dictionary that maps every consumer parameter (any param whose name ends with `id`, `Id`, `uuid`) to its likely producer API and JSON path, using only the loaded `TestConfigurationObject` OpenAPI specs.
+
+```mermaid
+flowchart TD
+    A[SemanticDependencyRegistry.build serviceConfigs] --> B[For each TestConfigurationObject]
+    B --> C[For each operation in spec]
+    C --> D{Is POST or PUT on entity resource?}
+    D -->|Yes| E[Register as strong producer: POST /order → orderId]
+    D -->|No| F{Has ID-like path parameter?}
+    F -->|Yes| G[Register as weak producer: GET /order/orderId]
+    F -->|No| H[Check response schema for ID-like fields]
+    H --> I[Register response schema producer if found]
+    E --> J[Store in producersByIdStem map]
+    G --> J
+    I --> J
+    C --> K[For each ID-like parameter in operation]
+    K --> L[Query producersByIdStem for matching stem]
+    L --> M{Producer found?}
+    M -->|Yes| N[Create ProducerBinding: serviceName, apiKey, jsonPath]
+    M -->|No| O[Skip - no wiring needed]
+    N --> P[Store in consumerIndex: consumerApiKey x paramName → ProducerBinding]
+    P --> Q[Prefer cross-service and POST over GET producers]
+```
+
+**`findProducer(consumerApiKey, paramName)`** — called during JIT binding in `traverse()`:
+1. Normalise `paramName` by stripping trailing `Id`/`ID`/`uuid` to get the "noun stem" (e.g., `orderId` → `order`)
+2. Look up `consumerIndex[consumerApiKey][paramName]`
+3. If not found, try `consumerIndex["*"][paramName]` (global lookup ignoring consumer API)
+4. Returns `ProducerBinding(serviceName, apiKey, jsonPath)` or `null`
+
+**JIT Binding in `traverse()` (Just-In-Time Dependency Wiring):**
+
+```mermaid
+flowchart TD
+    A[traverse: processing Root N where N > 1] --> B{Root N is isTopLevelRoot?}
+    B -->|No| Z[Skip JIT binding]
+    B -->|Yes| C[For each TestParameter in Root N operation]
+    C --> D{param already wired via dataProvenance?}
+    D -->|Yes| E[Skip - provenance takes priority]
+    D -->|No| F[Build consumerApiKey = method:path]
+    F --> G[Query dependencyRegistry.findProducer consumerApiKey, paramName]
+    G --> H{Producer binding found?}
+    H -->|No| I[log.debug: Producer missing, fallback to smart fetch/LLM]
+    H -->|Yes| J[Scan tc.getSteps backwards for matching producer API]
+    J --> K{Matching prior root step found?}
+    K -->|No| I
+    K -->|Yes| L[call.addParamDependency paramName, matchedStepIndex, jsonPath]
+    L --> M[Set DependencyType.DATA_DEPENDENCY]
+    M --> N[Writer emits: capturedOutputs.get matchedStepIndex]
+```
+
+> **Graceful Fallback (C→B edge case):** If `SemanticDependencyRegistry` says Root B needs data from Root A, but the current merged scenario is `Root C → Root B` (A is absent), then `scanBackwards` returns no match and **no** `ParamDependency` is added. RESTest's existing smart fetch / LLM generation handles the parameter automatically. A `log.debug` message is emitted: `"Producer missing for parameter X in sequence, falling back to smart fetch."`
+
+**Classes involved:**
+
+| Class | Responsibility |
+|-------|----------------|
+| `SemanticDependencyRegistry` | Builds producer/consumer map from TestConfigurationObject; `findProducer()` API |
+| `SemanticDependencyRegistry.ProducerBinding` | Holds `serviceName`, `apiKey`, `jsonPath` for a matched producer |
+| `MultiServiceTestCaseGenerator` | Calls `dependencyRegistry.findProducer()` in `traverse()` for Root N > 1 |
+| `MultiServiceRESTAssuredWriter` | Emits `capturedOutputs.get(N)` code for steps with JIT-wired `ParamDependency` |
+
+---
 
 ### Shared Parameter Pool Generation (per root API)
 
-**Purpose**: Pre-generate parameter values once per root API to avoid redundant Smart Fetch/LLM calls and ensure consistent value rotation across test variants.
+**Purpose**: Pre-generate diverse parameter values once per root API, size each pool dynamically from API complexity, and remove the old semantic-expansion bottleneck.
 
 ```mermaid
 flowchart TD
     A[Identify first business operation] --> B[Load operation test parameters]
-    B --> C[For each parameter]
-    C --> D[Smart Fetch up to 15 values]
-    D --> E[If less than limit get LLM seed values]
-    E --> F[Semantic expand to needed count]
-    F --> G[Pool: smart + LLM expanded + fallback]
-    G --> G1[Store in sharedParameterPools map]
+    B --> B1[Compute targetPoolSize from parameter count and configured variants]
+    B1 --> C[For each parameter]
+    C --> D[Try Smart Fetch first]
+    D --> E[Add unique values to LinkedHashSet]
+    E --> F{Pool size reached target?}
+    F -->|No| G[Call LLM with target-aware howMany]
+    G --> H[LLM prompt includes endpoint method/path and full OpenAPI constraints]
+    H --> I[Add unique values from LLM]
+    I --> J{Still below target?}
+    J -->|Yes| K[Apply fallback padding]
+    J -->|No| L[Finalize pool]
+    K --> L
+    F -->|Yes| L
+    L --> G1[Store in sharedParameterPools map]
     
-    C --> H[Generate comprehensive InvalidInputPool]
-    H --> I1[TYPE_MISMATCH: Ask LLM for wrong types]
-    I1 --> I2[Parse typed values: integer:55, boolean:true]
-    I2 --> I3[Add defaults based on param type]
-    I3 --> I4[REGEX_MISMATCH: Ask LLM for pattern violations]
-    I4 --> I5[SEMANTIC_MISMATCH: Ask LLM for meaningless values]
-    I5 --> I6[OVERFLOW: Ask LLM for huge values]
-    I6 --> I7[EMPTY_INPUT: Add empty string, whitespace]
-    I7 --> I8[NULL_INPUT: Add null, 'null', 'NULL']
-    I8 --> I9[SPECIAL_CHARACTERS: SQL injection, XSS]
-    I9 --> I10[BOUNDARY_VIOLATION: Off-by-one errors]
-    I10 --> J[Store InvalidInputPool by root API key]
-    J --> K[Pool tracks usage for round-robin]
+    C --> N0[Generate comprehensive InvalidInputPool]
+    N0 --> N1[TYPE_MISMATCH: Ask LLM for wrong types]
+    N1 --> N2[Parse typed values: integer:55, boolean:true]
+    N2 --> N3[Add defaults based on param type]
+    N3 --> N4[REGEX_MISMATCH: Ask LLM for pattern violations]
+    N4 --> N5[SEMANTIC_MISMATCH: Ask LLM for meaningless values]
+    N5 --> N6[OVERFLOW: Ask LLM for huge values]
+    N6 --> N7[EMPTY_INPUT: Add empty string, whitespace]
+    N7 --> N8[NULL_INPUT: Add null, 'null', 'NULL']
+    N8 --> N9[SPECIAL_CHARACTERS: SQL injection, XSS]
+    N9 --> N10[BOUNDARY_VIOLATION: Off-by-one errors]
+    N10 --> N11[Store InvalidInputPool by root API key]
+    N11 --> N12[Pool tracks usage for round-robin]
 ```
 
 ### Shared Parameter Pool Usage (during variant generation)
 
-**Strategy**: Use pre-generated shared pool values with rotation to maximize efficiency and diversity.
+**Strategy**: Positive tests use the pre-generated shared pool as the primary source for the first business API, but values are selected randomly rather than by modulo rotation.
 
 ```mermaid
 flowchart TD
     A[Need parameter value for variant N] --> B{Check sharedParameterPools}
     B -->|Found| C[Get pool values list]
-    C --> D[Calculate rotation index: N % pool.size]
-    D --> E[Return poolValues at rotationIndex]
+    C --> D[Pick random index with Random.nextInt pool.size]
+    D --> E[Return randomly selected pooled value]
     E --> F[✅ Value from shared pool]
     
     B -->|Not found| G{Smart Fetch enabled?}
@@ -178,25 +546,52 @@ flowchart TD
     
     G -->|No| J
     J --> K[Call llmGen.generateParameterValues]
-    K --> L[Rotate through LLM cached values]
+    K --> L[Pick random LLM value from returned list]
     L --> M[Return LLM value]
 ```
 
 **Key Benefits**:
 1. **Performance**: Pre-generated pools eliminate redundant Smart Fetch/LLM calls during variant generation
 2. **Consistency**: All variants use values from the same pre-generated pool
-3. **Diversity**: Rotation through 15 pool values ensures each variant gets different values
-4. **Fallback**: Direct Smart Fetch/LLM calls only when pool doesn't exist for a parameter
+3. **Diversity**: Dynamic pool sizing plus random selection greatly reduces duplicate payloads
+4. **Correctness**: The LLM now sees endpoint context plus OpenAPI constraints before generating values
+5. **Fallback**: Direct Smart Fetch/LLM calls only when a pool is unavailable or under-filled
 
 **Example Execution**:
 - Root API: `POST /api/v1/adminroute`
 - Parameter: `startStation`
-- Shared Pool: `["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu", ...]` (15 values)
-- Variant 1: `startStation = "Beijing"` (index 0)
-- Variant 2: `startStation = "Shanghai"` (index 1)
-- Variant 3: `startStation = "Guangzhou"` (index 2)
-- ...
-- Variant 16: `startStation = "Beijing"` (index 0, rotates back)
+- Computed `targetPoolSize`: e.g. `25` for a 2-parameter API with `V=100`
+- Shared Pool: `["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu", ...]`
+- Variant 1: random draw may pick `"Shanghai"`
+- Variant 2: random draw may pick `"Chengdu"`
+- Variant 3: random draw may pick `"Beijing"`
+- Full payload uniqueness is enforced later by fingerprint-based deduplication with retries
+
+### Positive-Value LLM Prompt Construction (`ZeroShotLLMGenerator`)
+
+**Purpose**: Ensure the LLM generates values that are realistic **and** schema-valid by giving it the complete parameter context extracted from OpenAPI.
+
+```mermaid
+flowchart TD
+    A[Create ParameterInfo from TestParameter] --> B[Attach endpoint and service context]
+    B --> C[Attach parameter metadata]
+    C --> C1[Name location type format required example description]
+    C1 --> C2[Enum minimum maximum minLength maxLength regex]
+    C2 --> D[Build structured prompt]
+    D --> D1[API Context section]
+    D1 --> D2[Parameter Details section]
+    D2 --> D3[Constraints section]
+    D3 --> D4[Strict Instructions section]
+    D4 --> E[Call LLM with expert API tester persona]
+    E --> F[Parse exactly N values or JSON array]
+```
+
+**Prompt Rules**:
+1. Include `Endpoint: METHOD /path` so values are business-aware.
+2. Include `Parameter Name`, `Location`, `Type`, and `Format`.
+3. Print explicit constraints: enum values, numeric range, string length, and regex.
+4. Repeat strict output rules: exactly `N` values, no markdown, no numbering, no explanations.
+5. For enum parameters, instruct the LLM to use **only** the allowed values.
 
 ### Negative Test Selection with 8 Fault Types (Configurable Strategy)
 
@@ -359,18 +754,36 @@ flowchart TD
     E --> F[Next diverse cached value?]
     F -->|Yes| G[Return cached]
     F -->|No| H[Fetch from smart sources]
-    H --> I[Load mappings from registry]
+    H --> H0{traceProducerEndpoints set?}
+    H0 -->|Yes - Priority 0| H1[Try each trace-observed endpoint via DIRECT_EXTRACTION]
+    H1 -->|success| P0[Cache and Return]
+    H1 -->|all endpoints exhausted| I[Load mappings from registry]
+    H0 -->|No| I
     I --> J{Empty and discovery enabled}
-    J -->|Yes| K[Discover mappings]
-    J -->|No| L[Proceed]
+    J -->|Yes| K[LLM-based discovery - DIRECT_EXTRACTION only]
+    J -->|No| L[Proceed with registry mappings]
     K --> L
-    L --> M[Rank by score then limit]
-    M --> N[Iterate candidates then call endpoint]
-    N --> O[Validate update cache]
-    O -->|valid| P[Return]
+    L --> M[Rank by calculateScore then limit to maxCandidates]
+    M --> N[Iterate candidates - call endpoint - DIRECT_EXTRACTION]
+    N --> O[LLM extracts actual value from response body]
+    O -->|valid| P[Cache and Return]
     O -->|invalid| N
     N -->|none valid| C[Fallback to LLM]
 ```
+
+**Priority Chain inside `fetchFromSmartSource`:**
+
+| Priority | Source | Mechanism |
+|----------|--------|-----------|
+| 0 | Trace-observed producer endpoints (`traceProducerEndpoints`) | Direct GET to baked-in URL, LLM extracts value |
+| 1 | YAML registry mappings (persisted between runs) | GET to registered endpoint, LLM extracts value |
+| 2 | LLM-discovered mappings (new this session, then saved) | LLM selects service → infers endpoint → GET → LLM extracts |
+| — | Fallback | `fallbackToLLM()` (pure generation, no HTTP call) |
+
+**Key Design Decisions:**
+- **JSONPath is fully retired**: `fetchFromApiMapping` always calls `extractValueDirectlyFromResponse` regardless of `ApiMapping.extractPath`. The legacy `extractValueFromResponse` (JSONPath) method has zero call sites and is dead code.
+- **Trace endpoints are session-scoped**: Trace-observed `ApiMapping` objects are never added to `registry.addMapping()` and are never persisted to YAML. Only LLM-discovered mappings are saved.
+- **Cache collision risk**: `buildCacheKey` uses `paramName + type + location` only — no workflow or scenario scope. Two workflows sharing the same parameter name will share a cached value.
 
 ### LLM Communication Path (LLMService)
 
@@ -578,10 +991,14 @@ flowchart TD
 - jaeger.lookback: lookback period for trace queries (e.g., "10m", "1h")
 
 **Root API Registry & Fault Detection:**
-- root.api.registry.path: enables Root API registry population from scenarios
+- root.api.registry.path: enables Root API registry population from scenarios for architectural observation and JSON export; it does **not** itself filter redundant scenarios during generation
 - fault.detection.enabled: enables fault detection tracking
 - fault.detection.injected.faults.path: path to injected faults JSON registry
 - fault.detection.report.dir: directory where fault detection reports are saved
+
+**Session-Based Heuristic Trace Merging (Phase 2):**
+- trace.merge.max.session.gap.micros: maximum microsecond gap between end of one trace and start of next to still be considered the same user session (default: `60000000` = 60 seconds)
+- trace.merge.max.roots.per.scenario: maximum number of root APIs allowed in a single merged scenario (prevents unbounded merging, default: `10`)
 
 **Negative Input Generation:**
 - negative.input.generation.mode: `llm` or `hardcode` (default: hardcode)
@@ -701,8 +1118,27 @@ flowchart TD
 
 ### Notes on Data/Status Selection
 
-- First business step: parameters prefer Smart Fetch -> LLM fallback; body from generated fields
-- Subsequent steps: prefer dependencies (prev outputs -> inputs) -> trace -> Smart Fetch -> LLM -> fallback
+**Full parameter resolution priority (subsequent steps, non-negative):**
+
+| Priority | Source | Method |
+|----------|--------|--------|
+| 1 | Previous step output → current input dependency | `context` map lookup (flat key=value) |
+| 2 | Input reuse from previous step | `context` map lookup |
+| **3-PROV** | **dataProvenance (Phase 1 cross-trace merge)** | **`span.getDataProvenance().get(paramName)` — exact value from proven producer** |
+| **3-JIT** | **SemanticDependencyRegistry JIT Binding (Phase 2/3 merged roots)** | **`dependencyRegistry.findProducer()` → `call.addParamDependency()` → `capturedOutputs.get(N)` at runtime** |
+| 4 | Trace replay value | `getTraceParameterValue(span, paramName)` from `inputFields`/`outputFields` |
+| 5 | Shared Parameter Pool | random draw from `sharedParameterPools.get(rootApiKey)` |
+| 6 | Smart Fetch (INDEPENDENT path) | `smartFetcher.fetchSmartInput(info)` with `traceProducerEndpoints` enriched |
+| 7 | LLM generation | `llmGen.generateParameterValues(...)` using full OpenAPI-aware prompt |
+
+**Priority 3-PROV explanation**: When Phase 1 `mergeScenariosByDataDependency` links two traces by matching `accountId=AAA`, it records `rootB.dataProvenance = {"accountId" → "AAA"}`. The Generator checks this map *before* the flat context map so the cross-trace consumer step always uses the exact same UUID that caused the merge.
+
+**Priority 3-JIT explanation**: For scenarios merged by Phase 2 (session heuristic), no `dataProvenance` values exist because the merge was based on time proximity, not value matching. Instead, `SemanticDependencyRegistry` infers *at generation time* that Root N's `orderId` parameter should come from a prior root API that produces orders. The Generator adds a `ParamDependency` on `StepCall`, and the Writer emits `capturedOutputs.get(matchedStepIndex)` code that resolves the ID at **test runtime** from the actual response of the prior root. This is a Just-In-Time binding: the value is unknown at generation time but wired dynamically during execution.
+
+**traceProducerEndpoints enrichment**: For every INDEPENDENT parameter (priority 6), the Generator calls `collectProducerEndpoints(span)` to walk the span's ancestor chain and collect HTTP paths of sibling/ancestor steps. These are passed to `SmartInputFetcher` as `Priority 0` candidate URLs, ensuring the fetcher queries endpoints actually observed in this workflow before falling back to the generic registry.
+
+- First business step: positive parameters prefer `sharedParameterPools` first, then Smart Fetch, then LLM; body from generated fields
+- Subsequent steps: follow the full priority chain above
 - Expected status: Uses `expectedStatus` from configuration file (not hardcoded thresholds)
   - Positive tests: PASS if actual == expected
   - Negative tests: PASS if actual != expected (any deviation is valid)

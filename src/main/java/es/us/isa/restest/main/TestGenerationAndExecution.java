@@ -1,5 +1,6 @@
 package es.us.isa.restest.main;
 
+import es.us.isa.restest.analysis.FaultDetectionTracker;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationGenerator;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
 import es.us.isa.restest.configuration.multiservice.MultiServiceTestConfiguration;
@@ -9,6 +10,10 @@ import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.coverage.CoverageGatherer;
 import es.us.isa.restest.coverage.CoverageMeter;
 
+import java.io.*;
+import java.lang.ClassLoader;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -16,6 +21,7 @@ import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
 import es.us.isa.restest.generators.*;
+import es.us.isa.restest.util.ConsoleProgressBar;
 import es.us.isa.restest.reporting.AllureReportManager;
 import es.us.isa.restest.reporting.StatsReportManager;
 import es.us.isa.restest.runners.RESTestWorkflow;
@@ -39,10 +45,6 @@ import org.junit.runner.Result;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.concurrent.TimeUnit;
 
 import static es.us.isa.restest.configuration.TestConfigurationIO.loadConfiguration;
@@ -79,7 +81,7 @@ public class TestGenerationAndExecution {
 	// Properties file with configuration settings
 	private static String propertiesFilePath = "src/main/resources/My-Example/trainticket-demo.properties";
 	/** Directory (or file) of trace JSON/JSONL; must use / so it works on Linux/macOS (\\ is only a separator on Windows). */
-	private static String TraceFile = "src/main/resources/My-Example/trainticket/traces/";
+	private static String TraceFile = "src/main/resources/My-Example/trainticket/test-trace";
 
 	private static List<String> argsList;								// List containing args
 
@@ -199,8 +201,8 @@ public class TestGenerationAndExecution {
 				// Default path if not configured
 				faultsJsonPath = "src/main/resources/My-Example/trainticket/injectedFaults/injected-faults.json";
 			}
-			es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().reset();
-			es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
+			FaultDetectionTracker.getInstance().reset();
+			FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
 			logger.info("🔍 Fault Detection Tracker initialized from: {}", faultsJsonPath);
 			
 			// Set up writer
@@ -276,11 +278,11 @@ public class TestGenerationAndExecution {
 					// Default directory if not configured
 					faultReportDir = "logs/fault-detection-reports";
 				}
-				es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
+				FaultDetectionTracker.getInstance()
 					.generateReport(faultReportDir, experimentName + "_" + id);
 				
 				// Log detection statistics
-				java.util.Map<String, Object> stats = es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().getStatistics();
+				Map<String, Object> stats = FaultDetectionTracker.getInstance().getStatistics();
 				logger.info("🔍 Fault Detection Summary:");
 				logger.info("   - Total Injected Faults: {}", stats.get("totalInjectedFaults"));
 				logger.info("   - Detected Faults: {}", stats.get("detectedFaults"));
@@ -774,9 +776,7 @@ public class TestGenerationAndExecution {
 			faultyDependencyRatio = Float.parseFloat(readParameterValue("faulty.dependency.ratio"));
 		logger.info("Faulty dependency ratio: {}", faultyDependencyRatio);
 
-		if (readParameterValue("trace.file.path") != null) {
-			TraceFile = readParameterValue("trace.file.path");
-		}
+		// Trace JSON/JSONL path: use static TraceFile only (trace.file.path in .properties is not applied)
 		logger.info("Trace file/directory (MST): {}", TraceFile);
 
 	}
@@ -1048,7 +1048,7 @@ public class TestGenerationAndExecution {
 			for (String testClassName : testClassNames) {
 				try {
 					// Use the updated context class loader that includes test-classes
-					java.lang.ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+					ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 					Class<?> testClass = Class.forName(testClassName, true, classLoader);
 					testClasses.add(testClass);
 					logger.info("Loaded test class: {}", testClassName);
@@ -1192,11 +1192,12 @@ public class TestGenerationAndExecution {
 			int totalEnhanced = 0;
 			int totalImproved = 0;  // Tests that passed after enhancement
 			
+			ConsoleProgressBar.begin("Enhance Rounds", enhancerRounds + 1);
 			for (int round = 0; round <= enhancerRounds; round++) {
 				boolean isFinalRound = (round == enhancerRounds);
-				
+
 				logger.info("═══════════════════════════════════════════════════════════════════════════");
-				logger.info("🔄 EXECUTION ROUND {} of {} {}", round, enhancerRounds, 
+				logger.info("🔄 EXECUTION ROUND {} of {} {}", round, enhancerRounds,
 						isFinalRound ? "(FINAL - Results saved to Allure)" : "(Enhancement round)");
 				logger.info("═══════════════════════════════════════════════════════════════════════════");
 				
@@ -1211,16 +1212,8 @@ public class TestGenerationAndExecution {
 					break;
 				}
 				
-				// Log round results
-				logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
-				logger.info("║  ROUND {} RESULTS                                                            ║", round);
-				logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
-				logger.info("║  Tests Run: {}                                                               ║", result.getRunCount());
-				logger.info("║  Failures: {}                                                                ║", result.getFailureCount());
-				logger.info("║  Enhanceable Failures: {}                                                    ║", collector.getFailedTestCount());
-				logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
-				
 				// Status Code Exploration: Run after round 0 to discover and create exploration tests
+				// NOTE: Moved BEFORE round results logging so collector reflects exploration execution
 				if (round == 0 && statusCodeExplorationEnabled && statusCodeEnhancer != null) {
 					logger.info("═══════════════════════════════════════════════════════════════════════════");
 					logger.info("🔍 RUNNING STATUS CODE EXPLORATION PHASE");
@@ -1286,6 +1279,11 @@ public class TestGenerationAndExecution {
 										if (execResult != null) {
 											logger.info("✅ Execution complete: {} tests run, {} failures",
 												execResult.getRunCount(), execResult.getFailureCount());
+											
+											// CRITICAL: Replace the collector reference so enhancement uses exploration results
+											collector = explorationCollector;
+											logger.info("📊 Updated collector for enhancement: {} enhanceable failures from exploration execution",
+												collector.getFailedTestCount());
 											
 											// STEP 4: Record exploration results to update round-robin
 											Map<String, Integer> explorationResultsMap = new HashMap<>();
@@ -1354,6 +1352,15 @@ public class TestGenerationAndExecution {
 					}
 				}
 				
+				// Log round results (after exploration so collector reflects final state)
+				logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
+				logger.info("║  ROUND {} RESULTS                                                            ║", round);
+				logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
+				logger.info("║  Tests Run: {}                                                               ║", result.getRunCount());
+				logger.info("║  Failures: {}                                                                ║", result.getFailureCount());
+				logger.info("║  Enhanceable Failures: {}                                                    ║", collector.getFailedTestCount());
+				logger.info("╚══════════════════════════════════════════════════════════════════════════════╝");
+				
 				// If this is the final round or no failures to enhance, we're done
 				if (isFinalRound) {
 					logger.info("✅ Final round complete. Results saved to Allure.");
@@ -1375,16 +1382,18 @@ public class TestGenerationAndExecution {
 				
 				// Regenerate test files with enhanced values
 				int regenerated = 0;
+				ConsoleProgressBar.begin("Regenerating", enhancementResults.size());
 				for (int i = 0; i < enhancementResults.size(); i++) {
 					TestCaseEnhancer.EnhancementResult enhancement = enhancementResults.get(i);
 					if (!enhancement.isSuccess()) {
+						ConsoleProgressBar.update("skip");
 						continue;
 					}
-					
+
 					FailedTestResult originalFailure = failedTests.get(i);
-					String testFilePath = findTestFilePath(fullPackageName, className, 
+					String testFilePath = findTestFilePath(fullPackageName, className,
 							originalFailure.getTestClassName(), originalFailure.getTestMethodName());
-					
+
 					if (testFilePath != null) {
 						boolean success = regenerator.regenerateTestFile(
 								testFilePath,
@@ -1397,10 +1406,12 @@ public class TestGenerationAndExecution {
 							totalEnhanced++;
 						}
 					}
+					ConsoleProgressBar.update(originalFailure.getTestMethodName());
 				}
-				
+				ConsoleProgressBar.complete();
+
 				logger.info("📝 Regenerated {} test files with enhanced values", regenerated);
-				
+
 				// Recompile for next round
 				if (regenerated > 0) {
 					logger.info("🔨 Recompiling test classes for next round...");
@@ -1410,8 +1421,10 @@ public class TestGenerationAndExecution {
 						break;
 					}
 				}
+				ConsoleProgressBar.update("Round " + round);
 			}
-			
+			ConsoleProgressBar.complete();
+
 			// Final summary
 			logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
 			logger.info("║              TEST CASE ENHANCER - FINAL SUMMARY                             ║");
@@ -1430,7 +1443,7 @@ public class TestGenerationAndExecution {
 	
 	/**
 	 * Execute tests with a FailedTestCollector to gather failure information.
-	 * @param skipAllureClean if true, skip Allure setup/cleaning (for exploration tests that should add to existing results)
+	 * @param isFinalRound if true, skip Allure setup/cleaning (for exploration tests that should add to existing results)
 	 */
 	private static Result executeTestsWithCollector(String fullPackageName, String className,
 													FailedTestCollector collector, boolean isFinalRound) {
@@ -1447,16 +1460,6 @@ public class TestGenerationAndExecution {
 		try {
 			// Clean and setup
 			cleanOldCompiledTestClasses(fullPackageName);
-			
-			// Only setup Allure (which cleans) if not skipping
-			if (!skipAllureClean) {
-				setupAllureForIntelliJ();
-			}
-			
-			// For non-final rounds, clear Allure results to avoid accumulating intermediate results
-			if (!isFinalRound && !skipAllureClean) {
-				clearAllureResults();
-			}
 			
 			// Find test class directory
 			String baseDir = System.getProperty("user.dir");
@@ -1476,6 +1479,17 @@ public class TestGenerationAndExecution {
 				return null;
 			}
 			
+			// 🔧 FIX: Only setup and clean Allure AFTER successful compilation.
+			// This prevents nuking previous results if the current round fails to compile.
+			if (!skipAllureClean) {
+				setupAllureForIntelliJ();
+			}
+			
+			// For non-final rounds, clear Allure results to avoid accumulating intermediate results
+			if (!isFinalRound && !skipAllureClean) {
+				clearAllureResults();
+			}
+			
 			// Add to classpath
 			addTestClassesToClasspath();
 			
@@ -1483,10 +1497,10 @@ public class TestGenerationAndExecution {
 			// The JVM caches loaded classes, so we need a new ClassLoader to pick up
 			// changes from recompiled test files during enhancement rounds
 			File testClassesDir = new File(baseDir, "target/test-classes");
-			java.net.URL[] urls = new java.net.URL[] { testClassesDir.toURI().toURL() };
+			URL[] urls = new URL[] { testClassesDir.toURI().toURL() };
 			
 			// Create isolated ClassLoader that loads from test-classes first
-			java.net.URLClassLoader freshClassLoader = new java.net.URLClassLoader(
+			URLClassLoader freshClassLoader = new URLClassLoader(
 				urls, 
 				TestGenerationAndExecution.class.getClassLoader()
 			) {
@@ -1498,10 +1512,10 @@ public class TestGenerationAndExecution {
 						try {
 							// First check if class file exists in our test-classes
 							String classFile = name.replace('.', '/') + ".class";
-							java.net.URL resource = findResource(classFile);
+							URL resource = findResource(classFile);
 							if (resource != null) {
 								// Load fresh by reading the bytes directly
-								try (java.io.InputStream is = resource.openStream()) {
+								try (InputStream is = resource.openStream()) {
 									byte[] bytes = is.readAllBytes();
 									return defineClass(name, bytes, 0, bytes.length);
 								}
@@ -1545,17 +1559,28 @@ public class TestGenerationAndExecution {
 			// Add our collector
 			junit.addListener(collector);
 			
-			// Add console listener
+			// Add console listener with progress tracking
 			junit.addListener(new RunListener() {
 				@Override
+				public void testRunStarted(Description description) {
+					ConsoleProgressBar.begin("Test Exec", description.testCount());
+				}
+
+				@Override
 				public void testStarted(Description description) {
+					ConsoleProgressBar.update(description.getMethodName());
 					logger.debug("Starting: {}", description.getMethodName());
 				}
-				
+
 				@Override
 				public void testFailure(Failure failure) {
-					logger.debug("Failed: {} - {}", failure.getDescription().getMethodName(), 
+					logger.debug("Failed: {} - {}", failure.getDescription().getMethodName(),
 							failure.getMessage() != null ? failure.getMessage().substring(0, Math.min(100, failure.getMessage().length())) : "");
+				}
+
+				@Override
+				public void testRunFinished(Result result) {
+					ConsoleProgressBar.complete();
 				}
 			});
 			
@@ -1747,7 +1772,7 @@ public class TestGenerationAndExecution {
 			logger.info("Using Java version: {} for compilation", javaVersion);
 			
 			// Get Java compiler (this uses the JDK that's running, which should be Java 11 in IntelliJ)
-			javax.tools.JavaCompiler compiler = javax.tools.ToolProvider.getSystemJavaCompiler();
+			JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 			if (compiler == null) {
 				logger.error("Java compiler not available. Make sure you're running with JDK (not JRE)");
 				logger.error("Current Java home: {}", System.getProperty("java.home"));
@@ -1771,7 +1796,7 @@ public class TestGenerationAndExecution {
 			// Convert File list to String list for compiler
 			List<String> fileNames = javaFiles.stream()
 				.map(File::getAbsolutePath)
-				.collect(java.util.stream.Collectors.toList());
+				.collect(Collectors.toList());
 			
 			// Combine options and file names
 			List<String> compilerArgs = new ArrayList<>();
@@ -1779,8 +1804,8 @@ public class TestGenerationAndExecution {
 			compilerArgs.addAll(fileNames);
 			
 			// 🔧 FIX: Capture compiler output to detect compilation errors
-			java.io.ByteArrayOutputStream errorStream = new java.io.ByteArrayOutputStream();
-			java.io.PrintStream errorPrintStream = new java.io.PrintStream(errorStream);
+			ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+			PrintStream errorPrintStream = new PrintStream(errorStream);
 			
 			// Run compilation with error capture
 			int result = compiler.run(null, errorPrintStream, errorPrintStream, compilerArgs.toArray(new String[0]));
@@ -1816,8 +1841,18 @@ public class TestGenerationAndExecution {
 				long duration = System.currentTimeMillis() - startTime;
 				logger.info("✅ Fast compilation of newly generated tests completed successfully in {} ms", duration);
 				return true;
-			} else if (failedCount > 0) {
-				logger.error("❌ Some files failed to compile ({} failures). Falling back to Maven...", failedCount);
+			} else if (failedCount > 0 && compiledCount > 0) {
+				// 🔧 FIX: Partial compilation success - proceed with the tests that compiled.
+				// The class loader already handles missing classes gracefully (catches ClassNotFoundException).
+				// Previously this fell back to Maven which also failed, causing ZERO tests to run.
+				long duration = System.currentTimeMillis() - startTime;
+				logger.warn("⚠️ Partial compilation: {} compiled, {} failed out of {} total in {} ms", 
+					compiledCount, failedCount, javaFiles.size(), duration);
+				logger.warn("⚠️ Proceeding with {} successfully compiled test classes. " +
+					"Failed classes will be skipped during class loading.", compiledCount);
+				return true;
+			} else if (failedCount > 0 && compiledCount == 0) {
+				logger.error("❌ All files failed to compile ({} failures). Falling back to Maven...", failedCount);
 				return fallbackMavenCompilation();
 			} else {
 				logger.error("❌ Fast compilation failed with exit code: {}", result);
@@ -1982,6 +2017,15 @@ public class TestGenerationAndExecution {
 			pb.redirectErrorStream(true);
 			
 			Process process = pb.start();
+			
+			// 🔧 FIX: Consume process output to prevent OS buffer deadlock
+			try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					logger.debug("Maven: {}", line);
+				}
+			}
+			
 			int exitCode = process.waitFor();
 			
 			long duration = System.currentTimeMillis() - startTime;
@@ -2023,7 +2067,7 @@ public class TestGenerationAndExecution {
 			}
 			
 			// Ensure compiler is available
-			if (javax.tools.ToolProvider.getSystemJavaCompiler() == null) {
+			if (ToolProvider.getSystemJavaCompiler() == null) {
 				logger.error("❌ Java compiler not available!");
 				logger.error("   Make sure you're running with JDK 11, not JRE");
 				logger.error("   In IntelliJ: File → Project Structure → Project → Project SDK should be JDK 11");
@@ -2072,14 +2116,14 @@ public class TestGenerationAndExecution {
 			}
 			
 			// Add test-classes to classpath using URLClassLoader approach
-			java.net.URL testClassesURL = testClassesDir.toURI().toURL();
+			URL testClassesURL = testClassesDir.toURI().toURL();
 			
 			// Get current thread's context class loader
-			java.lang.ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+			ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
 			
 			// Create new URLClassLoader with test-classes added
-			java.net.URLClassLoader newClassLoader = new java.net.URLClassLoader(
-				new java.net.URL[]{testClassesURL}, 
+			URLClassLoader newClassLoader = new URLClassLoader(
+				new URL[]{testClassesURL},
 				currentClassLoader
 			);
 			

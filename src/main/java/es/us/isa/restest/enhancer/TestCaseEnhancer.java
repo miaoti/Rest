@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import es.us.isa.restest.llm.LLMService;
+import es.us.isa.restest.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,16 +75,17 @@ public class TestCaseEnhancer {
      */
     public List<EnhancementResult> enhanceBatch(List<FailedTestResult> failedTests) {
         log.info("🔧 Enhancing {} failed tests...", failedTests.size());
-        
+
         List<EnhancementResult> results = new ArrayList<>();
         int enhanced = 0;
         int failed = 0;
-        
+
+        ConsoleProgressBar.begin("Enhancing", failedTests.size());
         for (FailedTestResult failedTest : failedTests) {
             try {
                 EnhancementResult result = enhance(failedTest);
                 results.add(result);
-                
+
                 if (result.isSuccess()) {
                     enhanced++;
                     // Cache the enhanced parameters
@@ -92,14 +94,16 @@ public class TestCaseEnhancer {
                 } else {
                     failed++;
                 }
-                
+
             } catch (Exception e) {
                 log.error("Error enhancing test {}: {}", failedTest.getTestMethodName(), e.getMessage());
                 results.add(EnhancementResult.failed("Exception: " + e.getMessage()));
                 failed++;
             }
+            ConsoleProgressBar.update(failedTest.getTestMethodName());
         }
-        
+        ConsoleProgressBar.complete();
+
         log.info("✅ Enhancement complete: {} enhanced, {} failed", enhanced, failed);
         return results;
     }
@@ -155,12 +159,18 @@ public class TestCaseEnhancer {
         
         prompt.append("ANALYZE THIS FAILED TEST AND SUGGEST IMPROVED PARAMETER VALUES:\n\n");
         
+        int failedStep = failedTest.getFailedStepIndex();
+        
         prompt.append("TEST INFORMATION:\n");
         prompt.append("- Test Name: ").append(failedTest.getTestMethodName()).append("\n");
         prompt.append("- Endpoint: ").append(failedTest.getHttpMethod()).append(" ")
               .append(failedTest.getEndpoint()).append("\n");
         prompt.append("- Test Type: ").append(failedTest.isNegativeTest() ? "NEGATIVE (invalid inputs)" : "POSITIVE (valid inputs)").append("\n");
-        prompt.append("- Service: ").append(failedTest.getServiceName()).append("\n\n");
+        prompt.append("- Service: ").append(failedTest.getServiceName()).append("\n");
+        if (failedStep > 0) {
+            prompt.append("- Failed Step Index: ").append(failedStep).append("\n");
+        }
+        prompt.append("\n");
         
         prompt.append("EXECUTION RESULT:\n");
         prompt.append("- HTTP Status: ").append(failedTest.getActualStatusCode()).append("\n");
@@ -180,14 +190,52 @@ public class TestCaseEnhancer {
             prompt.append("DO NOT change the intentionally invalid parameters listed above.\n\n");
         }
         
-        prompt.append("PARAMETERS USED:\n");
+        // Filter parameters to only those belonging to the failed step
+        List<ParameterSnapshot> allParams = failedTest.getParameters();
+        List<ParameterSnapshot> targetParams;
+        
+        if (failedStep > 0) {
+            targetParams = new ArrayList<>();
+            for (ParameterSnapshot p : allParams) {
+                if (p.getStepIndex() == failedStep) {
+                    targetParams.add(p);
+                }
+            }
+        } else {
+            targetParams = new ArrayList<>(allParams);
+        }
+        
+        // Structural lock: list param names wired to capturedOutputs via StepCall.getParamDependencies()
+        Set<String> locked = failedTest.getLockedDependencyParams();
+        if (locked != null && !locked.isEmpty()) {
+            prompt.append("STRUCTURALLY LOCKED PARAMETERS (DO NOT MODIFY):\n");
+            prompt.append("These parameters are wired to runtime variables (capturedOutputs from a previous step).\n");
+            prompt.append("They maintain cross-step data flow and MUST remain unchanged.\n");
+            for (String lockedName : locked) {
+                prompt.append("- ").append(lockedName).append("\n");
+            }
+            prompt.append("\n");
+            
+            // Remove locked params from the list shown to the LLM to reduce hallucination risk
+            targetParams.removeIf(p -> locked.contains(p.getName()));
+        }
+        
+        prompt.append("CRITICAL RULE: Some parameters in the source code are structurally wired to ")
+              .append("runtime variables (e.g., 'capturedOutputs.get(...)'). These are locked dependencies ")
+              .append("to maintain business logic. You MUST NOT modify, hardcode, or replace the values ")
+              .append("of these parameters. Only generate fixes for independent parameters.\n\n");
+        
+        prompt.append("PARAMETERS USED (Step ").append(failedStep > 0 ? failedStep : "all").append("):\n");
         prompt.append("```json\n");
-        prompt.append(formatParametersForPrompt(failedTest.getParameters()));
+        prompt.append(formatParametersForPrompt(targetParams));
         prompt.append("\n```\n\n");
         
         prompt.append("Based on the error response, suggest improved values for the parameters.\n");
         if (failedTest.isNegativeTest()) {
             prompt.append("Remember: DO NOT change the intentionally invalid parameters. Only adjust other parameters.\n");
+        }
+        if (locked != null && !locked.isEmpty()) {
+            prompt.append("CRITICAL: DO NOT suggest changes for structurally locked parameters listed above.\n");
         }
         prompt.append("Return ONLY a valid JSON response in the specified format.");
         
@@ -257,8 +305,21 @@ public class TestCaseEnhancer {
                 reasoning = root.get("reasoning").asText();
             }
             
+            // Layer A: Strip structurally locked dependency parameters
+            Set<String> locked = originalTest.getLockedDependencyParams();
+            if (locked != null && !locked.isEmpty()) {
+                Iterator<String> it = enhancedParams.keySet().iterator();
+                while (it.hasNext()) {
+                    String paramName = it.next();
+                    if (locked.contains(paramName)) {
+                        log.warn("LLM suggested modifying structurally locked dependency '{}' — stripped", paramName);
+                        it.remove();
+                    }
+                }
+            }
+            
             if (enhancedParams.isEmpty()) {
-                return EnhancementResult.failed("No enhanced parameters found in LLM response");
+                return EnhancementResult.failed("No enhanced parameters found in LLM response (all were locked dependencies)");
             }
             
             return EnhancementResult.success(
