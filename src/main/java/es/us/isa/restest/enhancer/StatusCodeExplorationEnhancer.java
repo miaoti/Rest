@@ -7,6 +7,7 @@ import es.us.isa.restest.coverage.StatusCodeTarget;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.llm.LLMService;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
+import es.us.isa.restest.util.ConsoleProgressBar;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -225,20 +226,24 @@ public class StatusCodeExplorationEnhancer {
         // STEP 3: For each test × each step, get exploration suggestions with reachability gating
         List<MultiServiceTestCase> allExplorationTests = new ArrayList<>();
         int totalCreated = 0;
-        
+
+        ConsoleProgressBar.begin("Explore Eval", executedTests.size());
+        try {
         for (MultiServiceTestCase test : executedTests) {
             if (totalCreated >= maxExplorationTestsPerRound) {
                 log.info("Reached max exploration tests per round ({})", maxExplorationTestsPerRound);
                 break;
             }
-            
+
             if (test.isStatusCodeExplorationTest()) {
+                ConsoleProgressBar.update("skip explor-test");
                 continue;
             }
-            
+
             TestExecutionResult result = executionResults.get(test.getOperationId());
             if (result == null) {
                 log.warn("No execution result for test: {}", test.getOperationId());
+                ConsoleProgressBar.update("no result " + test.getOperationId());
                 continue;
             }
             
@@ -307,14 +312,18 @@ public class StatusCodeExplorationEnhancer {
                         totalCreated++;
                         createdForThisStep++;
                         
-                        log.info("   ✅ Created: {} targeting status {} at step {}", 
+                        log.info("   ✅ Created: {} targeting status {} at step {}",
                             explorationTest.getOperationId(), targetCode, stepIdx);
                         log.info("      Parameters: {}", suggestion.parameterChanges);
                     }
                 }
             }
+            ConsoleProgressBar.update(test.getOperationId());
         }
-        
+        } finally {
+            ConsoleProgressBar.complete();
+        }
+
         log.info("═══════════════════════════════════════════════════════════════════════════");
         log.info("🔬 EXPLORATION GENERATION COMPLETE: Created {} exploration tests", allExplorationTests.size());
         log.info("   Next: Caller will execute these tests and call recordExplorationResults()");
@@ -439,31 +448,38 @@ public class StatusCodeExplorationEnhancer {
         }
         
         log.info("Running LLM Discovery for {} unique APIs (across all steps)", apiToStepSample.size());
-        
-        for (Map.Entry<String, int[]> entry : apiToStepSample.entrySet()) {
-            String apiKey = entry.getKey();
-            int stepIdx = entry.getValue()[0];
-            
-            if (tracker.hasApi(apiKey)) {
-                log.debug("API {} already discovered", apiKey);
-                continue;
+
+        ConsoleProgressBar.begin("Status Discovery", apiToStepSample.size());
+        try {
+            for (Map.Entry<String, int[]> entry : apiToStepSample.entrySet()) {
+                String apiKey = entry.getKey();
+                int stepIdx = entry.getValue()[0];
+
+                if (tracker.hasApi(apiKey)) {
+                    log.debug("API {} already discovered", apiKey);
+                    ConsoleProgressBar.update("cached " + apiKey);
+                    continue;
+                }
+
+                MultiServiceTestCase sampleTest = apiToSampleTest.get(apiKey);
+                Set<Integer> observedCodes = observedCodesPerApi.getOrDefault(apiKey, Collections.emptySet());
+                List<String> sampleResponses = sampleResponsesPerApi.getOrDefault(apiKey, Collections.emptyList());
+
+                String[] apiParts = apiKey.split(" ", 2);
+                String httpMethod = apiParts[0];
+                String path = apiParts.length > 1 ? apiParts[1] : "";
+                String serviceName = getServiceName(sampleTest, stepIdx);
+
+                List<StatusCodeTarget> discoveredCodes = discovery.discoverStatusCodes(
+                    serviceName, httpMethod, path,
+                    getParameterInfos(sampleTest, stepIdx),
+                    observedCodes, sampleResponses);
+
+                tracker.registerDiscoveredCodes(apiKey, discoveredCodes);
+                ConsoleProgressBar.update(apiKey);
             }
-            
-            MultiServiceTestCase sampleTest = apiToSampleTest.get(apiKey);
-            Set<Integer> observedCodes = observedCodesPerApi.getOrDefault(apiKey, Collections.emptySet());
-            List<String> sampleResponses = sampleResponsesPerApi.getOrDefault(apiKey, Collections.emptyList());
-            
-            String[] apiParts = apiKey.split(" ", 2);
-            String httpMethod = apiParts[0];
-            String path = apiParts.length > 1 ? apiParts[1] : "";
-            String serviceName = getServiceName(sampleTest, stepIdx);
-            
-            List<StatusCodeTarget> discoveredCodes = discovery.discoverStatusCodes(
-                serviceName, httpMethod, path,
-                getParameterInfos(sampleTest, stepIdx),
-                observedCodes, sampleResponses);
-            
-            tracker.registerDiscoveredCodes(apiKey, discoveredCodes);
+        } finally {
+            ConsoleProgressBar.complete();
         }
     }
     

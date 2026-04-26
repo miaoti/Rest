@@ -5,6 +5,16 @@ import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.specification.OpenAPISpecification;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,13 +31,26 @@ import java.util.regex.Pattern;
 /**
  * Builds a queryable dictionary of semantic parameter dependencies between APIs.
  *
- * <h3>Two-Pass Build Architecture</h3>
+ * <h3>Build Architecture</h3>
  * <ol>
- *   <li><b>Pass 1 — Heuristic Discovery:</b> registers producers and consumers using
- *       naming conventions. JsonPath defaults to {@code "data.id"}.</li>
- *   <li><b>Pass 2 — Schema Refinement:</b> for every producer registered in Pass 1,
- *       traverses the OpenAPI 200/201 response schema to locate the exact JSON path
- *       of the ID field, replacing the hardcoded fallback.</li>
+ *   <li><b>Pass 1a — Producer discovery (config-driven):</b> scans the generated
+ *       {@link TestConfigurationObject}s and registers POST/PUT operations as
+ *       strong producers for ID-like fields derived from resource nouns.
+ *       JsonPath defaults to {@code "data.id"}.</li>
+ *   <li><b>Pass 1b — Consumer indexing (config-driven):</b> scans the same
+ *       generated configurations for ID-like parameters in each operation and
+ *       resolves them to the best matching producer.</li>
+ *   <li><b>Pass 1c — Consumer indexing (Swagger safety net):</b> scans the
+ *       original OpenAPI specs and registers ID-like parameters (path, query,
+ *       body-field) as consumers when they aren't already present from 1b.
+ *       This catches anything the config generator may have missed.</li>
+ *   <li><b>Pass 2a — Schema-driven JSON path refinement:</b> for every producer,
+ *       traverses its OpenAPI 200/201 response schema (with service-prefix {@code $ref}
+ *       fallback) to locate the exact JSON path of the ID field, replacing the
+ *       heuristic default.</li>
+ *   <li><b>Pass 2b — Trace-driven JSON path refinement (fallback):</b> for any
+ *       producer not resolved by 2a, consults recorded trace {@code http.response.body}
+ *       values.  Best-effort; many production OTel setups omit response bodies.</li>
  * </ol>
  *
  * <p><b>Consumers</b> are parameters whose name matches an ID pattern (e.g. {@code orderId},
@@ -48,7 +71,20 @@ public class SemanticDependencyRegistry {
 
     private static final Logger log = LogManager.getLogger(SemanticDependencyRegistry.class);
 
-    private static final Pattern ID_SUFFIX = Pattern.compile("(?i)^.+(id|Id|ID|uuid|Uuid|UUID)$");
+    /** Suffix form: {@code orderId}, {@code account_id}, {@code trip_uuid}. */
+    private static final Pattern ID_SUFFIX = Pattern.compile("(?i)^.+(id|uuid)$");
+
+    /**
+     * Prefix form: {@code id_account}, {@code idAccount}, {@code uuid_order},
+     * {@code uuidOrder}. Requires an explicit separator after the prefix — either
+     * an underscore or a camelCase boundary — to avoid false positives on English
+     * words like {@code identify}, {@code identity}, {@code idle} that happen to
+     * start with {@code id}. The capturing groups expose the stem portion:
+     * group~1 when the separator is {@code _}, group~2 when the separator is a
+     * camelCase uppercase boundary.
+     */
+    private static final Pattern ID_PREFIX =
+            Pattern.compile("^(?:id|Id|ID|uuid|Uuid|UUID)(?:_(\\w+)|([A-Z]\\w*))$");
 
     private static final String DEFAULT_JSON_PATH = "data.id";
     private static final int MAX_SCHEMA_DEPTH = 8;
@@ -69,12 +105,23 @@ public class SemanticDependencyRegistry {
         public String jsonPath;
         /** True if Pass 2 resolved the jsonPath from the actual OpenAPI response schema. */
         public boolean schemaResolved;
+        /** HTTP method (post/put/get/delete/…) for scoring when a stem has multiple candidates. */
+        public final String httpMethod;
+        /** 1 = POST/PUT on entity resource (strong); 2 = reverse-engineered from path ID param (weak). */
+        public final int heuristic;
 
         public ProducerBinding(String serviceName, String apiKey, String jsonPath) {
+            this(serviceName, apiKey, jsonPath, /*httpMethod*/ "", /*heuristic*/ 1);
+        }
+
+        public ProducerBinding(String serviceName, String apiKey, String jsonPath,
+                               String httpMethod, int heuristic) {
             this.serviceName = serviceName;
             this.apiKey = apiKey;
             this.jsonPath = jsonPath;
             this.schemaResolved = false;
+            this.httpMethod = httpMethod != null ? httpMethod.toLowerCase(Locale.ROOT) : "";
+            this.heuristic = heuristic;
         }
 
         @Override
@@ -83,7 +130,51 @@ public class SemanticDependencyRegistry {
         }
     }
 
+    /** Which optional passes ran during the last build; used by helpers that
+     *  need to honour the ablation mask (e.g. generic-id path inference). */
+    private EnumSet<Pass> enabledPasses = EnumSet.allOf(Pass.class);
+
     private SemanticDependencyRegistry() { }
+
+    /**
+     * Optional passes in the registry-build pipeline. Used to parameterize
+     * {@link #build(Map, Map, List, EnumSet)} for ablation studies.
+     *
+     * <p>Mandatory passes (producer discovery, heuristic consumer binding via
+     * explicit ID-suffixed parameter names, canonical-path indexing) are always
+     * applied and not represented here.
+     */
+    public enum Pass {
+        /** Pass 1c — scan the raw OpenAPI spec to catch consumers that the
+         *  generated test configuration dropped. Adds bindings via
+         *  {@code putIfAbsent}; never overwrites. */
+        SWAGGER_CONSUMER_SCAN,
+
+        /** Pass 2a — walk the OpenAPI 200/201 response schema for each producer
+         *  and locate a concrete ID field; replaces the {@code data.id}
+         *  heuristic default when a match is found. */
+        SCHEMA_JSONPATH_REFINEMENT,
+
+        /** Pass 2b — inspect recorded trace response bodies to discover the
+         *  real JSON path of each producer's ID field. Best-effort: many OTel
+         *  setups omit {@code http.response.body}. */
+        TRACE_JSONPATH_REFINEMENT,
+
+        /** For path parameters named generically ({@code id}, {@code uuid}),
+         *  infer the entity stem from the preceding path segment
+         *  (e.g. {@code /consigns/account/{id}} ⇒ stem {@code account}). */
+        GENERIC_ID_PATH_INFERENCE,
+
+        /** Choose the best producer via the scoring function
+         *  ({@link #chooseBestProducer}). When disabled, the registry falls
+         *  back to the first candidate in insertion order (the naive baseline). */
+        SCORED_PRODUCER_SELECTION
+    }
+
+    /** Convenience: every optional pass enabled (the default production config). */
+    public static EnumSet<Pass> defaultPasses() {
+        return EnumSet.allOf(Pass.class);
+    }
 
     /**
      * Builds the registry from the full set of per-service test configurations.
@@ -129,7 +220,21 @@ public class SemanticDependencyRegistry {
     public static SemanticDependencyRegistry build(Map<String, TestConfigurationObject> serviceConfigs,
                                                    Map<String, OpenAPISpecification> serviceSpecs,
                                                    List<WorkflowScenario> scenarios) {
+        return build(serviceConfigs, serviceSpecs, scenarios, defaultPasses());
+    }
+
+    /**
+     * Ablation-aware build. Caller chooses which optional {@link Pass}es run.
+     * Mandatory passes (producer discovery from config, canonical-path keying,
+     * ID-suffixed-name consumer binding) always run regardless.
+     */
+    public static SemanticDependencyRegistry build(Map<String, TestConfigurationObject> serviceConfigs,
+                                                   Map<String, OpenAPISpecification> serviceSpecs,
+                                                   List<WorkflowScenario> scenarios,
+                                                   EnumSet<Pass> passes) {
+        if (passes == null) passes = defaultPasses();
         SemanticDependencyRegistry reg = new SemanticDependencyRegistry();
+        reg.enabledPasses = EnumSet.copyOf(passes);
 
         // ═══════════════════════════════════════════════════════════════
         // Pass 1: Heuristic Discovery
@@ -145,7 +250,10 @@ public class SemanticDependencyRegistry {
             for (Operation op : tco.getTestConfiguration().getOperations()) {
                 String method = op.getMethod() != null ? op.getMethod().toLowerCase(Locale.ROOT) : "";
                 String path = op.getTestPath() != null ? op.getTestPath() : "";
-                String apiKey = method + " " + path;
+                // Canonicalize the path so the registry key is independent of how path
+                // parameters are spelled: a template /{orderId} stored as {} matches a
+                // runtime concrete /df2b3a56-… (also canonicalized to {}) at lookup time.
+                String apiKey = method + " " + canonicalizePath(path);
 
                 registerProducers(reg, svcName, apiKey, method, path, op);
             }
@@ -161,27 +269,27 @@ public class SemanticDependencyRegistry {
             for (Operation op : tco.getTestConfiguration().getOperations()) {
                 String method = op.getMethod() != null ? op.getMethod().toLowerCase(Locale.ROOT) : "";
                 String path = op.getTestPath() != null ? op.getTestPath() : "";
-                String consumerKey = method + " " + path;
+                String consumerKey = method + " " + canonicalizePath(path);
 
                 if (op.getTestParameters() == null) continue;
 
                 for (TestParameter tp : op.getTestParameters()) {
                     String pName = tp.getName();
-                    if (pName == null || !ID_SUFFIX.matcher(pName).matches()) continue;
-
-                    String stem = normaliseIdStem(pName);
+                    if (pName == null) continue;
+                    String stem = null;
+                    if (isIdLikeParam(pName)) {
+                        stem = normaliseIdStem(pName);
+                    } else if (isGenericIdParam(pName) && passes.contains(Pass.GENERIC_ID_PATH_INFERENCE)) {
+                        // Generic "id" / "uuid" path param — infer from preceding segment
+                        stem = inferStemFromPathSegment(path, pName);
+                    }
+                    if (stem == null) continue;
                     List<ProducerBinding> candidates = reg.producersByIdStem.get(stem);
                     if (candidates == null || candidates.isEmpty()) continue;
 
-                    // Pick the best producer (prefer a different service, then POST over GET)
-                    ProducerBinding best = candidates.get(0);
-                    for (ProducerBinding pb : candidates) {
-                        if (!pb.serviceName.equals(svcName)) {
-                            best = pb;
-                            break;
-                        }
-                    }
-
+                    ProducerBinding best = passes.contains(Pass.SCORED_PRODUCER_SELECTION)
+                            ? chooseBestProducer(candidates, stem, svcName)
+                            : candidates.get(0);
                     reg.consumerIndex
                             .computeIfAbsent(consumerKey, k -> new LinkedHashMap<>())
                             .put(pName, best);
@@ -190,14 +298,50 @@ public class SemanticDependencyRegistry {
         }
 
         // ═══════════════════════════════════════════════════════════════
-        // Pass 2: Trace-Driven JSON Path Refinement
+        // Pass 1c: Swagger-side consumer scan (SAFETY NET for anything the
+        // generated config might have dropped or that was added to the raw
+        // OpenAPI spec by hand).  For every operation defined in an
+        // OpenAPISpecification, look at its parameters (path + query + body)
+        // and register ID-like ones as consumers.  Entries that already exist
+        // from Pass 1b are preserved via putIfAbsent.
         // ═══════════════════════════════════════════════════════════════
-        if (scenarios != null && !scenarios.isEmpty()) {
+        if (serviceSpecs != null && !serviceSpecs.isEmpty() && passes.contains(Pass.SWAGGER_CONSUMER_SCAN)) {
+            int addedFromSwagger = scanSwaggerConsumers(reg, serviceSpecs);
+            log.info("Pass 1c (Swagger consumer scan): added {} consumer bindings not present in generated config",
+                    addedFromSwagger);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // Pass 2a: Schema-Driven JSON Path Refinement
+        // ----------------------------------------------------------------
+        // For every producer, locate its OpenAPI operation's 200/201 response
+        // schema, resolve any $ref (with service-prefix fallback to handle
+        // broken ref names like "api_HttpEntity" that are actually stored as
+        // "ts-<service>_HttpEntity" in components.schemas), and traverse to
+        // find the first field whose name matches the producer's ID stem.
+        // ═══════════════════════════════════════════════════════════════
+        int schemaRefined = 0;
+        if (serviceSpecs != null && !serviceSpecs.isEmpty() && passes.contains(Pass.SCHEMA_JSONPATH_REFINEMENT)) {
+            schemaRefined = refineJsonPathsFromSchema(reg, serviceSpecs);
+            log.info("Pass 2a (schema-driven): {} producer jsonPaths refined from OpenAPI response schemas",
+                    schemaRefined);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // Pass 2b: Trace-Driven JSON Path Refinement (fallback)
+        // ----------------------------------------------------------------
+        // For any producer whose jsonPath is still the heuristic default after
+        // schema refinement, consult actual recorded trace response bodies.
+        // Many production OTel setups omit http.response.body, so this pass
+        // is best-effort.
+        // ═══════════════════════════════════════════════════════════════
+        if (scenarios != null && !scenarios.isEmpty() && passes.contains(Pass.TRACE_JSONPATH_REFINEMENT)) {
             List<WorkflowStep> allSteps = flattenAllSteps(scenarios);
-            log.info("Pass 2: running trace-driven refinement with {} trace steps", allSteps.size());
+            log.info("Pass 2b: running trace-driven refinement with {} trace steps", allSteps.size());
             refineJsonPathsFromTraces(reg, allSteps);
         } else {
-            log.info("Pass 2 skipped: no trace scenarios provided; using heuristic '{}' for all producers",
+            log.info("Pass 2b skipped: {}; remaining producers use heuristic '{}'",
+                    passes.contains(Pass.TRACE_JSONPATH_REFINEMENT) ? "no trace scenarios provided" : "disabled by ablation mask",
                     DEFAULT_JSON_PATH);
         }
 
@@ -241,6 +385,29 @@ public class SemanticDependencyRegistry {
         if (stem == null) return Collections.emptyList();
         List<ProducerBinding> candidates = producersByIdStem.get(stem);
         return candidates != null ? Collections.unmodifiableList(candidates) : Collections.emptyList();
+    }
+
+    /**
+     * Path-aware variant of {@link #getCandidateProducers(String)} — when the
+     * parameter name is generic ({@code id}, {@code uuid}) so stem derivation
+     * from the name alone yields nothing, the stem is inferred from the
+     * preceding path segment of the consumer endpoint.
+     *
+     * <p>Example: {@code (paramName="id", consumerPath="/.../consigns/account/{id}")}
+     * resolves to stem {@code account} and returns every account-producer
+     * already indexed.
+     */
+    public List<ProducerBinding> getCandidateProducers(String paramName, String consumerPath) {
+        List<ProducerBinding> primary = getCandidateProducers(paramName);
+        if (!primary.isEmpty()) return primary;
+        if (isGenericIdParam(paramName) && consumerPath != null) {
+            String stem = inferStemFromPathSegment(consumerPath, paramName);
+            if (stem != null) {
+                List<ProducerBinding> candidates = producersByIdStem.get(stem);
+                if (candidates != null) return Collections.unmodifiableList(candidates);
+            }
+        }
+        return Collections.emptyList();
     }
 
     /**
@@ -391,10 +558,385 @@ public class SemanticDependencyRegistry {
         int q = path.indexOf('?');
         if (q >= 0) path = path.substring(0, q);
 
-        return method.toLowerCase(Locale.ROOT) + " " + path;
+        // Canonicalize: registry keys were built from OpenAPI testPath ({orderId}, {id}),
+        // runtime span attributes give concrete values (df2b3a56-…, 12345). Both forms
+        // collapse to {} here so lookups succeed for endpoints with path parameters —
+        // which is most entity-by-id endpoints.
+        return method.toLowerCase(Locale.ROOT) + " " + canonicalizePath(path);
     }
 
-    // ── Pass 2: Trace-Driven JSON Path Resolution ──────────────────────────
+    /**
+     * Canonicalize an API path to a form where both OpenAPI path-parameter templates
+     * and concrete runtime ID-like segments collapse to the same {@code {}} placeholder,
+     * enabling template-vs-runtime key matching.
+     *
+     * <p>Replacements applied (order matters):
+     * <ul>
+     *   <li>OpenAPI path params {@code /{anyName}} → {@code /{}}</li>
+     *   <li>UUID v4 segments (36-char hyphenated hex) → {@code /{}}</li>
+     *   <li>Pure digit segments with ≥4 digits → {@code /{}}</li>
+     *   <li>Decimal segments like {@code /12.0} (used by consignprice/weight) → {@code /{}}</li>
+     *   <li>Boolean-looking segments {@code /true}, {@code /false} (after a numeric
+     *       segment was canonicalized; only done when preceded by {@code /{}}) → {@code /{}}</li>
+     * </ul>
+     *
+     * <p>We deliberately do NOT collapse short alphanumeric segments because legitimate
+     * resource names (e.g. {@code /api/v1/orderservice/order/refresh}) would otherwise
+     * be mis-canonicalized.
+     */
+    public static String canonicalizePath(String path) {
+        if (path == null) return null;
+        // 1. OpenAPI path params: /{whatever} → /{}
+        path = path.replaceAll("/\\{[^/}]+\\}", "/{}");
+        // 2. UUID: /xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx → /{}
+        path = path.replaceAll("/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", "/{}");
+        // 3. Long integer IDs: /12345 (4+ digits) → /{}.  Threshold of 4 avoids stripping
+        //    API version numbers like /v1 and status codes like /200.
+        path = path.replaceAll("/\\d{4,}", "/{}");
+        // 4. Decimal segments (weight, price): /12.0 → /{}
+        path = path.replaceAll("/\\d+\\.\\d+", "/{}");
+        // 5. Trailing boolean after an already-canonicalized segment: /{}/true → /{}/{}
+        path = path.replaceAll("/\\{\\}/(true|false)(?=/|$)", "/{}/{}");
+        return path;
+    }
+
+    // ── Pass 1c: Swagger-side consumer scan ───────────────────────────────
+    //
+    // Iterates every OpenAPI operation across all services and, for every ID-like
+    // parameter (path, query, or body-field) whose binding is NOT yet present in
+    // the consumerIndex from Pass 1b, registers it.  This is a safety net against
+    // gaps in the generator-produced TestConfigurationObject.
+    private static int scanSwaggerConsumers(SemanticDependencyRegistry reg,
+                                            Map<String, OpenAPISpecification> serviceSpecs) {
+        int added = 0;
+        for (Map.Entry<String, OpenAPISpecification> svcEntry : serviceSpecs.entrySet()) {
+            String svcName = svcEntry.getKey();
+            OpenAPISpecification spec = svcEntry.getValue();
+            if (spec == null || spec.getSpecification() == null
+                    || spec.getSpecification().getPaths() == null) continue;
+
+            for (Map.Entry<String, PathItem> pathEntry : spec.getSpecification().getPaths().entrySet()) {
+                String path = pathEntry.getKey();
+                PathItem pathItem = pathEntry.getValue();
+                if (pathItem == null) continue;
+
+                for (Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> opEntry :
+                        pathItem.readOperationsMap().entrySet()) {
+                    String method = opEntry.getKey().name().toLowerCase(Locale.ROOT);
+                    io.swagger.v3.oas.models.Operation op = opEntry.getValue();
+                    if (op == null) continue;
+
+                    String consumerKey = method + " " + canonicalizePath(path);
+
+                    // Parameters — path/query/header/cookie
+                    if (op.getParameters() != null) {
+                        for (Parameter p : op.getParameters()) {
+                            if (p == null || p.getName() == null) continue;
+                            String pn = p.getName();
+                            if (isIdLikeParam(pn)) {
+                                added += registerConsumerIfAbsent(reg, svcName, consumerKey, pn, null);
+                            } else if (reg.enabledPasses.contains(Pass.GENERIC_ID_PATH_INFERENCE)
+                                    && isGenericIdParam(pn) && "path".equalsIgnoreCase(p.getIn())) {
+                                String stem = inferStemFromPathSegment(path, pn);
+                                if (stem != null) {
+                                    added += registerConsumerIfAbsent(reg, svcName, consumerKey, pn, stem);
+                                }
+                            }
+                        }
+                    }
+                    // Request body properties
+                    if (op.getRequestBody() != null && op.getRequestBody().getContent() != null) {
+                        for (MediaType mt : op.getRequestBody().getContent().values()) {
+                            if (mt == null || mt.getSchema() == null) continue;
+                            Schema<?> bodySchema = resolveSchemaRef(mt.getSchema(), spec.getSpecification(), svcName);
+                            if (bodySchema == null || bodySchema.getProperties() == null) continue;
+                            for (Object propName : bodySchema.getProperties().keySet()) {
+                                String pn = String.valueOf(propName);
+                                if (!isIdLikeParam(pn)) continue;
+                                added += registerConsumerIfAbsent(reg, svcName, consumerKey, pn, null);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return added;
+    }
+
+    /**
+     * Register a consumer binding only if the (consumerKey, paramName) pair is not already indexed.
+     *
+     * @param explicitStem when non-null, use this stem directly (e.g. for generic {@code id}
+     *                     path params with path-segment-inferred stems); otherwise derive
+     *                     it from {@code paramName} via {@link #normaliseIdStem}.
+     */
+    private static int registerConsumerIfAbsent(SemanticDependencyRegistry reg,
+                                                String svcName,
+                                                String consumerKey,
+                                                String paramName,
+                                                String explicitStem) {
+        Map<String, ProducerBinding> existing = reg.consumerIndex.get(consumerKey);
+        if (existing != null && existing.containsKey(paramName)) return 0;
+
+        String stem = explicitStem != null ? explicitStem : normaliseIdStem(paramName);
+        if (stem == null) return 0;
+        List<ProducerBinding> candidates = reg.producersByIdStem.get(stem);
+        if (candidates == null || candidates.isEmpty()) return 0;
+
+        ProducerBinding best = reg.enabledPasses.contains(Pass.SCORED_PRODUCER_SELECTION)
+                ? chooseBestProducer(candidates, stem, svcName)
+                : candidates.get(0);
+        reg.consumerIndex
+                .computeIfAbsent(consumerKey, k -> new LinkedHashMap<>())
+                .put(paramName, best);
+        return 1;
+    }
+
+    /**
+     * Choose the best producer for a given stem and consumer-side service.
+     *
+     * <p>Scoring rationale (higher is better):
+     * <ul>
+     *   <li><b>Heuristic 1 over Heuristic 2</b> (H1 = explicit POST/PUT on the resource;
+     *       H2 = reverse-engineered from path ID param in any-method endpoint).</li>
+     *   <li><b>POST &gt; PUT &gt; PATCH &gt; DELETE &gt; GET</b> (creation strength).</li>
+     *   <li><b>Service-name match with stem</b> — prefer a producer from the service
+     *       whose name contains the stem (e.g. stem {@code order} → {@code ts-order-service}
+     *       beats {@code ts-wait-order-service} or {@code ts-admin-order-service} when the
+     *       consumer is cross-service).</li>
+     *   <li><b>Cross-service bonus</b> when the producer service differs from the consumer's
+     *       (all else equal, a cross-service dependency is usually the real one).</li>
+     *   <li><b>Shorter path is more canonical</b> — tiebreaker favouring
+     *       {@code /orderservice/order} over {@code /orderservice/order/refresh}.</li>
+     * </ul>
+     */
+    private static ProducerBinding chooseBestProducer(List<ProducerBinding> candidates,
+                                                      String stem,
+                                                      String consumerSvcName) {
+        ProducerBinding best = null;
+        int bestScore = Integer.MIN_VALUE;
+        for (ProducerBinding pb : candidates) {
+            int score = scoreProducer(pb, stem, consumerSvcName);
+            if (score > bestScore) {
+                bestScore = score;
+                best = pb;
+            }
+        }
+        return best != null ? best : candidates.get(0);
+    }
+
+    private static int scoreProducer(ProducerBinding pb, String stem, String consumerSvcName) {
+        int score = 0;
+        // Heuristic tier (H1 is much stronger than H2)
+        score += (pb.heuristic == 1) ? 100 : 0;
+        // HTTP method strength
+        switch (pb.httpMethod) {
+            case "post":  score += 50; break;
+            case "put":   score += 40; break;
+            case "patch": score += 25; break;
+            case "delete":score += 10; break;
+            case "get":   score +=  5; break;
+            default:                    break;
+        }
+        // Service-name matches the entity stem — layered so the MOST specific match wins.
+        //   "ts-order-service"        ↔ stem "order"  → EXACT match, strongest bonus
+        //   "ts-wait-order-service"   ↔ stem "order"  → stem appears but service is specialized
+        //   "ts-admin-order-service"  ↔ stem "order"  → admin-variant, lower priority
+        if (pb.serviceName != null && stem != null) {
+            String svcLc = pb.serviceName.toLowerCase(Locale.ROOT);
+            String canonical = "ts-" + stem + "-service";
+            if (svcLc.equals(canonical)) {
+                score += 60;                       // exact canonical service for this stem
+            } else if (svcLc.contains("-" + stem + "-")) {
+                score += 25;                       // stem appears as a whole path segment in svc name (wait-order, admin-order)
+            } else if (svcLc.contains(stem)) {
+                score += 10;                       // weaker substring match
+            }
+        }
+        // Cross-service dependencies are generally the real ones.
+        if (pb.serviceName != null && consumerSvcName != null
+                && !pb.serviceName.equals(consumerSvcName)) {
+            score += 5;
+        }
+        // Shorter canonical path breaks ties (e.g. /order beats /order/refresh).
+        if (pb.apiKey != null) {
+            // Penalize path length weakly so it only matters as a tiebreaker.
+            score -= pb.apiKey.length() / 20;
+        }
+        return score;
+    }
+
+    // ── Pass 2a: Schema-Driven JSON Path Resolution ───────────────────────
+    //
+    // For every producer in producersByIdStem, find its OpenAPI operation's
+    // 200/201 response schema, resolve $ref (with service-prefix fallback),
+    // and locate the first field name that matches the producer's ID stem.
+    // The resolved dotted path (e.g. "data.id", "data[0].orderId") replaces
+    // the heuristic default only when a match is found.
+    private static int refineJsonPathsFromSchema(SemanticDependencyRegistry reg,
+                                                 Map<String, OpenAPISpecification> serviceSpecs) {
+        int refined = 0;
+
+        // Index every OpenAPI operation across all services by canonical apiKey.
+        Map<String, SchemaOperationRef> opByKey = new HashMap<>();
+        for (Map.Entry<String, OpenAPISpecification> svcEntry : serviceSpecs.entrySet()) {
+            String svcName = svcEntry.getKey();
+            OpenAPISpecification spec = svcEntry.getValue();
+            if (spec == null || spec.getSpecification() == null
+                    || spec.getSpecification().getPaths() == null) continue;
+            for (Map.Entry<String, PathItem> pe : spec.getSpecification().getPaths().entrySet()) {
+                String path = pe.getKey();
+                PathItem pathItem = pe.getValue();
+                if (pathItem == null) continue;
+                for (Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> me :
+                        pathItem.readOperationsMap().entrySet()) {
+                    String apiKey = me.getKey().name().toLowerCase(Locale.ROOT) + " " + canonicalizePath(path);
+                    opByKey.put(apiKey, new SchemaOperationRef(svcName, spec.getSpecification(), me.getValue()));
+                }
+            }
+        }
+
+        for (Map.Entry<String, List<ProducerBinding>> stemEntry : reg.producersByIdStem.entrySet()) {
+            String stem = stemEntry.getKey();
+            for (ProducerBinding pb : stemEntry.getValue()) {
+                if (pb.schemaResolved) continue;     // already refined
+                SchemaOperationRef ref = opByKey.get(pb.apiKey);
+                if (ref == null || ref.op == null) continue;
+
+                Schema<?> responseSchema = extractSuccessResponseSchema(ref.op, ref.openApi, ref.svcName);
+                if (responseSchema == null) continue;
+
+                String discovered = findIdJsonPathInSchema(responseSchema, stem,
+                        ref.openApi, ref.svcName, new HashSet<>(), "", 0);
+                if (discovered != null) {
+                    pb.jsonPath = discovered;
+                    pb.schemaResolved = true;
+                    refined++;
+                    log.debug("Pass 2a: {} stem '{}' → '{}'", pb.apiKey, stem, discovered);
+                }
+            }
+        }
+        return refined;
+    }
+
+    /** Holds a reference to an operation together with the OpenAPI root it was pulled from. */
+    private static final class SchemaOperationRef {
+        final String svcName;
+        final OpenAPI openApi;
+        final io.swagger.v3.oas.models.Operation op;
+        SchemaOperationRef(String svcName, OpenAPI openApi, io.swagger.v3.oas.models.Operation op) {
+            this.svcName = svcName;
+            this.openApi = openApi;
+            this.op = op;
+        }
+    }
+
+    /** Get the schema of the first 2xx response content entry; resolve $ref. */
+    private static Schema<?> extractSuccessResponseSchema(io.swagger.v3.oas.models.Operation op,
+                                                          OpenAPI openApi,
+                                                          String svcName) {
+        if (op == null || op.getResponses() == null) return null;
+        ApiResponses responses = op.getResponses();
+        for (String code : Arrays.asList("200", "201")) {
+            ApiResponse resp = responses.get(code);
+            if (resp == null || resp.getContent() == null) continue;
+            Content content = resp.getContent();
+            // Prefer JSON; fall back to first non-null media type
+            MediaType mt = content.get("application/json");
+            if (mt == null) mt = content.get("*/*");
+            if (mt == null && !content.isEmpty()) mt = content.values().iterator().next();
+            if (mt == null || mt.getSchema() == null) continue;
+            return resolveSchemaRef(mt.getSchema(), openApi, svcName);
+        }
+        return null;
+    }
+
+    /**
+     * Resolve a {@link Schema}'s {@code $ref} (if any) by name lookup against
+     * {@code components.schemas}, with a service-prefix fallback.  The trainticket
+     * Swagger uses short refs like {@code api_HttpEntity} while components use
+     * service-prefixed names like {@code ts-admin-order-service_HttpEntity} — so
+     * if the literal ref name is not found we retry with a few prefix variants.
+     */
+    private static Schema<?> resolveSchemaRef(Schema<?> schema, OpenAPI openApi, String svcName) {
+        if (schema == null || openApi == null || openApi.getComponents() == null
+                || openApi.getComponents().getSchemas() == null) return schema;
+        if (schema.get$ref() == null) return schema;
+
+        String ref = schema.get$ref();
+        int slash = ref.lastIndexOf('/');
+        String refName = slash >= 0 ? ref.substring(slash + 1) : ref;
+        Map<String, Schema> schemas = openApi.getComponents().getSchemas();
+
+        Schema<?> target = schemas.get(refName);
+        if (target != null) return target;
+
+        // Service-prefix fallback: e.g. api_HttpEntity → ts-<svc>_HttpEntity
+        String shortName = refName.startsWith("api_") ? refName.substring(4) : refName;
+        if (svcName != null) {
+            Schema<?> pref = schemas.get(svcName + "_" + shortName);
+            if (pref != null) return pref;
+        }
+        // Brute-force: any schema whose name ends with "_<shortName>"
+        for (Map.Entry<String, Schema> e : schemas.entrySet()) {
+            if (e.getKey().endsWith("_" + shortName)) return e.getValue();
+        }
+        return null;
+    }
+
+    /**
+     * DFS over a resolved schema looking for the first property whose name is an
+     * ID for {@code stem} (e.g. stem = "order" matches {@code id}, {@code orderId},
+     * {@code order_id}).  Returns the dot-notation path to the ID field.
+     */
+    private static String findIdJsonPathInSchema(Schema<?> schema, String stem,
+                                                 OpenAPI openApi, String svcName,
+                                                 Set<String> visited, String pathSoFar,
+                                                 int depth) {
+        if (schema == null || depth > MAX_SCHEMA_DEPTH) return null;
+        Schema<?> resolved = resolveSchemaRef(schema, openApi, svcName);
+        if (resolved == null) return null;
+        // Prevent cycles when following $ref chains
+        String refKey = resolved.get$ref() != null ? resolved.get$ref() : System.identityHashCode(resolved) + "";
+        if (!visited.add(refKey)) return null;
+
+        // Array: descend into items, keep the same path (arrays don't add a dotted segment here)
+        if (resolved instanceof ArraySchema) {
+            Schema<?> items = ((ArraySchema) resolved).getItems();
+            return findIdJsonPathInSchema(items, stem, openApi, svcName, visited, pathSoFar, depth + 1);
+        }
+
+        Map<String, Schema> props = resolved.getProperties();
+        if (props == null || props.isEmpty()) return null;
+
+        // First pass: exact ID-match at this level
+        for (Map.Entry<String, Schema> e : props.entrySet()) {
+            if (matchesIdForStem(e.getKey(), stem)) {
+                return pathSoFar.isEmpty() ? e.getKey() : pathSoFar + "." + e.getKey();
+            }
+        }
+        // Second pass: recurse into object/array-typed properties (common wrapper: "data")
+        for (Map.Entry<String, Schema> e : props.entrySet()) {
+            Schema<?> child = e.getValue();
+            if (child == null) continue;
+            String childPath = pathSoFar.isEmpty() ? e.getKey() : pathSoFar + "." + e.getKey();
+            String hit = findIdJsonPathInSchema(child, stem, openApi, svcName, visited, childPath, depth + 1);
+            if (hit != null) return hit;
+        }
+        return null;
+    }
+
+    /** True if {@code fieldName} is an ID field for the given entity stem. */
+    private static boolean matchesIdForStem(String fieldName, String stem) {
+        if (fieldName == null || stem == null) return false;
+        String lc = fieldName.toLowerCase(Locale.ROOT);
+        if (lc.equals("id")) return true;
+        if (lc.equals(stem + "id") || lc.equals(stem + "_id")) return true;
+        // Also accept the full param-name form (e.g. "orderId" is already exact)
+        return lc.startsWith(stem) && (lc.endsWith("id") || lc.endsWith("uuid"));
+    }
+
+    // ── Pass 2b: Trace-Driven JSON Path Resolution ────────────────────────
 
     /**
      * Iterates through every {@link ProducerBinding} in {@code producersByIdStem}
@@ -422,6 +964,8 @@ public class SemanticDependencyRegistry {
         for (Map.Entry<String, List<ProducerBinding>> stemEntry : reg.producersByIdStem.entrySet()) {
             String stem = stemEntry.getKey();
             for (ProducerBinding pb : stemEntry.getValue()) {
+                // Skip producers already resolved by the schema pass.
+                if (pb.schemaResolved) continue;
                 // Find a trace step that matches this producer's API key
                 List<WorkflowStep> matchingSteps = stepsByApiKey.get(pb.apiKey);
                 if (matchingSteps == null || matchingSteps.isEmpty()) {
@@ -686,6 +1230,14 @@ public class SemanticDependencyRegistry {
 
     // ── internals ──────────────────────────────────────────────────────────
 
+    /** POST endpoints whose trailing segment matches one of these verbs are
+     *  recognised as authentication producers — they return a session/login
+     *  identifier as part of their success response. This is a carve-out from
+     *  {@link #isLikelyEntityNoun} (which otherwise blacklists these as
+     *  actions rather than entities). */
+    private static final Set<String> AUTH_VERBS = new HashSet<>(Arrays.asList(
+            "login", "authenticate", "signin"));
+
     private static void registerProducers(SemanticDependencyRegistry reg,
                                           String svcName, String apiKey,
                                           String method, String path,
@@ -695,37 +1247,89 @@ public class SemanticDependencyRegistry {
         //      POST /api/v1/consignservice/consigns → produces "consignId"
         if ("post".equals(method) || "put".equals(method)) {
             String resourceNoun = extractTrailingNoun(path);
-            if (resourceNoun != null) {
+            if (resourceNoun != null && isLikelyEntityNoun(resourceNoun)) {
                 String stem = normaliseNounToStem(resourceNoun);
                 if (stem != null) {
-                    ProducerBinding pb = new ProducerBinding(svcName, apiKey, "data.id");
+                    ProducerBinding pb = new ProducerBinding(svcName, apiKey, "data.id", method, /*heuristic*/ 1);
                     reg.producersByIdStem
                             .computeIfAbsent(stem, k -> new ArrayList<>())
                             .add(pb);
-                    log.debug("Producer registered: {} ({}) → stem '{}'", apiKey, svcName, stem);
+                    log.debug("Producer H1 registered: {} ({}) → stem '{}'", apiKey, svcName, stem);
                 }
             }
         }
 
-        // Heuristic 2: any operation that has an ID-like parameter in its OWN params
-        // is also a potential producer of that ID (it received it, so it can output it).
-        // Only register if no stronger producer already exists for that stem.
-        if (op.getTestParameters() != null) {
+        // Heuristic 1-auth: POST to an authentication verb (login / authenticate /
+        // signin) produces a session identifier. Stem equals the verb; the default
+        // jsonPath follows the "data.<verb>Id" convention (e.g. "data.loginId").
+        if ("post".equals(method)) {
+            String tail = extractTrailingNoun(path);
+            if (tail != null) {
+                String lc = tail.toLowerCase(Locale.ROOT);
+                if (AUTH_VERBS.contains(lc)) {
+                    ProducerBinding pb = new ProducerBinding(svcName, apiKey,
+                            "data." + lc + "Id", method, /*heuristic*/ 1);
+                    reg.producersByIdStem
+                            .computeIfAbsent(lc, k -> new ArrayList<>())
+                            .add(pb);
+                    log.debug("Producer H1-auth registered: {} ({}) → stem '{}'", apiKey, svcName, lc);
+                }
+            }
+        }
+
+        // Heuristic 2 (restricted): reverse-engineer producers from operations
+        // that carry an ID-like path parameter. Only POST/PUT qualify — GET is a
+        // reader and DELETE is a destroyer, neither produces fresh IDs, so
+        // allowing those created false-positive producers (e.g. a GET-by-id was
+        // being registered as the producer of that id).
+        if (("post".equals(method) || "put".equals(method)) && op.getTestParameters() != null) {
             for (TestParameter tp : op.getTestParameters()) {
                 String pName = tp.getName();
-                if (pName == null || !ID_SUFFIX.matcher(pName).matches()) continue;
+                if (pName == null || !isIdLikeParam(pName)) continue;
                 if (!"path".equalsIgnoreCase(tp.getIn())) continue;
 
                 String stem = normaliseIdStem(pName);
                 if (!reg.producersByIdStem.containsKey(stem)) {
                     String jsonPath = "data." + pName;
-                    ProducerBinding pb = new ProducerBinding(svcName, apiKey, jsonPath);
+                    ProducerBinding pb = new ProducerBinding(svcName, apiKey, jsonPath, method, /*heuristic*/ 2);
                     reg.producersByIdStem
                             .computeIfAbsent(stem, k -> new ArrayList<>())
                             .add(pb);
                 }
             }
         }
+    }
+
+    /**
+     * Reject path segments that are clearly actions, queries, or modifiers rather than
+     * entity resource names.  This prevents garbage stems like {@code cheapest},
+     * {@code refresh}, {@code money}, {@code byIds} from polluting the registry
+     * (they cannot be anyone's producer).
+     */
+    private static boolean isLikelyEntityNoun(String segment) {
+        if (segment == null || segment.isEmpty()) return false;
+        String lc = segment.toLowerCase(Locale.ROOT);
+        // Verbs/modifiers that commonly appear as trailing path segments but are NOT entities.
+        switch (lc) {
+            case "cheapest": case "quickest": case "cheapestroute": case "quickestroute":
+            case "refresh":  case "refreshed":
+            case "login":    case "logout":   case "register":   case "signup":
+            case "query":    case "search":   case "find":       case "lookup":
+            case "byid":     case "byids":    case "byname":     case "byrouteidsandtraintype":
+            case "money":    case "amount":   case "balance":
+            case "transferresult":
+            case "idlist":   case "namelist":
+            case "minstation": case "minstopstation":
+            case "left":     case "left_parallel": case "left_ticket":
+            case "error":    case "success":
+                return false;
+        }
+        // Paths ending with common success/notification event names
+        if (lc.endsWith("_success") || lc.endsWith("_cancel_success")
+                || lc.endsWith("_change_success") || lc.endsWith("_create_success")) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -752,13 +1356,29 @@ public class SemanticDependencyRegistry {
      * Normalises a resource noun to a canonical stem used as the dictionary key.
      * <pre>
      *   "orders" → "order", "consigns" → "consign", "trips" → "trip"
+     *   "success" → "success"  (NOT "succes" — ends with "ss")
+     *   "status"  → "status"   (NOT "statu"  — ends with "us")
+     *   "business"→ "business" (NOT "busines"— ends with "ss")
      * </pre>
+     * The rule: only strip a trailing 's' when it looks like a plural form.  English
+     * plural heuristic: preceding char is a consonant that can form a regular plural,
+     * AND the previous char is NOT another 's' (guards against "ss"), NOT 'u' (guards
+     * against "us" words like "status"), NOT 'i' (guards against Latin plurals like
+     * "genesis").  Simpler rule: keep the word unchanged if the last two chars are
+     * one of {ss, us, is}.  Plural "s" after vowels (orders, prices, trips, consigns)
+     * still gets stripped.
      */
     static String normaliseNounToStem(String noun) {
         if (noun == null || noun.isEmpty()) return null;
         String lower = noun.toLowerCase(Locale.ROOT);
-        if (lower.endsWith("s") && lower.length() > 2) {
-            lower = lower.substring(0, lower.length() - 1);
+        if (lower.length() > 2 && lower.endsWith("s")) {
+            String last2 = lower.substring(lower.length() - 2);
+            boolean isPluralSafe = !last2.equals("ss")
+                                && !last2.equals("us")
+                                && !last2.equals("is");
+            if (isPluralSafe) {
+                lower = lower.substring(0, lower.length() - 1);
+            }
         }
         return lower;
     }
@@ -774,14 +1394,85 @@ public class SemanticDependencyRegistry {
      */
     public static String normaliseIdStem(String paramName) {
         if (paramName == null) return null;
+
+        // Prefix form first (id_account, idAccount, uuid_order, uuidOrder)
+        java.util.regex.Matcher pre = ID_PREFIX.matcher(paramName);
+        if (pre.matches()) {
+            String raw = pre.group(1) != null ? pre.group(1) : pre.group(2);
+            return pluralSafeStem(raw.toLowerCase(Locale.ROOT));
+        }
+
+        // Suffix form (orderId, account_id, trip_uuid)
         String stem = paramName
                 .replaceAll("(?i)(id|uuid)$", "")
                 .replaceAll("_$", "");
         if (stem.isEmpty()) return null;
-        stem = stem.toLowerCase(Locale.ROOT);
-        if (stem.endsWith("s") && stem.length() > 2) {
-            stem = stem.substring(0, stem.length() - 1);
+        return pluralSafeStem(stem.toLowerCase(Locale.ROOT));
+    }
+
+    /**
+     * Strip a trailing {@code s} only when it forms a regular English plural.
+     * Protects words ending in {@code ss} / {@code us} / {@code is}
+     * ({@code success}, {@code status}, {@code analysis}).
+     */
+    private static String pluralSafeStem(String stem) {
+        if (stem.length() > 2 && stem.endsWith("s")) {
+            String last2 = stem.substring(stem.length() - 2);
+            if (!last2.equals("ss") && !last2.equals("us") && !last2.equals("is")) {
+                stem = stem.substring(0, stem.length() - 1);
+            }
         }
         return stem;
+    }
+
+    /**
+     * True when a parameter name follows a recognised ID naming convention —
+     * either the suffix form ({@code orderId}, {@code account_id}) or the
+     * prefix form ({@code id_account}, {@code idAccount}). Bare {@code id} /
+     * {@code uuid} path parameters are handled separately by
+     * {@link #isGenericIdParam}, with stem derived from the surrounding path.
+     */
+    public static boolean isIdLikeParam(String paramName) {
+        if (paramName == null) return false;
+        return ID_SUFFIX.matcher(paramName).matches()
+            || ID_PREFIX.matcher(paramName).matches();
+    }
+
+    /**
+     * Infer an entity stem from the segment preceding a path parameter.
+     *
+     * <p>Used when the parameter name is generic ({@code id}, {@code uuid}) and
+     * carries no entity info by itself. REST convention puts the entity just
+     * before the ID segment: {@code /consigns/account/{id}} ⇒ stem {@code account},
+     * {@code /consigns/order/{id}} ⇒ stem {@code order}.
+     *
+     * <p>Returns {@code null} when the path does not contain the parameter, the
+     * preceding segment is missing, or the preceding segment fails the
+     * entity-noun filter (so action-like segments like {@code refresh} or
+     * {@code byIds} do not contaminate the dictionary).
+     */
+    public static String inferStemFromPathSegment(String path, String paramName) {
+        if (path == null || paramName == null) return null;
+        String token = "{" + paramName + "}";
+        int idx = path.indexOf(token);
+        if (idx < 0) return null;
+        String prefix = path.substring(0, idx);
+        while (prefix.endsWith("/")) prefix = prefix.substring(0, prefix.length() - 1);
+        int lastSlash = prefix.lastIndexOf('/');
+        if (lastSlash < 0) return null;
+        String prev = prefix.substring(lastSlash + 1);
+        if (prev.isEmpty() || prev.startsWith("{")) return null;
+        if (!isLikelyEntityNoun(prev)) return null;
+        return normaliseNounToStem(prev);
+    }
+
+    /**
+     * True when a parameter name is generic (not carrying its own entity info).
+     * For such params, stem inference falls back to the surrounding path context.
+     */
+    public static boolean isGenericIdParam(String paramName) {
+        if (paramName == null) return false;
+        String lc = paramName.toLowerCase(Locale.ROOT);
+        return lc.equals("id") || lc.equals("uuid");
     }
 }

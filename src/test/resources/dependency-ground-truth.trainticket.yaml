@@ -1,0 +1,242 @@
+# ======================================================================
+# Trainticket — Semantic Dependency Ground Truth
+# ======================================================================
+# Purpose:
+#   Manually curated ground truth for evaluating the SemanticDependencyRegistry.
+#   Each labeled row says: "For consumer C's parameter P, the canonical producer
+#   is X." Precision/Recall/F1 are computed by comparing this file against
+#   target/semantic-registry-dump.json.
+#
+# Scope:
+#   Only root APIs (public gateway entry points) as identified by
+#   src/main/resources/My-Example/trainticket/root-api-registry.json.
+#   No private/internal step APIs are labeled.
+#
+# Keys:
+#   - All consumer/producer API keys use the registry's canonical form:
+#       "<lowercase-method> <path-with-{}-placeholders>"
+#     e.g. "get /api/v1/orderservice/order/{}" (not "/{orderId}").
+#   - "param" is the original parameter name as declared in real-system-conf.yaml.
+#   - "producer: null" means "no cross-entity producer is expected"; the
+#     registry should NOT emit a binding for this (param, consumer) pair.
+#     Any registry binding against such an entry counts as a false positive.
+#
+# Labeling convention (trainticket-specific):
+#   accountId   ← post /api/v1/inside_pay_service/inside_payment/account  (literal createAccount)
+#   orderId     ← post /api/v1/orderservice/order     (canonical user-order creation)
+#   tripId      ← post /api/v1/travelservice/trips    (canonical trip creation)
+#   contactsId  ← post /api/v1/contactservice/contacts
+#   routeId     ← post /api/v1/routeservice/routes
+#   loginId     ← producer: null  (POST /users/login is only observed in traces,
+#                                  not declared in Swagger/config, so inference
+#                                  is impossible — registry must not emit a binding)
+#   pricesId    ← post /api/v1/priceservice/prices
+#   stationId   ← post /api/v1/stationservice/stations
+#
+# Self-referential `id` on create/update body (e.g. the new row's own id) is
+# NOT labeled — it has no upstream producer. Query-only string fields such as
+# startPlace, endPlace, trainType, trainNumber, from, to are NOT labeled
+# either (they are names, not cross-entity IDs).
+
+metadata:
+  sample: trainticket
+  scope: root-apis-only
+  labeledAt: "2026-04-24"
+  rootApiSource: src/main/resources/My-Example/trainticket/root-api-registry.json
+  paramSource:   src/main/resources/My-Example/trainticket/real-system-conf.yaml
+
+# ----------------------------------------------------------------------
+# A. Endpoints with EXPECTED bindings (consumer → producer)
+# ----------------------------------------------------------------------
+bindings:
+
+  # --- ID path parameters (explicit entity-name suffix) ------------------
+  - consumer: "delete /api/v1/admintravelservice/admintravel/{}"
+    param: tripId
+    producer: "post /api/v1/travelservice/trips"
+    rationale: "tripId identifies a trip row created by travelservice."
+
+  - consumer: "get /api/v1/contactservice/contacts/account/{}"
+    param: accountId
+    producer: "post /api/v1/inside_pay_service/inside_payment/account"
+    rationale: "Literal 'createAccount' endpoint — canonical stem-based producer of account IDs."
+
+  - consumer: "get /api/v1/executeservice/execute/collected/{}"
+    param: orderId
+    producer: "post /api/v1/orderservice/order"
+    rationale: "execute/collected operates on an order created via orderservice."
+
+  - consumer: "get /api/v1/executeservice/execute/execute/{}"
+    param: orderId
+    producer: "post /api/v1/orderservice/order"
+    rationale: "execute/execute operates on an order created via orderservice."
+
+  # --- Generic {id} path parameters (stem inferred from preceding segment) --
+  - consumer: "get /api/v1/consignservice/consigns/account/{}"
+    param: id
+    producer: "post /api/v1/inside_pay_service/inside_payment/account"
+    rationale: "path segment 'account' + generic {id} ⇒ accountId (canonical account producer)."
+
+  - consumer: "get /api/v1/consignservice/consigns/order/{}"
+    param: id
+    producer: "post /api/v1/orderservice/order"
+    rationale: "path segment 'order' + generic {id} ⇒ orderId."
+
+  # --- Body parameters on admin creation endpoints -----------------------
+  - consumer: "post /api/v1/adminbasicservice/adminbasic/prices"
+    param: routeId
+    producer: "post /api/v1/routeservice/routes"
+    rationale: "Price row references a route created by routeservice."
+
+  - consumer: "post /api/v1/adminorderservice/adminorder"
+    param: accountId
+    producer: "post /api/v1/inside_pay_service/inside_payment/account"
+    rationale: "accountId = literal account id (canonical producer)."
+
+  - consumer: "post /api/v1/adminrouteservice/adminroute"
+    param: loginId
+    producer: null
+    rationale: "POST /api/v1/users/login is absent from the Swagger/config inputs (only observed in traces), so no correct producer is inferable — registry must not emit a binding."
+
+  - consumer: "post /api/v1/admintravelservice/admintravel"
+    param: routeId
+    producer: "post /api/v1/routeservice/routes"
+    rationale: "TravelInfo.routeId references a route."
+
+  - consumer: "post /api/v1/admintravelservice/admintravel"
+    param: tripId
+    producer: "post /api/v1/travelservice/trips"
+    rationale: "TravelInfo.tripId references a trip."
+
+  - consumer: "post /api/v1/admintravelservice/admintravel"
+    param: loginId
+    producer: null
+    rationale: "POST /api/v1/users/login not in Swagger/config; registry must not emit a binding."
+
+  # --- Refresh endpoints (owned by the logged-in user) -------------------
+  - consumer: "post /api/v1/orderservice/order/refresh"
+    param: loginId
+    producer: null
+    rationale: "POST /api/v1/users/login not in Swagger/config; registry must not emit a binding."
+
+  - consumer: "post /api/v1/orderOtherService/orderOther/refresh"
+    param: loginId
+    producer: null
+    rationale: "POST /api/v1/users/login not in Swagger/config; registry must not emit a binding."
+
+  # --- Consign update (multi-FK) -----------------------------------------
+  - consumer: "put /api/v1/consignservice/consigns"
+    param: accountId
+    producer: "post /api/v1/inside_pay_service/inside_payment/account"
+    rationale: "Consign is owned by an account (same entity identified by accountId)."
+
+  - consumer: "put /api/v1/consignservice/consigns"
+    param: orderId
+    producer: "post /api/v1/orderservice/order"
+    rationale: "Consign is attached to an existing order."
+
+  # --- Expected-null bindings (precision at parameter level) ---------------
+  # These parameters appear on already-labeled consumers but are NOT
+  # cross-entity IDs — they are document numbers, category codes, plain
+  # strings, or dates. The registry's ID_SUFFIX filter must reject them.
+  # Any binding the registry emits for these counts as a false positive.
+
+  - consumer: "post /api/v1/adminorderservice/adminorder"
+    param: contactsDocumentNumber
+    producer: null
+    rationale: "Passport/ID document number, not a cross-entity foreign key."
+
+  - consumer: "post /api/v1/adminorderservice/adminorder"
+    param: trainNumber
+    producer: null
+    rationale: "Train route identifier string (e.g. G1234), not a database FK."
+
+  - consumer: "post /api/v1/adminorderservice/adminorder"
+    param: seatClass
+    producer: null
+    rationale: "Integer seat-class enum, not a cross-entity ID."
+
+  - consumer: "post /api/v1/adminorderservice/adminorder"
+    param: seatNumber
+    producer: null
+    rationale: "Physical seat label (e.g. 12A), not a cross-entity ID."
+
+  - consumer: "post /api/v1/admintravelservice/admintravel"
+    param: startStationName
+    producer: null
+    rationale: "Station display name, not a station FK."
+
+  - consumer: "post /api/v1/admintravelservice/admintravel"
+    param: terminalStationName
+    producer: null
+    rationale: "Station display name, not a station FK."
+
+  - consumer: "post /api/v1/admintravelservice/admintravel"
+    param: trainTypeName
+    producer: null
+    rationale: "Train-type name, not a cross-entity FK."
+
+  - consumer: "post /api/v1/adminbasicservice/adminbasic/prices"
+    param: trainType
+    producer: null
+    rationale: "Type label string, not a cross-entity ID."
+
+  - consumer: "post /api/v1/adminbasicservice/adminbasic/prices"
+    param: basicPriceRate
+    producer: null
+    rationale: "Numeric rate, not an ID."
+
+  - consumer: "post /api/v1/adminbasicservice/adminbasic/prices"
+    param: firstClassPriceRate
+    producer: null
+    rationale: "Numeric rate, not an ID."
+
+  - consumer: "put /api/v1/consignservice/consigns"
+    param: consignee
+    producer: null
+    rationale: "Person name, not an ID."
+
+  - consumer: "put /api/v1/consignservice/consigns"
+    param: phone
+    producer: null
+    rationale: "Phone-number string, not a cross-entity ID."
+
+  - consumer: "put /api/v1/consignservice/consigns"
+    param: from
+    producer: null
+    rationale: "Address string, not a cross-entity ID."
+
+  - consumer: "put /api/v1/consignservice/consigns"
+    param: to
+    producer: null
+    rationale: "Address string, not a cross-entity ID."
+
+# ----------------------------------------------------------------------
+# B. Endpoints with NO EXPECTED bindings (precision sentinel)
+#    The registry must NOT emit any binding for these consumers. Any binding
+#    the registry produces for these is a false positive.
+# ----------------------------------------------------------------------
+# These appear as empty bindings: the evaluator treats any emitted binding
+# whose consumer key matches an entry here as FP.
+no_binding_consumers:
+  - "get /api/v1/adminbasicservice/adminbasic/configs"
+  - "get /api/v1/adminbasicservice/adminbasic/prices"
+  - "get /api/v1/adminbasicservice/adminbasic/stations"
+  - "get /api/v1/adminbasicservice/adminbasic/trains"
+  - "get /api/v1/adminorderservice/adminorder"
+  - "get /api/v1/adminrouteservice/adminroute"
+  - "get /api/v1/admintravelservice/admintravel"
+  - "get /api/v1/routeservice/routes"
+  - "get /api/v1/stationservice/stations"
+  - "get /api/v1/trainservice/trains"
+  - "get /api/v1/userservice/users"
+  - "get /api/v1/verifycode/generate"
+  - "post /api/v1/users/login"
+  - "post /api/v1/travelservice/trips/left"
+  - "post /api/v1/travel2service/trips/left"
+  - "post /api/v1/travelplanservice/travelPlan/cheapest"
+  - "post /api/v1/travelplanservice/travelPlan/minStation"
+  - "post /api/v1/adminbasicservice/adminbasic/stations"
+  - "post /api/v1/adminbasicservice/adminbasic/trains"
+  - "put /api/v1/adminbasicservice/adminbasic/stations"
+  - "put /api/v1/adminbasicservice/adminbasic/trains"

@@ -49,8 +49,13 @@ public class OpenAPISpecification {
 	public String getTitle(boolean capitalize) {
 		String title = "";
 
-		if (specification != null && specification.getInfo() != null) {
+		if (specification != null && specification.getInfo() != null && specification.getInfo().getTitle() != null) {
 			title = specification.getInfo().getTitle().replaceAll("[^\\p{L}\\p{Nd}\\s]+", "").trim();
+			// Guard: after stripping symbols, the title may collapse to an empty string
+			// (e.g. when the spec's info.title is "$$$"). substring(0,1) on "" throws.
+			if (title.isEmpty()) {
+				return "";
+			}
 			title = (capitalize ? title.substring(0, 1).toUpperCase() : title.substring(0, 1).toLowerCase()) +
 					(title.length() > 1 ? formatTitle(title.substring(1).split("\\s")) : "");
 		}

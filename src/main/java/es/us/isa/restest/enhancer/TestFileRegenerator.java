@@ -163,48 +163,56 @@ public class TestFileRegenerator {
     
     /**
      * Replace a parameter value in the method content.
+     *
+     * <p>CRITICAL: every replacement argument to {@link String#replaceAll} must be wrapped
+     * in {@link Matcher#quoteReplacement(String)}.  The replacement argument of
+     * {@code replaceAll} treats {@code $} as a backreference ({@code $1}, {@code $2}, ...)
+     * and {@code \} as an escape — so an LLM-enhanced value containing e.g. {@code $5},
+     * {@code \n}, or a literal backslash would either corrupt the generated Java code or
+     * throw {@code IndexOutOfBoundsException}.  {@code Matcher.quoteReplacement} treats
+     * the string as a literal, eliminating that hazard.
      */
     private String replaceParameterValue(String methodContent, String paramName, String newValue) {
         String originalContent = methodContent;
-        
+
         // Pattern 1: JSON body in Java string - \"paramName\":\"oldValue\" (escaped quotes in Java strings)
         // This is the main pattern used in generated test code like: String requestBody1 = "{\"stationList\":\"value\"}";
         String escapedJsonPattern = "\\\\\"" + Pattern.quote(paramName) + "\\\\\"\\s*:\\s*\\\\\"[^\\\\]*\\\\\"";
         String escapedReplacement = "\\\\\"" + paramName + "\\\\\":\\\\\"" + escapeJavaForJson(newValue) + "\\\\\"";
-        methodContent = methodContent.replaceAll(escapedJsonPattern, escapedReplacement);
-        
+        methodContent = methodContent.replaceAll(escapedJsonPattern, Matcher.quoteReplacement(escapedReplacement));
+
         // Pattern 2: Body field assignment - bodyFields.put("paramName", "oldValue")
         String bodyPattern = "bodyFields\\.put\\(\"" + Pattern.quote(paramName) + "\",\\s*\"[^\"]*\"\\)";
-        methodContent = methodContent.replaceAll(bodyPattern, 
-                "bodyFields.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")");
-        
+        methodContent = methodContent.replaceAll(bodyPattern,
+                Matcher.quoteReplacement("bodyFields.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")"));
+
         // Pattern 3: Regular JSON (not escaped) - "paramName":"oldValue"
         String jsonPattern = "\"" + Pattern.quote(paramName) + "\"\\s*:\\s*\"[^\"]*\"";
-        methodContent = methodContent.replaceAll(jsonPattern, 
-                "\"" + paramName + "\":\"" + escapeJava(newValue) + "\"");
-        
+        methodContent = methodContent.replaceAll(jsonPattern,
+                Matcher.quoteReplacement("\"" + paramName + "\":\"" + escapeJava(newValue) + "\""));
+
         // Pattern 4: Path parameter - pathParams.put("paramName", "oldValue")
         String pathPattern = "pathParams\\.put\\(\"" + Pattern.quote(paramName) + "\",\\s*\"[^\"]*\"\\)";
-        methodContent = methodContent.replaceAll(pathPattern, 
-                "pathParams.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")");
-        
+        methodContent = methodContent.replaceAll(pathPattern,
+                Matcher.quoteReplacement("pathParams.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")"));
+
         // Pattern 5: Query parameter - queryParams.put("paramName", "oldValue")
         String queryPattern = "queryParams\\.put\\(\"" + Pattern.quote(paramName) + "\",\\s*\"[^\"]*\"\\)";
-        methodContent = methodContent.replaceAll(queryPattern, 
-                "queryParams.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")");
-        
+        methodContent = methodContent.replaceAll(queryPattern,
+                Matcher.quoteReplacement("queryParams.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")"));
+
         // Pattern 6: Allure parameter reporting
-        String allurePattern = "Allure\\.parameter\\(\"🔴 Invalid Parameters\",\\s*\"" + 
+        String allurePattern = "Allure\\.parameter\\(\"🔴 Invalid Parameters\",\\s*\"" +
                 Pattern.quote(paramName) + "=[^\"]*\"\\)";
-        methodContent = methodContent.replaceAll(allurePattern, 
-                "Allure.parameter(\"🔴 Invalid Parameters (ENHANCED)\", \"" + 
-                paramName + "=" + escapeJava(newValue) + "\")");
-        
+        methodContent = methodContent.replaceAll(allurePattern,
+                Matcher.quoteReplacement("Allure.parameter(\"🔴 Invalid Parameters (ENHANCED)\", \"" +
+                        paramName + "=" + escapeJava(newValue) + "\")"));
+
         // Log if any changes were made
         if (!methodContent.equals(originalContent)) {
             log.debug("   Replaced {} with new value", paramName);
         }
-        
+
         return methodContent;
     }
     

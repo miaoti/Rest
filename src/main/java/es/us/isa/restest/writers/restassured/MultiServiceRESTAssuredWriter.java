@@ -196,6 +196,18 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 /* ---------- class header ---------------------------------------- */
                 pw.println("public class " + className + " {");
                 pw.println();
+
+                // Static LLM singleton fields — initialized once in @BeforeClass
+                pw.println("    // LLM validation singletons — created ONCE per test class, not per test method");
+                pw.println("    private static final boolean LLM_VALIDATION_ENABLED = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
+                pw.println("    private static final boolean LLM_ONLY_2XX = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
+                pw.println("    private static final boolean LLM_INCLUDE_RCA = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
+                pw.println("    private static final boolean SOFT_ERROR_CACHE_ENABLED = Boolean.parseBoolean(System.getProperty(\"soft.error.cache.enabled\", \"true\"));");
+                pw.println("    private static final String SOFT_ERROR_CACHE_PATH = System.getProperty(\"soft.error.cache.path\", \"target/soft-error-rule-cache.json\");");
+                pw.println("    private static es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator;");
+                pw.println("    private static es.us.isa.restest.validation.SoftErrorRuleCache ruleCache;");
+                pw.println();
+
                 if (allureReport) {
                     pw.println("    // Jaeger configuration");
                     pw.println("    private static final boolean JAEGER_ENABLED = Boolean.parseBoolean(System.getProperty(\"jaeger.enabled\", \"true\"));");
@@ -1054,6 +1066,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("        // We use manual, controlled attachments instead for cleaner reports");
                     pw.println("        // RestAssured.filters(new AllureRestAssured());");
                 }
+                // Initialize LLM singletons once for the entire test class
+                pw.println("        // Initialize LLM validation singletons (ONCE per class, not per test)");
+                pw.println("        if (LLM_VALIDATION_ENABLED) {");
+                pw.println("            llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
+                pw.println("            if (SOFT_ERROR_CACHE_ENABLED) {");
+                pw.println("                ruleCache = es.us.isa.restest.validation.SoftErrorRuleCache.getInstance(SOFT_ERROR_CACHE_PATH);");
+                pw.println("            }");
+                pw.println("        }");
                 pw.println("    }");
                 pw.println();
 
@@ -1136,11 +1156,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             flowPath = classNormalizedSuite;
                         }
 
-                        pw.println("        // Allure Suite Taxonomy: Service -> Flow Path -> Test Variant");
+                        pw.println("        // Allure Suite Taxonomy: Service -> <JUnit4 auto-suite from @DisplayName> -> Variant");
+                        pw.println("        // IMPORTANT: we do NOT emit an explicit 'suite' label here.  The AllureJunit4 listener");
+                        pw.println("        // already auto-adds one derived from the class's @DisplayName (e.g.");
+                        pw.println("        // 'Flow_Scenario_2386 | POST /api/v1/...').  Emitting another 'suite' label would");
+                        pw.println("        // be additive (Allure does not override on duplicate label names) and the same");
+                        pw.println("        // tests would appear TWICE in the Suites view under two different suite folders.");
                         pw.println("        Allure.label(\"parentSuite\", \"" + escape(serviceSuite) + "\");");
-                        pw.println("        Allure.label(\"suite\", \"" + escape(flowPath) + "\");");
                         pw.println("        Allure.label(\"subSuite\", \"" + escape(subSuiteLabel) + "\");");
-                        pw.println("        Allure.label(\"story\", \"" + escape(flowPath) + "\");");
                         pw.println();
                     }
                     
@@ -1592,23 +1615,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        int expectedStatusCode" + stepIdx + " = " + step.getExpectedStatus() + ";");
                             pw.println("                        ");
                             
-                            // 🤖 LLM RESPONSE VALIDATION setup (for both positive and negative tests)
-                            pw.println("                        // 🤖 LLM RESPONSE VALIDATION: Check response body for errors");
-                            pw.println("                        boolean llmValidationEnabled = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
-                            pw.println("                        boolean only2xx = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
-                            pw.println("                        boolean includeRca = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
-                            pw.println("                        boolean softErrorCacheEnabled = Boolean.parseBoolean(System.getProperty(\"soft.error.cache.enabled\", \"true\"));");
-                            pw.println("                        String softErrorCachePath = System.getProperty(\"soft.error.cache.path\", \"target/soft-error-rule-cache.json\");");
+                            // 🤖 LLM RESPONSE VALIDATION: uses class-level singletons (llmValidator, ruleCache)
+                            pw.println("                        // 🤖 LLM RESPONSE VALIDATION: uses class-level singletons");
                             pw.println("                        ");
                             
                             if (scenario.getFaulty()) {
                                 // NEGATIVE TEST: Check LLM validation FIRST, then status code
                                 pw.println("                        // 🔴 NEGATIVE TEST VALIDATION");
-                                pw.println("                        // For negative tests with invalid inputs, we expect EITHER:");
-                                pw.println("                        // 1. A different status code (error response), OR");
-                                pw.println("                        // 2. Status 200 but with error/failure message in response body (soft error)");
-                                pw.println("                        // CRITICAL: The error message MUST be related to our designed invalid input!");
-                                pw.println("                        boolean statusCodeIndicatesError = (actualStatusCode" + stepIdx + " != expectedStatusCode" + stepIdx + ");");
+                                pw.println("                        // For negative tests with invalid inputs, pass iff:");
+                                pw.println("                        //   (a) the response status is non-2xx (API clearly rejected the invalid input), OR");
+                                pw.println("                        //   (b) the response is 2xx AND the LLM detects a soft error related to our invalid input.");
+                                pw.println("                        // This predicate is response-class based (not \"actual != expected\"), so it works");
+                                pw.println("                        // correctly when expectedStatus itself is non-2xx and naturally respects the");
+                                pw.println("                        // llm.response.validation.only.2xx contract (LLM only fires on actual 2xx).");
+                                pw.println("                        boolean responseIsError = (actualStatusCode" + stepIdx + " < 200 || actualStatusCode" + stepIdx + " >= 300);");
+                                pw.println("                        boolean statusCodeIndicatesError = responseIsError;  // alias kept for downstream log strings");
                                 pw.println("                        boolean llmDetectedRelatedError = false;");
                                 pw.println("                        String llmRca = \"LLM validation not performed\";");
                                 pw.println("                        ");
@@ -1630,18 +1651,20 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 }
                                 pw.println("                        ");
                                 
-                                pw.println("                        // Always run LLM validation for negative tests (to detect soft errors related to our invalid input)");
-                                pw.println("                        if (llmValidationEnabled) {");
+                                pw.println("                        // 🚀 ZERO-OVERHEAD FAST PATH: when the response is non-2xx the API has already");
+                                pw.println("                        // rejected the invalid input — the negative test passes without an LLM call.");
+                                pw.println("                        // This naturally enforces the llm.response.validation.only.2xx contract for");
+                                pw.println("                        // negative tests: LLM only runs when the response is in [200,300).");
+                                pw.println("                        if (responseIsError) {");
+                                pw.println("                            llmRca = \"Skipped: response status \" + actualStatusCode" + stepIdx + " + \" is non-2xx; API rejected invalid input\";");
+                                pw.println("                            System.out.println(\"⚡ Skipping LLM validation: response is non-2xx (\" + actualStatusCode" + stepIdx + " + \")\");");
+                                pw.println("                        } else if (LLM_VALIDATION_ENABLED && llmValidator != null) {");
                                 pw.println("                            try {");
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
-                                pw.println("                                // Create LLM validator instance");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
-                                pw.println("                                ");
-                                pw.println("                                // Validate response -- use cache when available");
+                                pw.println("                                // Use class-level singleton (created once in @BeforeClass)");
                                 pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult;");
-                                pw.println("                                if (softErrorCacheEnabled) {");
-                                pw.println("                                    es.us.isa.restest.validation.SoftErrorRuleCache cache = es.us.isa.restest.validation.SoftErrorRuleCache.getInstance(softErrorCachePath);");
+                                pw.println("                                if (SOFT_ERROR_CACHE_ENABLED && ruleCache != null) {");
                                 pw.println("                                    validationResult = llmValidator.validateNegativeResponseWithCache(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
@@ -1649,7 +1672,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
                                 pw.println("                                        \"" + escape(step.getPath()) + "\",");
                                 pw.println("                                        invalidParams,");
-                                pw.println("                                        cache");
+                                pw.println("                                        ruleCache");
                                 pw.println("                                    );");
                                 pw.println("                                } else {");
                                 pw.println("                                    validationResult = llmValidator.validateNegativeTestResponse(");
@@ -1668,7 +1691,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                System.out.println(\"🤖 LLM Validation (Negative Test): Error Related to Invalid Input=\" + llmDetectedRelatedError + \", RCA: \" + llmRca);");
                                 pw.println("                                ");
                                 pw.println("                                // Attach LLM analysis to Allure report");
-                                pw.println("                                if (includeRca) {");
+                                pw.println("                                if (LLM_INCLUDE_RCA) {");
                                 pw.println("                                    StringBuilder llmReport = new StringBuilder();");
                                 pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\");");
                                 pw.println("                                    llmReport.append(\"🤖 INTELLIGENT ANALYSIS (Negative Test)\\n\");");
@@ -1721,24 +1744,20 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        }");
                                 pw.println("                        ");
                                 pw.println("                        // LLM validation for positive tests - detect soft errors in 2XX responses");
-                                pw.println("                        if (llmValidationEnabled && (!only2xx || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
+                                pw.println("                        if (LLM_VALIDATION_ENABLED && llmValidator != null && (!LLM_ONLY_2XX || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
                                 pw.println("                            try {");
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
-                                pw.println("                                // Create LLM validator instance");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
-                                pw.println("                                ");
-                                pw.println("                                // Validate response -- use cache when available");
+                                pw.println("                                // Use class-level singleton (created once in @BeforeClass)");
                                 pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult;");
-                                pw.println("                                if (softErrorCacheEnabled) {");
-                                pw.println("                                    es.us.isa.restest.validation.SoftErrorRuleCache cache = es.us.isa.restest.validation.SoftErrorRuleCache.getInstance(softErrorCachePath);");
+                                pw.println("                                if (SOFT_ERROR_CACHE_ENABLED && ruleCache != null) {");
                                 pw.println("                                    validationResult = llmValidator.validateResponseWithCache(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
                                 pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
                                 pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
                                 pw.println("                                        \"" + escape(step.getPath()) + "\",");
-                                pw.println("                                        cache");
+                                pw.println("                                        ruleCache");
                                 pw.println("                                    );");
                                 pw.println("                                } else {");
                                 pw.println("                                    validationResult = llmValidator.validateResponse(");
@@ -1753,7 +1772,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                System.out.println(\"🤖 LLM Validation (Positive Test): Failed=\" + validationResult.isFailed() + \", RCA: \" + validationResult.getRca());");
                                 pw.println("                                ");
                                 pw.println("                                // Attach LLM analysis to Allure report");
-                                pw.println("                                if (includeRca) {");
+                                pw.println("                                if (LLM_INCLUDE_RCA) {");
                                 pw.println("                                    StringBuilder llmReport = new StringBuilder();");
                                 pw.println("                                    llmReport.append(\"════════════════════════════════════════════════════════════════════════\\n\");");
                                 pw.println("                                    llmReport.append(\"🤖 INTELLIGENT ANALYSIS (Positive Test)\\n\");");
@@ -2073,9 +2092,10 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("        Allure.parameter(\"📊 Scenario Result\", overallResult + \" (\" + successfulSteps + \"/\" + totalSteps + \" steps)\");");
                         pw.println("        ");
                         pw.println("        // Add clean categorization");
+                        pw.println("        // NOTE: do NOT emit an extra 'feature' label here — it conflicts with class-level");
+                        pw.println("        // @Feature(serviceName) and Allure treats duplicate label names as additive,");
+                        pw.println("        // producing phantom groupings like \"Microservice Workflow\" in the Behaviors view.");
                         pw.println("        Allure.label(\"severity\", severity);");
-                        pw.println("        Allure.label(\"feature\", \"Microservice Workflow\");");
-                        pw.println("        Allure.label(\"story\", \"" + escape(scenario.getOperationId()) + "\");");
                         pw.println("        Allure.description(\"Microservice test scenario with \" + totalSteps + \" steps.\");");
                         pw.println("        ");
                     }

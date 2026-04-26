@@ -153,7 +153,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         this.serviceConfigs   = serviceConfigs;
         this.scenarios        = scenarios;
         this.useLLM           = useLLMforParams;
-        this.onlyFirstBusinessStep = Boolean.parseBoolean(System.getProperty("mst.generate.only.first.step", "false"));
+        // Root API Mode is the PRIMARY mode (per the paper).  When true, the generator
+        // keeps all top-level root API spans in every test case and prunes internal
+        // step-API / service-to-service spans; each scenario becomes a sequence of
+        // gateway-entry calls only.  When false, every internal span is also materialized
+        // as its own step (Multi-Step Replay) — much larger test suites, rarely desired.
+        // Default flipped to true so runs with a bare properties file don't silently
+        // enter Multi-Step Replay.  Property name kept for backward compatibility.
+        this.onlyFirstBusinessStep = Boolean.parseBoolean(System.getProperty("mst.generate.only.first.step", "true"));
+        log.info("Root API mode: onlyFirstBusinessStep={} (true → prune step-API spans, default)", this.onlyFirstBusinessStep);
         this.faultyRatio = Float.parseFloat(System.getProperty("faulty.ratio", "0.1"));
         this.faultyRoundRobin = Boolean.parseBoolean(System.getProperty("faulty.round-robin", "true"));
         this.dependencyRegistry = SemanticDependencyRegistry.build(serviceConfigs, serviceSpecs, scenarios);
@@ -255,6 +263,12 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 System.getProperty("scenario.shattering.enabled", "true"));
         if (shatterEnabled) {
             new ScenarioOptimizer(dependencyRegistry).optimizeScenarios(scenarios);
+            // Phase 3.5: Shattering can emit NEW 1-root partitions (isolated connected
+            // components) that never went through the Phase 2.5 dedup filter. Re-apply
+            // the 1-root dedup here against the same seenSingleRootApis set to prevent
+            // byte-identical duplicate test classes like Flow_Scenario_671 /
+            // Flow_Scenario_7473 for the same parameterless endpoint.
+            deduplicatePostShatter();
         }
 
         // Phase 4: Trace Decomposition — extract individual 1-Root baseline
@@ -1078,13 +1092,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         // static producer binding, we retrieve ALL candidate producers for the
         // parameter's entity stem and match against the actual trace history.
         if (isTopLevelRoot && rootIndex > 1 && opCfg.getTestParameters() != null) {
+            String consumerPath = opCfg.getTestPath();
             for (TestParameter tp : opCfg.getTestParameters()) {
                 String pName = tp.getName();
                 if (pName == null) continue;
                 if (call.getParamDependencies().containsKey(pName)) continue;
 
                 List<SemanticDependencyRegistry.ProducerBinding> candidates =
-                        dependencyRegistry.getCandidateProducers(pName);
+                        dependencyRegistry.getCandidateProducers(pName, consumerPath);
                 if (candidates.isEmpty()) continue;
 
                 // Build a fast lookup set from candidate API keys
@@ -1093,17 +1108,20 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     candidateMap.putIfAbsent(pb.apiKey, pb);
                 }
 
-                // Scan previous root steps backward to find the nearest matching producer
+                // Scan previous root steps backward to find the nearest matching producer.
+                // Canonicalize the prev-step API key (collapsing {templateName} AND concrete
+                // /12345 or UUID segments to /{}) so lookup matches the canonical keys
+                // stored in the registry.
                 int matchedStepIndex = -1;
                 SemanticDependencyRegistry.ProducerBinding matchedProducer = null;
                 for (int si = tc.getSteps().size() - 1; si >= 0; si--) {
                     MultiServiceTestCase.StepCall prev = tc.getSteps().get(si);
                     if (!prev.isTopLevelRoot()) continue;
-                    String prevApiKey = (prev.getMethod().getMethod() != null
-                            ? prev.getMethod().getMethod().toLowerCase(Locale.ROOT) : "")
-                            + " "
-                            + (prev.getMethod().getTestPath() != null
-                            ? prev.getMethod().getTestPath() : prev.getPath());
+                    String prevMethod = prev.getMethod().getMethod() != null
+                            ? prev.getMethod().getMethod().toLowerCase(Locale.ROOT) : "";
+                    String prevPath = prev.getMethod().getTestPath() != null
+                            ? prev.getMethod().getTestPath() : prev.getPath();
+                    String prevApiKey = prevMethod + " " + SemanticDependencyRegistry.canonicalizePath(prevPath);
                     SemanticDependencyRegistry.ProducerBinding hit = candidateMap.get(prevApiKey);
                     if (hit != null) {
                         matchedStepIndex = si;
@@ -2246,7 +2264,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             // Build API name for context
             String apiName = verb.toUpperCase() + " " + route;
 
-            ConsoleProgressBar.begin("Pool Params", opCfg.getTestParameters().size());
+            ConsoleProgressBar.begin("params", opCfg.getTestParameters().size());
             for (TestParameter p : opCfg.getTestParameters()) {
                 ParameterInfo info = createParameterInfoWithContext(p, apiName, service, allParamNames);
                 Set<String> uniqueValues = new LinkedHashSet<>();
@@ -2450,7 +2468,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             }
             String apiName = verb.toUpperCase() + " " + route;
 
-            ConsoleProgressBar.begin("Fault Params", opCfg.getTestParameters().size());
+            ConsoleProgressBar.begin("params", opCfg.getTestParameters().size());
             for (TestParameter p : opCfg.getTestParameters()) {
                 ParameterInfo info = createParameterInfoWithContext(p, apiName, service, allParamNames);
                 InvalidInputPool pool = llmGen.generateInvalidInputPool(info);
@@ -2916,7 +2934,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * can skip decomposed {@code _RT} baselines for endpoints already covered.
      */
     private void deduplicateSingleRootScenarios() {
-        log.info("=== PHASE 2.5: SINGLE-ROOT SCENARIO DEDUPLICATION ===");
+        applySingleRootDedup("PHASE 2.5: SINGLE-ROOT SCENARIO DEDUPLICATION");
+    }
+
+    /**
+     * Re-apply the 1-root dedup filter after Phase 3 (ScenarioOptimizer shattering).
+     * Shattering can emit brand-new 1-root partitions from multi-root scenarios without
+     * any dedup check. Running the filter a second time against the shared
+     * {@link #seenSingleRootApis} set catches those duplicates and also registers any
+     * legitimately new 1-root partitions so Phase 4 decomposition sees a consistent view.
+     */
+    private void deduplicatePostShatter() {
+        applySingleRootDedup("PHASE 3.5: POST-SHATTER SINGLE-ROOT DEDUPLICATION");
+    }
+
+    private void applySingleRootDedup(String phaseLabel) {
+        log.info("=== {} ===", phaseLabel);
         int originalSize = scenarios.size();
 
         List<WorkflowScenario> deduplicated = new ArrayList<>();

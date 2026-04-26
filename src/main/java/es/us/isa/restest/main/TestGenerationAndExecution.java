@@ -501,17 +501,32 @@ public class TestGenerationAndExecution {
 					logger.info("MST faulty round-robin mode: {}", faultyRoundRobin);
 				}
 				
-				// Pass negative input generation mode (llm/hardcode) to MST generator
+				// Pass negative input generation mode (smart | llm | hardcode) to the MST generator.
+				//   smart    — LLM only for REGEX_MISMATCH + SEMANTIC_MISMATCH; static/schema for the rest
+				//   llm      — LLM for all 6 contextual fault types (research/ablation mode, much slower)
+				//   hardcode — fully deterministic, zero LLM calls (fastest)
 				String negativeInputMode = readParameterValue("negative.input.generation.mode");
 				if (negativeInputMode != null) {
-					System.setProperty("negative.input.generation.mode", negativeInputMode);
-					logger.info("MST negative input generation mode: {} ({})", negativeInputMode,
-							"llm".equalsIgnoreCase(negativeInputMode) ? 
-									"LLM-generated context-aware inputs" : "Deterministic hardcoded inputs");
+					String modeLc = negativeInputMode.trim().toLowerCase();
+					System.setProperty("negative.input.generation.mode", modeLc);
+					String desc;
+					switch (modeLc) {
+						case "llm":      desc = "LLM for all contextual types (slow; research/ablation)"; break;
+						case "hardcode": desc = "Deterministic hardcoded; zero LLM calls"; break;
+						case "smart":    desc = "LLM only for REGEX/SEMANTIC; static for the rest (default)"; break;
+						default:
+							logger.warn("Unknown negative.input.generation.mode '{}' — falling back to 'smart'", negativeInputMode);
+							modeLc = "smart";
+							System.setProperty("negative.input.generation.mode", modeLc);
+							desc = "LLM only for REGEX/SEMANTIC; static for the rest (default)";
+					}
+					logger.info("MST negative input generation mode: {} ({})", modeLc, desc);
 				} else {
-					// Default to hardcode mode for faster execution
-					System.setProperty("negative.input.generation.mode", "hardcode");
-					logger.info("MST negative input generation mode: hardcode (default - faster, deterministic)");
+					// Default to SMART mode: the universal fault categories (NULL, EMPTY, OVERFLOW,
+					// SPECIAL_CHARACTERS, TYPE_MISMATCH, BOUNDARY_VIOLATION) are filled with static/
+					// schema-derived payloads and only REGEX_MISMATCH + SEMANTIC_MISMATCH hit the LLM.
+					System.setProperty("negative.input.generation.mode", "smart");
+					logger.info("MST negative input generation mode: smart (default — static payloads + LLM only for REGEX/SEMANTIC)");
 				}
 
 				// 7. Instantiate the generator
@@ -1191,8 +1206,21 @@ public class TestGenerationAndExecution {
 			// Track overall statistics
 			int totalEnhanced = 0;
 			int totalImproved = 0;  // Tests that passed after enhancement
-			
-			ConsoleProgressBar.begin("Enhance Rounds", enhancerRounds + 1);
+
+			// Compute total outer slots so the bar advances after EACH major sub-phase,
+			// not just at the end of each round. Without this the bar would sit at the
+			// same fraction for the entire round (which contains tests + optional status
+			// code exploration + enhancement + regeneration), since each inner phase only
+			// credits up to 1/outerTotal of the outer fraction and the monotonic clamp
+			// keeps the visual fixed across sequential inner phases.
+			int totalSlots = 0;
+			for (int r = 0; r <= enhancerRounds; r++) {
+				boolean rIsFinal = (r == enhancerRounds);
+				totalSlots += 1; // tests
+				if (r == 0 && statusCodeExplorationEnabled) totalSlots += 1; // exploration
+				if (!rIsFinal) totalSlots += 2; // enhance + regen
+			}
+			ConsoleProgressBar.begin("Enhance Rounds", totalSlots);
 			for (int round = 0; round <= enhancerRounds; round++) {
 				boolean isFinalRound = (round == enhancerRounds);
 
@@ -1206,12 +1234,13 @@ public class TestGenerationAndExecution {
 				
 				// Execute tests with collector
 				Result result = executeTestsWithCollector(fullPackageName, className, collector, isFinalRound);
-				
+
 				if (result == null) {
 					logger.error("Test execution failed in round {}", round);
 					break;
 				}
-				
+				ConsoleProgressBar.update("Round " + round + " tests done");
+
 				// Status Code Exploration: Run after round 0 to discover and create exploration tests
 				// NOTE: Moved BEFORE round results logging so collector reflects exploration execution
 				if (round == 0 && statusCodeExplorationEnabled && statusCodeEnhancer != null) {
@@ -1344,12 +1373,13 @@ public class TestGenerationAndExecution {
 						
 						// Start new round for the exploration enhancer
 						statusCodeEnhancer.startNewRound();
-						
+
 						// Clear captured results now that exploration is done
 						TestResultCapture.clearResults();
 					} else {
 						logger.info("⚠️ No execution results available for status code exploration");
 					}
+					ConsoleProgressBar.update("Round " + round + " exploration done");
 				}
 				
 				// Log round results (after exploration so collector reflects final state)
@@ -1376,7 +1406,8 @@ public class TestGenerationAndExecution {
 				logger.info("🔧 Enhancing {} failed tests with LLM...", collector.getFailedTestCount());
 				List<FailedTestResult> failedTests = collector.getFailedTests();
 				List<TestCaseEnhancer.EnhancementResult> enhancementResults = enhancer.enhanceBatch(failedTests);
-				
+				ConsoleProgressBar.update("Round " + round + " enhance done");
+
 				// Save enhancement results
 				enhancer.saveEnhancementResults(enhancementResults, enhancerOutputDir, round);
 				
@@ -1421,7 +1452,7 @@ public class TestGenerationAndExecution {
 						break;
 					}
 				}
-				ConsoleProgressBar.update("Round " + round);
+				ConsoleProgressBar.update("Round " + round + " regen done");
 			}
 			ConsoleProgressBar.complete();
 
@@ -1563,7 +1594,7 @@ public class TestGenerationAndExecution {
 			junit.addListener(new RunListener() {
 				@Override
 				public void testRunStarted(Description description) {
-					ConsoleProgressBar.begin("Test Exec", description.testCount());
+					ConsoleProgressBar.begin("tests", description.testCount());
 				}
 
 				@Override

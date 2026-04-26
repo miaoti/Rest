@@ -60,8 +60,11 @@ public class HardcodedInvalidInputGenerator {
     /**
      * Generate type mismatch inputs - wrong data type for the parameter.
      * These are stored as raw objects (Integer, Boolean, etc.) NOT strings.
+     *
+     * <p>Package-private so {@link ZeroShotLLMGenerator}'s "smart" mode can reuse
+     * the static payload set without going through the LLM.
      */
-    private void generateTypeMismatchInputs(ParameterInfo param, InvalidInputPool pool) {
+    void generateTypeMismatchInputs(ParameterInfo param, InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
         
         log.debug("  📝 Generating TYPE_MISMATCH for type: {}", paramType);
@@ -146,8 +149,9 @@ public class HardcodedInvalidInputGenerator {
     
     /**
      * Generate overflow inputs - values that exceed expected limits.
+     * Package-private for reuse by {@link ZeroShotLLMGenerator}'s smart mode.
      */
-    private void generateOverflowInputs(ParameterInfo param, InvalidInputPool pool) {
+    void generateOverflowInputs(ParameterInfo param, InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
         
         log.debug("  📝 Generating OVERFLOW for type: {}", paramType);
@@ -205,8 +209,9 @@ public class HardcodedInvalidInputGenerator {
     /**
      * Generate empty inputs - empty string, empty array, empty object.
      * ONLY for REQUIRED parameters.
+     * Package-private for reuse by {@link ZeroShotLLMGenerator}'s smart mode.
      */
-    private void generateEmptyInputs(ParameterInfo param, InvalidInputPool pool) {
+    void generateEmptyInputs(ParameterInfo param, InvalidInputPool pool) {
         // Skip empty inputs for optional parameters - they are valid!
         if (param.getRequired() == null || !param.getRequired()) {
             log.debug("  ⚠️ Skipping EMPTY_INPUT for optional parameter: {}", param.getName());
@@ -238,8 +243,9 @@ public class HardcodedInvalidInputGenerator {
     /**
      * Generate null inputs.
      * ONLY for REQUIRED parameters.
+     * Package-private for reuse by {@link ZeroShotLLMGenerator}'s smart mode.
      */
-    private void generateNullInputs(ParameterInfo param, InvalidInputPool pool) {
+    void generateNullInputs(ParameterInfo param, InvalidInputPool pool) {
         // Skip null inputs for optional parameters - they are valid!
         if (param.getRequired() == null || !param.getRequired()) {
             log.debug("  ⚠️ Skipping NULL_INPUT for optional parameter: {}", param.getName());
@@ -262,8 +268,9 @@ public class HardcodedInvalidInputGenerator {
     
     /**
      * Generate special character inputs (potential injection attempts).
+     * Package-private for reuse by {@link ZeroShotLLMGenerator}'s smart mode.
      */
-    private void generateSpecialCharacterInputs(ParameterInfo param, InvalidInputPool pool) {
+    void generateSpecialCharacterInputs(ParameterInfo param, InvalidInputPool pool) {
         log.debug("  📝 Generating SPECIAL_CHARACTERS for: {}", param.getName());
         
         // SQL injection attempts
@@ -297,45 +304,86 @@ public class HardcodedInvalidInputGenerator {
     
     /**
      * Generate boundary violation inputs.
+     * Package-private for reuse by {@link ZeroShotLLMGenerator}'s smart mode.
+     *
+     * <p>When the schema declares {@code minimum/maximum/minLength/maxLength} constraints,
+     * this method emits precise off-by-one violations ({@code min-1}, {@code max+1},
+     * {@code minLength-1}, {@code maxLength+1}).  When no constraints are declared, it
+     * falls back to canonical boundaries per type.  This replaces the previous code path
+     * where the LLM was asked to produce boundary values without ever being told what
+     * the actual boundaries were.
      */
-    private void generateBoundaryViolationInputs(ParameterInfo param, InvalidInputPool pool) {
+    void generateBoundaryViolationInputs(ParameterInfo param, InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
-        
+
         log.debug("  📝 Generating BOUNDARY_VIOLATION for type: {}", paramType);
-        
+
+        // Schema-derived numeric boundaries (off-by-one)
+        Number min = param.getMinimum();
+        Number max = param.getMaximum();
+        Integer minLen = param.getMinLength();
+        Integer maxLen = param.getMaxLength();
+
         switch (paramType) {
             case "integer":
             case "int":
             case "long":
             case "number":
+                // Overflow-safe schema-derived off-by-ones.
+                if (min != null && min.longValue() > Long.MIN_VALUE) {
+                    pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, min.longValue() - 1);
+                }
+                if (max != null && max.longValue() < Long.MAX_VALUE) {
+                    pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, max.longValue() + 1);
+                }
+                // Canonical fallbacks — always useful regardless of schema
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -1);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -999999);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 999999999);
                 break;
-                
+
             case "string":
-                // Boundary length violations
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "");  // Zero length
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "a"); // One character
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "A".repeat(256)); // Common max
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "B".repeat(257)); // Just over common max
+                // Guard minLen > 0: a minLen of 0 means empty string is valid, so
+                // "length - 1 = -1" is meaningless as a boundary violation and would
+                // just duplicate EMPTY_INPUT coverage.
+                if (minLen != null && minLen > 0) {
+                    // One character shorter than the minimum
+                    pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "a".repeat(minLen - 1));
+                }
+                // Cap the maxLen+1 string at a sane upper bound so we don't blow up the
+                // JVM heap when a schema declares maxLength = Integer.MAX_VALUE.
+                if (maxLen != null && maxLen > 0 && maxLen < 100_000) {
+                    pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "A".repeat(maxLen + 1));
+                }
+                // Canonical fallbacks
+                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "");
+                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "a");
+                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "A".repeat(256));
+                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "B".repeat(257));
                 break;
-                
+
             case "double":
             case "float":
+                // Overflow / non-finite guards.
+                if (min != null && Double.isFinite(min.doubleValue()) && min.doubleValue() > -Double.MAX_VALUE) {
+                    pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, min.doubleValue() - 0.0001);
+                }
+                if (max != null && Double.isFinite(max.doubleValue()) && max.doubleValue() < Double.MAX_VALUE) {
+                    pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, max.doubleValue() + 0.0001);
+                }
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -0.0001);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0.0);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0.0001);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -1.0);
                 break;
-                
+
             case "array":
                 // Boundary array sizes
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, Collections.emptyList());
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, Collections.singletonList("single"));
                 break;
-                
+
             default:
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -1);
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0);

@@ -134,19 +134,53 @@ public class WorkflowScenarioUtils {
         }
     }
 
-    // Build a signature from ROOT API only (first step)
+    // Build a signature from the FULL SET of root APIs (gateway entries) the scenario visits.
+    //
+    // Why a set: for MST, each root step is a distinct gateway entry and therefore a distinct
+    // public API surface worth covering. Two scenarios that happen to share the SAME first
+    // root but visit DIFFERENT downstream roots carry materially different coverage — only if
+    // the entire set of gateway entries matches are they truly redundant for test generation.
+    //
+    // The sorted set form is used (not the order-preserving sequence) so that two scenarios
+    // with the same gateway entries but different chronological orderings are still deduped;
+    // Phase 3 shattering collapses order anyway, so ordering is not load-bearing post-dedup.
+    //
+    // NULL SAFETY: {@link #httpMethod}/{@link #httpPath} can return null when a step lacks
+    // OpenTelemetry HTTP tags. Uncaught, those nulls get coerced to the literal string "null"
+    // and two unrelated scenarios ({MERGE_A, null null} vs {MERGE_B, null null}) would still
+    // collide on that fragment. We bucket every null-API root into a per-scenario unique
+    // sentinel so it contributes to uniqueness without false matches.
     private static String buildRootApiSignature(WorkflowScenario sc) {
-        List<WorkflowStep> steps = flatten(sc);
-        if (steps.isEmpty()) {
+        if (sc == null) return "EMPTY_SCENARIO";
+        List<WorkflowStep> roots = sc.getRootSteps();
+        if (roots == null || roots.isEmpty()) {
             return "EMPTY_SCENARIO";
         }
-        
-        // Get the first step (root API)
-        WorkflowStep rootStep = steps.get(0);
-        String verb = httpMethod(rootStep);
-        String path = httpPath(rootStep);
-        
-        return verb + " " + path;
+
+        java.util.TreeSet<String> rootApiSet = new java.util.TreeSet<>();
+        int nullBucket = 0;
+        for (WorkflowStep rootStep : roots) {
+            if (rootStep == null) {
+                rootApiSet.add("__NULL_ROOT_" + (nullBucket++));
+                continue;
+            }
+            String verb = httpMethod(rootStep);
+            String path = httpPath(rootStep);
+            if (verb == null || path == null) {
+                // Per-scenario unique bucket: avoids collapsing unrelated scenarios
+                // that happen to have the same unidentifiable root.
+                String opName = rootStep.getOperationName();
+                String svc    = rootStep.getServiceName();
+                rootApiSet.add("__UNKNOWN_ROOT_" + safeForKey(svc) + "::" + safeForKey(opName) + "_" + (nullBucket++));
+                continue;
+            }
+            rootApiSet.add(verb + " " + path);
+        }
+        return String.join(" | ", rootApiSet);
+    }
+
+    private static String safeForKey(String s) {
+        return s == null ? "null" : s;
     }
     
     // Build a unique signature string from ordered steps (full workflow)

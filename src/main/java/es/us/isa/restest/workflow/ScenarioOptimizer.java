@@ -130,11 +130,22 @@ public class ScenarioOptimizer {
             partition.setSourceFileName(original.getSourceFileName());
             partition.setSessionIdentifier(original.getSessionIdentifier());
 
+            // Map the member's GLOBAL root index → its 1-based LOCAL position inside this
+            // partition.  Used below to compute producerRootIndex from actual dependency
+            // edges (adjReverse), which correctly handles fan-out topologies (A → B, A → C)
+            // where the naive "previous member" assumption would wrongly record C's producer
+            // as B.
+            Map<Integer, Integer> globalToLocal = new HashMap<>(memberIndices.size() * 2);
+            for (int local = 0; local < memberIndices.size(); local++) {
+                globalToLocal.put(memberIndices.get(local), local + 1);
+            }
+
             long minStart = Long.MAX_VALUE;
             long maxEnd = Long.MIN_VALUE;
 
             for (int idx = 0; idx < memberIndices.size(); idx++) {
-                WorkflowStep step = roots.get(memberIndices.get(idx));
+                int globalIdx = memberIndices.get(idx);
+                WorkflowStep step = roots.get(globalIdx);
 
                 if (idx == 0) {
                     // First root in component keeps original root status
@@ -142,7 +153,20 @@ public class ScenarioOptimizer {
                     step.setProducerRootIndex(-1);
                 } else {
                     step.setMergedRoot(true);
-                    step.setProducerRootIndex(idx);
+                    // Real producer = the earliest predecessor inside this component that
+                    // has a directed edge INTO this node (adjReverse).  Falls back to the
+                    // chain predecessor (idx) if the edge set is empty, which shouldn't
+                    // happen inside a connected component but keeps the code robust.
+                    int producerLocalIdx = -1;
+                    for (int pred : adjReverse.get(globalIdx)) {
+                        Integer predLocal = globalToLocal.get(pred);
+                        if (predLocal != null && predLocal < idx + 1) {
+                            if (producerLocalIdx == -1 || predLocal < producerLocalIdx) {
+                                producerLocalIdx = predLocal;
+                            }
+                        }
+                    }
+                    step.setProducerRootIndex(producerLocalIdx != -1 ? producerLocalIdx : idx);
                 }
                 step.setParent(null);
                 partition.addRootStep(step);

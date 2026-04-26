@@ -876,8 +876,22 @@ public class TraceWorkflowExtractor {
             String session = entry.getKey();
             List<WorkflowScenario> group = entry.getValue();
 
-            // Skip unknown-session group to avoid false merges
-            if ("UNKNOWN_SESSION".equals(session) || group.size() < 2) continue;
+            if (group.size() < 2) continue;
+
+            // Traces that arrived without an http.client_ip tag fall into the UNKNOWN_SESSION
+            // bucket.  Rather than skip them entirely (which loses coverage for workloads
+            // with weak OTel session metadata), we merge them with CONSERVATIVE thresholds:
+            // a much tighter time window and a smaller root cap.  This preserves some
+            // multi-root assembly for legitimately related traces while preventing wild
+            // merges across unrelated requests that only happen to share the absence of
+            // client IP.
+            boolean unknownSession = "UNKNOWN_SESSION".equals(session);
+            long    effectiveMaxGap   = unknownSession ? Math.min(maxGapMicros, 15_000_000L) : maxGapMicros;
+            int     effectiveMaxRoots = unknownSession ? Math.min(maxRootsPerScenario, 3)    : maxRootsPerScenario;
+            if (unknownSession) {
+                log.info("Session merge [UNKNOWN_SESSION]: applying conservative thresholds (gap≤{}µs, ≤{} roots)",
+                         effectiveMaxGap, effectiveMaxRoots);
+            }
 
             // 2. Sort chronologically
             group.sort(Comparator.comparingLong(WorkflowScenario::getStartTimeMicros));
@@ -888,8 +902,8 @@ public class TraceWorkflowExtractor {
                 WorkflowScenario next = group.get(i);
 
                 long gap = next.getStartTimeMicros() - accumulator.getEndTimeMicros();
-                boolean withinWindow = gap >= 0 && gap <= maxGapMicros;
-                boolean underLimit = accumulator.getRootSteps().size() < maxRootsPerScenario;
+                boolean withinWindow = gap >= 0 && gap <= effectiveMaxGap;
+                boolean underLimit = accumulator.getRootSteps().size() < effectiveMaxRoots;
 
                 if (withinWindow && underLimit) {
                     log.info("Session merge [{}]: appending trace {} (gap={}µs) → now {} roots",

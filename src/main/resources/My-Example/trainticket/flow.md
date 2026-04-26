@@ -239,8 +239,10 @@ flowchart TD
 |----------|---------|-------------|
 | `trace.merge.max.session.gap.micros` | `60000000` (60 seconds) | Maximum time gap between end of one trace and start of the next to be considered the same session |
 | `trace.merge.max.roots.per.scenario` | `10` | Maximum number of root APIs a merged scenario may contain (prevents unbounded merging) |
+| *(implicit, UNKNOWN_SESSION fallback gap)* | `15000000` (15 seconds) | Hardcoded tighter gap applied when `sessionIdentifier == "UNKNOWN_SESSION"` |
+| *(implicit, UNKNOWN_SESSION fallback roots)* | `3` | Hardcoded tighter root cap applied when `sessionIdentifier == "UNKNOWN_SESSION"` |
 
-**"UNKNOWN_SESSION" handling**: Scenarios without a resolvable `http.client_ip` are assigned `sessionIdentifier = "UNKNOWN_SESSION"`. They are grouped together by the algorithm but treated conservatively — they can still be merged by time proximity, but since session identity is unconfirmed, the operator should consider reducing `maxRootsPerScenario` for this bucket.
+**"UNKNOWN_SESSION" handling**: Scenarios without a resolvable `http.client_ip` are assigned `sessionIdentifier = "UNKNOWN_SESSION"`. They participate in Phase 2 merging but with **conservative thresholds applied in code** (gap ≤ 15 s, root cap of 3), independent of the configured `trace.merge.max.session.gap.micros` / `trace.merge.max.roots.per.scenario` values. This preserves some multi-root assembly for legitimately related traces while preventing wild merges across unrelated requests that only share the absence of a client IP. Operators who want to disable UNKNOWN_SESSION merging entirely can strip that path in `TraceWorkflowExtractor.mergeScenariosBySessionTimeWindow`.
 
 **Example (traces-1772605095842.json, 154 traces):**
 - Before Phase 2: 154 individual single-root scenarios (Phase 1 produced some multi-root merges but many remained single)
@@ -319,7 +321,7 @@ flowchart TD
 1. **Graph Construction**: For each pair of root steps `(i, j)` where `j > i`, call `SemanticDependencyRegistry.hasDirectedDependency(rootStep[j], rootStep[i])`. If true, draw a directed edge from `i → j` (producer → consumer).
 2. **Union-Find**: Initialise each node as its own component. For every edge, union the two endpoints. Path compression ensures near-constant-time operations.
 3. **Component Extraction**: Group root step indices by their component representative. Each group becomes a new `WorkflowScenario`.
-4. **Metadata Reassignment**: Within each partition, the first root step is unmarked (`mergedRoot=false`), and subsequent roots receive sequential `producerRootIndex` values starting from 1.
+4. **Metadata Reassignment**: Within each partition, the first root step is unmarked (`mergedRoot=false`, `producerRootIndex=-1`). For every subsequent root, `producerRootIndex` is the **1-based local position of the earliest preceding root inside the same component that has an incoming directed edge from the predecessor** (i.e., the earliest member of the component that produces data consumed by this root, looked up via the reverse-adjacency set built in step 1). This correctly handles fan-out topologies (A produces for both B and C, no edge B→C) where a naive "previous list position" heuristic would wrongly record C's producer as B. If no directed predecessor is found in the component (unexpected inside a connected component), the code falls back to the chain position to stay robust.
 
 **`hasDirectedDependency(consumerStep, producerStep)`** logic:
 1. Build normalised API keys from both steps (`method + path` from span attributes)
@@ -888,25 +890,26 @@ flowchart TD
     C --> D[Get expected status from config]
     D --> E{Test type?}
     E -->|Positive| F[Validate: actual == expected]
-    E -->|Negative| G[Validate: actual != expected]
+    E -->|Negative| G["Validate: actual is non-2xx (response-class predicate)"]
     F -->|Match| H[PASS]
     F -->|Mismatch| I[FAIL: Status code mismatch]
-    G -->|Different| J[PASS: Got expected error]
-    G -->|Same| K[FAIL: Got success status]
+    G -->|"non-2xx"| J[PASS: API rejected invalid input]
+    G -->|"2xx"| K[Proceed to LLM soft-error check]
     H --> L[Continue to LLM validation if enabled]
-    J --> L
+    J --> O[Complete test]
     I --> M[Test failure]
-    K --> M
-    L --> N{LLM validation enabled?}
+    K --> N{LLM validation enabled?}
+    L --> N
     N -->|No| O[Complete test]
     N -->|Yes| P[Proceed to response validation]
 ```
 
 **Key Changes from Previous Implementation:**
 - **Before**: Hardcoded thresholds (< 400 for success)
-- **After**: Uses `expectedStatus` from `real-system-conf.yaml` 
+- **Intermediate**: Used `expectedStatus` from `real-system-conf.yaml` for both positive and negative predicates (but broke when `expectedStatus` itself was non-2xx)
+- **Current**: **Response-class predicate** for negatives
 - **Positive Tests**: PASS only if `actualStatus == expectedStatus`
-- **Negative Tests**: PASS if `actualStatus != expectedStatus` (any deviation is valid)
+- **Negative Tests**: PASS if the response is non-2xx (i.e., `actualStatus < 200 || actualStatus >= 300`) — the API clearly rejected the invalid input. A 2xx response proceeds to the LLM soft-error check. This predicate is response-class based (not `actual != expected`) so it works correctly when `expectedStatus` itself is non-2xx, and it naturally enforces the `llm.response.validation.only.2xx` contract: the LLM only fires when the response is in `[200,300)`.
 
 ### LLM Response Validation Flow (Soft Error Detection)
 
@@ -961,7 +964,7 @@ flowchart TD
 **Core MST Configuration:**
 - generator == MST: switches to multi-service flow
 - testsperoperation / test.variants.per.scenario: number of variants per scenario
-- mst.generate.only.first.step: generate only first business step (writer handles login as step 0)
+- mst.generate.only.first.step: **default `true` (Root API Mode — primary)**. When `true`, keeps all top-level root APIs in a scenario but prunes internal step-API / service-to-service spans. When `false` (Multi-Step Replay), every internal HTTP span in the trace also becomes its own step in the generated test. Despite its legacy name, this flag does NOT restrict a scenario to a single step — a scenario with 3 root APIs still produces a 3-step test in Root API Mode.
 - faulty.ratio: percentage of test variants that should be intentionally faulty (e.g., 0.1 = 10%)
 - faulty.round-robin: true (default) = one param per test cycling, false = 1-3 random params per test
 
@@ -1141,7 +1144,7 @@ flowchart TD
 - Subsequent steps: follow the full priority chain above
 - Expected status: Uses `expectedStatus` from configuration file (not hardcoded thresholds)
   - Positive tests: PASS if actual == expected
-  - Negative tests: PASS if actual != expected (any deviation is valid)
+  - Negative tests: PASS if actual ∉ [200,300) (response is non-2xx → API rejected invalid input). 2xx responses proceed to the LLM soft-error check.
 - LLM response validation: Additional layer for 2XX responses to detect soft errors
   - Only runs when `llm.response.validation.enabled=true`
   - Provides detailed RCA in Allure reports

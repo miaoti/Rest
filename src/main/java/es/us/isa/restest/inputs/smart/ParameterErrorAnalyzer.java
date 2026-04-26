@@ -353,13 +353,12 @@ public class ParameterErrorAnalyzer {
                         String value = tag.optString("value", "");
                         
                         if ("http.url".equals(key) || "http.target".equals(key)) {
-                            // Extract path from full URL
+                            // Extract path from full URL — skip "protocol://host" prefix.
+                            // indexOf returns -1 when there is no path component (e.g. "http://host"),
+                            // so guard explicitly rather than relying on substring's exception.
                             if (value.startsWith("http")) {
-                                try {
-                                    return value.substring(value.indexOf('/', 8)); // Skip protocol://host
-                                } catch (Exception e) {
-                                    return value;
-                                }
+                                int pathStart = value.indexOf('/', 8);
+                                return pathStart >= 0 ? value.substring(pathStart) : value;
                             }
                             return value;
                         }

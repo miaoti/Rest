@@ -123,18 +123,104 @@ public class ZeroShotLLMGenerator {
         return new ArrayList<>();
     }
     
+    // Shared hardcoded generator used by SMART mode and HARDCODE mode to populate
+    // the structural/universal fault categories (NULL, EMPTY, OVERFLOW, SPECIAL, TYPE_MISMATCH, BOUNDARY).
+    // Created lazily to avoid any load-order cost when LLM mode is selected.
+    private volatile HardcodedInvalidInputGenerator hardcodedGen;
+
+    private HardcodedInvalidInputGenerator hardcodedGen() {
+        HardcodedInvalidInputGenerator local = hardcodedGen;
+        if (local == null) {
+            synchronized (this) {
+                local = hardcodedGen;
+                if (local == null) {
+                    local = new HardcodedInvalidInputGenerator();
+                    hardcodedGen = local;
+                }
+            }
+        }
+        return local;
+    }
+
     /**
-     * Generate comprehensive invalid inputs for all fault types
-     * Returns an InvalidInputPool with properly typed invalid values
+     * Generate comprehensive invalid inputs for all fault types.
+     *
+     * <p>Dispatches on the {@code negative.input.generation.mode} system property:
+     * <ul>
+     *   <li><b>smart</b> (default) — LLM is called only for REGEX_MISMATCH and SEMANTIC_MISMATCH,
+     *       where domain understanding genuinely helps.  The other 6 categories are filled from
+     *       the universal/schema-derived payload set via {@link HardcodedInvalidInputGenerator}.
+     *       Reduces LLM calls per parameter from ~6 to ~2.</li>
+     *   <li><b>llm</b> — every contextual category goes through the LLM (legacy behavior, kept
+     *       for research / ablation experiments).</li>
+     *   <li><b>hardcode</b> — every category is populated from {@link HardcodedInvalidInputGenerator};
+     *       zero LLM calls; fastest and fully deterministic.</li>
+     * </ul>
      */
     public es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
-        System.out.println("*** ZeroShotLLMGenerator.generateInvalidInputPool for: " + param.getName() + 
-                          " (type: " + param.getType() + ")");
-        
-        es.us.isa.restest.inputs.InvalidInputPool pool = 
+        String mode = System.getProperty("negative.input.generation.mode", "smart")
+                .toLowerCase(java.util.Locale.ROOT)
+                .trim();
+
+        System.out.println("*** ZeroShotLLMGenerator.generateInvalidInputPool for: " + param.getName() +
+                          " (type: " + param.getType() + ", mode: " + mode + ")");
+
+        switch (mode) {
+            case "hardcode":
+                // Fully deterministic, zero LLM calls.
+                return hardcodedGen().generateInvalidInputPool(param);
+
+            case "llm":
+                // Legacy all-LLM path — kept for research / ablation.
+                return generateInvalidInputPoolAllLLM(param);
+
+            case "smart":
+            default:
+                // Recommended default — static/schema for universal categories, LLM only where
+                // domain context actually adds value (regex inversion, semantic mismatch).
+                return generateInvalidInputPoolSmart(param);
+        }
+    }
+
+    /**
+     * SMART MODE: mix of static payloads and targeted LLM calls.
+     *
+     * <p>NULL/EMPTY/OVERFLOW/SPECIAL_CHARACTERS/TYPE_MISMATCH/BOUNDARY_VIOLATION are universal
+     * or schema-derived — populated from {@link HardcodedInvalidInputGenerator}.
+     *
+     * <p>REGEX_MISMATCH and SEMANTIC_MISMATCH keep the LLM call because they benefit from
+     * domain context the schema cannot express.
+     */
+    private es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPoolSmart(ParameterInfo param) {
+        es.us.isa.restest.inputs.InvalidInputPool pool =
             new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), safeStr(param.getType()));
-        
-        // Generate each type of invalid input
+
+        HardcodedInvalidInputGenerator hc = hardcodedGen();
+
+        // Static / schema-derived categories — no LLM call.
+        hc.generateTypeMismatchInputs(param, pool);
+        hc.generateOverflowInputs(param, pool);
+        hc.generateEmptyInputs(param, pool);
+        hc.generateNullInputs(param, pool);
+        hc.generateSpecialCharacterInputs(param, pool);
+        hc.generateBoundaryViolationInputs(param, pool);
+
+        // Context-aware categories — LLM earns its keep here.
+        generateRegexMismatchInputs(param, pool);
+        generateSemanticMismatchInputs(param, pool);
+
+        System.out.println("*** [SMART] Generated invalid input pool:\n" + pool.getPoolSummary());
+        return pool;
+    }
+
+    /**
+     * LEGACY LLM MODE: the original behavior before the smart/hardcode split — LLM is called
+     * for every contextual category.  Retained for ablation studies and head-to-head comparisons.
+     */
+    private es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPoolAllLLM(ParameterInfo param) {
+        es.us.isa.restest.inputs.InvalidInputPool pool =
+            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), safeStr(param.getType()));
+
         generateTypeMismatchInputs(param, pool);
         generateRegexMismatchInputs(param, pool);
         generateSemanticMismatchInputs(param, pool);
@@ -143,9 +229,8 @@ public class ZeroShotLLMGenerator {
         generateNullInputs(param, pool);
         generateSpecialCharacterInputs(param, pool);
         generateBoundaryViolationInputs(param, pool);
-        
-        System.out.println("*** Generated invalid input pool:\n" + pool.getPoolSummary());
-        
+
+        System.out.println("*** [LLM] Generated invalid input pool:\n" + pool.getPoolSummary());
         return pool;
     }
     

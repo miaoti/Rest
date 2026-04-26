@@ -1,0 +1,848 @@
+################################################################################
+# LLM COMMUNICATION LOG
+# Session ID: LLM-1776367949084-1
+# Started: 2026-04-16 14:32:29.097
+# Configuration:
+#   - Include Response Time: true
+#   - Include Content: true
+#   - Include Metadata: true
+#   - Max Content Length: Unlimited
+#   - Log Level: INFO
+################################################################################
+
+================================================================================
+🚀 LLM REQUEST #1
+================================================================================
+Timestamp: 2026-04-16 14:32:38.037
+Session ID: LLM-1776367949084-1
+Request ID: 1
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"91d6ac1d-e629-497b-9fbf-7f25ba0ebd99","tripId":{"type":"G","number":"1234"},"trainTypeName":"GaoTieOne","routeId":"BXzMvuwltijtWLO","startStationName":null,"stationsName":"QgeBDP6Dbfh","terminalStationName":null,"startTime":"qrvSJstlBnlOoui","endTime":"aGI9FpaCoT"}],"status":1}
+
+Target Parameter: boughtDateEnd (type: string)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #1
+Timestamp: 2026-04-16 14:32:40.176
+Status: ✅ SUCCESS
+Response Time: 2149 ms
+📊 Resource Usage During Generation: System CPU: avg=88.7%, max=98.7% | System Memory: avg=92.7%, max=92.8% (116.6 GB/125.7 GB) | Samples: 5 over 2164ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #2
+================================================================================
+Timestamp: 2026-04-16 14:32:40.236
+Session ID: LLM-1776367949084-1
+Request ID: 2
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=50, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a test data generator. Generate realistic test values based on parameter information. Return only the actual value, never JSONPath expressions or explanations.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a realistic test value for the following parameter:
+
+Parameter Name: boughtDateEnd
+Parameter Type: string
+Schema Type: string
+
+Based on the parameter name and type, generate a realistic test value.
+Single Value Examples:
+- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'
+- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'
+- For 'userId' (string): 'user123' or 'john.doe'
+- For 'trainNumber' (string): 'G1237' or 'D2468'
+- For 'price' (number): '150.50' or '89.99'
+- For 'distance' (number): '350' or '1200'
+- For 'date' (string): '2024-12-25' or '2024-01-15'
+- For 'time' (string): '14:30' or '09:15'
+
+Respond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').
+Do NOT include quotes, explanations, or JSONPath expressions.
+If you cannot generate a suitable value: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #2
+Timestamp: 2026-04-16 14:32:41.861
+Status: ✅ SUCCESS
+Response Time: 1626 ms
+📊 Resource Usage During Generation: System CPU: avg=73.4%, max=89.6% | System Memory: avg=92.7%, max=92.7% (116.6 GB/125.7 GB) | Samples: 4 over 1626ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2024-11-30
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #3
+================================================================================
+Timestamp: 2026-04-16 14:32:41.880
+Session ID: LLM-1776367949084-1
+Request ID: 3
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'boughtDateEnd' (type: string).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"91d6ac1d-e629-497b-9fbf-7f25ba0ebd99","tripId":{"type":"G","number":"1234"},"trainTypeName":"GaoTieOne","routeId":"BXzMvuwltijtWLO","startStationName":null,"stationsName":"QgeBDP6Dbfh","terminalStationName":null,"startTime":"qrvSJstlBnlOoui","endTime":"aGI9FpaCoT"},{"id":"9b042177-7f5e-4e68-89fd-24edf23f9509","tripId":{"type":null,"number":"f73666e-8d9b-4ad4-8b03-bcb71df34ba4"},"trainTypeName":"CJBnwXcTbdzy","routeId":null,"startStationName":"b8e65ob7","stationsName":"f2ya","terminalStationName":"wi8","startTime":null,"endTime":"nbOOuzzo"}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #3
+Timestamp: 2026-04-16 14:32:43.547
+Status: ✅ SUCCESS
+Response Time: 1667 ms
+📊 Resource Usage During Generation: System CPU: avg=53.0%, max=62.7% | System Memory: avg=92.7%, max=92.7% (116.6 GB/125.7 GB) | Samples: 4 over 1667ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO_VALUES_FOUND
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #4
+================================================================================
+Timestamp: 2026-04-16 14:32:43.548
+Session ID: LLM-1776367949084-1
+Request ID: 4
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'boughtDateEnd' (type: string).
+
+Existing values:
+- 2024-11-30
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #4
+Timestamp: 2026-04-16 14:32:49.600
+Status: ✅ SUCCESS
+Response Time: 6051 ms
+📊 Resource Usage During Generation: System CPU: avg=52.6%, max=75.9% | System Memory: avg=92.7%, max=92.7% (116.6 GB/125.7 GB) | Samples: 13 over 6056ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2024-12-15  
+2025-01-01  
+2024-10-20  
+2024-09-01  
+2024-12-31  
+2024-11-15  
+2024-10-31  
+2024-08-15  
+2024-07-01
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #5
+================================================================================
+Timestamp: 2026-04-16 14:32:49.651
+Session ID: LLM-1776367949084-1
+Request ID: 5
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert API tester specialising in test data generation. Your sole task is to produce realistic, constraint-compliant values for API parameters. STRICT RULES: (1) When asked for N values, return EXACTLY N items — no more, no fewer. (2) For line-separated output: one value per line, nothing else on that line. (3) For JSON array output: a single valid JSON array, nothing else. (4) Never add markdown fences (```), bullet points, numbering, explanations,     or commentary of any kind. (5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. (6) If an enum list is provided, output ONLY values from that list.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an expert API tester. Generate 5 distinct, highly realistic, and strictly valid values for the following API parameter.
+Current Date/Time: Thursday, April 16, 2026 at 2:32:49 PM CDT
+
+[API Context]
+Endpoint: POST /api/v1/orderOtherService/orderOther/refresh
+Service:  ts-order-other-service
+Sibling Parameters: boughtDateEnd, boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, loginId, state, travelDateEnd, travelDateStart
+
+[Parameter Details]
+Parameter Name: boughtDateEnd
+Location:       formData
+Type:           string
+Required:       No
+
+[Instructions]
+1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.
+2. The values must be semantically realistic for the Endpoint context and domain.
+3. Return EXACTLY 5 values.
+4. Domain guidance:
+   • This is a future-oriented temporal parameter — generate dates 1-30 days AFTER the Current Date/Time.
+5. Output format:
+   • Output ONLY the values, one per line.
+   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.
+   • Do NOT prefix values with hyphens, dashes, or numbers.
+
+Generate your 5 values now, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #5
+Timestamp: 2026-04-16 14:32:56.277
+Status: ✅ SUCCESS
+Response Time: 6625 ms
+📊 Resource Usage During Generation: System CPU: avg=62.7%, max=88.9% | System Memory: avg=92.5%, max=92.7% (116.6 GB/125.7 GB) | Samples: 14 over 6626ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2026-04-17T02:32:49Z  
+2026-04-18T02:32:49Z  
+2026-04-19T02:32:49Z  
+2026-04-20T02:32:49Z  
+2026-04-25T02:32:49Z
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #6
+================================================================================
+Timestamp: 2026-04-16 14:32:56.285
+Session ID: LLM-1776367949084-1
+Request ID: 6
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert API tester specialising in test data generation. Your sole task is to produce realistic, constraint-compliant values for API parameters. STRICT RULES: (1) When asked for N values, return EXACTLY N items — no more, no fewer. (2) For line-separated output: one value per line, nothing else on that line. (3) For JSON array output: a single valid JSON array, nothing else. (4) Never add markdown fences (```), bullet points, numbering, explanations,     or commentary of any kind. (5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. (6) If an enum list is provided, output ONLY values from that list.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an expert API tester. Generate 7 distinct, highly realistic, and strictly valid values for the following API parameter.
+Current Date/Time: Thursday, April 16, 2026 at 2:32:56 PM CDT
+
+[API Context]
+Endpoint: POST /api/v1/orderOtherService/orderOther/refresh
+Service:  ts-order-other-service
+Sibling Parameters: boughtDateEnd, boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, loginId, state, travelDateEnd, travelDateStart
+
+[Parameter Details]
+Parameter Name: boughtDateEnd
+Location:       formData
+Type:           string
+Required:       No
+
+[Instructions]
+1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.
+2. The values must be semantically realistic for the Endpoint context and domain.
+3. Return EXACTLY 7 values.
+4. Domain guidance:
+   • This is a future-oriented temporal parameter — generate dates 1-30 days AFTER the Current Date/Time.
+5. Output format:
+   • Output ONLY the values, one per line.
+   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.
+   • Do NOT prefix values with hyphens, dashes, or numbers.
+
+Generate your 7 values now, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #6
+Timestamp: 2026-04-16 14:33:04.611
+Status: ✅ SUCCESS
+Response Time: 8326 ms
+📊 Resource Usage During Generation: System CPU: avg=53.5%, max=71.9% | System Memory: avg=92.0%, max=92.0% (115.6 GB/125.7 GB) | Samples: 17 over 8329ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2026-04-17T14:32:56Z  
+2026-04-18T14:32:56Z  
+2026-04-19T14:32:56Z  
+2026-04-20T14:32:56Z  
+2026-04-21T14:32:56Z  
+2026-04-22T14:32:56Z  
+2026-04-23T14:32:56Z
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #7
+================================================================================
+Timestamp: 2026-04-16 14:33:04.618
+Session ID: LLM-1776367949084-1
+Request ID: 7
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert API tester specialising in test data generation. Your sole task is to produce realistic, constraint-compliant values for API parameters. STRICT RULES: (1) When asked for N values, return EXACTLY N items — no more, no fewer. (2) For line-separated output: one value per line, nothing else on that line. (3) For JSON array output: a single valid JSON array, nothing else. (4) Never add markdown fences (```), bullet points, numbering, explanations,     or commentary of any kind. (5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. (6) If an enum list is provided, output ONLY values from that list.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an expert API tester. Generate 5 distinct, highly realistic, and strictly valid values for the following API parameter.
+Current Date/Time: Thursday, April 16, 2026 at 2:33:04 PM CDT
+
+[API Context]
+Endpoint: POST /api/v1/orderOtherService/orderOther/refresh
+Service:  ts-order-other-service
+Sibling Parameters: boughtDateEnd, boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, loginId, state, travelDateEnd, travelDateStart
+
+[Parameter Details]
+Parameter Name: boughtDateStart
+Location:       formData
+Type:           string
+Required:       No
+
+[Instructions]
+1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.
+2. The values must be semantically realistic for the Endpoint context and domain.
+3. Return EXACTLY 5 values.
+4. Domain guidance:
+   • This is a future-oriented temporal parameter — generate dates 1-30 days AFTER the Current Date/Time.
+5. Output format:
+   • Output ONLY the values, one per line.
+   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.
+   • Do NOT prefix values with hyphens, dashes, or numbers.
+
+Generate your 5 values now, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #7
+Timestamp: 2026-04-16 14:33:10.926
+Status: ✅ SUCCESS
+Response Time: 6308 ms
+📊 Resource Usage During Generation: System CPU: avg=80.9%, max=98.3% | System Memory: avg=91.8%, max=92.0% (115.7 GB/125.7 GB) | Samples: 13 over 6308ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2026-04-17T14:33:04Z  
+2026-04-18T14:33:04Z  
+2026-04-19T14:33:04Z  
+2026-04-20T14:33:04Z  
+2026-04-21T14:33:04Z
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #8
+================================================================================
+Timestamp: 2026-04-16 14:33:10.933
+Session ID: LLM-1776367949084-1
+Request ID: 8
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert API tester specialising in test data generation. Your sole task is to produce realistic, constraint-compliant values for API parameters. STRICT RULES: (1) When asked for N values, return EXACTLY N items — no more, no fewer. (2) For line-separated output: one value per line, nothing else on that line. (3) For JSON array output: a single valid JSON array, nothing else. (4) Never add markdown fences (```), bullet points, numbering, explanations,     or commentary of any kind. (5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. (6) If an enum list is provided, output ONLY values from that list.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an expert API tester. Generate 10 distinct, highly realistic, and strictly valid values for the following API parameter.
+Current Date/Time: Thursday, April 16, 2026 at 2:33:10 PM CDT
+
+[API Context]
+Endpoint: POST /api/v1/orderOtherService/orderOther/refresh
+Service:  ts-order-other-service
+Sibling Parameters: boughtDateEnd, boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, loginId, state, travelDateEnd, travelDateStart
+
+[Parameter Details]
+Parameter Name: boughtDateStart
+Location:       formData
+Type:           string
+Required:       No
+
+[Instructions]
+1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.
+2. The values must be semantically realistic for the Endpoint context and domain.
+3. Return EXACTLY 10 values.
+4. Domain guidance:
+   • This is a future-oriented temporal parameter — generate dates 1-30 days AFTER the Current Date/Time.
+5. Output format:
+   • Output ONLY the values, one per line.
+   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.
+   • Do NOT prefix values with hyphens, dashes, or numbers.
+
+Generate your 10 values now, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #8
+Timestamp: 2026-04-16 14:33:22.559
+Status: ✅ SUCCESS
+Response Time: 11626 ms
+📊 Resource Usage During Generation: System CPU: avg=93.5%, max=100.0% | System Memory: avg=88.5%, max=91.9% (115.6 GB/125.7 GB) | Samples: 24 over 11627ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+2026-04-17T14:33:10Z  
+2026-04-18T14:33:10Z  
+2026-04-19T14:33:10Z  
+2026-04-20T14:33:10Z  
+2026-04-21T14:33:10Z  
+2026-04-22T14:33:10Z  
+2026-04-23T14:33:10Z  
+2026-04-24T14:33:10Z  
+2026-04-25T14:33:10Z  
+2026-04-26T14:33:10Z
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #9
+================================================================================
+Timestamp: 2026-04-16 14:33:22.733
+Session ID: LLM-1776367949084-1
+Request ID: 9
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"id":"8a7480b99b9bc008019bce2aec740000","travelTime":"2026-01-17T22:54:38.000+00:00","accountId":null,"contactsId":null,"contactsName":null,"contactsDocumentType":0,"contactsDocumentNumber":null,"trainNumber":null,"seatType":0,"from":null,"to":null,"price":null,"waitUtilTime":"2026-01-18T22:54:38.000+00:00","createdTime":"2026-01-17T22:54:38.000+00:00","status":0}],"status":1}
+
+Target Parameter: enableBoughtDateQuery (type: boolean)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #9
+Timestamp: 2026-04-16 14:33:24.721
+Status: ✅ SUCCESS
+Response Time: 1988 ms
+📊 Resource Usage During Generation: System CPU: avg=98.2%, max=100.0% | System Memory: avg=87.3%, max=87.4% (109.8 GB/125.7 GB) | Samples: 4 over 1993ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #10
+================================================================================
+Timestamp: 2026-04-16 14:33:24.768
+Session ID: LLM-1776367949084-1
+Request ID: 10
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=50, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a test data generator. Generate realistic test values based on parameter information. Return only the actual value, never JSONPath expressions or explanations.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate a realistic test value for the following parameter:
+
+Parameter Name: enableBoughtDateQuery
+Parameter Type: boolean
+Schema Type: boolean
+
+Based on the parameter name and type, generate a realistic test value.
+Single Value Examples:
+- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'
+- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'
+- For 'userId' (string): 'user123' or 'john.doe'
+- For 'trainNumber' (string): 'G1237' or 'D2468'
+- For 'price' (number): '150.50' or '89.99'
+- For 'distance' (number): '350' or '1200'
+- For 'date' (string): '2024-12-25' or '2024-01-15'
+- For 'time' (string): '14:30' or '09:15'
+
+Respond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').
+Do NOT include quotes, explanations, or JSONPath expressions.
+If you cannot generate a suitable value: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #10
+Timestamp: 2026-04-16 14:33:26.052
+Status: ✅ SUCCESS
+Response Time: 1285 ms
+📊 Resource Usage During Generation: System CPU: avg=99.6%, max=100.0% | System Memory: avg=87.4%, max=87.4% (109.8 GB/125.7 GB) | Samples: 3 over 1285ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+true
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #11
+================================================================================
+Timestamp: 2026-04-16 14:33:26.080
+Session ID: LLM-1776367949084-1
+Request ID: 11
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are a data extraction expert. Extract ALL relevant values from JSON responses for test parameter generation. Focus on finding diverse, meaningful values that match the parameter semantically. Return actual values, not JSONPath expressions or field names.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Extract ALL possible values from this JSON response that could be used for parameter 'enableBoughtDateQuery' (type: boolean).
+
+JSON Response:
+{"msg":"truncated","data":[{"id":"8a7480b99b9bc008019bce2aec740000","travelTime":"2026-01-17T22:54:38.000+00:00","accountId":null,"contactsId":null,"contactsName":null,"contactsDocumentType":0,"contactsDocumentNumber":null,"trainNumber":null,"seatType":0,"from":null,"to":null,"price":null,"waitUtilTime":"2026-01-18T22:54:38.000+00:00","createdTime":"2026-01-17T22:54:38.000+00:00","status":0},{"id":"8a7480b99b9bc008019bce2d3d460001","travelTime":"2026-01-17T22:57:09.000+00:00","accountId":null,"contactsId":null,"contactsName":null,"contactsDocumentType":0,"contactsDocumentNumber":null,"trainNumber":null,"seatType":0,"from":null,"to":null,"price":null,"waitUtilTime":"2026-01-18T22:57:09.000+00:00","createdTime":"2026-01-17T22:57:09.000+00:00","status":0}],"status":1}
+
+Instructions:
+1. Find ALL values in the JSON that are semantically relevant for this parameter
+2. Look for values in arrays, nested objects, and all fields
+3. Consider field names, data types, and semantic meaning
+4. Extract ONLY actual data values, NOT field names, paths, or descriptions
+5. For array-type parameters (stations, distances), extract individual elements
+6. For numeric parameters, extract only numeric values
+7. For ID parameters, extract only actual IDs (UUIDs, numbers), not descriptions
+8. Do NOT generate explanatory text or descriptions
+9. Return each value on a separate line
+10. If no relevant values found, respond with: NO_VALUES_FOUND
+
+Example for parameter 'stationName':
+Shanghai
+Beijing
+Nanjing
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #11
+Timestamp: 2026-04-16 14:33:28.101
+Status: ✅ SUCCESS
+Response Time: 2021 ms
+📊 Resource Usage During Generation: System CPU: avg=99.1%, max=99.5% | System Memory: avg=87.4%, max=87.4% (109.9 GB/125.7 GB) | Samples: 5 over 2022ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO_VALUES_FOUND
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #12
+================================================================================
+Timestamp: 2026-04-16 14:33:28.106
+Session ID: LLM-1776367949084-1
+Request ID: 12
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=150, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert in semantic similarity and test data generation. Generate diverse but semantically similar values based on existing examples. Focus on maintaining the same domain, format, and meaning while ensuring diversity. Use your knowledge of real-world entities, naming patterns, and data structures.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+Generate 9 additional values that are semantically similar to the existing values for parameter 'enableBoughtDateQuery' (type: boolean).
+
+Existing values:
+- true
+
+Instructions:
+1. Generate values that are semantically similar to the existing ones
+2. Consider the same domain, category, or type as existing values
+3. Use similar naming patterns, formats, or structures
+4. Generate realistic, meaningful values (not random strings or descriptions)
+5. Generate values appropriate to the parameter type and domain
+6. For names: generate actual names, not generic terms like 'objects' or 'service'
+7. Each value should be different from existing ones
+8. Return ONLY the actual values, no explanatory text
+9. Return each value on a separate line
+10. If unable to generate similar values, respond with: NO_VALUES_GENERATED
+
+Examples:
+If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou
+If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456
+If existing values are [admin, user123] → generate: manager, guest456, operator
+
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #12
+Timestamp: 2026-04-16 14:33:29.545
+Status: ✅ SUCCESS
+Response Time: 1439 ms
+📊 Resource Usage During Generation: System CPU: avg=99.4%, max=100.0% | System Memory: avg=87.3%, max=87.3% (109.8 GB/125.7 GB) | Samples: 3 over 1440ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+NO_VALUES_GENERATED
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #13
+================================================================================
+Timestamp: 2026-04-16 14:33:29.549
+Session ID: LLM-1776367949084-1
+Request ID: 13
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert API tester specialising in test data generation. Your sole task is to produce realistic, constraint-compliant values for API parameters. STRICT RULES: (1) When asked for N values, return EXACTLY N items — no more, no fewer. (2) For line-separated output: one value per line, nothing else on that line. (3) For JSON array output: a single valid JSON array, nothing else. (4) Never add markdown fences (```), bullet points, numbering, explanations,     or commentary of any kind. (5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. (6) If an enum list is provided, output ONLY values from that list.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an expert API tester. Generate 5 distinct, highly realistic, and strictly valid values for the following API parameter.
+Current Date/Time: Thursday, April 16, 2026 at 2:33:29 PM CDT
+
+[API Context]
+Endpoint: POST /api/v1/orderOtherService/orderOther/refresh
+Service:  ts-order-other-service
+Sibling Parameters: boughtDateEnd, boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, loginId, state, travelDateEnd, travelDateStart
+
+[Parameter Details]
+Parameter Name: enableBoughtDateQuery
+Location:       formData
+Type:           boolean
+Required:       No
+
+[Instructions]
+1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.
+2. The values must be semantically realistic for the Endpoint context and domain.
+3. Return EXACTLY 5 values.
+4. Domain guidance:
+   • Output only 'true' or 'false' (lowercase, no quotes).
+5. Output format:
+   • Output ONLY the values, one per line.
+   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.
+   • Do NOT prefix values with hyphens, dashes, or numbers.
+
+Generate your 5 values now, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #13
+Timestamp: 2026-04-16 14:33:31.550
+Status: ✅ SUCCESS
+Response Time: 2001 ms
+📊 Resource Usage During Generation: System CPU: avg=99.5%, max=100.0% | System Memory: avg=87.3%, max=87.3% (109.8 GB/125.7 GB) | Samples: 4 over 2001ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+true  
+false  
+true  
+false  
+true
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #14
+================================================================================
+Timestamp: 2026-04-16 14:33:31.614
+Session ID: LLM-1776367949084-1
+Request ID: 14
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=200, temperature=0.70
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an expert API tester specialising in test data generation. Your sole task is to produce realistic, constraint-compliant values for API parameters. STRICT RULES: (1) When asked for N values, return EXACTLY N items — no more, no fewer. (2) For line-separated output: one value per line, nothing else on that line. (3) For JSON array output: a single valid JSON array, nothing else. (4) Never add markdown fences (```), bullet points, numbering, explanations,     or commentary of any kind. (5) Always respect the Type, Format, Enum, and numeric/length Constraints stated in the prompt. (6) If an enum list is provided, output ONLY values from that list.
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+You are an expert API tester. Generate 13 distinct, highly realistic, and strictly valid values for the following API parameter.
+Current Date/Time: Thursday, April 16, 2026 at 2:33:31 PM CDT
+
+[API Context]
+Endpoint: POST /api/v1/orderOtherService/orderOther/refresh
+Service:  ts-order-other-service
+Sibling Parameters: boughtDateEnd, boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, loginId, state, travelDateEnd, travelDateStart
+
+[Parameter Details]
+Parameter Name: enableBoughtDateQuery
+Location:       formData
+Type:           boolean
+Required:       No
+
+[Instructions]
+1. You MUST strictly adhere to the Type, Format, and all Constraints listed above.
+2. The values must be semantically realistic for the Endpoint context and domain.
+3. Return EXACTLY 13 values.
+4. Domain guidance:
+   • Output only 'true' or 'false' (lowercase, no quotes).
+5. Output format:
+   • Output ONLY the values, one per line.
+   • Do NOT use markdown code blocks, bullet points, numbering, or any explanations.
+   • Do NOT prefix values with hyphens, dashes, or numbers.
+
+Generate your 13 values now, one per line:
+--------------------------------------------------------------------------------
+🎯 LLM RESPONSE #14
+Timestamp: 2026-04-16 14:33:34.002
+Status: ✅ SUCCESS
+Response Time: 2394 ms
+📊 Resource Usage During Generation: System CPU: avg=98.6%, max=100.0% | System Memory: avg=87.3%, max=87.4% (109.8 GB/125.7 GB) | Samples: 5 over 2395ms
+--------------------------------------------------------------------------------
+🤖 LLM RESPONSE:
+true  
+false  
+true  
+false  
+true  
+false  
+true  
+false  
+true  
+false  
+true  
+false  
+true
+--------------------------------------------------------------------------------
+================================================================================
+
+================================================================================
+🚀 LLM REQUEST #15
+================================================================================
+Timestamp: 2026-04-16 14:33:34.036
+Session ID: LLM-1776367949084-1
+Request ID: 15
+Model Type: OLLAMA
+Model Name: qwen2.5-coder:14b
+Endpoint: http://localhost:11434
+Additional Metadata: maxTokens=100, temperature=0.30
+Resource Monitoring: ✅ ENABLED & ACTIVE (Local Model) - Monitoring system resources
+--------------------------------------------------------------------------------
+📝 SYSTEM PROMPT:
+You are an API testing assistant that extracts specific parameter values from JSON API responses. Given a JSON response and a parameter description, extract the most appropriate actual value from the response. CRITICAL RULES:
+1. Return ONLY the extracted value, not explanations or descriptions
+2. Do NOT return JSONPath expressions like $.data[*].name
+3. Do NOT return explanatory text like 'The format appears to be...'
+4. Do NOT return generic words like 'objects', 'data', 'items'
+5. For IDs: return actual ID values like 'route123' or 'abc-def-123'
+6. For names: return actual names like 'Shanghai' or 'Beijing'
+7. For numbers: return actual numbers like '100' or '25.5'
+8. If no suitable value exists, return 'NO_GOOD_MATCH'
+Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'
+--------------------------------------------------------------------------------
+👤 USER PROMPT:
+API Response: {"msg":"truncated","data":[{"userId":"98779e1f-8cce-4435-9ff4-81411a9d9bd5","userName":"Rq","password":"hV91PcS","gender":1610123377,"documentType":65,"documentNum":"EvqsPJr8ptbuVG9CX9","email":"40FGKR0xuwz8UN"},{"userId":"3159df22-a947-4736-8ede-d61d778a6141","userName":"6EgzRjkP2N","password":"CbVLAeZ5M3YSC4","gender":38,"documentType":70,"documentNum":"sD01AsohRdEzZZrDR","email":"76z9XTIkv9buvAlW"}],"status":1}
+
+Target Parameter: enableStateQuery (type: boolean)
+Description: 
+
+Task: Extract or derive a suitable value for this parameter from the API response above.
+You must use ONLY values that appear in the response - do not generate new values.
+
+Guidelines:
+- Look for exact field matches first
+- Consider semantically related fields
+- Use any reasonable value from the response
+- For list parameters: you can combine multiple values with commas
+- Ensure the returned value matches the parameter type
+
+Examples:
+- For 'stationName': use values from 'from', 'to', or similar fields
+- For 'price': use values from 'price' or cost-related fields
+- For 'id': use any ID field from the response
+- For 'distanceList': use numeric values or station names that could represent distances
+
+Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')
+If no suitable value exists in the response: NO_GOOD_MATCH
+--------------------------------------------------------------------------------
