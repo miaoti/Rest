@@ -19,6 +19,8 @@ All findings are evidence-backed: every claim cites a specific `file:line` in th
 | [`microservice-input-quality-research.md`](./microservice-input-quality-research.md) | Companion field survey behind Q1. Reviews Restats / EvoMaster black-box / ARAT-RL / LlamaRestTest / RESTGPT / Schemathesis / Train Ticket / OpenTelemetry trace-based testing. Establishes the input-vs-tool taxonomy and the microservice-specific dimensions. |
 | [`pipeline-bug-audit.md`](./pipeline-bug-audit.md) | Q2 — 27 evidence-backed bug findings (with a Fix Status table at the top showing 26 fixed + 1 verified false positive). Each finding has file:line, code excerpt, impact, fix sketch, and verification plan. |
 | [`dataflow-map.md`](./dataflow-map.md) | Implementation-reality call-graph (Positive first-step / non-first-step / Smart Fetch / LLM / Negative round-robin / Negative random). Tables of shared mutable state and invariant-enforcement points. Discrepancies with `flow.md`. |
+| [`scripts/`](./scripts/) | Self-contained Python pipeline that computes **D1 / D2 / D3** from existing artefacts (no re-run of the tool). `./scripts/run_metrics.sh` mines generated tests + LLM logs, validates against the OpenAPI schema and prompt-stated constraints, then writes a markdown report under `measurements/<RUN_ID>/report.md`. See `scripts/README.md`. |
+| [`measurements/`](./measurements/) | Per-run output (gitignored) — regenerated each time you run `./scripts/run_metrics.sh`. |
 
 ## How to use this folder
 

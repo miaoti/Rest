@@ -2038,6 +2038,24 @@ public class SmartInputFetcher {
     private Set<String> generateSemanticallySimilarValues(ParameterInfo parameterInfo, Set<String> existingValues, int count) {
         Set<String> generatedValues = new HashSet<>();
 
+        // Closed-domain short-circuit: when the parameter has a finite, fully-known value
+        // space (boolean, or enum-constrained), do not call the LLM. The "semantic
+        // similarity" framing tempts the model to emit synonyms ('yes', 'on', 'enabled'
+        // for a boolean, or near-misses for enums) that are *not* schema-valid. We can
+        // produce the correct candidates deterministically.
+        Set<String> closedDomain = closedDomainCandidates(parameterInfo);
+        if (closedDomain != null) {
+            for (String v : closedDomain) {
+                if (!existingValues.contains(v)) {
+                    generatedValues.add(v);
+                    if (generatedValues.size() >= count) break;
+                }
+            }
+            log.debug("Closed-domain short-circuit for '{}' (type={}): produced {} value(s) without LLM",
+                    parameterInfo.getName(), parameterInfo.getType(), generatedValues.size());
+            return generatedValues;
+        }
+
         try {
             String prompt = buildSemanticSimilarityPrompt(parameterInfo, existingValues, count);
 
@@ -2077,6 +2095,32 @@ public class SmartInputFetcher {
     }
 
     /**
+     * Returns the full set of valid values when the parameter has a closed value domain
+     * (boolean type or enum-constrained), or {@code null} for open domains.
+     */
+    private static Set<String> closedDomainCandidates(ParameterInfo parameterInfo) {
+        if (parameterInfo == null) return null;
+        String type = parameterInfo.getType();
+        if (type != null) {
+            String t = type.toLowerCase(java.util.Locale.ROOT);
+            if (t.equals("boolean") || t.equals("bool")) {
+                Set<String> out = new java.util.LinkedHashSet<>();
+                out.add("true");
+                out.add("false");
+                return out;
+            }
+        }
+        if (parameterInfo.hasEnum() && parameterInfo.getEnumValues() != null) {
+            Set<String> out = new java.util.LinkedHashSet<>();
+            for (String v : parameterInfo.getEnumValues()) {
+                if (v != null) out.add(v);
+            }
+            return out;
+        }
+        return null;
+    }
+
+    /**
      * Build prompt for semantic similarity-based value generation
      */
     private String buildSemanticSimilarityPrompt(ParameterInfo parameterInfo, Set<String> existingValues, int count) {
@@ -2101,9 +2145,20 @@ public class SmartInputFetcher {
         prompt.append("3. Use similar naming patterns, formats, or structures\n");
         prompt.append("4. Generate realistic, meaningful values (not random strings or descriptions)\n");
 
-        // Add parameter-specific instructions
+        // Add type/parameter-specific instructions. The type guard comes first so the LLM
+        // does not "diversify" booleans into synonyms like 'yes'/'on'/'enabled' (a real
+        // hallucination observed on the qwen2.5-coder:14b model — see D3 measurement).
+        String paramType = parameterInfo.getType() != null
+                ? parameterInfo.getType().toLowerCase(java.util.Locale.ROOT) : "";
         String paramName = parameterInfo.getName().toLowerCase();
-        if (paramName.contains("station")) {
+        if (paramType.equals("boolean") || paramType.equals("bool")) {
+            prompt.append("5. CRITICAL: This is a boolean parameter — every value MUST be the literal token 'true' or 'false'. ");
+            prompt.append("Do NOT emit synonyms like 'yes', 'no', 'on', 'off', 'enabled', 'disabled', 'active'.\n");
+        } else if (paramType.equals("integer") || paramType.equals("int")
+                || paramType.equals("long") || paramType.equals("number")
+                || paramType.equals("double") || paramType.equals("float")) {
+            prompt.append("5. CRITICAL: This is a numeric parameter — every value MUST be a parseable number with no units, currency symbols, or letters.\n");
+        } else if (paramName.contains("station")) {
             prompt.append("5. For station parameters: generate actual city/station names, not UUIDs or random strings\n");
         } else if (paramName.contains("id") && !paramName.contains("station")) {
             prompt.append("5. For ID parameters: generate actual UUID-like strings or meaningful IDs\n");
@@ -2120,7 +2175,11 @@ public class SmartInputFetcher {
         prompt.append("10. If unable to generate similar values, respond with: NO_VALUES_GENERATED\n\n");
 
         prompt.append("Examples:\n");
-        if (paramName.contains("station")) {
+        if (paramType.equals("boolean") || paramType.equals("bool")) {
+            prompt.append("If existing values are [true] → generate: false\n");
+            prompt.append("If existing values are [false] → generate: true\n");
+            prompt.append("(Only the two literal tokens 'true' and 'false' are valid.)\n");
+        } else if (paramName.contains("station")) {
             prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
             prompt.append("If existing values are [wuxi, suzhou] → generate: hangzhou, nanjing, changzhou\n");
         } else if (paramName.contains("distance")) {
