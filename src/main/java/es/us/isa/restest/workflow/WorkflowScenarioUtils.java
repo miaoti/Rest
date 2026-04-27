@@ -87,8 +87,8 @@ public class WorkflowScenarioUtils {
         log.info("Original scenarios: {}", scenarios.size());
         log.info("Unique scenarios for test generation: {}", uniqueScenarios.size());
         log.info("Duplicate scenarios eliminated: {}", totalDuplicatesEliminated);
-        log.info("Resource savings: {:.1f}% fewer test cases to generate", 
-                 (double) totalDuplicatesEliminated / scenarios.size() * 100);
+        log.info("Resource savings: {}% fewer test cases to generate",
+                 String.format("%.1f", (double) totalDuplicatesEliminated / scenarios.size() * 100));
         
         return uniqueScenarios;
     }

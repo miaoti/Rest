@@ -104,6 +104,23 @@ public class MultiServiceTestCase extends TestCase {
     public String getTargetFaultRootApiPath() { return targetFaultRootApiPath; }
     public void setTargetFaultRootApiPath(String targetFaultRootApiPath) { this.targetFaultRootApiPath = targetFaultRootApiPath; }
 
+    /**
+     * Pre-recorded invalid value selected for the targeted faulty parameter, captured at
+     * fault-queue build time so the generator does not need to re-rotate
+     * {@code InvalidInputPool} state at fire time. Decouples the fault label (already on
+     * {@link #faultTypeCategory}) from the value, eliminating any drift if pool state changes
+     * between queue construction and variant emission.
+     */
+    private Object targetFaultValue;
+    private boolean hasTargetFaultValue = false;
+
+    public Object getTargetFaultValue() { return targetFaultValue; }
+    public boolean hasTargetFaultValue() { return hasTargetFaultValue; }
+    public void setTargetFaultValue(Object value) {
+        this.targetFaultValue = value;
+        this.hasTargetFaultValue = true;
+    }
+
     /* -------- status code exploration methods -------- */
     
     /** 

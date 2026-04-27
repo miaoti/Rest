@@ -26,7 +26,7 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
     private SmartInputFetcher smartFetcher;
     private SmartInputFetchConfig config;
     private boolean initialized = false;
-    private Random random = new Random();
+    private Random random = es.us.isa.restest.util.SeededRandom.create("SmartLLMParameterGenerator");
     
     public SmartLLMParameterGenerator() {
         super();
@@ -266,50 +266,63 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
         // "type" from the parent
         pinfo.setType(getParameterType());
         
-        // We guess the paramIn. If your testConf.yaml has "in" somewhere,
-        // you may store it in the parent. For now let's just guess "query".
-        String paramIn = "query";  // or "path", "header", etc.
-        
         // 1) Find the Operation from the OAS
         Operation openApiOp = findOperation(
                 getSpec().getSpecification(), // The 'OpenAPI' object
                 getOperationPath(),
                 getOperationMethod().toLowerCase()
         );
-        
-        // 2) If we found the Operation, find the parameter features
+
+        // 2) Try every standard parameter location in priority order so path/header/body/cookie
+        // parameters are not silently treated as query strings (which would skip their schema
+        // constraints — pattern, enum, format, etc.).
         if (openApiOp != null && finalParamName != null) {
-            OpenAPIParameter paramObj = OpenAPISpecificationVisitor.findParameterFeatures(openApiOp, finalParamName, paramIn);
-            
+            OpenAPIParameter paramObj = null;
+            String foundIn = null;
+            for (String candidateIn : PARAM_LOCATION_LOOKUP_ORDER) {
+                OpenAPIParameter candidate = OpenAPISpecificationVisitor.findParameterFeatures(
+                        openApiOp, finalParamName, candidateIn);
+                if (candidate != null) {
+                    paramObj = candidate;
+                    foundIn = candidateIn;
+                    break;
+                }
+            }
+
             if (paramObj != null) {
-                pinfo.setInLocation(paramObj.getIn());
+                pinfo.setInLocation(paramObj.getIn() != null ? paramObj.getIn() : foundIn);
                 pinfo.setFormat(paramObj.getFormat());
                 pinfo.setRegex(paramObj.getPattern());
                 pinfo.setDescription(paramObj.getDescription());
                 pinfo.setSchemaType(paramObj.getType());
-                
+
                 // Set the example if available
                 if (paramObj.getExample() != null) {
                     pinfo.setSchemaExample(paramObj.getExample().toString());
                 }
-                
-                logger.debug("Found param in OAS => in: {}, type: {}, format: {}, pattern: {}, example: {}, description: {}",
-                        paramObj.getIn(),
+
+                logger.debug("Found param '{}' (in={}) in OAS => type: {}, format: {}, pattern: {}, example: {}, description: {}",
+                        finalParamName,
+                        pinfo.getInLocation(),
                         paramObj.getType(),
                         paramObj.getFormat(),
                         paramObj.getPattern(),
                         paramObj.getExample(),
                         paramObj.getDescription());
             } else {
-                logger.warn("Could NOT find param '{}' with in='{}' in operation {} {}",
-                        finalParamName, paramIn, getOperationMethod(), getOperationPath());
+                logger.warn("Could NOT find param '{}' in any location for operation {} {}",
+                        finalParamName, getOperationMethod(), getOperationPath());
             }
         } else {
             logger.warn("No Operation found for path='{}', method='{}', or paramName null", getOperationPath(), getOperationMethod());
         }
-        
+
         return pinfo;
     }
+
+    /** Order in which parameter locations are tried when the caller didn't tell us which one. */
+    private static final java.util.List<String> PARAM_LOCATION_LOOKUP_ORDER =
+            java.util.Arrays.asList("query", "path", "header", "body", "formData", "cookie");
     
     /**
      * Helper method: find the correct OAS Operation from OpenAPI spec

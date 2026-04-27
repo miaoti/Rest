@@ -71,8 +71,20 @@ public class SemanticDependencyRegistry {
 
     private static final Logger log = LogManager.getLogger(SemanticDependencyRegistry.class);
 
-    /** Suffix form: {@code orderId}, {@code account_id}, {@code trip_uuid}. */
-    private static final Pattern ID_SUFFIX = Pattern.compile("(?i)^.+(id|uuid)$");
+    /**
+     * Suffix form: {@code orderId}, {@code account_id}, {@code trip_uuid}, {@code clientUUID}.
+     * Requires an explicit boundary so plain English words ending in {@code id}
+     * ({@code paid}, {@code aid}, {@code valid}, {@code void}, {@code humid}) and {@code uuid}
+     * variants never satisfy the pattern. Accepted boundaries: camelCase {@code Id} / {@code ID} /
+     * {@code UUID} / {@code Uuid}, or snake-case {@code _id} / {@code _ID} / {@code _uuid} /
+     * {@code _UUID}.
+     */
+    private static final Pattern ID_SUFFIX =
+            Pattern.compile("^.+?(Id|ID|UUID|Uuid|_id|_ID|_uuid|_UUID)$");
+
+    /** Same suffix set as {@link #ID_SUFFIX}, used by {@link #normaliseIdStem} to strip the suffix. */
+    private static final Pattern ID_SUFFIX_STRIP =
+            Pattern.compile("(Id|ID|UUID|Uuid|_id|_ID|_uuid|_UUID)$");
 
     /**
      * Prefix form: {@code id_account}, {@code idAccount}, {@code uuid_order},
@@ -1402,23 +1414,41 @@ public class SemanticDependencyRegistry {
             return pluralSafeStem(raw.toLowerCase(Locale.ROOT));
         }
 
-        // Suffix form (orderId, account_id, trip_uuid)
-        String stem = paramName
-                .replaceAll("(?i)(id|uuid)$", "")
+        // Suffix form (orderId, account_id, trip_uuid, clientUUID)
+        // Require the same boundary as ID_SUFFIX so words like "paid"/"valid"/"void" do not
+        // produce stems "pa"/"val"/"vo".
+        if (!ID_SUFFIX.matcher(paramName).matches()) return null;
+        String stem = ID_SUFFIX_STRIP.matcher(paramName).replaceFirst("")
                 .replaceAll("_$", "");
         if (stem.isEmpty()) return null;
         return pluralSafeStem(stem.toLowerCase(Locale.ROOT));
     }
 
     /**
+     * Common English non-plural words ending in 's' that must not be stem-stripped.
+     * Hard-coded list of low-coverage but frequently-encountered cases. (A proper
+     * Porter / Lancaster stemmer would be heavier than warranted here.)
+     */
+    private static final java.util.Set<String> NON_PLURAL_S_WORDS = new java.util.HashSet<>(
+            java.util.Arrays.asList(
+                    "address", "news", "bus", "gas", "boss", "loss", "pass", "class",
+                    "miss", "kiss", "less", "press", "process", "stress", "access",
+                    "atlas", "canvas", "chaos", "lens", "series", "species", "logos",
+                    "campus", "focus", "menus", "virus", "thus", "plus", "minus", "bonus"
+            ));
+
+    /**
      * Strip a trailing {@code s} only when it forms a regular English plural.
-     * Protects words ending in {@code ss} / {@code us} / {@code is}
-     * ({@code success}, {@code status}, {@code analysis}).
+     * Protects words ending in {@code ss} / {@code us} / {@code is} / {@code os} / {@code as}
+     * ({@code success}, {@code status}, {@code analysis}, {@code logos}, {@code atlas}) and a
+     * curated list of common non-plurals ({@code news}, {@code bus}, {@code address}, ...).
      */
     private static String pluralSafeStem(String stem) {
         if (stem.length() > 2 && stem.endsWith("s")) {
             String last2 = stem.substring(stem.length() - 2);
-            if (!last2.equals("ss") && !last2.equals("us") && !last2.equals("is")) {
+            boolean protectedSuffix = last2.equals("ss") || last2.equals("us")
+                    || last2.equals("is") || last2.equals("os") || last2.equals("as");
+            if (!protectedSuffix && !NON_PLURAL_S_WORDS.contains(stem)) {
                 stem = stem.substring(0, stem.length() - 1);
             }
         }

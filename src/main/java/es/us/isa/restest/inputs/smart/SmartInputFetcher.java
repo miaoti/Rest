@@ -41,6 +41,14 @@ public class SmartInputFetcher {
 
     private static final Logger log = LogManager.getLogger(SmartInputFetcher.class);
 
+    /**
+     * Safety ceiling on value length when the parameter schema does not declare a
+     * {@code maxLength}. Generous enough to cover realistic descriptions, station names,
+     * and serialized JSON snippets, while still rejecting clearly truncated paragraphs
+     * pasted by an LLM.
+     */
+    private static final int DEFAULT_MAX_VALUE_LENGTH = 2000;
+
     private final SmartInputFetchConfig config;
     private final AiDrivenLLMGenerator llmGenerator;
     private final LLMService llmService;
@@ -81,7 +89,7 @@ public class SmartInputFetcher {
         this.llmService = LLMService.getInstance(llmProperties);
 
         this.objectMapper = new ObjectMapper();
-        this.random = new Random();
+        this.random = es.us.isa.restest.util.SeededRandom.create("SmartInputFetcher");
         this.cache = new ConcurrentHashMap<>();
         this.diverseValueCache = new ConcurrentHashMap<>();
         this.valueRotationIndex = new ConcurrentHashMap<>();
@@ -154,8 +162,10 @@ public class SmartInputFetcher {
         double randomValue = random.nextDouble();
         if (randomValue < config.getSmartFetchPercentage()) {
             // Use smart fetching (e.g., 90% of the time if percentage = 0.9)
-            log.info("🎯 Smart Fetch Decision → {} (random: {:.3f} < {:.1f}%)",
-                     parameterInfo.getName(), randomValue, config.getSmartFetchPercentage() * 100);
+            log.info("🎯 Smart Fetch Decision → {} (random: {} < {}%)",
+                     parameterInfo.getName(),
+                     String.format("%.3f", randomValue),
+                     String.format("%.1f", config.getSmartFetchPercentage() * 100));
 
             // Clear any invalid cached values before proceeding
             clearInvalidCachedValues(parameterInfo);
@@ -182,8 +192,10 @@ public class SmartInputFetcher {
             }
         } else {
             // Use traditional LLM generation (e.g., 10% of the time if percentage = 0.9)
-            log.info("🤖 LLM Decision → {} (random: {:.3f} >= {:.1f}%)",
-                     parameterInfo.getName(), randomValue, config.getSmartFetchPercentage() * 100);
+            log.info("🤖 LLM Decision → {} (random: {} >= {}%)",
+                     parameterInfo.getName(),
+                     String.format("%.3f", randomValue),
+                     String.format("%.1f", config.getSmartFetchPercentage() * 100));
             return fallbackToLLM(parameterInfo);
         }
     }
@@ -464,34 +476,89 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Validate that API response contains useful data
+     * Validate that an API response contains useful data.
+     * Uses a structured JSON check first (looks for explicit failure flags such as
+     * {@code "status": 0}, {@code "success": false}, {@code "error": true}, or a non-empty
+     * top-level {@code "error"} message). Falls back to a conservative whole-document substring
+     * scan only when the body is not parseable as JSON. The previous unconditional substring
+     * scan for {@code "error"}/{@code "exception"} rejected legitimate responses whose data
+     * fields contained those words (e.g. {@code "errorCode": 0}).
      */
     private boolean isValidApiResponse(String responseBody, ParameterInfo parameterInfo) {
         if (responseBody == null || responseBody.trim().isEmpty()) {
             return false;
         }
 
-        // Check for common error responses
-        String lower = responseBody.toLowerCase();
-        if (lower.contains("error") || lower.contains("exception") ||
-            lower.contains("not found") || lower.contains("unauthorized")) {
+        String trimmed = responseBody.trim();
+        if (trimmed.equals("{}") || trimmed.equals("[]")) {
+            log.debug("API response is an empty document");
+            return false;
+        }
+        if (trimmed.length() < 20) {
+            log.debug("API response too short: {} chars", trimmed.length());
             return false;
         }
 
-        // Check for empty data structures
-        if (responseBody.trim().equals("{}") || responseBody.trim().equals("[]") ||
-            responseBody.contains("\"data\":[]") || responseBody.contains("\"data\":{}")) {
-            log.debug("API response contains empty data structure");
-            return false;
+        // Structured JSON inspection — only checks the top-level envelope for failure flags.
+        if (trimmed.startsWith("{")) {
+            try {
+                org.json.JSONObject obj = new org.json.JSONObject(trimmed);
+                if (isExplicitFailureEnvelope(obj)) {
+                    log.debug("API response is an explicit failure envelope: {}",
+                            trimmed.length() > 200 ? trimmed.substring(0, 200) + "..." : trimmed);
+                    return false;
+                }
+                // Common pattern: { "status": 1, "data": [] } — empty data is a soft miss
+                Object data = obj.opt("data");
+                if (data instanceof org.json.JSONArray && ((org.json.JSONArray) data).isEmpty()) {
+                    log.debug("API response has empty data array");
+                    return false;
+                }
+                if (data instanceof org.json.JSONObject && ((org.json.JSONObject) data).isEmpty()) {
+                    log.debug("API response has empty data object");
+                    return false;
+                }
+                return true;
+            } catch (org.json.JSONException ignored) {
+                // Fall through to conservative substring check below.
+            }
         }
 
-        // Check minimum content length (avoid trivial responses)
-        if (responseBody.length() < 20) {
-            log.debug("API response too short: {} chars", responseBody.length());
+        // Non-JSON or unparseable: be conservative and only reject documents that look like
+        // error pages / status messages, not arbitrary payloads.
+        String lower = trimmed.toLowerCase(java.util.Locale.ROOT);
+        if (lower.startsWith("error") || lower.startsWith("exception")
+                || lower.contains("internal server error") || lower.contains("not found")
+                || lower.contains("unauthorized") || lower.contains("forbidden")) {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * True when a JSON object explicitly declares a failure outcome at the top level
+     * (the only level where these keys carry envelope semantics).
+     */
+    private boolean isExplicitFailureEnvelope(org.json.JSONObject obj) {
+        if (obj.has("success") && !obj.optBoolean("success", true)) return true;
+        if (obj.has("error")) {
+            Object err = obj.opt("error");
+            if (err instanceof Boolean && (Boolean) err) return true;
+            if (err instanceof String && !((String) err).isEmpty()) return true;
+        }
+        if (obj.has("hasError") && obj.optBoolean("hasError", false)) return true;
+        // status==0 / status=="error" / status=="false" are common Spring-style envelopes.
+        if (obj.has("status")) {
+            Object s = obj.opt("status");
+            if (s instanceof Number && ((Number) s).intValue() == 0) return true;
+            if (s instanceof Boolean && !((Boolean) s)) return true;
+            if (s instanceof String) {
+                String sv = ((String) s).toLowerCase(java.util.Locale.ROOT);
+                if (sv.equals("error") || sv.equals("false") || sv.equals("0")) return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1300,18 +1367,28 @@ public class SmartInputFetcher {
             cleanValue = cleanValue.substring(1, cleanValue.length() - 1);
         }
 
-        // For distance/numeric parameters, extract numeric part from values with units
-        if (paramName.contains("distance") || paramName.contains("price") || paramName.contains("rate")) {
+        // Strip unit suffixes for any numeric-typed parameter (driven by the schema, not by
+        // hard-coded name fragments). The LLM commonly emits values like "15.5 kg" or "120 km"
+        // which would otherwise fail downstream Double/Long parsing.
+        if (isNumericSchemaType(parameterInfo)) {
             String numericPart = extractNumericPart(cleanValue);
-            if (numericPart != null) {
-                log.debug("Extracted numeric part '{}' from LLM value '{}' for parameter '{}'",
-                         numericPart, value, parameterInfo.getName());
+            if (numericPart != null && !numericPart.equals(cleanValue)) {
+                log.debug("Extracted numeric part '{}' from LLM value '{}' for parameter '{}' (type={})",
+                         numericPart, value, parameterInfo.getName(), parameterInfo.getType());
                 return numericPart;
             }
         }
 
         // For other parameters, return cleaned value
         return cleanValue;
+    }
+
+    private static boolean isNumericSchemaType(ParameterInfo parameterInfo) {
+        String type = parameterInfo == null ? null : parameterInfo.getType();
+        if (type == null) return false;
+        String t = type.toLowerCase(java.util.Locale.ROOT);
+        return t.equals("integer") || t.equals("int") || t.equals("long")
+                || t.equals("number") || t.equals("double") || t.equals("float");
     }
 
     /**
@@ -1329,14 +1406,20 @@ public class SmartInputFetcher {
         String formattedValue = formatValueForSchema(value, parameterInfo);
 
         String cacheKey = buildCacheKey(parameterInfo);
-        diverseValueCache.computeIfAbsent(cacheKey, k -> new ArrayList<>());
-
-        List<String> values = diverseValueCache.get(cacheKey);
-        if (!values.contains(formattedValue)) {
-            values.add(formattedValue);
-            log.debug("📋 Cached diverse value '{}' for parameter '{}' (total: {})",
-                     formattedValue, parameterInfo.getName(), values.size());
-        }
+        // Atomic update: combine the get-or-create and the conditional add into a single
+        // compute step so iteration / mutation cannot race when callers share the fetcher.
+        diverseValueCache.compute(cacheKey, (key, existing) -> {
+            List<String> list = (existing != null) ? existing
+                    : java.util.Collections.synchronizedList(new ArrayList<>());
+            synchronized (list) {
+                if (!list.contains(formattedValue)) {
+                    list.add(formattedValue);
+                    log.debug("📋 Cached diverse value '{}' for parameter '{}' (total: {})",
+                             formattedValue, parameterInfo.getName(), list.size());
+                }
+            }
+            return list;
+        });
     }
 
     /**
@@ -1356,27 +1439,44 @@ public class SmartInputFetcher {
 
         // Clear diverse value cache
         if (diverseValueCache.containsKey(cacheKey)) {
-            List<String> values = diverseValueCache.get(cacheKey);
-            List<String> validValues = values.stream()
-                    .filter(value -> isValidValueForParameter(value, parameterInfo))
-                    .collect(Collectors.toList());
-
-            if (validValues.size() != values.size()) {
-                if (validValues.isEmpty()) {
-                    diverseValueCache.remove(cacheKey);
-                    log.info("🧹 Cleared all invalid diverse cached values for parameter '{}'", parameterInfo.getName());
-                } else {
-                    diverseValueCache.put(cacheKey, validValues);
-                    log.info("🧹 Removed {} invalid diverse cached values for parameter '{}', kept {} valid values",
-                            values.size() - validValues.size(), parameterInfo.getName(), validValues.size());
+            // Atomic compute keeps the iterate-and-replace step safe against concurrent writers.
+            diverseValueCache.compute(cacheKey, (key, values) -> {
+                if (values == null) return null;
+                List<String> validValues;
+                synchronized (values) {
+                    validValues = values.stream()
+                            .filter(value -> isValidValueForParameter(value, parameterInfo))
+                            .collect(Collectors.toList());
                 }
-            }
+                if (validValues.size() == values.size()) {
+                    return values;
+                }
+                if (validValues.isEmpty()) {
+                    log.info("🧹 Cleared all invalid diverse cached values for parameter '{}'", parameterInfo.getName());
+                    return null; // remove entry
+                }
+                log.info("🧹 Removed {} invalid diverse cached values for parameter '{}', kept {} valid values",
+                        values.size() - validValues.size(), parameterInfo.getName(), validValues.size());
+                return java.util.Collections.synchronizedList(new ArrayList<>(validValues));
+            });
         }
     }
 
     /**
      * Get next diverse value using rotation
      */
+    /**
+     * Reset the per-parameter diverse-value rotation cursor. Should be invoked at the start of
+     * every new scenario so that scenario A's draws do not advance the cursor that scenario B
+     * starts from. Without this reset, the same parameter pool yields correlated picks across
+     * independent scenarios and reproducibility across runs depends on scenario ordering.
+     */
+    public void resetValueRotation() {
+        if (valueRotationIndex != null) {
+            valueRotationIndex.clear();
+        }
+    }
+
     private String getNextDiverseValue(ParameterInfo parameterInfo) {
         String cacheKey = buildCacheKey(parameterInfo);
         List<String> values = diverseValueCache.get(cacheKey);
@@ -2288,9 +2388,24 @@ public class SmartInputFetcher {
             return false;
         }
 
-        // Reject very long strings (likely descriptions, not data)
-        if (value.length() > 100) {
-            log.debug("Rejecting overly long value '{}' for parameter '{}'", value, parameterInfo.getName());
+        // Reject values that exceed the schema's declared maxLength (with a small slack to avoid
+        // off-by-one rejections), or — when no schema bound is declared — a generous safety
+        // ceiling. The previous hard-coded 100-char cap was rejecting legitimate long station
+        // names / descriptions and any OVERFLOW/SPECIAL_CHARACTERS payload that legitimately
+        // needs to exceed 100 chars.
+        Integer maxLen = parameterInfo.getMaxLength();
+        int allowed;
+        if (maxLen != null && maxLen > 0) {
+            // Allow the schema max plus a small buffer for boundary-violation values that
+            // intentionally exceed the cap. The fault-pool callers don't go through this
+            // validator, so values that reach here are either positive or LLM-generated.
+            allowed = maxLen + 100;
+        } else {
+            allowed = DEFAULT_MAX_VALUE_LENGTH;
+        }
+        if (value.length() > allowed) {
+            log.debug("Rejecting overly long value (len={}, allowed={}) for parameter '{}'",
+                    value.length(), allowed, parameterInfo.getName());
             return false;
         }
 
@@ -2477,29 +2592,47 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Clean integer value without full formatting
+     * Clean an integer-typed value extracted from an API response or LLM output.
+     * Preserves int64 magnitudes (uses {@link Long#parseLong} with a {@link java.math.BigInteger}
+     * fallback) and truncates fractional digits toward zero. Leading sign is preserved only when
+     * it appears at the start of the string; embedded dashes (e.g., {@code "order-id-12345"}) are
+     * treated as separators and the trailing digit run is used.
      */
+    private static final java.util.regex.Pattern INTEGER_LEADING_PATTERN =
+            java.util.regex.Pattern.compile("^-?\\d+");
+    private static final java.util.regex.Pattern INTEGER_ANY_DIGIT_RUN =
+            java.util.regex.Pattern.compile("\\d+");
+
     private String cleanIntegerValue(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
             return "1";
         }
+        String trimmed = value.trim();
 
+        java.util.regex.Matcher leading = INTEGER_LEADING_PATTERN.matcher(trimmed);
+        if (leading.find()) {
+            String parsed = parseIntegerLiteral(leading.group());
+            if (parsed != null) return parsed;
+        }
+        java.util.regex.Matcher anyRun = INTEGER_ANY_DIGIT_RUN.matcher(trimmed);
+        if (anyRun.find()) {
+            String parsed = parseIntegerLiteral(anyRun.group());
+            if (parsed != null) return parsed;
+        }
+        log.debug("Failed to clean integer value '{}' for parameter '{}'", value, parameterInfo.getName());
+        return "1";
+    }
+
+    private static String parseIntegerLiteral(String candidate) {
+        if (candidate == null || candidate.isEmpty() || candidate.equals("-")) return null;
         try {
-            // Remove non-numeric characters except minus sign
-            String cleanValue = value.replaceAll("[^0-9-]", "");
-
-            if (cleanValue.isEmpty() || cleanValue.equals("-")) {
-                return "1";
+            return String.valueOf(Long.parseLong(candidate));
+        } catch (NumberFormatException ignored) {
+            try {
+                return new java.math.BigInteger(candidate).toString();
+            } catch (NumberFormatException ignored2) {
+                return null;
             }
-
-            // Parse as integer to validate
-            int intValue = Integer.parseInt(cleanValue);
-            return String.valueOf(intValue);
-
-        } catch (NumberFormatException e) {
-            log.debug("Failed to clean integer value '{}' for parameter '{}': {}",
-                     value, parameterInfo.getName(), e.getMessage());
-            return "1"; // Safe fallback
         }
     }
 
@@ -3000,8 +3133,27 @@ public class SmartInputFetcher {
         }
     }
 
+    /**
+     * Build a cache key that distinguishes parameters not just by name, type, and location, but
+     * also by their schema-level constraints. Two parameters that share a name but differ in
+     * format/enum/bounds/length/regex must not share a cached value (the SmartInputFetcher used
+     * to leak values across services and operations because the key was too coarse).
+     */
     private String buildCacheKey(ParameterInfo parameterInfo) {
-        return parameterInfo.getName() + ":" + parameterInfo.getType() + ":" + parameterInfo.getInLocation();
+        String name     = parameterInfo.getName()       != null ? parameterInfo.getName()       : "unknown";
+        String type     = parameterInfo.getType()       != null ? parameterInfo.getType()       : "unknown";
+        String location = parameterInfo.getInLocation() != null ? parameterInfo.getInLocation() : "unknown";
+        String format   = parameterInfo.getFormat()     != null ? parameterInfo.getFormat()     : "";
+        String enums    = parameterInfo.hasEnum() && parameterInfo.getEnumValues() != null
+                ? String.join(",", parameterInfo.getEnumValues())
+                : "";
+        String bounds   = (parameterInfo.getMinimum()   != null ? parameterInfo.getMinimum()   : "")
+                + ".." + (parameterInfo.getMaximum()   != null ? parameterInfo.getMaximum()   : "");
+        String lengths  = (parameterInfo.getMinLength() != null ? parameterInfo.getMinLength() : "")
+                + ".." + (parameterInfo.getMaxLength() != null ? parameterInfo.getMaxLength() : "");
+        String regex    = parameterInfo.getRegex()      != null ? parameterInfo.getRegex()      : "";
+        return name + ":" + type + ":" + location + ":" + format + ":" + enums
+                + ":" + bounds + ":" + lengths + ":" + regex;
     }
 
     private String readResponse(HttpURLConnection conn) throws IOException {

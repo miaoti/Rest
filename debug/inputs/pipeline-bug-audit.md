@@ -3,6 +3,41 @@ Date: 2026-04-26
 Branch: inject-detection
 Auditor: Claude (Opus 4.7)
 
+## Fix Status (applied 2026-04-26)
+
+| # | Status | Notes |
+|---|---|---|
+| 1 | ✅ Fixed | All 5 sites pre-format `String.format("%.3f", v)` and pass into `{}`. |
+| 2 | ✅ Fixed | `extractJsonObjectFields` now stores dot-prefixed keys AND first-wins bare aliases. Cross-trace merging keeps working; nested-key clobber is gone. |
+| 3 / 13 | ✅ Fixed | `cleanIntegerValue` rewritten with regex-based extraction, `Long.parseLong` then `BigInteger` fallback, truncates decimals toward zero, treats embedded dashes as separators. |
+| 4 | ✅ Fixed | `SmartInputFetcher.buildCacheKey` now hashes name+type+location+format+enum+min/max+min/maxLength+regex, mirroring `ZeroShotLLMGenerator`. |
+| 5 | ✅ Fixed | `ID_SUFFIX` requires `Id`/`ID`/`UUID`/`Uuid`/`_id`/`_ID`/`_uuid`/`_UUID` boundary. `normaliseIdStem` early-returns null for non-matching names. |
+| 6 | ✅ Fixed | `parseTypedValue` boolean case only converts literal `true`/`false`; everything else returned as raw string. |
+| 7 | ✅ Fixed | `generateRequestBody` array-body trigger uses `p.getIn()=="body" && p.getType()=="array"` regardless of name. |
+| 8 / 12 | ✅ Fixed | `ZeroShotLLMGenerator.generateEmptyInputs` / `generateNullInputs` now early-return for optional params, matching `HardcodedInvalidInputGenerator`. |
+| 9 | ✅ Fixed | `FaultTarget` carries the pre-recorded `value`; fire-time uses `tc.getTargetFaultValue()` instead of re-rotating the pool — labels and values can no longer drift. |
+| 10 | ❌ False positive | Verified the fallback math is correct (loop's 0-based `idx` equals previous member's 1-based local position). Added a clarifying comment. |
+| 11 | ✅ Fixed | `addDefaultTypeMismatches` no longer seeds `null` into TYPE_MISMATCH; null values are owned by the (required-only-gated) NULL_INPUT category. |
+| 14 | ✅ Fixed | `SmartLLMParameterGenerator.createParameterInfo` iterates `query/path/header/body/formData/cookie` until a match is found instead of hard-coding `"query"`. |
+| 15 / 17 | ✅ Fixed | `isValidValueForParameter` uses `parameterInfo.getMaxLength() + 100` when set, otherwise the new `DEFAULT_MAX_VALUE_LENGTH = 2000`. |
+| 16 | ✅ Fixed | `isValidApiResponse` now parses JSON and inspects only the top-level envelope (`status`, `success`, `error`, `hasError`); falls back to a conservative whole-document substring check only when not parseable. |
+| 18 | ✅ Fixed | New `SmartInputFetcher.resetValueRotation()` is invoked from `MultiServiceTestCaseGenerator.generateScenarioVariants` at the start of every scenario. |
+| 19 | ✅ Fixed | `cacheDiverseValue` and `clearInvalidCachedValues` use `ConcurrentHashMap.compute` with a synchronized `ArrayList` so iterate-and-mutate cannot race. |
+| 20 | ✅ Fixed | New `es.us.isa.restest.util.SeededRandom` honours `random.seed`. All `new Random()` sites in the input pipeline route through it; `Math.random()` in `generateJsonArray` replaced with the seeded instance. |
+| 21 | ✅ Fixed | `cleanLLMGeneratedValue` strips numeric units for any numeric schema type, not just `distance`/`price`/`rate` parameter names. |
+| 22 | ✅ Fixed | New `escapeJsonStringStatic` escapes every U+0000..U+001F via the six-char `\uXXXX` form. Both `serializeJsonValue` and `escapeJsonString` route through it. |
+| 23 | ✅ Fixed | `pluralSafeStem` protects a curated `NON_PLURAL_S_WORDS` set plus suffix classes `ss`/`us`/`is`/`os`/`as`. |
+| 24 / 27 | ✅ Fixed | `extractFieldsFromUrl` requires a meaningful path noun (≥3 lowercase letters, not in `PATH_NOISE_TOKENS`); orphan segments are skipped instead of producing `pathParam_i` keys. |
+| 25 | ✅ Fixed | New `typedValSet` boolean tracks intentional typed-value assignment (including null); body branch uses it instead of `typedVal != null`, so NULL_INPUT body values serialise as JSON `null` rather than the string `"null"`. |
+| 26 | ✅ Fixed | `parseFormData` and `parseFormDataToObjectMap` share a `decodeFormPairs` helper using `StandardCharsets.UTF_8`. |
+
+`flow.md` updated to reflect the new behaviour for items 2, 4, 8/12, 16, 17, 18, 21, 24/27, 25, 22, 9, 5, 3/13, and the new `random.seed` property.
+
+`mvn compile -q` exits 0 after all changes.
+
+---
+
+
 ## Executive Summary
 
 This audit examined the parameter input generation pipeline of RESTest's MST mode across `SmartInputFetcher`, `ZeroShotLLMGenerator`, `HardcodedInvalidInputGenerator`, `MultiServiceTestCaseGenerator`, `SemanticDependencyRegistry`, `ScenarioOptimizer`, `TraceWorkflowExtractor`, and supporting helpers. **27 distinct bugs** were identified spanning logic errors, pipeline flow violations, parsing/coercion problems, fault-detection coverage gaps, and concurrency hazards. The most impactful findings:

@@ -54,7 +54,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private float faultyRatio;
     private boolean faultyRoundRobin = true;  // true = round-robin, false = random
     private Map<String, Map<String, InvalidInputPool>> faultyParameterPools = new HashMap<>();
-    private Random random = new Random();
+    private Random random = es.us.isa.restest.util.SeededRandom.create("MultiServiceTestCaseGenerator");
     
     // Track which parameter should have invalid value in current test case (round-robin mode)
     private List<String> parameterRotation = new ArrayList<>();
@@ -74,12 +74,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         final String rootApiKey;      // verb_path key for pool lookup
         final String paramName;       // target parameter
         final InvalidInputType type;  // which edge-case category
+        final Object value;           // pre-captured invalid value (replayed at fire time)
 
-        FaultTarget(int rootIndex, String rootApiKey, String paramName, InvalidInputType type) {
+        FaultTarget(int rootIndex, String rootApiKey, String paramName,
+                    InvalidInputType type, Object value) {
             this.rootIndex  = rootIndex;
             this.rootApiKey = rootApiKey;
             this.paramName  = paramName;
             this.type       = type;
+            this.value      = value;
         }
 
         @Override
@@ -117,12 +120,16 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
                 // Use hasNextRoundRobin() rather than a null-return sentinel so that
                 // legitimately stored null values (NULL_INPUT category) do not
-                // prematurely terminate the drain loop.
+                // prematurely terminate the drain loop. Capture both the type AND the
+                // value here so fire-time can replay them directly without re-rotating
+                // pool state (eliminates the label/value drift risk if anything mutates
+                // the pool between build and fire).
                 while (pool.hasNextRoundRobin()) {
-                    pool.getNextRoundRobin();
+                    Object val = pool.getNextRoundRobin();
                     InvalidInputType lastType = pool.getLastSelectedType();
                     queue.add(new FaultTarget(rootIdx + 1, rootApiKey, paramName,
-                            lastType != null ? lastType : InvalidInputType.SEMANTIC_MISMATCH));
+                            lastType != null ? lastType : InvalidInputType.SEMANTIC_MISMATCH,
+                            val));
                 }
                 pool.resetUsage();
             }
@@ -303,10 +310,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("╔══════════════════════════════════════════════════════════════════╗");
         log.info("║          SEMANTIC DEPENDENCY REGISTRY — JIT BINDING METRICS     ║");
         log.info("╠══════════════════════════════════════════════════════════════════╣");
-        log.info("║  Dictionary Hits (wired successfully):   {:>6}                 ║", jitDictionaryHits);
-        log.info("║  Fuzzing Fallbacks (producer not in seq): {:>5}                 ║", jitFuzzingFallbacks);
-        log.info("║  Total ID-param lookups with producer:   {:>6}                 ║", total);
-        log.info("║  Hit Rate: {:>6.1f}%                                             ║", hitRate);
+        log.info("║  Dictionary Hits (wired successfully):   {}                 ║", String.format("%6d", jitDictionaryHits));
+        log.info("║  Fuzzing Fallbacks (producer not in seq): {}                 ║", String.format("%5d", jitFuzzingFallbacks));
+        log.info("║  Total ID-param lookups with producer:   {}                 ║", String.format("%6d", total));
+        log.info("║  Hit Rate: {}%                                             ║", String.format("%6.1f", hitRate));
         log.info("╚══════════════════════════════════════════════════════════════════╝");
     }
     
@@ -318,6 +325,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private List<MultiServiceTestCase> generateScenarioVariants(WorkflowScenario sc, int baseCounter) {
         List<MultiServiceTestCase> variants = new ArrayList<>();
         Set<String> seenPayloads = new HashSet<>();
+
+        // Reset per-scenario state on the smart fetcher so the diverse-value rotation cursor
+        // starts at 0 for every new scenario instead of inheriting wherever the previous
+        // scenario left off (deterministic order regardless of scenario ordering).
+        if (smartFetcher != null) {
+            smartFetcher.resetValueRotation();
+        }
 
         int configuredVariantCount = getVariantCountFromProperties();
 
@@ -401,6 +415,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 tc.setTargetFaultRootId("Root " + targetFaultRootIndex);
                 tc.setFaultTypeCategory(currentTarget.type.name());
                 tc.setTargetFaultRootApiPath(currentTarget.rootApiKey);
+                // Replay the exact value captured at queue build time so fire-time
+                // emission cannot drift from the recorded type label.
+                tc.setTargetFaultValue(currentTarget.value);
             }
 
             String faultyMarker = isFaultyVariant
@@ -662,6 +679,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         p.getName(), p.getType(), p.getIn(), p.getDescription());
                 String val = null;  // For path/query/header params (must be strings)
                 Object typedVal = null;  // For body params (can be typed objects)
+                // Distinguishes "typedVal was intentionally set to null" (e.g. NULL_INPUT body
+                // value, which should serialise as JSON null) from "typedVal was never assigned".
+                boolean typedValSet = false;
 
                 if (isFirstBusinessStep) {
                     /* Step 1 (First Business Step): Check if negative test, then use smart fetch or invalid values */
@@ -692,19 +712,17 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                 // Get next invalid value based on mode
                                 Object invalidValue;
                                 if (faultyRoundRobin) {
-                                    // Use hasNextRoundRobin() as the exhaustion gate so that a
-                                    // legitimately stored Java null (NULL_INPUT category) is never
-                                    // misread as the "pool exhausted" sentinel.
-                                    if (!pool.hasNextRoundRobin()) {
-                                        log.warn("⚠️ All invalid values exhausted for '{}' in round-robin mode. Skipping negative test.", p.getName());
+                                    // Round-robin mode: replay the value captured at queue build time
+                                    // (stored on the test case) rather than re-rotating pool state.
+                                    // This guarantees the fired value matches the recorded type label.
+                                    if (!tc.hasTargetFaultValue()) {
+                                        log.warn("⚠️ Round-robin negative test for '{}' is missing a pre-recorded fault value — skipping.", p.getName());
                                         faultyValueSet = false;
                                     } else {
-                                        invalidValue = pool.getNextRoundRobin();
+                                        invalidValue = tc.getTargetFaultValue();
 
-                                        // Get the invalid type selected for logging
-                                        InvalidInputType selectedType = pool.getLastSelectedType();
-                                        String invalidTypeName = selectedType != null
-                                                ? selectedType.getDisplayName() : "Unknown";
+                                        String invalidTypeName = tc.getFaultTypeCategory() != null
+                                                ? tc.getFaultTypeCategory() : "Unknown";
 
                                         // For body/formData params keep the typed object (null, Integer,
                                         // Boolean …) so the JSON serializer emits the correct literal.
@@ -712,6 +730,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         // construction, so represent it as the literal string "null".
                                         if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                             typedVal = invalidValue; // null → JSON null; Integer → JSON number; etc.
+                                            typedValSet = true;
                                             val = (invalidValue == null) ? "null" : convertObjectToString(invalidValue, p.getType());
                                         } else {
                                             val = (invalidValue == null) ? "null" : convertObjectToString(invalidValue, p.getType());
@@ -734,6 +753,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                         // For body/formData params, store in typedVal; for path/query/header, convert to string
                                         if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                             typedVal = invalidValue; // Keep typed (Integer 123, not "123")
+                                            typedValSet = true;
                                             val = convertObjectToString(invalidValue, p.getType()); // String for logging/tracking
                                         } else {
                                             // Path/query/header params must be strings (URL construction)
@@ -765,9 +785,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                     String poolValue = poolVals.get(random.nextInt(poolVals.size()));
                                     if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                         typedVal = convertStringToTypedValue(poolValue, p);
+                                        typedValSet = true;
                                         val = poolValue;
                                         log.info("Shared Pool (Step 1) → {} {} = {} (type: {}, pool size: {}) ✅",
-                                                service, p.getName(), typedVal, typedVal.getClass().getSimpleName(), poolVals.size());
+                                                service, p.getName(), typedVal,
+                                                typedVal != null ? typedVal.getClass().getSimpleName() : "null", poolVals.size());
                                     } else {
                                         val = poolValue;
                                         log.info("Shared Pool (Step 1) → {} {} = {} (pool size: {}) ✅",
@@ -778,7 +800,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         }
 
                         // FALLBACK 1: Smart Input Fetching if pool miss
-                        if (!faultyValueSet && !isTargetNegativeParam && val == null && typedVal == null
+                        if (!faultyValueSet && !isTargetNegativeParam && val == null && !typedValSet
                                 && smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
                             log.info("Pool miss for '{}', falling back to smart fetch", p.getName());
                             try {
@@ -786,9 +808,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                 if (smartFetchValue != null && !smartFetchValue.trim().isEmpty()) {
                                     if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                         typedVal = convertStringToTypedValue(smartFetchValue, p);
+                                        typedValSet = true;
                                         val = smartFetchValue;
                                         log.info("Smart Fetch (Step 1) → {} {} = {} (type: {}) ✅",
-                                                service, p.getName(), typedVal, typedVal.getClass().getSimpleName());
+                                                service, p.getName(), typedVal,
+                                                typedVal != null ? typedVal.getClass().getSimpleName() : "null");
                                     } else {
                                         val = smartFetchValue;
                                         log.info("Smart Fetch (Step 1) → {} {} = {} ✅",
@@ -802,7 +826,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         }
 
                         // FALLBACK 2: Direct LLM generation with random selection
-                        if (!faultyValueSet && !isTargetNegativeParam && val == null && typedVal == null) {
+                        if (!faultyValueSet && !isTargetNegativeParam && val == null && !typedValSet) {
                             List<String> vals = llmGen.generateParameterValues(info);
                             String llmValue;
                             if (vals.isEmpty()) {
@@ -812,9 +836,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             }
                             if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                 typedVal = convertStringToTypedValue(llmValue, p);
+                                typedValSet = true;
                                 val = llmValue;
                                 log.info("LLM (Step 1 Fallback) → {} {} = {} (type: {})",
-                                        service, p.getName(), typedVal, typedVal.getClass().getSimpleName());
+                                        service, p.getName(), typedVal,
+                                        typedVal != null ? typedVal.getClass().getSimpleName() : "null");
                             } else {
                                 val = llmValue;
                                 log.info("LLM (Step 1 Fallback) → {} {} = {}",
@@ -823,7 +849,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         }
 
                         // FALLBACK 3: If negative test parameter failed, get a VALID value instead
-                        if (isTargetNegativeParam && !faultyValueSet && val == null && typedVal == null) {
+                        if (isTargetNegativeParam && !faultyValueSet && val == null && !typedValSet) {
                             log.warn("⚠️ Negative test parameter '{}' failed to get invalid value. Getting valid value instead.", p.getName());
                             String currentRootApiKey = verb.toUpperCase() + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
                             Map<String, List<String>> pool = sharedParameterPools.get(currentRootApiKey);
@@ -833,17 +859,19 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                     String poolValue = poolVals.get(random.nextInt(poolVals.size()));
                                     if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                         typedVal = convertStringToTypedValue(poolValue, p);
+                                        typedValSet = true;
                                         val = poolValue;
                                     } else {
                                         val = poolValue;
                                     }
                                 }
                             }
-                            if (val == null && typedVal == null) {
+                            if (val == null && !typedValSet) {
                                 List<String> vals = llmGen.generateParameterValues(info);
                                 String llmValue = vals.isEmpty() ? "FALLBACK_" + p.getName() : vals.get(random.nextInt(vals.size()));
                                 if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                     typedVal = convertStringToTypedValue(llmValue, p);
+                                    typedValSet = true;
                                     val = llmValue;
                                 } else {
                                     val = llmValue;
@@ -916,12 +944,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                     // Convert to proper type for body/formData params, keep as string for path/query/header
                                     if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                         typedVal = convertStringToTypedValue(smartFetchValue, p);
+                                        typedValSet = true;
                                         val = smartFetchValue;
-                                        log.info("Smart Fetch (Independent) → {} {} = {} (type: {}) ✅ (step {})", 
-                                                service, p.getName(), typedVal, typedVal.getClass().getSimpleName(), stepNumber);
+                                        log.info("Smart Fetch (Independent) → {} {} = {} (type: {}) ✅ (step {})",
+                                                service, p.getName(), typedVal,
+                                                typedVal != null ? typedVal.getClass().getSimpleName() : "null", stepNumber);
                                     } else {
                                         val = smartFetchValue;
-                                        log.info("Smart Fetch (Independent) → {} {} = {} ✅ (step {})", 
+                                        log.info("Smart Fetch (Independent) → {} {} = {} ✅ (step {})",
                                                 service, p.getName(), val, stepNumber);
                                     }
                                 } else {
@@ -935,7 +965,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         }
 
                         // Fall back to traditional LLM generation if smart fetching didn't work
-                        if (val == null && typedVal == null) {
+                        if (val == null && !typedValSet) {
                             List<String> vals = llmGen.generateParameterValues(info);
                             String llmValue;
                             if (vals.isEmpty()) {
@@ -945,9 +975,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             }
                             if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                 typedVal = convertStringToTypedValue(llmValue, p);
+                                typedValSet = true;
                                 val = llmValue;
                                 log.info("LLM (Independent Fallback) → {} {} = {} (type: {}) (step {})",
-                                        service, p.getName(), typedVal, typedVal.getClass().getSimpleName(), stepNumber);
+                                        service, p.getName(), typedVal,
+                                        typedVal != null ? typedVal.getClass().getSimpleName() : "null", stepNumber);
                             } else {
                                 val = llmValue;
                                 log.info("LLM (Independent Fallback) → {} {} = {} (step {})",
@@ -1003,10 +1035,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         break;
                     case "body":
                     case "formdata":
-                        // Use typedVal if available (already typed), otherwise use val
-                        Object bodyValue = (typedVal != null) ? typedVal : val;
+                        // Use typedVal when it was explicitly assigned (including intentional null
+                        // for NULL_INPUT body values, which must serialise as JSON null — not the
+                        // string "null"). Fall back to the string val only when typedVal was
+                        // never set (path/query/header-flow code did not produce a typed object).
+                        Object bodyValue = typedValSet ? typedVal : val;
                         bodyFields.put(p.getName(), bodyValue); // Body fields can be typed objects
-                        log.debug("Storing body parameter '{}' = {} (type: {})", 
+                        log.debug("Storing body parameter '{}' = {} (type: {})",
                                 p.getName(), bodyValue, bodyValue != null ? bodyValue.getClass().getSimpleName() : "null");
                         break;
                 }
@@ -1338,44 +1373,40 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
-     * Parse form data or query string into key-value pairs.
+     * Parse form data or query string into key-value pairs (string-typed values).
+     * Delegates the decoding loop to {@link #decodeFormPairs(String, java.util.function.BiConsumer)}
+     * so the {@link Map String,String} and {@link Map String,Object} variants stay in sync.
      */
     private void parseFormData(String data, Map<String,String> target) {
-        if (data == null || data.trim().isEmpty()) return;
-
-        String[] pairs = data.split("&");
-        for (String pair : pairs) {
-            String[] kv = pair.split("=", 2);
-            if (kv.length == 2) {
-                try {
-                    String key = java.net.URLDecoder.decode(kv[0], "UTF-8");
-                    String value = java.net.URLDecoder.decode(kv[1], "UTF-8");
-                    target.put(key, value);
-                } catch (Exception e) {
-                    target.put(kv[0], kv[1]);
-                }
-            }
-        }
+        decodeFormPairs(data, target::put);
     }
 
     /**
      * Parse form data or query string into key-value pairs (Object version).
      */
     private void parseFormDataToObjectMap(String data, Map<String,Object> target) {
-        if (data == null || data.trim().isEmpty()) return;
+        decodeFormPairs(data, (k, v) -> target.put(k, v));
+    }
 
-        String[] pairs = data.split("&");
-        for (String pair : pairs) {
+    /**
+     * Decode {@code key=value&key=value} pairs into the supplied sink. Uses the modern
+     * {@link java.nio.charset.StandardCharsets#UTF_8} overload (the {@code String} overload was
+     * deprecated for removal in JDK 10) and keeps both form-data parsers in lockstep.
+     */
+    private static void decodeFormPairs(String data, java.util.function.BiConsumer<String,String> sink) {
+        if (data == null || data.trim().isEmpty()) return;
+        for (String pair : data.split("&")) {
             String[] kv = pair.split("=", 2);
-            if (kv.length == 2) {
-                try {
-                    String key = java.net.URLDecoder.decode(kv[0], "UTF-8");
-                    String value = java.net.URLDecoder.decode(kv[1], "UTF-8");
-                    target.put(key, value);
-                } catch (Exception e) {
-                    target.put(kv[0], kv[1]);
-                }
+            if (kv.length != 2) continue;
+            String key, value;
+            try {
+                key = java.net.URLDecoder.decode(kv[0], java.nio.charset.StandardCharsets.UTF_8);
+                value = java.net.URLDecoder.decode(kv[1], java.nio.charset.StandardCharsets.UTF_8);
+            } catch (RuntimeException e) {
+                key = kv[0];
+                value = kv[1];
             }
+            sink.accept(key, value);
         }
     }
 
@@ -1862,13 +1893,40 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             return toJson(map);
         }
         
-        // Handle strings - escape and quote
-        String str = value.toString();
-        return '"' + str.replace("\\", "\\\\")
-                        .replace("\"", "\\\"")
-                        .replace("\n", "\\n")
-                        .replace("\r", "\\r")
-                        .replace("\t", "\\t") + '"';
+        // Handle strings - escape and quote (RFC 8259 §7: every control char < U+0020 must be escaped)
+        return '"' + escapeJsonStringStatic(value.toString()) + '"';
+    }
+
+    /**
+     * RFC 8259 section 7-conforming string escape.
+     * Handles backslash, double-quote, newline (n), carriage-return (r), tab (t), backspace (b),
+     * form-feed (f), and every other code point in U+0000..U+001F via the six-char form
+     * (backslash + u + four hex digits). Without this, SPECIAL_CHARACTERS
+     * payloads that contain raw control bytes (NUL, SOH, STX, ...) are emitted as-is,
+     * which some JSON parsers reject outright and others silently truncate at the first NUL.
+     */
+    static String escapeJsonStringStatic(String str) {
+        if (str == null || str.isEmpty()) return str == null ? "" : "";
+        StringBuilder sb = new StringBuilder(str.length() + 8);
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            switch (c) {
+                case '\\': sb.append("\\\\"); break;
+                case '"':  sb.append("\\\""); break;
+                case '\n': sb.append("\\n");  break;
+                case '\r': sb.append("\\r");  break;
+                case '\t': sb.append("\\t");  break;
+                case '\b': sb.append("\\b");  break;
+                case '\f': sb.append("\\f");  break;
+                default:
+                    if (c < 0x20) {
+                        sb.append(String.format("\\u%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -2807,20 +2865,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * Otherwise, generates standard JSON object.
      */
     private String generateRequestBody(Map<String, Object> bodyFields, Operation opCfg) {
-        // 🔥 FIX: Check if we have a single body parameter with type "array"
-        if (bodyFields.size() == 1 && bodyFields.containsKey("body")) {
-            // Find the body parameter in the configuration to check its type
-            if (opCfg != null && opCfg.getTestParameters() != null) {
-                for (TestParameter p : opCfg.getTestParameters()) {
-                    if ("body".equals(p.getName()) && "body".equals(p.getIn()) && "array".equals(p.getType())) {
-                        // This is an array-type body parameter - generate entire body as array
-                        String singleValue = bodyFields.get("body").toString();
-                        return generateJsonArray(singleValue, p);
-                    }
+        // Single body parameter whose schema type is "array" → emit a top-level JSON array,
+        // not an object wrapper. The parameter name is no longer required to be the literal
+        // "body" — OpenAPI bodies are commonly named after the resource (e.g., "routes",
+        // "stationsToAdd", "seatPlan").
+        if (bodyFields.size() == 1 && opCfg != null && opCfg.getTestParameters() != null) {
+            String onlyKey = bodyFields.keySet().iterator().next();
+            for (TestParameter p : opCfg.getTestParameters()) {
+                if ("body".equalsIgnoreCase(p.getIn())
+                        && "array".equalsIgnoreCase(p.getType())
+                        && onlyKey.equals(p.getName())) {
+                    String singleValue = bodyFields.get(onlyKey).toString();
+                    return generateJsonArray(singleValue, p);
                 }
             }
         }
-        
+
         // Default behavior: generate JSON object
         return toJson(bodyFields);
     }
@@ -2833,7 +2893,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         StringBuilder arrayJson = new StringBuilder("[");
         
         // Generate 2-4 array elements for more realistic testing
-        int arraySize = 2 + (int)(Math.random() * 3); // Random between 2-4
+        // Use the seeded generator instead of Math.random() so array sizes are reproducible.
+        int arraySize = 2 + random.nextInt(3); // Random between 2-4 inclusive
         List<String> arrayValues = new ArrayList<>();
         
         // Add the original value first
@@ -2901,15 +2962,12 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
     
     /**
-     * Escape special characters in JSON string values.
+     * Escape special characters in JSON string values per RFC 8259 §7. Delegates to the static
+     * helper used by {@link #serializeJsonValue(Object)} to keep the two paths in sync.
      */
     private String escapeJsonString(String str) {
         if (str == null) return "";
-        return str.replace("\\", "\\\\")
-                  .replace("\"", "\\\"")
-                  .replace("\n", "\\n")
-                  .replace("\r", "\\r")
-                  .replace("\t", "\\t");
+        return escapeJsonStringStatic(str);
     }
 
     /* ============================================================ */

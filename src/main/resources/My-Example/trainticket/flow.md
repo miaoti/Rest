@@ -115,6 +115,7 @@ flowchart TD
 **Span Field Extraction (`extractJsonObjectFields`):**
 - Iterates **all** elements in a `JSONArray` (previously only read index 0).
 - Recursively calls itself on any `JSONObject` element found inside an array.
+- **Dot-prefixed flattening + first-wins bare alias.** Each leaf is stored under both its dot-prefixed path (e.g., `data.orderId`) AND its bare key (`orderId`) using `putIfAbsent`. The bare alias keeps cross-trace merging semantics (which match on bare key + value) but is now deterministic: the shallowest occurrence wins instead of the previous last-wins clobber. Two unrelated nested fields with the same name no longer corrupt each other.
 - Skips keys in `ignoreKeys`: `http.method`, `http.url`, `http.target`, `http.path`, `http.request.body`, `http.response.body` (these are structural, not business data).
 
 **URL Path Parameter Extraction (`extractFieldsFromUrl`):**
@@ -122,11 +123,14 @@ flowchart TD
 | Pattern | Example URL | Key Assigned | Value |
 |---------|-------------|--------------|-------|
 | UUID after known noun | `/api/v1/orderservice/orders/47e2a130-...` | `orderId` | `47e2a130-...` |
-| UUID after unknown noun | `/api/v1/foo/47e2a130-...` | `pathId` | `47e2a130-...` |
+| UUID after unknown but meaningful noun | `/api/v1/widgets/47e2a130-...` | `widgetId` | `47e2a130-...` |
+| UUID after short / structural segment | `/api/v1/47e2a130-...` (prev = `v1`) | *skipped* | — |
 | Long integer (≥5 digits) after known noun | `/api/v1/accountservice/accounts/10001` | `accountId` | `10001` |
-| Long integer after unknown noun | `/api/v1/foo/10001` | `pathId` | `10001` |
+| Long integer after unknown but meaningful noun | `/api/v1/widgets/10001` | `widgetId` | `10001` |
 
-Noun-to-key mappings cover: `orders→orderId`, `accounts→accountId`, `trips→tripId`, `routes→routeId`, `users→userId`, `contacts→contactId`, `trains→trainId`, `stations→stationId`, `prices→priceId`, `travels→travelId`, `passengers→passengerId`.
+Noun-to-key mappings cover: `orders→orderId`, `accounts→accountId`, `trips→tripId`, `routes→routeId`, `users→userId`, `contacts→contactId`, `trains→trainNumber`, `stations→stationId`, `prices→priceId`, `seats→seatId`, `configs→configId`, `consigns→consignId`, `foods→foodId`, `assurances→assuranceId`, `vouchers→voucherId`, `payments→paymentId`.
+
+**Meaningful-noun guard.** A previous segment now must be at least 3 lowercase letters and not in the path-noise set (`api`, `rest`, `service(s)`, `internal`, `external`, `public`, `private`, `v`, `version`). Short or structural prefixes used to produce keys like `v1Id`, `apiId`, `tId` that polluted `inputFields` and risked false cross-trace merges; they are now dropped entirely. The previous fallback `pathParam_<i>` orphan keys are also gone for the same reason.
 
 > **Bug fix (Session Merging era):** URL path parameters are stored in **`inputFields` only** — NOT in `outputFields`. URL path segments are client-supplied inputs (they identify the resource to access); they are not values *produced* by the API call. Placing them in `outputFields` was causing false-positive cross-trace producer relationships in `mergeScenariosByDataDependency`, incorrectly linking unrelated traces. The line `extractFieldsFromUrl(urlForPathExtraction, outputFields)` was removed; only `extractFieldsFromUrl(urlForPathExtraction, inputFields)` remains.
 
@@ -645,6 +649,7 @@ flowchart TD
   - ONE invalid param per test, cycling through all params
   - For each param, cycles through all 8 fault types and their values
   - NO REPETITION until all invalid values exhausted
+  - **Pre-recorded values**: Each `FaultTarget` captures the actual invalid value at queue-build time and stores it on the `MultiServiceTestCase` (`targetFaultValue`). At fire time the generator reads the pre-recorded value instead of re-rotating the pool, so the rendered value can never drift from the recorded `faultTypeCategory` label even if pool state mutates between phases.
   - **All 8 Fault Types (with examples)**:
     1. **TYPE_MISMATCH**: Wrong data type
        - Example: String param gets `Integer(55)` or `Boolean(true)`
@@ -743,6 +748,11 @@ flowchart TD
 - **EMPTY_INPUT** and **NULL_INPUT** are only generated for **required parameters** (`required: true`)
 - For **optional parameters** (`required: false` or not specified), null/empty values are **valid** and should NOT be used for negative testing
 - This ensures negative tests only target true violations, not legitimate optional parameter behavior
+- The required-only gate is now enforced in **both** generators: `HardcodedInvalidInputGenerator` (always) AND `ZeroShotLLMGenerator` (`generateEmptyInputs` / `generateNullInputs` early-return for `!required`). Pure-LLM mode previously skipped this guard and silently produced false-fail negative tests for optional parameters.
+
+**TYPE_MISMATCH category hygiene**
+- `parseTypedValue` no longer coerces every non-`true` boolean string to `Boolean.FALSE`. Only the literal tokens `true` / `false` (case-insensitive) are converted; any other string is preserved verbatim, which is the actual TYPE_MISMATCH semantics for boolean parameters.
+- `addDefaultTypeMismatches` no longer seeds `null` into the TYPE_MISMATCH list. Null values belong to the (required-only-gated) NULL_INPUT category; mixing them into TYPE_MISMATCH made optional-parameter negative tests indistinguishable from positive ones.
 
 ### Smart Input Fetching Flow (SmartInputFetcher)
 
@@ -785,7 +795,9 @@ flowchart TD
 **Key Design Decisions:**
 - **JSONPath is fully retired**: `fetchFromApiMapping` always calls `extractValueDirectlyFromResponse` regardless of `ApiMapping.extractPath`. The legacy `extractValueFromResponse` (JSONPath) method has zero call sites and is dead code.
 - **Trace endpoints are session-scoped**: Trace-observed `ApiMapping` objects are never added to `registry.addMapping()` and are never persisted to YAML. Only LLM-discovered mappings are saved.
-- **Cache collision risk**: `buildCacheKey` uses `paramName + type + location` only — no workflow or scenario scope. Two workflows sharing the same parameter name will share a cached value.
+- **Cache key parity with the LLM generator**: `buildCacheKey` now hashes `name + type + location + format + enum + minimum/maximum + minLength/maxLength + regex`. Two parameters that share a name but differ on any of those constraints get distinct cache entries — the previous coarse `name+type+location` key was leaking values across services and across operations with different constraints.
+- **Per-scenario rotation reset**: `SmartInputFetcher.resetValueRotation()` is invoked at the start of every scenario from `MultiServiceTestCaseGenerator.generateScenarioVariants`. The diverse-value rotation cursor therefore starts at 0 in every scenario instead of inheriting wherever the previous one left off — reproducibility no longer depends on scenario ordering.
+- **`isValidApiResponse` uses structured detection**: instead of a substring scan for the word "error" anywhere in the body, the validator now parses JSON and inspects only the top-level envelope (`status`, `success`, `error`, `hasError`). Responses whose `data` payload contains words like `errorCode` or `errors` are no longer falsely rejected.
 
 ### LLM Communication Path (LLMService)
 
@@ -1024,6 +1036,22 @@ flowchart TD
 - allure.report: generate Allure report after execution
 - experiment.execute: execute tests vs only generate
 - deletepreviousresults: clean allure/data outputs before run
+
+**Reproducibility:**
+- `random.seed`: optional system property (long). When set, every `Random` instance produced by `SeededRandom.create(scope)` is deterministically seeded (XOR of base seed and scope hash), so the smart-fetch percentage decision, shared-pool draws, random-mode invalid-param selection, and array-size choice are reproducible across runs. When unset, generators fall back to a per-instance time-derived seed (previous behaviour) and `Math.random()` is no longer used.
+
+**Body Generation Notes:**
+- `generateRequestBody` emits a top-level JSON array whenever the operation has exactly one body parameter whose schema type is `array`, regardless of whether the parameter is named `body` or something domain-specific (`routes`, `stationsToAdd`, `seatPlan`). Previously the array form only fired when the literal name was `"body"`, causing array-bodied endpoints to receive an object wrapper and unconditionally fail with HTTP 400.
+- `serializeJsonValue` is RFC 8259 §7-conforming: every code point in U+0000..U+001F is escaped as a six-char `\uXXXX` sequence (in addition to `\b`, `\f`, `\n`, `\r`, `\t`, `\\`, `\"`). SPECIAL_CHARACTERS payloads containing raw control bytes are no longer emitted as raw bytes that some JSON parsers truncate at NUL.
+- NULL_INPUT body values now serialise as JSON `null`. The generator tracks `typedValSet` separately from `typedVal != null`, so an intentional null assignment for a body parameter is preserved instead of falling back to the string `"null"`.
+
+**ID-stem Normalisation:**
+- `SemanticDependencyRegistry.normaliseIdStem` no longer matches plain English words like `paid`, `aid`, `valid`, `void`, `humid`. The `ID_SUFFIX` regex requires a camelCase or snake-case boundary (`Id`, `ID`, `_id`, `_ID`, `UUID`, `Uuid`, `_uuid`, `_UUID`); pure-lowercase `id` at the end of a word is no longer treated as an ID indicator.
+- `pluralSafeStem` protects a curated list of common non-plurals (`news`, `bus`, `gas`, `address`, `atlas`, `chaos`, `lens`, `series`, ...) in addition to suffix classes (`ss`, `us`, `is`, `os`, `as`).
+
+**Numeric Cleaning:**
+- `SmartInputFetcher.cleanIntegerValue` now uses `Long.parseLong` with a `BigInteger` fallback for int64 / overflow-sized values, truncates fractional digits toward zero (`"12.5"` → `"12"` rather than `"125"`), and treats embedded dashes as separators (`"order-id-12345"` extracts `"12345"`). The previous `Integer.parseInt` path silently coerced almost every realistic ID to `"1"`.
+- `cleanLLMGeneratedValue` strips unit suffixes for any numeric-typed parameter (driven by the schema's `type`), not just parameters whose name happens to contain `distance`, `price`, or `rate`.
 
 ### Allure Report Attachments (Enhanced Intelligent Analysis)
 

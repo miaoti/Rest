@@ -166,6 +166,10 @@ public class ScenarioOptimizer {
                             }
                         }
                     }
+                    // Fallback: chain to the immediately preceding member of this component.
+                    // Local positions are 1-based and aligned to the loop index (member at
+                    // loop position k has local position k+1), so the previous member's local
+                    // position equals the current loop index `idx` — not `idx - 1`.
                     step.setProducerRootIndex(producerLocalIdx != -1 ? producerLocalIdx : idx);
                 }
                 step.setParent(null);

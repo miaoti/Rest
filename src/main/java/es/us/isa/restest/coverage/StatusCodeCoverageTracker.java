@@ -314,11 +314,11 @@ public class StatusCodeCoverageTracker {
             totalDiscovered += info.getDiscoveredCount();
             totalTriggered += info.getTriggeredCount();
             
-            log.info("  {} : {}/{} ({:.1f}%)", 
-                info.getApiKey(), 
-                info.getTriggeredCount(), 
+            log.info("  {} : {}/{} ({}%)",
+                info.getApiKey(),
+                info.getTriggeredCount(),
                 info.getDiscoveredCount(),
-                info.getCoveragePercentage());
+                String.format("%.1f", info.getCoveragePercentage()));
             
             if (info.getUntriggeredCount() > 0) {
                 List<Integer> untriggered = info.getDiscoveredCodes().stream()
@@ -332,7 +332,7 @@ public class StatusCodeCoverageTracker {
         double overallPercentage = totalDiscovered > 0 ? 
             (totalTriggered * 100.0) / totalDiscovered : 100.0;
         
-        log.info("  TOTAL: {}/{} ({:.1f}%)", totalTriggered, totalDiscovered, overallPercentage);
+        log.info("  TOTAL: {}/{} ({}%)", totalTriggered, totalDiscovered, String.format("%.1f", overallPercentage));
         log.info("==========================================");
     }
     

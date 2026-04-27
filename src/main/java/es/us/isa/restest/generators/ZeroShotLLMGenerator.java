@@ -18,12 +18,17 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * A "zero-shot" style generator that queries a Large Language Model (LLM)
  * to produce realistic sample values for *any* parameter concept,
  * without enumerating categories like IP, city, country, etc.
  */
 public class ZeroShotLLMGenerator {
+
+    private static final Logger log = LogManager.getLogger(ZeroShotLLMGenerator.class);
 
     // optional: param name -> cached list of values
     private final Map<String, List<String>> cache = new ConcurrentHashMap<>();
@@ -355,9 +360,17 @@ public class ZeroShotLLMGenerator {
                     
                 case "boolean":
                 case "bool":
-                    return Boolean.parseBoolean(value);
-                    
+                    // Only convert literal "true"/"false" — anything else is a TYPE_MISMATCH
+                    // invalid value and must be preserved as-is (Boolean.parseBoolean would
+                    // silently coerce e.g. "yes" / "1" / "garbage" to a perfectly valid Boolean.FALSE).
+                    if ("true".equalsIgnoreCase(value)) return Boolean.TRUE;
+                    if ("false".equalsIgnoreCase(value)) return Boolean.FALSE;
+                    return value;
+
                 case "null":
+                    // Sentinel used by callers to route this entry into NULL_INPUT rather than
+                    // TYPE_MISMATCH. parseTypedValue itself does not know which pool it serves, so
+                    // returning Java null here is acceptable; the caller filters it out.
                     return null;
                     
                 case "string":
@@ -384,10 +397,10 @@ public class ZeroShotLLMGenerator {
     private void addDefaultTypeMismatches(String paramType, es.us.isa.restest.inputs.InvalidInputPool pool) {
         switch (paramType) {
             case "string":
-                // String expects text, provide numbers/booleans/null
+                // String expects text — provide a numeric and a boolean. Null values are owned by
+                // the NULL_INPUT category (which is required-only-gated) and must not leak here.
                 pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 12345);
                 pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, true);
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, null);
                 break;
                 
             case "integer":
@@ -420,9 +433,9 @@ public class ZeroShotLLMGenerator {
                 break;
                 
             default:
-                // Generic type mismatches
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, null);
+                // Generic type mismatches — null values are owned by NULL_INPUT, not TYPE_MISMATCH.
                 pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 999);
+                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_the_expected_type");
                 break;
         }
     }
@@ -542,25 +555,29 @@ public class ZeroShotLLMGenerator {
     }
     
     /**
-     * Generate empty inputs for ALL parameters (both required and optional)
-     * Even optional parameters should be tested with empty values to catch edge cases
+     * Generate empty inputs for REQUIRED parameters only.
+     * Empty values are valid for optional parameters and must not be added to the negative pool —
+     * doing so would cause the API to legitimately accept the request and the test to be marked
+     * as a fault-detection regression. This matches {@code HardcodedInvalidInputGenerator} and
+     * the policy stated in {@code flow.md}.
      */
     private void generateEmptyInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        boolean isRequired = param.getRequired() != null && param.getRequired();
-        String requiredStatus = isRequired ? "REQUIRED" : "OPTIONAL";
-        
-        System.out.println("✅ Generating EMPTY_INPUT for " + requiredStatus + " parameter: " + param.getName());
+        if (param.getRequired() == null || !param.getRequired()) {
+            log.debug("⚠️ Skipping EMPTY_INPUT for optional parameter: {}", param.getName());
+            return;
+        }
+        log.debug("✅ Generating EMPTY_INPUT for REQUIRED parameter: {}", param.getName());
         String paramType = safeStr(param.getType()).toLowerCase();
-        
+
         // Empty string
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "");
-        
+
         // Whitespace only
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, " ");
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "   ");
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "\t");
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "\n");
-        
+
         // Type-specific empty values
         if ("array".equals(paramType)) {
             pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "[]");
@@ -568,20 +585,22 @@ public class ZeroShotLLMGenerator {
             pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "{}");
         }
     }
-    
+
     /**
-     * Generate null inputs for ALL parameters (both required and optional)
-     * Even optional parameters should be tested with null values to catch edge cases
+     * Generate null inputs for REQUIRED parameters only.
+     * Null is a valid value for optional parameters and must not be added to the negative pool —
+     * see {@link #generateEmptyInputs(ParameterInfo, es.us.isa.restest.inputs.InvalidInputPool)}.
      */
     private void generateNullInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
-        boolean isRequired = param.getRequired() != null && param.getRequired();
-        String requiredStatus = isRequired ? "REQUIRED" : "OPTIONAL";
-        
-        System.out.println("✅ Generating NULL_INPUT for " + requiredStatus + " parameter: " + param.getName());
-        
+        if (param.getRequired() == null || !param.getRequired()) {
+            log.debug("⚠️ Skipping NULL_INPUT for optional parameter: {}", param.getName());
+            return;
+        }
+        log.debug("✅ Generating NULL_INPUT for REQUIRED parameter: {}", param.getName());
+
         // Actual null
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, null);
-        
+
         // String representations of null (sometimes APIs parse these)
         // NOTE: Only use lowercase "null" to avoid class name conflicts on case-insensitive filesystems
         pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");

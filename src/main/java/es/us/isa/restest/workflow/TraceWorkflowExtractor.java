@@ -581,37 +581,46 @@ public class TraceWorkflowExtractor {
 
     /**
      * Recursively extracts all leaf key-value pairs from a JSONObject into the field map.
-     * Nested objects are flattened by combining parent and child keys with a dot, to avoid key collisions.
+     * Each leaf is stored under its dot-prefixed path (e.g., {@code data.orderId}) and also under
+     * its bare key name with first-wins semantics so that the shallowest occurrence is preserved
+     * for cross-trace merging. Last-wins clobbering of duplicate inner keys is avoided.
      *
      * @param jsonObj the JSONObject to extract fields from
-     *
      * @param fieldMap the map to populate with extracted fields
      */
     private static void extractJsonObjectFields(JSONObject jsonObj, Map<String, String> fieldMap) {
-        // Iterate over the keys in the JSON object
+        extractJsonObjectFields(jsonObj, fieldMap, "");
+    }
+
+    private static void extractJsonObjectFields(JSONObject jsonObj, Map<String, String> fieldMap, String prefix) {
         for (String key : jsonObj.keySet()) {
             Object valueObj = jsonObj.get(key);
             if (valueObj == null) {
                 continue; // skip null values
             }
+            String prefixedKey = prefix.isEmpty() ? key : prefix + "." + key;
             if (valueObj instanceof JSONObject) {
-                // Nested object: recurse with prefix
-                extractJsonObjectFields((JSONObject) valueObj, fieldMap);
+                extractJsonObjectFields((JSONObject) valueObj, fieldMap, prefixedKey);
             } else if (valueObj instanceof JSONArray) {
                 JSONArray array = (JSONArray) valueObj;
                 boolean hasObjects = false;
                 for (int idx = 0; idx < array.length(); idx++) {
                     if (array.get(idx) instanceof JSONObject) {
-                        extractJsonObjectFields(array.getJSONObject(idx), fieldMap);
+                        extractJsonObjectFields(array.getJSONObject(idx), fieldMap, prefixedKey);
                         hasObjects = true;
                     }
                 }
                 if (!hasObjects) {
-                    fieldMap.put(key, array.toString());
+                    String arrayString = array.toString();
+                    fieldMap.put(prefixedKey, arrayString);
+                    // Bare-key alias — first-wins so top-level / shallowest values are preserved
+                    fieldMap.putIfAbsent(key, arrayString);
                 }
             } else {
-                // Primitive value (string/number/boolean)
-                fieldMap.put(key, valueObj.toString());
+                String stringValue = valueObj.toString();
+                fieldMap.put(prefixedKey, stringValue);
+                // Bare-key alias — first-wins so top-level / shallowest values are preserved
+                fieldMap.putIfAbsent(key, stringValue);
             }
         }
     }
@@ -703,26 +712,66 @@ public class TraceWorkflowExtractor {
 
             if (!isUuid && !isLongId) continue;
 
-            // Determine the key name from the preceding segment
+            // Determine the key name from the preceding segment.
+            // Only derive a semantic key when the previous segment is meaningful — short fragments
+            // like "as", "ts", "v1", or "api" produce keys ("aId", "tId", "v1Id", "apiId") that
+            // are clutter at best and false producer/consumer matches at worst.
             String key = null;
             if (i > 0) {
                 String prev = segments[i - 1].toLowerCase();
                 key = NOUN_TO_KEY.get(prev);
-                if (key == null && !prev.isEmpty()) {
-                    // Derive a key: strip trailing 's' for plural, append "Id"
-                    String singular = prev.endsWith("s") && prev.length() > 1
-                            ? prev.substring(0, prev.length() - 1) : prev;
+                if (key == null && isMeaningfulPathNoun(prev)) {
+                    // Derive a key: strip trailing 's' for plural (only when not a protected
+                    // non-plural like "news"/"address"), append "Id".
+                    String singular = stripPluralForUrlSegment(prev);
                     key = singular + "Id";
                 }
             }
+            // If we couldn't derive a semantic name, skip the segment entirely. The previous
+            // {@code pathParam_i} fallback was matching by happenstance across unrelated traces
+            // when two requests reused the same UUID at the same positional index.
             if (key == null) {
-                key = "pathParam_" + i;
+                log.debug("URL path param: skipping segment '{}' at index {} (no semantic key)", seg, i);
+                continue;
             }
 
             fieldMap.put(key, seg);
             log.debug("URL path param: {}={} (from {})", key, seg, path);
         }
     }
+
+    /** True when the path segment is plausibly a resource noun (not a version, scheme, etc.). */
+    private static boolean isMeaningfulPathNoun(String seg) {
+        if (seg == null || seg.length() < 3) return false;
+        // Must be lowercase letters only (rules out "v1", "api/v2", numeric IDs, etc.).
+        for (int i = 0; i < seg.length(); i++) {
+            char c = seg.charAt(i);
+            if (c < 'a' || c > 'z') return false;
+        }
+        // Reject common non-resource path tokens.
+        return !PATH_NOISE_TOKENS.contains(seg);
+    }
+
+    private static final java.util.Set<String> PATH_NOISE_TOKENS = new java.util.HashSet<>(
+            java.util.Arrays.asList("api", "rest", "service", "services", "internal", "external",
+                    "public", "private", "v", "version"));
+
+    /** Strip a trailing 's' for plural-singular conversion, but protect common non-plurals. */
+    private static String stripPluralForUrlSegment(String seg) {
+        if (seg.length() <= 2 || !seg.endsWith("s")) return seg;
+        String last2 = seg.substring(seg.length() - 2);
+        if (last2.equals("ss") || last2.equals("us") || last2.equals("is")
+                || last2.equals("os") || last2.equals("as")) {
+            return seg;
+        }
+        if (PATH_NON_PLURAL_S.contains(seg)) return seg;
+        return seg.substring(0, seg.length() - 1);
+    }
+
+    private static final java.util.Set<String> PATH_NON_PLURAL_S = new java.util.HashSet<>(
+            java.util.Arrays.asList("news", "bus", "gas", "boss", "address", "atlas",
+                    "canvas", "chaos", "campus", "focus", "menus", "virus", "lens",
+                    "series", "species"));
 
     // ---- end URL path-parameter extraction ------------------------------------
 

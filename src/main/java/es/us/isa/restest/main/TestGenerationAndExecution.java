@@ -286,7 +286,7 @@ public class TestGenerationAndExecution {
 				logger.info("🔍 Fault Detection Summary:");
 				logger.info("   - Total Injected Faults: {}", stats.get("totalInjectedFaults"));
 				logger.info("   - Detected Faults: {}", stats.get("detectedFaults"));
-				logger.info("   - Detection Rate: {:.1f}%", stats.get("detectionRate"));
+				logger.info("   - Detection Rate: {}%", String.format("%.1f", ((Number) stats.get("detectionRate")).doubleValue()));
 				logger.info("   - Report saved to: {}", faultReportDir);
 			}
 			
