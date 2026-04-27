@@ -517,3 +517,24 @@
 
 2026-04-27 15:10:54 INFO  TraceWorkflowExtractor:64 - Processing 1 trace files from directory: src/main/resources/My-Example/trainticket/test-trace
 2026-04-27 15:10:54 INFO  TraceWorkflowExtractor:66 - Processing trace file: traces-1772605095842.json
+2026-04-27 15:10:59 ERROR stderr:36 - Exception in thread "main" 
+2026-04-27 15:10:59 ERROR stderr:36 - java.lang.NoClassDefFoundError: es/us/isa/restest/workflow/WorkflowScenario
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at es.us.isa.restest.workflow.TraceWorkflowExtractor.extractScenariosFromFile(TraceWorkflowExtractor.java:219)
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at es.us.isa.restest.workflow.TraceWorkflowExtractor.extractScenarios(TraceWorkflowExtractor.java:73)
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at es.us.isa.restest.main.TestGenerationAndExecution.createGenerator(TestGenerationAndExecution.java:439)
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at es.us.isa.restest.main.TestGenerationAndExecution.main(TestGenerationAndExecution.java:156)
+
+2026-04-27 15:10:59 ERROR stderr:36 - Caused by: java.lang.ClassNotFoundException: es.us.isa.restest.workflow.WorkflowScenario
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+
+2026-04-27 15:10:59 ERROR stderr:36 - 	... 4 more
+
