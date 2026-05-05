@@ -199,40 +199,72 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
     }
     
     /**
-     * Create ParameterInfo object with error context from registry
+     * Path-keyed in-memory cache of {@link InputFetchRegistry}. The previous implementation
+     * re-parsed the entire (~1.6 MB / 51 K-line) registry YAML on every parameter generation,
+     * burning seconds of wall time per scenario (Bug audit Finding #13).
+     *
+     * <p>The cache is invalidated when the registry file's mtime changes — sufficient for
+     * concurrent reads from a single JVM. Reviewer Comment 19: this is a process-wide
+     * cache so multiple {@code SmartLLMParameterGenerator}/{@code SmartInputFetcher}
+     * instances share a single view.</p>
+     */
+    private static final java.util.concurrent.ConcurrentMap<String, CachedRegistry> REGISTRY_CACHE =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
+    private static final class CachedRegistry {
+        final InputFetchRegistry registry;
+        final long lastModified;
+        CachedRegistry(InputFetchRegistry r, long m) { this.registry = r; this.lastModified = m; }
+    }
+
+    /**
+     * Returns the cached registry for the given path, or loads + caches it on miss.
+     * Returns {@code null} when the path is unset / file missing / parse fails.
+     */
+    static InputFetchRegistry sharedRegistry(String registryPath) {
+        if (registryPath == null || registryPath.isEmpty()) return null;
+        java.io.File registryFile = new java.io.File(registryPath);
+        if (!registryFile.exists()) return null;
+        long mtime = registryFile.lastModified();
+        CachedRegistry cached = REGISTRY_CACHE.get(registryPath);
+        if (cached != null && cached.lastModified == mtime) {
+            return cached.registry;
+        }
+        try {
+            InputFetchRegistry loaded = InputFetchRegistry.loadFromFile(registryFile);
+            REGISTRY_CACHE.put(registryPath, new CachedRegistry(loaded, mtime));
+            return loaded;
+        } catch (java.io.IOException e) {
+            logger.debug("Failed to load registry from {}: {}", registryPath, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Create ParameterInfo object with error context from registry.
      */
     private ParameterInfo createParameterInfoWithErrorContext() {
         ParameterInfo pinfo = createParameterInfo();
-        
         try {
-            // Load error context from registry
             String registryPath = System.getProperty("smart.input.fetch.registry.path");
-            if (registryPath != null && !registryPath.isEmpty()) {
-                java.io.File registryFile = new java.io.File(registryPath);
-                if (registryFile.exists()) {
-                    InputFetchRegistry registry = InputFetchRegistry.loadFromFile(registryFile);
-                    
-                    // Build API endpoint identifier 
-                    String apiEndpoint = getOperationPath();
-                    if (apiEndpoint != null) {
-                        String errorContext = registry.getErrorContextForParameter(apiEndpoint, pinfo.getName());
-                        if (!errorContext.isEmpty()) {
-                            // Enhance the description with error context
-                            String existingDesc = pinfo.getDescription() != null ? pinfo.getDescription() : "";
-                            String enhancedDesc = existingDesc + "\n\n" + errorContext;
-                            pinfo.setDescription(enhancedDesc);
-                            
-                            logger.debug("Added error context for parameter '{}' on endpoint '{}': {} error patterns found",
-                                       pinfo.getName(), apiEndpoint, 
-                                       registry.getParameterErrors(apiEndpoint, pinfo.getName()).size());
-                        }
+            InputFetchRegistry registry = sharedRegistry(registryPath);
+            if (registry != null) {
+                String apiEndpoint = getOperationPath();
+                if (apiEndpoint != null) {
+                    String errorContext = registry.getErrorContextForParameter(apiEndpoint, pinfo.getName());
+                    if (!errorContext.isEmpty()) {
+                        String existingDesc = pinfo.getDescription() != null ? pinfo.getDescription() : "";
+                        String enhancedDesc = existingDesc + "\n\n" + errorContext;
+                        pinfo.setDescription(enhancedDesc);
+                        logger.debug("Added error context for parameter '{}' on endpoint '{}': {} error patterns found",
+                                pinfo.getName(), apiEndpoint,
+                                registry.getParameterErrors(apiEndpoint, pinfo.getName()).size());
                     }
                 }
             }
         } catch (Exception e) {
             logger.debug("Could not load error context for parameter '{}': {}", pinfo.getName(), e.getMessage());
         }
-        
         return pinfo;
     }
     

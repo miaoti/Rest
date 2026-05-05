@@ -1,6 +1,7 @@
 package es.us.isa.restest.inputs.smart;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -16,6 +17,18 @@ public class ApiMapping {
     private LocalDateTime lastUsed;
     private double successRate;  // 0.0 to 1.0
     private String description;
+    /**
+     * Consumer API key (e.g., {@code "POST /api/v1/orderservice/orders"}) that triggered
+     * the discovery of this mapping. {@code null} means "global" — this mapping applies to
+     * any consumer of the parameter. (Bug audit Finding #15 + Reviewer Comment 2.)
+     *
+     * <p>The persisted YAML keeps {@code parameterMappings} keyed by bare parameter name for
+     * back-compat (preserving existing learning at registry-cleanup time), but each entry
+     * now records its consumer scope. {@link InputFetchRegistry#getMappingsForParameter}
+     * returns scoped mappings ahead of global ones, so two operations sharing parameter
+     * name {@code id} no longer pollute each other's candidate list.</p>
+     */
+    private String consumerApiKey;
     
     // Default constructor
     public ApiMapping() {
@@ -54,24 +67,50 @@ public class ApiMapping {
     }
     
     /**
-     * Update success rate based on fetch result
+     * Default decay window in days for the recentness axis of {@link #calculateScore()}.
+     * A mapping last used today scores 1.0 on recentness; one last used {@code DECAY_DAYS}+
+     * days ago scores 0.0. Configurable per-instance via {@link #setDecayDays(int)}.
+     */
+    private static final int DEFAULT_DECAY_DAYS = 30;
+    private int decayDays = DEFAULT_DECAY_DAYS;
+
+    /**
+     * Default EMA learning rate; bigger values let a fresh upstream recover faster
+     * after a streak of failures (e.g. when the SUT was temporarily down).
+     */
+    private static final double DEFAULT_EMA_ALPHA = 0.1;
+    private double emaAlpha = DEFAULT_EMA_ALPHA;
+
+    /**
+     * Update success rate based on fetch result.
      */
     public void updateSuccessRate(boolean success) {
-        // Simple exponential moving average
-        double alpha = 0.1; // Learning rate
-        this.successRate = alpha * (success ? 1.0 : 0.0) + (1 - alpha) * this.successRate;
+        this.successRate = emaAlpha * (success ? 1.0 : 0.0) + (1 - emaAlpha) * this.successRate;
         this.lastUsed = LocalDateTime.now();
     }
-    
+
+    public int getDecayDays() { return decayDays; }
+    public void setDecayDays(int decayDays) {
+        if (decayDays > 0) this.decayDays = decayDays;
+    }
+
+    public double getEmaAlpha() { return emaAlpha; }
+    public void setEmaAlpha(double emaAlpha) {
+        if (emaAlpha > 0.0 && emaAlpha <= 1.0) this.emaAlpha = emaAlpha;
+    }
+
     /**
-     * Calculate overall score for ranking APIs
+     * Calculate overall score for ranking APIs.
+     *
+     * Recentness uses {@link ChronoUnit#DAYS} between {@code lastUsed} and now; the prior
+     * implementation divided {@code LocalDateTime.compareTo} (which returns -1/0/+1) by 86400,
+     * which made recentnessScore ≈ 1.0 for every mapping regardless of staleness — defeating
+     * the whole {@code lastUsed} field. (Bug audit Finding #1.)
      */
     public double calculateScore() {
-        // Combine priority, success rate, and recency
         double priorityScore = priority / 10.0;
-        double recentnessScore = Math.max(0, 1.0 - 
-            (LocalDateTime.now().compareTo(lastUsed) / (24.0 * 60 * 60))); // Days ago
-        
+        long daysSince = lastUsed != null ? ChronoUnit.DAYS.between(lastUsed, LocalDateTime.now()) : decayDays;
+        double recentnessScore = Math.max(0.0, 1.0 - (double) daysSince / decayDays);
         return (0.5 * priorityScore) + (0.3 * successRate) + (0.2 * recentnessScore);
     }
     
@@ -99,6 +138,9 @@ public class ApiMapping {
     
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getConsumerApiKey() { return consumerApiKey; }
+    public void setConsumerApiKey(String consumerApiKey) { this.consumerApiKey = consumerApiKey; }
     
     @Override
     public boolean equals(Object o) {

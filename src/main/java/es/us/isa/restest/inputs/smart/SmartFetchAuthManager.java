@@ -18,36 +18,61 @@ import java.time.temporal.ChronoUnit;
  * Handles login and JWT token management for TrainTicket system
  */
 public class SmartFetchAuthManager {
-    
+
     private static final Logger log = LogManager.getLogger(SmartFetchAuthManager.class);
-    
+
     private final String baseUrl;
     private final String adminUsername;
     private final String adminPassword;
-    
-    // JWT token management
-    private String jwtToken;
-    private String jwtType = "Bearer";
-    private LocalDateTime tokenExpiry;
-    private static final int TOKEN_VALIDITY_MINUTES = 30; // Conservative estimate
-    
+
+    // Bug audit Finding #11: configurable login plumbing — was previously hardcoded to
+    // TrainTicket's {@code /api/v1/users/login}, JSON keys {@code username}/{@code password},
+    // response path {@code data.token}, and 30-minute expiry.
+    private final String loginPath;
+    private final String loginUsernameField;
+    private final String loginPasswordField;
+    private final String tokenJsonPath;
+    private final int tokenValidityMinutes;
+
+    // JWT token management. Reviewer Comment 4: synchronized accessor below to prevent
+    // concurrent 401-retry races where multiple fetchers double-login simultaneously.
+    private volatile String jwtToken;
+    private final String jwtType = "Bearer";
+    private volatile LocalDateTime tokenExpiry;
+
     public SmartFetchAuthManager(String baseUrl, String adminUsername, String adminPassword) {
-        this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+        this(baseUrl, adminUsername, adminPassword,
+                "/api/v1/users/login", "username", "password", "data.token", 30);
+    }
+
+    public SmartFetchAuthManager(String baseUrl, String adminUsername, String adminPassword,
+                                  String loginPath, String loginUsernameField,
+                                  String loginPasswordField, String tokenJsonPath,
+                                  int tokenValidityMinutes) {
+        this.baseUrl = baseUrl != null && baseUrl.endsWith("/")
+                ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.adminUsername = adminUsername;
         this.adminPassword = adminPassword;
-        
-        log.info("SmartFetchAuthManager initialized for baseUrl: {}, username: {}", baseUrl, adminUsername);
+        this.loginPath = loginPath != null ? loginPath : "/api/v1/users/login";
+        this.loginUsernameField = loginUsernameField != null ? loginUsernameField : "username";
+        this.loginPasswordField = loginPasswordField != null ? loginPasswordField : "password";
+        this.tokenJsonPath = tokenJsonPath != null ? tokenJsonPath : "data.token";
+        this.tokenValidityMinutes = tokenValidityMinutes > 0 ? tokenValidityMinutes : 30;
+
+        log.info("SmartFetchAuthManager initialized for baseUrl: {}, username: {}, loginPath: {}",
+                baseUrl, adminUsername, this.loginPath);
     }
     
     /**
-     * Get valid JWT token, performing login if necessary
+     * Get valid JWT token, performing login if necessary. Reviewer Comment 4:
+     * synchronized so concurrent fetchers do not all try to relogin simultaneously after
+     * a token expires — the second caller waits and reuses the freshly-acquired token.
      */
-    public String getValidToken() {
+    public synchronized String getValidToken() {
         if (isTokenValid()) {
             log.debug("Using existing valid JWT token");
             return jwtToken;
         }
-        
         log.info("🔐 JWT token expired or missing, performing admin login...");
         return performLogin();
     }
@@ -70,11 +95,11 @@ public class SmartFetchAuthManager {
         if (jwtToken == null || tokenExpiry == null) {
             return false;
         }
-        
         // Check if token expires within next 5 minutes (buffer for safety)
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expiryWithBuffer = tokenExpiry.minus(5, ChronoUnit.MINUTES);
-        
+        // Use min(5, half of validity window) so a 1-minute test token still works.
+        long bufferMinutes = Math.min(5, Math.max(1, tokenValidityMinutes / 2));
+        LocalDateTime expiryWithBuffer = tokenExpiry.minus(bufferMinutes, ChronoUnit.MINUTES);
         return now.isBefore(expiryWithBuffer);
     }
     
@@ -83,60 +108,69 @@ public class SmartFetchAuthManager {
      */
     private String performLogin() {
         try {
-            String loginUrl = baseUrl + "/api/v1/users/login";
+            String loginUrl = baseUrl + loginPath;
             log.info("🔐 Attempting admin login to: {}", loginUrl);
-            
-            // Create login request
+
             URL url = new URL(loginUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
-            conn.setConnectTimeout(10000); // 10 seconds
+            conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
-            
-            // Build login payload
+
             JSONObject loginPayload = new JSONObject();
-            loginPayload.put("username", adminUsername);
-            loginPayload.put("password", adminPassword);
-            
-            // Send request
+            loginPayload.put(loginUsernameField, adminUsername);
+            loginPayload.put(loginPasswordField, adminPassword);
+
             try (OutputStream os = conn.getOutputStream()) {
                 byte[] input = loginPayload.toString().getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
-            
-            // Read response
+
             int responseCode = conn.getResponseCode();
             String responseBody = readResponse(conn);
-            
+
             if (responseCode == 200) {
-                // Parse JWT token from response
                 JSONObject response = new JSONObject(responseBody);
-                
-                if (response.has("data") && response.getJSONObject("data").has("token")) {
-                    jwtToken = response.getJSONObject("data").getString("token");
-                    tokenExpiry = LocalDateTime.now().plus(TOKEN_VALIDITY_MINUTES, ChronoUnit.MINUTES);
-                    
+                String extracted = extractTokenAtPath(response, tokenJsonPath);
+                if (extracted != null && !extracted.isEmpty()) {
+                    jwtToken = extracted;
+                    tokenExpiry = LocalDateTime.now().plus(tokenValidityMinutes, ChronoUnit.MINUTES);
                     log.info("✅ Admin login successful, JWT token obtained (expires: {})", tokenExpiry);
-                    log.debug("JWT token: {}...", jwtToken != null ? jwtToken.substring(0, Math.min(20, jwtToken.length())) : "null");
-                    
+                    log.debug("JWT token: {}...", jwtToken.substring(0, Math.min(20, jwtToken.length())));
                     return jwtToken;
                 } else {
-                    log.error("❌ Login response missing token field: {}", responseBody);
+                    log.error("❌ Login response missing token at path '{}': {}",
+                            tokenJsonPath, responseBody);
                 }
             } else {
                 log.error("❌ Admin login failed with HTTP {}: {}", responseCode, responseBody);
             }
-            
         } catch (Exception e) {
             log.error("❌ Admin login failed with exception: {}", e.getMessage(), e);
         }
-        
-        // Clear invalid token
         jwtToken = null;
         tokenExpiry = null;
         return null;
+    }
+
+    /**
+     * Extract a token from a dotted JSON path (e.g. {@code data.token} or {@code access_token}).
+     * Returns {@code null} if any segment is missing or non-string at the leaf.
+     */
+    private static String extractTokenAtPath(JSONObject root, String dotted) {
+        if (root == null || dotted == null || dotted.isEmpty()) return null;
+        String[] parts = dotted.split("\\.");
+        Object cursor = root;
+        for (int i = 0; i < parts.length; i++) {
+            if (!(cursor instanceof JSONObject)) return null;
+            JSONObject obj = (JSONObject) cursor;
+            String segment = parts[i];
+            if (!obj.has(segment)) return null;
+            cursor = obj.opt(segment);
+        }
+        return cursor instanceof String ? (String) cursor : null;
     }
     
     /**
@@ -164,7 +198,7 @@ public class SmartFetchAuthManager {
     /**
      * Force token refresh on next request
      */
-    public void invalidateToken() {
+    public synchronized void invalidateToken() {
         log.info("🔄 Invalidating JWT token, will re-login on next request");
         jwtToken = null;
         tokenExpiry = null;

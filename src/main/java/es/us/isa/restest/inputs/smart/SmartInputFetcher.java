@@ -8,8 +8,8 @@ import es.us.isa.restest.llm.LLMConfig;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
+// JsonPath / PathNotFoundException imports removed — JSONPath is fully retired in favor
+// of direct LLM extraction (Bug audit Findings #9, #31; Reviewer Comment 14).
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,10 +59,37 @@ public class SmartInputFetcher {
 
     // Runtime data
     private InputFetchRegistry registry;
+    /**
+     * Bug audit Finding #24: caches are bounded by {@link CacheConfig#getMaxEntries()}.
+     * The previous implementation used unbounded {@link ConcurrentHashMap}, which leaks
+     * in long-running soak tests and never honored the {@code maxEntries} config field.
+     * We now use a synchronized LinkedHashMap that evicts least-recently-accessed entries
+     * once the cap is exceeded.
+     */
     private Map<String, CachedValue> cache;
-    private Map<String, List<String>> diverseValueCache; // Cache multiple values per parameter
-    private Map<String, Integer> valueRotationIndex; // Track which value to use next
+    private Map<String, List<String>> diverseValueCache;
+    private Map<String, Integer> valueRotationIndex;
     private String baseUrl;
+
+    /**
+     * Construct a bounded LRU map with the given capacity. Access-order ensures that
+     * frequently-used entries survive eviction. Wrapped in {@code synchronizedMap} so
+     * the existing {@code ConcurrentHashMap}-style synchronization assumptions hold for
+     * single-key operations; the caller is responsible for compound atomicity (which the
+     * existing code already manages via {@code synchronized (list) { ... }} blocks).
+     */
+    private static <K, V> Map<K, V> boundedLruMap(int capacity) {
+        if (capacity <= 0) {
+            return java.util.Collections.synchronizedMap(new java.util.LinkedHashMap<>(16, 0.75f, true));
+        }
+        final int max = capacity;
+        return java.util.Collections.synchronizedMap(new java.util.LinkedHashMap<K, V>(16, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+                return size() > max;
+            }
+        });
+    }
 
     // Cache for fetched values
     private static class CachedValue {
@@ -79,6 +106,15 @@ public class SmartInputFetcher {
         }
     }
 
+    /**
+     * Reviewer Comment 1: track in-memory mutations to {@code registry} that originate
+     * from Priority-1 (registry-mapping) success/failure updates so we can flush them on
+     * scenario boundary or JVM shutdown — previously {@code saveRegistry()} only ran
+     * after discovery, so {@code ApiMapping.successRate}/{@code lastUsed} updates from
+     * subsequent fetches were lost on next run.
+     */
+    private volatile boolean registryDirty = false;
+
     public SmartInputFetcher(SmartInputFetchConfig config, String baseUrl) {
         this.config = config;
         this.baseUrl = baseUrl;
@@ -90,23 +126,67 @@ public class SmartInputFetcher {
 
         this.objectMapper = new ObjectMapper();
         this.random = es.us.isa.restest.util.SeededRandom.create("SmartInputFetcher");
-        this.cache = new ConcurrentHashMap<>();
-        this.diverseValueCache = new ConcurrentHashMap<>();
-        this.valueRotationIndex = new ConcurrentHashMap<>();
+        // Bug audit Finding #24: bound the caches by CacheConfig.maxEntries (default 1000).
+        // Each cache key is a parameter signature; with hundreds of test parameters per run
+        // the bound is comfortably above working-set size but caps long-running test pools.
+        int cacheCap = config.isCacheEnabled()
+                ? Math.max(1, registryCacheCapacity()) : 1;
+        this.cache = boundedLruMap(cacheCap);
+        this.diverseValueCache = boundedLruMap(cacheCap);
+        this.valueRotationIndex = boundedLruMap(cacheCap);
         this.openAPIDiscovery = new OpenAPIEndpointDiscovery();
 
-        // Initialize authentication manager
+        // Initialize authentication manager (Bug audit Finding #11: now accepts a generic
+        // login URL/body/token-path/expiry config so it is no longer TrainTicket-specific).
         this.authManager = new SmartFetchAuthManager(
             baseUrl,
             config.getAuthAdminUsername(),
-            config.getAuthAdminPassword()
+            config.getAuthAdminPassword(),
+            config.getAuthLoginPath(),
+            config.getAuthLoginUsernameField(),
+            config.getAuthLoginPasswordField(),
+            config.getAuthTokenJsonPath(),
+            config.getAuthTokenValidityMinutes()
         );
 
         loadRegistry();
         loadOpenAPISpec();
 
+        // Reviewer Comment 1: persist Priority-1 mutations on JVM exit. Without this, the
+        // freshness-recency signal from Stream 5 cannot accumulate across runs.
+        Runtime.getRuntime().addShutdownHook(new Thread(this::flushIfDirty,
+                "smart-fetch-registry-flush"));
+
         log.info("SmartInputFetcher initialized with config: {}", config);
         log.info("Authentication manager configured: {}", authManager.isConfigured());
+    }
+
+    /**
+     * Persist the in-memory registry to disk if any Priority-1 mutation has occurred since
+     * the last save. Safe to call multiple times; no-op when clean. Used by the JVM shutdown
+     * hook and may be called by callers at scenario-boundary for tighter durability
+     * (Reviewer Comment 1).
+     */
+    /**
+     * Resolve the LRU bound for the in-memory caches from {@link CacheConfig#getMaxEntries()}.
+     * Defaults to 1000 if the registry has not been loaded yet (the cache is constructed
+     * before {@code loadRegistry()} runs).
+     */
+    private int registryCacheCapacity() {
+        return registry != null && registry.getCacheConfig() != null
+                ? registry.getCacheConfig().getMaxEntries()
+                : 1000;
+    }
+
+    public void flushIfDirty() {
+        if (registryDirty) {
+            try {
+                saveRegistry();
+                registryDirty = false;
+            } catch (Exception e) {
+                log.warn("Failed to flush dirty registry: {}", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -242,9 +322,13 @@ public class SmartInputFetcher {
             log.info("All trace-observed endpoints exhausted for '{}', falling back to registry", paramName);
         }
 
-        // Look for existing mappings
-        List<ApiMapping> mappings = registry.getMappingsForParameter(paramName);
-        log.info("Parameter '{}' has {} existing registry mappings", paramName, mappings.size());
+        // Bug audit Finding #15: scope mapping lookup by consumer API so two operations that
+        // both have a parameter named e.g. {@code id} do not pollute each other's candidate
+        // list. Falls back to global-tier mappings (legacy entries with no recorded scope).
+        String consumerApiKey = parameterInfo.getApiName();
+        List<ApiMapping> mappings = registry.getMappingsForParameter(consumerApiKey, paramName);
+        log.info("Parameter '{}' (consumer='{}') has {} existing registry mappings (scoped+global)",
+                paramName, consumerApiKey != null ? consumerApiKey : "<global>", mappings.size());
 
         // If no mappings found, try to discover new ones
         if (mappings.isEmpty() && config.isLlmDiscoveryEnabled()) {
@@ -268,6 +352,7 @@ public class SmartInputFetcher {
                     if (isValidValueForParameter(value, parameterInfo)) {
                         // Update success rate and cache only valid values
                         mapping.updateSuccessRate(true);
+                        registryDirty = true;
                         cacheValue(parameterInfo, value);
 
                         log.debug("Successfully fetched valid value '{}' for parameter '{}' from {}",
@@ -277,16 +362,20 @@ public class SmartInputFetcher {
                         log.warn("Rejecting invalid value '{}' for parameter '{}' from {}",
                                 value, paramName, mapping.getEndpoint());
                         mapping.updateSuccessRate(false);
+                        registryDirty = true;
                     }
                 }
             } catch (Exception e) {
                 log.debug("Failed to fetch from mapping {}: {}", mapping, e.getMessage());
                 mapping.updateSuccessRate(false);
+                registryDirty = true;
             }
         }
 
-        // If all smart sources failed, fall back to LLM
-        throw new Exception("No smart sources available for parameter: " + paramName);
+        // If all smart sources failed, return null. The caller already handles a null result
+        // by falling back to LLM and logging "FAILED (no good matches found)". Using an
+        // exception for ordinary control flow is wasteful (Bug audit Finding #8).
+        return null;
     }
 
     /**
@@ -299,12 +388,9 @@ public class SmartInputFetcher {
         try {
             log.info("🔍 Starting discovery for parameter '{}'", paramName);
 
-            // 1. Pattern-based discovery
-            List<ApiMapping> patternMappings = discoverByPatterns(parameterInfo);
-            discoveries.addAll(patternMappings);
-            log.info("📋 Pattern discovery for '{}' found {} mappings", paramName, patternMappings.size());
-
-            // 2. LLM-based discovery
+            // Pattern discovery was a no-op stub that always returned an empty list and
+            // emitted misleading warning logs (Bug audit Finding #32 + Reviewer C12). It is
+            // now removed; LLM-based discovery is the only supported discovery path.
             if (config.isLlmDiscoveryEnabled()) {
                 List<ApiMapping> llmMappings = discoverByLLM(parameterInfo);
                 discoveries.addAll(llmMappings);
@@ -313,15 +399,21 @@ public class SmartInputFetcher {
                 log.info("🚫 LLM discovery disabled for '{}'", paramName);
             }
 
-            // 3. Save discovered mappings to registry
+            // 3. Save discovered mappings to registry, scoped by consumer (Bug audit Finding #15).
+            String consumerApiKey = parameterInfo.getApiName();
             for (ApiMapping mapping : discoveries) {
-                registry.addMapping(parameterInfo.getName(), mapping);
-                log.info("💾 Saved mapping for '{}': {} -> {}", paramName, mapping.getService(), mapping.getEndpoint());
+                registry.addMapping(consumerApiKey, parameterInfo.getName(), mapping);
+                log.info("💾 Saved mapping for '{}' (consumer='{}'): {} -> {}",
+                        paramName, consumerApiKey != null ? consumerApiKey : "<global>",
+                        mapping.getService(), mapping.getEndpoint());
             }
 
             if (!discoveries.isEmpty()) {
-                saveRegistry(); // Persist learned mappings
-                log.info("✅ Registry updated with {} new mappings for '{}'", discoveries.size(), paramName);
+                // Bug audit Finding #14 finish: mark dirty rather than write immediately;
+                // flushIfDirty handles persistence on scenario boundary / shutdown.
+                registryDirty = true;
+                log.info("✅ Registry updated with {} new mappings for '{}' (deferred save)",
+                        discoveries.size(), paramName);
             } else {
                 log.warn("❌ No mappings discovered for parameter '{}'", paramName);
             }
@@ -331,28 +423,6 @@ public class SmartInputFetcher {
         }
 
         return discoveries;
-    }
-
-    /**
-     * DEPRECATED: Pattern discovery creates JSONPath mappings - we want direct extraction only
-     */
-    private List<ApiMapping> discoverByPatterns(ParameterInfo parameterInfo) {
-        List<ApiMapping> mappings = new ArrayList<>();
-        String paramName = parameterInfo.getName();
-
-        log.info("🔍 Pattern discovery for '{}' checking {} patterns", paramName, registry.getServicePatterns().size());
-        log.warn("❌ DEPRECATED: Pattern discovery creates JSONPath mappings - we want direct extraction only");
-        log.warn("❌ Skipping pattern discovery to avoid JSONPath expressions like '$.data[*].route.endStation'");
-
-        // DISABLED: Pattern discovery creates JSONPath mappings, but we want direct extraction only
-        // The old pattern discovery would create mappings like:
-        // endStation -> /api/v1/stationservice/stations (extractPath: $.data[*].route.endStation)
-        //
-        // Instead, we want LLM-based discovery that creates:
-        // endStation -> /api/v1/stationservice/stations (extractPath: DIRECT_EXTRACTION)
-
-        log.info("📋 Pattern discovery for '{}' created {} mappings (disabled for direct extraction)", paramName, mappings.size());
-        return mappings; // Return empty list to force LLM-based discovery
     }
 
     /**
@@ -373,7 +443,14 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Discover APIs using LLM analysis
+     * Discover APIs using LLM analysis.
+     *
+     * <p>Validates each LLM-suggested service against the known service set before persisting
+     * (Bug audit Findings #2, #4, #22): the literal sentinel {@code NO_GOOD_MATCH} is
+     * stripped, names are lowercase-normalized for canonical lookup, and any name not in
+     * the known service set is dropped. This prevents the registry from accumulating
+     * entries like {@code service: "NO_GOOD_MATCH"} or capitalization variants
+     * ({@code ts-Travel-Service} vs {@code ts-travel-service}).</p>
      */
     private List<ApiMapping> discoverByLLM(ParameterInfo parameterInfo) {
         List<ApiMapping> mappings = new ArrayList<>();
@@ -386,28 +463,52 @@ public class SmartInputFetcher {
             String prompt = buildLLMDiscoveryPrompt(parameterInfo, availableServices);
             List<String> suggestedServices = askLLMForServices(prompt);
 
-            // Create mappings for suggested services with priority based on order
             if (suggestedServices.isEmpty()) {
                 log.info("LLM indicated no good service matches for parameter '{}', skipping LLM discovery",
                         parameterInfo.getName());
-            } else {
-                for (int i = 0; i < suggestedServices.size(); i++) {
-                    String service = suggestedServices.get(i);
-                    String endpoint = inferEndpointForService(service, parameterInfo);
-                    if (endpoint != null) {
-                        // No need for JSONPath discovery anymore - we do direct extraction
-                        ApiMapping mapping = new ApiMapping(endpoint, service, "DIRECT_EXTRACTION");
+                return mappings;
+            }
 
-                        // Set priority based on LLM ranking (higher priority = lower number)
-                        // First service gets highest priority (base priority), second gets base+1, etc.
-                        int priority = config.getLlmDiscoveryPriority() + i;
-                        mapping.setPriority(priority);
-                        mappings.add(mapping);
-
-                        log.info("LLM-discovered mapping #{}: {} -> {} {} (priority: {}) [DIRECT]",
-                                i+1, parameterInfo.getName(), service, endpoint, priority);
-                    }
+            // Build a lowercase lookup of known services for whitelist validation.
+            java.util.Map<String, String> knownByLower = new java.util.HashMap<>();
+            for (String s : availableServices) {
+                if (s != null && !s.trim().isEmpty()) {
+                    knownByLower.putIfAbsent(s.toLowerCase(java.util.Locale.ROOT), s);
                 }
+            }
+
+            int rank = 0;
+            for (String rawService : suggestedServices) {
+                if (rawService == null) continue;
+                String trimmed = rawService.trim();
+                // Bug audit Finding #2: drop the LLM sentinel "NO_GOOD_MATCH" before persisting.
+                if (trimmed.isEmpty() || trimmed.equalsIgnoreCase("NO_GOOD_MATCH")) {
+                    log.debug("Skipping LLM-suggested sentinel/empty service: '{}'", rawService);
+                    continue;
+                }
+                // Bug audit Findings #4 + #22: whitelist + lowercase canonicalization.
+                String canonical = knownByLower.get(trimmed.toLowerCase(java.util.Locale.ROOT));
+                if (canonical == null) {
+                    log.warn("LLM suggested unknown service '{}' for parameter '{}'; dropping (whitelist enforcement)",
+                            trimmed, parameterInfo.getName());
+                    continue;
+                }
+                String endpoint = inferEndpointForService(canonical, parameterInfo);
+                // Bug audit Finding #33 + reviewer C7: when the picker fails, return null
+                // and skip the service rather than fabricating "/api/v1/<svc>/query".
+                if (endpoint == null) {
+                    log.debug("No reasonable endpoint for service '{}'; skipping mapping for '{}'",
+                            canonical, parameterInfo.getName());
+                    continue;
+                }
+                ApiMapping mapping = new ApiMapping(endpoint, canonical, "DIRECT_EXTRACTION");
+                int priority = config.getLlmDiscoveryPriority() + rank;
+                mapping.setPriority(priority);
+                mappings.add(mapping);
+
+                log.info("LLM-discovered mapping #{}: {} -> {} {} (priority: {}) [DIRECT]",
+                        rank + 1, parameterInfo.getName(), canonical, endpoint, priority);
+                rank++;
             }
 
         } catch (Exception e) {
@@ -418,10 +519,21 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Fetch data from a specific API mapping
+     * Fetch data from a specific API mapping. The endpoint is resolved via
+     * {@link #resolveFetchableEndpoint} which strips trailing {@code /{...}} segments so
+     * that path-templated registry rows like {@code /api/v1/orderservice/order/{orderId}}
+     * fall back to the collection endpoint {@code /api/v1/orderservice/order} (Bug audit
+     * Finding #3). If no fetchable endpoint can be resolved (e.g. {@code /{paramName}} mid-path)
+     * the call returns {@code null} and the caller drops this candidate.
      */
     private String fetchFromApiMapping(ApiMapping mapping, ParameterInfo parameterInfo) throws Exception {
-        String url = baseUrl + mapping.getEndpoint();
+        String resolved = resolveFetchableEndpoint(mapping.getEndpoint());
+        if (resolved == null) {
+            log.warn("Skipping mapping with unresolvable path placeholders: '{}' (param='{}')",
+                    mapping.getEndpoint(), parameterInfo.getName());
+            return null;
+        }
+        String url = baseUrl + resolved;
 
         // Always use GET for data fetching
         String httpMethod = "GET";
@@ -439,12 +551,19 @@ public class SmartInputFetcher {
         } else {
             log.warn("⚠️ Authentication not configured, API call may fail with 403");
         }
-        conn.setConnectTimeout((int) config.getDiscoveryTimeoutMs());
-        conn.setReadTimeout((int) config.getDiscoveryTimeoutMs());
+        conn.setConnectTimeout((int) config.getConnectTimeoutMs());
+        conn.setReadTimeout((int) config.getReadTimeoutMs());
 
         try {
             int responseCode = conn.getResponseCode();
             if (responseCode != config.getSuccessResponseCode()) {
+                // Bug audit Finding #26: auto-invalidate the cached JWT on 401/403 so the
+                // next attempt re-logs in instead of reusing a stale token.
+                if ((responseCode == 401 || responseCode == 403) && authManager.isConfigured()) {
+                    log.warn("Authentication response {} from {} → invalidating JWT for next attempt",
+                            responseCode, url);
+                    authManager.invalidateToken();
+                }
                 log.warn("❌ API call failed with HTTP {}: {}", responseCode, url);
                 throw new Exception("HTTP " + responseCode + " from " + url);
             }
@@ -476,6 +595,39 @@ public class SmartInputFetcher {
     }
 
     /**
+     * Resolve a registry-stored endpoint into a fetchable URL path. Endpoints persisted with
+     * trailing path placeholders (e.g. {@code /api/v1/orderservice/order/{orderId}}) cannot
+     * be GET'd as-is; we strip the trailing {@code /{...}} segments to recover the collection
+     * endpoint. Mid-path placeholders like {@code /api/v1/foo/{x}/bar} cannot be safely
+     * resolved without value substitution; for those we return {@code null} so the caller
+     * drops the candidate (Bug audit Finding #3 + reviewer Comment 9).
+     *
+     * @param endpoint the persisted endpoint string; may contain {@code {placeholder}} segments
+     * @return a placeholder-free path suitable for {@code baseUrl + path}, or {@code null}
+     *         if the placeholders cannot be safely stripped
+     */
+    static String resolveFetchableEndpoint(String endpoint) {
+        if (endpoint == null || endpoint.isEmpty()) return endpoint;
+        if (endpoint.indexOf('{') < 0) return endpoint;
+        // Strip trailing /{...} segments greedily, but only at the end of the path.
+        String stripped = endpoint;
+        while (true) {
+            int lastSlash = stripped.lastIndexOf('/');
+            if (lastSlash < 0) break;
+            String tail = stripped.substring(lastSlash + 1);
+            if (tail.startsWith("{") && tail.endsWith("}")) {
+                stripped = stripped.substring(0, lastSlash);
+            } else {
+                break;
+            }
+        }
+        if (stripped.indexOf('{') >= 0) {
+            return null;
+        }
+        return stripped.isEmpty() ? null : stripped;
+    }
+
+    /**
      * Validate that an API response contains useful data.
      * Uses a structured JSON check first (looks for explicit failure flags such as
      * {@code "status": 0}, {@code "success": false}, {@code "error": true}, or a non-empty
@@ -494,10 +646,9 @@ public class SmartInputFetcher {
             log.debug("API response is an empty document");
             return false;
         }
-        if (trimmed.length() < 20) {
-            log.debug("API response too short: {} chars", trimmed.length());
-            return false;
-        }
+        // Removed the legacy {@code length() < 20} floor (Bug audit Finding #7) — short
+        // payloads like {@code {"data":[1,2]}} are legitimate and the structured-failure
+        // checks below already catch real error envelopes.
 
         // Structured JSON inspection — only checks the top-level envelope for failure flags.
         if (trimmed.startsWith("{")) {
@@ -508,15 +659,21 @@ public class SmartInputFetcher {
                             trimmed.length() > 200 ? trimmed.substring(0, 200) + "..." : trimmed);
                     return false;
                 }
-                // Common pattern: { "status": 1, "data": [] } — empty data is a soft miss
-                Object data = obj.opt("data");
-                if (data instanceof org.json.JSONArray && ((org.json.JSONArray) data).isEmpty()) {
-                    log.debug("API response has empty data array");
-                    return false;
-                }
-                if (data instanceof org.json.JSONObject && ((org.json.JSONObject) data).isEmpty()) {
-                    log.debug("API response has empty data object");
-                    return false;
+                // Common envelope shapes — { "status": 1, "data": [] } /
+                // { "result": [] } / { "payload": null } / { "items": [] } — empty payload
+                // is a soft miss (Bug audit Finding #37). Previously only "data" was checked.
+                for (String envelopeKey : new String[] {"data", "result", "payload", "items"}) {
+                    Object payload = obj.opt(envelopeKey);
+                    if (payload instanceof org.json.JSONArray
+                            && ((org.json.JSONArray) payload).isEmpty()) {
+                        log.debug("API response has empty {} array", envelopeKey);
+                        return false;
+                    }
+                    if (payload instanceof org.json.JSONObject
+                            && ((org.json.JSONObject) payload).isEmpty()) {
+                        log.debug("API response has empty {} object", envelopeKey);
+                        return false;
+                    }
                 }
                 return true;
             } catch (org.json.JSONException ignored) {
@@ -571,7 +728,7 @@ public class SmartInputFetcher {
             // Build direct extraction prompt
             String prompt = buildDirectExtractionPrompt(responseBody, parameterInfo);
 
-            if (prompt.length() > 2044) {
+            if (prompt.length() > config.getMaxPromptChars()) {
                 log.warn("Direct extraction prompt too long ({} chars), using fallback", prompt.length());
                 return extractValueWithSimpleFallback(responseBody, parameterInfo);
             }
@@ -879,169 +1036,17 @@ public class SmartInputFetcher {
         }
     }
 
-    /**
-     * Extract value from API response using JSONPath (legacy method, kept for compatibility)
-     */
-    private String extractValueFromResponse(String responseBody, String extractPath, ParameterInfo parameterInfo) {
-        try {
-            Object result = JsonPath.read(responseBody, extractPath);
-
-            if (result != null) {
-                // Use LLM to intelligently select the most appropriate value
-                String selectedValue = selectValueWithLLM(result, parameterInfo);
-                if (selectedValue != null) {
-                    return selectedValue;
-                }
-
-                // Fallback: use intelligent selection logic if LLM fails
-                return selectValueWithFallbackLogic(result, parameterInfo);
-            }
-        } catch (PathNotFoundException e) {
-            log.debug("JSONPath '{}' not found in response for parameter '{}'",
-                     extractPath, parameterInfo.getName());
-        } catch (Exception e) {
-            log.debug("Failed to extract value using JSONPath '{}' for parameter '{}': {}",
-                     extractPath, parameterInfo.getName(), e.getMessage());
-        }
-        return null;
-    }
+    // extractValueFromResponse, selectValueWithFallbackLogic, selectValueWithLLM,
+    // buildValueSelectionPrompt, truncateDataForLLM, askLLMForValueSelection,
+    // callLLMForValueSelection removed — JSONPath is fully retired in favor of direct LLM
+    // extraction (extractValueDirectlyFromResponse). truncateJsonIntelligently below is
+    // kept because truncateResponseSchemaForLLM still calls it.
+    // (Bug audit Findings #9, #18, #29; Reviewer Comment 14.)
 
     /**
-     * Smart fallback value selection when LLM fails
-     */
-    private String selectValueWithFallbackLogic(Object result, ParameterInfo parameterInfo) {
-        if (result == null) return null;
-
-        String paramName = parameterInfo.getName() != null ? parameterInfo.getName().toLowerCase() : "";
-        String paramType = parameterInfo.getType() != null ? parameterInfo.getType().toLowerCase() : "";
-
-        if (result instanceof List) {
-            List<?> list = (List<?>) result;
-            if (list.isEmpty()) return null;
-
-            // Smart selection based on parameter characteristics
-            if (paramName.contains("list") || paramName.contains("array")) {
-                // For list parameters, return a representative value (not first, which might be 0)
-                if (list.size() > 1) {
-                    Object value = list.get(1); // Second element often more representative
-                    return value != null ? value.toString() : null;
-                }
-            }
-
-            if (paramName.contains("id") || paramName.contains("identifier")) {
-                // For ID parameters, prefer non-empty, non-zero values
-                for (Object item : list) {
-                    if (item != null) {
-                        String str = item.toString();
-                        if (!str.isEmpty() && !str.equals("0") && !str.equals("null")) {
-                            return str;
-                        }
-                    }
-                }
-            }
-
-            if (paramName.contains("name") || paramName.contains("title")) {
-                // For name parameters, prefer non-empty strings
-                for (Object item : list) {
-                    if (item != null) {
-                        String str = item.toString();
-                        if (!str.isEmpty() && !str.matches("\\d+")) { // Not just numbers
-                            return str;
-                        }
-                    }
-                }
-            }
-
-            // Default: take first non-null element
-            for (Object item : list) {
-                if (item != null) {
-                    return item.toString();
-                }
-            }
-        } else {
-            return result.toString();
-        }
-
-        return null;
-    }
-
-    private String selectValueWithLLM(Object extractedData, ParameterInfo parameterInfo) {
-        try {
-            // Convert extracted data to a readable format for LLM
-            String dataString = objectMapper.writeValueAsString(extractedData);
-
-            // Build prompt for value selection
-            String prompt = buildValueSelectionPrompt(dataString, parameterInfo);
-            String llmResponse = askLLMForValueSelection(prompt);
-
-            if (llmResponse != null && !llmResponse.trim().isEmpty()) {
-                String cleanResponse = llmResponse.trim();
-
-                // Check for NO_GOOD_MATCH response
-                if (cleanResponse.equals("NO_GOOD_MATCH")) {
-                    log.info("LLM indicated no good value match for parameter '{}'", parameterInfo.getName());
-                    return null; // Will trigger fallback to traditional LLM generation
-                }
-
-                log.debug("LLM selected value '{}' for parameter '{}'", cleanResponse, parameterInfo.getName());
-                return cleanResponse;
-            }
-        } catch (Exception e) {
-            log.debug("LLM value selection failed for parameter '{}': {}",
-                     parameterInfo.getName(), e.getMessage());
-        }
-        return null;
-    }
-
-    private String buildValueSelectionPrompt(String extractedData, ParameterInfo parameterInfo) {
-        String template = registry.getLlmPrompts().get("valueSelection");
-
-        // Handle message length limit (2044 chars for GPT4All)
-        String truncatedData = truncateDataForLLM(extractedData, template, parameterInfo);
-
-        return template
-                .replace("{extractedData}", truncatedData != null ? truncatedData : "")
-                .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
-                .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
-                .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "");
-    }
-
-    /**
-     * Truncate extracted data to fit within LLM message length limits
-     */
-    private String truncateDataForLLM(String extractedData, String template, ParameterInfo parameterInfo) {
-        if (extractedData == null) return "";
-
-        // Calculate space available for data (leave 200 chars buffer for template + parameters)
-        String tempPrompt = template
-                .replace("{extractedData}", "")
-                .replace("{parameterName}", parameterInfo.getName() != null ? parameterInfo.getName() : "")
-                .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
-                .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "");
-
-        int maxDataLength = 1844 - tempPrompt.length(); // 2044 - 200 buffer
-
-        if (extractedData.length() <= maxDataLength) {
-            return extractedData;
-        }
-
-        // Try to truncate intelligently
-        try {
-            // If it's JSON, try to keep complete objects/arrays
-            if (extractedData.trim().startsWith("{") || extractedData.trim().startsWith("[")) {
-                return truncateJsonIntelligently(extractedData, maxDataLength);
-            } else {
-                // Simple truncation for non-JSON data
-                return extractedData.substring(0, maxDataLength) + "...";
-            }
-        } catch (Exception e) {
-            // Fallback to simple truncation
-            return extractedData.substring(0, Math.min(maxDataLength, extractedData.length())) + "...";
-        }
-    }
-
-    /**
-     * Intelligently truncate JSON to keep complete objects/arrays when possible
+     * Intelligently truncate JSON to keep complete objects/arrays when possible.
+     * Used by {@code truncateResponseSchemaForLLM} when an API response exceeds the
+     * configured prompt budget.
      */
     private String truncateJsonIntelligently(String jsonData, int maxLength) {
         if (jsonData.length() <= maxLength) return jsonData;
@@ -1089,61 +1094,6 @@ public class SmartInputFetcher {
         }
     }
 
-    private String askLLMForValueSelection(String prompt) {
-        try {
-            // Call LLM directly for value selection, not parameter generation
-            String rawResponse = callLLMForValueSelection(prompt);
-
-            if (rawResponse != null && !rawResponse.trim().isEmpty()) {
-                // Clean any markdown formatting
-                String cleaned = cleanJsonFromMarkdown(rawResponse);
-
-                // Check for NO_GOOD_MATCH response first
-                if (cleaned.trim().equals("NO_GOOD_MATCH")) {
-                    return "NO_GOOD_MATCH";
-                }
-
-                // Remove quotes if the LLM wrapped the value in quotes
-                if (cleaned.startsWith("\"") && cleaned.endsWith("\"")) {
-                    cleaned = cleaned.substring(1, cleaned.length() - 1);
-                }
-                return cleaned.trim();
-            }
-
-            return null;
-
-        } catch (Exception e) {
-            log.warn("Failed to ask LLM for value selection: {}", e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Call LLM specifically for value selection (not parameter generation)
-     */
-    private String callLLMForValueSelection(String prompt) {
-        String systemContent = "You are an AI assistant that selects the most appropriate value from given data. Respond with only the selected value, no explanations.";
-
-        log.debug("[Value Selection LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
-        log.debug("[Value Selection LLM] User prompt: {}", prompt);
-
-        try {
-            String result = llmService.generateText(systemContent, prompt, 100, 0.1);
-
-            if (result != null && !result.trim().isEmpty()) {
-                log.debug("[Value Selection LLM] Successfully generated content: {}", result);
-                return result;
-            } else {
-                log.warn("[Value Selection LLM] LLM service returned null or empty result");
-                return null;
-            }
-
-        } catch (Exception e) {
-            log.warn("[Value Selection LLM] Failed to call LLM service: {}", e.getMessage());
-            return null;
-        }
-    }
-
     /**
      * Fallback to traditional LLM generation with validation
      */
@@ -1186,8 +1136,14 @@ public class SmartInputFetcher {
                     String processed = cleanLLMGeneratedValue(cleaned, parameterInfo);
                     if (processed != null && isValidValueForParameter(processed, parameterInfo)) {
                         validCleanedValues.add(processed);
-                        // Add to diverse cache for rotation
-                        cacheDiverseValue(parameterInfo, processed);
+                        // Bug audit Finding #35: gate the diverse-cache contribution behind
+                        // {@code smart.input.fetch.cache.llm.fallback}. When false, the cache
+                        // contains only smart-fetched values from real upstreams (i.e., it
+                        // models "what the SUT actually produces") instead of being polluted
+                        // with LLM guesses that happen to pass the validator.
+                        if (config.isCacheLlmFallbackValues()) {
+                            cacheDiverseValue(parameterInfo, processed);
+                        }
                     }
                 }
 
@@ -1254,30 +1210,8 @@ public class SmartInputFetcher {
         }
     }
 
-    /**
-     * Handle single value parameter from LLM
-     */
-    private String handleSingleValueParameterFromLLM(ParameterInfo parameterInfo, String value) {
-        if (value != null) {
-            String result = cleanJsonFromMarkdown(value);
-            if (!result.trim().isEmpty() && !result.equals("json") && !result.startsWith("```")) {
-                String cleanedResult = cleanLLMGeneratedValue(result, parameterInfo);
-                if (cleanedResult != null && isValidValueForParameter(cleanedResult, parameterInfo)) {
-                    log.info("LLM (Fallback) → {} = {} (cleaned from '{}')",
-                            parameterInfo.getName(), cleanedResult, result);
-                    return cleanedResult;
-                } else {
-                    log.warn("❌ LLM generated invalid value '{}' for parameter '{}', generating appropriate fallback",
-                            result, parameterInfo.getName());
-                }
-            }
-        }
-
-        // Generate appropriate fallback based on parameter info
-        String appropriateFallback = generateMinimalFallbackValue(parameterInfo);
-        log.info("Single Value Fallback → {} = {}", parameterInfo.getName(), appropriateFallback);
-        return appropriateFallback;
-    }
+    // handleSingleValueParameterFromLLM removed — was dead code with no callers
+    // (Bug audit Finding #25).
 
 
 
@@ -1475,36 +1409,45 @@ public class SmartInputFetcher {
         if (valueRotationIndex != null) {
             valueRotationIndex.clear();
         }
+        // Reviewer Comment 1: persist Priority-1 mutations at scenario boundary too — the
+        // shutdown hook is the safety net but a per-scenario flush keeps recent learning
+        // durable even if the JVM is killed mid-run.
+        flushIfDirty();
     }
 
     private String getNextDiverseValue(ParameterInfo parameterInfo) {
         String cacheKey = buildCacheKey(parameterInfo);
         List<String> values = diverseValueCache.get(cacheKey);
 
-        if (values == null || values.isEmpty()) {
+        if (values == null) {
             return null;
         }
-
-        // Get current rotation index
-        int currentIndex = valueRotationIndex.getOrDefault(cacheKey, 0);
-
-        // Get value at current index
-        String value = values.get(currentIndex % values.size());
-
-        // Update rotation index for next call
-        valueRotationIndex.put(cacheKey, (currentIndex + 1) % values.size());
-
-        log.debug("🔄 Rotating to diverse value '{}' for parameter '{}' (index: {}/{})",
-                 value, parameterInfo.getName(), currentIndex, values.size());
-
-        // Format the cached value according to parameter schema
-        String formattedValue = formatCachedValueForSchema(value, parameterInfo);
-
-        if (!formattedValue.equals(value)) {
-            log.debug("🔧 Formatted cached value '{}' → '{}' for parameter '{}'",
-                     value, formattedValue, parameterInfo.getName());
+        // Snapshot the list under its monitor so iteration / size are consistent even if
+        // another thread mutates it concurrently.
+        int snapshotSize;
+        String value;
+        synchronized (values) {
+            snapshotSize = values.size();
+            if (snapshotSize == 0) return null;
+            // Bug audit Finding #30: read-and-update the rotation cursor atomically per
+            // (cacheKey). Previously this was a get-then-put pair that two threads could
+            // interleave, producing duplicate or skipped picks.
+            int[] picked = new int[1];
+            valueRotationIndex.compute(cacheKey, (k, current) -> {
+                int idx = (current == null ? 0 : current) % snapshotSize;
+                picked[0] = idx;
+                return (idx + 1) % snapshotSize;
+            });
+            value = values.get(picked[0]);
+            log.debug("🔄 Rotating to diverse value '{}' for parameter '{}' (index: {}/{})",
+                    value, parameterInfo.getName(), picked[0], snapshotSize);
         }
 
+        String formattedValue = formatCachedValueForSchema(value, parameterInfo);
+        if (!formattedValue.equals(value)) {
+            log.debug("🔧 Formatted cached value '{}' → '{}' for parameter '{}'",
+                    value, formattedValue, parameterInfo.getName());
+        }
         return formattedValue;
     }
 
@@ -1590,7 +1533,7 @@ public class SmartInputFetcher {
         try {
             String prompt = buildMultipleValueExtractionPrompt(responseBody, parameterInfo);
 
-            if (prompt.length() > 2044) {
+            if (prompt.length() > config.getMaxPromptChars()) {
                 log.warn("Multiple value extraction prompt too long ({} chars), using fallback", prompt.length());
                 return extractValuesWithFallback(responseBody, parameterInfo);
             }
@@ -1658,7 +1601,7 @@ public class SmartInputFetcher {
         }
 
         // Validate parameter-specific formats
-        if (paramName.contains("id") || paramName.contains("route")) {
+        if (isIdLikeParamName(paramName) || paramName.contains("route")) {
             // IDs should be reasonable length and format
             if (cleanResponse.length() < 3 || cleanResponse.length() > 50) {
                 log.warn("❌ ID parameter '{}' has invalid length: '{}'", paramName, cleanResponse);
@@ -1722,7 +1665,7 @@ public class SmartInputFetcher {
                 if (isArrayType) {
                     prompt.append("Example: [\"Shanghai\", \"Beijing\", \"Guangzhou\"]\n");
                 }
-            } else if (paramName.contains("id")) {
+            } else if (isIdLikeParamName(paramName)) {
                 prompt.append("Semantic hint: This represents an identifier\n");
             } else if (paramName.contains("price") || paramName.contains("rate")) {
                 prompt.append("Semantic hint: This represents a price or rate value\n");
@@ -1848,24 +1791,41 @@ public class SmartInputFetcher {
         String paramName = parameterInfo.getName();
 
         if ("integer".equals(schemaType)) {
-            // Use parameter name hash to generate consistent but varied integers
-            return String.valueOf(Math.abs(paramName.hashCode() % 1000) + 1);
+            // Bug audit Finding #20: respect schema minimum/maximum when synthesizing the
+            // algorithmic fallback. Previously this returned (hash % 1000) + 1 unconditionally,
+            // ignoring any declared bounds and producing schema-invalid integers.
+            long base = Math.abs((long) paramName.hashCode() % 1000) + 1;
+            return String.valueOf(clampToIntegerBounds(base, parameterInfo));
         } else if ("number".equals(schemaType)) {
-            // Use parameter name hash to generate consistent but varied numbers
             double value = (Math.abs(paramName.hashCode() % 10000) + 1) / 10.0;
-            return String.valueOf(value);
+            return String.valueOf(clampToNumberBounds(value, parameterInfo));
         } else if ("boolean".equals(schemaType)) {
-            // Use parameter name hash to generate consistent boolean
             return String.valueOf(paramName.hashCode() % 2 == 0);
         } else if ("array".equals(schemaType)) {
-            // Generate array with algorithmic values
             String baseValue = generateAlgorithmicStringValue(paramName);
             String secondValue = generateAlgorithmicStringValue(paramName + "_2");
             return "[\"" + baseValue + "\", \"" + secondValue + "\"]";
         } else {
-            // Generate string value algorithmically
             return generateAlgorithmicStringValue(paramName);
         }
+    }
+
+    /** Clamp an integer fallback to the parameter's declared {@code minimum}/{@code maximum}. */
+    private static long clampToIntegerBounds(long candidate, ParameterInfo parameterInfo) {
+        Number min = parameterInfo.getMinimum();
+        Number max = parameterInfo.getMaximum();
+        if (min != null && candidate < min.longValue()) candidate = min.longValue();
+        if (max != null && candidate > max.longValue()) candidate = max.longValue();
+        return candidate;
+    }
+
+    /** Clamp a numeric fallback to the parameter's declared {@code minimum}/{@code maximum}. */
+    private static double clampToNumberBounds(double candidate, ParameterInfo parameterInfo) {
+        Number min = parameterInfo.getMinimum();
+        Number max = parameterInfo.getMaximum();
+        if (min != null && candidate < min.doubleValue()) candidate = min.doubleValue();
+        if (max != null && candidate > max.doubleValue()) candidate = max.doubleValue();
+        return candidate;
     }
 
     /**
@@ -1991,12 +1951,20 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Get required number of diverse values based on test case count
+     * Get required number of diverse values per parameter pool.
+     * Configurable via {@code smart.input.fetch.diverse.target.count} (default 10).
+     * The previous implementation returned {@code Math.max(5, 10) = 10} unconditionally
+     * (Bug audit Finding #6).
      */
     private int getRequiredValueCount(ParameterInfo parameterInfo) {
-        // Estimate based on typical test generation needs
-        // This could be made configurable or dynamic based on test suite size
-        return Math.max(5, 10); // At least 5, preferably 10 diverse values
+        String configured = System.getProperty("smart.input.fetch.diverse.target.count");
+        if (configured != null) {
+            try {
+                int n = Integer.parseInt(configured.trim());
+                if (n > 0) return n;
+            } catch (NumberFormatException ignored) { }
+        }
+        return 10;
     }
 
     /**
@@ -2077,7 +2045,7 @@ public class SmartInputFetcher {
         try {
             String prompt = buildSemanticSimilarityPrompt(parameterInfo, existingValues, count);
 
-            if (prompt.length() > 2044) {
+            if (prompt.length() > config.getMaxPromptChars()) {
                 log.warn("Semantic similarity prompt too long ({} chars), using fallback", prompt.length());
                 return generateFallbackSemanticValues(parameterInfo, existingValues, count);
             }
@@ -2129,7 +2097,17 @@ public class SmartInputFetcher {
 
     private static boolean isIdTypedParam(ParameterInfo parameterInfo) {
         if (parameterInfo == null) return false;
-        String name = parameterInfo.getName();
+        return isIdLikeParamName(parameterInfo.getName());
+    }
+
+    /**
+     * String form of {@link #isIdTypedParam} so call sites that only have the param name
+     * (validators, prompt builders, simple-fallback heuristics) can use the same boundary-aware
+     * rule instead of the loose {@code paramName.contains("id")} that falsely matches
+     * {@code paid}, {@code valid}, {@code humid}, {@code aid}, {@code void}, etc.
+     * (Bug audit Findings #5, #18).
+     */
+    static boolean isIdLikeParamName(String name) {
         if (name == null || name.isEmpty()) return false;
         if (BARE_ID_NAMES.contains(name)) return true;
         if (ID_PARAM_SUFFIX_RX.matcher(name).matches()) return true;
@@ -2203,7 +2181,7 @@ public class SmartInputFetcher {
             prompt.append("5. CRITICAL: This is a numeric parameter — every value MUST be a parseable number with no units, currency symbols, or letters.\n");
         } else if (paramName.contains("station")) {
             prompt.append("5. For station parameters: generate actual city/station names, not UUIDs or random strings\n");
-        } else if (paramName.contains("id") && !paramName.contains("station")) {
+        } else if (isIdLikeParamName(paramName) && !paramName.contains("station")) {
             prompt.append("5. For ID parameters: generate actual UUID-like strings or meaningful IDs\n");
         } else if (paramName.contains("distance")) {
             prompt.append("5. For distance parameters: generate numeric values with appropriate units\n");
@@ -2280,6 +2258,7 @@ public class SmartInputFetcher {
             }
 
             // If we need more values, generate variations
+            int safetyCounter = 0;
             while (generatedValues.size() < count) {
                 String variation = generateValueVariationWithLLM(parameterInfo, generatedValues);
                 if (variation != null && !variation.trim().isEmpty() &&
@@ -2287,15 +2266,23 @@ public class SmartInputFetcher {
                     isValidValueForParameter(variation, parameterInfo)) {
                     generatedValues.add(variation);
                 } else {
-                    // If LLM fails completely, generate minimal schema-compliant values
+                    // Bug audit Finding #21: previously this appended {@code "_<idx>"} to a
+                    // "minimal schema-compliant" value, producing strings like {@code "42_2"}
+                    // for an integer parameter — which then fail downstream
+                    // {@code isValidValueForParameter}, triggering wasted LLM regeneration.
+                    // We now request a fresh minimal value per loop iteration. If the
+                    // generator yields a duplicate, we just stop adding rather than
+                    // synthesizing a corrupt suffix.
                     String minimalValue = generateMinimalFallbackValue(parameterInfo);
-                    if (!generatedValues.contains(minimalValue) && !existingValues.contains(minimalValue)) {
-                        generatedValues.add(minimalValue + "_" + generatedValues.size());
+                    if (minimalValue != null && !generatedValues.contains(minimalValue)
+                            && !existingValues.contains(minimalValue)
+                            && isValidValueForParameter(minimalValue, parameterInfo)) {
+                        generatedValues.add(minimalValue);
                     }
                 }
 
                 // Prevent infinite loop
-                if (generatedValues.size() >= count || generatedValues.size() >= 10) {
+                if (generatedValues.size() >= count || ++safetyCounter >= count * 3 + 10) {
                     break;
                 }
             }
@@ -2304,10 +2291,14 @@ public class SmartInputFetcher {
             log.debug("Fallback semantic value generation failed for parameter '{}': {}",
                      parameterInfo.getName(), e.getMessage());
 
-            // Last resort: generate minimal values
+            // Last resort: only schema-valid minimal values, no synthetic suffixes.
             for (int i = 0; i < count && generatedValues.size() < count; i++) {
                 String minimalValue = generateMinimalFallbackValue(parameterInfo);
-                generatedValues.add(minimalValue + "_" + i);
+                if (minimalValue != null && isValidValueForParameter(minimalValue, parameterInfo)
+                        && !generatedValues.contains(minimalValue)
+                        && !existingValues.contains(minimalValue)) {
+                    generatedValues.add(minimalValue);
+                }
             }
         }
 
@@ -2392,10 +2383,34 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Check if a field is relevant for the parameter using LLM-based analysis
+     * Check if a field is relevant for the parameter.
+     *
+     * <p>Bug audit Finding #39: previously this issued a fresh LLM call per JSON field —
+     * for a typical 20-field response, that meant 20 LLM round-trips per fetch. We now
+     * accept deterministic matches (substring, ID-stem, normalized equality) and fall back
+     * to the LLM only when no deterministic signal is present.</p>
      */
     private boolean isRelevantField(String fieldName, String paramName, String paramType) {
-        // Use LLM to determine field relevance instead of hardcoded rules
+        if (fieldName == null || paramName == null) return false;
+        String fnLower = fieldName.toLowerCase(java.util.Locale.ROOT);
+        String pnLower = paramName.toLowerCase(java.util.Locale.ROOT);
+        if (fnLower.equals(pnLower)) return true;
+        if (fnLower.contains(pnLower) || pnLower.contains(fnLower)) return true;
+        // ID-stem heuristic: orderId ↔ id, accountId ↔ accountId / account
+        if (isIdLikeParamName(paramName) && (fnLower.equals("id") || fnLower.endsWith("id"))) {
+            return true;
+        }
+        // Numeric field for numeric parameter — let extraction try it.
+        if (paramType != null) {
+            String t = paramType.toLowerCase(java.util.Locale.ROOT);
+            if ((t.contains("int") || t.contains("number") || t.contains("double")
+                    || t.contains("float")) && (fnLower.contains("amount") || fnLower.contains("price")
+                    || fnLower.contains("rate") || fnLower.contains("count")
+                    || fnLower.contains("size") || fnLower.contains("number"))) {
+                return true;
+            }
+        }
+        // Last resort: ask the LLM. Most fields will match deterministically above.
         return askLLMForFieldRelevance(fieldName, paramName, paramType);
     }
 
@@ -2511,8 +2526,8 @@ public class SmartInputFetcher {
             return false;
         }
 
-        // For ID parameters, be more strict
-        if (paramName.contains("id")) {
+        // For ID parameters, be more strict (boundary-aware: paid/valid/humid are NOT IDs)
+        if (isIdLikeParamName(paramName)) {
             return isValidIdValue(value, parameterInfo);
         }
 
@@ -2532,7 +2547,7 @@ public class SmartInputFetcher {
         }
 
         // UUID values for non-ID parameters (major issue!)
-        if (isUUIDValue(cleanValue) && !paramName.contains("id")) {
+        if (isUUIDValue(cleanValue) && !isIdLikeParamName(paramName)) {
             log.debug("Rejecting UUID value '{}' for non-ID parameter '{}'", cleanValue, paramName);
             return true;
         }
@@ -2707,7 +2722,8 @@ public class SmartInputFetcher {
 
     private String cleanIntegerValue(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
-            return "1";
+            // Bug audit Finding #36: respect schema bounds when synthesizing the fallback.
+            return integerFallbackForSchema(parameterInfo);
         }
         String trimmed = value.trim();
 
@@ -2722,7 +2738,23 @@ public class SmartInputFetcher {
             if (parsed != null) return parsed;
         }
         log.debug("Failed to clean integer value '{}' for parameter '{}'", value, parameterInfo.getName());
+        return integerFallbackForSchema(parameterInfo);
+    }
+
+    private static String integerFallbackForSchema(ParameterInfo parameterInfo) {
+        Number min = parameterInfo.getMinimum();
+        Number max = parameterInfo.getMaximum();
+        if (min != null) return String.valueOf(min.longValue());
+        if (max != null && max.longValue() < 1L) return String.valueOf(max.longValue());
         return "1";
+    }
+
+    private static String numberFallbackForSchema(ParameterInfo parameterInfo) {
+        Number min = parameterInfo.getMinimum();
+        Number max = parameterInfo.getMaximum();
+        if (min != null) return String.valueOf(min.doubleValue());
+        if (max != null && max.doubleValue() < 1.0) return String.valueOf(max.doubleValue());
+        return "1.0";
     }
 
     private static String parseIntegerLiteral(String candidate) {
@@ -2743,7 +2775,7 @@ public class SmartInputFetcher {
      */
     private String cleanNumberValue(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
-            return "1.0";
+            return numberFallbackForSchema(parameterInfo);
         }
 
         try {
@@ -2751,7 +2783,7 @@ public class SmartInputFetcher {
             String cleanValue = value.replaceAll("[^0-9.-]", "");
 
             if (cleanValue.isEmpty() || cleanValue.equals("-") || cleanValue.equals(".")) {
-                return "1.0";
+                return numberFallbackForSchema(parameterInfo);
             }
 
             // Parse as double to validate
@@ -2761,29 +2793,26 @@ public class SmartInputFetcher {
         } catch (NumberFormatException e) {
             log.debug("Failed to clean number value '{}' for parameter '{}': {}",
                      value, parameterInfo.getName(), e.getMessage());
-            return "1.0"; // Safe fallback
+            return numberFallbackForSchema(parameterInfo);
         }
     }
 
     /**
-     * Clean boolean value without full formatting
+     * Clean a boolean value extracted by smart-fetch. Only accepts the strict literal
+     * tokens {@code "true"} / {@code "false"} (case-insensitive) plus {@code "1"}/{@code "0"}.
+     * Synonyms like {@code yes/on/enabled/active} are rejected — they laundered LLM
+     * type-mismatches as {@code true} and hid genuine boolean fault types
+     * (Bug audit Finding #17). When the value cannot be cleanly resolved, return the raw
+     * trimmed value so the downstream validator can reject it instead of silently coercing.
      */
     private String cleanBooleanValue(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
             return "false";
         }
-
-        String cleanValue = value.trim().toLowerCase();
-
-        // True values
-        if (cleanValue.equals("true") || cleanValue.equals("1") ||
-            cleanValue.equals("yes") || cleanValue.equals("on") ||
-            cleanValue.equals("enabled") || cleanValue.equals("active")) {
-            return "true";
-        }
-
-        // False values (default)
-        return "false";
+        String cleanValue = value.trim().toLowerCase(java.util.Locale.ROOT);
+        if (cleanValue.equals("true") || cleanValue.equals("1")) return "true";
+        if (cleanValue.equals("false") || cleanValue.equals("0")) return "false";
+        return value.trim();
     }
 
     
@@ -3010,24 +3039,11 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Format value as boolean
+     * Format value as boolean — strict (only literal {@code true}/{@code false}/{@code 1}/{@code 0}).
+     * Companion to {@link #cleanBooleanValue}; same rationale (Bug audit Finding #17).
      */
     private String formatAsBooleanValue(String value, ParameterInfo parameterInfo) {
-        if (value == null || value.trim().isEmpty()) {
-            return "false";
-        }
-
-        String cleanValue = value.trim().toLowerCase();
-
-        // True values
-        if (cleanValue.equals("true") || cleanValue.equals("1") ||
-            cleanValue.equals("yes") || cleanValue.equals("on") ||
-            cleanValue.equals("enabled") || cleanValue.equals("active")) {
-            return "true";
-        }
-
-        // False values (default)
-        return "false";
+        return cleanBooleanValue(value, parameterInfo);
     }
 
     /**
@@ -3138,7 +3154,12 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Format value as array - FIXED to avoid string-wrapped JSON
+     * Format value as array - FIXED to avoid string-wrapped JSON.
+     *
+     * <p>Bug audit Finding #34: rejects sentinel/error tokens like {@code NO_GOOD_MATCH},
+     * {@code NO_VALUES_FOUND}, {@code NO_MATCH} so the array does not end up containing
+     * them as data. The Stream 1 whitelist already prevents these from reaching the value
+     * pipeline, but this is a belt-and-braces guard.</p>
      */
     private String formatAsArrayValue(String value, ParameterInfo parameterInfo) {
         if (value == null || value.trim().isEmpty()) {
@@ -3147,6 +3168,14 @@ public class SmartInputFetcher {
 
         try {
             String trimmedValue = value.trim();
+            // Bug audit Finding #34: drop LLM sentinel tokens before wrapping as array.
+            String upper = trimmedValue.toUpperCase(java.util.Locale.ROOT);
+            if (upper.equals("NO_GOOD_MATCH") || upper.equals("NO_VALUES_FOUND")
+                    || upper.equals("NO_MATCH") || upper.equals("NO_VALUES_GENERATED")) {
+                log.debug("Refusing to wrap LLM sentinel '{}' as array element for parameter '{}'",
+                        trimmedValue, parameterInfo.getName());
+                return "[]";
+            }
 
             // CRITICAL FIX: If value is already a JSON array string, parse and return properly
             if (trimmedValue.startsWith("[") && trimmedValue.endsWith("]")) {
@@ -3269,202 +3298,10 @@ public class SmartInputFetcher {
         }
     }
 
-    private String guessExtractPath(ParameterInfo parameterInfo, String endpoint) {
-        try {
-            // First, try to get the actual API response schema by making a sample request
-            String responseSchema = getApiResponseSchema(endpoint);
 
-            if (responseSchema != null) {
-                // Build prompt and check length before sending to LLM
-                String prompt = buildDataExtractionPrompt(parameterInfo, responseSchema);
 
-                if (prompt.length() <= 2044) {
-                    // Use LLM to determine the best JSONPath for extraction
-                    String llmResponse = askLLMForExtractionPath(prompt);
 
-                    if (llmResponse != null && !llmResponse.trim().isEmpty()) {
-                        String cleanPath = llmResponse.trim();
-                        // Remove any markdown formatting
-                        cleanPath = cleanJsonFromMarkdown(cleanPath);
 
-                        // Check for NO_GOOD_MATCH response
-                        if (cleanPath.equals("NO_GOOD_MATCH")) {
-                            log.info("LLM indicated no good JSONPath match for parameter '{}'", parameterInfo.getName());
-                            return null; // Will trigger fallback
-                        }
-
-                        // Validate JSONPath before using it
-                        if (isValidJsonPath(cleanPath, responseSchema)) {
-                            log.info("✅ LLM suggested valid JSONPath '{}' for parameter '{}'", cleanPath, parameterInfo.getName());
-                            return cleanPath;
-                        } else {
-                            log.warn("❌ LLM suggested invalid JSONPath '{}' for parameter '{}', using fallback",
-                                    cleanPath, parameterInfo.getName());
-                            return null; // Will trigger pattern-based fallback
-                        }
-                    }
-                } else {
-                    log.warn("Prompt too long ({} chars) for LLM, using pattern-based fallback for parameter '{}'",
-                            prompt.length(), parameterInfo.getName());
-                }
-            }
-        } catch (Exception e) {
-            log.debug("LLM extraction path discovery failed for parameter '{}': {}",
-                     parameterInfo.getName(), e.getMessage());
-        }
-
-        // Fallback: use pattern-based guessing
-        String fallbackPath = guessPathByParameterName(parameterInfo.getName());
-        log.info("Using pattern-based JSONPath '{}' for parameter '{}'", fallbackPath, parameterInfo.getName());
-        return fallbackPath;
-    }
-
-    /**
-     * Guess JSONPath based on parameter name patterns
-     */
-    private String guessPathByParameterName(String paramName) {
-        if (paramName == null) return "$.data[*]";
-
-        String lowerName = paramName.toLowerCase();
-
-        // Distance-related parameters
-        if (lowerName.contains("distance")) {
-            return "$.data[*].route.distances[*]";
-        }
-
-        // Station-related parameters
-        if (lowerName.contains("station")) {
-            if (lowerName.contains("start") || lowerName.contains("from")) {
-                return "$.data[*].route.startStation";
-            } else if (lowerName.contains("end") || lowerName.contains("to") || lowerName.contains("terminal")) {
-                return "$.data[*].route.endStation";
-            } else {
-                return "$.data[*].route.stations[*]";
-            }
-        }
-
-        // ID-related parameters
-        if (lowerName.contains("id")) {
-            if (lowerName.contains("trip")) {
-                return "$.data[*].trip.id";
-            } else if (lowerName.contains("route")) {
-                return "$.data[*].route.id";
-            } else {
-                return "$.data[*].id";
-            }
-        }
-
-        // Name-related parameters
-        if (lowerName.contains("name")) {
-            if (lowerName.contains("train")) {
-                return "$.data[*].trip.trainTypeName";
-            } else {
-                return "$.data[*].name";
-            }
-        }
-
-        // Time-related parameters
-        if (lowerName.contains("time")) {
-            if (lowerName.contains("start")) {
-                return "$.data[*].trip.startTime";
-            } else if (lowerName.contains("end")) {
-                return "$.data[*].trip.endTime";
-            } else {
-                return "$.data[*].time";
-            }
-        }
-
-        // Price-related parameters
-        if (lowerName.contains("price") || lowerName.contains("cost")) {
-            return "$.data[*].price";
-        }
-
-        // Default fallback
-        return "$.data[*]." + paramName;
-    }
-
-    /**
-     * Validate that a JSONPath expression works with the given response
-     */
-    private boolean isValidJsonPath(String jsonPath, String responseBody) {
-        if (jsonPath == null || jsonPath.trim().isEmpty()) {
-            return false;
-        }
-
-        try {
-            // Test the JSONPath against the response
-            Object result = JsonPath.read(responseBody, jsonPath);
-
-            // Check if result is meaningful
-            if (result == null) {
-                return false;
-            }
-
-            if (result instanceof List) {
-                List<?> list = (List<?>) result;
-                return !list.isEmpty(); // List should have at least one element
-            }
-
-            if (result instanceof String) {
-                return !((String) result).trim().isEmpty(); // String should not be empty
-            }
-
-            return true; // Other types (numbers, objects) are generally valid
-
-        } catch (Exception e) {
-            log.debug("JSONPath validation failed for '{}': {}", jsonPath, e.getMessage());
-            return false;
-        }
-    }
-
-    private String getApiResponseSchema(String endpoint) {
-        try {
-            // Make a sample request to get the response structure
-            String url = baseUrl + endpoint;
-            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Content-Type", config.getDefaultContentType());
-            conn.setConnectTimeout((int) config.getSchemaDiscoveryTimeoutMs());
-            conn.setReadTimeout((int) config.getSchemaDiscoveryTimeoutMs());
-
-            // Add authentication headers for schema discovery
-            if (authManager.isConfigured()) {
-                authManager.addAuthHeaders(conn);
-                log.debug("🔐 Added authentication headers to schema discovery request");
-            }
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode == config.getSuccessResponseCode()) {
-                String responseBody = readResponse(conn);
-                log.debug("Got sample response from {}: {}", url, responseBody.substring(0, Math.min(200, responseBody.length())));
-                return responseBody;
-            } else {
-                log.debug("Schema discovery request failed with HTTP {}: {}", responseCode, url);
-            }
-        } catch (Exception e) {
-            log.debug("Failed to get API response schema from {}: {}", endpoint, e.getMessage());
-        }
-        return null;
-    }
-
-    private String buildDataExtractionPrompt(ParameterInfo parameterInfo, String responseSchema) {
-        String template = registry.getLlmPrompts().get("dataExtraction");
-
-        // Handle message length limit for response schema
-        String truncatedSchema = truncateResponseSchemaForLLM(responseSchema, template, parameterInfo);
-
-        String paramName = parameterInfo.getName() != null ? parameterInfo.getName() : "";
-        String paramType = parameterInfo.getType() != null ? parameterInfo.getType() : "";
-        String paramDesc = parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "";
-
-        return template
-                .replace("{responseSchema}", truncatedSchema != null ? truncatedSchema : "")
-                .replace("{parameterName}", paramName)
-                .replace("{parameterType}", paramType)
-                .replace("{parameterDescription}", paramDesc)
-                // Handle multiple parameter name references in the new template
-                .replaceAll("\\{parameterName\\}", paramName);
-    }
 
     /**
      * Truncate response schema to fit within LLM message length limits
@@ -3479,7 +3316,9 @@ public class SmartInputFetcher {
                 .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
                 .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "");
 
-        int maxSchemaLength = 1500 - tempPrompt.length(); // Much more aggressive limit
+        // Bug audit Finding #10 finish: derive the schema budget from the configured prompt
+        // cap rather than the legacy 1500 hardcode (which was tuned for a 2044-char total).
+        int maxSchemaLength = Math.max(256, config.getMaxPromptChars() - 500 - tempPrompt.length());
 
         if (responseSchema.length() <= maxSchemaLength) {
             return responseSchema;
@@ -3503,17 +3342,11 @@ public class SmartInputFetcher {
         }
     }
 
-    private String askLLMForExtractionPath(String prompt) {
-        log.warn("❌ DEPRECATED: askLLMForExtractionPath called - this should not happen!");
-        log.warn("❌ The system should use direct value extraction instead of JSONPath discovery");
-        log.warn("❌ Returning null to force fallback to direct extraction");
-        return null;
-    }
 
     private String buildLLMDiscoveryPrompt(ParameterInfo parameterInfo, List<String> availableServices) {
         String template = registry.getLlmPrompts().get("apiDiscovery");
 
-        // Limit services list to prevent message length issues (max 2044 chars)
+        // Limit services list to prevent message length issues (respect maxPromptChars)
         String servicesString = String.join(", ", availableServices);
 
         // First replace all parameters except availableServices
@@ -3523,10 +3356,11 @@ public class SmartInputFetcher {
                 .replace("{parameterDescription}", parameterInfo.getDescription() != null ? parameterInfo.getDescription() : "")
                 .replace("{parameterLocation}", parameterInfo.getInLocation() != null ? parameterInfo.getInLocation() : "");
 
-        // Calculate remaining space for services (leave 100 chars buffer)
-        // Use a temporary replacement to calculate space needed
+        // Bug audit Finding #10 finish: services list budget derives from configured prompt
+        // cap minus a 100-char buffer for the rest of the template, instead of the legacy
+        // hardcoded 1944 (= 2044 - 100 buffer).
         String tempPrompt = basePrompt.replace("{availableServices}", "");
-        int maxServicesLength = 1944 - tempPrompt.length();
+        int maxServicesLength = Math.max(128, config.getMaxPromptChars() - 100 - tempPrompt.length());
 
         if (servicesString.length() > maxServicesLength) {
             // Truncate services list to fit within limit
@@ -3564,7 +3398,7 @@ public class SmartInputFetcher {
 
                     JsonNode jsonResponse = objectMapper.readTree(cleanedResponse);
                     // Check for NO_GOOD_MATCH response
-                    if (cleanedResponse.trim().equals("NO_GOOD_MATCH")) {
+                    if (cleanedResponse.trim().equalsIgnoreCase("NO_GOOD_MATCH")) {
                         log.info("LLM indicated no good service matches for this parameter");
                         return new ArrayList<>();
                     }
@@ -3573,7 +3407,11 @@ public class SmartInputFetcher {
                         List<String> services = new ArrayList<>();
                         jsonResponse.forEach(node -> {
                             String serviceName = node.asText().trim();
-                            if (!serviceName.isEmpty()) {
+                            // Bug audit Finding #2: also drop the sentinel when the LLM
+                            // emits it as a single element of a JSON array (a real failure
+                            // mode that polluted the registry).
+                            if (!serviceName.isEmpty()
+                                    && !serviceName.equalsIgnoreCase("NO_GOOD_MATCH")) {
                                 services.add(serviceName);
                             }
                         });
@@ -3663,16 +3501,6 @@ public class SmartInputFetcher {
          }
      }
 
-     /**
-       * DEPRECATED: Old JSONPath discovery method - replaced by direct value extraction
-       * This method is disabled to prevent JSONPath expressions from being returned
-       */
-      private String callLLMForExtractionPathDiscovery(String prompt) {
-          log.warn("❌ DEPRECATED: callLLMForExtractionPathDiscovery called - this should not happen!");
-          log.warn("❌ The system should use direct value extraction instead of JSONPath discovery");
-          log.warn("❌ Returning null to force fallback to direct extraction");
-          return null;
-      }
 
       /**
        * Call LLM for direct value extraction from API response
@@ -3722,7 +3550,7 @@ public class SmartInputFetcher {
               // Build prompt for value generation
               String prompt = buildValueGenerationPrompt(parameterInfo);
 
-              if (prompt.length() > 2044) {
+              if (prompt.length() > config.getMaxPromptChars()) {
                   log.warn("Value generation prompt too long ({} chars), using simple generation", prompt.length());
                   return generateSimpleValue(parameterInfo);
               }
@@ -3900,97 +3728,85 @@ public class SmartInputFetcher {
         return cleaned;
     }
 
+    /**
+     * Pick a real, parameter-relevant GET endpoint for the given service. Returns {@code null}
+     * if no real endpoint is found — the caller (LLM discovery) then drops this service
+     * candidate altogether. The previous implementation fabricated
+     * {@code /api/v1/<svc>/query} when the OAS lookup failed, which produced 56 dead
+     * endpoints in the persisted registry (Bug audit Finding #33).
+     *
+     * <p>Reviewer Comment 7: the {@code pickFirstReasonableEndpoint} heuristic is also
+     * gated — when the LLM picker fails after retries, returning a "first non-utility"
+     * endpoint regardless of relevance still pollutes the registry. We now return
+     * {@code null} in that case too.</p>
+     */
     private String inferEndpointForService(String service, ParameterInfo parameterInfo) {
-        // Pure LLM-based endpoint selection (GET endpoints only)
-        if (openAPIDiscovery != null && openAPIDiscovery.isLoaded()) {
-            List<OpenAPIEndpointDiscovery.EndpointInfo> allEndpoints = openAPIDiscovery.getEndpointsForService(service);
-
-            // Filter to only GET endpoints for data fetching
-            List<OpenAPIEndpointDiscovery.EndpointInfo> getEndpoints = allEndpoints.stream()
-                    .filter(endpoint -> "GET".equalsIgnoreCase(endpoint.getMethod()))
-                    .collect(Collectors.toList());
-
-            if (!getEndpoints.isEmpty()) {
-                log.info("🔍 Found {} GET endpoints for service '{}' (filtered from {} total)",
-                        getEndpoints.size(), service, allEndpoints.size());
-
-                // Use LLM to select the best GET endpoint (with retries for reliability)
-                String selectedEndpoint = selectEndpointWithLLMRetry(getEndpoints, parameterInfo, service);
-                if (selectedEndpoint != null) {
-                    log.info("🧠 LLM selected GET endpoint '{}' for parameter '{}' in service '{}'",
-                            selectedEndpoint, parameterInfo.getName(), service);
-                    return selectedEndpoint;
-                }
-
-                // If LLM completely fails after retries, log error and use first reasonable endpoint
-                log.error("❌ LLM endpoint selection failed completely for parameter '{}' in service '{}', using first reasonable endpoint",
-                         parameterInfo.getName(), service);
-                String fallbackEndpoint = pickFirstReasonableEndpoint(getEndpoints);
-                log.info("🔧 Emergency fallback: using GET endpoint '{}' for parameter '{}'",
-                        fallbackEndpoint, parameterInfo.getName());
-                return fallbackEndpoint;
-            } else {
-                log.warn("⚠️ No GET endpoints found for service '{}' (found {} non-GET endpoints)",
-                        service, allEndpoints.size());
-            }
+        if (openAPIDiscovery == null || !openAPIDiscovery.isLoaded()) {
+            log.debug("OpenAPI discovery unavailable; cannot infer endpoint for service '{}'", service);
+            return null;
         }
-
-        // Final fallback: create a reasonable endpoint based on service name
-        String fallbackEndpoint = "/api/v1/" + service.toLowerCase().replace("ts-", "").replace("-service", "") + "/query";
-        log.info("🔧 Using generated endpoint '{}' for service '{}' and parameter '{}'",
-                fallbackEndpoint, service, parameterInfo.getName());
-        return fallbackEndpoint;
-     }
-
-     /**
-      * Pick the first reasonable endpoint (avoid welcome, health, etc.)
-      */
-     private String pickFirstReasonableEndpoint(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints) {
-         // First try: avoid utility endpoints
-         for (OpenAPIEndpointDiscovery.EndpointInfo endpoint : endpoints) {
-             String path = endpoint.getPath().toLowerCase();
-             if (!path.contains("welcome") && !path.contains("health") &&
-                 !path.contains("status") && !path.contains("info")) {
-                 return endpoint.getPath();
-             }
-         }
-
-         // Last resort: use first endpoint
-         return endpoints.get(0).getPath();
-     }
+        List<OpenAPIEndpointDiscovery.EndpointInfo> allEndpoints =
+                openAPIDiscovery.getEndpointsForService(service);
+        List<OpenAPIEndpointDiscovery.EndpointInfo> getEndpoints = allEndpoints.stream()
+                .filter(endpoint -> "GET".equalsIgnoreCase(endpoint.getMethod()))
+                .collect(Collectors.toList());
+        if (getEndpoints.isEmpty()) {
+            log.warn("⚠️ No GET endpoints found for service '{}' (found {} non-GET endpoints); dropping candidate",
+                    service, allEndpoints.size());
+            return null;
+        }
+        log.info("🔍 Found {} GET endpoints for service '{}' (filtered from {} total)",
+                getEndpoints.size(), service, allEndpoints.size());
+        String selectedEndpoint = selectEndpointWithLLMRetry(getEndpoints, parameterInfo, service);
+        if (selectedEndpoint != null) {
+            log.info("🧠 LLM selected GET endpoint '{}' for parameter '{}' in service '{}'",
+                    selectedEndpoint, parameterInfo.getName(), service);
+            return selectedEndpoint;
+        }
+        log.warn("LLM endpoint selection failed for parameter '{}' in service '{}'; dropping candidate (no fabrication)",
+                parameterInfo.getName(), service);
+        return null;
+    }
 
      /**
-      * Use LLM to select the best endpoint for a parameter (with retries for reliability)
+      * Use LLM to select the best endpoint for a parameter.
+      *
+      * <p>Bug audit Finding #38: previously this looped {@code maxRetries=3} regardless of
+      * outcome and on every {@code NO_GOOD_MATCH} also fired the forced-selection prompt,
+      * leading to a worst case of 6 LLM calls per discovery. We now distinguish two
+      * failure modes:
+      * <ul>
+      *   <li><b>{@code NO_GOOD_MATCH}</b> — the LLM gave a deterministic "no match" answer.
+      *       Repeating the same prompt will give the same answer, so we try
+      *       {@code forceEndpointSelectionWithLLM} once and then stop.</li>
+      *   <li><b>{@code null}</b> (LLM call failure: timeout, parse error, etc.) — we retry
+      *       up to {@code maxRetries} times because the next call may succeed.</li>
+      * </ul>
+      * Worst case is now 1 normal + 1 forced = 2 LLM calls on a deterministic miss, or
+      * up to {@code maxRetries} on transient failures.</p>
       */
      private String selectEndpointWithLLMRetry(List<OpenAPIEndpointDiscovery.EndpointInfo> endpoints, ParameterInfo parameterInfo, String serviceName) {
          int maxRetries = 3;
-
          for (int attempt = 1; attempt <= maxRetries; attempt++) {
              log.debug("🔄 LLM endpoint selection attempt {} of {} for parameter '{}'",
                       attempt, maxRetries, parameterInfo.getName());
-
              String result = selectEndpointWithLLM(endpoints, parameterInfo, serviceName);
-
              if (result != null && !result.equals("NO_GOOD_MATCH")) {
                  log.info("✅ LLM endpoint selection succeeded on attempt {} for parameter '{}'",
                          attempt, parameterInfo.getName());
                  return result;
              }
-
              if (result != null && result.equals("NO_GOOD_MATCH")) {
-                 log.info("🤔 LLM said NO_GOOD_MATCH on attempt {} for parameter '{}' - forcing selection",
-                         attempt, parameterInfo.getName());
-                 // Force LLM to pick something by modifying the prompt
-                 String forcedResult = forceEndpointSelectionWithLLM(endpoints, parameterInfo, serviceName);
-                 if (forcedResult != null) {
-                     return forcedResult;
-                 }
+                 // Deterministic miss — try forced once, then stop. Retrying the same prompt
+                 // would just produce the same NO_GOOD_MATCH.
+                 log.info("🤔 LLM said NO_GOOD_MATCH for parameter '{}' - trying forced selection (no retry)",
+                         parameterInfo.getName());
+                 return forceEndpointSelectionWithLLM(endpoints, parameterInfo, serviceName);
              }
-
-             log.warn("⚠️ LLM endpoint selection attempt {} failed for parameter '{}', retrying...",
+             // result == null → transient LLM call failure → retry.
+             log.warn("⚠️ LLM endpoint selection attempt {} failed (transient) for parameter '{}', retrying...",
                      attempt, parameterInfo.getName());
          }
-
          log.error("❌ All {} LLM endpoint selection attempts failed for parameter '{}'",
                   maxRetries, parameterInfo.getName());
          return null;
@@ -4004,7 +3820,7 @@ public class SmartInputFetcher {
              // Build endpoint selection prompt
              String prompt = buildEndpointSelectionPrompt(endpoints, parameterInfo, serviceName);
 
-             if (prompt.length() > 2044) {
+             if (prompt.length() > config.getMaxPromptChars()) {
                  log.warn("Endpoint selection prompt too long ({} chars), falling back to scoring", prompt.length());
                  return null;
              }
@@ -4151,7 +3967,7 @@ public class SmartInputFetcher {
              // Build more aggressive prompt that forces selection
              String prompt = buildForcedEndpointSelectionPrompt(endpoints, parameterInfo, serviceName);
 
-             if (prompt.length() > 2044) {
+             if (prompt.length() > config.getMaxPromptChars()) {
                  log.warn("Forced endpoint selection prompt too long ({} chars), skipping", prompt.length());
                  return null;
              }
@@ -4292,10 +4108,11 @@ public class SmartInputFetcher {
                  .replace("{parameterType}", parameterInfo.getType() != null ? parameterInfo.getType() : "")
                  .replace("{parameterDescription}", description) + endpointsContext;
 
-         // Ensure total prompt length doesn't exceed limit
-         if (prompt.length() > 2000) {
-             log.warn("Endpoint discovery prompt too long ({}), truncating", prompt.length());
-             prompt = prompt.substring(0, 1997) + "...";
+         // Bug audit Finding #10 finish: respect the configured prompt cap.
+         int promptCap = config.getMaxPromptChars();
+         if (prompt.length() > promptCap) {
+             log.warn("Endpoint discovery prompt too long ({} > {}), truncating", prompt.length(), promptCap);
+             prompt = prompt.substring(0, Math.max(0, promptCap - 3)) + "...";
          }
 
          return prompt;

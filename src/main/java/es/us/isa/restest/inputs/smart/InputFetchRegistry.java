@@ -59,33 +59,117 @@ public class InputFetchRegistry {
     }
     
     /**
-     * Save registry to YAML file
+     * Save registry to YAML file using an atomic write (temp file + rename) so that a JVM
+     * crash mid-write cannot leave the canonical registry in a half-written state. The prior
+     * implementation called {@code yamlMapper.writeValue(file, ...)} directly — for a 1.6 MB
+     * file an interruption between byte 0 and EOF could corrupt the YAML and brick the next
+     * load (Reviewer Comment 6).
      */
-    public void saveToFile(File file) throws IOException {
+    public synchronized void saveToFile(File file) throws IOException {
+        this.lastUpdated = LocalDateTime.now();
+        RegistryData data = RegistryData.fromRegistry(this);
+        File parent = file.getAbsoluteFile().getParentFile();
+        if (parent != null && !parent.exists()) parent.mkdirs();
+        File tmp = File.createTempFile(file.getName() + ".", ".tmp", parent);
         try {
-            this.lastUpdated = LocalDateTime.now();
-            RegistryData data = RegistryData.fromRegistry(this);
-            yamlMapper.writeValue(file, data);
-            log.debug("Saved registry to {}", file.getPath());
+            yamlMapper.writeValue(tmp, data);
+            try {
+                java.nio.file.Files.move(tmp.toPath(), file.toPath(),
+                        java.nio.file.StandardCopyOption.ATOMIC_MOVE,
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            } catch (java.nio.file.AtomicMoveNotSupportedException atomicNotSupported) {
+                // Some filesystems (e.g. cross-device tmpdirs) cannot do ATOMIC_MOVE; fall
+                // back to non-atomic replace, still safer than direct overwrite of the canonical
+                // file because any failure of the writeValue happens against the temp file.
+                java.nio.file.Files.move(tmp.toPath(), file.toPath(),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+            log.debug("Saved registry to {} via atomic temp-rename", file.getPath());
         } catch (IOException e) {
             log.error("Failed to save registry to {}: {}", file.getPath(), e.getMessage());
+            try { java.nio.file.Files.deleteIfExists(tmp.toPath()); } catch (IOException ignored) { }
             throw e;
         }
     }
     
     /**
-     * Get mappings for a specific parameter
+     * Get mappings for a specific parameter (global tier only — back-compat).
      */
     public List<ApiMapping> getMappingsForParameter(String parameterName) {
-        return parameterMappings.getOrDefault(parameterName, new ArrayList<>());
+        return getMappingsForParameter(null, parameterName);
     }
-    
+
     /**
-     * Add a new mapping for a parameter
+     * Get mappings for a parameter scoped to a specific consumer API. Returns scoped
+     * mappings (whose {@code consumerApiKey} equals {@code consumerApiKey}) first, then
+     * global mappings (whose {@code consumerApiKey} is null/empty) for fallback.
+     *
+     * <p>Bug audit Finding #15 + Reviewer Comment 2: this lets two operations that both
+     * have a parameter named {@code id} use distinct producer mappings without zeroing
+     * out existing learning (legacy entries with no recorded scope are treated as global).</p>
+     *
+     * @param consumerApiKey the consumer's normalized API key (e.g.
+     *                       {@code "POST /api/v1/orderservice/orders"}), or {@code null} to
+     *                       return all mappings (global tier only).
+     * @param parameterName  the bare parameter name.
+     */
+    public List<ApiMapping> getMappingsForParameter(String consumerApiKey, String parameterName) {
+        List<ApiMapping> all = parameterMappings.getOrDefault(parameterName, new ArrayList<>());
+        if (consumerApiKey == null || consumerApiKey.isEmpty()) {
+            // Pre-Finding-#15 callers (anyone passing the bare paramName form) get the
+            // global tier only — same as before.
+            List<ApiMapping> globals = new ArrayList<>();
+            for (ApiMapping m : all) {
+                if (m.getConsumerApiKey() == null || m.getConsumerApiKey().isEmpty()) {
+                    globals.add(m);
+                }
+            }
+            return globals.isEmpty() ? all : globals;
+        }
+        List<ApiMapping> scoped = new ArrayList<>();
+        List<ApiMapping> globals = new ArrayList<>();
+        for (ApiMapping m : all) {
+            String mk = m.getConsumerApiKey();
+            if (consumerApiKey.equals(mk)) scoped.add(m);
+            else if (mk == null || mk.isEmpty()) globals.add(m);
+        }
+        List<ApiMapping> result = new ArrayList<>(scoped);
+        result.addAll(globals);
+        return result;
+    }
+
+    /**
+     * Add a new mapping for a parameter (global / unscoped — back-compat).
      */
     public void addMapping(String parameterName, ApiMapping mapping) {
+        addMapping(null, parameterName, mapping);
+    }
+
+    /**
+     * Add a new mapping for a parameter, scoped to a specific consumer API. The mapping's
+     * {@link ApiMapping#setConsumerApiKey} is set so future reads can scope-filter
+     * (Bug audit Finding #15).
+     *
+     * @param consumerApiKey may be {@code null} for a global mapping; otherwise normalized
+     *                       method+path key like {@code "POST /api/v1/orderservice/orders"}.
+     */
+    public void addMapping(String consumerApiKey, String parameterName, ApiMapping mapping) {
+        if (mapping == null) return;
+        // Bug audit Finding #23 + Reviewer note: smart-fetch only knows how to GET data
+        // upstream. Reject mappings that record a non-GET method so we never persist a
+        // POST/PUT/DELETE that would produce side effects when "fetched".
+        String method = mapping.getMethod();
+        if (method != null && !"GET".equalsIgnoreCase(method)) {
+            log.warn("Refusing to register non-GET mapping for parameter '{}' ({} {}); smart-fetch only supports GET.",
+                    parameterName, method, mapping.getEndpoint());
+            return;
+        }
+        if (consumerApiKey != null && !consumerApiKey.isEmpty()) {
+            mapping.setConsumerApiKey(consumerApiKey);
+        }
         parameterMappings.computeIfAbsent(parameterName, k -> new ArrayList<>()).add(mapping);
-        log.debug("Added mapping for parameter '{}': {}", parameterName, mapping);
+        log.debug("Added mapping for parameter '{}' (scope='{}'): {}",
+                parameterName, consumerApiKey != null ? consumerApiKey : "<global>", mapping);
     }
     
     /**
@@ -104,20 +188,43 @@ public class InputFetchRegistry {
     }
     
     /**
-     * Add a parameter error for specific API endpoint and parameter
+     * Reviewer Comment 22: cap the per-endpoint+param error history to bound registry
+     * memory and YAML size. A single OVERFLOW probe with a 49 KB Lorem-ipsum payload was
+     * inflating the live registry by ~25 % (dataflow-map § 6.5). FIFO-evicting the oldest
+     * entry beyond the cap keeps recent failure context for LLM-aware regeneration without
+     * unbounded growth.
+     */
+    private static final int MAX_ERRORS_PER_PARAM = 50;
+    private static final int MAX_ERROR_REASON_CHARS = 1024;
+
+    /**
+     * Add a parameter error for specific API endpoint and parameter.
+     * Decodes percent-encoded URL segments before keying so {@code /foo/%25} and
+     * {@code /foo/%} collapse into one bucket (Bug audit Finding #40). Caps total entries
+     * per (endpoint, param) at {@value #MAX_ERRORS_PER_PARAM} and individual reasons at
+     * {@value #MAX_ERROR_REASON_CHARS} chars (Reviewer Comment 22).
      */
     public void addParameterError(String apiEndpoint, String parameterName, ParameterError error) {
-        Map<String, List<ParameterError>> endpointErrors = parameterErrors.computeIfAbsent(apiEndpoint, k -> new HashMap<>());
+        String key = decodeUrlForKey(apiEndpoint);
+        if (error != null && error.getErrorReason() != null
+                && error.getErrorReason().length() > MAX_ERROR_REASON_CHARS) {
+            error.setErrorReason(error.getErrorReason().substring(0, MAX_ERROR_REASON_CHARS) + "...");
+        }
+        Map<String, List<ParameterError>> endpointErrors = parameterErrors.computeIfAbsent(key, k -> new HashMap<>());
         List<ParameterError> paramErrors = endpointErrors.computeIfAbsent(parameterName, k -> new ArrayList<>());
-        
+
         // Check for semantic similarity to avoid redundant information
         ParameterError existingSimilar = findSemanticallyEquivalentError(paramErrors, error);
-        
+
         if (existingSimilar == null) {
             // No similar error found, add the new one
             paramErrors.add(error);
-            log.debug("Added new parameter error for {}.{}: {} - {}", 
-                     apiEndpoint, parameterName, error.getErrorType(), 
+            // FIFO eviction once the cap is exceeded.
+            while (paramErrors.size() > MAX_ERRORS_PER_PARAM) {
+                paramErrors.remove(0);
+            }
+            log.debug("Added new parameter error for {}.{}: {} - {}",
+                     key, parameterName, error.getErrorType(),
                      truncateForLog(error.getErrorReason(), 50));
         } else {
             // Similar error exists, merge information if the new one is more detailed
@@ -398,7 +505,10 @@ public class InputFetchRegistry {
         public LocalDateTime lastUsed;
         public double successRate;
         public String description;
-        
+        // Bug audit Finding #15: persist the consumer scope so reads can filter by it.
+        // Optional/back-compat — older YAMLs without this field are interpreted as global.
+        public String consumerApiKey;
+
         public static ApiMappingData fromApiMapping(ApiMapping mapping) {
             ApiMappingData data = new ApiMappingData();
             data.endpoint = mapping.getEndpoint();
@@ -409,9 +519,10 @@ public class InputFetchRegistry {
             data.lastUsed = mapping.getLastUsed();
             data.successRate = mapping.getSuccessRate();
             data.description = mapping.getDescription();
+            data.consumerApiKey = mapping.getConsumerApiKey();
             return data;
         }
-        
+
         public ApiMapping toApiMapping() {
             ApiMapping mapping = new ApiMapping();
             mapping.setEndpoint(this.endpoint);
@@ -422,6 +533,7 @@ public class InputFetchRegistry {
             mapping.setLastUsed(this.lastUsed);
             mapping.setSuccessRate(this.successRate);
             mapping.setDescription(this.description);
+            mapping.setConsumerApiKey(this.consumerApiKey);
             return mapping;
         }
     }
@@ -698,6 +810,20 @@ public class InputFetchRegistry {
         }
     }
     
+    /**
+     * Decode percent-encoded segments in a URL path so the same logical endpoint with
+     * different encodings ({@code /foo/%25} vs {@code /foo/%}) shares one error bucket.
+     * Falls back to the raw input on decode failure (Bug audit Finding #40).
+     */
+    private static String decodeUrlForKey(String apiEndpoint) {
+        if (apiEndpoint == null || apiEndpoint.indexOf('%') < 0) return apiEndpoint;
+        try {
+            return java.net.URLDecoder.decode(apiEndpoint, java.nio.charset.StandardCharsets.UTF_8.name());
+        } catch (Exception e) {
+            return apiEndpoint;
+        }
+    }
+
     /**
      * Truncates text for logging purposes only (doesn't affect stored data)
      */

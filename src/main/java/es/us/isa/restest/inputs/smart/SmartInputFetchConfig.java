@@ -18,6 +18,8 @@ public class SmartInputFetchConfig {
     private int maxCandidates;
     private boolean dependencyResolutionEnabled;
     private long discoveryTimeoutMs;
+    private long connectTimeoutMs;
+    private long readTimeoutMs;
     private boolean cacheEnabled;
     private int cacheTtlSeconds;
     private int defaultPriority;
@@ -26,12 +28,29 @@ public class SmartInputFetchConfig {
     private String defaultContentType;
     private int successResponseCode;
     private long schemaDiscoveryTimeoutMs;
+    /**
+     * Bug audit Finding #10: maximum LLM prompt size in characters. The previous codebase
+     * baked a literal {@code 2044} cap across 9 sites (a GPT4All limit). Production runs
+     * use Ollama qwen2.5-coder:14b with a 32 K context, so 2044 was silently dropping
+     * useful schema context. Default is now 8000; users on smaller-context models can lower
+     * via {@code smart.input.fetch.max.prompt.chars}.
+     */
+    private int maxPromptChars;
+    /**
+     * Bug audit Finding #35: when true (default), LLM-fallback values are added to the
+     * diverse-value cache to broaden test diversity. When false, only smart-fetched values
+     * (from real upstream APIs) populate the cache, so it represents "what the SUT actually
+     * produces" rather than "what we guessed". Toggle via
+     * {@code smart.input.fetch.cache.llm.fallback}.
+     */
+    private boolean cacheLlmFallbackValues;
 
-    // Authentication settings
+    // Authentication settings.
+    // Bug audit Finding #12: the authUser* fields had no consumers in the codebase and were
+    // removed. The single-tenant admin-only auth is documented in SmartFetchAuthManager;
+    // a dual-profile setup would require explicit caller plumbing, not just a config field.
     private String authAdminUsername;
     private String authAdminPassword;
-    private String authUserUsername;
-    private String authUserPassword;
     
     // Default constructor
     public SmartInputFetchConfig() {
@@ -45,6 +64,8 @@ public class SmartInputFetchConfig {
         this.maxCandidates = 5;
         this.dependencyResolutionEnabled = true;
         this.discoveryTimeoutMs = 5000;
+        this.connectTimeoutMs = 2000;
+        this.readTimeoutMs = 8000;
         this.cacheEnabled = true;
         this.cacheTtlSeconds = 300;
         this.defaultPriority = 5;
@@ -53,6 +74,8 @@ public class SmartInputFetchConfig {
         this.defaultContentType = "application/json";
         this.successResponseCode = 200;
         this.schemaDiscoveryTimeoutMs = 3000;
+        this.maxPromptChars = 8000;
+        this.cacheLlmFallbackValues = true;
     }
     
     /**
@@ -87,7 +110,16 @@ public class SmartInputFetchConfig {
         
         config.discoveryTimeoutMs = Long.parseLong(
             properties.getOrDefault("smart.input.fetch.discovery.timeout.ms", "5000"));
-        
+
+        // Bug audit Finding #28: split connect/read timeouts. If unset, both fall back to
+        // discoveryTimeoutMs to preserve the previous behavior.
+        config.connectTimeoutMs = Long.parseLong(
+            properties.getOrDefault("smart.input.fetch.connect.timeout.ms",
+                String.valueOf(config.discoveryTimeoutMs)));
+        config.readTimeoutMs = Long.parseLong(
+            properties.getOrDefault("smart.input.fetch.read.timeout.ms",
+                String.valueOf(config.discoveryTimeoutMs)));
+
         config.cacheEnabled = Boolean.parseBoolean(
             properties.getOrDefault("smart.input.fetch.cache.enabled", "true"));
         
@@ -112,11 +144,27 @@ public class SmartInputFetchConfig {
         config.schemaDiscoveryTimeoutMs = Long.parseLong(
             properties.getOrDefault("smart.input.fetch.schema.discovery.timeout.ms", "3000"));
 
+        config.maxPromptChars = Integer.parseInt(
+            properties.getOrDefault("smart.input.fetch.max.prompt.chars", "8000"));
+
+        config.cacheLlmFallbackValues = Boolean.parseBoolean(
+            properties.getOrDefault("smart.input.fetch.cache.llm.fallback", "true"));
+
         // Authentication settings
         config.authAdminUsername = properties.getOrDefault("auth.admin.username", "admin");
         config.authAdminPassword = properties.getOrDefault("auth.admin.password", "222222");
-        config.authUserUsername = properties.getOrDefault("auth.user.username", "fdse_microservice");
-        config.authUserPassword = properties.getOrDefault("auth.user.password", "111111");
+
+        // Bug audit Finding #11: configurable login plumbing.
+        config.authLoginPath = properties.getOrDefault("auth.login.path", "/api/v1/users/login");
+        config.authLoginUsernameField = properties.getOrDefault("auth.login.username.field", "username");
+        config.authLoginPasswordField = properties.getOrDefault("auth.login.password.field", "password");
+        config.authTokenJsonPath = properties.getOrDefault("auth.token.json.path", "data.token");
+        try {
+            config.authTokenValidityMinutes = Integer.parseInt(
+                    properties.getOrDefault("auth.token.validity.minutes", "30"));
+        } catch (NumberFormatException ignored) {
+            config.authTokenValidityMinutes = 30;
+        }
 
         return config;
     }
@@ -155,9 +203,15 @@ public class SmartInputFetchConfig {
     }
     
     public long getDiscoveryTimeoutMs() { return discoveryTimeoutMs; }
-    public void setDiscoveryTimeoutMs(long discoveryTimeoutMs) { 
-        this.discoveryTimeoutMs = discoveryTimeoutMs; 
+    public void setDiscoveryTimeoutMs(long discoveryTimeoutMs) {
+        this.discoveryTimeoutMs = discoveryTimeoutMs;
     }
+
+    public long getConnectTimeoutMs() { return connectTimeoutMs; }
+    public void setConnectTimeoutMs(long connectTimeoutMs) { this.connectTimeoutMs = connectTimeoutMs; }
+
+    public long getReadTimeoutMs() { return readTimeoutMs; }
+    public void setReadTimeoutMs(long readTimeoutMs) { this.readTimeoutMs = readTimeoutMs; }
     
     public boolean isCacheEnabled() { return cacheEnabled; }
     public void setCacheEnabled(boolean cacheEnabled) { this.cacheEnabled = cacheEnabled; }
@@ -193,17 +247,37 @@ public class SmartInputFetchConfig {
         this.schemaDiscoveryTimeoutMs = schemaDiscoveryTimeoutMs;
     }
 
+    public int getMaxPromptChars() { return maxPromptChars; }
+    public void setMaxPromptChars(int maxPromptChars) { this.maxPromptChars = maxPromptChars; }
+
+    public boolean isCacheLlmFallbackValues() { return cacheLlmFallbackValues; }
+    public void setCacheLlmFallbackValues(boolean v) { this.cacheLlmFallbackValues = v; }
+
     public String getAuthAdminUsername() { return authAdminUsername; }
     public void setAuthAdminUsername(String authAdminUsername) { this.authAdminUsername = authAdminUsername; }
 
     public String getAuthAdminPassword() { return authAdminPassword; }
     public void setAuthAdminPassword(String authAdminPassword) { this.authAdminPassword = authAdminPassword; }
+    // getAuthUserUsername/getAuthUserPassword removed (Bug audit Finding #12).
 
-    public String getAuthUserUsername() { return authUserUsername; }
-    public void setAuthUserUsername(String authUserUsername) { this.authUserUsername = authUserUsername; }
+    // Bug audit Finding #11: configurable login plumbing so {@code SmartFetchAuthManager}
+    // is no longer hardcoded to TrainTicket. Defaults preserve current TrainTicket behavior.
+    private String authLoginPath = "/api/v1/users/login";
+    private String authLoginUsernameField = "username";
+    private String authLoginPasswordField = "password";
+    private String authTokenJsonPath = "data.token";
+    private int authTokenValidityMinutes = 30;
 
-    public String getAuthUserPassword() { return authUserPassword; }
-    public void setAuthUserPassword(String authUserPassword) { this.authUserPassword = authUserPassword; }
+    public String getAuthLoginPath() { return authLoginPath; }
+    public void setAuthLoginPath(String v) { this.authLoginPath = v; }
+    public String getAuthLoginUsernameField() { return authLoginUsernameField; }
+    public void setAuthLoginUsernameField(String v) { this.authLoginUsernameField = v; }
+    public String getAuthLoginPasswordField() { return authLoginPasswordField; }
+    public void setAuthLoginPasswordField(String v) { this.authLoginPasswordField = v; }
+    public String getAuthTokenJsonPath() { return authTokenJsonPath; }
+    public void setAuthTokenJsonPath(String v) { this.authTokenJsonPath = v; }
+    public int getAuthTokenValidityMinutes() { return authTokenValidityMinutes; }
+    public void setAuthTokenValidityMinutes(int v) { this.authTokenValidityMinutes = v; }
     
     @Override
     public String toString() {

@@ -134,63 +134,9 @@ public class OpenAPIEndpointDiscovery {
         return serviceEndpoints.getOrDefault(serviceName, new ArrayList<>());
     }
     
-    /**
-     * Find the best matching endpoint for a service and parameter context
-     */
-    public Optional<EndpointInfo> findBestEndpoint(String serviceName, String parameterName, String parameterType) {
-        List<EndpointInfo> endpoints = getEndpointsForService(serviceName);
-        if (endpoints.isEmpty()) {
-            return Optional.empty();
-        }
-        
-        // Score endpoints based on relevance to parameter
-        return endpoints.stream()
-                .map(endpoint -> new ScoredEndpoint(endpoint, scoreEndpoint(endpoint, parameterName, parameterType)))
-                .max(Comparator.comparingDouble(ScoredEndpoint::getScore))
-                .map(ScoredEndpoint::getEndpoint);
-    }
-    
-    /**
-     * Score an endpoint based on how well it matches the parameter context
-     */
-    private double scoreEndpoint(EndpointInfo endpoint, String parameterName, String parameterType) {
-        double score = 0.0;
-        
-        String lowerParamName = parameterName.toLowerCase();
-        String lowerPath = endpoint.getPath().toLowerCase();
-        String lowerSummary = endpoint.getSummary() != null ? endpoint.getSummary().toLowerCase() : "";
-        String lowerDescription = endpoint.getDescription() != null ? endpoint.getDescription().toLowerCase() : "";
-        
-        // Score based on path relevance
-        if (lowerPath.contains(lowerParamName)) {
-            score += 3.0;
-        }
-        
-        // Score based on summary relevance
-        if (lowerSummary.contains(lowerParamName)) {
-            score += 2.0;
-        }
-        
-        // Score based on description relevance
-        if (lowerDescription.contains(lowerParamName)) {
-            score += 1.0;
-        }
-        
-        // Prefer GET endpoints for data fetching
-        if ("GET".equals(endpoint.getMethod())) {
-            score += 1.0;
-        }
-        
-        // Score based on parameter type hints
-        if (parameterType != null) {
-            String lowerParamType = parameterType.toLowerCase();
-            if (lowerPath.contains(lowerParamType) || lowerSummary.contains(lowerParamType)) {
-                score += 1.5;
-            }
-        }
-        
-        return score;
-    }
+    // findBestEndpoint and scoreEndpoint removed — dead code (Bug audit Finding #16).
+    // Endpoint selection is performed by SmartInputFetcher.selectEndpointWithLLMRetry which
+    // is a strict superset of this scoring heuristic.
     
     /**
      * Get total number of endpoints across all services
@@ -272,19 +218,5 @@ public class OpenAPIEndpointDiscovery {
         }
     }
     
-    /**
-     * Helper class for scoring endpoints
-     */
-    private static class ScoredEndpoint {
-        private final EndpointInfo endpoint;
-        private final double score;
-        
-        public ScoredEndpoint(EndpointInfo endpoint, double score) {
-            this.endpoint = endpoint;
-            this.score = score;
-        }
-        
-        public EndpointInfo getEndpoint() { return endpoint; }
-        public double getScore() { return score; }
-    }
+    // ScoredEndpoint removed alongside findBestEndpoint (Bug audit Finding #16).
 }
