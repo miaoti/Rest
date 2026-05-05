@@ -167,7 +167,20 @@ public class InputFetchRegistry {
         if (consumerApiKey != null && !consumerApiKey.isEmpty()) {
             mapping.setConsumerApiKey(consumerApiKey);
         }
-        parameterMappings.computeIfAbsent(parameterName, k -> new ArrayList<>()).add(mapping);
+        // Fresh-review Finding F20: dedup by (endpoint, method, service, extractPath, scope).
+        // ApiMapping.equals already covers the first four; we additionally require scope
+        // equality so a global entry and a scoped entry with otherwise-identical fields
+        // coexist.
+        List<ApiMapping> bucket = parameterMappings.computeIfAbsent(parameterName, k -> new ArrayList<>());
+        for (ApiMapping existing : bucket) {
+            if (existing.equals(mapping)
+                    && java.util.Objects.equals(existing.getConsumerApiKey(), mapping.getConsumerApiKey())) {
+                log.debug("Skipping duplicate mapping for parameter '{}' (scope='{}'): {}",
+                        parameterName, consumerApiKey != null ? consumerApiKey : "<global>", mapping);
+                return;
+            }
+        }
+        bucket.add(mapping);
         log.debug("Added mapping for parameter '{}' (scope='{}'): {}",
                 parameterName, consumerApiKey != null ? consumerApiKey : "<global>", mapping);
     }
@@ -240,18 +253,25 @@ public class InputFetchRegistry {
     }
     
     /**
-     * Get parameter errors for specific API endpoint and parameter
+     * Get parameter errors for specific API endpoint and parameter.
+     *
+     * <p>Fresh-review Finding F10: applies the same {@code decodeUrlForKey} normalization
+     * as {@link #addParameterError}. Without this symmetry, callers asking for
+     * {@code /foo/%25} fail to find errors stored under decoded {@code /foo/%}, undermining
+     * Bug audit Finding #40.</p>
      */
     public List<ParameterError> getParameterErrors(String apiEndpoint, String parameterName) {
-        return parameterErrors.getOrDefault(apiEndpoint, new HashMap<>())
+        String key = decodeUrlForKey(apiEndpoint);
+        return parameterErrors.getOrDefault(key, new HashMap<>())
                 .getOrDefault(parameterName, new ArrayList<>());
     }
-    
+
     /**
-     * Get all parameter errors for an API endpoint
+     * Get all parameter errors for an API endpoint (decoded-key, see {@link #getParameterErrors}).
      */
     public Map<String, List<ParameterError>> getParameterErrorsForEndpoint(String apiEndpoint) {
-        return parameterErrors.getOrDefault(apiEndpoint, new HashMap<>());
+        String key = decodeUrlForKey(apiEndpoint);
+        return parameterErrors.getOrDefault(key, new HashMap<>());
     }
     
     /**

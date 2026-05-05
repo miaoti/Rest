@@ -44,6 +44,23 @@ public class SmartInputFetchConfig {
      * {@code smart.input.fetch.cache.llm.fallback}.
      */
     private boolean cacheLlmFallbackValues;
+    /**
+     * Bug audit Finding #27 follow-up: EMA learning rate for {@link ApiMapping#updateSuccessRate}.
+     * Higher α (0.0..1.0) lets a fresh upstream recover from past failures faster; lower α
+     * smooths over transient noise. Default 0.1 matches the original hardcoded value.
+     */
+    private double emaAlpha;
+    /**
+     * Decay window in days for the recentness axis of {@link ApiMapping#calculateScore}.
+     * A mapping last used today scores 1.0; one last used {@code decayDays}+ days ago scores 0.0.
+     */
+    private int decayDays;
+    /**
+     * Fresh-review Finding F17: target count of diverse values to keep in the rotation pool
+     * per parameter. Was previously read directly via {@code System.getProperty} bypassing
+     * this config object; now plumbed here for consistency.
+     */
+    private int diverseTargetCount;
 
     // Authentication settings.
     // Bug audit Finding #12: the authUser* fields had no consumers in the codebase and were
@@ -75,7 +92,13 @@ public class SmartInputFetchConfig {
         this.successResponseCode = 200;
         this.schemaDiscoveryTimeoutMs = 3000;
         this.maxPromptChars = 8000;
-        this.cacheLlmFallbackValues = true;
+        // Bug audit Finding #35 follow-up: default flipped to false so the diverse cache
+        // reflects only smart-fetched values from real upstreams; operators can opt back in
+        // via {@code smart.input.fetch.cache.llm.fallback=true}.
+        this.cacheLlmFallbackValues = false;
+        this.emaAlpha = 0.1;
+        this.decayDays = 30;
+        this.diverseTargetCount = 10;
     }
     
     /**
@@ -147,12 +170,42 @@ public class SmartInputFetchConfig {
         config.maxPromptChars = Integer.parseInt(
             properties.getOrDefault("smart.input.fetch.max.prompt.chars", "8000"));
 
+        // Bug audit Finding #35 follow-up: default false; operators opt-in if they want
+        // LLM-fallback values in the diverse cache for broader test diversity.
         config.cacheLlmFallbackValues = Boolean.parseBoolean(
-            properties.getOrDefault("smart.input.fetch.cache.llm.fallback", "true"));
+            properties.getOrDefault("smart.input.fetch.cache.llm.fallback", "false"));
+
+        try {
+            config.emaAlpha = Double.parseDouble(
+                    properties.getOrDefault("smart.input.fetch.ema.alpha", "0.1"));
+            if (config.emaAlpha <= 0.0 || config.emaAlpha > 1.0) {
+                config.emaAlpha = 0.1;
+            }
+        } catch (NumberFormatException ignored) {
+            config.emaAlpha = 0.1;
+        }
+        try {
+            config.decayDays = Integer.parseInt(
+                    properties.getOrDefault("smart.input.fetch.decay.days", "30"));
+            if (config.decayDays <= 0) config.decayDays = 30;
+        } catch (NumberFormatException ignored) {
+            config.decayDays = 30;
+        }
+        try {
+            config.diverseTargetCount = Integer.parseInt(
+                    properties.getOrDefault("smart.input.fetch.diverse.target.count", "10"));
+            if (config.diverseTargetCount <= 0) config.diverseTargetCount = 10;
+        } catch (NumberFormatException ignored) {
+            config.diverseTargetCount = 10;
+        }
 
         // Authentication settings
-        config.authAdminUsername = properties.getOrDefault("auth.admin.username", "admin");
-        config.authAdminPassword = properties.getOrDefault("auth.admin.password", "222222");
+        // Fresh-review Finding F27: do not ship a default admin password. Operators must
+        // set {@code auth.admin.password} (and username) via properties; missing values
+        // make {@link SmartFetchAuthManager#isConfigured()} return false → smart-fetch
+        // proceeds without auth instead of using a guessed credential.
+        config.authAdminUsername = properties.getOrDefault("auth.admin.username", "");
+        config.authAdminPassword = properties.getOrDefault("auth.admin.password", "");
 
         // Bug audit Finding #11: configurable login plumbing.
         config.authLoginPath = properties.getOrDefault("auth.login.path", "/api/v1/users/login");
@@ -252,6 +305,19 @@ public class SmartInputFetchConfig {
 
     public boolean isCacheLlmFallbackValues() { return cacheLlmFallbackValues; }
     public void setCacheLlmFallbackValues(boolean v) { this.cacheLlmFallbackValues = v; }
+
+    public double getEmaAlpha() { return emaAlpha; }
+    public void setEmaAlpha(double emaAlpha) {
+        if (emaAlpha > 0.0 && emaAlpha <= 1.0) this.emaAlpha = emaAlpha;
+    }
+
+    public int getDecayDays() { return decayDays; }
+    public void setDecayDays(int decayDays) {
+        if (decayDays > 0) this.decayDays = decayDays;
+    }
+
+    public int getDiverseTargetCount() { return diverseTargetCount; }
+    public void setDiverseTargetCount(int v) { if (v > 0) this.diverseTargetCount = v; }
 
     public String getAuthAdminUsername() { return authAdminUsername; }
     public void setAuthAdminUsername(String authAdminUsername) { this.authAdminUsername = authAdminUsername; }

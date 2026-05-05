@@ -138,14 +138,19 @@ public class SmartFetchAuthManager {
                     jwtToken = extracted;
                     tokenExpiry = LocalDateTime.now().plus(tokenValidityMinutes, ChronoUnit.MINUTES);
                     log.info("✅ Admin login successful, JWT token obtained (expires: {})", tokenExpiry);
-                    log.debug("JWT token: {}...", jwtToken.substring(0, Math.min(20, jwtToken.length())));
+                    // Fresh-review Finding F13: dropped the "JWT token: <prefix>..." debug log
+                    // — even a 20-char prefix can leak base64url-encoded payload claims and
+                    // is unnecessary now that the success log records the expiry.
                     return jwtToken;
                 } else {
-                    log.error("❌ Login response missing token at path '{}': {}",
-                            tokenJsonPath, responseBody);
+                    log.error("❌ Login response missing token at path '{}' (body redacted, length={})",
+                            tokenJsonPath, responseBody == null ? 0 : responseBody.length());
                 }
             } else {
-                log.error("❌ Admin login failed with HTTP {}: {}", responseCode, responseBody);
+                // Fresh-review Finding F13: redact the response body — a server error message
+                // may echo the password attempt or include sensitive recovery hints.
+                log.error("❌ Admin login failed with HTTP {} (body redacted, length={})",
+                        responseCode, responseBody == null ? 0 : responseBody.length());
             }
         } catch (Exception e) {
             log.error("❌ Admin login failed with exception: {}", e.getMessage(), e);

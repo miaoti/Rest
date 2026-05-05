@@ -290,19 +290,30 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
      */
     private ParameterInfo createParameterInfo() {
         ParameterInfo pinfo = new ParameterInfo();
-        
+
         // Use altParameterName if set, else the normal param name
         String finalParamName = (getAltParameterName() != null) ? getAltParameterName() : getParameterName();
         pinfo.setName(finalParamName);
-        
+
         // "type" from the parent
         pinfo.setType(getParameterType());
-        
+
+        // Fresh-review Finding F3: stamp the consumer API key (e.g. "POST /api/v1/...")
+        // onto the ParameterInfo so {@link SmartInputFetcher#fetchFromSmartSource}'s
+        // consumer-scoped registry lookup actually has scope information. Without this,
+        // every discovery via this generator path falls into the global tier and the
+        // cross-service collision fix (Bug audit Finding #15) is bypassed.
+        String method = getOperationMethod();
+        String path = getOperationPath();
+        if (method != null && path != null) {
+            pinfo.setApiName(method.toUpperCase(java.util.Locale.ROOT) + " " + path);
+        }
+
         // 1) Find the Operation from the OAS
         Operation openApiOp = findOperation(
                 getSpec().getSpecification(), // The 'OpenAPI' object
-                getOperationPath(),
-                getOperationMethod().toLowerCase()
+                path,
+                method != null ? method.toLowerCase() : null
         );
 
         // 2) Try every standard parameter location in priority order so path/header/body/cookie

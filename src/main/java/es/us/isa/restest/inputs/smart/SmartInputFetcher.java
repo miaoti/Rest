@@ -2,9 +2,7 @@ package es.us.isa.restest.inputs.smart;
 
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
-import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.llm.LLMService;
-import es.us.isa.restest.llm.LLMConfig;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,20 +16,12 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.stream.Collectors;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
+// Fresh-review Finding F22: removed unused imports (OpenAPISpecification, LLMConfig,
+// ConcurrentHashMap, TimeUnit, java.util.regex.Pattern, all okhttp3.* — okhttp3 was a
+// planned migration that never happened; the file uses HttpURLConnection throughout).
+// org.json.JSONArray / JSONObject are referenced fully-qualified in this file already.
 
 /**
  * Smart Input Fetching Service
@@ -115,9 +105,35 @@ public class SmartInputFetcher {
      */
     private volatile boolean registryDirty = false;
 
+    /**
+     * Fresh-review Finding F11: track live fetchers in a class-level set so we can register
+     * exactly ONE JVM shutdown hook regardless of how many fetchers are constructed. The
+     * previous per-instance hook leaked the fetcher reference (preventing GC) and caused
+     * last-writer-wins data loss in multi-fetcher test farms.
+     */
+    private static final java.util.Set<SmartInputFetcher> LIVE_FETCHERS =
+            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private static final java.util.concurrent.atomic.AtomicBoolean SHUTDOWN_HOOK_REGISTERED =
+            new java.util.concurrent.atomic.AtomicBoolean(false);
+
+    private static void registerSharedShutdownHook() {
+        if (SHUTDOWN_HOOK_REGISTERED.compareAndSet(false, true)) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                for (SmartInputFetcher f : LIVE_FETCHERS) {
+                    try { f.flushIfDirty(); }
+                    catch (Throwable ignored) { /* shutdown is best-effort */ }
+                }
+            }, "smart-fetch-registry-flush"));
+        }
+    }
+
     public SmartInputFetcher(SmartInputFetchConfig config, String baseUrl) {
         this.config = config;
-        this.baseUrl = baseUrl;
+        // Fresh-review Finding F23: normalize trailing slash so concatenation with the
+        // mapping endpoint (which always starts with '/') doesn't produce a `//path` URL.
+        // Matches the same hygiene already applied in SmartFetchAuthManager.
+        this.baseUrl = baseUrl != null && baseUrl.endsWith("/")
+                ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.llmGenerator = new AiDrivenLLMGenerator();
 
         // Initialize LLM service with properties from system
@@ -126,14 +142,6 @@ public class SmartInputFetcher {
 
         this.objectMapper = new ObjectMapper();
         this.random = es.us.isa.restest.util.SeededRandom.create("SmartInputFetcher");
-        // Bug audit Finding #24: bound the caches by CacheConfig.maxEntries (default 1000).
-        // Each cache key is a parameter signature; with hundreds of test parameters per run
-        // the bound is comfortably above working-set size but caps long-running test pools.
-        int cacheCap = config.isCacheEnabled()
-                ? Math.max(1, registryCacheCapacity()) : 1;
-        this.cache = boundedLruMap(cacheCap);
-        this.diverseValueCache = boundedLruMap(cacheCap);
-        this.valueRotationIndex = boundedLruMap(cacheCap);
         this.openAPIDiscovery = new OpenAPIEndpointDiscovery();
 
         // Initialize authentication manager (Bug audit Finding #11: now accepts a generic
@@ -149,13 +157,23 @@ public class SmartInputFetcher {
             config.getAuthTokenValidityMinutes()
         );
 
+        // Fresh-review Finding F1: load the registry before constructing the caches so
+        // CacheConfig.maxEntries from the persisted YAML is honored. Previously the caches
+        // were constructed first, registryCacheCapacity() saw {@code registry==null} and
+        // always returned the literal 1000, silently dropping the operator's tuning knob.
         loadRegistry();
         loadOpenAPISpec();
 
-        // Reviewer Comment 1: persist Priority-1 mutations on JVM exit. Without this, the
-        // freshness-recency signal from Stream 5 cannot accumulate across runs.
-        Runtime.getRuntime().addShutdownHook(new Thread(this::flushIfDirty,
-                "smart-fetch-registry-flush"));
+        int cacheCap = config.isCacheEnabled()
+                ? Math.max(1, registryCacheCapacity()) : 1;
+        this.cache = boundedLruMap(cacheCap);
+        this.diverseValueCache = boundedLruMap(cacheCap);
+        this.valueRotationIndex = boundedLruMap(cacheCap);
+
+        // Reviewer Comment 1 + Fresh-review F11: persist Priority-1 mutations on JVM exit
+        // via a SINGLE class-level shutdown hook (was previously one per fetcher → leak).
+        LIVE_FETCHERS.add(this);
+        registerSharedShutdownHook();
 
         log.info("SmartInputFetcher initialized with config: {}", config);
         log.info("Authentication manager configured: {}", authManager.isConfigured());
@@ -190,30 +208,23 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Load LLM properties from system properties
+     * Load LLM properties from system properties.
+     *
+     * <p>Fresh-review Finding F2: replaced the explicit allowlist (which silently dropped
+     * {@code llm.local.api.key} — critical for DeepSeek/OpenAI-compatible auth per
+     * {@code flow.md:851-862}) with a prefix-based filter that forwards every system
+     * property starting with {@code llm.} or {@code auth.admin.}. New LLM properties are
+     * automatically picked up without touching this method.</p>
      */
     private Map<String, String> loadLLMProperties() {
         Map<String, String> properties = new HashMap<>();
-
-        // List of LLM-related properties to load
-        String[] llmProperties = {
-            "llm.enabled", "llm.model.type",
-            "llm.local.enabled", "llm.local.url", "llm.local.model",
-            "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
-            "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
-            "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries",
-            "auth.admin.username", "auth.admin.password", "auth.user.username", "auth.user.password",
-            // LLM Communication Logging Properties
-            "llm.communication.logging.enabled", "llm.communication.logging.dir",
-            "llm.communication.logging.file.prefix", "llm.communication.logging.include.response.time",
-            "llm.communication.logging.include.content", "llm.communication.logging.include.metadata",
-            "llm.communication.logging.level", "llm.communication.logging.max.content.length"
-        };
-
-        for (String prop : llmProperties) {
-            String value = System.getProperty(prop);
-            if (value != null) {
-                properties.put(prop, value);
+        for (Object keyObj : System.getProperties().keySet()) {
+            String key = String.valueOf(keyObj);
+            if (key.startsWith("llm.") || key.startsWith("auth.admin.")) {
+                String value = System.getProperty(key);
+                if (value != null) {
+                    properties.put(key, value);
+                }
             }
         }
 
@@ -307,6 +318,7 @@ public class SmartInputFetcher {
             for (String endpoint : traceEndpoints) {
                 ApiMapping traceMapping = new ApiMapping(endpoint, "trace-observed", "DIRECT_EXTRACTION");
                 traceMapping.setPriority(10);
+                applyMappingTuning(traceMapping);
                 try {
                     String value = fetchFromApiMapping(traceMapping, parameterInfo);
                     if (value != null && !value.trim().isEmpty() && isValidValueForParameter(value, parameterInfo)) {
@@ -504,6 +516,7 @@ public class SmartInputFetcher {
                 ApiMapping mapping = new ApiMapping(endpoint, canonical, "DIRECT_EXTRACTION");
                 int priority = config.getLlmDiscoveryPriority() + rank;
                 mapping.setPriority(priority);
+                applyMappingTuning(mapping);
                 mappings.add(mapping);
 
                 log.info("LLM-discovered mapping #{}: {} -> {} {} (priority: {}) [DIRECT]",
@@ -535,11 +548,20 @@ public class SmartInputFetcher {
         }
         String url = baseUrl + resolved;
 
-        // Always use GET for data fetching
-        String httpMethod = "GET";
+        // Bug audit Finding #23 follow-up: honor the mapping's recorded method instead of
+        // hardcoding "GET". The write-side {@code InputFetchRegistry.addMapping} already
+        // rejects non-GET registrations, so in practice every persisted mapping is GET.
+        // This makes the read-path consistent with the write-path contract and surfaces
+        // any future inconsistency through {@code conn.setRequestMethod} directly.
+        String httpMethod = mapping.getMethod() != null && !mapping.getMethod().isEmpty()
+                ? mapping.getMethod().toUpperCase(java.util.Locale.ROOT) : "GET";
+        if (!"GET".equals(httpMethod)) {
+            log.warn("Mapping for parameter '{}' has non-GET method '{}'; smart-fetch enforces GET only",
+                    parameterInfo.getName(), httpMethod);
+            httpMethod = "GET";
+        }
         log.info("🌐 API Call: {} {} for parameter '{}'", httpMethod, url, parameterInfo.getName());
 
-        // Make HTTP request (GET only for data fetching)
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
         conn.setRequestMethod(httpMethod);
         conn.setRequestProperty("Content-Type", config.getDefaultContentType());
@@ -661,9 +683,16 @@ public class SmartInputFetcher {
                 }
                 // Common envelope shapes — { "status": 1, "data": [] } /
                 // { "result": [] } / { "payload": null } / { "items": [] } — empty payload
-                // is a soft miss (Bug audit Finding #37). Previously only "data" was checked.
+                // is a soft miss (Bug audit Finding #37). Fresh-review Finding F7 also
+                // rejects {@code "data": null} (was previously accepted, leaving extraction
+                // to fail downstream with no signal).
                 for (String envelopeKey : new String[] {"data", "result", "payload", "items"}) {
+                    if (!obj.has(envelopeKey)) continue;
                     Object payload = obj.opt(envelopeKey);
+                    if (payload == null || payload == org.json.JSONObject.NULL) {
+                        log.debug("API response has null {} payload", envelopeKey);
+                        return false;
+                    }
                     if (payload instanceof org.json.JSONArray
                             && ((org.json.JSONArray) payload).isEmpty()) {
                         log.debug("API response has empty {} array", envelopeKey);
@@ -1120,10 +1149,14 @@ public class SmartInputFetcher {
                 // 1) Clean and validate all returned values
                 // 2) Cache them as diverse options
                 // 3) Return a rotated value to avoid repeating the same choice across tests
+                // Fresh-review Finding F9: single get + null check instead of containsKey-then-get
+                // (the latter is a TOCTOU race on a synchronized map: another thread could
+                // remove() the entry between containsKey and get, causing a NPE on size()).
                 int cachedCountBefore = 0;
                 String cacheKey = buildCacheKey(parameterInfo);
-                if (diverseValueCache.containsKey(cacheKey)) {
-                    cachedCountBefore = diverseValueCache.get(cacheKey).size();
+                List<String> existingDiverse = diverseValueCache.get(cacheKey);
+                if (existingDiverse != null) {
+                    synchronized (existingDiverse) { cachedCountBefore = existingDiverse.size(); }
                 }
 
                 List<String> validCleanedValues = new ArrayList<>();
@@ -1233,6 +1266,32 @@ public class SmartInputFetcher {
             log.warn("Failed to load registry, creating new one: {}", e.getMessage());
             registry = new InputFetchRegistry();
         }
+        // Bug audit Finding #27 follow-up: apply per-config EMA alpha + decay-days tuning to
+        // every ApiMapping in the loaded registry. Default 0.1 / 30 days preserves prior
+        // behavior; operators can tune via {@code smart.input.fetch.ema.alpha} and
+        // {@code smart.input.fetch.decay.days}.
+        applyMappingTuningToRegistry();
+    }
+
+    /**
+     * Stamp the configured EMA alpha + decay-days onto every {@link ApiMapping} held by the
+     * registry. Called once after {@link #loadRegistry} and again whenever a new mapping is
+     * registered via discovery, so the tuning is uniform across loaded and learned entries.
+     */
+    private void applyMappingTuningToRegistry() {
+        if (registry == null || registry.getParameterMappings() == null) return;
+        for (List<ApiMapping> mappings : registry.getParameterMappings().values()) {
+            if (mappings == null) continue;
+            for (ApiMapping m : mappings) {
+                applyMappingTuning(m);
+            }
+        }
+    }
+
+    private void applyMappingTuning(ApiMapping mapping) {
+        if (mapping == null) return;
+        mapping.setEmaAlpha(config.getEmaAlpha());
+        mapping.setDecayDays(config.getDecayDays());
     }
 
     /**
@@ -1241,23 +1300,27 @@ public class SmartInputFetcher {
     private void loadOpenAPISpec() {
         try {
             String openApiPath = config.getOpenApiSpecPath();
-            if (openApiPath != null && !openApiPath.trim().isEmpty()) {
-                File openApiFile = new File(openApiPath);
-
-                if (openApiFile.exists()) {
-                    openAPIDiscovery.loadFromFile(openApiPath);
-                    log.info("Loaded OpenAPI specification from: {}", openApiPath);
-                    log.info("Available services: {}", openAPIDiscovery.getAllServices().size());
-                } else {
-                    log.warn("OpenAPI specification file not found: {}", openApiPath);
-                    log.info("Will fall back to LLM endpoint guessing");
-                }
+            if (openApiPath == null || openApiPath.trim().isEmpty()) {
+                log.info("No OpenAPI specification path configured; smart-fetch endpoint discovery disabled.");
+                return;
+            }
+            File openApiFile = new File(openApiPath);
+            if (openApiFile.exists()) {
+                openAPIDiscovery.loadFromFile(openApiPath);
+                log.info("Loaded OpenAPI specification from: {}", openApiPath);
+                log.info("Available services: {}", openAPIDiscovery.getAllServices().size());
             } else {
-                log.info("No OpenAPI specification path configured, will use LLM endpoint guessing");
+                // Fresh-review Finding F25: a configured-but-missing path is operator
+                // misconfiguration — escalate to ERROR with an actionable message instead
+                // of silently degrading to LLM-only mode.
+                log.error("Configured OpenAPI specification file not found: {} — endpoint "
+                        + "discovery will be disabled (LLM-only mode). Fix the "
+                        + "{@code smart.input.fetch.openapi.spec.path} property to enable "
+                        + "OAS-driven discovery.", openApiPath);
             }
         } catch (Exception e) {
-            log.error("Failed to load OpenAPI specification: {}", e.getMessage());
-            log.info("Will fall back to LLM endpoint guessing");
+            log.error("Failed to load OpenAPI specification ({}); endpoint discovery disabled",
+                    e.getMessage(), e);
         }
     }
 
@@ -1362,13 +1425,12 @@ public class SmartInputFetcher {
     private void clearInvalidCachedValues(ParameterInfo parameterInfo) {
         String cacheKey = buildCacheKey(parameterInfo);
 
-        // Clear main cache
-        if (cache.containsKey(cacheKey)) {
-            CachedValue cachedValue = cache.get(cacheKey);
-            if (cachedValue != null && !isValidValueForParameter(cachedValue.value, parameterInfo)) {
-                cache.remove(cacheKey);
-                log.info("🧹 Cleared invalid cached value for parameter '{}'", parameterInfo.getName());
-            }
+        // Fresh-review Finding F9: single get + null check; no TOCTOU race with concurrent
+        // remove() / LRU eviction.
+        CachedValue cachedValue = cache.get(cacheKey);
+        if (cachedValue != null && !isValidValueForParameter(cachedValue.value, parameterInfo)) {
+            cache.remove(cacheKey);
+            log.info("🧹 Cleared invalid cached value for parameter '{}'", parameterInfo.getName());
         }
 
         // Clear diverse value cache
@@ -1408,6 +1470,16 @@ public class SmartInputFetcher {
     public void resetValueRotation() {
         if (valueRotationIndex != null) {
             valueRotationIndex.clear();
+        }
+        // Fresh-review Finding F26: also clear the diverse-value cache contents at scenario
+        // boundary. Trace-observed values flow through this cache (cacheValue is called for
+        // them), and {@code flow.md:825} declares trace endpoints session-scoped — so values
+        // harvested in scenario A must not leak into scenario B's rotation pool.
+        if (diverseValueCache != null) {
+            diverseValueCache.clear();
+        }
+        if (cache != null) {
+            cache.clear();
         }
         // Reviewer Comment 1: persist Priority-1 mutations at scenario boundary too — the
         // shutdown hook is the safety net but a per-scenario flush keeps recent learning
@@ -1574,7 +1646,11 @@ public class SmartInputFetcher {
         String cleanResponse = response.trim();
         String paramName = parameterInfo.getName().toLowerCase();
 
-        // Reject responses that look like explanations or descriptions
+        // Reject responses that look like explanations or descriptions. Fresh-review F8:
+        // dropped the magic {@code length() > 100} cap — schema-level {@code maxLength}
+        // is the authoritative size bound (enforced by {@link #isValidValueForParameter}).
+        // The remaining substring checks are signature phrases the LLM emits when it
+        // returns prose instead of a value.
         if (cleanResponse.contains("The format appears to be") ||
             cleanResponse.contains("delivery route)") ||
             cleanResponse.contains("This is a") ||
@@ -1583,8 +1659,7 @@ public class SmartInputFetcher {
             cleanResponse.contains("typically") ||
             cleanResponse.contains("usually") ||
             cleanResponse.contains("format:") ||
-            cleanResponse.contains("example:") ||
-            cleanResponse.length() > 100) { // Very long responses are likely explanations
+            cleanResponse.contains("example:")) {
             log.warn("❌ LLM response looks like explanation, not value: '{}'", cleanResponse);
             return false;
         }
@@ -1600,24 +1675,25 @@ public class SmartInputFetcher {
             return false;
         }
 
-        // Validate parameter-specific formats
-        if (isIdLikeParamName(paramName) || paramName.contains("route")) {
-            // IDs should be reasonable length and format
+        // Validate parameter-specific formats. Fresh-review Finding F4: dropped the
+        // {@code || paramName.contains("route")} clause — it false-positived on names like
+        // {@code routeDescription}, {@code traceRouteUrl}. The boundary-aware
+        // {@link #isIdLikeParamName} is the single source of truth for "this is an ID".
+        if (isIdLikeParamName(paramName)) {
             if (cleanResponse.length() < 3 || cleanResponse.length() > 50) {
                 log.warn("❌ ID parameter '{}' has invalid length: '{}'", paramName, cleanResponse);
                 return false;
             }
-
-            // Reject responses that contain explanatory text
             if (cleanResponse.contains(" ") && cleanResponse.split(" ").length > 3) {
                 log.warn("❌ ID parameter '{}' contains too many words: '{}'", paramName, cleanResponse);
                 return false;
             }
         }
 
-        // Validate numeric parameters
-        if (paramName.contains("price") || paramName.contains("rate") || paramName.contains("number")) {
-            // Should be numeric or at least contain numbers
+        // Fresh-review Finding F5: gate the digit-presence check on the schema type, not on
+        // substring matches against the parameter name. {@code phoneNumber} (string) and
+        // {@code priceListDescription} (string) used to falsely require digits.
+        if (isNumericSchemaType(parameterInfo)) {
             if (!cleanResponse.matches(".*\\d.*")) {
                 log.warn("❌ Numeric parameter '{}' contains no digits: '{}'", paramName, cleanResponse);
                 return false;
@@ -1853,14 +1929,10 @@ public class SmartInputFetcher {
         // Add hash-derived numeric component
         result.append(hashValue % 10000);
 
-        // For parameters that might need units, add hash-derived suffix
-        String lowerName = paramName.toLowerCase();
-        if (lowerName.contains("distance") || lowerName.contains("length") || lowerName.contains("size")) {
-            // Generate unit-like suffix using parameter characteristics
-            char unitChar = (char)('a' + (hashValue % 26));
-            result.append(unitChar);
-        }
-
+        // Fresh-review Finding F19: dropped the "unit-char suffix" for distance/length/size
+        // — appending a single random Latin letter does not produce a unit (`d1234x` is not
+        // "1234 km"). This is the absolute-last-resort fallback; cleaner output is better
+        // than fake-unit gibberish.
         return result.toString();
     }
 
@@ -1951,20 +2023,13 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Get required number of diverse values per parameter pool.
-     * Configurable via {@code smart.input.fetch.diverse.target.count} (default 10).
-     * The previous implementation returned {@code Math.max(5, 10) = 10} unconditionally
-     * (Bug audit Finding #6).
+     * Required number of diverse values per parameter pool.
+     * Sourced from {@link SmartInputFetchConfig#getDiverseTargetCount()} (default 10);
+     * formerly read directly via {@code System.getProperty} in violation of the config
+     * pipeline (Fresh-review Finding F17, Bug audit Finding #6).
      */
     private int getRequiredValueCount(ParameterInfo parameterInfo) {
-        String configured = System.getProperty("smart.input.fetch.diverse.target.count");
-        if (configured != null) {
-            try {
-                int n = Integer.parseInt(configured.trim());
-                if (n > 0) return n;
-            } catch (NumberFormatException ignored) { }
-        }
-        return 10;
+        return config.getDiverseTargetCount();
     }
 
     /**
@@ -2410,8 +2475,11 @@ public class SmartInputFetcher {
                 return true;
             }
         }
-        // Last resort: ask the LLM. Most fields will match deterministically above.
-        return askLLMForFieldRelevance(fieldName, paramName, paramType);
+        // Fresh-review Finding F30: when no deterministic check matches, return false
+        // rather than firing a per-field LLM call. A 30-field response would otherwise
+        // trigger up to 30 LLM round-trips per fetch — the dominant performance cost on
+        // trace-rich responses, with rate-limited APIs (Gemini, OpenAI) throttling.
+        return false;
     }
 
     /**
@@ -2500,7 +2568,7 @@ public class SmartInputFetcher {
         String paramName = parameterInfo.getName().toLowerCase();
 
         // Reject nonsensical LLM hallucinations
-        if (isNonsensicalValue(cleanValue, paramName)) {
+        if (isNonsensicalValue(cleanValue, paramName, parameterInfo)) {
             log.debug("Rejecting nonsensical value '{}' for parameter '{}'", value, parameterInfo.getName());
             return false;
         }
@@ -2531,6 +2599,31 @@ public class SmartInputFetcher {
             return isValidIdValue(value, parameterInfo);
         }
 
+        // Fresh-review Finding F28: enforce schema {@code minimum}/{@code maximum} on numeric
+        // parameters. Without this, an LLM-emitted value like {@code "-99999"} for a parameter
+        // declared with {@code minimum: 0} passed validation, was cached, and surfaced as a
+        // 400 from the SUT.
+        if (isNumericSchemaType(parameterInfo)
+                && (parameterInfo.getMinimum() != null || parameterInfo.getMaximum() != null)) {
+            try {
+                double parsed = Double.parseDouble(value.trim());
+                if (parameterInfo.getMinimum() != null
+                        && parsed < parameterInfo.getMinimum().doubleValue()) {
+                    log.debug("Rejecting value '{}' below schema minimum {} for parameter '{}'",
+                            value, parameterInfo.getMinimum(), parameterInfo.getName());
+                    return false;
+                }
+                if (parameterInfo.getMaximum() != null
+                        && parsed > parameterInfo.getMaximum().doubleValue()) {
+                    log.debug("Rejecting value '{}' above schema maximum {} for parameter '{}'",
+                            value, parameterInfo.getMaximum(), parameterInfo.getName());
+                    return false;
+                }
+            } catch (NumberFormatException ignored) {
+                // Non-parseable — let other validators handle it; bounds-check doesn't apply.
+            }
+        }
+
         // Accept reasonable values
         return true;
     }
@@ -2538,7 +2631,7 @@ public class SmartInputFetcher {
     /**
      * Check if a value is nonsensical LLM hallucination
      */
-    private boolean isNonsensicalValue(String cleanValue, String paramName) {
+    private boolean isNonsensicalValue(String cleanValue, String paramName, ParameterInfo parameterInfo) {
         // Generic/meaningless terms
         if (cleanValue.equals("objects") || cleanValue.equals("service") || cleanValue.equals("data") ||
             cleanValue.equals("response") || cleanValue.equals("result") || cleanValue.equals("value") ||
@@ -2552,8 +2645,11 @@ public class SmartInputFetcher {
             return true;
         }
 
-        // Distance/numeric parameters should not have non-numeric values (but allow values with units)
-        if ((paramName.contains("distance") || paramName.contains("price") || paramName.contains("rate"))) {
+        // Fresh-review Finding F6: numeric parameters should not have non-numeric values
+        // (still allow values with units). Gate on the schema type, not on parameter-name
+        // substrings — {@code distanceUnit}, {@code priceListDescription} are strings whose
+        // value-class is determined by the OAS, not by the substring "distance" / "price".
+        if (parameterInfo != null && isNumericSchemaType(parameterInfo)) {
             String numericPart = extractNumericPart(cleanValue);
             if (numericPart == null || numericPart.trim().isEmpty()) {
                 log.debug("Rejecting non-numeric value '{}' for numeric parameter '{}'", cleanValue, paramName);
@@ -2730,15 +2826,31 @@ public class SmartInputFetcher {
         java.util.regex.Matcher leading = INTEGER_LEADING_PATTERN.matcher(trimmed);
         if (leading.find()) {
             String parsed = parseIntegerLiteral(leading.group());
-            if (parsed != null) return parsed;
+            if (parsed != null) return clampIntegerString(parsed, parameterInfo);
         }
         java.util.regex.Matcher anyRun = INTEGER_ANY_DIGIT_RUN.matcher(trimmed);
         if (anyRun.find()) {
             String parsed = parseIntegerLiteral(anyRun.group());
-            if (parsed != null) return parsed;
+            if (parsed != null) return clampIntegerString(parsed, parameterInfo);
         }
         log.debug("Failed to clean integer value '{}' for parameter '{}'", value, parameterInfo.getName());
         return integerFallbackForSchema(parameterInfo);
+    }
+
+    /**
+     * Fresh-review Finding F15: clamp the parsed value to the parameter's declared
+     * {@code minimum}/{@code maximum}. Companion {@code clampToIntegerBounds} was already
+     * defined for the algorithmic fallback path; this brings the cleaner into parity.
+     */
+    private static String clampIntegerString(String parsed, ParameterInfo parameterInfo) {
+        try {
+            long parsedLong = Long.parseLong(parsed);
+            return String.valueOf(clampToIntegerBounds(parsedLong, parameterInfo));
+        } catch (NumberFormatException ignored) {
+            // BigInteger overflow path — leave the parsed value as-is; the validator will
+            // reject it if it exceeds bounds (Finding F28).
+            return parsed;
+        }
     }
 
     private static String integerFallbackForSchema(ParameterInfo parameterInfo) {
@@ -2786,9 +2898,10 @@ public class SmartInputFetcher {
                 return numberFallbackForSchema(parameterInfo);
             }
 
-            // Parse as double to validate
+            // Parse as double to validate, then clamp to the parameter's declared
+            // {@code minimum}/{@code maximum} (Fresh-review Finding F15).
             double doubleValue = Double.parseDouble(cleanValue);
-            return String.valueOf(doubleValue);
+            return String.valueOf(clampToNumberBounds(doubleValue, parameterInfo));
 
         } catch (NumberFormatException e) {
             log.debug("Failed to clean number value '{}' for parameter '{}': {}",
@@ -2911,32 +3024,17 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Infer schema type from parameter name using LLM-based analysis
+     * Infer schema type from parameter name when no OpenAPI declaration is available.
+     *
+     * <p>Fresh-review Finding F29: previously this fired an LLM call per fetch when
+     * {@code parameterInfo.getSchemaType()/getType()} were null/empty — extra latency for
+     * a one-word answer the LLM rarely improves on. We now default to {@code "string"}
+     * (the safest unconstrained type) without consulting the LLM. The 99 % case
+     * already-typed parameters never reach this branch; the 1 % missing-type case spends
+     * its budget on the actual fetch instead.</p>
      */
     private String inferSchemaTypeFromParameterName(ParameterInfo parameterInfo) {
-        try {
-            // Use LLM to infer the most likely OpenAPI schema type
-            String llmInferredType = askLLMForSchemaTypeInference(parameterInfo);
-
-            if (llmInferredType != null && !llmInferredType.trim().isEmpty()) {
-                String cleanType = llmInferredType.trim().toLowerCase();
-
-                // Validate LLM response against known OpenAPI types
-                if (cleanType.equals("integer") || cleanType.equals("number") ||
-                    cleanType.equals("string") || cleanType.equals("boolean") ||
-                    cleanType.equals("array")) {
-                    log.debug("LLM inferred schema type '{}' for parameter '{}'", cleanType, parameterInfo.getName());
-                    return cleanType;
-                }
-            }
-
-            log.debug("LLM schema type inference failed for parameter '{}', defaulting to string", parameterInfo.getName());
-            return "string"; // Safe default
-
-        } catch (Exception e) {
-            log.debug("Failed to infer schema type for parameter '{}': {}", parameterInfo.getName(), e.getMessage());
-            return "string"; // Safe default
-        }
+        return "string";
     }
 
     /**
@@ -3287,12 +3385,27 @@ public class SmartInputFetcher {
                 + ":" + bounds + ":" + lengths + ":" + regex;
     }
 
+    /**
+     * Read the response body as UTF-8 (Fresh-review Finding F14: was using the platform
+     * default charset, which mangled non-ASCII payloads on non-UTF-8 hosts). Falls back to
+     * the connection's error stream when the input stream is not available — mirrors the
+     * pattern used by {@code SmartFetchAuthManager.readResponse}.
+     */
     private String readResponse(HttpURLConnection conn) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+        java.io.InputStream stream;
+        try {
+            stream = conn.getInputStream();
+        } catch (IOException e) {
+            stream = conn.getErrorStream();
+            if (stream == null) throw e;
+        }
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+            char[] buf = new char[4096];
+            int n;
+            while ((n = reader.read(buf)) >= 0) {
+                response.append(buf, 0, n);
             }
             return response.toString();
         }

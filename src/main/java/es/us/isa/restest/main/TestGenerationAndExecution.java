@@ -840,6 +840,7 @@ public class TestGenerationAndExecution {
 			"llm.local.enabled",
 			"llm.local.url",
 			"llm.local.model",
+			"llm.local.api.key",
 			"llm.gemini.enabled",
 			"llm.gemini.api.key",
 			"llm.gemini.model",
