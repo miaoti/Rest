@@ -147,6 +147,22 @@ RE_BULK_EXTRACT_PARAM = re.compile(
 )
 
 
+def _split_type_and_format(raw_type: str) -> tuple[str, str]:
+    """Decompose `'integer (int32)'` → `('integer', 'int32')`.
+    Several RESTest LLM prompts include the OAS `format` as a parenthetical
+    after the type (e.g. `Type: integer (int32)`, `string (date)`,
+    `number (double)`). The constraint validator handles them separately so
+    `integer (int32)` would otherwise pass through type validation
+    unconditionally — an LLM emitting `'2024-01-01'` for an int32 param would
+    not be flagged. Split them so D3 LHR validates both axes."""
+    if not raw_type:
+        return "", ""
+    m = re.match(r"^\s*([A-Za-z][A-Za-z0-9]*)\s*\(([^)]+)\)\s*$", raw_type)
+    if m:
+        return m.group(1).strip().lower(), m.group(2).strip().lower()
+    return raw_type.strip().lower(), ""
+
+
 def parse_constraints(user_prompt: str, category: str) -> dict:
     """Return a dict of constraint fields. Missing fields are absent from the dict."""
     out: dict = {}
@@ -155,21 +171,37 @@ def parse_constraints(user_prompt: str, category: str) -> dict:
             m = pattern.search(user_prompt)
             if m:
                 out[key] = m.group(1).strip()
+        # Extract a parenthetical format from the type field if present and
+        # promote it to a top-level format constraint for D3 validation.
+        if out.get("type"):
+            t_norm, fmt = _split_type_and_format(out["type"])
+            out["type"] = t_norm
+            if fmt and not out.get("format"):
+                out["format"] = fmt
     elif category == "diverse_gen":
         m = RE_DIVERSE_PARAM.search(user_prompt)
         if m:
             out["parameter"] = m.group(1).strip()
-            out["type"] = m.group(2).strip()
+            t_norm, fmt = _split_type_and_format(m.group(2).strip())
+            out["type"] = t_norm
+            if fmt:
+                out["format"] = fmt
     elif category == "bulk_extract":
         m = RE_BULK_EXTRACT_PARAM.search(user_prompt)
         if m:
             out["parameter"] = m.group(1).strip()
-            out["type"] = m.group(2).strip()
+            t_norm, fmt = _split_type_and_format(m.group(2).strip())
+            out["type"] = t_norm
+            if fmt:
+                out["format"] = fmt
     elif category == "extraction":
         m = RE_TARGET_PARAM.search(user_prompt)
         if m:
             out["parameter"] = m.group(1).strip()
-            out["type"] = m.group(2).strip()
+            t_norm, fmt = _split_type_and_format(m.group(2).strip())
+            out["type"] = t_norm
+            if fmt:
+                out["format"] = fmt
     return out
 
 

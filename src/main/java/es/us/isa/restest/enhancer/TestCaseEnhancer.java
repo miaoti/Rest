@@ -1,5 +1,6 @@
 package es.us.isa.restest.enhancer;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -21,8 +22,16 @@ import java.util.*;
 public class TestCaseEnhancer {
     
     private static final Logger log = LogManager.getLogger(TestCaseEnhancer.class);
+    // The LLM commonly emits JSON decorated with // comments, trailing commas, and
+    // single-quoted keys/values. We turn on the corresponding Jackson tolerances so a
+    // helpful-but-non-strict response does not abort an entire enhancement round
+    // (12 such failures observed in a single run when these were strict).
     private static final ObjectMapper objectMapper = new ObjectMapper()
-            .enable(SerializationFeature.INDENT_OUTPUT);
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .configure(JsonParser.Feature.ALLOW_COMMENTS, true)
+            .configure(JsonParser.Feature.ALLOW_TRAILING_COMMA, true)
+            .configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true)
+            .configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
     
     private final LLMService llmService;
     private final int maxTokens;

@@ -36,16 +36,20 @@ public class HardcodedInvalidInputGenerator {
         log.info("🔧 [HARDCODE] Generating invalid input pool for '{}' (type: {})", paramName, paramType);
         
         InvalidInputPool pool = new InvalidInputPool(paramName, paramType);
-        
-        // Generate each type of invalid input using hardcoded values
-        generateTypeMismatchInputs(param, pool);
-        generateOverflowInputs(param, pool);
-        generateEmptyInputs(param, pool);
-        generateNullInputs(param, pool);
-        generateSpecialCharacterInputs(param, pool);
-        generateBoundaryViolationInputs(param, pool);
-        generateRegexMismatchInputs(param, pool);
-        generateSemanticMismatchInputs(param, pool);
+
+        // Generate each fault type only when it is meaningful for the schema type.
+        // See InvalidInputType.appliesTo() for the applicability matrix.
+        // This prevents nonsense like "OVERFLOW" being applied to a boolean
+        // parameter (which has a 2-element domain and cannot overflow), which
+        // D10 NIFP previously surfaced as label-vs-value purity failures.
+        if (InvalidInputType.TYPE_MISMATCH.appliesTo(paramType))       generateTypeMismatchInputs(param, pool);
+        if (InvalidInputType.OVERFLOW.appliesTo(paramType))            generateOverflowInputs(param, pool);
+        if (InvalidInputType.EMPTY_INPUT.appliesTo(paramType))         generateEmptyInputs(param, pool);
+        if (InvalidInputType.NULL_INPUT.appliesTo(paramType))          generateNullInputs(param, pool);
+        if (InvalidInputType.SPECIAL_CHARACTERS.appliesTo(paramType))  generateSpecialCharacterInputs(param, pool);
+        if (InvalidInputType.BOUNDARY_VIOLATION.appliesTo(paramType))  generateBoundaryViolationInputs(param, pool);
+        if (InvalidInputType.REGEX_MISMATCH.appliesTo(paramType))      generateRegexMismatchInputs(param, pool);
+        if (InvalidInputType.SEMANTIC_MISMATCH.appliesTo(paramType))   generateSemanticMismatchInputs(param, pool);
         
         // Special handling for array types - generate both array-level and element-level invalids
         if ("array".equalsIgnoreCase(paramType)) {
@@ -324,31 +328,40 @@ public class HardcodedInvalidInputGenerator {
         Integer minLen = param.getMinLength();
         Integer maxLen = param.getMaxLength();
 
+        // BOUNDARY_VIOLATION is only meaningful when the schema declares a bound
+        // to violate. For schemas with no minimum/maximum/minLength/maxLength,
+        // any value we emit here would be a label-vs-value mismatch (D10 NIFP
+        // surfaced 248/248 such cases as schema-unbounded). Skip silently — the
+        // round-robin will simply exercise fewer fault types for that param.
+        boolean hasNumericBound = (min != null) || (max != null);
+        boolean hasLengthBound = (minLen != null) || (maxLen != null);
+
         switch (paramType) {
             case "integer":
             case "int":
             case "long":
             case "number":
-                // Overflow-safe schema-derived off-by-ones.
+                if (!hasNumericBound) {
+                    log.debug("    ⤷ skipping BOUNDARY_VIOLATION: no min/max declared in schema");
+                    return;
+                }
                 if (min != null && min.longValue() > Long.MIN_VALUE) {
                     pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, min.longValue() - 1);
                 }
                 if (max != null && max.longValue() < Long.MAX_VALUE) {
                     pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, max.longValue() + 1);
                 }
-                // Canonical fallbacks — always useful regardless of schema
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -1);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -999999);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 999999999);
                 break;
 
             case "string":
+                if (!hasLengthBound) {
+                    log.debug("    ⤷ skipping BOUNDARY_VIOLATION: no minLength/maxLength declared in schema");
+                    return;
+                }
                 // Guard minLen > 0: a minLen of 0 means empty string is valid, so
                 // "length - 1 = -1" is meaningless as a boundary violation and would
                 // just duplicate EMPTY_INPUT coverage.
                 if (minLen != null && minLen > 0) {
-                    // One character shorter than the minimum
                     pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "a".repeat(minLen - 1));
                 }
                 // Cap the maxLen+1 string at a sane upper bound so we don't blow up the
@@ -356,39 +369,33 @@ public class HardcodedInvalidInputGenerator {
                 if (maxLen != null && maxLen > 0 && maxLen < 100_000) {
                     pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "A".repeat(maxLen + 1));
                 }
-                // Canonical fallbacks
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "");
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "a");
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "A".repeat(256));
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "B".repeat(257));
                 break;
 
             case "double":
             case "float":
-                // Overflow / non-finite guards.
+                if (!hasNumericBound) {
+                    log.debug("    ⤷ skipping BOUNDARY_VIOLATION: no min/max declared in schema");
+                    return;
+                }
                 if (min != null && Double.isFinite(min.doubleValue()) && min.doubleValue() > -Double.MAX_VALUE) {
                     pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, min.doubleValue() - 0.0001);
                 }
                 if (max != null && Double.isFinite(max.doubleValue()) && max.doubleValue() < Double.MAX_VALUE) {
                     pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, max.doubleValue() + 0.0001);
                 }
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -0.0001);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0.0);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0.0001);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -1.0);
                 break;
 
             case "array":
-                // Boundary array sizes
+                // Array boundary applies when minItems/maxItems is declared. The
+                // ParameterInfo model doesn't expose those today; conservatively
+                // emit empty + singleton as boundary candidates.
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, Collections.emptyList());
                 pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, Collections.singletonList("single"));
                 break;
 
             default:
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, -1);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, 0);
-                pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, "");
-                break;
+                // Unknown type without bounds — skip silently.
+                return;
         }
     }
     

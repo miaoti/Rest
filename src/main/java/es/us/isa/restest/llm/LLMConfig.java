@@ -20,10 +20,13 @@ public class LLMConfig {
     private boolean enabled;
     private ModelType modelType;
     
-    // Local LLM settings
+    // Local LLM settings (OpenAI-compatible endpoint; covers DeepSeek, OpenAI, gpt4all, etc.)
     private boolean localEnabled;
     private String localUrl;
     private String localModel;
+    /** Optional bearer token for OpenAI-compatible hosted APIs (DeepSeek, OpenAI, etc.).
+     *  Empty for true local servers like gpt4all. Resolved from ${ENV_VAR} syntax in properties. */
+    private String localApiKey;
     
     // Gemini API settings
     private boolean geminiEnabled;
@@ -47,6 +50,7 @@ public class LLMConfig {
         this.localEnabled = true;
         this.localUrl = "http://localhost:4891/v1/chat/completions";
         this.localModel = "llama-3-8b-instruct";
+        this.localApiKey = "";
         this.geminiEnabled = false;
         this.geminiApiKey = "";
         this.geminiModel = "gemini-2.0-flash-exp";
@@ -88,6 +92,11 @@ public class LLMConfig {
             "llm.local.url", "http://localhost:4891/v1/chat/completions");
         config.localModel = properties.getOrDefault(
             "llm.local.model", "llama-3-8b-instruct");
+        // Resolve ${ENV_VAR} in api.key so the secret never has to be committed
+        // to the .properties file. Falls back to the literal value when no
+        // ${...} placeholder is used.
+        config.localApiKey = resolveEnvPlaceholder(
+            properties.getOrDefault("llm.local.api.key", ""));
         
         // Gemini API settings
         config.geminiEnabled = Boolean.parseBoolean(
@@ -205,6 +214,45 @@ public class LLMConfig {
     
     public String getLocalModel() { return localModel; }
     public void setLocalModel(String localModel) { this.localModel = localModel; }
+
+    public String getLocalApiKey() { return localApiKey; }
+    public void setLocalApiKey(String localApiKey) { this.localApiKey = localApiKey; }
+
+    /**
+     * Resolve a property value that may be a literal, an environment-variable
+     * reference of the form {@code ${VAR}}, or {@code ${VAR:default}}.
+     * <p>An empty or {@code null} input returns {@code ""}. A reference with
+     * no matching env var (and no default) returns {@code ""} so that a
+     * missing key disables the auth header instead of literally sending the
+     * placeholder text.
+     */
+    static String resolveEnvPlaceholder(String value) {
+        if (value == null || value.isEmpty()) {
+            return "";
+        }
+        String trimmed = value.trim();
+        if (!(trimmed.startsWith("${") && trimmed.endsWith("}"))) {
+            return trimmed;
+        }
+        String inside = trimmed.substring(2, trimmed.length() - 1);
+        String varName = inside;
+        String defaultVal = "";
+        int colon = inside.indexOf(':');
+        if (colon >= 0) {
+            varName = inside.substring(0, colon);
+            defaultVal = inside.substring(colon + 1);
+        }
+        String fromEnv = System.getenv(varName);
+        if (fromEnv != null && !fromEnv.isEmpty()) {
+            return fromEnv;
+        }
+        // Allow -D system properties as a fallback (handy for IDE run configs).
+        String fromSys = System.getProperty(varName);
+        if (fromSys != null && !fromSys.isEmpty()) {
+            return fromSys;
+        }
+        return defaultVal;
+    }
     
     public boolean isGeminiEnabled() { return geminiEnabled; }
     public void setGeminiEnabled(boolean geminiEnabled) { this.geminiEnabled = geminiEnabled; }

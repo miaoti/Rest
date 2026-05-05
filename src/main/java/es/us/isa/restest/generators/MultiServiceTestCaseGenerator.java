@@ -630,7 +630,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         /* 2. Load service-specific test-configuration ------------------------------ */
         TestConfigurationObject cfg = serviceConfigs.get(service);
         if (cfg == null) {
-            log.warn("No test-configuration for service '{}' (step {}), propagating to children", service, stepNumber);
+            // Routing-only services (e.g. ts-gateway-service) intentionally have no
+            // per-service test config; propagating to children is the designed behaviour,
+            // not an anomaly. DEBUG-level so it doesn't dominate the run log
+            // (17K+ identical lines per run otherwise).
+            log.debug("No test-configuration for service '{}' (step {}), propagating to children", service, stepNumber);
             gotoChildren(span, tc, context, stepNumber, rootIndex, isTopLevelRoot,
                     variantIndex, isFaultyVariant, targetFaultyParams, faultRootApiKey);
             return;
@@ -868,7 +872,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                             }
                             if (val == null && !typedValSet) {
                                 List<String> vals = llmGen.generateParameterValues(info);
-                                String llmValue = vals.isEmpty() ? "FALLBACK_" + p.getName() : vals.get(random.nextInt(vals.size()));
+                                String llmValue = vals.isEmpty()
+                                        ? typeAwareFallbackValue(p, variantIndex)
+                                        : vals.get(random.nextInt(vals.size()));
                                 if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                     typedVal = convertStringToTypedValue(llmValue, p);
                                     typedValSet = true;
@@ -2362,10 +2368,35 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     }
                 }
 
-                // Phase 3: Fallback padding to guarantee minimum pool size
+                // Phase 3: Fallback padding to guarantee minimum pool size.
+                // The padded value must be parseable as the parameter's declared type,
+                // otherwise every variant that draws this value triggers a noisy
+                // 'Failed to convert value FALLBACK_X to type integer' warning and
+                // sends a string into a typed body slot. Type-aware padding keeps the
+                // pool semantically valid even when smart-fetch and the LLM both fail.
+                //
+                // CRITICAL: closed-domain types (boolean, enum-constrained) have a
+                // FINITE valid value space. Padding past that capacity produces only
+                // duplicates, which a LinkedHashSet silently rejects — the previous
+                // unbounded `while` then spun forever. We cap the loop at a safety
+                // ceiling proportional to targetPoolSize and break out as soon as
+                // padding stops making progress.
                 int fallbackIdx = 0;
-                while (uniqueValues.size() < targetPoolSize) {
-                    uniqueValues.add("FALLBACK_" + p.getName() + "_" + fallbackIdx++);
+                int safetyCeiling = Math.max(targetPoolSize * 2, 64);
+                int prevSize = -1;
+                while (uniqueValues.size() < targetPoolSize && fallbackIdx < safetyCeiling) {
+                    int sizeBefore = uniqueValues.size();
+                    uniqueValues.add(typeAwareFallbackValue(p, fallbackIdx++));
+                    if (uniqueValues.size() == sizeBefore && uniqueValues.size() == prevSize) {
+                        // Two consecutive padding attempts produced no new value —
+                        // we've hit the closed-domain ceiling. Stop padding; the pool
+                        // is as large as it can legitimately be for this parameter.
+                        log.debug("Pool padding for '{}' reached closed-domain ceiling at "
+                                + "{} unique values (target was {})",
+                                p.getName(), uniqueValues.size(), targetPoolSize);
+                        break;
+                    }
+                    prevSize = sizeBefore;
                 }
 
                 parameterPool.put(p.getName(), new ArrayList<>(uniqueValues));
@@ -2377,6 +2408,40 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         }
 
         return parameterPool;
+    }
+
+    /**
+     * Produce a padding value for the shared pool that is parseable as the parameter's
+     * declared type. The previous always-string {@code FALLBACK_<name>_<i>} pad worked
+     * for string params but produced 'Failed to convert' warnings (and string-typed body
+     * slots) for every numeric / boolean / array / object parameter that hit padding.
+     */
+    private static String typeAwareFallbackValue(TestParameter p, int idx) {
+        String name = p != null && p.getName() != null ? p.getName() : "param";
+        String type = p != null && p.getType() != null
+                ? p.getType().toLowerCase(java.util.Locale.ROOT) : "string";
+        switch (type) {
+            case "integer":
+            case "int":
+            case "int32":
+            case "int64":
+            case "long":
+                return Integer.toString(idx);
+            case "number":
+            case "double":
+            case "float":
+                return idx + ".0";
+            case "boolean":
+            case "bool":
+                return (idx % 2 == 0) ? "false" : "true";
+            case "array":
+                return "[]";
+            case "object":
+                return "{}";
+            case "string":
+            default:
+                return "FALLBACK_" + name + "_" + idx;
+        }
     }
 
     /**

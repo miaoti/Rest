@@ -23,12 +23,19 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import sys
 from collections import defaultdict
 from pathlib import Path
 
 from jsonschema import Draft7Validator
 from jsonschema.exceptions import ValidationError
+
+# Tool-side padding values produced by typeAwareFallbackValue. They are not
+# LLM/test outputs and shouldn't be measured as schema conformance — they
+# always serialize as plain strings regardless of the parameter's declared
+# type.
+FALLBACK_VALUE_RX = re.compile(r"^FALLBACK_[A-Za-z0-9_]+_\d+$")
 
 from oas_helpers import (
     get_operation,
@@ -130,6 +137,7 @@ def main(argv: list[str]) -> int:
         "no_schema": 0,
         "missing_op": 0,
         "skipped_negative": 0,
+        "skipped_fallback": 0,
     }
     per_param_counts: dict[tuple[str, str, str, str], dict] = defaultdict(
         lambda: {"total": 0, "valid": 0, "invalid_examples": []}
@@ -145,6 +153,10 @@ def main(argv: list[str]) -> int:
             kind = (row.get("test_kind") or "").lower()
             if kind == "negative" and not args.include_negatives:
                 counts["skipped_negative"] += 1
+                continue
+            value_for_filter = (row.get("value") or "").strip()
+            if FALLBACK_VALUE_RX.match(value_for_filter):
+                counts["skipped_fallback"] += 1
                 continue
             counts["total"] += 1
 
@@ -261,6 +273,7 @@ def main(argv: list[str]) -> int:
         "rows_no_schema": counts["no_schema"],
         "rows_missing_operation": counts["missing_op"],
         "rows_skipped_negative": counts["skipped_negative"],
+        "rows_skipped_fallback": counts["skipped_fallback"],
         "scr": overall_scr,
         "scr_threshold_pass": (overall_scr is not None) and (overall_scr >= 0.90),
         "by_test_kind": {
@@ -293,7 +306,8 @@ def main(argv: list[str]) -> int:
           f"({counts['valid']}/{schema_present_total}) "
           f"+ {counts['no_schema']} no-schema, "
           f"{counts['missing_op']} missing-op, "
-          f"{counts['skipped_negative']} skipped-negatives → {args.out_dir}")
+          f"{counts['skipped_negative']} skipped-negatives, "
+          f"{counts['skipped_fallback']} skipped-fallback → {args.out_dir}")
     return 0
 
 

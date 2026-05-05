@@ -1,9 +1,8 @@
 # Input Quality Metric Scripts
 
-Offline scripts that compute **D1 (Schema Conformance Rate)**, **D2 (IPD Satisfaction Rate)**,
-and **D3 (LLM Hallucination Rate)** from artefacts that RESTest already produces. **No re-run
-of the tool is required** — everything is mined from generated test files, the execution log,
-and LLM communication logs.
+Offline scripts that compute **D1–D10** of the input-quality framework from artefacts RESTest
+already produces. **No re-run of the tool is required** — everything is mined from generated
+test files, the execution log, LLM communication logs, and (optionally) Jaeger trace exports.
 
 See `debug/inputs/input-quality-measurement-framework.md` for the full definitions.
 
@@ -11,14 +10,26 @@ See `debug/inputs/input-quality-measurement-framework.md` for the full definitio
 
 | File | Stage | Purpose |
 |---|---|---|
-| `mine_test_inputs.py` | 1a | Walks generated test files, extracts every (operation, parameter, value) triple emitted by the tool. → `inputs.csv` |
-| `mine_llm_log.py`     | 1b | Walks LLM communication logs, extracts (prompt-stated constraints, emitted value) pairs. → `llm_pairs.csv` |
-| `validate_d1.py`      | 2a | D1 — validates each generated value against the OpenAPI schema. |
-| `validate_d3.py`      | 2b | D3 — validates each LLM-emitted value against the constraints stated in its own prompt. |
-| `validate_d2.py`      | 2c | D2 — validates payloads against IDL constraints (best-effort; reports N/A when no IDL is declared and no curated IDL file is supplied). |
-| `generate_report.py`  | 3  | Aggregates D1/D2/D3 outputs into a markdown report. |
+| `mine_test_inputs.py` | 1a | Walks generated test files, extracts every (operation, parameter, value) triple. → `inputs.csv` |
+| `mine_llm_log.py`     | 1b | Walks LLM communication logs, extracts (prompt-constraints, emitted value) pairs. → `llm_pairs.csv` |
+| `mine_provenance.py`  | 1c | Walks the execution log to label each (param, value) by SMART_FETCH / LLM / SHARED_POOL / NEGATIVE. → `provenance.csv` |
+| `mine_jaeger.py`      | 1d | Flattens a Jaeger trace export to (span, service, output_field, output_value). → `jaeger_outputs.csv` |
+| `export_jaeger_traces.py` | 1d′ | Optional: pulls post-execution traces from a Jaeger UI directly. |
+| `validate_d1.py`      | 2  | D1 — schema conformance against OpenAPI. |
+| `validate_d2.py`      | 2  | D2 — IDL inter-parameter satisfaction (best-effort; N/A when no IDL declared). |
+| `validate_d3.py`      | 2  | D3 — LLM hallucination rate against in-prompt constraints. |
+| `validate_d4.py`      | 2  | D4 — Smart-Fetch hit rate (conservative + upper-bound). |
+| `validate_d5.py`      | 2  | D5 — ID-resolvability rate against the Jaeger trace export. |
+| `validate_d6.py`      | 2  | D6 — Chain resolution rate across multi-step sequences. |
+| `validate_d7.py`      | 2  | D7 — Realism score against a curated entity oracle (offline; opt-in Wikidata online fallback). |
+| `validate_d8.py`      | 2  | D8 — Pool Shannon entropy + Simpson diversity per parameter. |
+| `validate_d9.py`      | 2  | D9 — Equivalence-partition coverage from OAS-derived classes. |
+| `validate_d10.py`     | 2  | D10 — Negative-input fault-type purity (per fault label). |
+| `generate_report.py`  | 3  | Aggregates D1–D10 into a markdown report. |
 | `run_metrics.sh`      | -  | One-shot orchestrator. |
 | `curated_idl.yaml`    | -  | Optional hand-written IDL for D2 (template included). |
+| `realism_entities.txt`| -  | Curated D7 entity oracle (~700 entries). |
+| `realism_oracle.py`   | -  | D7 entity-matching engine (exact + token + suffix-stripped + cache + online). |
 
 ## Quick start
 

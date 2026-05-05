@@ -234,11 +234,18 @@ public class LLMService {
                     MediaType.parse("application/json")
             );
             
-            Request request = new Request.Builder()
+            Request.Builder reqBuilder = new Request.Builder()
                     .url(config.getLocalUrl())
                     .post(body)
-                    .addHeader("Content-Type", "application/json")
-                    .build();
+                    .addHeader("Content-Type", "application/json");
+            // OpenAI-compatible hosted endpoints (DeepSeek, OpenAI, ...) need
+            // an Authorization header. Local-only servers (gpt4all) leave the
+            // key empty and skip the header.
+            String apiKey = config.getLocalApiKey();
+            if (apiKey != null && !apiKey.isEmpty()) {
+                reqBuilder.addHeader("Authorization", "Bearer " + apiKey);
+            }
+            Request request = reqBuilder.build();
             
             // Ensure per-request no-timeout client in case singleton was initialized earlier with timeouts
             OkHttpClient noTimeoutClient = httpClient.newBuilder()

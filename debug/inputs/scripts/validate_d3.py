@@ -179,6 +179,36 @@ def check_pattern(value: str, pattern: str) -> str | None:
         return None
 
 
+# Shape-only sanity check: catches the LLM "I'll fabricate a UUID-shaped
+# string by pattern-matching" failure mode that the prompt's stated
+# constraints (just `type: string`) cannot detect. Flagged when the value
+# matches the structural shape of a UUID/email/datetime but fails the
+# format-validity test for that shape.
+
+UUID_SHAPE_RX = re.compile(r"^[A-Za-z0-9]{8}-[A-Za-z0-9]{4,12}-[A-Za-z0-9]{4,12}-[A-Za-z0-9]{4,12}-[A-Za-z0-9]{4,16}$")
+UUID_VALID_RX = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+EMAIL_SHAPE_RX = re.compile(r"^\S+@\S+$")
+
+
+def check_shape_sanity(value: str) -> str | None:
+    """Catch LLM-fabricated values that copy a structural pattern but break
+    the format invariants. Specifically:
+      - UUID-shaped strings whose hex digits include non-hex letters
+        (`a3b2c1d4-ijkl-1234-5678-abcdef9015`).
+      - Email-shaped strings missing a domain dot.
+    Returns a violation reason or None.
+    """
+    if not value:
+        return None
+    # Fake-UUID detector.
+    if UUID_SHAPE_RX.match(value) and not UUID_VALID_RX.match(value):
+        return f"value has UUID-like shape but is not a valid UUID: {value!r}"
+    # Email-shape sanity.
+    if EMAIL_SHAPE_RX.match(value) and "." not in value.split("@", 1)[1]:
+        return f"value has email-like shape but no domain: {value!r}"
+    return None
+
+
 # ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
@@ -216,6 +246,7 @@ def evaluate_row(row: dict) -> tuple[str, list[str]]:
         ("range", lambda: check_numeric_range(value, row.get("minimum", ""), row.get("maximum", ""))),
         ("length", lambda: check_length(value, row.get("min_length", ""), row.get("max_length", ""))),
         ("pattern", lambda: check_pattern(value, row.get("pattern", ""))),
+        ("shape", lambda: check_shape_sanity(value)),
     ):
         msg = fn()
         if msg:

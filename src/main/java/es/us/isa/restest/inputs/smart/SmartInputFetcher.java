@@ -2056,6 +2056,24 @@ public class SmartInputFetcher {
             return generatedValues;
         }
 
+        // ID-typed short-circuit: a parameter whose name encodes the ID
+        // convention (`orderId`, `accountId`, `trip_uuid`, bare `id`, `uuid`...)
+        // refers to a real entity in the SUT. Asking an LLM to generate
+        // "semantically similar UUIDs" produces UUID-shaped strings whose
+        // hex digits include letters like `g..z` (e.g. `a3b2c1d4-ijkl-...`)
+        // — they look like UUIDs but are not. They later pollute the diverse
+        // cache and surface as smart-fetched values that no real upstream
+        // would ever produce, breaking D5 ID-resolvability and producing
+        // 4xx responses against the SUT. Skip the LLM for these params; the
+        // pool will be filled only by real smart-fetched values plus any
+        // existing seed value.
+        if (isIdTypedParam(parameterInfo)) {
+            log.debug("ID-typed short-circuit for '{}': declining to LLM-diversify a real-entity ID — "
+                    + "smart-fetch values from upstream services are the only realistic source.",
+                    parameterInfo.getName());
+            return generatedValues;
+        }
+
         try {
             String prompt = buildSemanticSimilarityPrompt(parameterInfo, existingValues, count);
 
@@ -2092,6 +2110,31 @@ public class SmartInputFetcher {
         }
 
         return generatedValues;
+    }
+
+    /**
+     * True when the parameter name follows an ID convention — same boundary-aware
+     * rule used by {@link es.us.isa.restest.workflow.SemanticDependencyRegistry#isIdLikeParam}.
+     * Boundary required: camelCase {@code Id}/{@code ID}/{@code UUID}/{@code Uuid},
+     * snake-case {@code _id}/{@code _uuid}, or the bare names {@code id}/{@code uuid}.
+     * English words ending in lowercase 'id' ({@code paid}, {@code valid}, {@code humid})
+     * are NOT matched — pipeline-bug-audit finding #5.
+     */
+    private static final java.util.regex.Pattern ID_PARAM_SUFFIX_RX =
+            java.util.regex.Pattern.compile("^.+?(Id|ID|UUID|Uuid|_id|_ID|_uuid|_UUID)$");
+    private static final java.util.regex.Pattern ID_PARAM_PREFIX_RX =
+            java.util.regex.Pattern.compile("^(?:id|Id|ID|uuid|Uuid|UUID)(?:_(\\w+)|([A-Z]\\w*))$");
+    private static final java.util.Set<String> BARE_ID_NAMES = new java.util.HashSet<>(
+            java.util.Arrays.asList("id", "ID", "Id", "iD", "uuid", "UUID", "Uuid"));
+
+    private static boolean isIdTypedParam(ParameterInfo parameterInfo) {
+        if (parameterInfo == null) return false;
+        String name = parameterInfo.getName();
+        if (name == null || name.isEmpty()) return false;
+        if (BARE_ID_NAMES.contains(name)) return true;
+        if (ID_PARAM_SUFFIX_RX.matcher(name).matches()) return true;
+        if (ID_PARAM_PREFIX_RX.matcher(name).matches()) return true;
+        return false;
     }
 
     /**

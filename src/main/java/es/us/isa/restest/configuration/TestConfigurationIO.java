@@ -10,11 +10,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 
+import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import io.swagger.v3.oas.models.PathItem;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class to load and save test configuration files
@@ -41,8 +45,35 @@ public class TestConfigurationIO {
 		try {
 			conf = mapper.readValue(new File(path), TestConfigurationObject.class);
 
-			conf.getTestConfiguration().getOperations().forEach(x -> {
-				PathItem pathItem = spec.getSpecification().getPaths().get(x.getTestPath());
+			// MST configs populate `services:` (Map<service, List<Op>>), classic configs
+			// populate `operations:` (flat List<Op>). Only the classic shape carries
+			// per-operation OpenAPI hookups here; for MST shape, getOperations() is null
+			// and the per-service operations are wired separately by the MST generator.
+			List<Operation> operations = conf.getTestConfiguration() != null
+					? conf.getTestConfiguration().getOperations()
+					: null;
+			if (operations == null || operations.isEmpty()) {
+				logger.debug("Test configuration at '{}' uses multi-service ('services:') format; "
+						+ "skipping flat-operations OpenAPI wiring.", path);
+				return conf;
+			}
+
+			Map<String, PathItem> pathsByName = spec.getSpecification() != null
+					&& spec.getSpecification().getPaths() != null
+					? spec.getSpecification().getPaths()
+					: java.util.Collections.emptyMap();
+
+			operations.forEach(x -> {
+				if (x == null || x.getTestPath() == null || x.getMethod() == null) {
+					logger.warn("Skipping operation entry with missing testPath or method: {}", x);
+					return;
+				}
+				PathItem pathItem = pathsByName.get(x.getTestPath());
+				if (pathItem == null) {
+					logger.warn("Test path '{}' not found in OpenAPI spec; "
+							+ "leaving openApiOperation unset.", x.getTestPath());
+					return;
+				}
 				switch (x.getMethod().toLowerCase()) {
 				case "get":
 					x.setOpenApiOperation(pathItem.getGet());

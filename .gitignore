@@ -54,6 +54,13 @@ src/main/resources/ml/model.onnx
 
 # Environment variables with API keys
 .env
+
+# Local copies of LLM properties that may carry literal API keys.
+# The committed templates use ${ENV_VAR} resolution; if you create a copy
+# with the literal key, name it *-local.properties or *-secret.properties
+# so it stays out of the repo.
+*-local.properties
+*-secret.properties
 src/main/resources/My-Example/trainticket/traces/traces-1759191634608.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192358887.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192396059.json

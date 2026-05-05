@@ -754,6 +754,34 @@ flowchart TD
 - `parseTypedValue` no longer coerces every non-`true` boolean string to `Boolean.FALSE`. Only the literal tokens `true` / `false` (case-insensitive) are converted; any other string is preserved verbatim, which is the actual TYPE_MISMATCH semantics for boolean parameters.
 - `addDefaultTypeMismatches` no longer seeds `null` into the TYPE_MISMATCH list. Null values belong to the (required-only-gated) NULL_INPUT category; mixing them into TYPE_MISMATCH made optional-parameter negative tests indistinguishable from positive ones.
 
+**Schema-aware fault applicability (added 2026-05-05)**
+
+A negative variant labelled with a fault type the parameter's schema cannot meaningfully express is **not generated**. This stops the round-robin from emitting nonsense like a 5000-character string labelled `OVERFLOW` for a `boolean` parameter, where the value is really a `TYPE_MISMATCH` wearing the wrong label.
+
+`InvalidInputType.appliesTo(oasType)` is the single source of truth, consulted at pool-build time by both `HardcodedInvalidInputGenerator.generateInvalidInputPool` and `ZeroShotLLMGenerator` (smart and all-LLM modes). The matrix:
+
+| Fault | string | integer / number | boolean | array | object |
+|---|---|---|---|---|---|
+| TYPE_MISMATCH | ✅ | ✅ | ✅ | ✅ | ✅ |
+| NULL_INPUT | ✅ | ✅ | ✅ | ✅ | ✅ |
+| EMPTY_INPUT | ✅ | ❌ | ❌ | ✅ | ✅ |
+| OVERFLOW | ✅ | ✅ | ❌ | ✅ | ❌ |
+| BOUNDARY_VIOLATION | ✅ | ✅ | ❌ | ✅ | ❌ |
+| SPECIAL_CHARACTERS | ✅ | ❌ | ❌ | ✅ | ❌ |
+| REGEX_MISMATCH | ✅ | ❌ | ❌ | ❌ | ❌ |
+| SEMANTIC_MISMATCH | ✅ | ✅ | ❌ | ✅ | ✅ |
+
+Effects:
+- A `boolean` parameter now produces only `TYPE_MISMATCH` and `NULL_INPUT` (when required) variants. Previously it received six additional fault types whose payloads (long strings, big integers, OWASP injection strings) were really TYPE_MISMATCHes.
+- A numeric parameter no longer receives `SPECIAL_CHARACTERS` or `REGEX_MISMATCH` payloads.
+- Locked in by `src/test/java/es/us/isa/restest/inputs/InvalidInputTypeApplicabilityTest.java`.
+
+**BOUNDARY_VIOLATION skipped when schema is unbounded**
+
+`generateBoundaryViolationInputs` returns early when the parameter's schema declares no `minimum` / `maximum` / `minLength` / `maxLength`. Previously it emitted "canonical fallbacks" (`-1`, `0`, `""`, length-256 strings) labelled `BOUNDARY_VIOLATION` even when no boundary was declared — those values are really opportunistic edge probes, not boundary violations. The D10 NIFP metric surfaced 248/248 such cases as schema-unbounded; the new behaviour stops generating them at the source rather than mis-labelling.
+
+When the OAS spec is sparse (TrainTicket's case), the round-robin will simply exercise fewer fault types per parameter — which is the correct behaviour. A test for "violates a constraint the schema does not declare" is meaningless.
+
 ### Smart Input Fetching Flow (SmartInputFetcher)
 
 ```mermaid
@@ -808,7 +836,7 @@ flowchart LR
     B -->|Yes| D[Log LLM request]
     D --> E{model type}
     E -- GEMINI --> F[GeminiApiClient]
-    E -- LOCAL --> G[Local HTTP]
+    E -- LOCAL --> G[Local HTTP w/ optional Bearer auth]
     E -- OLLAMA --> H[OllamaApiClient]
     F --> I
     G --> I
@@ -816,6 +844,24 @@ flowchart LR
     I --> J[Log LLM response]
     J --> K[Return text]
 ```
+
+**Backends**:
+- **OLLAMA** — local Ollama daemon (default for TrainTicket: `qwen2.5-coder:14b` at `http://localhost:11434`).
+- **GEMINI** — Google Gemini REST API.
+- **LOCAL** — any OpenAI-compatible chat-completions endpoint. Covers true local servers (`gpt4all`, `llama.cpp`'s OpenAI shim) and **hosted OpenAI-compatible APIs** (DeepSeek, OpenAI, etc.). When `llm.local.api.key` is non-empty, `LLMService.generateWithLocal` adds an `Authorization: Bearer <key>` header; when empty it sends an unauthenticated request as before.
+
+**`llm.local.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `src/test/java/es/us/isa/restest/llm/LLMConfigEnvResolverTest.java`.
+
+**DeepSeek example** (no edits to the existing `trainticket-demo.properties` needed; copy `deepseek-config.properties` or set these four lines):
+
+```properties
+llm.model.type=local
+llm.local.url=https://api.deepseek.com/v1/chat/completions
+llm.local.model=deepseek-chat
+llm.local.api.key=${DEEPSEEK_API_KEY}
+```
+
+Local copies of properties files that carry a literal API key should be named `*-local.properties` or `*-secret.properties` (gitignored).
 
 ### LLM Response Validation System (ZeroShotLLMGenerator.validateResponse)
 

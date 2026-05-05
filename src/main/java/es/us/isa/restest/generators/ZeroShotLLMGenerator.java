@@ -197,22 +197,34 @@ public class ZeroShotLLMGenerator {
      * domain context the schema cannot express.
      */
     private es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPoolSmart(ParameterInfo param) {
+        String paramType = safeStr(param.getType());
         es.us.isa.restest.inputs.InvalidInputPool pool =
-            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), safeStr(param.getType()));
+            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), paramType);
 
         HardcodedInvalidInputGenerator hc = hardcodedGen();
 
-        // Static / schema-derived categories — no LLM call.
-        hc.generateTypeMismatchInputs(param, pool);
-        hc.generateOverflowInputs(param, pool);
-        hc.generateEmptyInputs(param, pool);
-        hc.generateNullInputs(param, pool);
-        hc.generateSpecialCharacterInputs(param, pool);
-        hc.generateBoundaryViolationInputs(param, pool);
+        // Each fault type only fires when meaningful for the schema type — see
+        // InvalidInputType.appliesTo() for the matrix. This stops boolean
+        // params from receiving overflow/boundary/special-char attacks that
+        // are really TYPE_MISMATCHES wearing a wrong label.
+        if (es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH.appliesTo(paramType))
+            hc.generateTypeMismatchInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.OVERFLOW.appliesTo(paramType))
+            hc.generateOverflowInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT.appliesTo(paramType))
+            hc.generateEmptyInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT.appliesTo(paramType))
+            hc.generateNullInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS.appliesTo(paramType))
+            hc.generateSpecialCharacterInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION.appliesTo(paramType))
+            hc.generateBoundaryViolationInputs(param, pool);
 
         // Context-aware categories — LLM earns its keep here.
-        generateRegexMismatchInputs(param, pool);
-        generateSemanticMismatchInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.REGEX_MISMATCH.appliesTo(paramType))
+            generateRegexMismatchInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH.appliesTo(paramType))
+            generateSemanticMismatchInputs(param, pool);
 
         System.out.println("*** [SMART] Generated invalid input pool:\n" + pool.getPoolSummary());
         return pool;
@@ -223,17 +235,28 @@ public class ZeroShotLLMGenerator {
      * for every contextual category.  Retained for ablation studies and head-to-head comparisons.
      */
     private es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPoolAllLLM(ParameterInfo param) {
+        String paramType = safeStr(param.getType());
         es.us.isa.restest.inputs.InvalidInputPool pool =
-            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), safeStr(param.getType()));
+            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), paramType);
 
-        generateTypeMismatchInputs(param, pool);
-        generateRegexMismatchInputs(param, pool);
-        generateSemanticMismatchInputs(param, pool);
-        generateOverflowInputs(param, pool);
-        generateEmptyInputs(param, pool);
-        generateNullInputs(param, pool);
-        generateSpecialCharacterInputs(param, pool);
-        generateBoundaryViolationInputs(param, pool);
+        // Same applicability gating as smart mode — fault types only fire when
+        // they have a meaningful interpretation against the schema's primitive type.
+        if (es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH.appliesTo(paramType))
+            generateTypeMismatchInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.REGEX_MISMATCH.appliesTo(paramType))
+            generateRegexMismatchInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH.appliesTo(paramType))
+            generateSemanticMismatchInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.OVERFLOW.appliesTo(paramType))
+            generateOverflowInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT.appliesTo(paramType))
+            generateEmptyInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT.appliesTo(paramType))
+            generateNullInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS.appliesTo(paramType))
+            generateSpecialCharacterInputs(param, pool);
+        if (es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION.appliesTo(paramType))
+            generateBoundaryViolationInputs(param, pool);
 
         System.out.println("*** [LLM] Generated invalid input pool:\n" + pool.getPoolSummary());
         return pool;

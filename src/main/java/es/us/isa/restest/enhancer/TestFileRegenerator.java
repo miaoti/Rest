@@ -177,8 +177,18 @@ public class TestFileRegenerator {
 
         // Pattern 1: JSON body in Java string - \"paramName\":\"oldValue\" (escaped quotes in Java strings)
         // This is the main pattern used in generated test code like: String requestBody1 = "{\"stationList\":\"value\"}";
+        //
+        // Escape semantics (this MUST be preserved exactly to keep generated Java compilable):
+        //   - Pattern (matches `\"` 2-char sequences in the source file):
+        //       Java source "\\\\\"" → runtime string `\\"` → regex matches the literal 2-char `\"`.
+        //   - Replacement (must INSERT the same 2-char `\"` back into the source file):
+        //       Java source  "\\\""  → runtime string `\"`  → after Matcher.quoteReplacement → `\\\"` →
+        //                                replaceAll resolves to `\"` in the output file.
+        //   The previous "\\\\\"" wrapping in the replacement was inserting `\\"` (3 chars) into the
+        //   Java source, which the compiler then read as "one literal backslash + end-of-string",
+        //   yielding tens of thousands of `illegal character: '\'` errors per regenerated file.
         String escapedJsonPattern = "\\\\\"" + Pattern.quote(paramName) + "\\\\\"\\s*:\\s*\\\\\"[^\\\\]*\\\\\"";
-        String escapedReplacement = "\\\\\"" + paramName + "\\\\\":\\\\\"" + escapeJavaForJson(newValue) + "\\\\\"";
+        String escapedReplacement = "\\\"" + paramName + "\\\":\\\"" + escapeJavaForJson(newValue) + "\\\"";
         methodContent = methodContent.replaceAll(escapedJsonPattern, Matcher.quoteReplacement(escapedReplacement));
 
         // Pattern 2: Body field assignment - bodyFields.put("paramName", "oldValue")
