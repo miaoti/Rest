@@ -1,7 +1,6 @@
 # Input Generation — End-to-End Data Flow Map
 Date: 2026-04-26
 Branch: inject-detection
-Author: Claude (Opus 4.7)
 
 This document is a **call-graph and state-flow** for parameter input generation, with file:line citations into the actual source. It is the companion to `pipeline-bug-audit.md` (bugs) and `input-quality-measurement-framework.md` (metrics). The narrative summary in `flow.md` is the design intent; this document is the implementation reality.
 

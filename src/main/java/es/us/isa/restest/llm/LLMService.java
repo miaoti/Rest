@@ -23,7 +23,17 @@ public class LLMService {
     private final GeminiApiClient geminiClient;
     private final OllamaApiClient ollamaClient;
     private final OkHttpClient httpClient;
+    private final OkHttpClient hostedHttpClient;
     private final LLMCommunicationLogger communicationLogger;
+
+    // Watchdog scheduler for hosted-endpoint deadlines — defense in depth on
+    // top of OkHttp's own timeouts (see hostedHttpClient construction note).
+    private static final java.util.concurrent.ScheduledExecutorService WATCHDOG =
+            java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "LLMService-watchdog");
+                t.setDaemon(true);
+                return t;
+            });
 
     // Singleton instance
     private static LLMService instance;
@@ -62,8 +72,17 @@ public class LLMService {
             this.geminiClient = null;
         }
 
-        // Initialize Ollama client if needed
-        if (config.getModelType() == LLMConfig.ModelType.OLLAMA && config.isOllamaEnabled()) {
+        // Initialize Ollama client whenever URL+model are configured, even when
+        // the active modelType is LOCAL or GEMINI. This makes Ollama available
+        // as a per-call fallback when the primary backend (e.g. a flaky DeepSeek
+        // HTTP/2 stream) times out or returns null. enforceModelTypeConsistency
+        // sets ollamaEnabled=false for non-Ollama primaries; that flag governs
+        // routing, not whether the local client should exist.
+        boolean ollamaConfigured = config.getOllamaUrl() != null
+                && !config.getOllamaUrl().trim().isEmpty()
+                && config.getOllamaModel() != null
+                && !config.getOllamaModel().trim().isEmpty();
+        if (ollamaConfigured) {
             this.ollamaClient = new OllamaApiClient(
                 config.getOllamaUrl(),
                 config.getOllamaModel(),
@@ -83,6 +102,23 @@ public class LLMService {
                 .retryOnConnectionFailure(true)
                 .pingInterval(30, TimeUnit.SECONDS)
                 .callTimeout(0, TimeUnit.MILLISECONDS)
+                .build();
+
+        // Separate, fully-independent HTTP client for hosted endpoints
+        // (DeepSeek, OpenAI, ...). This MUST NOT share its ConnectionPool with
+        // httpClient: OkHttp 4.10's HTTP/2 stream timeouts inherit from the
+        // pooled connection's parent client. If we derive this client via
+        // httpClient.newBuilder(), reused connections keep the zero readTimeout
+        // and a stalled stream blocks forever (observed: 3+ minutes on a
+        // DeepSeek HTTP/2 stream stall in 22:56 run).
+        this.hostedHttpClient = new OkHttpClient.Builder()
+                .connectionPool(new okhttp3.ConnectionPool(5, 5, TimeUnit.MINUTES))
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .callTimeout(180, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .pingInterval(30, TimeUnit.SECONDS)
                 .build();
         
         logger.info("LLMService initialized with model type: {}", config.getModelType());
@@ -171,11 +207,47 @@ public class LLMService {
                     break;
             }
 
+            // Per-call fallback to a local Ollama model when the hosted primary
+            // (LOCAL → DeepSeek/OpenAI/etc., or GEMINI) returns null because of
+            // a timeout, 401, parse failure, etc. The fallback is *per call only*
+            // — the next call routes to the primary again so a transient hosted-
+            // API stall doesn't permanently demote the run to local quality.
+            // If Ollama also fails, return null and let the upstream caller
+            // (SmartInputFetcher / ZeroShotLLMGenerator) hit its placeholder
+            // fallback as before.
+            if (result == null
+                    && ollamaClient != null
+                    && config.getModelType() != LLMConfig.ModelType.OLLAMA) {
+                logger.warn("[LLM] Primary {} returned null — falling back to Ollama for this call", config.getModelType());
+                String fallback = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
+                if (fallback != null) {
+                    result = fallback;
+                    logger.info("[LLM] Ollama fallback succeeded ({} chars)", fallback.length());
+                } else {
+                    logger.warn("[LLM] Ollama fallback also returned null — caller will use its own fallback");
+                }
+            }
+
             success = (result != null);
 
         } catch (Exception e) {
             errorMessage = e.getMessage();
             logger.error("Error during LLM generation: {}", errorMessage, e);
+            // Same per-call cascade on hard exceptions, e.g. SocketTimeoutException
+            // bubbled out of OkHttp before generateWithLocal could swallow it.
+            if (result == null
+                    && ollamaClient != null
+                    && config.getModelType() != LLMConfig.ModelType.OLLAMA) {
+                try {
+                    logger.warn("[LLM] Primary threw '{}' — falling back to Ollama for this call", errorMessage);
+                    result = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
+                    if (result != null) {
+                        logger.info("[LLM] Ollama fallback succeeded after exception ({} chars)", result.length());
+                    }
+                } catch (Exception fbErr) {
+                    logger.error("[LLM] Ollama fallback also threw '{}'", fbErr.getMessage());
+                }
+            }
         } finally {
             // Log the response
             communicationLogger.logResponse(context, result, success, errorMessage);
@@ -244,22 +316,45 @@ public class LLMService {
             String apiKey = config.getLocalApiKey();
             if (apiKey != null && !apiKey.isEmpty()) {
                 reqBuilder.addHeader("Authorization", "Bearer " + apiKey);
+            } else if (looksLikeHostedEndpoint(config.getLocalUrl())) {
+                // Loud warning the first time we hit this — better one ugly log line
+                // up front than thousands of silent 401s downstream.
+                warnMissingKeyOnce(config.getLocalUrl());
             }
             Request request = reqBuilder.build();
-            
-            // Ensure per-request no-timeout client in case singleton was initialized earlier with timeouts
-            OkHttpClient noTimeoutClient = httpClient.newBuilder()
-                    .connectTimeout(0, TimeUnit.MILLISECONDS)
-                    .writeTimeout(0, TimeUnit.MILLISECONDS)
-                    .readTimeout(0, TimeUnit.MILLISECONDS)
-                    .callTimeout(0, TimeUnit.MILLISECONDS)
-                    .build();
 
-            try (Response response = noTimeoutClient.newCall(request).execute()) {
+            // Pick a client whose timeouts and ConnectionPool match the endpoint.
+            // hostedHttpClient has a fresh pool and finite timeouts; httpClient is
+            // the zero-timeout local one. We deliberately do NOT derive one from
+            // the other via newBuilder(), because OkHttp 4.10 stream-level
+            // timeouts inherit from the pooled connection's parent client and a
+            // shared pool would re-import the zero timeout (observed in 22:56 run:
+            // readTimeout(120) ignored, JVM blocked 3+ min in Http2Stream.waitForIo).
+            boolean hosted = looksLikeHostedEndpoint(config.getLocalUrl());
+            OkHttpClient perCallClient = hosted ? hostedHttpClient : httpClient;
+
+            // Belt-and-braces watchdog: schedule call.cancel() at deadline+5s in
+            // case OkHttp's internal callTimeout still fails to fire on a
+            // stalled HTTP/2 stream. cancel() throws IOException("Canceled") in
+            // the executing thread, which our existing catch turns into null and
+            // the cascade then routes to Ollama.
+            okhttp3.Call call = perCallClient.newCall(request);
+            java.util.concurrent.ScheduledFuture<?> watchdog = null;
+            if (hosted) {
+                watchdog = WATCHDOG.schedule(() -> {
+                    if (!call.isExecuted() || !call.isCanceled()) {
+                        logger.warn("[Local LLM] Watchdog firing — cancelling stalled call to {}",
+                                config.getLocalUrl());
+                        call.cancel();
+                    }
+                }, 185, TimeUnit.SECONDS);
+            }
+
+            try (Response response = call.execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
                     logger.debug("[Local LLM] Response: {}", responseBody);
-                    
+
                     return parseLocalLLMResponse(responseBody);
                 } else {
                     String errorBody = "";
@@ -269,8 +364,12 @@ public class LLMService {
                     logger.error("[Local LLM] Request failed with code {}: {}", response.code(), errorBody);
                     return null;
                 }
+            } finally {
+                if (watchdog != null) {
+                    watchdog.cancel(false);
+                }
             }
-            
+
         } catch (Exception e) {
             logger.error("[Local LLM] Error calling local LLM API: {}", e.getMessage(), e);
             return null;
@@ -377,6 +476,29 @@ public class LLMService {
     public void close() {
         if (communicationLogger != null) {
             communicationLogger.close();
+        }
+    }
+
+    private static final java.util.concurrent.atomic.AtomicBoolean MISSING_KEY_WARNED =
+            new java.util.concurrent.atomic.AtomicBoolean(false);
+
+    private static boolean looksLikeHostedEndpoint(String url) {
+        if (url == null) return false;
+        String lower = url.toLowerCase(java.util.Locale.ROOT);
+        return lower.contains("api.deepseek.com")
+                || lower.contains("api.openai.com")
+                || lower.contains("api.anthropic.com")
+                || lower.contains("openrouter.ai")
+                || lower.contains("api.together")
+                || lower.contains("api.mistral");
+    }
+
+    private static void warnMissingKeyOnce(String url) {
+        if (MISSING_KEY_WARNED.compareAndSet(false, true)) {
+            logger.error("[Local LLM] Hosted endpoint detected ({}) but llm.local.api.key resolved to "
+                    + "an empty value. Every request will return 401. Either set DEEPSEEK_API_KEY "
+                    + "(or your provider's env var) before launching, or write the key to "
+                    + ".api_keys/<VAR_NAME> in the project root. Suppressing further warnings.", url);
         }
     }
 }

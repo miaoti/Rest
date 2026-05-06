@@ -1,6 +1,5 @@
 # Code Review — D4-D7 Input Quality Metrics
 Date: 2026-04-30
-Reviewer: Claude (independent, Opus 4.7)
 
 ## Summary
 

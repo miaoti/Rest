@@ -1,7 +1,6 @@
 # Input Generation Pipeline — Bug Audit Report
 Date: 2026-04-26
 Branch: inject-detection
-Auditor: Claude (Opus 4.7)
 
 ## Fix Status (applied 2026-04-26)
 

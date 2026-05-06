@@ -95,8 +95,25 @@ public class LLMConfig {
         // Resolve ${ENV_VAR} in api.key so the secret never has to be committed
         // to the .properties file. Falls back to the literal value when no
         // ${...} placeholder is used.
-        config.localApiKey = resolveEnvPlaceholder(
-            properties.getOrDefault("llm.local.api.key", ""));
+        String rawApiKey = properties.getOrDefault("llm.local.api.key", "");
+        config.localApiKey = resolveEnvPlaceholder(rawApiKey);
+        // Diagnostic: surface key-resolution health (length only, never the value)
+        // so production failures are debuggable without leaking the secret.
+        if (rawApiKey != null && !rawApiKey.isEmpty()) {
+            boolean isPlaceholder = rawApiKey.trim().startsWith("${")
+                                    && rawApiKey.trim().endsWith("}");
+            int resolvedLen = config.localApiKey == null ? 0 : config.localApiKey.length();
+            String source;
+            if (!isPlaceholder) {
+                source = "literal";
+            } else if (resolvedLen == 0) {
+                source = "PLACEHOLDER UNRESOLVED — env/sys/file all empty";
+            } else {
+                source = "resolved";
+            }
+            logger.info("LLM local api.key: raw='{}' (placeholder={}), resolvedLength={}, source={}",
+                    isPlaceholder ? rawApiKey.trim() : "<literal>", isPlaceholder, resolvedLen, source);
+        }
         
         // Gemini API settings
         config.geminiEnabled = Boolean.parseBoolean(
@@ -221,9 +238,20 @@ public class LLMConfig {
     /**
      * Resolve a property value that may be a literal, an environment-variable
      * reference of the form {@code ${VAR}}, or {@code ${VAR:default}}.
+     *
+     * <p>Resolution order for placeholders:
+     * <ol>
+     *   <li>{@code System.getenv(VAR)}</li>
+     *   <li>{@code System.getProperty(VAR)} (handy for IDE run configs that
+     *       inject {@code -DVAR=...})</li>
+     *   <li>File at {@code .api_keys/VAR} relative to the current working
+     *       directory (gitignored — survives IDE env-var injection issues)</li>
+     *   <li>Literal default after {@code :} in {@code ${VAR:default}}</li>
+     * </ol>
+     *
      * <p>An empty or {@code null} input returns {@code ""}. A reference with
-     * no matching env var (and no default) returns {@code ""} so that a
-     * missing key disables the auth header instead of literally sending the
+     * no matching value anywhere returns {@code ""} so that a missing key
+     * causes the auth header to be omitted instead of literally sending the
      * placeholder text.
      */
     static String resolveEnvPlaceholder(String value) {
@@ -246,12 +274,59 @@ public class LLMConfig {
         if (fromEnv != null && !fromEnv.isEmpty()) {
             return fromEnv;
         }
-        // Allow -D system properties as a fallback (handy for IDE run configs).
         String fromSys = System.getProperty(varName);
         if (fromSys != null && !fromSys.isEmpty()) {
             return fromSys;
         }
+        String fromFile = readApiKeyFile(varName);
+        if (fromFile != null && !fromFile.isEmpty()) {
+            return fromFile;
+        }
         return defaultVal;
+    }
+
+    /**
+     * Read a single secret value from {@code .api_keys/<varName>}.
+     * <p>Tries, in order:
+     * <ol>
+     *   <li>Current working directory ({@code .api_keys/<VAR>}) — the IntelliJ
+     *       default CWD for Application run configs.</li>
+     *   <li>{@code System.getProperty("user.dir")} — same path, resolved via
+     *       the user-dir property in case the JVM CWD differs.</li>
+     *   <li>{@code System.getProperty("user.home")/.restest/api_keys/<VAR>} —
+     *       a user-wide location for users who want one key shared across
+     *       multiple checkouts.</li>
+     * </ol>
+     * The file should contain only the secret (trailing whitespace/newlines
+     * are stripped). Returns {@code null} if no candidate file exists. The
+     * {@code .api_keys/} directory is gitignored.
+     */
+    private static String readApiKeyFile(String varName) {
+        if (varName == null || varName.isEmpty()) {
+            return null;
+        }
+        java.nio.file.Path[] candidates = new java.nio.file.Path[] {
+            java.nio.file.Paths.get(".api_keys", varName),
+            java.nio.file.Paths.get(
+                    System.getProperty("user.dir", "."), ".api_keys", varName),
+            java.nio.file.Paths.get(
+                    System.getProperty("user.home", "."), ".restest", "api_keys", varName),
+        };
+        for (java.nio.file.Path p : candidates) {
+            try {
+                if (java.nio.file.Files.isRegularFile(p)) {
+                    String content = new String(java.nio.file.Files.readAllBytes(p),
+                            java.nio.charset.StandardCharsets.UTF_8);
+                    String trimmed = content.trim();
+                    if (!trimmed.isEmpty()) {
+                        return trimmed;
+                    }
+                }
+            } catch (java.io.IOException | SecurityException e) {
+                // Try the next candidate.
+            }
+        }
+        return null;
     }
     
     public boolean isGeminiEnabled() { return geminiEnabled; }

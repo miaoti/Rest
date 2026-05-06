@@ -589,6 +589,7 @@ public class TraceErrorAnalyzer {
             llmProperties.put("llm.local.enabled", System.getProperty("llm.local.enabled", "false"));
             llmProperties.put("llm.local.url", System.getProperty("llm.local.url", "http://localhost:4891/v1/chat/completions"));
             llmProperties.put("llm.local.model", System.getProperty("llm.local.model", "llama-3-8b-instruct"));
+            llmProperties.put("llm.local.api.key", System.getProperty("llm.local.api.key", ""));
             llmProperties.put("llm.gemini.enabled", System.getProperty("llm.gemini.enabled", "false"));
             llmProperties.put("llm.gemini.api.key", System.getProperty("llm.gemini.api.key", ""));
             llmProperties.put("llm.gemini.model", System.getProperty("llm.gemini.model", "gemini-2.0-flash-exp"));

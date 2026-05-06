@@ -61,6 +61,12 @@ src/main/resources/ml/model.onnx
 # so it stays out of the repo.
 *-local.properties
 *-secret.properties
+
+# Project-local API-key files read by LLMConfig.resolveEnvPlaceholder when
+# IntelliJ env-var injection or shell exports aren't available. Each file is
+# named after the env var it stands in for (e.g. .api_keys/DEEPSEEK_API_KEY)
+# and contains just the secret on a single line.
+.api_keys/
 src/main/resources/My-Example/trainticket/traces/traces-1759191634608.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192358887.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192396059.json

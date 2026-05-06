@@ -2,7 +2,6 @@
 
 Date: 2026-05-05
 Branch: inject-detection
-Author: Claude (Opus 4.7, 1M context)
 
 This document is the **implementation-reality companion** to the design-intent diagrams in `src/main/resources/My-Example/trainticket/flow.md` (sections at line 785, 1029, 1198). Every box, branch, and table cell carries a `file:line` citation. When the code disagrees with `flow.md`, the discrepancy is recorded in section 7.
 

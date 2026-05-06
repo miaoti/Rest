@@ -1,6 +1,5 @@
 # Code Review — Jaeger Trace Exporter (D5 post-execution)
 Date: 2026-04-26
-Reviewer: Claude (independent, Opus 4.7)
 
 ## Summary
 

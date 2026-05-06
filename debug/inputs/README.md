@@ -2,7 +2,6 @@
 
 Date: 2026-04-26 (rev. 2 — quality framework rescoped to black-box microservice testing)
 Branch: inject-detection
-Author: Claude (Opus 4.7)
 
 This folder contains a deep audit of the **parameter input generation pipeline** in RESTest's MST mode (Smart Fetch + LLM positive paths, plus the eight-fault-type negative path). It was produced in response to two questions:
 

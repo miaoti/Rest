@@ -1,7 +1,6 @@
 # Smart-Fetch Quality Measurement Framework for RESTest
 
 Date: 2026-05-05
-Author: Claude (Opus 4.7, 1M context) — research synthesis
 Companion documents:
 - `debug/inputs/input-quality-measurement-framework.md` — parent framework, D1–D10 (Validity, Microservice Grounding, Realism, Diversity, Negative-Adversariness)
 - `debug/inputs/microservice-input-quality-research.md` — bibliography survey

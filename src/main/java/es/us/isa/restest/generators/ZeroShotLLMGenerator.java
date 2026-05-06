@@ -51,7 +51,7 @@ public class ZeroShotLLMGenerator {
         // List of LLM-related properties to load
         String[] llmProperties = {
             "llm.enabled", "llm.model.type",
-            "llm.local.enabled", "llm.local.url", "llm.local.model",
+            "llm.local.enabled", "llm.local.url", "llm.local.model", "llm.local.api.key",
             "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
             "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
             "llm.rate.limit.retry.enabled", "llm.rate.limit.max.retries",

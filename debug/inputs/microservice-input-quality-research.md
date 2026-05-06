@@ -1,7 +1,6 @@
 # Microservice REST API Input Quality — Field Research
 
 Date: 2026-04-26
-Author: Claude (Opus 4.7, 1M context)
 Scope: Black-box, input-only quality metrics for microservice REST testing — applied to RESTest on the TrainTicket benchmark
 Status: Companion to `input-quality-measurement-framework.md`. Recommends restructuring that document around input-intrinsic dimensions only.
 

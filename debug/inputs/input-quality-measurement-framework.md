@@ -1,6 +1,5 @@
 # Input Quality Measurement Framework for RESTest
 Date: 2026-04-26 (rev. 2 — scope corrected to black-box microservice testing)
-Author: Claude (Opus 4.7) — research synthesis
 Companion: `microservice-input-quality-research.md` (field survey + bibliography)
 
 ## Scope
