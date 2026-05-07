@@ -1232,68 +1232,64 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         }
                     }
 
-                    /* ------------ login (own Allure step) ---------------------- */
-                    pw.println("        final String[] _jwt     = new String[1];");
-                    pw.println("        final String[] _jwtType = new String[1];");
+                    /* ---------- auth (delegated to MstAuthHandler) ----------------
+                     * The handler picks the strategy from auth.mode in the MST
+                     * configuration:  none / static_token / per_jvm (default)
+                     * / per_test.  PER_JVM caches the token across the whole
+                     * suite so we no longer hit /login per test.
+                     *
+                     * Per-test override (AuthManipulationStrategy: INVALID_TOKEN
+                     * / EXPIRED_TOKEN / REMOVE_AUTH for status-code exploration)
+                     * is forwarded via the two locals below and consumed at the
+                     * per-step header stamp.
+                     */
+                    String __overrideTokenLit = "null";
+                    boolean __disableAuthLit = false;
+                    es.us.isa.restest.auth.AuthManipulationStrategy.AuthConfig __mstAcWrite =
+                            mstc.getAuthManipulation();
+                    if (__mstAcWrite != null) {
+                        if (!__mstAcWrite.isAuthEnabled()) {
+                            __disableAuthLit = true;
+                        } else if (__mstAcWrite.getToken() != null) {
+                            __overrideTokenLit = "\"" + escape(__mstAcWrite.getToken()) + "\"";
+                        }
+                    }
+
+                    pw.println("        // Per-test auth override (AuthManipulationStrategy). null = use default.");
+                    pw.println("        final String  __mstOverrideToken = " + __overrideTokenLit + ";");
+                    pw.println("        final boolean __mstDisableAuth   = " + __disableAuthLit + ";");
                     pw.println("        final java.util.concurrent.atomic.AtomicBoolean loginSucceeded  = new java.util.concurrent.atomic.AtomicBoolean(true);");
                     pw.println("        final java.util.concurrent.atomic.AtomicBoolean scenarioFailed = new java.util.concurrent.atomic.AtomicBoolean(false);");
 
                     if (allureReport) {
-                        pw.println("        // 🔐 STEP 0: Authentication - Clean reporting");
-                        pw.println("        Allure.step(\"🔐 Step 0: Authentication (Login)\", () -> {");
+                        pw.println("        // 🔐 STEP 0: Authentication (delegates to MstAuthHandler)");
+                        pw.println("        Allure.step(\"🔐 Step 0: Authentication\", () -> {");
                         pw.println("            try {");
-                        pw.println("                Allure.parameter(\"🏢 Service\", \"Authentication Service\");");
-                        pw.println("                Allure.parameter(\"📡 HTTP Method\", \"POST\");");
-                        pw.println("                Allure.parameter(\"🔗 Endpoint\", \"/api/v1/users/login\");");
-                        pw.println("                Allure.parameter(\"🎯 Expected Status\", 200);");
-                        pw.println("                Allure.parameter(\"👤 Username\", \"admin\");");
-                        pw.println("                Allure.parameter(\"🚦 Execution Decision\", \"▶️ EXECUTE - Authentication required\");");
-                        pw.println("                Allure.description(\"🔐 **Authentication Step**\\n\" +");
-                        pw.println("                                 \"This step authenticates the user to obtain JWT token for subsequent API calls.\\n\" +");
-                        pw.println("                                 \"All other steps depend on successful authentication.\");");
-                        pw.println("                ");
-                    }
-                    pw.println("                Response loginRes = RestAssured.given()");
-                    pw.println("                    .contentType(\"application/json\")");
-                    pw.println("                    .body(\"{\\\"username\\\":\\\"admin\\\"," +
-                            "\\\"password\\\":\\\"222222\\\"}\")");
-                    pw.println("                .when().post(\"/api/v1/users/login\")");
-                    pw.println("                    .then().log().ifValidationFails()");
-                    pw.println("                    .statusCode(200)  // Login expects 200 - could be configurable in future");
-                    pw.println("                    .extract().response();");
-                    pw.println("                _jwt[0]     = loginRes.jsonPath().getString(\"data.token\");");
-                    pw.println("                _jwtType[0] = \"Bearer\";");
-                    if (allureReport) {
-                        pw.println("                ");
-                        pw.println("                // ✅ SUCCESS: Clean login success reporting");
-                        pw.println("                String tokenObtained = _jwt[0] != null ? \"Yes\" : \"No\";");
-                        pw.println("                Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (Token: \" + tokenObtained + \")\");");
-                        pw.println("                Allure.addAttachment(\"🔐 Login Response\", \"application/json\", loginRes.getBody().asString());");
-                        pw.println("            } catch (Throwable loginError) {");
-                        pw.println("                loginSucceeded.set(false);");
-                        pw.println("                ");
-                        pw.println("                // ❌ FAILURE: Clean login failure reporting");
-                        pw.println("                String errorType = loginError.getClass().getSimpleName();");
-                        pw.println("                if (loginError instanceof java.net.ConnectException) {");
-                        pw.println("                    errorType = \"Connection Failed\";");
-                        pw.println("                } else if (loginError instanceof AssertionError) {");
-                        pw.println("                    errorType = \"Authentication Failed\";");
+                        pw.println("                es.us.isa.restest.auth.MstAuthHandler.Mode __mstMode = es.us.isa.restest.auth.MstAuthHandler.getMode();");
+                        pw.println("                Allure.parameter(\"🔐 Auth Mode\", __mstMode.name());");
+                        pw.println("                if (__mstMode == es.us.isa.restest.auth.MstAuthHandler.Mode.NONE) {");
+                        pw.println("                    Allure.parameter(\"🎯 Result\", \"⏭️ SKIPPED (auth.mode=none)\");");
+                        pw.println("                } else {");
+                        pw.println("                    boolean __mstReady = es.us.isa.restest.auth.MstAuthHandler.ensureReady();");
+                        pw.println("                    if (!__mstReady) loginSucceeded.set(false);");
+                        pw.println("                    Allure.parameter(\"🎯 Result\", __mstReady ? \"✅ READY\" : \"❌ FAILED\");");
                         pw.println("                }");
-                        pw.println("                ");
-                        pw.println("                Allure.parameter(\"🎯 Result\", \"❌ FAILED (\" + errorType + \")\");");
-                        pw.println("                Allure.addAttachment(\"💥 Login Error\", \"text/plain\", \"Error: \" + errorType + \"\\nMessage: \" + loginError.getMessage());");
-                        pw.println("                ");
-                        pw.println("                // Throw to mark login step as failed in Allure");
-                        pw.println("                throw new RuntimeException(\"Login failed: \" + loginError.getMessage(), loginError);");
+                        pw.println("            } catch (Throwable __mstAuthErr) {");
+                        pw.println("                loginSucceeded.set(false);");
+                        pw.println("                Allure.parameter(\"🎯 Result\", \"❌ FAILED (\" + __mstAuthErr.getClass().getSimpleName() + \")\");");
+                        pw.println("                Allure.addAttachment(\"💥 Auth Error\", \"text/plain\", String.valueOf(__mstAuthErr.getMessage()));");
                         pw.println("            }");
                         pw.println("        });");
                     } else {
-                        pw.println("        } catch (Throwable __t) {");   // login failed
+                        pw.println("        try {");
+                        pw.println("            if (es.us.isa.restest.auth.MstAuthHandler.getMode() != es.us.isa.restest.auth.MstAuthHandler.Mode.NONE");
+                        pw.println("                    && !es.us.isa.restest.auth.MstAuthHandler.ensureReady()) {");
+                        pw.println("                loginSucceeded.set(false);");
+                        pw.println("            }");
+                        pw.println("        } catch (Throwable __mstAuthErr) {");
                         pw.println("            loginSucceeded.set(false);");
                         pw.println("        }");
                     }
-                    pw.println("        String jwt     = _jwt[0];");
-                    pw.println("        String jwtType = _jwtType[0];");
                     pw.println();
 
                     /* ------------ every StepCall -------------------------------- */
@@ -1547,8 +1543,18 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        Allure.addAttachment(\"📤 Request Body\", \"application/json\", requestBody" + stepIdx + ");");
                             }
                             
-                            pw.println("                        if (loginSucceeded.get()) {");
-                            pw.println("                            req = req.header(\"Authorization\", jwtType + \" \" + jwt);");
+                            // Auth header: delegates to MstAuthHandler.applyAuth which honours
+                            // (1) per-test override (__mstOverrideToken / __mstDisableAuth from
+                            // AuthManipulationStrategy), (2) auth.skip.path.patterns, and
+                            // (3) the cached token from the configured auth.mode.
+                            pw.println("                        req = es.us.isa.restest.auth.MstAuthHandler.applyAuth(req, \"" + escape(step.getPath()) + "\", __mstOverrideToken, __mstDisableAuth);");
+                            // 401 hardening (MST only): when no per-test auth override is in effect,
+                            // attach the refresh filter so an expired/revoked cached token gets
+                            // transparently swapped and the request retried once. Exploration tests
+                            // targeting 401 (INVALID_TOKEN / EXPIRED_TOKEN / REMOVE_AUTH) bypass
+                            // this filter on purpose - they need to observe the 401.
+                            pw.println("                        if (__mstOverrideToken == null && !__mstDisableAuth) {");
+                            pw.println("                            req = req.filter(es.us.isa.restest.auth.MstAuthRefreshFilter.INSTANCE);");
                             pw.println("                        }");
                             
                             // Add dependency resolution for parameters (with resilient bypass)

@@ -118,8 +118,10 @@ public class LLMConfig {
         // Gemini API settings
         config.geminiEnabled = Boolean.parseBoolean(
             properties.getOrDefault("llm.gemini.enabled", "false"));
-        config.geminiApiKey = properties.getOrDefault(
-            "llm.gemini.api.key", "");
+        // Same ${VAR} resolution as the local key, so gemini secrets can stay
+        // out of the .properties file too.
+        config.geminiApiKey = resolveEnvPlaceholder(
+            properties.getOrDefault("llm.gemini.api.key", ""));
         config.geminiModel = properties.getOrDefault(
             "llm.gemini.model", "gemini-2.0-flash-exp");
         config.geminiApiUrl = properties.getOrDefault(
