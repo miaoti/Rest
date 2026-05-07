@@ -11,11 +11,15 @@ public class OpenAPIDebugTest {
         System.out.println("=== OpenAPI Configuration Debug Test ===");
         
         try {
-            // Load properties from the trainticket-demo.properties file
+            // smart.input.fetch.openapi.spec.path moved to the MST-only file;
+            // oas.path is still in the core file. Load both into one Properties.
             Properties props = new Properties();
-            FileInputStream fis = new FileInputStream("src/main/resources/My-Example/trainticket-demo.properties");
-            props.load(fis);
-            fis.close();
+            try (FileInputStream core = new FileInputStream("src/main/resources/My-Example/trainticket-demo.properties")) {
+                props.load(core);
+            }
+            try (FileInputStream mst = new FileInputStream("src/main/resources/My-Example/trainticket-mst.properties")) {
+                props.load(mst);
+            }
             
             // Check OpenAPI path configuration
             String openApiPath = props.getProperty("smart.input.fetch.openapi.spec.path");

@@ -140,11 +140,13 @@ public class TraceErrorAnalysisMain {
      */
     private static void loadPropertiesForTesting() {
         try {
-            System.out.println("🔧 Loading LLM configuration from trainticket-demo.properties...");
-            
-            // Path to the properties file (same as used in TestGenerationAndExecution)
-            String propertiesPath = "src/main/resources/My-Example/trainticket-demo.properties";
-            
+            System.out.println("🔧 Loading LLM configuration from trainticket-mst.properties...");
+
+            // LLM keys live in the MST-only file now (separated from RESTest core).
+            // See es.us.isa.restest.configuration.multiservice.MstConfig and the
+            // mst.config.path key in trainticket-demo.properties.
+            String propertiesPath = "src/main/resources/My-Example/trainticket-mst.properties";
+
             Properties properties = new Properties();
             try (FileInputStream fis = new FileInputStream(propertiesPath)) {
                 properties.load(fis);

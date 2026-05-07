@@ -15,15 +15,19 @@ public class SmartInputFetchingDebugTest {
     public void testSmartInputFetchingConfiguration() {
         System.out.println("=== Smart Input Fetching Debug Test ===");
         
-        // 1. Load properties from the trainticket-demo.properties file
+        // Load both files: smart.* keys live in trainticket-mst.properties (MST-only),
+        // base.url lives in trainticket-demo.properties (RESTest core).
         Properties props = new Properties();
         try {
-            FileInputStream fis = new FileInputStream("src/main/resources/My-Example/trainticket-demo.properties");
-            props.load(fis);
-            fis.close();
-            System.out.println("✅ Successfully loaded properties file");
+            try (FileInputStream core = new FileInputStream("src/main/resources/My-Example/trainticket-demo.properties")) {
+                props.load(core);
+            }
+            try (FileInputStream mst = new FileInputStream("src/main/resources/My-Example/trainticket-mst.properties")) {
+                props.load(mst);
+            }
+            System.out.println("✅ Successfully loaded properties files");
         } catch (IOException e) {
-            System.err.println("❌ Failed to load properties file: " + e.getMessage());
+            System.err.println("❌ Failed to load properties files: " + e.getMessage());
             return;
         }
         

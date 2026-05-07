@@ -3,6 +3,7 @@ package es.us.isa.restest.main;
 import es.us.isa.restest.analysis.FaultDetectionTracker;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationGenerator;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
+import es.us.isa.restest.configuration.multiservice.MstConfig;
 import es.us.isa.restest.configuration.multiservice.MultiServiceTestConfiguration;
 import es.us.isa.restest.configuration.pojos.Auth;
 import es.us.isa.restest.configuration.pojos.TestConfiguration;
@@ -80,6 +81,12 @@ public class TestGenerationAndExecution {
 
 	// Properties file with configuration settings
 	private static String propertiesFilePath = "src/main/resources/My-Example/trainticket-demo.properties";
+	/** MST-only properties file (loaded only when generator=MST; resolved from the
+	 *  {@code mst.config.path} key in {@link #propertiesFilePath}). Held in a static
+	 *  field so {@link #readParameterValue(String)} can fall through to it for any
+	 *  MST-only key without forcing every call site to know about MstConfig. */
+	private static String mstPropertiesFilePath;
+	private static MstConfig mstConfig;
 	/** Directory (or file) of trace JSON/JSONL; must use / so it works on Linux/macOS (\\ is only a separator on Windows). */
 	private static String TraceFile = "src/main/resources/My-Example/trainticket/test-trace";
 
@@ -138,6 +145,16 @@ public class TestGenerationAndExecution {
 		// Populate configuration parameters, either from arguments or from .properties file
 		argsList = Arrays.asList(args);
 		readParameterValues();
+
+		// MST mode loads its dedicated properties file (LLM, smart fetch, jaeger,
+		// fault detection, soft-error cache, enhancer, status-code exploration,
+		// root-API registry, trace merging, ...) and pushes every key to System
+		// properties so generators / writers / generated test code that read via
+		// System.getProperty keep working unchanged. Classic generators never
+		// reach this branch and never see MST configuration.
+		if ("MST".equals(generator)) {
+			loadMstConfig();
+		}
 
 		// Set proxy globally, if specified
 		if (proxy != null) {
@@ -796,7 +813,9 @@ public class TestGenerationAndExecution {
 
 	}
 
-	// Read the parameter value from: 1) CLI; 2) the local .properties file; 3) the global .properties file (config.properties)
+	// Read the parameter value from: 1) CLI; 2) the local .properties file;
+	// 3) the MST-only .properties file (when MST mode is active);
+	// 4) the global .properties file (config.properties)
 	private static String readParameterValue(String propertyName) {
 
 		String value = null;
@@ -807,6 +826,8 @@ public class TestGenerationAndExecution {
 			value = argsList.stream().filter(arg -> arg.matches("^" + propertyName + "=.*")).findFirst().get().split("=")[1];
 		else if (PropertyManager.readProperty(propertiesFilePath, propertyName) != null) // Read value from local .properties file
 			value = PropertyManager.readProperty(propertiesFilePath, propertyName);
+		else if (mstPropertiesFilePath != null && PropertyManager.readProperty(mstPropertiesFilePath, propertyName) != null) // MST-only file
+			value = PropertyManager.readProperty(mstPropertiesFilePath, propertyName);
 		else if (PropertyManager.readProperty(propertyName) != null) // Read value from global .properties file
 			value = PropertyManager.readProperty(propertyName);
 
@@ -814,140 +835,90 @@ public class TestGenerationAndExecution {
 	}
 
 	/**
-	 * Pass Smart Input Fetching and LLM configuration properties to system properties
-	 * This ensures MST generator can access the smart fetching and LLM configuration
+	 * Resolve the MST-only properties file via the {@code mst.config.path} key,
+	 * load it, and push every entry to System properties so that downstream
+	 * readers (writers, generators, smart fetcher, generated test code) that
+	 * use {@code System.getProperty} pick the values up unchanged.
+	 *
+	 * Called once from {@link #main(String[])} after the RESTest-core file has
+	 * been read and only when {@code generator=MST}.
+	 */
+	private static void loadMstConfig() {
+		String mstPath = readParameterValue("mst.config.path");
+		if (mstPath == null || mstPath.trim().isEmpty()) {
+			logger.warn("MST mode is active but 'mst.config.path' is not set. " +
+					"MST-only keys (LLM, smart fetch, jaeger, ...) will fall back to defaults. " +
+					"Set 'mst.config.path' in {} to load them from a dedicated file.", propertiesFilePath);
+			return;
+		}
+		try {
+			mstConfig = MstConfig.load(mstPath);
+			mstPropertiesFilePath = mstConfig.getFilePath();
+			mstConfig.applyToSystemProperties();
+		} catch (IOException e) {
+			logger.error("Failed to load MST configuration from '{}': {}", mstPath, e.getMessage());
+			throw new RuntimeException("Cannot load MST configuration file: " + mstPath, e);
+		}
+	}
+
+	/**
+	 * Bridge a handful of RESTest-core values that MST generators read via
+	 * System.getProperty (oas.path, base.url) and log a summary of the
+	 * MST configuration that {@link #loadMstConfig()} already pushed to
+	 * System properties.
+	 *
+	 * The bulk MST-key propagation lives in
+	 * {@link MstConfig#applyToSystemProperties()} - this method does not
+	 * re-list every MST key.
 	 */
 	private static void passSmartInputFetchingProperties() {
-		logger.info("🔧 Configuring Smart Input Fetching and LLM for MST mode...");
+		logger.info("🔧 Bridging RESTest-core values for MST and logging MST configuration summary...");
 
-		// List of all smart input fetching and LLM properties
-		String[] smartProperties = {
-			"smart.input.fetch.enabled",
-			"smart.input.fetch.percentage",
-			"smart.input.fetch.registry.path",
-			"smart.input.fetch.openapi.spec.path",
-			"smart.input.fetch.llm.discovery.enabled",
-			"smart.input.fetch.max.candidates",
-			"smart.input.fetch.dependency.resolution.enabled",
-			"smart.input.fetch.discovery.timeout.ms",
-			"smart.input.fetch.cache.enabled",
-			"smart.input.fetch.cache.ttl.seconds",
-			"oas.path",
-			"base.url",
-			// LLM configuration properties
-			"llm.enabled",
-			"llm.model.type",
-			"llm.local.enabled",
-			"llm.local.url",
-			"llm.local.model",
-			"llm.local.api.key",
-			"llm.gemini.enabled",
-			"llm.gemini.api.key",
-			"llm.gemini.model",
-			"llm.gemini.api.url",
-			"llm.ollama.enabled",
-			"llm.ollama.url",
-			"llm.ollama.model",
-			"llm.rate.limit.retry.enabled",
-			"llm.rate.limit.max.retries",
-			// Authentication properties for smart fetch
-			"auth.admin.username",
-			"auth.admin.password",
-			"auth.user.username",
-			"auth.user.password",
-			// Jaeger trace fetching properties
-			"jaeger.enabled",
-			"jaeger.base.url",
-			"jaeger.lookback",
-			// LLM response validation properties (soft error detection)
-			"llm.response.validation.enabled",
-			"llm.response.validation.only.2xx",
-			"llm.response.validation.include.rca",
-			// LLM communication logging properties
-			"llm.communication.logging.enabled",
-			"llm.communication.logging.dir",
-			"llm.communication.logging.file.prefix",
-			"llm.communication.logging.include.response.time",
-			"llm.communication.logging.include.content",
-			"llm.communication.logging.include.metadata",
-			"llm.communication.logging.level",
-			"llm.communication.logging.max.content.length",
-			// LLM resource monitoring properties
-			"llm.resource.monitoring.enabled",
-			"llm.resource.monitoring.interval.ms",
-			// Test Case Enhancer properties
-			"test.enhancer.enabled",
-			"test.enhancer.rounds",
-			"test.enhancer.skip.5xx",
-			// Status Code Exploration properties
-			"status.code.exploration.enabled",
-			"status.code.exploration.max.per.test",
-			"status.code.exploration.max.per.round",
-			// Soft error rule cache properties
-			"soft.error.cache.enabled",
-			"soft.error.cache.path",
-			// HTTP timeout properties for REST Assured test execution
-			"http.connect.timeout.ms",
-			"http.socket.timeout.ms"
-		};
-		
-		int configuredCount = 0;
-		for (String property : smartProperties) {
-			String value = readParameterValue(property);
-			if (value != null) {
-				System.setProperty(property, value);
-				logger.info("✅ Set system property: {} = {}", property, value);
-				configuredCount++;
-			} else {
-				logger.debug("⚠️  Property not found: {}", property);
+		// RESTest-core values that the smart fetcher / generators read via
+		// System.getProperty - these live in the core file, not the MST file,
+		// so MstConfig.applyToSystemProperties() does not cover them.
+		for (String coreKey : new String[] { "oas.path", "base.url" }) {
+			String value = readParameterValue(coreKey);
+			if (value != null && System.getProperty(coreKey) == null) {
+				System.setProperty(coreKey, value);
 			}
 		}
-		
-		if (configuredCount > 0) {
-			logger.info("🚀 Smart Input Fetching and LLM configured with {} properties for MST mode", configuredCount);
 
-			// Log the key settings
-			String enabled = System.getProperty("smart.input.fetch.enabled", "false");
-			String percentage = System.getProperty("smart.input.fetch.percentage", "0.0");
-			String registryPath = System.getProperty("smart.input.fetch.registry.path", "not set");
+		String enabled = System.getProperty("smart.input.fetch.enabled", "false");
+		String percentage = System.getProperty("smart.input.fetch.percentage", "0.0");
+		String registryPath = System.getProperty("smart.input.fetch.registry.path", "not set");
 
-			// Log LLM settings
-			String llmEnabled = System.getProperty("llm.enabled", "false");
-			String llmModelType = System.getProperty("llm.model.type", "local");
-			String geminiApiKey = System.getProperty("llm.gemini.api.key", "not set");
-			String ollamaEnabled = System.getProperty("llm.ollama.enabled", "false");
-			String ollamaModel = System.getProperty("llm.ollama.model", "not set");
+		String llmEnabled = System.getProperty("llm.enabled", "false");
+		String llmModelType = System.getProperty("llm.model.type", "local");
+		String geminiApiKey = System.getProperty("llm.gemini.api.key", "not set");
+		String ollamaEnabled = System.getProperty("llm.ollama.enabled", "false");
+		String ollamaModel = System.getProperty("llm.ollama.model", "not set");
 
-			logger.info("📊 Smart Fetching Settings:");
-			logger.info("   - Enabled: {}", enabled);
-			logger.info("   - Percentage: {}% smart fetching",
-				Float.parseFloat(percentage) * 100);
-			logger.info("   - Registry: {}", registryPath);
+		logger.info("📊 Smart Fetching Settings:");
+		logger.info("   - Enabled: {}", enabled);
+		logger.info("   - Percentage: {}% smart fetching", Float.parseFloat(percentage) * 100);
+		logger.info("   - Registry: {}", registryPath);
 
-			logger.info("🤖 LLM Settings:");
-			logger.info("   - Enabled: {}", llmEnabled);
-			logger.info("   - Model Type: {}", llmModelType);
-			logger.info("   - Gemini API Key: {}", geminiApiKey.equals("not set") ? "not set" : "configured");
-			logger.info("   - Ollama Enabled: {}", ollamaEnabled);
-			logger.info("   - Ollama Model: {}", ollamaModel);
-			
-			// Log LLM response validation settings (soft error detection)
-			String llmValidationEnabled = System.getProperty("llm.response.validation.enabled", "false");
-			String llmValidationOnly2xx = System.getProperty("llm.response.validation.only.2xx", "true");
-			String llmValidationRca = System.getProperty("llm.response.validation.include.rca", "true");
-			
-			logger.info("🔍 LLM Response Validation (Soft Error Detection):");
-			logger.info("   - Enabled: {}", llmValidationEnabled);
-			logger.info("   - Only 2XX responses: {}", llmValidationOnly2xx);
-			logger.info("   - Include RCA in reports: {}", llmValidationRca);
-			
-			if ("true".equals(enabled)) {
-				logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");
-			} else {
-				logger.warn("❌ Smart Input Fetching is DISABLED - enable it by setting smart.input.fetch.enabled=true");
-			}
+		logger.info("🤖 LLM Settings:");
+		logger.info("   - Enabled: {}", llmEnabled);
+		logger.info("   - Model Type: {}", llmModelType);
+		logger.info("   - Gemini API Key: {}", geminiApiKey.equals("not set") ? "not set" : "configured");
+		logger.info("   - Ollama Enabled: {}", ollamaEnabled);
+		logger.info("   - Ollama Model: {}", ollamaModel);
+
+		String llmValidationEnabled = System.getProperty("llm.response.validation.enabled", "false");
+		String llmValidationOnly2xx = System.getProperty("llm.response.validation.only.2xx", "true");
+		String llmValidationRca = System.getProperty("llm.response.validation.include.rca", "true");
+
+		logger.info("🔍 LLM Response Validation (Soft Error Detection):");
+		logger.info("   - Enabled: {}", llmValidationEnabled);
+		logger.info("   - Only 2XX responses: {}", llmValidationOnly2xx);
+		logger.info("   - Include RCA in reports: {}", llmValidationRca);
+
+		if ("true".equals(enabled)) {
+			logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");
 		} else {
-			logger.warn("⚠️  No Smart Input Fetching properties found - make sure they're in your properties file");
+			logger.warn("❌ Smart Input Fetching is DISABLED - enable it by setting smart.input.fetch.enabled=true in the MST configuration file");
 		}
 	}
 
