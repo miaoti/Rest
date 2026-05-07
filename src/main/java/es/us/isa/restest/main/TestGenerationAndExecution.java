@@ -451,9 +451,18 @@ public class TestGenerationAndExecution {
 					serviceSpecs.put(svc, spec);
 				}
 
-				// 5. Get the recorded workflows from the trace file
-                                List<WorkflowScenario> scenarios =
-                                                TraceWorkflowExtractor.extractScenarios(TraceFile);
+				// 5. Get the recorded workflows from the trace file. Path is
+				// taken from `trace.file.path` (in the MST or core config) so
+				// users running on a different microservice system don't have
+				// to edit Java; falls back to the hardcoded TraceFile so the
+				// bundled trainticket demo keeps working out of the box.
+				String tracePath = readParameterValue("trace.file.path");
+				if (tracePath == null || tracePath.trim().isEmpty()) {
+					tracePath = TraceFile;
+				}
+				logger.info("MST trace input: {}", tracePath);
+				List<WorkflowScenario> scenarios =
+				                TraceWorkflowExtractor.extractScenarios(tracePath);
 
 				// 5.5. Register root APIs with their tree structures in the registry
 				// ⚠️ IMPORTANT: Register BEFORE deduplication to capture ALL trace patterns

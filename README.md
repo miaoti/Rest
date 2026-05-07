@@ -4,28 +4,103 @@
 
 ---
 
-## Quick Start (5 commands)
+## Inputs (every run needs these)
 
-Replays the bundled TrainTicket demo end-to-end (compile → generate → execute → Allure report).
+A single MST run is fully described by one core `.properties` file. That file points at — and these are the four logical inputs you control:
+
+| Input | Configured via | Bundled demo value |
+|---|---|---|
+| **OpenAPI spec** of the system under test | `oas.path` | `src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml` |
+| **MST test configuration** (auto-generated from the spec) | `conf.path` | `src/main/resources/My-Example/trainticket/real-system-conf.yaml` |
+| **Jaeger / OpenTelemetry traces** (single file *or* directory of `.json` / `.jsonl`) | `trace.file.path` | `src/main/resources/My-Example/trainticket/test-trace` |
+| **Target system base URL** | `base.url` | `http://129.62.148.112:32677` |
+
+Two more sit in the *MST* properties file (`trainticket-mst.properties`):
+
+| Input | Configured via | Where to put the secret |
+|---|---|---|
+| **LLM backend** (Ollama / OpenAI-compatible / Gemini) | `llm.model.type` + `llm.<backend>.*` | env var `${VAR}` resolved at startup — see *API keys* |
+| **Injected-faults registry** (optional, for detection-rate evaluation) | `fault.detection.injected.faults.path` | `src/main/resources/My-Example/trainticket/injectedFaults/injected-faults.json` |
+
+The bundled demo ships every input above pre-staged for TrainTicket. Pick a Quick Start path below depending on whether you have an LLM API key handy.
+
+---
+
+## Quick Start A — bundled demo, fully local LLM (no API key)
+
+Best for first-time validation that the tool works on your machine. Uses Ollama, so nothing leaves your laptop.
+
+```bash
+# 1. Build the fat JAR
+mvn clean install -DskipTests
+
+# 2. Start Ollama and pull a model (one-time; see https://ollama.com/download)
+ollama serve &
+ollama pull qwen2.5-coder:14b
+
+# 3. Switch the bundled demo to Ollama (one-time edit; see snippet below)
+#    open src/main/resources/My-Example/trainticket-mst.properties and set:
+#       llm.model.type=ollama
+#       llm.ollama.enabled=true
+#       llm.local.enabled=false
+
+# 4. Generate + execute against the bundled TrainTicket demo
+java -jar target/restest.jar src/main/resources/My-Example/trainticket-demo.properties
+
+# 5. Render the Allure report
+allure/bin/allure generate target/allure-results -o target/allure-report --clean && \
+allure/bin/allure open target/allure-report
+```
+
+## Quick Start B — bundled demo, hosted LLM API (DeepSeek shown)
+
+Same demo, faster generation. Substitute Gemini / OpenAI / any OpenAI-compatible endpoint by adjusting the env-var name and the `llm.*` keys (see *LLM backends* below).
 
 ```bash
 # 1. Build
 mvn clean install -DskipTests
 
-# 2. Provide an LLM API key (DeepSeek shown; see "LLM backends" below for alternatives)
+# 2. Provide an API key (resolved by ${DEEPSEEK_API_KEY} placeholder in the MST file)
 export DEEPSEEK_API_KEY=sk-...
 
-# 3. Run MST generation + execution against the included TrainTicket demo
+# 3. The bundled demo is already wired for DeepSeek (llm.model.type=local,
+#    llm.local.url=https://api.deepseek.com/v1/chat/completions). Just run:
 java -jar target/restest.jar src/main/resources/My-Example/trainticket-demo.properties
 
-# 4. Render the Allure report
-allure/bin/allure generate target/allure-results -o target/allure-report --clean
-
-# 5. Open it
+# 4-5. Same Allure rendering as above
+allure/bin/allure generate target/allure-results -o target/allure-report --clean && \
 allure/bin/allure open target/allure-report
 ```
 
-The fault-detection report lands under `logs/fault-detection-reports/`; CSV stats under `target/test-data/`.
+## Quick Start C — your own microservice system
+
+Five edits, then the same `java -jar` command.
+
+```bash
+# 1. Build (one-time)
+mvn clean install -DskipTests
+
+# 2. Drop your inputs anywhere under src/main/resources/<your-system>/:
+#       openapi.yaml
+#       test-trace/*.json     (one or more Jaeger / OTel traces)
+
+# 3. Generate the MST test configuration from your spec (one-time per spec change).
+#    Edit the input/output paths at the top of MicroserviceConfBuilderMain
+#    or wrap it in your own main, then:
+java -cp target/restest.jar es.us.isa.restest.main.MicroserviceConfBuilderMain
+
+# 4. Copy the bundled property files as a template and update FOUR keys:
+#       oas.path           → your openapi.yaml
+#       conf.path          → the YAML produced by step 3
+#       trace.file.path    → your test-trace directory
+#       base.url           → your system's HTTP entry point
+#    plus mst.config.path so the core file points at your MST file.
+
+# 5. Same launch command, pointed at YOUR core properties file:
+java -jar target/restest.jar src/main/resources/<your-system>/system-demo.properties
+```
+
+After any run, the fault-detection report lands under `logs/fault-detection-reports/`, CSV stats under `target/test-data/`.
 
 ---
 
@@ -70,18 +145,7 @@ src/main/resources/My-Example/
                                      #   trace merging, auth strategy, ...)
 ```
 
-`trainticket-demo.properties` is the file you pass on the command line. When `generator=MST`, [`MstConfig`](src/main/java/es/us/isa/restest/configuration/multiservice/MstConfig.java) loads the file referenced by `mst.config.path` and pushes every key onto System properties. Classic generators never touch the MST file.
-
-### Bring your own microservice system
-
-1. Place your OpenAPI spec at `src/main/resources/<your-system>/openapi.yaml`.
-2. Drop one or more Jaeger trace JSON/JSONL files into `src/main/resources/<your-system>/test-trace/`.
-3. Generate the test configuration once:
-   ```bash
-   java -cp target/restest.jar es.us.isa.restest.main.MicroserviceConfBuilderMain
-   ```
-   (Edit the input/output paths at the top of the file or wrap it in your own main.)
-4. Copy `trainticket-demo.properties` + `trainticket-mst.properties` to a sibling directory and update the `oas.path`, `conf.path`, `base.url`, `jaeger.base.url`, `mst.config.path` keys.
+`trainticket-demo.properties` is the file you pass on the command line. When `generator=MST`, [`MstConfig`](src/main/java/es/us/isa/restest/configuration/multiservice/MstConfig.java) loads the file referenced by `mst.config.path` and pushes every key onto System properties. Classic generators never touch the MST file. (Bringing your own system is covered in *Quick Start C* above.)
 
 ---
 
