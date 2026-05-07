@@ -12919,6 +12919,14 @@ public class Flow_Scenario_273 {
 
     @Test
     public void test_negative_flow_S273_v40_fault_Root1_NULL_INPUT() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [accountId]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {accountId=null}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S273_v40_fault_Root1_NULL_INPUT");
@@ -25155,6 +25163,14 @@ public class Flow_Scenario_273 {
 
     @Test
     public void test_negative_flow_S273_v63_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [accountId]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {accountId=abc}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S273_v63_fault_Root1_SEMANTIC_MISMATCH");

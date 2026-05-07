@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2026
 - 5
-- 5
-- 23
-- 51
-- 44
-- 802148171
+- 6
+- 17
+- 24
+- 40
+- 933361057
 parameterMappings:
   boughtDateStart:
   - endpoint: "/api/v1/orderservice/order"
@@ -252,10 +252,10 @@ parameterMappings:
     - 5
     - 5
     - 23
-    - 7
-    - 59
-    - 429489120
-    successRate: 0.46855900000000006
+    - 9
+    - 50
+    - 189368602
+    successRate: 0.5217031000000001
     description: null
     consumerApiKey: null
   price:
@@ -501,9 +501,9 @@ parameterMappings:
     - 5
     - 23
     - 9
-    - 32
-    - 860886737
-    successRate: 0.9528987130275376
+    - 46
+    - 143171338
+    successRate: 0.9576088417247838
     description: null
     consumerApiKey: null
   startPlace:
@@ -883,8 +883,8 @@ parameterMappings:
     - 5
     - 23
     - 9
-    - 41
-    - 818553896
+    - 51
+    - 129120585
     successRate: 0.0
     description: null
     consumerApiKey: null
@@ -8187,11 +8187,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 38
-      - 8
-      - 414039504
+      - 3
+      - 6
+      - 58
+      - 1
+      - 992740879
       additionalInfo: null
     accountId:
     - errorType: "CONSTRAINT_ERROR"
@@ -15847,11 +15847,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 47
+      - 4
       - 14
-      - 475955274
+      - 33
+      - 2
+      - 265190953
       additionalInfo: null
     - errorType: "LENGTH_ERROR"
       errorReason: "Data truncation: Data too long for column 'bought_date' at row\
@@ -15887,11 +15887,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 46
-      - 3
-      - 177951381
+      - 2
+      - 1
+      - 56
+      - 7
+      - 780913968
       additionalInfo: null
     - errorType: "SECURITY_VIOLATION"
       errorReason: "Unknown (HTTP 400)"
@@ -16083,11 +16083,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 42
-      - 44
-      - 591035460
+      - 4
+      - 12
+      - 48
+      - 9
+      - 473729962
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'contacts_document_number'\
@@ -16422,11 +16422,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 21
-      - 3
-      - 230896184
+      - 4
+      - 13
+      - 22
+      - 9
+      - 355935762
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -16450,11 +16450,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 31
-      - 0
-      - 451598144
+      - 4
+      - 14
+      - 11
+      - 20
+      - 607916085
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -16544,11 +16544,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 13
-      - 47
-      - 809773147
+      - 4
+      - 14
+      - 30
+      - 17
+      - 582139212
       additionalInfo: null
     - errorType: "SQL_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -16650,11 +16650,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 37
-      - 34
-      - 688619548
+      - 3
+      - 6
+      - 32
+      - 59
+      - 236688909
       additionalInfo: null
     - errorType: "INVALID_VALUE"
       errorReason: "Unknown (HTTP 400)"
@@ -16917,11 +16917,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 30
-      - 59
-      - 384157894
+      - 4
+      - 13
+      - 20
+      - 4
+      - 133783771
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'price' at row 1"
@@ -16930,11 +16930,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 17
-      - 53
-      - 939228869
+      - 4
+      - 13
+      - 59
+      - 58
+      - 82161034
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Data truncation: Data too long for column 'price' at row 1"
@@ -16943,11 +16943,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 47
-      - 37
-      - 467195023
+      - 4
+      - 13
+      - 43
+      - 50
+      - 991504244
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Data truncation: Data too long for column 'price' at row 1"
@@ -16956,11 +16956,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 50
-      - 53
-      - 17066636
+      - 4
+      - 14
+      - 37
+      - 19
+      - 270203820
       additionalInfo: null
     - errorType: "SQL_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -17396,11 +17396,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 40
-      - 20
-      - 506806874
+      - 4
+      - 14
+      - 15
+      - 22
+      - 507786332
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -17409,11 +17409,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 51
-      - 16
-      - 515595668
+      - 3
+      - 6
+      - 9
+      - 58
+      - 868368003
       additionalInfo: null
     - errorType: "INJECTION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -17644,11 +17644,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 27
-      - 35
-      - 980640236
+      - 3
+      - 6
+      - 10
+      - 1
+      - 571002658
       additionalInfo: null
     - errorType: "INVALID_VALUE"
       errorReason: "Unknown (HTTP 400)"
@@ -17917,11 +17917,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 42
-      - 53
-      - 663237948
+      - 4
+      - 14
+      - 19
+      - 52
+      - 112720121
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -17956,11 +17956,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 30
-      - 49
-      - 271033805
+      - 2
+      - 2
+      - 40
+      - 46
+      - 673415551
       additionalInfo: null
     - errorType: "XSS_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -18412,11 +18412,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 47
-      - 0
-      - 449670986
+      - 4
+      - 14
+      - 36
+      - 45
+      - 356530187
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Data truncation: Data too long for column 'travel_time' at row\
@@ -18425,12 +18425,12 @@ parameterErrors:
       parameterName: "travelTime"
       timestamp:
       - 2026
-      - 5
-      - 5
-      - 23
-      - 16
-      - 17
-      - 148666965
+      - 4
+      - 29
+      - 6
+      - 37
+      - 24
+      - 481674508
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -18479,11 +18479,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 15
-      - 29
-      - 830800382
+      - 4
+      - 8
+      - 49
+      - 47
+      - 32203694
       additionalInfo: null
     - errorType: "VALUE_OUT_OF_BOUNDS"
       errorReason: "Unknown (HTTP 400)"
@@ -18887,11 +18887,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 37
-      - 15
-      - 322384866
+      - 4
+      - 14
+      - 35
+      - 18
+      - 995760253
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -18900,11 +18900,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 19
-      - 9
-      - 727440926
+      - 4
+      - 14
+      - 33
+      - 36
+      - 466678971
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -18913,11 +18913,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
+      - 4
+      - 12
+      - 43
       - 26
-      - 0
-      - 195456361
+      - 918069912
       additionalInfo: null
     - errorType: "VALUE_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -19355,11 +19355,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 41
+      - 4
+      - 10
       - 51
-      - 820601476
+      - 59
+      - 979238852
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -19381,11 +19381,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 23
-      - 33
-      - 308913937
+      - 4
+      - 13
+      - 35
+      - 29
+      - 727518030
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Data truncation: Data too long for column 'account_id' at row\
@@ -19395,11 +19395,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 49
-      - 35
-      - 456101681
+      - 4
+      - 13
+      - 24
+      - 38
+      - 811439180
       additionalInfo: null
     - errorType: "SQL_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -19972,12 +19972,12 @@ parameterErrors:
       parameterName: "trainNumber"
       timestamp:
       - 2026
-      - 5
-      - 5
-      - 23
-      - 33
-      - 9
-      - 971635733
+      - 4
+      - 29
+      - 8
+      - 47
+      - 35
+      - 439753526
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Data truncation: Data too long for column 'train_number' at row\
@@ -20535,11 +20535,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 16
-      - 40
-      - 6514408
+      - 4
+      - 14
+      - 2
+      - 13
+      - 916165472
       additionalInfo: null
     - errorType: "EMPTY_VALUE_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -20680,11 +20680,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 35
-      - 23
-      - 694090602
+      - 4
+      - 10
+      - 13
+      - 52
+      - 269373599
       additionalInfo: null
     - errorType: "SQL_INJECTION_ATTEMPT"
       errorReason: "Unknown (HTTP 400)"
@@ -20774,11 +20774,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 33
-      - 23
-      - 158619644
+      - 3
+      - 3
+      - 30
+      - 12
+      - 364561503
       additionalInfo: null
     - errorType: "XSS_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -20979,11 +20979,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 37
-      - 16
-      - 307106874
+      - 4
+      - 14
+      - 33
+      - 0
+      - 256800516
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -21075,11 +21075,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 35
+      - 4
       - 13
-      - 939497044
+      - 59
+      - 8
+      - 523387187
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -21089,12 +21089,12 @@ parameterErrors:
       parameterName: "documentType"
       timestamp:
       - 2026
+      - 2
+      - 1
       - 5
-      - 5
-      - 23
-      - 35
-      - 49
-      - 481432700
+      - 7
+      - 16
+      - 811034600
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -21117,11 +21117,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 30
-      - 50
-      - 347662079
+      - 4
+      - 12
+      - 52
+      - 10
+      - 390486256
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize instance of `int` out of\
@@ -21131,11 +21131,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 46
-      - 11
-      - 841642498
+      - 4
+      - 13
+      - 50
+      - 6
+      - 344917906
       additionalInfo: null
     - errorType: "SQL_INJECTION_ATTEMPT"
       errorReason: "Unknown (HTTP 400)"
@@ -21653,11 +21653,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 48
+      - 4
       - 13
-      - 62739020
+      - 3
+      - 46
+      - 35082789
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -21666,11 +21666,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 14
-      - 16
-      - 231221541
+      - 4
+      - 13
+      - 43
+      - 1
+      - 435748236
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -21679,11 +21679,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 50
-      - 12
-      - 383882614
+      - 4
+      - 14
+      - 25
+      - 19
+      - 178336820
       additionalInfo: null
     - errorType: "LENGTH_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -21954,12 +21954,12 @@ parameterErrors:
       parameterName: "contactsName"
       timestamp:
       - 2026
-      - 5
-      - 5
-      - 23
-      - 14
-      - 15
-      - 43282686
+      - 4
+      - 29
+      - 7
+      - 7
+      - 46
+      - 2617558
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'contacts_name' at row\
@@ -21969,11 +21969,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 37
+      - 4
+      - 14
       - 25
-      - 215493138
+      - 39
+      - 475720674
       additionalInfo: null
     - errorType: "INJECTION_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -22036,11 +22036,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
+      - 4
+      - 14
       - 23
-      - 30
-      - 40
-      - 268905667
+      - 5
+      - 811911243
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -22048,12 +22048,12 @@ parameterErrors:
       parameterName: "seatNumber"
       timestamp:
       - 2026
-      - 5
-      - 5
+      - 4
+      - 29
+      - 7
       - 23
-      - 27
-      - 45
-      - 571631595
+      - 28
+      - 579489234
       additionalInfo: null
     - errorType: "LENGTH_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -22166,11 +22166,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 36
-      - 17
-      - 329623654
+      - 4
+      - 13
+      - 22
+      - 11
+      - 235581409
       additionalInfo: null
     - errorType: "EMPTY_VALUE_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -22233,11 +22233,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 22
-      - 46
-      - 140282998
+      - 4
+      - 13
+      - 16
+      - 16
+      - 521492212
       additionalInfo: null
     - errorType: "SECURITY_ERROR (specifically XSS vulnerability)"
       errorReason: "Unknown (HTTP 400)"
@@ -22530,11 +22530,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 27
-      - 21
-      - 993749147
+      - 4
+      - 12
+      - 28
+      - 54
+      - 278100320
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -22544,11 +22544,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
+      - 4
+      - 13
+      - 52
       - 38
-      - 22
-      - 331284836
+      - 124565439
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Data truncation: Data too long for column 'bought_date' at row\
@@ -22679,11 +22679,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 22
-      - 8
-      - 618352214
+      - 4
+      - 12
+      - 57
+      - 59
+      - 575643628
       additionalInfo: null
     - errorType: "XSS_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -22772,11 +22772,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
+      - 4
+      - 14
+      - 16
       - 28
-      - 0
-      - 595130148
+      - 839709917
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Illegal unquoted character ((CTRL-CHAR, code\
@@ -23455,11 +23455,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 47
-      - 50
-      - 778844507
+      - 4
+      - 14
+      - 35
+      - 42
+      - 449256029
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -23844,11 +23844,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 50
-      - 25
-      - 214217074
+      - 4
+      - 14
+      - 17
+      - 0
+      - 613617850
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -23864,18 +23864,17 @@ parameterErrors:
       - 112135620
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
-      errorReason: "Data truncation: Data too long for column 'account_id' at row\
-        \ 1"
+      errorReason: "Unknown (HTTP 400)"
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "boughtDate"
       timestamp:
       - 2026
       - 5
+      - 4
+      - 13
       - 5
-      - 23
-      - 43
-      - 7
-      - 997428193
+      - 1
+      - 129028397
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -23884,11 +23883,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 24
-      - 45
-      - 588188767
+      - 4
+      - 14
+      - 9
+      - 20
+      - 48924800
       additionalInfo: null
     - errorType: "SQL_INJECTION_ATTEMPT"
       errorReason: "Unknown (HTTP 400)"
@@ -24271,11 +24270,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 46
-      - 12
-      - 712364996
+      - 4
+      - 13
+      - 47
+      - 28
+      - 569865695
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -24284,11 +24283,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 39
-      - 43
-      - 701121725
+      - 4
+      - 14
+      - 6
+      - 29
+      - 678441718
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -24297,11 +24296,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 37
-      - 6
-      - 28457138
+      - 4
+      - 13
+      - 58
+      - 20
+      - 4596369
       additionalInfo: null
     - errorType: "VALUE_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -24324,11 +24323,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 32
+      - 4
       - 12
-      - 74776015
+      - 51
+      - 48
+      - 63744346
       additionalInfo: null
     - errorType: "SQL_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -24443,11 +24442,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 5
-      - 23
-      - 33
-      - 56
-      - 598948279
+      - 4
+      - 13
+      - 15
+      - 46
+      - 345470647
       additionalInfo: null
     - errorType: "XSS_ATTEMPT"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -24715,20 +24714,6 @@ parameterErrors:
       - 24
       - 5
       - 913347938
-      additionalInfo: null
-    - errorType: "TYPE_MISMATCH"
-      errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
-        \ String \"x\": not a valid Integer value"
-      apiEndpoint: "/api/v1/adminorderservice/adminorder"
-      parameterName: "to"
-      timestamp:
-      - 2026
-      - 5
-      - 5
-      - 23
-      - 39
-      - 44
-      - 826354415
       additionalInfo: null
     customer_id:
     - errorType: "FORMAT_ERROR"

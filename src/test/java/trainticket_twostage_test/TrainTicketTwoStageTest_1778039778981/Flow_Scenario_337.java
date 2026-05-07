@@ -895,6 +895,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v1() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, stationList, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Shanghai Hongqiao, stationList=Shanghai,Beijing,Nanjing,Shanghai Hongqiao, startStation=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v1");
@@ -1062,7 +1070,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"empirestatebuilding,12345678901\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Beijing,Nanjing,Shanghai Hongqiao\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -1070,7 +1078,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"empirestatebuilding,12345678901\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Beijing,Nanjing,Shanghai Hongqiao\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -1415,6 +1423,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v2() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v2");
@@ -1582,7 +1598,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -1590,7 +1606,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -1935,6 +1951,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v3() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, stationList, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, stationList=Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v3");
@@ -2102,7 +2126,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Beijing\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -2110,7 +2134,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Beijing\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -2455,6 +2479,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v4() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v4");
@@ -2622,7 +2654,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -2630,7 +2662,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -2975,6 +3007,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v5() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=Shanghai,Shanghai Hongqiao}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v5");
@@ -3142,7 +3182,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"empirestatebuilding\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Shanghai Hongqiao\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -3150,7 +3190,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"empirestatebuilding\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Shanghai Hongqiao\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -3495,6 +3535,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v6() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=Shanghai,Shanghai Hongqiao}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v6");
@@ -3662,7 +3710,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"12345678901\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Shanghai Hongqiao\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -3670,7 +3718,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"12345678901\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Shanghai Hongqiao\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -4015,6 +4063,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v7() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v7");
@@ -4182,7 +4238,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Chengdu\",\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"loginId\":\"testuser01\",\"startStation\":\"empirestatebuilding\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -4190,7 +4246,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Chengdu\",\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"loginId\":\"testuser01\",\"startStation\":\"empirestatebuilding\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -4535,6 +4591,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v8() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList, distanceList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=Shanghai,Wuhan, distanceList=23.4}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v8");
@@ -4702,7 +4766,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Wuhan\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"timesquare\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4\",\"endStation\":\"Wuhan\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Wuhan\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -4710,7 +4774,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Wuhan\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"timesquare\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4\",\"endStation\":\"Wuhan\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Wuhan\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -5055,6 +5119,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v9() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=Shanghai,Chongqing}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v9");
@@ -5222,7 +5294,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Chongqing\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"brooklynbridge\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Chongqing\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Chongqing\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -5230,7 +5302,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Chongqing\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"brooklynbridge\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Chongqing\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Chongqing\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -5575,6 +5647,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v10() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v10");
@@ -5742,7 +5822,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -5750,7 +5830,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -6095,6 +6175,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v11() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v11");
@@ -6262,7 +6350,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"084837\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"084837\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -6270,7 +6358,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"084837\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"084837\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -6615,6 +6703,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v12() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList, distanceList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=centralpark,guangzhou, distanceList=23.4,15.8,9.2,31.6,7.1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v12");
@@ -6782,7 +6878,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Guangzhou\",\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"loginId\":\"testuser01\",\"startStation\":\"12345678901\",\"stationList\":\"centralpark\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Guangzhou\",\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"loginId\":\"testuser01\",\"startStation\":\"12345678901\",\"stationList\":\"centralpark,guangzhou\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -6790,7 +6886,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Guangzhou\",\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"loginId\":\"testuser01\",\"startStation\":\"12345678901\",\"stationList\":\"centralpark\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Guangzhou\",\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"loginId\":\"testuser01\",\"startStation\":\"12345678901\",\"stationList\":\"centralpark,guangzhou\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -7135,6 +7231,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v13() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v13");
@@ -7302,7 +7406,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -7310,7 +7414,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -7655,6 +7759,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v14() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, stationList, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Guangzhou, stationList=Shanghai,Beijing,Nanjing,Wuhan,Guangzhou, startStation=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v14");
@@ -7822,7 +7934,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Xi'an\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Guangzhou\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Beijing,Nanjing,Wuhan,Guangzhou\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -7830,7 +7942,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Xi'an\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Guangzhou\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Beijing,Nanjing,Wuhan,Guangzhou\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -8175,6 +8287,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v15() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v15");
@@ -8342,7 +8462,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Hangzhou\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"grandcentralterminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -8350,7 +8470,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Hangzhou\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"grandcentralterminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -8695,6 +8815,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v16() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=chicagounionstation,shanghaihongqiao}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v16");
@@ -8862,7 +8990,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"chicagounionstation\",\"stationList\":\"statueofliberty\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"chicagounionstation\",\"stationList\":\"chicagounionstation,shanghaihongqiao\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -8870,7 +8998,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"chicagounionstation\",\"stationList\":\"statueofliberty\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"chicagounionstation\",\"stationList\":\"chicagounionstation,shanghaihongqiao\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -9215,6 +9343,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v17() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v17");
@@ -9382,7 +9518,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shenzhen\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -9390,7 +9526,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shenzhen\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"T12345\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -9735,6 +9871,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v18() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 400
+        // Enhanced Parameters: [stationList]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 400\nOriginal Response: {\"status\":0,\"msg\":\"Route creation rejected: route must have at least 2 stations\",\"data\":{\"faultName\":\"INSUFFICIENT_STATIONS_FAULT\",\"message\":\"Route creation rejected: route must have at least 2 statio...\nEnhanced Parameters: {stationList=wallstreet,philadelphia30thstreetstation,Shanghai Hongqiao}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v18");
@@ -9902,7 +10046,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"loginId\":\"testuser01\",\"startStation\":\"philadelphia30thstreetstation\",\"stationList\":\"wallstreet\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"loginId\":\"testuser01\",\"startStation\":\"philadelphia30thstreetstation\",\"stationList\":\"wallstreet,philadelphia30thstreetstation,Shanghai Hongqiao\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -9910,7 +10054,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"loginId\":\"testuser01\",\"startStation\":\"philadelphia30thstreetstation\",\"stationList\":\"wallstreet\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai Hongqiao\",\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"loginId\":\"testuser01\",\"startStation\":\"philadelphia30thstreetstation\",\"stationList\":\"wallstreet,philadelphia30thstreetstation,Shanghai Hongqiao\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -10255,6 +10399,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v19() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, stationList, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Nanjing, stationList=Shanghai,Nanjing,Beijing,Guangzhou,Shenzhen, startStation=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v19");
@@ -10422,7 +10574,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Nanjing\",\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Nanjing\",\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Nanjing,Beijing,Guangzhou,Shenzhen\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -10430,7 +10582,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Nanjing\",\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Nanjing\",\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Shanghai,Nanjing,Beijing,Guangzhou,Shenzhen\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()
@@ -10775,6 +10927,14 @@ public class Flow_Scenario_337 {
 
     @Test
     public void test_positive_flow_S337_v20() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [endStation, startStation]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"start or end station not include in stationList.\",\"data\":null}\nEnhanced Parameters: {endStation=Broadway Station, startStation=Grand Central Terminal}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S337_v20");
@@ -10942,7 +11102,7 @@ public class Flow_Scenario_337 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
+                        String requestBody1 = "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -10950,7 +11110,7 @@ public class Flow_Scenario_337 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Shanghai\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Shanghai\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
+                        allStepParameters.put("body", "{\"distanceList\":\"23.4,15.8,9.2,31.6,7.1\",\"endStation\":\"Broadway Station\",\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"loginId\":\"testuser01\",\"startStation\":\"Grand Central Terminal\",\"stationList\":\"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminrouteservice/adminroute")
                                .then().log().ifValidationFails()

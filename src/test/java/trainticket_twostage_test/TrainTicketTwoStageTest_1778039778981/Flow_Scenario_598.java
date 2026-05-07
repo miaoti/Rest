@@ -9996,6 +9996,14 @@ public class Flow_Scenario_598 {
 
     @Test
     public void test_positive_flow_S598_v20() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"No Content according to accountId\",\"data\":null}\nEnhanced Parameters: {id=4d2a46c7-71cb-4cf1-b5bb-b68406d9da6f}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S598_v20");
@@ -46335,6 +46343,14 @@ public class Flow_Scenario_598 {
 
     @Test
     public void test_positive_flow_S598_v90() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"No Content according to accountId\",\"data\":null}\nEnhanced Parameters: {id=d4e567c2-1f54-5a8e-0d32-232c36931220}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S598_v90");

@@ -2437,6 +2437,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v4() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"Red Rocket\",\"economyClass\":9,\"confortClass\":6,\"averageSpeed\":220}}\nEnhanced Parameters: {name=Blue Comet, id=1b23bd3e-876a-4af3-b920-c50a90c90b05}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v4");
@@ -2598,7 +2606,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":6,\"economyClass\":9,\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"Red Rocket\"}";
+                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":6,\"economyClass\":9,\"id\":\"1b23bd3e-876a-4af3-b920-c50a90c90b05\",\"name\":\"Blue Comet\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -2606,7 +2614,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":6,\"economyClass\":9,\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"Red Rocket\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":6,\"economyClass\":9,\"id\":\"1b23bd3e-876a-4af3-b920-c50a90c90b05\",\"name\":\"Blue Comet\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -5007,6 +5015,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v9() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"Capitol Limited\",\"economyClass\":3,\"confortClass\":2,\"averageSpeed\":175}}\nEnhanced Parameters: {name=New Capitol Limited, id=NEW-EX-500}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v9");
@@ -5168,7 +5184,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":2,\"economyClass\":3,\"id\":\"EX-500\",\"name\":\"Capitol Limited\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":2,\"economyClass\":3,\"id\":\"NEW-EX-500\",\"name\":\"New Capitol Limited\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -5176,7 +5192,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":2,\"economyClass\":3,\"id\":\"EX-500\",\"name\":\"Capitol Limited\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":2,\"economyClass\":3,\"id\":\"NEW-EX-500\",\"name\":\"New Capitol Limited\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -5521,6 +5537,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v10() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-004\",\"name\":\"Desert Wind\",\"economyClass\":5,\"confortClass\":13,\"averageSpeed\":1}}\nEnhanced Parameters: {name=Coastal Express, id=T-005}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v10");
@@ -5682,7 +5706,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":1,\"confortClass\":13,\"economyClass\":5,\"id\":\"T-004\",\"name\":\"Desert Wind\"}";
+                        String requestBody1 = "{\"averageSpeed\":1,\"confortClass\":13,\"economyClass\":5,\"id\":\"T-005\",\"name\":\"Coastal Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -5690,7 +5714,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":1,\"confortClass\":13,\"economyClass\":5,\"id\":\"T-004\",\"name\":\"Desert Wind\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":1,\"confortClass\":13,\"economyClass\":5,\"id\":\"T-005\",\"name\":\"Coastal Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -6035,6 +6059,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v11() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-501\",\"name\":\"Prairie Zephyr\",\"economyClass\":13,\"confortClass\":10,\"averageSpeed\":350}}\nEnhanced Parameters: {name=New Prairie Zephyr, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v11");
@@ -6196,7 +6228,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":10,\"economyClass\":13,\"id\":\"EX-501\",\"name\":\"Prairie Zephyr\"}";
+                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":10,\"economyClass\":13,\"id\":\"EX-999\",\"name\":\"New Prairie Zephyr\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -6204,7 +6236,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":10,\"economyClass\":13,\"id\":\"EX-501\",\"name\":\"Prairie Zephyr\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":10,\"economyClass\":13,\"id\":\"EX-999\",\"name\":\"New Prairie Zephyr\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -6549,6 +6581,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v12() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-010\",\"name\":\"Empire Builder\",\"economyClass\":0,\"confortClass\":7,\"averageSpeed\":300}}\nEnhanced Parameters: {name=Coast Starlight, id=T-011}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v12");
@@ -6710,7 +6750,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":7,\"economyClass\":0,\"id\":\"T-010\",\"name\":\"Empire Builder\"}";
+                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":7,\"economyClass\":0,\"id\":\"T-011\",\"name\":\"Coast Starlight\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -6718,7 +6758,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":7,\"economyClass\":0,\"id\":\"T-010\",\"name\":\"Empire Builder\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":7,\"economyClass\":0,\"id\":\"T-011\",\"name\":\"Coast Starlight\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -7063,6 +7103,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v13() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-002\",\"name\":\"Coastal Flyer\",\"economyClass\":11,\"confortClass\":8,\"averageSpeed\":300}}\nEnhanced Parameters: {name=Mountain Express, id=T-099}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v13");
@@ -7224,7 +7272,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":8,\"economyClass\":11,\"id\":\"T-002\",\"name\":\"Coastal Flyer\"}";
+                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":8,\"economyClass\":11,\"id\":\"T-099\",\"name\":\"Mountain Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -7232,7 +7280,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":8,\"economyClass\":11,\"id\":\"T-002\",\"name\":\"Coastal Flyer\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":8,\"economyClass\":11,\"id\":\"T-099\",\"name\":\"Mountain Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -7577,6 +7625,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v14() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-200\",\"name\":\"Red Rocket\",\"economyClass\":1,\"confortClass\":1,\"averageSpeed\":300}}\nEnhanced Parameters: {name=Blue Comet, id=TR-201}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v14");
@@ -7738,7 +7794,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":1,\"economyClass\":1,\"id\":\"TR-200\",\"name\":\"Red Rocket\"}";
+                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":1,\"economyClass\":1,\"id\":\"TR-201\",\"name\":\"Blue Comet\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -7746,7 +7802,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":1,\"economyClass\":1,\"id\":\"TR-200\",\"name\":\"Red Rocket\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":1,\"economyClass\":1,\"id\":\"TR-201\",\"name\":\"Blue Comet\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -8091,6 +8147,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v15() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"Golden Eagle\",\"economyClass\":10,\"confortClass\":14,\"averageSpeed\":220}}\nEnhanced Parameters: {name=Silver Hawk, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v15");
@@ -8252,7 +8316,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":14,\"economyClass\":10,\"id\":\"T12345\",\"name\":\"Golden Eagle\"}";
+                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":14,\"economyClass\":10,\"id\":\"T99999\",\"name\":\"Silver Hawk\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -8260,7 +8324,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":14,\"economyClass\":10,\"id\":\"T12345\",\"name\":\"Golden Eagle\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":14,\"economyClass\":10,\"id\":\"T99999\",\"name\":\"Silver Hawk\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -8605,6 +8669,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v16() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-501\",\"name\":\"Silver Arrow\",\"economyClass\":9,\"confortClass\":5,\"averageSpeed\":160}}\nEnhanced Parameters: {name=Golden Eagle, id=EX-601}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v16");
@@ -8766,7 +8838,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":5,\"economyClass\":9,\"id\":\"EX-501\",\"name\":\"Silver Arrow\"}";
+                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":5,\"economyClass\":9,\"id\":\"EX-601\",\"name\":\"Golden Eagle\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -8774,7 +8846,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":5,\"economyClass\":9,\"id\":\"EX-501\",\"name\":\"Silver Arrow\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":5,\"economyClass\":9,\"id\":\"EX-601\",\"name\":\"Golden Eagle\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -9119,6 +9191,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v17() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-009\",\"name\":\"Lone Star\",\"economyClass\":5,\"confortClass\":0,\"averageSpeed\":150}}\nEnhanced Parameters: {name=Silver Comet, id=T-010}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v17");
@@ -9280,7 +9360,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":5,\"id\":\"T-009\",\"name\":\"Lone Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":5,\"id\":\"T-010\",\"name\":\"Silver Comet\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -9288,7 +9368,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":5,\"id\":\"T-009\",\"name\":\"Lone Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":5,\"id\":\"T-010\",\"name\":\"Silver Comet\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -9633,6 +9713,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v18() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Morning Star\",\"economyClass\":4,\"confortClass\":10,\"averageSpeed\":150}}\nEnhanced Parameters: {name=Evening Star, id=e7b3c4d5-6f8a-4b2c-9e1d-0a3b5c7d9e1f}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v18");
@@ -9794,7 +9882,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":10,\"economyClass\":4,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Morning Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":10,\"economyClass\":4,\"id\":\"e7b3c4d5-6f8a-4b2c-9e1d-0a3b5c7d9e1f\",\"name\":\"Evening Star\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -9802,7 +9890,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":10,\"economyClass\":4,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Morning Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":10,\"economyClass\":4,\"id\":\"e7b3c4d5-6f8a-4b2c-9e1d-0a3b5c7d9e1f\",\"name\":\"Evening Star\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -10147,6 +10235,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v19() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-001\",\"name\":\"Mountain Runner\",\"economyClass\":11,\"confortClass\":12,\"averageSpeed\":210}}\nEnhanced Parameters: {name=Rapid Express, id=T-002}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v19");
@@ -10308,7 +10404,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":210,\"confortClass\":12,\"economyClass\":11,\"id\":\"T-001\",\"name\":\"Mountain Runner\"}";
+                        String requestBody1 = "{\"averageSpeed\":210,\"confortClass\":12,\"economyClass\":11,\"id\":\"T-002\",\"name\":\"Rapid Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -10316,7 +10412,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":210,\"confortClass\":12,\"economyClass\":11,\"id\":\"T-001\",\"name\":\"Mountain Runner\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":210,\"confortClass\":12,\"economyClass\":11,\"id\":\"T-002\",\"name\":\"Rapid Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -10661,6 +10757,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_positive_flow_S1752_v20() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-007\",\"name\":\"K-12 Express\",\"economyClass\":2,\"confortClass\":6,\"averageSpeed\":240}}\nEnhanced Parameters: {name=K-15 Express, id=T-008}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S1752_v20");
@@ -10822,7 +10926,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":6,\"economyClass\":2,\"id\":\"T-007\",\"name\":\"K-12 Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":6,\"economyClass\":2,\"id\":\"T-008\",\"name\":\"K-15 Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -10830,7 +10934,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":6,\"economyClass\":2,\"id\":\"T-007\",\"name\":\"K-12 Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":6,\"economyClass\":2,\"id\":\"T-008\",\"name\":\"K-15 Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -11175,6 +11279,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v21_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-200\",\"name\":\"Twilight Express\",\"economyClass\":50,\"confortClass\":2147483647,\"averageSpeed\":270}}\nEnhanced Parameters: {name=, id=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v21_fault_Root1_OVERFLOW");
@@ -11351,7 +11463,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":2147483647,\"economyClass\":50,\"id\":\"TR-200\",\"name\":\"Twilight Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":2147483647,\"economyClass\":50,\"id\":\"\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -11359,7 +11471,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":2147483647,\"economyClass\":50,\"id\":\"TR-200\",\"name\":\"Twilight Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":2147483647,\"economyClass\":50,\"id\":\"\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -12309,6 +12421,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v23_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-002\",\"name\":\"Prairie Zephyr\",\"economyClass\":4,\"confortClass\":0,\"averageSpeed\":210}}\nEnhanced Parameters: {name=Unique Test Train, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v23_fault_Root1_SEMANTIC_MISMATCH");
@@ -12485,7 +12605,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":210,\"confortClass\":\"0\",\"economyClass\":4,\"id\":\"T-002\",\"name\":\"Prairie Zephyr\"}";
+                        String requestBody1 = "{\"averageSpeed\":210,\"confortClass\":\"0\",\"economyClass\":4,\"id\":\"T-999\",\"name\":\"Unique Test Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -12493,7 +12613,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":210,\"confortClass\":\"0\",\"economyClass\":4,\"id\":\"T-002\",\"name\":\"Prairie Zephyr\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":210,\"confortClass\":\"0\",\"economyClass\":4,\"id\":\"T-999\",\"name\":\"Unique Test Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -12876,6 +12996,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v24_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Coastal Flyer\",\"economyClass\":14,\"confortClass\":-2147483648,\"averageSpeed\":160}}\nEnhanced Parameters: {name=New Train Name, id=new-unique-id-12345}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v24_fault_Root1_OVERFLOW");
@@ -13052,7 +13180,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":-2147483648,\"economyClass\":14,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Coastal Flyer\"}";
+                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":-2147483648,\"economyClass\":14,\"id\":\"new-unique-id-12345\",\"name\":\"New Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -13060,7 +13188,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":-2147483648,\"economyClass\":14,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Coastal Flyer\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":-2147483648,\"economyClass\":14,\"id\":\"new-unique-id-12345\",\"name\":\"New Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -14010,6 +14138,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v26_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [economyClass, name, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {economyClass=50, name=New Express, averageSpeed=250, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v26_fault_Root1_SEMANTIC_MISMATCH");
@@ -14186,7 +14322,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":\"-1\",\"economyClass\":10,\"id\":\"EX-503\",\"name\":\"Mountain Runner\"}";
+                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":\"-1\",\"economyClass\":10,\"id\":\"EX-999\",\"name\":\"New Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -14194,7 +14330,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":\"-1\",\"economyClass\":10,\"id\":\"EX-503\",\"name\":\"Mountain Runner\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":\"-1\",\"economyClass\":10,\"id\":\"EX-999\",\"name\":\"New Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -15711,6 +15847,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v29_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-006\",\"name\":\"Coastal Flyer\",\"economyClass\":9,\"confortClass\":999999,\"averageSpeed\":350}}\nEnhanced Parameters: {name=New Express, id=T-001}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v29_fault_Root1_SEMANTIC_MISMATCH");
@@ -15887,7 +16031,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":\"999999\",\"economyClass\":9,\"id\":\"T-006\",\"name\":\"Coastal Flyer\"}";
+                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":\"999999\",\"economyClass\":9,\"id\":\"T-001\",\"name\":\"New Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -15895,7 +16039,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":\"999999\",\"economyClass\":9,\"id\":\"T-006\",\"name\":\"Coastal Flyer\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":\"999999\",\"economyClass\":9,\"id\":\"T-001\",\"name\":\"New Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -21948,6 +22092,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v40_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-007\",\"name\":\"Golden Eagle\",\"economyClass\":7,\"confortClass\":0,\"averageSpeed\":175}}\nEnhanced Parameters: {name=New Train, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v40_fault_Root1_TYPE_MISMATCH");
@@ -22124,7 +22276,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":\"\",\"economyClass\":7,\"id\":\"T-007\",\"name\":\"Golden Eagle\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":\"\",\"economyClass\":7,\"id\":\"T-999\",\"name\":\"New Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -22132,7 +22284,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":\"\",\"economyClass\":7,\"id\":\"T-007\",\"name\":\"Golden Eagle\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":\"\",\"economyClass\":7,\"id\":\"T-999\",\"name\":\"New Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -22515,6 +22667,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v41_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-002\",\"name\":\"Blue Streak\",\"economyClass\":13,\"confortClass\":1,\"averageSpeed\":225}}\nEnhanced Parameters: {name=New Train, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v41_fault_Root1_SEMANTIC_MISMATCH");
@@ -22691,7 +22851,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":\"1\",\"economyClass\":13,\"id\":\"T-002\",\"name\":\"Blue Streak\"}";
+                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":\"1\",\"economyClass\":13,\"id\":\"T-999\",\"name\":\"New Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -22699,7 +22859,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":\"1\",\"economyClass\":13,\"id\":\"T-002\",\"name\":\"Blue Streak\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":\"1\",\"economyClass\":13,\"id\":\"T-999\",\"name\":\"New Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -24783,6 +24943,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v45_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, name, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=10, name=Express Limited, averageSpeed=250, id=T-010}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v45_fault_Root1_OVERFLOW");
@@ -24959,7 +25127,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":14,\"economyClass\":2147483647,\"id\":\"T-009\",\"name\":\"Twilight Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":14,\"economyClass\":2147483647,\"id\":\"T-010\",\"name\":\"Express Limited\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -24967,7 +25135,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":14,\"economyClass\":2147483647,\"id\":\"T-009\",\"name\":\"Twilight Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":14,\"economyClass\":2147483647,\"id\":\"T-010\",\"name\":\"Express Limited\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -25917,6 +26085,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v47_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-004\",\"name\":\"K-12 Express\",\"economyClass\":-1,\"confortClass\":0,\"averageSpeed\":220}}\nEnhanced Parameters: {name=Unique Express, id=T-005}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v47_fault_Root1_SEMANTIC_MISMATCH");
@@ -26093,7 +26269,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":\"-1\",\"id\":\"T-004\",\"name\":\"K-12 Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":\"-1\",\"id\":\"T-005\",\"name\":\"Unique Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -26101,7 +26277,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":\"-1\",\"id\":\"T-004\",\"name\":\"K-12 Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":\"-1\",\"id\":\"T-005\",\"name\":\"Unique Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -26484,6 +26660,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v48_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-009\",\"name\":\"Capitol Limited\",\"economyClass\":-2147483648,\"confortClass\":0,\"averageSpeed\":120}}\nEnhanced Parameters: {name=New Train, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v48_fault_Root1_OVERFLOW");
@@ -26660,7 +26844,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":0,\"economyClass\":-2147483648,\"id\":\"T-009\",\"name\":\"Capitol Limited\"}";
+                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":0,\"economyClass\":-2147483648,\"id\":\"T-999\",\"name\":\"New Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -26668,7 +26852,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":0,\"economyClass\":-2147483648,\"id\":\"T-009\",\"name\":\"Capitol Limited\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":0,\"economyClass\":-2147483648,\"id\":\"T-999\",\"name\":\"New Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -27618,6 +27802,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v50_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"Silver Arrow\",\"economyClass\":0,\"confortClass\":11,\"averageSpeed\":220}}\nEnhanced Parameters: {name=UniqueTrainName, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v50_fault_Root1_SEMANTIC_MISMATCH");
@@ -27794,7 +27986,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":11,\"economyClass\":\"0\",\"id\":\"EX-500\",\"name\":\"Silver Arrow\"}";
+                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":11,\"economyClass\":\"0\",\"id\":\"EX-999\",\"name\":\"UniqueTrainName\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -27802,7 +27994,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":11,\"economyClass\":\"0\",\"id\":\"EX-500\",\"name\":\"Silver Arrow\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":11,\"economyClass\":\"0\",\"id\":\"EX-999\",\"name\":\"UniqueTrainName\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -29319,6 +29511,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v53_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-503\",\"name\":\"Pacific Coast\",\"economyClass\":999999999,\"confortClass\":4,\"averageSpeed\":120}}\nEnhanced Parameters: {name=Unique Train Name, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v53_fault_Root1_SEMANTIC_MISMATCH");
@@ -29495,7 +29695,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":4,\"economyClass\":\"999999999\",\"id\":\"EX-503\",\"name\":\"Pacific Coast\"}";
+                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":4,\"economyClass\":\"999999999\",\"id\":\"EX-999\",\"name\":\"Unique Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -29503,7 +29703,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":4,\"economyClass\":\"999999999\",\"id\":\"EX-503\",\"name\":\"Pacific Coast\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":4,\"economyClass\":\"999999999\",\"id\":\"EX-999\",\"name\":\"Unique Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -32721,6 +32921,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v59_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-003\",\"name\":\"Lone Star\",\"economyClass\":0,\"confortClass\":14,\"averageSpeed\":270}}\nEnhanced Parameters: {name=New Train, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v59_fault_Root1_SEMANTIC_MISMATCH");
@@ -32897,7 +33105,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":14,\"economyClass\":\"null\",\"id\":\"T-003\",\"name\":\"Lone Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":14,\"economyClass\":\"null\",\"id\":\"T-999\",\"name\":\"New Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -32905,7 +33113,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":14,\"economyClass\":\"null\",\"id\":\"T-003\",\"name\":\"Lone Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":14,\"economyClass\":\"null\",\"id\":\"T-999\",\"name\":\"New Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -34989,6 +35197,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v63_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"Morning Star\",\"economyClass\":1,\"confortClass\":12,\"averageSpeed\":3}}\nEnhanced Parameters: {name=Evening Star, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v63_fault_Root1_SEMANTIC_MISMATCH");
@@ -35165,7 +35381,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":12,\"economyClass\":\"1\",\"id\":\"EX-500\",\"name\":\"Morning Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":12,\"economyClass\":\"1\",\"id\":\"EX-999\",\"name\":\"Evening Star\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -35173,7 +35389,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":12,\"economyClass\":\"1\",\"id\":\"EX-500\",\"name\":\"Morning Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":12,\"economyClass\":\"1\",\"id\":\"EX-999\",\"name\":\"Evening Star\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -35556,6 +35772,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v64_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-006\",\"name\":\"K-12 Express\",\"economyClass\":0,\"confortClass\":8,\"averageSpeed\":180}}\nEnhanced Parameters: {name=New Express, id=T-007}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v64_fault_Root1_TYPE_MISMATCH");
@@ -35732,7 +35956,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":8,\"economyClass\":\"\",\"id\":\"T-006\",\"name\":\"K-12 Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":8,\"economyClass\":\"\",\"id\":\"T-007\",\"name\":\"New Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -35740,7 +35964,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":8,\"economyClass\":\"\",\"id\":\"T-006\",\"name\":\"K-12 Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":8,\"economyClass\":\"\",\"id\":\"T-007\",\"name\":\"New Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -38391,6 +38615,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v69_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"' OR '1'='1\",\"economyClass\":7,\"confortClass\":10,\"averageSpeed\":120}}\nEnhanced Parameters: {id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v69_fault_Root1_SPECIAL_CHARACTERS");
@@ -38567,7 +38799,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":10,\"economyClass\":7,\"id\":\"T12345\",\"name\":\"' OR '1'='1\"}";
+                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":10,\"economyClass\":7,\"id\":\"T99999\",\"name\":\"' OR '1'='1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -38575,7 +38807,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":10,\"economyClass\":7,\"id\":\"T12345\",\"name\":\"' OR '1'='1\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":10,\"economyClass\":7,\"id\":\"T99999\",\"name\":\"' OR '1'='1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -38958,6 +39190,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v70_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-009\",\"name\":\"12345\",\"economyClass\":50,\"confortClass\":13,\"averageSpeed\":2}}\nEnhanced Parameters: {confortClass=100, economyClass=200, averageSpeed=200, id=T-010}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v70_fault_Root1_TYPE_MISMATCH");
@@ -39134,7 +39374,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":2,\"confortClass\":13,\"economyClass\":50,\"id\":\"T-009\",\"name\":12345}";
+                        String requestBody1 = "{\"averageSpeed\":2,\"confortClass\":13,\"economyClass\":50,\"id\":\"T-010\",\"name\":12345}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -39142,7 +39382,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":2,\"confortClass\":13,\"economyClass\":50,\"id\":\"T-009\",\"name\":12345}");
+                        allStepParameters.put("body", "{\"averageSpeed\":2,\"confortClass\":13,\"economyClass\":50,\"id\":\"T-010\",\"name\":12345}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -39525,6 +39765,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v71_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-010\",\"name\":\"X\",\"economyClass\":0,\"confortClass\":13,\"averageSpeed\":180}}\nEnhanced Parameters: {id=T-011}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v71_fault_Root1_SEMANTIC_MISMATCH");
@@ -39701,7 +39949,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":13,\"economyClass\":0,\"id\":\"T-010\",\"name\":\"X\"}";
+                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":13,\"economyClass\":0,\"id\":\"T-011\",\"name\":\"X\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -39709,7 +39957,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":13,\"economyClass\":0,\"id\":\"T-010\",\"name\":\"X\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":13,\"economyClass\":0,\"id\":\"T-011\",\"name\":\"X\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -40659,6 +40907,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v73_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"'; DROP TABLE users; --\",\"economyClass\":1,\"confortClass\":12,\"averageSpeed\":200}}\nEnhanced Parameters: {confortClass=12, economyClass=1, averageSpeed=200, id=EX-500}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v73_fault_Root1_SPECIAL_CHARACTERS");
@@ -41226,6 +41482,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v74_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-006\",\"name\":\"-999\",\"economyClass\":6,\"confortClass\":8,\"averageSpeed\":160}}\nEnhanced Parameters: {confortClass=30, economyClass=50, averageSpeed=200, id=T-007}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v74_fault_Root1_TYPE_MISMATCH");
@@ -41402,7 +41666,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":8,\"economyClass\":6,\"id\":\"T-006\",\"name\":-999}";
+                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":8,\"economyClass\":6,\"id\":\"T-007\",\"name\":-999}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -41410,7 +41674,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":8,\"economyClass\":6,\"id\":\"T-006\",\"name\":-999}");
+                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":8,\"economyClass\":6,\"id\":\"T-007\",\"name\":-999}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -41793,6 +42057,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v75_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-200\",\"name\":\"AB\",\"economyClass\":12,\"confortClass\":9,\"averageSpeed\":240}}\nEnhanced Parameters: {confortClass=10, economyClass=15, averageSpeed=200, id=TR-201}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v75_fault_Root1_SEMANTIC_MISMATCH");
@@ -41969,7 +42241,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":9,\"economyClass\":12,\"id\":\"TR-200\",\"name\":\"AB\"}";
+                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":9,\"economyClass\":12,\"id\":\"TR-201\",\"name\":\"AB\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -41977,7 +42249,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":9,\"economyClass\":12,\"id\":\"TR-200\",\"name\":\"AB\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":9,\"economyClass\":12,\"id\":\"TR-201\",\"name\":\"AB\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -42927,6 +43199,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v77_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"1; DELETE FROM users WHERE 1=1\",\"economyClass\":1059033782,\"confortClass\":1,\"averageSpeed\":220}}\nEnhanced Parameters: {confortClass=50, economyClass=100, averageSpeed=200, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v77_fault_Root1_SPECIAL_CHARACTERS");
@@ -43103,7 +43383,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":1,\"economyClass\":1059033782,\"id\":\"EX-500\",\"name\":\"1; DELETE FROM users WHERE 1=1\"}";
+                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":1,\"economyClass\":1059033782,\"id\":\"EX-999\",\"name\":\"1; DELETE FROM users WHERE 1=1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -43111,7 +43391,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":1,\"economyClass\":1059033782,\"id\":\"EX-500\",\"name\":\"1; DELETE FROM users WHERE 1=1\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":1,\"economyClass\":1059033782,\"id\":\"EX-999\",\"name\":\"1; DELETE FROM users WHERE 1=1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -43494,6 +43774,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v78_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-100\",\"name\":\"3.14159\",\"economyClass\":14,\"confortClass\":4,\"averageSpeed\":175}}\nEnhanced Parameters: {confortClass=5, economyClass=10, averageSpeed=200, id=TR-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v78_fault_Root1_TYPE_MISMATCH");
@@ -43670,7 +43958,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":4,\"economyClass\":14,\"id\":\"TR-100\",\"name\":3.14159}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":4,\"economyClass\":14,\"id\":\"TR-999\",\"name\":3.14159}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -43678,7 +43966,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":4,\"economyClass\":14,\"id\":\"TR-100\",\"name\":3.14159}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":4,\"economyClass\":14,\"id\":\"TR-999\",\"name\":3.14159}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -44061,6 +44349,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v79_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-004\",\"name\":\"1\",\"economyClass\":1059033782,\"confortClass\":11,\"averageSpeed\":320}}\nEnhanced Parameters: {confortClass=50, economyClass=100, averageSpeed=200, id=T-005}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v79_fault_Root1_SEMANTIC_MISMATCH");
@@ -44237,7 +44533,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":320,\"confortClass\":11,\"economyClass\":1059033782,\"id\":\"T-004\",\"name\":\"1\"}";
+                        String requestBody1 = "{\"averageSpeed\":320,\"confortClass\":11,\"economyClass\":1059033782,\"id\":\"T-005\",\"name\":\"1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -44245,7 +44541,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":320,\"confortClass\":11,\"economyClass\":1059033782,\"id\":\"T-004\",\"name\":\"1\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":320,\"confortClass\":11,\"economyClass\":1059033782,\"id\":\"T-005\",\"name\":\"1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -45195,6 +45491,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v81_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-501\",\"name\":\"' UNION SELECT * FROM passwords --\",\"economyClass\":1,\"confortClass\":2,\"averageSpeed\":350}}\nEnhanced Parameters: {confortClass=1, economyClass=1, averageSpeed=300, id=EX-001}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v81_fault_Root1_SPECIAL_CHARACTERS");
@@ -45371,7 +45675,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":2,\"economyClass\":1,\"id\":\"EX-501\",\"name\":\"' UNION SELECT * FROM passwords --\"}";
+                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":2,\"economyClass\":1,\"id\":\"EX-001\",\"name\":\"' UNION SELECT * FROM passwords --\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -45379,7 +45683,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":2,\"economyClass\":1,\"id\":\"EX-501\",\"name\":\"' UNION SELECT * FROM passwords --\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":2,\"economyClass\":1,\"id\":\"EX-001\",\"name\":\"' UNION SELECT * FROM passwords --\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -45762,6 +46066,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v82_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"true\",\"economyClass\":1059033785,\"confortClass\":1,\"averageSpeed\":0}}\nEnhanced Parameters: {id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v82_fault_Root1_TYPE_MISMATCH");
@@ -45938,7 +46250,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":1,\"economyClass\":1059033785,\"id\":\"EX-500\",\"name\":true}";
+                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":1,\"economyClass\":1059033785,\"id\":\"EX-999\",\"name\":true}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -45946,7 +46258,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":1,\"economyClass\":1059033785,\"id\":\"EX-500\",\"name\":true}");
+                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":1,\"economyClass\":1059033785,\"id\":\"EX-999\",\"name\":true}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -46329,6 +46641,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v83_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-002\",\"name\":\"NonExistentStation\",\"economyClass\":1059033785,\"confortClass\":13,\"averageSpeed\":175}}\nEnhanced Parameters: {confortClass=50, economyClass=100, averageSpeed=200, id=T-003}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v83_fault_Root1_SEMANTIC_MISMATCH");
@@ -46505,7 +46825,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":13,\"economyClass\":1059033785,\"id\":\"T-002\",\"name\":\"NonExistentStation\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":13,\"economyClass\":1059033785,\"id\":\"T-003\",\"name\":\"NonExistentStation\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -46513,7 +46833,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":13,\"economyClass\":1059033785,\"id\":\"T-002\",\"name\":\"NonExistentStation\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":13,\"economyClass\":1059033785,\"id\":\"T-003\",\"name\":\"NonExistentStation\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -46896,6 +47216,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v84_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-007\",\"name\":\"<script>alert('XSS')</script>\",\"economyClass\":7,\"confortClass\":13,\"averageSpeed\":0}}\nEnhanced Parameters: {confortClass=30, economyClass=50, averageSpeed=200, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v84_fault_Root1_SPECIAL_CHARACTERS");
@@ -47072,7 +47400,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":13,\"economyClass\":7,\"id\":\"T-007\",\"name\":\"<script>alert('XSS')</script>\"}";
+                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":13,\"economyClass\":7,\"id\":\"T-999\",\"name\":\"<script>alert('XSS')</script>\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -47080,7 +47408,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":13,\"economyClass\":7,\"id\":\"T-007\",\"name\":\"<script>alert('XSS')</script>\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":13,\"economyClass\":7,\"id\":\"T-999\",\"name\":\"<script>alert('XSS')</script>\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -47463,6 +47791,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v85_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-200\",\"name\":\"false\",\"economyClass\":1059033783,\"confortClass\":0,\"averageSpeed\":3}}\nEnhanced Parameters: {confortClass=50, economyClass=100, averageSpeed=200, id=TR-NEW-001}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v85_fault_Root1_TYPE_MISMATCH");
@@ -47639,7 +47975,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":0,\"economyClass\":1059033783,\"id\":\"TR-200\",\"name\":false}";
+                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":0,\"economyClass\":1059033783,\"id\":\"TR-NEW-001\",\"name\":false}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -47647,7 +47983,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":0,\"economyClass\":1059033783,\"id\":\"TR-200\",\"name\":false}");
+                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":0,\"economyClass\":1059033783,\"id\":\"TR-NEW-001\",\"name\":false}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -48030,6 +48366,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v86_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"FakeCity123\",\"economyClass\":1059033782,\"confortClass\":12,\"averageSpeed\":275}}\nEnhanced Parameters: {confortClass=50, economyClass=100, averageSpeed=200, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v86_fault_Root1_SEMANTIC_MISMATCH");
@@ -48206,7 +48550,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":12,\"economyClass\":1059033782,\"id\":\"T12345\",\"name\":\"FakeCity123\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":12,\"economyClass\":1059033782,\"id\":\"T99999\",\"name\":\"FakeCity123\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -48214,7 +48558,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":12,\"economyClass\":1059033782,\"id\":\"T12345\",\"name\":\"FakeCity123\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":12,\"economyClass\":1059033782,\"id\":\"T99999\",\"name\":\"FakeCity123\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -48597,6 +48941,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v87_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-007\",\"name\":\"<img src=x onerror=alert('XSS')>\",\"economyClass\":1059033785,\"confortClass\":0,\"averageSpeed\":0}}\nEnhanced Parameters: {confortClass=300, economyClass=500, averageSpeed=200, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v87_fault_Root1_SPECIAL_CHARACTERS");
@@ -48773,7 +49125,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":0,\"economyClass\":1059033785,\"id\":\"T-007\",\"name\":\"<img src=x onerror=alert('XSS')>\"}";
+                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":0,\"economyClass\":1059033785,\"id\":\"T-999\",\"name\":\"<img src=x onerror=alert('XSS')>\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -48781,7 +49133,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":0,\"economyClass\":1059033785,\"id\":\"T-007\",\"name\":\"<img src=x onerror=alert('XSS')>\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":0,\"economyClass\":1059033785,\"id\":\"T-999\",\"name\":\"<img src=x onerror=alert('XSS')>\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -49731,6 +50083,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v89_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-004\",\"name\":\"a\",\"economyClass\":9,\"confortClass\":11,\"averageSpeed\":3}}\nEnhanced Parameters: {confortClass=30, economyClass=50, averageSpeed=200, id=T-005}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v89_fault_Root1_SEMANTIC_MISMATCH");
@@ -49907,7 +50267,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":11,\"economyClass\":9,\"id\":\"T-004\",\"name\":\"a\"}";
+                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":11,\"economyClass\":9,\"id\":\"T-005\",\"name\":\"a\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -49915,7 +50275,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":11,\"economyClass\":9,\"id\":\"T-004\",\"name\":\"a\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":11,\"economyClass\":9,\"id\":\"T-005\",\"name\":\"a\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -50298,6 +50658,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v90_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-009\",\"name\":\"javascript:alert('XSS')\",\"economyClass\":9,\"confortClass\":9,\"averageSpeed\":200}}\nEnhanced Parameters: {id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v90_fault_Root1_SPECIAL_CHARACTERS");
@@ -50474,7 +50842,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":9,\"id\":\"T-009\",\"name\":\"javascript:alert('XSS')\"}";
+                        String requestBody1 = "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":9,\"id\":\"T-999\",\"name\":\"javascript:alert('XSS')\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -50482,7 +50850,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":9,\"id\":\"T-009\",\"name\":\"javascript:alert('XSS')\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":9,\"id\":\"T-999\",\"name\":\"javascript:alert('XSS')\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -51432,6 +51800,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v92_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-501\",\"name\":\"-\",\"economyClass\":10,\"confortClass\":8,\"averageSpeed\":225}}\nEnhanced Parameters: {confortClass=-1, economyClass=-1, averageSpeed=-1, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v92_fault_Root1_SEMANTIC_MISMATCH");
@@ -51608,7 +51984,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":8,\"economyClass\":10,\"id\":\"EX-501\",\"name\":\"-\"}";
+                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":8,\"economyClass\":10,\"id\":\"EX-999\",\"name\":\"-\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -51616,7 +51992,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":8,\"economyClass\":10,\"id\":\"EX-501\",\"name\":\"-\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":8,\"economyClass\":10,\"id\":\"EX-999\",\"name\":\"-\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -51999,6 +52375,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v93_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"<svg onload=alert('XSS')>\",\"economyClass\":5,\"confortClass\":1,\"averageSpeed\":275}}\nEnhanced Parameters: {confortClass=2, economyClass=10, averageSpeed=300, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v93_fault_Root1_SPECIAL_CHARACTERS");
@@ -52175,7 +52559,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":1,\"economyClass\":5,\"id\":\"T12345\",\"name\":\"<svg onload=alert('XSS')>\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":1,\"economyClass\":5,\"id\":\"T99999\",\"name\":\"<svg onload=alert('XSS')>\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -52183,7 +52567,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":1,\"economyClass\":5,\"id\":\"T12345\",\"name\":\"<svg onload=alert('XSS')>\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":1,\"economyClass\":5,\"id\":\"T99999\",\"name\":\"<svg onload=alert('XSS')>\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -52566,6 +52950,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v94_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"999\",\"economyClass\":13,\"confortClass\":13,\"averageSpeed\":3}}\nEnhanced Parameters: {confortClass=0, economyClass=0, averageSpeed=0, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v94_fault_Root1_SEMANTIC_MISMATCH");
@@ -52742,7 +53134,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":13,\"economyClass\":13,\"id\":\"T12345\",\"name\":\"999\"}";
+                        String requestBody1 = "{\"averageSpeed\":3,\"confortClass\":13,\"economyClass\":13,\"id\":\"T99999\",\"name\":\"999\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -52750,7 +53142,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":13,\"economyClass\":13,\"id\":\"T12345\",\"name\":\"999\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":3,\"confortClass\":13,\"economyClass\":13,\"id\":\"T99999\",\"name\":\"999\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -53133,6 +53525,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v95_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-005\",\"name\":\"../../../etc/passwd\",\"economyClass\":11,\"confortClass\":13,\"averageSpeed\":350}}\nEnhanced Parameters: {confortClass=0, economyClass=0, averageSpeed=0, id=T-006}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v95_fault_Root1_SPECIAL_CHARACTERS");
@@ -53309,7 +53709,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":13,\"economyClass\":11,\"id\":\"T-005\",\"name\":\"../../../etc/passwd\"}";
+                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":13,\"economyClass\":11,\"id\":\"T-006\",\"name\":\"../../../etc/passwd\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -53317,7 +53717,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":13,\"economyClass\":11,\"id\":\"T-005\",\"name\":\"../../../etc/passwd\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":13,\"economyClass\":11,\"id\":\"T-006\",\"name\":\"../../../etc/passwd\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -54267,6 +54667,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v97_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"economyClass\":13,\"confortClass\":12,\"averageSpeed\":...\nEnhanced Parameters: {confortClass=0, economyClass=0, averageSpeed=0, id=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v97_fault_Root1_SPECIAL_CHARACTERS");
@@ -54443,7 +54851,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":12,\"economyClass\":13,\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":12,\"economyClass\":13,\"id\":\"\",\"name\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -54451,7 +54859,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":12,\"economyClass\":13,\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":12,\"economyClass\":13,\"id\":\"\",\"name\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -55401,6 +55809,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v99_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"%2e%2e%2f%2e%2e%2f\",\"economyClass\":1059033782,\"confortClass\":7,\"averageSpeed\":175}}\nEnhanced Parameters: {confortClass=-1, economyClass=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v99_fault_Root1_SPECIAL_CHARACTERS");
@@ -55968,6 +56384,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v100_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-007\",\"name\":\"a\",\"economyClass\":9,\"confortClass\":0,\"averageSpeed\":220}}\nEnhanced Parameters: {confortClass=1, economyClass=10, averageSpeed=300, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v100_fault_Root1_SEMANTIC_MISMATCH");
@@ -56144,7 +56568,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":9,\"id\":\"T-007\",\"name\":\"a\"}";
+                        String requestBody1 = "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":9,\"id\":\"T-999\",\"name\":\"a\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -56152,7 +56576,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":9,\"id\":\"T-007\",\"name\":\"a\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":220,\"confortClass\":0,\"economyClass\":9,\"id\":\"T-999\",\"name\":\"a\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -56535,6 +56959,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v101_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-500\",\"name\":\"; ls -la\",\"economyClass\":10,\"confortClass\":0,\"averageSpeed\":150}}\nEnhanced Parameters: {confortClass=, economyClass=, averageSpeed=, id=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v101_fault_Root1_SPECIAL_CHARACTERS");
@@ -56711,7 +57143,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":10,\"id\":\"EX-500\",\"name\":\"; ls -la\"}";
+                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":10,\"id\":\"\",\"name\":\"; ls -la\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -56719,7 +57151,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":10,\"id\":\"EX-500\",\"name\":\"; ls -la\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":0,\"economyClass\":10,\"id\":\"\",\"name\":\"; ls -la\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -57102,6 +57534,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v102_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-008\",\"name\":\"-\",\"economyClass\":4,\"confortClass\":13,\"averageSpeed\":120}}\nEnhanced Parameters: {id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v102_fault_Root1_SEMANTIC_MISMATCH");
@@ -57278,7 +57718,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-008\",\"name\":\"-\"}";
+                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-999\",\"name\":\"-\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -57286,7 +57726,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-008\",\"name\":\"-\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-999\",\"name\":\"-\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -57669,6 +58109,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v103_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-100\",\"name\":\"| cat /etc/passwd\",\"economyClass\":7,\"confortClass\":8,\"averageSpeed\":120}}\nEnhanced Parameters: {confortClass=0, economyClass=0, averageSpeed=0, id=TR-EXISTING}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v103_fault_Root1_SPECIAL_CHARACTERS");
@@ -57845,7 +58293,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":8,\"economyClass\":7,\"id\":\"TR-100\",\"name\":\"| cat /etc/passwd\"}";
+                        String requestBody1 = "{\"averageSpeed\":120,\"confortClass\":8,\"economyClass\":7,\"id\":\"TR-EXISTING\",\"name\":\"| cat /etc/passwd\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -57853,7 +58301,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":8,\"economyClass\":7,\"id\":\"TR-100\",\"name\":\"| cat /etc/passwd\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":120,\"confortClass\":8,\"economyClass\":7,\"id\":\"TR-EXISTING\",\"name\":\"| cat /etc/passwd\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -58236,6 +58684,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v104_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-100\",\"name\":\"?\",\"economyClass\":3,\"confortClass\":2,\"averageSpeed\":270}}\nEnhanced Parameters: {confortClass=1, economyClass=1, averageSpeed=250, id=TR-200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v104_fault_Root1_SEMANTIC_MISMATCH");
@@ -58412,7 +58868,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":2,\"economyClass\":3,\"id\":\"TR-100\",\"name\":\"?\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":2,\"economyClass\":3,\"id\":\"TR-200\",\"name\":\"?\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -58420,7 +58876,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":2,\"economyClass\":3,\"id\":\"TR-100\",\"name\":\"?\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":2,\"economyClass\":3,\"id\":\"TR-200\",\"name\":\"?\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -58803,6 +59259,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v105_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-002\",\"name\":\"`whoami`\",\"economyClass\":4,\"confortClass\":13,\"averageSpeed\":240}}\nEnhanced Parameters: {confortClass=0, economyClass=0, averageSpeed=-1, id=T-003}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v105_fault_Root1_SPECIAL_CHARACTERS");
@@ -58979,7 +59443,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-002\",\"name\":\"`whoami`\"}";
+                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-003\",\"name\":\"`whoami`\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -58987,7 +59451,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-002\",\"name\":\"`whoami`\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":13,\"economyClass\":4,\"id\":\"T-003\",\"name\":\"`whoami`\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -59937,6 +60401,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v107_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\",\"economyClass\":5,\"confortClass\":13,\"averageSpeed\":320}}\nEnhanced Parameters: {confortClass=0, economyClass=0, averageSpeed=0, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v107_fault_Root1_SPECIAL_CHARACTERS");
@@ -60113,7 +60585,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":320,\"confortClass\":13,\"economyClass\":5,\"id\":\"T12345\",\"name\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}";
+                        String requestBody1 = "{\"averageSpeed\":320,\"confortClass\":13,\"economyClass\":5,\"id\":\"T99999\",\"name\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -60121,7 +60593,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":320,\"confortClass\":13,\"economyClass\":5,\"id\":\"T12345\",\"name\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":320,\"confortClass\":13,\"economyClass\":5,\"id\":\"T99999\",\"name\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -60504,6 +60976,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v108_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-008\",\"name\":\"\\\\x00\\\\x01\\\\x02\",\"economyClass\":1059033783,\"confortClass\":4,\"averageSpeed\":0}}\nEnhanced Parameters: {confortClass=1, economyClass=100, averageSpeed=200, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v108_fault_Root1_SPECIAL_CHARACTERS");
@@ -60680,7 +61160,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":4,\"economyClass\":1059033783,\"id\":\"T-008\",\"name\":\"\\\\x00\\\\x01\\\\x02\"}";
+                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":4,\"economyClass\":1059033783,\"id\":\"T-999\",\"name\":\"\\\\x00\\\\x01\\\\x02\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -60688,7 +61168,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":4,\"economyClass\":1059033783,\"id\":\"T-008\",\"name\":\"\\\\x00\\\\x01\\\\x02\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":4,\"economyClass\":1059033783,\"id\":\"T-999\",\"name\":\"\\\\x00\\\\x01\\\\x02\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -61071,6 +61551,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v109_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, averageSpeed, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-008\",\"name\":\"\\u0000\\u0001\\u0002\",\"economyClass\":1059033783,\"confortClass\":9,\"averageSpeed\":270}}\nEnhanced Parameters: {confortClass=50, economyClass=100, averageSpeed=200, id=T-009}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v109_fault_Root1_SPECIAL_CHARACTERS");
@@ -61247,7 +61735,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033783,\"id\":\"T-008\",\"name\":\"\\u0000\\u0001\\u0002\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033783,\"id\":\"T-009\",\"name\":\"\\u0000\\u0001\\u0002\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -61255,7 +61743,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033783,\"id\":\"T-008\",\"name\":\"\\u0000\\u0001\\u0002\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033783,\"id\":\"T-009\",\"name\":\"\\u0000\\u0001\\u0002\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -61638,6 +62126,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v110_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=0, economyClass=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v110_fault_Root1_OVERFLOW");
@@ -62772,6 +63268,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v112_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-001\",\"name\":\"Empire Builder\",\"economyClass\":7,\"confortClass\":10,\"averageSpeed\":-999999999}}\nEnhanced Parameters: {name=New Train, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v112_fault_Root1_SEMANTIC_MISMATCH");
@@ -62948,7 +63452,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"-999999999\",\"confortClass\":10,\"economyClass\":7,\"id\":\"T-001\",\"name\":\"Empire Builder\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"-999999999\",\"confortClass\":10,\"economyClass\":7,\"id\":\"T-999\",\"name\":\"New Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -62956,7 +63460,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"-999999999\",\"confortClass\":10,\"economyClass\":7,\"id\":\"T-001\",\"name\":\"Empire Builder\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"-999999999\",\"confortClass\":10,\"economyClass\":7,\"id\":\"T-999\",\"name\":\"New Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -63339,6 +63843,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v113_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Twilight Express\",\"economyClass\":3,\"confortClass\":9,\"averageSpeed\":-2147483648}}\nEnhanced Parameters: {name=Twilight Express Unique}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v113_fault_Root1_OVERFLOW");
@@ -63515,7 +64027,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":-2147483648,\"confortClass\":9,\"economyClass\":3,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Twilight Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":-2147483648,\"confortClass\":9,\"economyClass\":3,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Twilight Express Unique\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -63523,7 +64035,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":-2147483648,\"confortClass\":9,\"economyClass\":3,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Twilight Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":-2147483648,\"confortClass\":9,\"economyClass\":3,\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"Twilight Express Unique\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -66174,6 +66686,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v118_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-300\",\"name\":\"Red Rocket\",\"economyClass\":8,\"confortClass\":1,\"averageSpeed\":-1}}\nEnhanced Parameters: {name=Blue Comet, id=TR-301}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v118_fault_Root1_SEMANTIC_MISMATCH");
@@ -66350,7 +66870,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"-1\",\"confortClass\":1,\"economyClass\":8,\"id\":\"TR-300\",\"name\":\"Red Rocket\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"-1\",\"confortClass\":1,\"economyClass\":8,\"id\":\"TR-301\",\"name\":\"Blue Comet\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -66358,7 +66878,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"-1\",\"confortClass\":1,\"economyClass\":8,\"id\":\"TR-300\",\"name\":\"Red Rocket\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"-1\",\"confortClass\":1,\"economyClass\":8,\"id\":\"TR-301\",\"name\":\"Blue Comet\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -67875,6 +68395,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v121_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"EX-501\",\"name\":\"Prairie Zephyr\",\"economyClass\":7,\"confortClass\":7,\"averageSpeed\":0}}\nEnhanced Parameters: {name=New Unique Train, id=EX-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v121_fault_Root1_SEMANTIC_MISMATCH");
@@ -68051,7 +68579,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"0\",\"confortClass\":7,\"economyClass\":7,\"id\":\"EX-501\",\"name\":\"Prairie Zephyr\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"0\",\"confortClass\":7,\"economyClass\":7,\"id\":\"EX-999\",\"name\":\"New Unique Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -68059,7 +68587,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"0\",\"confortClass\":7,\"economyClass\":7,\"id\":\"EX-501\",\"name\":\"Prairie Zephyr\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"0\",\"confortClass\":7,\"economyClass\":7,\"id\":\"EX-999\",\"name\":\"New Unique Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -69576,6 +70104,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v124_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T-007\",\"name\":\"Coastal Flyer\",\"economyClass\":1059033785,\"confortClass\":10,\"averageSpeed\":999999}}\nEnhanced Parameters: {name=New Express, id=T-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v124_fault_Root1_SEMANTIC_MISMATCH");
@@ -69752,7 +70288,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"999999\",\"confortClass\":10,\"economyClass\":1059033785,\"id\":\"T-007\",\"name\":\"Coastal Flyer\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"999999\",\"confortClass\":10,\"economyClass\":1059033785,\"id\":\"T-999\",\"name\":\"New Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -69760,7 +70296,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"999999\",\"confortClass\":10,\"economyClass\":1059033785,\"id\":\"T-007\",\"name\":\"Coastal Flyer\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"999999\",\"confortClass\":10,\"economyClass\":1059033785,\"id\":\"T-999\",\"name\":\"New Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -70710,6 +71246,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v126_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"K-12 Express\",\"economyClass\":3,\"confortClass\":4,\"averageSpeed\":-100}}\nEnhanced Parameters: {name=Test Express, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v126_fault_Root1_SEMANTIC_MISMATCH");
@@ -70886,7 +71430,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"-100\",\"confortClass\":4,\"economyClass\":3,\"id\":\"T12345\",\"name\":\"K-12 Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"-100\",\"confortClass\":4,\"economyClass\":3,\"id\":\"T99999\",\"name\":\"Test Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -70894,7 +71438,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"-100\",\"confortClass\":4,\"economyClass\":3,\"id\":\"T12345\",\"name\":\"K-12 Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"-100\",\"confortClass\":4,\"economyClass\":3,\"id\":\"T99999\",\"name\":\"Test Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -71844,6 +72388,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v128_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=, id=INVALID-ID}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v128_fault_Root1_SEMANTIC_MISMATCH");
@@ -72020,7 +72572,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"1\",\"confortClass\":1,\"economyClass\":3,\"id\":\"EX-501\",\"name\":\"Desert Wind\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"1\",\"confortClass\":1,\"economyClass\":3,\"id\":\"INVALID-ID\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -72028,7 +72580,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"1\",\"confortClass\":1,\"economyClass\":3,\"id\":\"EX-501\",\"name\":\"Desert Wind\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"1\",\"confortClass\":1,\"economyClass\":3,\"id\":\"INVALID-ID\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -72411,6 +72963,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v129_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"TR-300\",\"name\":\"Northern Lights\",\"economyClass\":1,\"confortClass\":5,\"averageSpeed\":0}}\nEnhanced Parameters: {name=New Train, id=TR-999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v129_fault_Root1_TYPE_MISMATCH");
@@ -72587,7 +73147,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"\",\"confortClass\":5,\"economyClass\":1,\"id\":\"TR-300\",\"name\":\"Northern Lights\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"\",\"confortClass\":5,\"economyClass\":1,\"id\":\"TR-999\",\"name\":\"New Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -72595,7 +73155,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"\",\"confortClass\":5,\"economyClass\":1,\"id\":\"TR-300\",\"name\":\"Northern Lights\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"\",\"confortClass\":5,\"economyClass\":1,\"id\":\"TR-999\",\"name\":\"New Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -74112,6 +74672,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v132_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"T12345\",\"name\":\"Northern Lights\",\"economyClass\":0,\"confortClass\":2,\"averageSpeed\":1}}\nEnhanced Parameters: {name=New Train Name, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v132_fault_Root1_SEMANTIC_MISMATCH");
@@ -74288,7 +74856,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":\"1\",\"confortClass\":2,\"economyClass\":0,\"id\":\"T12345\",\"name\":\"Northern Lights\"}";
+                        String requestBody1 = "{\"averageSpeed\":\"1\",\"confortClass\":2,\"economyClass\":0,\"id\":\"T99999\",\"name\":\"New Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -74296,7 +74864,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":\"1\",\"confortClass\":2,\"economyClass\":0,\"id\":\"T12345\",\"name\":\"Northern Lights\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":\"1\",\"confortClass\":2,\"economyClass\":0,\"id\":\"T99999\",\"name\":\"New Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -76380,6 +76948,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v136_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...\nEnhanced Parameters: {confortClass=2, economyClass=50, name=Valley Voyager, averageSpeed=210}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v136_fault_Root1_OVERFLOW");
@@ -76947,6 +77523,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v137_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"' OR '1'='1\",\"name\":\"Empire Builder\",\"economyClass\":11,\"confortClass\":7,\"averageSpeed\":275}}\nEnhanced Parameters: {confortClass=5, economyClass=10, name=Another Train Name, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v137_fault_Root1_SPECIAL_CHARACTERS");
@@ -77123,7 +77707,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":7,\"economyClass\":11,\"id\":\"' OR '1'='1\",\"name\":\"Empire Builder\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":7,\"economyClass\":11,\"id\":\"' OR '1'='1\",\"name\":\"Another Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -77131,7 +77715,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":7,\"economyClass\":11,\"id\":\"' OR '1'='1\",\"name\":\"Empire Builder\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":7,\"economyClass\":11,\"id\":\"' OR '1'='1\",\"name\":\"Another Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -77514,6 +78098,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v138_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"12345\",\"name\":\"Empire Builder\",\"economyClass\":2,\"confortClass\":2,\"averageSpeed\":300}}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=, averageSpeed=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v138_fault_Root1_TYPE_MISMATCH");
@@ -77690,7 +78282,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":2,\"economyClass\":2,\"id\":12345,\"name\":\"Empire Builder\"}";
+                        String requestBody1 = "{\"averageSpeed\":300,\"confortClass\":2,\"economyClass\":2,\"id\":12345,\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -77698,7 +78290,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":2,\"economyClass\":2,\"id\":12345,\"name\":\"Empire Builder\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":300,\"confortClass\":2,\"economyClass\":2,\"id\":12345,\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -78081,6 +78673,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v139_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"x\",\"name\":\"Lone Star\",\"economyClass\":6,\"confortClass\":11,\"averageSpeed\":270}}\nEnhanced Parameters: {name=Lone Star}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v139_fault_Root1_SEMANTIC_MISMATCH");
@@ -78648,6 +79248,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v140_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX...\nEnhanced Parameters: {confortClass=11, economyClass=6, name=K-12 Express, averageSpeed=180}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v140_fault_Root1_OVERFLOW");
@@ -79215,6 +79823,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v141_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"'; DROP TABLE users; --\",\"name\":\"Red Rocket\",\"economyClass\":2,\"confortClass\":6,\"averageSpeed\":160}}\nEnhanced Parameters: {confortClass=-1, economyClass=-1, name=, averageSpeed=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v141_fault_Root1_SPECIAL_CHARACTERS");
@@ -79391,7 +80007,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":6,\"economyClass\":2,\"id\":\"'; DROP TABLE users; --\",\"name\":\"Red Rocket\"}";
+                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":6,\"economyClass\":2,\"id\":\"'; DROP TABLE users; --\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -79399,7 +80015,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":6,\"economyClass\":2,\"id\":\"'; DROP TABLE users; --\",\"name\":\"Red Rocket\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":6,\"economyClass\":2,\"id\":\"'; DROP TABLE users; --\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -79782,6 +80398,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v142_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"-999\",\"name\":\"Twilight Express\",\"economyClass\":1059033784,\"confortClass\":6,\"averageSpeed\":275}}\nEnhanced Parameters: {name=UniqueTrainName}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v142_fault_Root1_TYPE_MISMATCH");
@@ -79958,7 +80582,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":1059033784,\"id\":-999,\"name\":\"Twilight Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":1059033784,\"id\":-999,\"name\":\"UniqueTrainName\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -79966,7 +80590,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":1059033784,\"id\":-999,\"name\":\"Twilight Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":1059033784,\"id\":-999,\"name\":\"UniqueTrainName\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -80349,6 +80973,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v143_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"!\",\"name\":\"City Sprinter\",\"economyClass\":10,\"confortClass\":0,\"averageSpeed\":275}}\nEnhanced Parameters: {name=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v143_fault_Root1_SEMANTIC_MISMATCH");
@@ -80525,7 +81157,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":0,\"economyClass\":10,\"id\":\"!\",\"name\":\"City Sprinter\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":0,\"economyClass\":10,\"id\":\"!\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -80533,7 +81165,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":0,\"economyClass\":10,\"id\":\"!\",\"name\":\"City Sprinter\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":0,\"economyClass\":10,\"id\":\"!\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -80916,6 +81548,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v144_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ...\nEnhanced Parameters: {confortClass=50, economyClass=100, name=Express Arrow, averageSpeed=250}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v144_fault_Root1_OVERFLOW");
@@ -81092,7 +81732,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":12,\"economyClass\":6,\"id\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"name\":\"Prairie Zephyr\"}";
+                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":12,\"economyClass\":6,\"id\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"name\":\"Express Arrow\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -81100,7 +81740,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":12,\"economyClass\":6,\"id\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"name\":\"Prairie Zephyr\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":12,\"economyClass\":6,\"id\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"name\":\"Express Arrow\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -81483,6 +82123,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v145_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"1; DELETE FROM users WHERE 1=1\",\"name\":\"Morning Star\",\"economyClass\":9,\"confortClass\":3,\"averageSpeed\":270}}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=, averageSpeed=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v145_fault_Root1_SPECIAL_CHARACTERS");
@@ -81659,7 +82307,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":3,\"economyClass\":9,\"id\":\"1; DELETE FROM users WHERE 1=1\",\"name\":\"Morning Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":3,\"economyClass\":9,\"id\":\"1; DELETE FROM users WHERE 1=1\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -81667,7 +82315,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":3,\"economyClass\":9,\"id\":\"1; DELETE FROM users WHERE 1=1\",\"name\":\"Morning Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":3,\"economyClass\":9,\"id\":\"1; DELETE FROM users WHERE 1=1\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -82050,6 +82698,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v146_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=-1, economyClass=-1, name=, averageSpeed=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v146_fault_Root1_TYPE_MISMATCH");
@@ -82226,7 +82882,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":0,\"economyClass\":50,\"id\":3.14159,\"name\":\"Silver Arrow\"}";
+                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":0,\"economyClass\":50,\"id\":3.14159,\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -82234,7 +82890,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":0,\"economyClass\":50,\"id\":3.14159,\"name\":\"Silver Arrow\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":0,\"economyClass\":50,\"id\":3.14159,\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -82617,6 +83273,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v147_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"~\",\"name\":\"City Sprinter\",\"economyClass\":5,\"confortClass\":10,\"averageSpeed\":0}}\nEnhanced Parameters: {confortClass=20, economyClass=50, name=Unique Express 500, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v147_fault_Root1_SEMANTIC_MISMATCH");
@@ -82793,7 +83457,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":10,\"economyClass\":5,\"id\":\"~\",\"name\":\"City Sprinter\"}";
+                        String requestBody1 = "{\"averageSpeed\":0,\"confortClass\":10,\"economyClass\":5,\"id\":\"~\",\"name\":\"Unique Express 500\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -82801,7 +83465,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":10,\"economyClass\":5,\"id\":\"~\",\"name\":\"City Sprinter\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":0,\"confortClass\":10,\"economyClass\":5,\"id\":\"~\",\"name\":\"Unique Express 500\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -83184,6 +83848,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v148_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ...\nEnhanced Parameters: {confortClass=12, economyClass=3, name=Twilight Express, averageSpeed=210}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v148_fault_Root1_OVERFLOW");
@@ -83751,6 +84423,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v149_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=1, economyClass=100, name=G123, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v149_fault_Root1_SPECIAL_CHARACTERS");
@@ -84318,6 +84998,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v150_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"true\",\"name\":\"Blue Streak\",\"economyClass\":8,\"confortClass\":5,\"averageSpeed\":150}}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=InvalidTrainName}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v150_fault_Root1_TYPE_MISMATCH");
@@ -84494,7 +85182,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":5,\"economyClass\":8,\"id\":true,\"name\":\"Blue Streak\"}";
+                        String requestBody1 = "{\"averageSpeed\":150,\"confortClass\":5,\"economyClass\":8,\"id\":true,\"name\":\"InvalidTrainName\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -84502,7 +85190,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":5,\"economyClass\":8,\"id\":true,\"name\":\"Blue Streak\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":150,\"confortClass\":5,\"economyClass\":8,\"id\":true,\"name\":\"InvalidTrainName\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -84885,6 +85573,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v151_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"0\",\"name\":\"Capitol Limited\",\"economyClass\":10,\"confortClass\":6,\"averageSpeed\":175}}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=Invalid Train, averageSpeed=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v151_fault_Root1_SEMANTIC_MISMATCH");
@@ -85061,7 +85757,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":10,\"id\":\"0\",\"name\":\"Capitol Limited\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":10,\"id\":\"0\",\"name\":\"Invalid Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -85069,7 +85765,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":10,\"id\":\"0\",\"name\":\"Capitol Limited\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":10,\"id\":\"0\",\"name\":\"Invalid Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -85452,6 +86148,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v152_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"<script>alert('XSS')</script>\",\"name\":\"Lone Star\",\"economyClass\":11,\"confortClass\":13,\"averageSpeed\":225}}\nEnhanced Parameters: {confortClass=20, economyClass=10, name=Existing Train Name, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v152_fault_Root1_SPECIAL_CHARACTERS");
@@ -85628,7 +86332,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":13,\"economyClass\":11,\"id\":\"<script>alert('XSS')</script>\",\"name\":\"Lone Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":13,\"economyClass\":11,\"id\":\"<script>alert('XSS')</script>\",\"name\":\"Existing Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -85636,7 +86340,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":13,\"economyClass\":11,\"id\":\"<script>alert('XSS')</script>\",\"name\":\"Lone Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":13,\"economyClass\":11,\"id\":\"<script>alert('XSS')</script>\",\"name\":\"Existing Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -86019,6 +86723,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v153_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"false\",\"name\":\"Sunset Limited\",\"economyClass\":6,\"confortClass\":6,\"averageSpeed\":175}}\nEnhanced Parameters: {confortClass=5, economyClass=10, name=Unique Train 2024, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v153_fault_Root1_TYPE_MISMATCH");
@@ -86195,7 +86907,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":6,\"id\":false,\"name\":\"Sunset Limited\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":6,\"id\":false,\"name\":\"Unique Train 2024\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -86203,7 +86915,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":6,\"id\":false,\"name\":\"Sunset Limited\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":6,\"economyClass\":6,\"id\":false,\"name\":\"Unique Train 2024\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -87153,6 +87865,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v155_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"<img src=x onerror=alert('XSS')>\",\"name\":\"Silver Arrow\",\"economyClass\":7,\"confortClass\":5,\"averageSpeed\":200}}\nEnhanced Parameters: {confortClass=5, economyClass=7, name=Silver Arrow, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v155_fault_Root1_SPECIAL_CHARACTERS");
@@ -88287,6 +89007,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v157_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"-1\",\"name\":\"Golden Eagle\",\"economyClass\":1059033785,\"confortClass\":7,\"averageSpeed\":225}}\nEnhanced Parameters: {confortClass=50, economyClass=500, name=InvalidTrainType, averageSpeed=500}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v157_fault_Root1_SEMANTIC_MISMATCH");
@@ -88463,7 +89191,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":7,\"economyClass\":1059033785,\"id\":\"-1\",\"name\":\"Golden Eagle\"}";
+                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":7,\"economyClass\":1059033785,\"id\":\"-1\",\"name\":\"InvalidTrainType\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -88471,7 +89199,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":7,\"economyClass\":1059033785,\"id\":\"-1\",\"name\":\"Golden Eagle\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":7,\"economyClass\":1059033785,\"id\":\"-1\",\"name\":\"InvalidTrainType\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -88854,6 +89582,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v158_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"javascript:alert('XSS')\",\"name\":\"Mountain Runner\",\"economyClass\":12,\"confortClass\":4,\"averageSpeed\":270}}\nEnhanced Parameters: {confortClass=2, economyClass=5, name=G Train, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v158_fault_Root1_SPECIAL_CHARACTERS");
@@ -89030,7 +89766,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":4,\"economyClass\":12,\"id\":\"javascript:alert('XSS')\",\"name\":\"Mountain Runner\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":4,\"economyClass\":12,\"id\":\"javascript:alert('XSS')\",\"name\":\"G Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -89038,7 +89774,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":4,\"economyClass\":12,\"id\":\"javascript:alert('XSS')\",\"name\":\"Mountain Runner\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":4,\"economyClass\":12,\"id\":\"javascript:alert('XSS')\",\"name\":\"G Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -89988,6 +90724,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v160_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"999999\",\"name\":\"Twilight Express\",\"economyClass\":1,\"confortClass\":5,\"averageSpeed\":250}}\nEnhanced Parameters: {confortClass=3, economyClass=2, name=Sunrise Limited, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v160_fault_Root1_SEMANTIC_MISMATCH");
@@ -90164,7 +90908,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":1,\"id\":\"999999\",\"name\":\"Twilight Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":1,\"id\":\"999999\",\"name\":\"Sunrise Limited\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -90172,7 +90916,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":1,\"id\":\"999999\",\"name\":\"Twilight Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":1,\"id\":\"999999\",\"name\":\"Sunrise Limited\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -90555,6 +91299,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v161_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"<svg onload=alert('XSS')>\",\"name\":\"Valley Voyager\",\"economyClass\":5,\"confortClass\":10,\"averageSpeed\":175}}\nEnhanced Parameters: {confortClass=-1, economyClass=-1, name=, averageSpeed=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v161_fault_Root1_SPECIAL_CHARACTERS");
@@ -90731,7 +91483,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":10,\"economyClass\":5,\"id\":\"<svg onload=alert('XSS')>\",\"name\":\"Valley Voyager\"}";
+                        String requestBody1 = "{\"averageSpeed\":175,\"confortClass\":10,\"economyClass\":5,\"id\":\"<svg onload=alert('XSS')>\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -90739,7 +91491,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":10,\"economyClass\":5,\"id\":\"<svg onload=alert('XSS')>\",\"name\":\"Valley Voyager\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":175,\"confortClass\":10,\"economyClass\":5,\"id\":\"<svg onload=alert('XSS')>\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -91122,6 +91874,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v162_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=1, economyClass=1, name=InvalidTrain, averageSpeed=250}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v162_fault_Root1_SEMANTIC_MISMATCH");
@@ -91298,7 +92058,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":11,\"id\":\"abc\",\"name\":\"Pacific Coast\"}";
+                        String requestBody1 = "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":11,\"id\":\"abc\",\"name\":\"InvalidTrain\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -91306,7 +92066,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":11,\"id\":\"abc\",\"name\":\"Pacific Coast\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":275,\"confortClass\":6,\"economyClass\":11,\"id\":\"abc\",\"name\":\"InvalidTrain\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -91689,6 +92449,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v163_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"../../../etc/passwd\",\"name\":\"K-12 Express\",\"economyClass\":12,\"confortClass\":10,\"averageSpeed\":180}}\nEnhanced Parameters: {confortClass=15, economyClass=20, name=Z-99 Express, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v163_fault_Root1_SPECIAL_CHARACTERS");
@@ -91865,7 +92633,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":10,\"economyClass\":12,\"id\":\"../../../etc/passwd\",\"name\":\"K-12 Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":180,\"confortClass\":10,\"economyClass\":12,\"id\":\"../../../etc/passwd\",\"name\":\"Z-99 Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -91873,7 +92641,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":10,\"economyClass\":12,\"id\":\"../../../etc/passwd\",\"name\":\"K-12 Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":180,\"confortClass\":10,\"economyClass\":12,\"id\":\"../../../etc/passwd\",\"name\":\"Z-99 Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -92256,6 +93024,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v164_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"x\",\"name\":\"Lone Star\",\"economyClass\":6,\"confortClass\":3,\"averageSpeed\":180}}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=Lone Star, averageSpeed=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v164_fault_Root1_SEMANTIC_MISMATCH");
@@ -92823,6 +93599,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v165_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"name\":\"Morning Star\",\"economyClass\":1059033782,\"confortClass\":9,\"averageSpeed\":270}}\nEnhanced Parameters: {confortClass=50, economyClass=100, name=TestTrain, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v165_fault_Root1_SPECIAL_CHARACTERS");
@@ -92999,7 +93783,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033782,\"id\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"name\":\"Morning Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033782,\"id\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"name\":\"TestTrain\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -93007,7 +93791,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033782,\"id\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"name\":\"Morning Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":9,\"economyClass\":1059033782,\"id\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"name\":\"TestTrain\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -93390,6 +94174,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v166_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"1\",\"name\":\"Prairie Zephyr\",\"economyClass\":1059033784,\"confortClass\":12,\"averageSpeed\":225}}\nEnhanced Parameters: {confortClass=50, economyClass=100, name=Test Train, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v166_fault_Root1_SEMANTIC_MISMATCH");
@@ -93566,7 +94358,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":12,\"economyClass\":1059033784,\"id\":\"1\",\"name\":\"Prairie Zephyr\"}";
+                        String requestBody1 = "{\"averageSpeed\":225,\"confortClass\":12,\"economyClass\":1059033784,\"id\":\"1\",\"name\":\"Test Train\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -93574,7 +94366,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":12,\"economyClass\":1059033784,\"id\":\"1\",\"name\":\"Prairie Zephyr\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":225,\"confortClass\":12,\"economyClass\":1059033784,\"id\":\"1\",\"name\":\"Test Train\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -93957,6 +94749,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v167_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"%2e%2e%2f%2e%2e%2f\",\"name\":\"Pacific Coast\",\"economyClass\":9,\"confortClass\":9,\"averageSpeed\":350}}\nEnhanced Parameters: {confortClass=10, economyClass=10, name=New Coast, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v167_fault_Root1_SPECIAL_CHARACTERS");
@@ -94133,7 +94933,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":9,\"economyClass\":9,\"id\":\"%2e%2e%2f%2e%2e%2f\",\"name\":\"Pacific Coast\"}";
+                        String requestBody1 = "{\"averageSpeed\":350,\"confortClass\":9,\"economyClass\":9,\"id\":\"%2e%2e%2f%2e%2e%2f\",\"name\":\"New Coast\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -94141,7 +94941,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":9,\"economyClass\":9,\"id\":\"%2e%2e%2f%2e%2e%2f\",\"name\":\"Pacific Coast\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":350,\"confortClass\":9,\"economyClass\":9,\"id\":\"%2e%2e%2f%2e%2e%2f\",\"name\":\"New Coast\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -94524,6 +95324,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v168_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"a\",\"name\":\"Lone Star\",\"economyClass\":11,\"confortClass\":5,\"averageSpeed\":250}}\nEnhanced Parameters: {confortClass=10, economyClass=20, name=Gotham Express, averageSpeed=300}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v168_fault_Root1_SEMANTIC_MISMATCH");
@@ -94700,7 +95508,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":11,\"id\":\"a\",\"name\":\"Lone Star\"}";
+                        String requestBody1 = "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":11,\"id\":\"a\",\"name\":\"Gotham Express\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -94708,7 +95516,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":11,\"id\":\"a\",\"name\":\"Lone Star\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":250,\"confortClass\":5,\"economyClass\":11,\"id\":\"a\",\"name\":\"Gotham Express\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -95091,6 +95899,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v169_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"; ls -la\",\"name\":\"Lone Star\",\"economyClass\":6,\"confortClass\":5,\"averageSpeed\":0}}\nEnhanced Parameters: {confortClass=5, economyClass=6, name=Lone Star, averageSpeed=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v169_fault_Root1_SPECIAL_CHARACTERS");
@@ -95658,6 +96474,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v170_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"-\",\"name\":\"Lone Star\",\"economyClass\":1059033785,\"confortClass\":4,\"averageSpeed\":2}}\nEnhanced Parameters: {confortClass=4, economyClass=1059033785, name=Lone Star, averageSpeed=2}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v170_fault_Root1_SEMANTIC_MISMATCH");
@@ -96225,6 +97049,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v171_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"| cat /etc/passwd\",\"name\":\"K-12 Express\",\"economyClass\":12,\"confortClass\":9,\"averageSpeed\":200}}\nEnhanced Parameters: {confortClass=30, economyClass=50, name=New Unique Train Name, averageSpeed=250}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v171_fault_Root1_SPECIAL_CHARACTERS");
@@ -96401,7 +97233,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":12,\"id\":\"| cat /etc/passwd\",\"name\":\"K-12 Express\"}";
+                        String requestBody1 = "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":12,\"id\":\"| cat /etc/passwd\",\"name\":\"New Unique Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -96409,7 +97241,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":12,\"id\":\"| cat /etc/passwd\",\"name\":\"K-12 Express\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":200,\"confortClass\":9,\"economyClass\":12,\"id\":\"| cat /etc/passwd\",\"name\":\"New Unique Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -96792,6 +97624,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v172_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"?\",\"name\":\"Blue Streak\",\"economyClass\":3,\"confortClass\":13,\"averageSpeed\":160}}\nEnhanced Parameters: {confortClass=10, economyClass=5, name=Red Rocket, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v172_fault_Root1_SEMANTIC_MISMATCH");
@@ -96968,7 +97808,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":13,\"economyClass\":3,\"id\":\"?\",\"name\":\"Blue Streak\"}";
+                        String requestBody1 = "{\"averageSpeed\":160,\"confortClass\":13,\"economyClass\":3,\"id\":\"?\",\"name\":\"Red Rocket\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -96976,7 +97816,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":13,\"economyClass\":3,\"id\":\"?\",\"name\":\"Blue Streak\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":160,\"confortClass\":13,\"economyClass\":3,\"id\":\"?\",\"name\":\"Red Rocket\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -97359,6 +98199,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v173_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"create success\",\"data\":null}\nEnhanced Parameters: {confortClass=2, economyClass=3, name=Blue Streak, averageSpeed=200}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v173_fault_Root1_SPECIAL_CHARACTERS");
@@ -97926,6 +98774,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v174_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"$(cat /etc/passwd)\",\"name\":\"Blue Streak\",\"economyClass\":11,\"confortClass\":12,\"averageSpeed\":240}}\nEnhanced Parameters: {confortClass=0, economyClass=0, name=, averageSpeed=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v174_fault_Root1_SPECIAL_CHARACTERS");
@@ -98102,7 +98958,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":12,\"economyClass\":11,\"id\":\"$(cat /etc/passwd)\",\"name\":\"Blue Streak\"}";
+                        String requestBody1 = "{\"averageSpeed\":240,\"confortClass\":12,\"economyClass\":11,\"id\":\"$(cat /etc/passwd)\",\"name\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -98110,7 +98966,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":12,\"economyClass\":11,\"id\":\"$(cat /etc/passwd)\",\"name\":\"Blue Streak\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":240,\"confortClass\":12,\"economyClass\":11,\"id\":\"$(cat /etc/passwd)\",\"name\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()
@@ -98493,6 +99349,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v175_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\",\"name\":\"Lone Star\",\"economyClass\":9,\"confortClass\":10,\"averageSpeed\":2}}\nEnhanced Parameters: {confortClass=10, economyClass=9, name=Lone Star, averageSpeed=2}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v175_fault_Root1_SPECIAL_CHARACTERS");
@@ -99060,6 +99924,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v176_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"\\\\x00\\\\x01\\\\x02\",\"name\":\"Morning Star\",\"economyClass\":13,\"confortClass\":14,\"averageSpeed\":180}}\nEnhanced Parameters: {name=Morning Star}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v176_fault_Root1_SPECIAL_CHARACTERS");
@@ -99627,6 +100499,14 @@ public class Flow_Scenario_1752 {
 
     @Test
     public void test_negative_flow_S1752_v177_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [confortClass, economyClass, name, averageSpeed]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"train type already exist\",\"data\":{\"id\":\"\\u0000\\u0001\\u0002\",\"name\":\"Blue Streak\",\"economyClass\":14,\"confortClass\":5,\"averageSpeed\":270}}\nEnhanced Parameters: {confortClass=-1, economyClass=-1, name=Existing Train Name, averageSpeed=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1752_v177_fault_Root1_SPECIAL_CHARACTERS");
@@ -99803,7 +100683,7 @@ public class Flow_Scenario_1752 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":5,\"economyClass\":14,\"id\":\"\\u0000\\u0001\\u0002\",\"name\":\"Blue Streak\"}";
+                        String requestBody1 = "{\"averageSpeed\":270,\"confortClass\":5,\"economyClass\":14,\"id\":\"\\u0000\\u0001\\u0002\",\"name\":\"Existing Train Name\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -99811,7 +100691,7 @@ public class Flow_Scenario_1752 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":5,\"economyClass\":14,\"id\":\"\\u0000\\u0001\\u0002\",\"name\":\"Blue Streak\"}");
+                        allStepParameters.put("body", "{\"averageSpeed\":270,\"confortClass\":5,\"economyClass\":14,\"id\":\"\\u0000\\u0001\\u0002\",\"name\":\"Existing Train Name\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/trains")
                                .then().log().ifValidationFails()

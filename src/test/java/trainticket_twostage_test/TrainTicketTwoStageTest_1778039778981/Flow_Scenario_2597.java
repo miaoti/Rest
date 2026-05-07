@@ -895,6 +895,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v1() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"T12345\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {stayTime=5, name=G124, id=T12346}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v1");
@@ -1044,7 +1052,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"T12346\",\"name\":\"G124\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -1052,7 +1060,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"T12346\",\"name\":\"G124\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -1397,6 +1405,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v2() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"g123\",\"stayTime\":3}}\nEnhanced Parameters: {name=NewStationName}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v2");
@@ -1546,7 +1562,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"G123\",\"stayTime\":3}";
+                        String requestBody1 = "{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"NewStationName\",\"stayTime\":3}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -1554,7 +1570,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"G123\",\"stayTime\":3}");
+                        allStepParameters.put("body", "{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"NewStationName\",\"stayTime\":3}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -1899,6 +1915,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v3() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=g123}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v3");
@@ -2048,7 +2072,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"g123\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -2056,7 +2080,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"d693a2c5-ef87-4a3c-bef8-600b43f62c68\",\"name\":\"g123\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -2401,6 +2425,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v4() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"T12345\",\"name\":\"g123\",\"stayTime\":1}}\nEnhanced Parameters: {stayTime=2, name=g456, id=T67890}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v4");
@@ -2550,7 +2582,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":1}";
+                        String requestBody1 = "{\"id\":\"T67890\",\"name\":\"g456\",\"stayTime\":1}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -2558,7 +2590,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":1}");
+                        allStepParameters.put("body", "{\"id\":\"T67890\",\"name\":\"g456\",\"stayTime\":1}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -2903,6 +2935,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v5() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {stayTime=5, name=G124}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v5");
@@ -3052,7 +3092,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G124\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -3060,7 +3100,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G124\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -3405,6 +3445,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v6() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"T12345\",\"name\":\"g123\",\"stayTime\":2}}\nEnhanced Parameters: {stayTime=10, name=g_new_station, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v6");
@@ -3554,7 +3602,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":2}";
+                        String requestBody1 = "{\"id\":\"T99999\",\"name\":\"g_new_station\",\"stayTime\":2}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -3562,7 +3610,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":2}");
+                        allStepParameters.put("body", "{\"id\":\"T99999\",\"name\":\"g_new_station\",\"stayTime\":2}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -3907,6 +3955,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v7() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=g123}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v7");
@@ -4056,7 +4112,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"g123\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -4064,7 +4120,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"g123\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -4409,6 +4465,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v8() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"084837\",\"name\":\"g123\",\"stayTime\":4}}\nEnhanced Parameters: {stayTime=5, name=G124, id=084838}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v8");
@@ -4558,7 +4622,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"084837\",\"name\":\"G123\",\"stayTime\":4}";
+                        String requestBody1 = "{\"id\":\"084838\",\"name\":\"G124\",\"stayTime\":4}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -4566,7 +4630,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"084837\",\"name\":\"G123\",\"stayTime\":4}");
+                        allStepParameters.put("body", "{\"id\":\"084838\",\"name\":\"G124\",\"stayTime\":4}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -4911,6 +4975,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v9() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=G456, id=d4a5b6c7-8e9f-0a1b-2c3d-4e5f6a7b8c9d}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v9");
@@ -5060,7 +5132,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"d4a5b6c7-8e9f-0a1b-2c3d-4e5f6a7b8c9d\",\"name\":\"G456\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -5068,7 +5140,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"20eb7122-3a11-423f-b10a-be0dc5bce7db\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"d4a5b6c7-8e9f-0a1b-2c3d-4e5f6a7b8c9d\",\"name\":\"G456\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -5413,6 +5485,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v10() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=UniqueStationName}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v10");
@@ -5562,7 +5642,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"name\":\"UniqueStationName\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -5570,7 +5650,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"92708982-77af-4318-be25-57ccb0ff69ad\",\"name\":\"UniqueStationName\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -5915,6 +5995,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v11() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"g123\",\"stayTime\":6}}\nEnhanced Parameters: {stayTime=5, name=g123}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v11");
@@ -6064,7 +6152,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"G123\",\"stayTime\":6}";
+                        String requestBody1 = "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"g123\",\"stayTime\":6}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -6072,7 +6160,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"G123\",\"stayTime\":6}");
+                        allStepParameters.put("body", "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"g123\",\"stayTime\":6}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -6417,6 +6505,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v12() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"T12345\",\"name\":\"g123\",\"stayTime\":7}}\nEnhanced Parameters: {stayTime=10, name=g124, id=T12346}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v12");
@@ -6566,7 +6662,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":7}";
+                        String requestBody1 = "{\"id\":\"T12346\",\"name\":\"g124\",\"stayTime\":7}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -6574,7 +6670,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":7}");
+                        allStepParameters.put("body", "{\"id\":\"T12346\",\"name\":\"g124\",\"stayTime\":7}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -6919,6 +7015,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v13() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"T12345\",\"name\":\"g123\",\"stayTime\":8}}\nEnhanced Parameters: {stayTime=5, name=S2597_station, id=S2597}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v13");
@@ -7068,7 +7172,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":8}";
+                        String requestBody1 = "{\"id\":\"S2597\",\"name\":\"S2597_station\",\"stayTime\":8}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -7076,7 +7180,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":8}");
+                        allStepParameters.put("body", "{\"id\":\"S2597\",\"name\":\"S2597_station\",\"stayTime\":8}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -7421,6 +7525,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v14() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=g123}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v14");
@@ -7570,7 +7682,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"g123\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -7578,7 +7690,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"g123\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -7923,6 +8035,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v15() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=NewUniqueStationName, id=new-unique-id-12345}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v15");
@@ -8072,7 +8192,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"new-unique-id-12345\",\"name\":\"NewUniqueStationName\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -8080,7 +8200,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"0b23bd3e-876a-4af3-b920-c50a90c90b04\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"new-unique-id-12345\",\"name\":\"NewUniqueStationName\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -8425,6 +8545,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v16() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"g123\",\"stayTime\":9}}\nEnhanced Parameters: {name=G124}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v16");
@@ -8574,7 +8702,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G123\",\"stayTime\":9}";
+                        String requestBody1 = "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G124\",\"stayTime\":9}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -8582,7 +8710,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G123\",\"stayTime\":9}");
+                        allStepParameters.put("body", "{\"id\":\"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7\",\"name\":\"G124\",\"stayTime\":9}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -8927,6 +9055,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v17() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"T12345\",\"name\":\"g123\",\"stayTime\":10}}\nEnhanced Parameters: {stayTime=15, name=g456, id=T54321}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v17");
@@ -9076,7 +9212,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":10}";
+                        String requestBody1 = "{\"id\":\"T54321\",\"name\":\"g456\",\"stayTime\":10}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -9084,7 +9220,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"G123\",\"stayTime\":10}");
+                        allStepParameters.put("body", "{\"id\":\"T54321\",\"name\":\"g456\",\"stayTime\":10}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -9429,6 +9565,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v18() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"g123\",\"stayTime\":3}}\nEnhanced Parameters: {stayTime=4, name=g123}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v18");
@@ -9578,7 +9722,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"G123\",\"stayTime\":3}";
+                        String requestBody1 = "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"g123\",\"stayTime\":3}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -9586,7 +9730,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"G123\",\"stayTime\":3}");
+                        allStepParameters.put("body", "{\"id\":\"9fc9c261-3263-4bfa-82f8-bb44e06b2f52\",\"name\":\"g123\",\"stayTime\":3}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -9931,6 +10075,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v19() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"084837\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {stayTime=10, name=g124, id=084838}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v19");
@@ -10080,7 +10232,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"084837\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"084838\",\"name\":\"g124\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -10088,7 +10240,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"084837\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"084838\",\"name\":\"g124\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -10433,6 +10585,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_positive_flow_S2597_v20() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [name, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":0,\"msg\":\"Already exists\",\"data\":{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"g123\",\"stayTime\":5}}\nEnhanced Parameters: {name=g124, id=aefcef3f-3f42-46e8-afd7-6cb2a928bd4e}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S2597_v20");
@@ -10582,7 +10742,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"G123\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd4e\",\"name\":\"g124\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -10590,7 +10750,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd3d\",\"name\":\"G123\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"aefcef3f-3f42-46e8-afd7-6cb2a928bd4e\",\"name\":\"g124\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -33135,6 +33295,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_negative_flow_S2597_v61_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Create success\",\"data\":{\"id\":\"T12345\",\"name\":\"nonexistentname\",\"stayTime\":5}}\nEnhanced Parameters: {stayTime=0, id=T99999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S2597_v61_fault_Root1_SEMANTIC_MISMATCH");
@@ -33299,7 +33467,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"T12345\",\"name\":\"NonExistentName\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"T99999\",\"name\":\"NonExistentName\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -33307,7 +33475,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"T12345\",\"name\":\"NonExistentName\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"T99999\",\"name\":\"NonExistentName\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -34800,6 +34968,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_negative_flow_S2597_v64_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Create success\",\"data\":{\"id\":\"T12345\",\"name\":\"fakename123\",\"stayTime\":10}}\nEnhanced Parameters: {stayTime=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S2597_v64_fault_Root1_SEMANTIC_MISMATCH");
@@ -36465,6 +36641,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_negative_flow_S2597_v67_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, id]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Create success\",\"data\":{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"xyz\",\"stayTime\":5}}\nEnhanced Parameters: {stayTime=-1, id=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S2597_v67_fault_Root1_SEMANTIC_MISMATCH");
@@ -36629,7 +36813,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"xyz\",\"stayTime\":5}";
+                        String requestBody1 = "{\"id\":\"\",\"name\":\"xyz\",\"stayTime\":5}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -36637,7 +36821,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"a3f256c1-0e43-4f7d-9c21-121bf258101f\",\"name\":\"xyz\",\"stayTime\":5}");
+                        allStepParameters.put("body", "{\"id\":\"\",\"name\":\"xyz\",\"stayTime\":5}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()
@@ -61440,6 +61624,14 @@ public class Flow_Scenario_2597 {
 
     @Test
     public void test_negative_flow_S2597_v112_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [stayTime, name]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Create success\",\"data\":{\"id\":\"x\",\"name\":\"g123\",\"stayTime\":10}}\nEnhanced Parameters: {stayTime=0, name=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S2597_v112_fault_Root1_SEMANTIC_MISMATCH");
@@ -61604,7 +61796,7 @@ public class Flow_Scenario_2597 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"id\":\"x\",\"name\":\"G123\",\"stayTime\":10}";
+                        String requestBody1 = "{\"id\":\"x\",\"name\":\"\",\"stayTime\":10}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -61612,7 +61804,7 @@ public class Flow_Scenario_2597 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"id\":\"x\",\"name\":\"G123\",\"stayTime\":10}");
+                        allStepParameters.put("body", "{\"id\":\"x\",\"name\":\"\",\"stayTime\":10}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/adminbasicservice/adminbasic/stations")
                                .then().log().ifValidationFails()

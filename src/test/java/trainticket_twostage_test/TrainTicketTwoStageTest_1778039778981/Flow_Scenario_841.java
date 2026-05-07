@@ -1397,6 +1397,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_positive_flow_S841_v2() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, startPlace, endPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-11-20, startPlace=Shanghai, endPlace=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_positive_flow_S841_v2");
@@ -1546,7 +1554,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"Shanghai\",\"startPlace\":\"shanghai\"}";
+                        String requestBody1 = "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"Shanghai\",\"startPlace\":\"Shanghai\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -1554,7 +1562,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"Shanghai\",\"startPlace\":\"shanghai\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"Shanghai\",\"startPlace\":\"Shanghai\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -32580,6 +32588,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v60_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [startPlace, endPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {startPlace=Shanghai, endPlace=Beijing}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v60_fault_Root1_SPECIAL_CHARACTERS");
@@ -32744,7 +32760,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"\\u0000\\u0001\\u0002\",\"endPlace\":\"Chongqing\",\"startPlace\":\"Nanjing\"}";
+                        String requestBody1 = "{\"departureTime\":\"\\u0000\\u0001\\u0002\",\"endPlace\":\"Beijing\",\"startPlace\":\"Shanghai\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -32752,7 +32768,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"\\u0000\\u0001\\u0002\",\"endPlace\":\"Chongqing\",\"startPlace\":\"Nanjing\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"\\u0000\\u0001\\u0002\",\"endPlace\":\"Beijing\",\"startPlace\":\"Shanghai\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -38685,6 +38701,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v71_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, endPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-10-31, endPlace=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v71_fault_Root1_TYPE_MISMATCH");
@@ -38849,7 +38873,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"Suzhou\",\"startPlace\":3.14159}";
+                        String requestBody1 = "{\"departureTime\":\"2025-10-31\",\"endPlace\":\"Shanghai\",\"startPlace\":3.14159}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -38857,7 +38881,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"Suzhou\",\"startPlace\":3.14159}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-10-31\",\"endPlace\":\"Shanghai\",\"startPlace\":3.14159}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -40905,6 +40929,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v75_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, endPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-11-01, endPlace=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v75_fault_Root1_TYPE_MISMATCH");
@@ -41069,7 +41101,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2026-05-05\",\"endPlace\":\"Kunming\",\"startPlace\":true}";
+                        String requestBody1 = "{\"departureTime\":\"2025-11-01\",\"endPlace\":\"Shanghai\",\"startPlace\":true}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -41077,7 +41109,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-05\",\"endPlace\":\"Kunming\",\"startPlace\":true}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-01\",\"endPlace\":\"Shanghai\",\"startPlace\":true}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -42570,6 +42602,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v78_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, endPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-11-20, endPlace=shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v78_fault_Root1_TYPE_MISMATCH");
@@ -42734,7 +42774,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"shenzhen\",\"startPlace\":false}";
+                        String requestBody1 = "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"shanghai\",\"startPlace\":false}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -42742,7 +42782,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"shenzhen\",\"startPlace\":false}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-20\",\"endPlace\":\"shanghai\",\"startPlace\":false}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -48120,6 +48160,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v88_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, endPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-11-02, endPlace=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v88_fault_Root1_SPECIAL_CHARACTERS");
@@ -48284,7 +48332,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2025-11-02\",\"endPlace\":\"Chengdu\",\"startPlace\":\"../../../etc/passwd\"}";
+                        String requestBody1 = "{\"departureTime\":\"2025-11-02\",\"endPlace\":\"Shanghai\",\"startPlace\":\"../../../etc/passwd\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -48292,7 +48340,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-02\",\"endPlace\":\"Chengdu\",\"startPlace\":\"../../../etc/passwd\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-02\",\"endPlace\":\"Shanghai\",\"startPlace\":\"../../../etc/passwd\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -60330,6 +60378,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v110_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, startPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2026-05-01, startPlace=invalid_place}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v110_fault_Root1_SEMANTIC_MISMATCH");
@@ -60494,7 +60550,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"XX\",\"startPlace\":\"tianjin\"}";
+                        String requestBody1 = "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"XX\",\"startPlace\":\"invalid_place\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -60502,7 +60558,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"XX\",\"startPlace\":\"tianjin\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"XX\",\"startPlace\":\"invalid_place\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -63660,6 +63716,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v116_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, startPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-11-01, startPlace=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v116_fault_Root1_SPECIAL_CHARACTERS");
@@ -63824,7 +63888,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2026-05-05\",\"endPlace\":\"' UNION SELECT * FROM passwords --\",\"startPlace\":\"Shenzhen\"}";
+                        String requestBody1 = "{\"departureTime\":\"2025-11-01\",\"endPlace\":\"' UNION SELECT * FROM passwords --\",\"startPlace\":\"Shanghai\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -63832,7 +63896,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-05\",\"endPlace\":\"' UNION SELECT * FROM passwords --\",\"startPlace\":\"Shenzhen\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-11-01\",\"endPlace\":\"' UNION SELECT * FROM passwords --\",\"startPlace\":\"Shanghai\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -64770,6 +64834,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v118_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [startPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {startPlace=Shanghai}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v118_fault_Root1_SEMANTIC_MISMATCH");
@@ -64934,7 +65006,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2025-10-01\",\"endPlace\":\"FakeTown12345\",\"startPlace\":\"Chengdu\"}";
+                        String requestBody1 = "{\"departureTime\":\"2025-10-01\",\"endPlace\":\"FakeTown12345\",\"startPlace\":\"Shanghai\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -64942,7 +65014,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2025-10-01\",\"endPlace\":\"FakeTown12345\",\"startPlace\":\"Chengdu\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-10-01\",\"endPlace\":\"FakeTown12345\",\"startPlace\":\"Shanghai\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -70320,6 +70392,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v128_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, startPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-10-31, startPlace=nanjing}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v128_fault_Root1_SPECIAL_CHARACTERS");
@@ -70484,7 +70564,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"<svg onload=alert('XSS')>\",\"startPlace\":\"chengdu\"}";
+                        String requestBody1 = "{\"departureTime\":\"2025-10-31\",\"endPlace\":\"<svg onload=alert('XSS')>\",\"startPlace\":\"nanjing\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -70492,7 +70572,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"<svg onload=alert('XSS')>\",\"startPlace\":\"chengdu\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-10-31\",\"endPlace\":\"<svg onload=alert('XSS')>\",\"startPlace\":\"nanjing\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()
@@ -70875,6 +70955,14 @@ public class Flow_Scenario_841 {
 
     @Test
     public void test_negative_flow_S841_v129_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [departureTime, startPlace]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {departureTime=2025-05-01, startPlace=null}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S841_v129_fault_Root1_SEMANTIC_MISMATCH");
@@ -71039,7 +71127,7 @@ public class Flow_Scenario_841 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"NullPlace\",\"startPlace\":\"shanghai\"}";
+                        String requestBody1 = "{\"departureTime\":\"2025-05-01\",\"endPlace\":\"NullPlace\",\"startPlace\":\"null\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -71047,7 +71135,7 @@ public class Flow_Scenario_841 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"departureTime\":\"2026-05-01\",\"endPlace\":\"NullPlace\",\"startPlace\":\"shanghai\"}");
+                        allStepParameters.put("body", "{\"departureTime\":\"2025-05-01\",\"endPlace\":\"NullPlace\",\"startPlace\":\"null\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/travelservice/trips/left")
                                .then().log().ifValidationFails()

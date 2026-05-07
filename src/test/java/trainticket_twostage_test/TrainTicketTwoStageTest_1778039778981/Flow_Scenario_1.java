@@ -11655,6 +11655,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v21_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, loginId=, boughtDateEnd=, enableTravelDateQuery=false, travelDateEnd=, state=, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v21_fault_Root1_OVERFLOW");
@@ -11855,7 +11863,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":3,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":3,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -11863,7 +11871,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":3,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":3,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -12246,6 +12254,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v22_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=admin, enableBoughtDateQuery=true, boughtDateEnd=2026-05-29, enableStateQuery=true, enableTravelDateQuery=false, travelDateEnd=2026-05-26, state=2, travelDateStart=2026-05-11}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v22_fault_Root1_SPECIAL_CHARACTERS");
@@ -12446,7 +12462,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"' OR '1'='1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":3,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-29\",\"boughtDateStart\":\"' OR '1'='1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":3,\"travelDateEnd\":\"2026-05-26\",\"travelDateStart\":\"2026-05-11\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -12454,7 +12470,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"' OR '1'='1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":3,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-29\",\"boughtDateStart\":\"' OR '1'='1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":3,\"travelDateEnd\":\"2026-05-26\",\"travelDateStart\":\"2026-05-11\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -12837,6 +12853,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v23_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v23_fault_Root1_TYPE_MISMATCH");
@@ -13428,6 +13452,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v24_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v24_fault_Root1_SEMANTIC_MISMATCH");
@@ -14019,6 +14051,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v25_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, enableTravelDateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v25_fault_Root1_OVERFLOW");
@@ -14610,6 +14650,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v26_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=invalid_user, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2025-12-31, state=0, travelDateStart=2025-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v26_fault_Root1_SPECIAL_CHARACTERS");
@@ -14810,7 +14858,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"'; DROP TABLE users; --\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":1,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"'; DROP TABLE users; --\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":1,\"travelDateEnd\":\"2025-12-31\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -14818,7 +14866,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"'; DROP TABLE users; --\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":1,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"'; DROP TABLE users; --\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":1,\"travelDateEnd\":\"2025-12-31\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -15201,6 +15249,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v27_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateEnd, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateEnd=2025-05-25, travelDateEnd=2025-05-25, travelDateStart=2025-06-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v27_fault_Root1_TYPE_MISMATCH");
@@ -15401,7 +15457,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":-999,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-05-25\",\"boughtDateStart\":-999,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2025-05-25\",\"travelDateStart\":\"2025-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -15409,7 +15465,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":-999,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-05-25\",\"boughtDateStart\":-999,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2025-05-25\",\"travelDateStart\":\"2025-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -15792,6 +15848,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v28_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v28_fault_Root1_SEMANTIC_MISMATCH");
@@ -16383,6 +16447,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v29_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v29_fault_Root1_OVERFLOW");
@@ -16974,6 +17046,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v30_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, boughtDateEnd, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=invalid_user, enableStateQuery=false, enableTravelDateQuery=false, boughtDateEnd=invalid-date, travelDateEnd=invalid-date, state=-1, travelDateStart=invalid-date}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v30_fault_Root1_SPECIAL_CHARACTERS");
@@ -17174,7 +17254,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"1; DELETE FROM users WHERE 1=1\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":2,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"1; DELETE FROM users WHERE 1=1\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":2,\"travelDateEnd\":\"invalid-date\",\"travelDateStart\":\"invalid-date\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -17182,7 +17262,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"1; DELETE FROM users WHERE 1=1\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":2,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"1; DELETE FROM users WHERE 1=1\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":2,\"travelDateEnd\":\"invalid-date\",\"travelDateStart\":\"invalid-date\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -17565,6 +17645,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v31_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=false, state=7}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v31_fault_Root1_TYPE_MISMATCH");
@@ -18156,6 +18244,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v32_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, loginId=support_agent, boughtDateEnd=, enableStateQuery=true, enableTravelDateQuery=false, travelDateEnd=, state=5, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v32_fault_Root1_SEMANTIC_MISMATCH");
@@ -18356,7 +18452,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"x\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":5,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"x\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":5,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -18364,7 +18460,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"x\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":5,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"x\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":5,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -18747,6 +18843,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v33_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, loginId=invalid_user, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v33_fault_Root1_OVERFLOW");
@@ -18947,7 +19051,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":1,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":1,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -18955,7 +19059,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":1,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":1,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -19338,6 +19442,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v34_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=admin, boughtDateEnd=2026-05-20, enableStateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v34_fault_Root1_SPECIAL_CHARACTERS");
@@ -19538,7 +19650,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"' UNION SELECT * FROM passwords --\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":91,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"' UNION SELECT * FROM passwords --\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":91,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -19546,7 +19658,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"' UNION SELECT * FROM passwords --\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":91,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"' UNION SELECT * FROM passwords --\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":91,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -19929,6 +20041,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v35_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=testuser1, boughtDateEnd=2025-06-01, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-25, state=89, travelDateStart=2026-05-18}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v35_fault_Root1_TYPE_MISMATCH");
@@ -20520,6 +20640,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v36_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, travelDateEnd=2026-05-04 17:51:52, state=0, travelDateStart=2026-05-04 17:51:52}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v36_fault_Root1_SEMANTIC_MISMATCH");
@@ -20720,7 +20848,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":91,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":91,\"travelDateEnd\":\"2026-05-04 17:51:52\",\"travelDateStart\":\"2026-05-04 17:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -20728,7 +20856,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":91,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":91,\"travelDateEnd\":\"2026-05-04 17:51:52\",\"travelDateStart\":\"2026-05-04 17:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -21111,6 +21239,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v37_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {travelDateEnd=2026-05-05, travelDateStart=2026-05-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v37_fault_Root1_SPECIAL_CHARACTERS");
@@ -21311,7 +21447,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"<script>alert('XSS')</script>\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":89,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-12\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"<script>alert('XSS')</script>\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":89,\"travelDateEnd\":\"2026-05-05\",\"travelDateStart\":\"2026-05-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -21319,7 +21455,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"<script>alert('XSS')</script>\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":89,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-12\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"<script>alert('XSS')</script>\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":89,\"travelDateEnd\":\"2026-05-05\",\"travelDateStart\":\"2026-05-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -21702,6 +21838,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v38_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=, boughtDateEnd=2026-05-10, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-05-06, state=90, travelDateStart=2026-05-08}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v38_fault_Root1_TYPE_MISMATCH");
@@ -21902,7 +22046,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":false,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":90,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":false,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":90,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-08\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -21910,7 +22054,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":false,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":90,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":false,\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":90,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-08\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -22293,6 +22437,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v39_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=guest, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-27, state=6, travelDateStart=2026-05-08}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v39_fault_Root1_SEMANTIC_MISMATCH");
@@ -22884,6 +23036,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v40_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=jane.smith, boughtDateEnd=2026-06-01, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-10, state=89, travelDateStart=2026-05-30}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v40_fault_Root1_SPECIAL_CHARACTERS");
@@ -24066,6 +24226,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v42_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v42_fault_Root1_SEMANTIC_MISMATCH");
@@ -24657,6 +24825,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v43_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-10, state=1, travelDateStart=2026-05-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v43_fault_Root1_SPECIAL_CHARACTERS");
@@ -24857,7 +25033,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"javascript:alert('XSS')\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":0,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"javascript:alert('XSS')\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":0,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -24865,7 +25041,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"javascript:alert('XSS')\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":0,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"javascript:alert('XSS')\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":0,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -25839,6 +26015,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v45_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=invalid_user}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v45_fault_Root1_SEMANTIC_MISMATCH");
@@ -26039,7 +26223,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"a\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":93,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-12\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"a\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":93,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-12\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -26047,7 +26231,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"a\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":93,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-12\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"a\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":93,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-12\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -26430,6 +26614,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v46_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=false, state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v46_fault_Root1_SPECIAL_CHARACTERS");
@@ -27021,6 +27213,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v47_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v47_fault_Root1_SEMANTIC_MISMATCH");
@@ -27612,6 +27812,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v48_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=admin_user, state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v48_fault_Root1_SPECIAL_CHARACTERS");
@@ -27812,7 +28020,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"../../../etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-28\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"../../../etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin_user\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-28\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -27820,7 +28028,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"../../../etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-28\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"../../../etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin_user\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-28\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -28203,6 +28411,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v49_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, boughtDateEnd, enableStateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, boughtDateEnd=2023-05-20, enableStateQuery=false, travelDateEnd=2023-05-20 10:00:00, state=1, travelDateStart=2023-05-20 08:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v49_fault_Root1_SEMANTIC_MISMATCH");
@@ -28403,7 +28619,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":89,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-05-20\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":89,\"travelDateEnd\":\"2023-05-20 10:00:00\",\"travelDateStart\":\"2023-05-20 08:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -28411,7 +28627,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":89,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-05-20\",\"boughtDateStart\":\"1\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":89,\"travelDateEnd\":\"2023-05-20 10:00:00\",\"travelDateStart\":\"2023-05-20 08:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -28794,6 +29010,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v50_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=false, state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v50_fault_Root1_SPECIAL_CHARACTERS");
@@ -29385,6 +29609,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v51_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=api_test, boughtDateEnd=2026-06-04, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-05-25, state=3, travelDateStart=2026-05-18}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v51_fault_Root1_SEMANTIC_MISMATCH");
@@ -29976,6 +30208,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v52_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v52_fault_Root1_SPECIAL_CHARACTERS");
@@ -30567,6 +30807,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v53_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, boughtDateEnd=2025-02-28}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v53_fault_Root1_SEMANTIC_MISMATCH");
@@ -31158,6 +31406,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v54_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=customer123, boughtDateEnd=2025-06-01, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-06, state=0, travelDateStart=2026-06-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v54_fault_Root1_SPECIAL_CHARACTERS");
@@ -31749,6 +32005,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v55_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, boughtDateEnd=2026-05-06}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v55_fault_Root1_SEMANTIC_MISMATCH");
@@ -32340,6 +32604,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v56_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, boughtDateEnd, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=false, boughtDateEnd=2026-05-15, travelDateEnd=2026-06-10, travelDateStart=2026-06-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v56_fault_Root1_SPECIAL_CHARACTERS");
@@ -32540,7 +32812,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"| cat /etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"| cat /etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":3,\"travelDateEnd\":\"2026-06-10\",\"travelDateStart\":\"2026-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -32548,7 +32820,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"| cat /etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"| cat /etc/passwd\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":3,\"travelDateEnd\":\"2026-06-10\",\"travelDateStart\":\"2026-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -32931,6 +33203,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v57_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, loginId=nonexistent_user, boughtDateEnd=invalid-date}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v57_fault_Root1_SPECIAL_CHARACTERS");
@@ -33131,7 +33411,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"`whoami`\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":4,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"`whoami`\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"nonexistent_user\",\"state\":4,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -33139,7 +33419,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"`whoami`\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":4,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"`whoami`\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"nonexistent_user\",\"state\":4,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -33522,6 +33802,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v58_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v58_fault_Root1_SPECIAL_CHARACTERS");
@@ -34113,6 +34401,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v59_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableTravelDateQuery=false, enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v59_fault_Root1_SPECIAL_CHARACTERS");
@@ -34704,6 +35000,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v60_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, boughtDateEnd=2024-12-31, enableTravelDateQuery=false, travelDateEnd=2025-06-01, state=0, travelDateStart=2025-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v60_fault_Root1_SPECIAL_CHARACTERS");
@@ -34904,7 +35208,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"\\\\x00\\\\x01\\\\x02\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"\\\\x00\\\\x01\\\\x02\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2025-06-01\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -34912,7 +35216,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"\\\\x00\\\\x01\\\\x02\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"\\\\x00\\\\x01\\\\x02\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2025-06-01\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -35295,6 +35599,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v61_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=false, travelDateEnd=, state=0, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v61_fault_Root1_SPECIAL_CHARACTERS");
@@ -35495,7 +35807,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"\\u0000\\u0001\\u0002\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":4,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"\\u0000\\u0001\\u0002\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":4,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -35503,7 +35815,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"\\u0000\\u0001\\u0002\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":4,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"\\u0000\\u0001\\u0002\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":4,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -37659,6 +37971,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v65_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-08-14, boughtDateEnd=2023-06-04}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v65_fault_Root1_TYPE_MISMATCH");
@@ -37859,7 +38179,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":1,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"loadtest\",\"state\":2,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-06-04\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":1,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"loadtest\",\"state\":2,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-20\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -37867,7 +38187,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":1,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"loadtest\",\"state\":2,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-06-04\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":1,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"loadtest\",\"state\":2,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-20\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -38250,6 +38570,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v66_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, loginId, boughtDateEnd, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=, loginId=, boughtDateEnd=, travelDateEnd=, state=, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v66_fault_Root1_TYPE_MISMATCH");
@@ -38450,7 +38778,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":0,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":7,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":0,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":7,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -38458,7 +38786,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":0,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":7,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":0,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":7,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -38841,6 +39169,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v67_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=invalid-date, boughtDateEnd=invalid-date}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v67_fault_Root1_TYPE_MISMATCH");
@@ -39041,7 +39377,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":-1,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":0,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":-1,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":0,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-30\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -39049,7 +39385,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":-1,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":0,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":-1,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":0,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-30\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -40023,6 +40359,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v69_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=invalid, state=abc}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v69_fault_Root1_TYPE_MISMATCH");
@@ -40614,6 +40958,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v70_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v70_fault_Root1_OVERFLOW");
@@ -41205,6 +41557,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v71_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=, enableBoughtDateQuery=false, boughtDateEnd=, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=, state=0, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v71_fault_Root1_SPECIAL_CHARACTERS");
@@ -41405,7 +41765,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"' OR '1'='1\",\"state\":4,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"' OR '1'='1\",\"state\":4,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -41413,7 +41773,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"' OR '1'='1\",\"state\":4,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"' OR '1'='1\",\"state\":4,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -41796,6 +42156,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v72_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-02-28, enableBoughtDateQuery=true, boughtDateEnd=2026-05-25, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-05-25, state=1, travelDateStart=2026-05-10}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v72_fault_Root1_TYPE_MISMATCH");
@@ -41996,7 +42364,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":12345,\"state\":0,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2025-02-28\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":12345,\"state\":0,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2026-05-10\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -42004,7 +42372,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":12345,\"state\":0,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2025-02-28\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":12345,\"state\":0,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2026-05-10\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -42387,6 +42755,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v73_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, travelDateEnd=2026-12-31, travelDateStart=2026-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v73_fault_Root1_SEMANTIC_MISMATCH");
@@ -42587,7 +42963,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"X\",\"state\":3,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-25\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"X\",\"state\":3,\"travelDateEnd\":\"2026-12-31\",\"travelDateStart\":\"2026-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -42595,7 +42971,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"X\",\"state\":3,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-25\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"X\",\"state\":3,\"travelDateEnd\":\"2026-12-31\",\"travelDateStart\":\"2026-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -42978,6 +43354,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v74_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v74_fault_Root1_OVERFLOW");
@@ -43569,6 +43953,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v75_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, enableBoughtDateQuery=true, boughtDateEnd=2026-05-10, enableTravelDateQuery=false, travelDateEnd=2026-06-15, travelDateStart=2026-05-15, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v75_fault_Root1_SPECIAL_CHARACTERS");
@@ -43769,7 +44161,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"'; DROP TABLE users; --\",\"state\":4,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-15\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"'; DROP TABLE users; --\",\"state\":4,\"travelDateEnd\":\"2026-06-15\",\"travelDateStart\":\"2026-05-15\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -43777,7 +44169,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"'; DROP TABLE users; --\",\"state\":4,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-15\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"'; DROP TABLE users; --\",\"state\":4,\"travelDateEnd\":\"2026-06-15\",\"travelDateStart\":\"2026-05-15\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -44160,6 +44552,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v76_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"9180c1e4-3a17-4393-9f87-8f3ed1c94a96\",\"boughtDate\":\"2026-05-14\",\"travelDate\":\"2026-05-07\",\"travelTime\":\"22:55:00\",\"accountId\":\"-999\",\"contactsName\":\"6EgzRjkP...\nEnhanced Parameters: {enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v76_fault_Root1_TYPE_MISMATCH");
@@ -44751,6 +45151,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v77_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, boughtDateEnd=2026-05-30, travelDateEnd=2026-05-20, travelDateStart=2026-05-15}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v77_fault_Root1_SEMANTIC_MISMATCH");
@@ -44951,7 +45359,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"AB\",\"state\":3,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-15\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"AB\",\"state\":3,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-15\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -44959,7 +45367,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"AB\",\"state\":3,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-15\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"AB\",\"state\":3,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-15\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -45342,6 +45750,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v78_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-20, boughtDateEnd=2026-06-04, travelDateEnd=2026-06-01, travelDateStart=2026-05-06, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v78_fault_Root1_OVERFLOW");
@@ -45542,7 +45958,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"state\":89,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-06\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"state\":89,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-06\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -45550,7 +45966,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"state\":89,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-06\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"state\":89,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-06\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -45933,6 +46349,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v79_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-05-20, enableBoughtDateQuery=true, boughtDateEnd=2025-05-25, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2025-05-22, state=2, travelDateStart=2025-05-20}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v79_fault_Root1_SPECIAL_CHARACTERS");
@@ -46133,7 +46557,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"1; DELETE FROM users WHERE 1=1\",\"state\":0,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-05-25\",\"boughtDateStart\":\"2025-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"1; DELETE FROM users WHERE 1=1\",\"state\":0,\"travelDateEnd\":\"2025-05-22\",\"travelDateStart\":\"2025-05-20\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -46141,7 +46565,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"1; DELETE FROM users WHERE 1=1\",\"state\":0,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-05-25\",\"boughtDateStart\":\"2025-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"1; DELETE FROM users WHERE 1=1\",\"state\":0,\"travelDateEnd\":\"2025-05-22\",\"travelDateStart\":\"2025-05-20\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -46524,6 +46948,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v80_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v80_fault_Root1_TYPE_MISMATCH");
@@ -47115,6 +47547,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v81_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v81_fault_Root1_SEMANTIC_MISMATCH");
@@ -47706,6 +48146,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v82_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, boughtDateEnd=2024-12-31, travelDateEnd=2024-12-31, state=0, travelDateStart=2024-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v82_fault_Root1_OVERFLOW");
@@ -47906,7 +48354,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"state\":5,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"state\":5,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -47914,7 +48362,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"state\":5,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"state\":5,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -48297,6 +48745,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v83_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-10, enableBoughtDateQuery=false, boughtDateEnd=2026-05-15, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-04 23:59:59, state=0, travelDateStart=2026-05-04 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v83_fault_Root1_SPECIAL_CHARACTERS");
@@ -48497,7 +48953,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"' UNION SELECT * FROM passwords --\",\"state\":3,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"' UNION SELECT * FROM passwords --\",\"state\":3,\"travelDateEnd\":\"2026-05-04 23:59:59\",\"travelDateStart\":\"2026-05-04 00:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -48505,7 +48961,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"' UNION SELECT * FROM passwords --\",\"state\":3,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"' UNION SELECT * FROM passwords --\",\"state\":3,\"travelDateEnd\":\"2026-05-04 23:59:59\",\"travelDateStart\":\"2026-05-04 00:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -49479,6 +49935,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v85_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, boughtDateEnd=2024-12-31}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v85_fault_Root1_SEMANTIC_MISMATCH");
@@ -49679,7 +50143,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"NonExistentLoginId\",\"state\":0,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"NonExistentLoginId\",\"state\":0,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-30\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -49687,7 +50151,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"NonExistentLoginId\",\"state\":0,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"NonExistentLoginId\",\"state\":0,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-30\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -50070,6 +50534,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v86_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, enableBoughtDateQuery=true, boughtDateEnd=2026-05-10, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-05-10 17:51:52, state=0, travelDateStart=2026-05-01 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v86_fault_Root1_SPECIAL_CHARACTERS");
@@ -50270,7 +50742,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"<script>alert('XSS')</script>\",\"state\":90,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"<script>alert('XSS')</script>\",\"state\":90,\"travelDateEnd\":\"2026-05-10 17:51:52\",\"travelDateStart\":\"2026-05-01 00:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -50278,7 +50750,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"<script>alert('XSS')</script>\",\"state\":90,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"<script>alert('XSS')</script>\",\"state\":90,\"travelDateEnd\":\"2026-05-10 17:51:52\",\"travelDateStart\":\"2026-05-01 00:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -50661,6 +51133,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v87_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, enableTravelDateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v87_fault_Root1_TYPE_MISMATCH");
@@ -51252,6 +51732,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v88_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, boughtDateEnd=2026-05-10, travelDateEnd=2026-06-10, travelDateStart=2026-06-01, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v88_fault_Root1_SEMANTIC_MISMATCH");
@@ -51452,7 +51940,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"FakeUser999\",\"state\":2,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-06\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"FakeUser999\",\"state\":2,\"travelDateEnd\":\"2026-06-10\",\"travelDateStart\":\"2026-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -51460,7 +51948,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"FakeUser999\",\"state\":2,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-06\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"FakeUser999\",\"state\":2,\"travelDateEnd\":\"2026-06-10\",\"travelDateStart\":\"2026-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -51843,6 +52331,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v89_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, boughtDateEnd=2025-12-31, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2025-12-31 23:59:59, state=0, travelDateStart=2025-01-01 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v89_fault_Root1_SPECIAL_CHARACTERS");
@@ -52043,7 +52539,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"<img src=x onerror=alert('XSS')>\",\"state\":89,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"<img src=x onerror=alert('XSS')>\",\"state\":89,\"travelDateEnd\":\"2025-12-31 23:59:59\",\"travelDateStart\":\"2025-01-01 00:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -52051,7 +52547,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"<img src=x onerror=alert('XSS')>\",\"state\":89,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"<img src=x onerror=alert('XSS')>\",\"state\":89,\"travelDateEnd\":\"2025-12-31 23:59:59\",\"travelDateStart\":\"2025-01-01 00:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -53025,6 +53521,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v91_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"9934a4b2-27c7-4bc5-b119-1906427b95c9\",\"boughtDate\":\"2026-05-13\",\"travelDate\":\"2026-05-15\",\"travelTime\":\"20:10:00\",\"accountId\":\"a\",\"contactsName\":\"6EgzRjkP2N\"...\nEnhanced Parameters: {boughtDateStart=2026-06-01, enableBoughtDateQuery=false, boughtDateEnd=2026-06-04, enableTravelDateQuery=true, travelDateEnd=2026-05-28, travelDateStart=2026-05-12, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v91_fault_Root1_SEMANTIC_MISMATCH");
@@ -53225,7 +53729,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":90,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-12\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2026-06-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":90,\"travelDateEnd\":\"2026-05-28\",\"travelDateStart\":\"2026-05-12\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -53233,7 +53737,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":90,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-12\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2026-06-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":90,\"travelDateEnd\":\"2026-05-28\",\"travelDateStart\":\"2026-05-12\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -53616,6 +54120,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v92_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false, travelDateEnd=, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v92_fault_Root1_SPECIAL_CHARACTERS");
@@ -53816,7 +54328,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"javascript:alert('XSS')\",\"state\":93,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"javascript:alert('XSS')\",\"state\":93,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -53824,7 +54336,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"javascript:alert('XSS')\",\"state\":93,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"javascript:alert('XSS')\",\"state\":93,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -54798,6 +55310,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v94_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"8a17ec87-f703-4bd8-b09b-4bc955e5f4c3\",\"boughtDate\":\"2026-04-24T15:35:48Z\",\"travelDate\":\"2026-04-28\",\"travelTime\":\"14:37:31\",\"accountId\":\"0\",\"contactsName\":\"J...\nEnhanced Parameters: {enableStateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v94_fault_Root1_SEMANTIC_MISMATCH");
@@ -55389,6 +55909,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v95_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, boughtDateEnd=2025-12-31, enableTravelDateQuery=false, enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v95_fault_Root1_SPECIAL_CHARACTERS");
@@ -55589,7 +56117,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"<svg onload=alert('XSS')>\",\"state\":91,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"<svg onload=alert('XSS')>\",\"state\":91,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-30\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -55597,7 +56125,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"<svg onload=alert('XSS')>\",\"state\":91,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"<svg onload=alert('XSS')>\",\"state\":91,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-30\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -55980,6 +56508,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v96_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery, boughtDateEnd, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=true, enableTravelDateQuery=false, enableStateQuery=true, boughtDateEnd=2024-12-31, travelDateEnd=2024-11-30, travelDateStart=2024-11-01, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v96_fault_Root1_SEMANTIC_MISMATCH");
@@ -56180,7 +56716,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"x\",\"state\":89,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-25\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"x\",\"state\":89,\"travelDateEnd\":\"2024-11-30\",\"travelDateStart\":\"2024-11-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -56188,7 +56724,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"x\",\"state\":89,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-25\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"x\",\"state\":89,\"travelDateEnd\":\"2024-11-30\",\"travelDateStart\":\"2024-11-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -56571,6 +57107,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v97_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, boughtDateEnd, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"553a4ac9-09e1-423a-95a4-308255028998\",\"boughtDate\":\"2026-04-23T04:00:28Z\",\"travelDate\":\"2026-04-30\",\"travelTime\":\"21:08:54\",\"accountId\":\"../../../etc/passwd\"...\nEnhanced Parameters: {boughtDateStart=2023-01-01, enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true, boughtDateEnd=2026-12-31, travelDateEnd=2026-06-30, travelDateStart=2026-04-01, state=6}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v97_fault_Root1_SPECIAL_CHARACTERS");
@@ -56771,7 +57315,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"../../../etc/passwd\",\"state\":3,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-12-31\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"../../../etc/passwd\",\"state\":3,\"travelDateEnd\":\"2026-06-30\",\"travelDateStart\":\"2026-04-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -56779,7 +57323,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"../../../etc/passwd\",\"state\":3,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-12-31\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"../../../etc/passwd\",\"state\":3,\"travelDateEnd\":\"2026-06-30\",\"travelDateStart\":\"2026-04-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -57162,6 +57706,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v98_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, enableStateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"e7270d96-4c4b-4d86-8a56-0164d7351155\",\"boughtDate\":\"2026-04-28T07:35:41Z\",\"travelDate\":\"FALLBACK_travelDate_2\",\"travelTime\":\"6:00 PM\",\"accountId\":\"1\",\"contac...\nEnhanced Parameters: {enableTravelDateQuery=true, enableStateQuery=true, travelDateEnd=2024-12-31, state=0, travelDateStart=2024-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v98_fault_Root1_SEMANTIC_MISMATCH");
@@ -57362,7 +57914,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"1\",\"state\":92,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"1\",\"state\":92,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -57370,7 +57922,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"1\",\"state\":92,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"1\",\"state\":92,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -57753,6 +58305,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v99_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"bf4888a5-8e49-4a87-bdb5-cca08f560f87\",\"boughtDate\":\"2026-05-05T09:39:01Z\",\"travelDate\":\"2026-05-09\",\"travelTime\":\"06:00:00\",\"accountId\":\"..\\\\..\\\\..\\\\windows\\...\nEnhanced Parameters: {boughtDateStart=2025-01-01, boughtDateEnd=2025-12-31}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v99_fault_Root1_SPECIAL_CHARACTERS");
@@ -57953,7 +58513,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-08\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -57961,7 +58521,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-08\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -58344,6 +58904,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v100_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, boughtDateEnd, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[{\"id\":\"9934a4b2-27c7-4bc5-b119-1906427b95c9\",\"boughtDate\":\"2026-05-13\",\"travelDate\":\"2026-05-15\",\"travelTime\":\"20:10:00\",\"accountId\":\"a\",\"contactsName\":\"6EgzRjkP2N\"...\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true, boughtDateEnd=2026-05-15, travelDateEnd=2026-05-15, state=0, travelDateStart=2024-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v100_fault_Root1_SEMANTIC_MISMATCH");
@@ -58544,7 +59112,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":93,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":93,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2024-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -58552,7 +59120,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":93,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"a\",\"state\":93,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2024-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -58935,6 +59503,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v101_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, boughtDateEnd, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=, enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=false, boughtDateEnd=, travelDateEnd=, state=, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v101_fault_Root1_SPECIAL_CHARACTERS");
@@ -59135,7 +59711,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"%2e%2e%2f%2e%2e%2f\",\"state\":92,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"%2e%2e%2f%2e%2e%2f\",\"state\":92,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -59143,7 +59719,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"%2e%2e%2f%2e%2e%2f\",\"state\":92,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"%2e%2e%2f%2e%2e%2f\",\"state\":92,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -59526,6 +60102,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v102_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=false, boughtDateEnd=2024-05-15, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2024-05-20, state=0, travelDateStart=2024-05-15}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v102_fault_Root1_SEMANTIC_MISMATCH");
@@ -59726,7 +60310,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"-\",\"state\":3,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-15\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-05-15\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"-\",\"state\":3,\"travelDateEnd\":\"2024-05-20\",\"travelDateStart\":\"2024-05-15\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -59734,7 +60318,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"-\",\"state\":3,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"2026-05-15\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-05-15\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"-\",\"state\":3,\"travelDateEnd\":\"2024-05-20\",\"travelDateStart\":\"2024-05-15\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -60117,6 +60701,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v103_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, boughtDateEnd=2024-12-31, travelDateEnd=2024-12-31, travelDateStart=2024-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v103_fault_Root1_SPECIAL_CHARACTERS");
@@ -60317,7 +60909,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"; ls -la\",\"state\":93,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"; ls -la\",\"state\":93,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -60325,7 +60917,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"; ls -la\",\"state\":93,\"travelDateEnd\":\"2026-05-15\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"; ls -la\",\"state\":93,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -61299,6 +61891,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v105_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-20, enableBoughtDateQuery=true, boughtDateEnd=2026-05-20, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-20, state=3, travelDateStart=2026-05-08}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v105_fault_Root1_SPECIAL_CHARACTERS");
@@ -61890,6 +62490,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v106_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-15, enableBoughtDateQuery=true, boughtDateEnd=2026-05-20, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-05-20 23:59:59, state=0, travelDateStart=2026-05-15 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v106_fault_Root1_SPECIAL_CHARACTERS");
@@ -62090,7 +62698,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"`whoami`\",\"state\":93,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"`whoami`\",\"state\":93,\"travelDateEnd\":\"2026-05-20 23:59:59\",\"travelDateStart\":\"2026-05-15 00:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -62098,7 +62706,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"`whoami`\",\"state\":93,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"`whoami`\",\"state\":93,\"travelDateEnd\":\"2026-05-20 23:59:59\",\"travelDateStart\":\"2026-05-15 00:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -63072,6 +63680,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v108_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, boughtDateEnd=2025-12-31, enableTravelDateQuery=false, enableStateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v108_fault_Root1_SPECIAL_CHARACTERS");
@@ -63272,7 +63888,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\",\"state\":0,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\",\"state\":0,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-22\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -63280,7 +63896,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\",\"state\":0,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\",\"state\":0,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-22\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -63663,6 +64279,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v109_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v109_fault_Root1_SPECIAL_CHARACTERS");
@@ -64254,6 +64878,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v110_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v110_fault_Root1_SPECIAL_CHARACTERS");
@@ -64845,6 +65477,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v111_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=, enableBoughtDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v111_fault_Root1_OVERFLOW");
@@ -65045,7 +65685,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -65053,7 +65693,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -65436,6 +66076,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v112_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=invalid_user, state=999}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v112_fault_Root1_SPECIAL_CHARACTERS");
@@ -65636,7 +66284,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"' OR '1'='1\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"' OR '1'='1\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":89,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-10\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -65644,7 +66292,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"' OR '1'='1\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"' OR '1'='1\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":89,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-10\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -66027,6 +66675,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v113_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=invalid-date, enableBoughtDateQuery=true, loginId=operator_5, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-05-30, state=93, travelDateStart=FALLBACK_travelDateStart_0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v113_fault_Root1_TYPE_MISMATCH");
@@ -66227,7 +66883,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":12345,\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":12345,\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -66235,7 +66891,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":12345,\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":12345,\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -66618,6 +67274,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v114_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v114_fault_Root1_SEMANTIC_MISMATCH");
@@ -67209,6 +67873,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v115_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false, travelDateEnd=2026-05-10, travelDateStart=2026-05-10}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v115_fault_Root1_OVERFLOW");
@@ -67409,7 +68081,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-15\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-10\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -67417,7 +68089,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-15\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2026-05-10\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -67800,6 +68472,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v116_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v116_fault_Root1_SPECIAL_CHARACTERS");
@@ -68391,6 +69071,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v117_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-08-17, enableBoughtDateQuery=true, loginId=dev_user, enableStateQuery=true, enableTravelDateQuery=false, travelDateEnd=2026-05-06, state=6, travelDateStart=FALLBACK_travelDateStart_0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v117_fault_Root1_TYPE_MISMATCH");
@@ -68591,7 +69279,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":-999,\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":-999,\"boughtDateStart\":\"2023-08-17\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -68599,7 +69287,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":-999,\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":-999,\"boughtDateStart\":\"2023-08-17\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -68982,6 +69670,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v118_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, enableTravelDateQuery=false, state=invalid}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v118_fault_Root1_SEMANTIC_MISMATCH");
@@ -69573,6 +70269,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v119_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-07, enableBoughtDateQuery=false, loginId=, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-05-07, state=, travelDateStart=2026-05-06}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v119_fault_Root1_OVERFLOW");
@@ -69773,7 +70477,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"testuser01\",\"state\":3,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-05-06\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"boughtDateStart\":\"2026-05-07\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"\",\"state\":3,\"travelDateEnd\":\"2026-05-07\",\"travelDateStart\":\"2026-05-06\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -69781,7 +70485,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"testuser01\",\"state\":3,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-05-06\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"boughtDateStart\":\"2026-05-07\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"\",\"state\":3,\"travelDateEnd\":\"2026-05-07\",\"travelDateStart\":\"2026-05-06\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -70164,6 +70868,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v120_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, loginId, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=, loginId=, enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=, state=-1, travelDateStart=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v120_fault_Root1_SPECIAL_CHARACTERS");
@@ -70364,7 +71076,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser01\",\"state\":90,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"\",\"state\":90,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -70372,7 +71084,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser01\",\"state\":90,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"\",\"state\":90,\"travelDateEnd\":\"\",\"travelDateStart\":\"\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -70755,6 +71467,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v121_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v121_fault_Root1_TYPE_MISMATCH");
@@ -71346,6 +72066,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v122_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, travelDateEnd=2024-12-31, state=0, travelDateStart=2024-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v122_fault_Root1_SEMANTIC_MISMATCH");
@@ -71546,7 +72274,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-30\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":91,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-30\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":91,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -71554,7 +72282,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-30\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":91,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-30\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":91,\"travelDateEnd\":\"2024-12-31\",\"travelDateStart\":\"2024-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -71937,6 +72665,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v123_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=, enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v123_fault_Root1_OVERFLOW");
@@ -72137,7 +72873,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"dev_user\",\"state\":1,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-18\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":1,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-18\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -72145,7 +72881,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"dev_user\",\"state\":1,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-18\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet \",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":1,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"2026-05-18\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -72528,6 +73264,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v124_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-06-03, enableBoughtDateQuery=false, loginId=nonexistent_user, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-06-30, state=-1, travelDateStart=2026-06-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v124_fault_Root1_SPECIAL_CHARACTERS");
@@ -72728,7 +73472,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"' UNION SELECT * FROM passwords --\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":6,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-28\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"' UNION SELECT * FROM passwords --\",\"boughtDateStart\":\"2026-06-03\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"nonexistent_user\",\"state\":6,\"travelDateEnd\":\"2026-06-30\",\"travelDateStart\":\"2026-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -72736,7 +73480,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"' UNION SELECT * FROM passwords --\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":6,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-28\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"' UNION SELECT * FROM passwords --\",\"boughtDateStart\":\"2026-06-03\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"nonexistent_user\",\"state\":6,\"travelDateEnd\":\"2026-06-30\",\"travelDateStart\":\"2026-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -73119,6 +73863,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v125_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-08-15, enableBoughtDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v125_fault_Root1_TYPE_MISMATCH");
@@ -73710,6 +74462,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v126_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v126_fault_Root1_SEMANTIC_MISMATCH");
@@ -74301,6 +75061,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v127_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=true, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v127_fault_Root1_SPECIAL_CHARACTERS");
@@ -74892,6 +75660,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v128_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateEnd=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v128_fault_Root1_TYPE_MISMATCH");
@@ -75483,6 +76259,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v129_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-20, enableBoughtDateQuery=true, loginId=operator_5, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-06-01, state=90, travelDateStart=2026-06-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v129_fault_Root1_SEMANTIC_MISMATCH");
@@ -76074,6 +76858,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v130_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-07-14, enableBoughtDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v130_fault_Root1_SPECIAL_CHARACTERS");
@@ -76274,7 +77066,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":5,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"boughtDateStart\":\"2023-07-14\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":5,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -76282,7 +77074,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":5,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"boughtDateStart\":\"2023-07-14\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":5,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -77256,6 +78048,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v132_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-10, enableBoughtDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v132_fault_Root1_SEMANTIC_MISMATCH");
@@ -77847,6 +78647,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v133_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-15, enableBoughtDateQuery=true, loginId=api_test, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=FALLBACK_travelDateEnd_0, state=91, travelDateStart=2026-05-25}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v133_fault_Root1_SPECIAL_CHARACTERS");
@@ -79029,6 +79837,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v135_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-05-04 09:51:52, state=0, travelDateStart=2026-05-01 09:51:52}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v135_fault_Root1_SEMANTIC_MISMATCH");
@@ -79229,7 +80045,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-32\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":3,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-32\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":3,\"travelDateEnd\":\"2026-05-04 09:51:52\",\"travelDateStart\":\"2026-05-01 09:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -79237,7 +80053,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-32\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":3,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-32\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":3,\"travelDateEnd\":\"2026-05-04 09:51:52\",\"travelDateStart\":\"2026-05-01 09:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -79620,6 +80436,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v136_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v136_fault_Root1_SPECIAL_CHARACTERS");
@@ -80211,6 +81035,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v137_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v137_fault_Root1_SEMANTIC_MISMATCH");
@@ -80802,6 +81634,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v138_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=true, enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v138_fault_Root1_SPECIAL_CHARACTERS");
@@ -81393,6 +82233,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v139_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v139_fault_Root1_SEMANTIC_MISMATCH");
@@ -81984,6 +82832,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v140_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, loginId=invalid_user, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=invalid_date, state=999, travelDateStart=invalid_date}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v140_fault_Root1_SPECIAL_CHARACTERS");
@@ -82184,7 +83040,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":1,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":1,\"travelDateEnd\":\"invalid_date\",\"travelDateStart\":\"invalid_date\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -82192,7 +83048,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":1,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":1,\"travelDateEnd\":\"invalid_date\",\"travelDateStart\":\"invalid_date\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -82575,6 +83431,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v141_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=invalid_user, enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v141_fault_Root1_SEMANTIC_MISMATCH");
@@ -82775,7 +83639,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"a\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"dev_user\",\"state\":93,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-25\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"a\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":93,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-25\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -82783,7 +83647,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"a\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"dev_user\",\"state\":93,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-25\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"a\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":93,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"2026-05-25\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -83166,6 +84030,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v142_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-09-01, enableBoughtDateQuery=true, loginId=fdse_microservice, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-05-06, state=1, travelDateStart=2026-05-04}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v142_fault_Root1_SPECIAL_CHARACTERS");
@@ -83366,7 +84238,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":89,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"boughtDateStart\":\"2023-09-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"fdse_microservice\",\"state\":89,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-04\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -83374,7 +84246,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":89,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"boughtDateStart\":\"2023-09-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"fdse_microservice\",\"state\":89,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"2026-05-04\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -83757,6 +84629,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v143_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {travelDateEnd=2026-05-29 00:00:00, travelDateStart=2026-05-28 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v143_fault_Root1_SEMANTIC_MISMATCH");
@@ -83957,7 +84837,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"-\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-05-28\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"-\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2026-05-29 00:00:00\",\"travelDateStart\":\"2026-05-28 00:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -83965,7 +84845,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"-\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-05-28\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"-\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2026-05-29 00:00:00\",\"travelDateStart\":\"2026-05-28 00:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -84348,6 +85228,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v144_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-09-01, enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-05-30, state=1, travelDateStart=2026-05-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v144_fault_Root1_SPECIAL_CHARACTERS");
@@ -84548,7 +85436,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"; ls -la\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"; ls -la\",\"boughtDateStart\":\"2023-09-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -84556,7 +85444,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"; ls -la\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"; ls -la\",\"boughtDateStart\":\"2023-09-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"api_test\",\"state\":3,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -84939,6 +85827,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v145_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v145_fault_Root1_SEMANTIC_MISMATCH");
@@ -85530,6 +86426,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v146_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v146_fault_Root1_SPECIAL_CHARACTERS");
@@ -86121,6 +87025,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v147_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v147_fault_Root1_SPECIAL_CHARACTERS");
@@ -86321,7 +87233,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"`whoami`\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"`whoami`\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":89,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-08\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -86329,7 +87241,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"`whoami`\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":89,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"`whoami`\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":89,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-08\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -87303,6 +88215,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v149_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v149_fault_Root1_SPECIAL_CHARACTERS");
@@ -87894,6 +88814,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v150_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-20, enableBoughtDateQuery=true, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-06-01, state=0, travelDateStart=2026-05-20}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v150_fault_Root1_SPECIAL_CHARACTERS");
@@ -88094,7 +89022,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"\\\\x00\\\\x01\\\\x02\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":93,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\\\\x00\\\\x01\\\\x02\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":93,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-20\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -88102,7 +89030,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\\\\x00\\\\x01\\\\x02\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":93,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\\\\x00\\\\x01\\\\x02\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":93,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"2026-05-20\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -88485,6 +89413,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v151_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=invalid_user}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v151_fault_Root1_SPECIAL_CHARACTERS");
@@ -88685,7 +89621,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"\\u0000\\u0001\\u0002\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":89,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\\u0000\\u0001\\u0002\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":89,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -88693,7 +89629,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\\u0000\\u0001\\u0002\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":89,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\\u0000\\u0001\\u0002\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":89,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -90849,6 +91785,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v155_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableTravelDateQuery, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-06-01, enableBoughtDateQuery=true, loginId=invalid_user, boughtDateEnd=2023-06-04, enableTravelDateQuery=false, travelDateEnd=2026-06-04, travelDateStart=2026-06-01, state=2}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v155_fault_Root1_TYPE_MISMATCH");
@@ -91049,7 +91993,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":1,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":0,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-06-04\",\"boughtDateStart\":\"2023-06-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":1,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":0,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2026-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -91057,7 +92001,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":1,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":0,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-06-04\",\"boughtDateStart\":\"2023-06-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":1,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":0,\"travelDateEnd\":\"2026-06-04\",\"travelDateStart\":\"2026-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -91440,6 +92384,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v156_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=true, state=invalid}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v156_fault_Root1_TYPE_MISMATCH");
@@ -92031,6 +92983,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v157_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-05-06, enableBoughtDateQuery=true, loginId=nonexistent_user, boughtDateEnd=2024-05-30, enableTravelDateQuery=false, travelDateEnd=2024-05-20, state=0, travelDateStart=2024-05-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v157_fault_Root1_TYPE_MISMATCH");
@@ -92231,7 +93191,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":-1,\"enableTravelDateQuery\":true,\"loginId\":\"admin\",\"state\":88,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-05-30\",\"boughtDateStart\":\"2024-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":-1,\"enableTravelDateQuery\":true,\"loginId\":\"nonexistent_user\",\"state\":88,\"travelDateEnd\":\"2024-05-20\",\"travelDateStart\":\"2024-05-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -92239,7 +93199,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":-1,\"enableTravelDateQuery\":true,\"loginId\":\"admin\",\"state\":88,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-05-30\",\"boughtDateStart\":\"2024-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":-1,\"enableTravelDateQuery\":true,\"loginId\":\"nonexistent_user\",\"state\":88,\"travelDateEnd\":\"2024-05-20\",\"travelDateStart\":\"2024-05-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -93213,6 +94173,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v159_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableTravelDateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-08-14, enableBoughtDateQuery=true, loginId=guest, boughtDateEnd=2023-08-16, enableTravelDateQuery=false, travelDateEnd=2023-08-16 23:59:59, state=0, travelDateStart=2023-08-14 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v159_fault_Root1_TYPE_MISMATCH");
@@ -93413,7 +94381,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":2,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":91,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-08-16\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":2,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":91,\"travelDateEnd\":\"2023-08-16 23:59:59\",\"travelDateStart\":\"2023-08-14 00:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -93421,7 +94389,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":2,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":91,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-08-16\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":2,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":91,\"travelDateEnd\":\"2023-08-16 23:59:59\",\"travelDateStart\":\"2023-08-14 00:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -95577,6 +96545,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v163_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, travelDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, travelDateEnd=2026-05-30, travelDateStart=2026-05-25, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v163_fault_Root1_TYPE_MISMATCH");
@@ -95777,7 +96753,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":1,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-15\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":1,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-25\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -95785,7 +96761,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":1,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-15\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":1,\"loginId\":\"dev_user\",\"state\":6,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"2026-05-25\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -96168,6 +97144,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v164_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-02-01, enableBoughtDateQuery=true, boughtDateEnd=2025-02-28, enableStateQuery=false, travelDateEnd=2025-03-31, state=1, travelDateStart=2025-03-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v164_fault_Root1_TYPE_MISMATCH");
@@ -96368,7 +97352,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":0,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2025-02-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":0,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2025-03-31\",\"travelDateStart\":\"2025-03-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -96376,7 +97360,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":0,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2025-02-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":0,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2025-03-31\",\"travelDateStart\":\"2025-03-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -96759,6 +97743,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v165_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, boughtDateEnd, travelDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=true, enableStateQuery=true, boughtDateEnd=2024-12-31, travelDateEnd=2024-06-30, state=1, travelDateStart=2024-06-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v165_fault_Root1_TYPE_MISMATCH");
@@ -96959,7 +97951,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":-1,\"loginId\":\"support_agent\",\"state\":2,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2013-05-04 09:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":-1,\"loginId\":\"support_agent\",\"state\":2,\"travelDateEnd\":\"2024-06-30\",\"travelDateStart\":\"2024-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -96967,7 +97959,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":-1,\"loginId\":\"support_agent\",\"state\":2,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"2013-05-04 09:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":-1,\"loginId\":\"support_agent\",\"state\":2,\"travelDateEnd\":\"2024-06-30\",\"travelDateStart\":\"2024-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -97941,6 +98933,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v167_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, boughtDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-01-01, enableBoughtDateQuery=true, enableStateQuery=false, boughtDateEnd=2023-12-31, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v167_fault_Root1_TYPE_MISMATCH");
@@ -98141,7 +99141,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":2,\"loginId\":\"dev_user\",\"state\":92,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-28\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-12-31\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":2,\"loginId\":\"dev_user\",\"state\":92,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-28\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -98149,7 +99149,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":2,\"loginId\":\"dev_user\",\"state\":92,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-28\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-12-31\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":2,\"loginId\":\"dev_user\",\"state\":92,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-28\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -98532,6 +99532,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v168_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v168_fault_Root1_OVERFLOW");
@@ -99123,6 +100131,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v169_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v169_fault_Root1_SPECIAL_CHARACTERS");
@@ -99714,6 +100730,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v170_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableTravelDateQuery, boughtDateEnd, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-06-15, enableBoughtDateQuery=true, enableTravelDateQuery=false, boughtDateEnd=2026-05-15, enableStateQuery=false, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v170_fault_Root1_TYPE_MISMATCH");
@@ -100305,6 +101329,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v171_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, loginId=guest, boughtDateEnd=2025-12-31, enableStateQuery=true, enableTravelDateQuery=true, state=0, travelDateStart=2025-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v171_fault_Root1_SEMANTIC_MISMATCH");
@@ -100505,7 +101537,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2025-13-01\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2025-13-01\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -100513,7 +101545,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2025-13-01\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2025-13-01\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -100896,6 +101928,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v172_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v172_fault_Root1_OVERFLOW");
@@ -101487,6 +102527,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v173_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateStart=2026-05-28}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v173_fault_Root1_SPECIAL_CHARACTERS");
@@ -102078,6 +103126,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v174_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v174_fault_Root1_TYPE_MISMATCH");
@@ -102669,6 +103725,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v175_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-01-01, enableBoughtDateQuery=true, boughtDateEnd=2023-01-10, enableStateQuery=false, enableTravelDateQuery=true, state=0, travelDateStart=2025-12-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v175_fault_Root1_SEMANTIC_MISMATCH");
@@ -102869,7 +103933,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":4,\"travelDateEnd\":\"2026-00-10\",\"travelDateStart\":\"2013-05-04 17:51:52\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-01-10\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":4,\"travelDateEnd\":\"2026-00-10\",\"travelDateStart\":\"2025-12-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -102877,7 +103941,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":4,\"travelDateEnd\":\"2026-00-10\",\"travelDateStart\":\"2013-05-04 17:51:52\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-01-10\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":4,\"travelDateEnd\":\"2026-00-10\",\"travelDateStart\":\"2025-12-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -103260,6 +104324,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v176_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableTravelDateQuery, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-10, enableBoughtDateQuery=true, loginId=john.doe, boughtDateEnd=2026-05-20, enableTravelDateQuery=true, travelDateStart=2026-05-20, state=90}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v176_fault_Root1_OVERFLOW");
@@ -103460,7 +104532,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"travelDateStart\":\"2026-05-18\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"travelDateStart\":\"2026-05-20\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -103468,7 +104540,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"travelDateStart\":\"2026-05-18\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ\",\"travelDateStart\":\"2026-05-20\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -103851,6 +104923,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v177_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-19, enableBoughtDateQuery=false, boughtDateEnd=2026-05-21, enableTravelDateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v177_fault_Root1_SPECIAL_CHARACTERS");
@@ -104051,7 +105131,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":2,\"travelDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-21\",\"boughtDateStart\":\"2026-05-19\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":2,\"travelDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -104059,7 +105139,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":2,\"travelDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-21\",\"boughtDateStart\":\"2026-05-19\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"demo_user\",\"state\":2,\"travelDateEnd\":\"1; DELETE FROM users WHERE 1=1\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -104442,6 +105522,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v178_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, boughtDateEnd=2025-12-31}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v178_fault_Root1_TYPE_MISMATCH");
@@ -104642,7 +105730,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":5,\"travelDateEnd\":3.14159,\"travelDateStart\":\"2026-05-25\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":5,\"travelDateEnd\":3.14159,\"travelDateStart\":\"2026-05-25\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -104650,7 +105738,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":5,\"travelDateEnd\":3.14159,\"travelDateStart\":\"2026-05-25\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":5,\"travelDateEnd\":3.14159,\"travelDateStart\":\"2026-05-25\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -105033,6 +106121,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v179_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {travelDateEnd=2025-02-28, travelDateStart=2025-02-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v179_fault_Root1_SEMANTIC_MISMATCH");
@@ -105233,7 +106329,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":4,\"travelDateEnd\":\"2025-02-30\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":4,\"travelDateEnd\":\"2025-02-28\",\"travelDateStart\":\"2025-02-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -105241,7 +106337,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":4,\"travelDateEnd\":\"2025-02-30\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":4,\"travelDateEnd\":\"2025-02-28\",\"travelDateStart\":\"2025-02-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -105624,6 +106720,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v180_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v180_fault_Root1_OVERFLOW");
@@ -106215,6 +107319,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v181_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false, enableStateQuery=true, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v181_fault_Root1_SPECIAL_CHARACTERS");
@@ -106806,6 +107918,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v182_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v182_fault_Root1_TYPE_MISMATCH");
@@ -107397,6 +108517,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v183_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateStart=2026-05-06}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v183_fault_Root1_SEMANTIC_MISMATCH");
@@ -107988,6 +109116,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v184_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, boughtDateEnd=2025-12-31, travelDateStart=2025-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v184_fault_Root1_SPECIAL_CHARACTERS");
@@ -108188,7 +109324,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":1,\"travelDateEnd\":\"<script>alert('XSS')</script>\",\"travelDateStart\":\"2026-06-01\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":1,\"travelDateEnd\":\"<script>alert('XSS')</script>\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -108196,7 +109332,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":1,\"travelDateEnd\":\"<script>alert('XSS')</script>\",\"travelDateStart\":\"2026-06-01\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"loadtest\",\"state\":1,\"travelDateEnd\":\"<script>alert('XSS')</script>\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -108579,6 +109715,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v185_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v185_fault_Root1_TYPE_MISMATCH");
@@ -109170,6 +110314,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v186_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-01-01, enableBoughtDateQuery=true, loginId=invalid_user, boughtDateEnd=2023-12-31, enableStateQuery=false, travelDateStart=2025-01-01, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v186_fault_Root1_SEMANTIC_MISMATCH");
@@ -109370,7 +110522,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":92,\"travelDateEnd\":\"1\",\"travelDateStart\":\"2026-05-12\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2023-12-31\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":92,\"travelDateEnd\":\"1\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -109378,7 +110530,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":92,\"travelDateEnd\":\"1\",\"travelDateStart\":\"2026-05-12\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2023-12-31\",\"boughtDateStart\":\"2023-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":92,\"travelDateEnd\":\"1\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -109761,6 +110913,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v187_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=true, boughtDateEnd=2024-12-31, enableStateQuery=true, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v187_fault_Root1_SPECIAL_CHARACTERS");
@@ -109961,7 +111121,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":93,\"travelDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"travelDateStart\":\"2026-05-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":93,\"travelDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"travelDateStart\":\"2026-05-30\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -109969,7 +111129,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":93,\"travelDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"travelDateStart\":\"2026-05-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":93,\"travelDateEnd\":\"<img src=x onerror=alert('XSS')>\",\"travelDateStart\":\"2026-05-30\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -110943,6 +112103,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v189_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=false, boughtDateEnd=2025-01-15, enableStateQuery=false, enableTravelDateQuery=true, state=0, travelDateStart=2025-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v189_fault_Root1_SEMANTIC_MISMATCH");
@@ -111143,7 +112311,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2026-05-10\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -111151,7 +112319,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2026-05-10\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"john.doe\",\"state\":90,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -111534,6 +112702,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v190_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=false, loginId=nonexistent_user_xyz, boughtDateEnd=2025-01-15, enableStateQuery=false, enableTravelDateQuery=true, state=-1, travelDateStart=2026-05-18}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v190_fault_Root1_SPECIAL_CHARACTERS");
@@ -111734,7 +112910,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":90,\"travelDateEnd\":\"javascript:alert('XSS')\",\"travelDateStart\":\"2026-05-18\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"nonexistent_user_xyz\",\"state\":90,\"travelDateEnd\":\"javascript:alert('XSS')\",\"travelDateStart\":\"2026-05-18\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -111742,7 +112918,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":90,\"travelDateEnd\":\"javascript:alert('XSS')\",\"travelDateStart\":\"2026-05-18\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"nonexistent_user_xyz\",\"state\":90,\"travelDateEnd\":\"javascript:alert('XSS')\",\"travelDateStart\":\"2026-05-18\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -112716,6 +113892,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v192_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, enableBoughtDateQuery=true, loginId=dev_user, boughtDateEnd=2026-05-10, enableStateQuery=true, enableTravelDateQuery=true, state=0, travelDateStart=2026-05-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v192_fault_Root1_SEMANTIC_MISMATCH");
@@ -112916,7 +114100,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":90,\"travelDateEnd\":\"x\",\"travelDateStart\":\"2026-05-25\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":90,\"travelDateEnd\":\"x\",\"travelDateStart\":\"2026-05-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -112924,7 +114108,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-15\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":90,\"travelDateEnd\":\"x\",\"travelDateStart\":\"2026-05-25\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":90,\"travelDateEnd\":\"x\",\"travelDateStart\":\"2026-05-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -113307,6 +114491,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v193_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-01-15, enableBoughtDateQuery=false, boughtDateEnd=2024-01-15, enableStateQuery=true, enableTravelDateQuery=false, state=invalid_state}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v193_fault_Root1_SPECIAL_CHARACTERS");
@@ -113507,7 +114699,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":2,\"travelDateEnd\":\"<svg onload=alert('XSS')>\",\"travelDateStart\":\"2026-05-12\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-01-15\",\"boughtDateStart\":\"2023-01-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":2,\"travelDateEnd\":\"<svg onload=alert('XSS')>\",\"travelDateStart\":\"2026-05-12\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -113515,7 +114707,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":2,\"travelDateEnd\":\"<svg onload=alert('XSS')>\",\"travelDateStart\":\"2026-05-12\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-01-15\",\"boughtDateStart\":\"2023-01-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":2,\"travelDateEnd\":\"<svg onload=alert('XSS')>\",\"travelDateStart\":\"2026-05-12\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -113898,6 +115090,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v194_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=false, enableStateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v194_fault_Root1_SEMANTIC_MISMATCH");
@@ -114489,6 +115689,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v195_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-06, enableBoughtDateQuery=false, boughtDateEnd=2026-05-07, enableStateQuery=false, enableTravelDateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v195_fault_Root1_SPECIAL_CHARACTERS");
@@ -114689,7 +115897,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":1,\"travelDateEnd\":\"../../../etc/passwd\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-07\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":1,\"travelDateEnd\":\"../../../etc/passwd\",\"travelDateStart\":\"2026-05-08\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -114697,7 +115905,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":1,\"travelDateEnd\":\"../../../etc/passwd\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-07\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":1,\"travelDateEnd\":\"../../../etc/passwd\",\"travelDateStart\":\"2026-05-08\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -115080,6 +116288,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v196_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=a, travelDateStart=2023-08-15}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v196_fault_Root1_SEMANTIC_MISMATCH");
@@ -115280,7 +116496,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":91,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2026-05-18\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":91,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2023-08-15\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -115288,7 +116504,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":91,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2026-05-18\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":91,\"travelDateEnd\":\"a\",\"travelDateStart\":\"2023-08-15\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -115671,6 +116887,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v197_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v197_fault_Root1_SPECIAL_CHARACTERS");
@@ -116262,6 +117486,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v198_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, boughtDateEnd=2025-12-31, state=1, travelDateStart=2025-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v198_fault_Root1_SEMANTIC_MISMATCH");
@@ -116462,7 +117694,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":92,\"travelDateEnd\":\"-\",\"travelDateStart\":\"2026-05-06\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":92,\"travelDateEnd\":\"-\",\"travelDateStart\":\"2025-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -116470,7 +117702,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":92,\"travelDateEnd\":\"-\",\"travelDateStart\":\"2026-05-06\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":92,\"travelDateEnd\":\"-\",\"travelDateStart\":\"2025-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -116853,6 +118085,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v199_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=fdse_microservice, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v199_fault_Root1_SPECIAL_CHARACTERS");
@@ -117053,7 +118293,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":4,\"travelDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"travelDateStart\":\"2026-05-20\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"fdse_microservice\",\"state\":4,\"travelDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"travelDateStart\":\"2026-05-20\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -117061,7 +118301,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"jane.smith\",\"state\":4,\"travelDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"travelDateStart\":\"2026-05-20\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"fdse_microservice\",\"state\":4,\"travelDateEnd\":\"%2e%2e%2f%2e%2e%2f\",\"travelDateStart\":\"2026-05-20\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -117444,6 +118684,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v200_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableTravelDateQuery, boughtDateEnd, enableStateQuery, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=true, enableTravelDateQuery=true, boughtDateEnd=2024-12-31, enableStateQuery=true, travelDateStart=2024-06-01, state=2}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v200_fault_Root1_SEMANTIC_MISMATCH");
@@ -117644,7 +118892,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"?\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"?\",\"travelDateStart\":\"2024-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -117652,7 +118900,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-08-14\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"?\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"demo_user\",\"state\":5,\"travelDateEnd\":\"?\",\"travelDateStart\":\"2024-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -118035,6 +119283,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v201_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateStart=2024-01-01}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v201_fault_Root1_SPECIAL_CHARACTERS");
@@ -118235,7 +119491,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"jane.smith\",\"state\":93,\"travelDateEnd\":\"; ls -la\",\"travelDateStart\":\"2026-05-28\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"jane.smith\",\"state\":93,\"travelDateEnd\":\"; ls -la\",\"travelDateStart\":\"2024-01-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -118243,7 +119499,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"jane.smith\",\"state\":93,\"travelDateEnd\":\"; ls -la\",\"travelDateStart\":\"2026-05-28\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"jane.smith\",\"state\":93,\"travelDateEnd\":\"; ls -la\",\"travelDateStart\":\"2024-01-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -119217,6 +120473,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v203_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, state, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-10, enableBoughtDateQuery=true, loginId=testuser1, boughtDateEnd=2026-05-20, enableStateQuery=false, enableTravelDateQuery=false, state=7, travelDateStart=2026-05-08}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v203_fault_Root1_SPECIAL_CHARACTERS");
@@ -119417,7 +120681,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":7,\"travelDateEnd\":\"`whoami`\",\"travelDateStart\":\"2026-05-08\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":7,\"travelDateEnd\":\"`whoami`\",\"travelDateStart\":\"2026-05-08\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -119425,7 +120689,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":7,\"travelDateEnd\":\"`whoami`\",\"travelDateStart\":\"2026-05-08\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":7,\"travelDateEnd\":\"`whoami`\",\"travelDateStart\":\"2026-05-08\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -119808,6 +121072,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v204_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false, travelDateStart=2026-05-30}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v204_fault_Root1_SPECIAL_CHARACTERS");
@@ -120399,6 +121671,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v205_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=false, enableStateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v205_fault_Root1_SPECIAL_CHARACTERS");
@@ -120990,6 +122270,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v206_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v206_fault_Root1_SPECIAL_CHARACTERS");
@@ -121581,6 +122869,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v207_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, loginId, boughtDateEnd, travelDateStart, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, loginId=invalid_user, boughtDateEnd=2025-12-31, travelDateStart=2025-06-01, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v207_fault_Root1_SPECIAL_CHARACTERS");
@@ -121781,7 +123077,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":92,\"travelDateEnd\":\"\\u0000\\u0001\\u0002\",\"travelDateStart\":\"2026-05-28\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":92,\"travelDateEnd\":\"\\u0000\\u0001\\u0002\",\"travelDateStart\":\"2025-06-01\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -121789,7 +123085,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-01-15\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":92,\"travelDateEnd\":\"\\u0000\\u0001\\u0002\",\"travelDateStart\":\"2026-05-28\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":92,\"travelDateEnd\":\"\\u0000\\u0001\\u0002\",\"travelDateStart\":\"2025-06-01\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -122172,6 +123468,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v208_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=false, state=2147483647}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v208_fault_Root1_OVERFLOW");
@@ -123354,6 +124658,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v210_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v210_fault_Root1_SEMANTIC_MISMATCH");
@@ -123945,6 +125257,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v211_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2026-06-01 10:00:00, travelDateStart=2026-05-22 10:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v211_fault_Root1_OVERFLOW");
@@ -124145,7 +125465,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":-2147483648,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":-2147483648,\"travelDateEnd\":\"2026-06-01 10:00:00\",\"travelDateStart\":\"2026-05-22 10:00:00\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -124153,7 +125473,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":-2147483648,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":-2147483648,\"travelDateEnd\":\"2026-06-01 10:00:00\",\"travelDateStart\":\"2026-05-22 10:00:00\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -125127,6 +126447,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v213_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=fdse_microservice, enableStateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v213_fault_Root1_SEMANTIC_MISMATCH");
@@ -125327,7 +126655,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser01\",\"state\":\"0\",\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"fdse_microservice\",\"state\":\"0\",\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -125335,7 +126663,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser01\",\"state\":\"0\",\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"fdse_microservice\",\"state\":\"0\",\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"FALLBACK_travelDateStart_0\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -126900,6 +128228,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v216_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableStateQuery, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v216_fault_Root1_SEMANTIC_MISMATCH");
@@ -132810,6 +134146,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v226_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, loginId, boughtDateEnd, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-05-20, loginId=admin, boughtDateEnd=2024-05-30, enableStateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v226_fault_Root1_SEMANTIC_MISMATCH");
@@ -133010,7 +134354,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":\"1\",\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-22\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-05-30\",\"boughtDateStart\":\"2024-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":\"1\",\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-22\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -133018,7 +134362,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":\"1\",\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-22\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-05-30\",\"boughtDateStart\":\"2024-05-20\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":\"1\",\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"2026-05-22\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -133401,6 +134745,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v227_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, loginId, enableBoughtDateQuery, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=invalid-date, loginId=nonexistent_user, enableBoughtDateQuery=invalid-boolean, boughtDateEnd=invalid-date, enableStateQuery=invalid-boolean, enableTravelDateQuery=invalid-boolean, travelDateEnd=invalid-date, travelDateStart=invalid-date}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v227_fault_Root1_TYPE_MISMATCH");
@@ -133601,7 +134953,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":\"\",\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-18\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"nonexistent_user\",\"state\":\"\",\"travelDateEnd\":\"invalid-date\",\"travelDateStart\":\"invalid-date\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -133609,7 +134961,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":\"\",\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"2026-05-18\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"nonexistent_user\",\"state\":\"\",\"travelDateEnd\":\"invalid-date\",\"travelDateStart\":\"invalid-date\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -135765,6 +137117,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v231_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {travelDateEnd=2026-05-30, travelDateStart=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v231_fault_Root1_OVERFLOW");
@@ -136356,6 +137716,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v232_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=2025-12-31 23:59:59}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v232_fault_Root1_SPECIAL_CHARACTERS");
@@ -136556,7 +137924,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":7,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"' OR '1'='1\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":7,\"travelDateEnd\":\"2025-12-31 23:59:59\",\"travelDateStart\":\"' OR '1'='1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -136564,7 +137932,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":7,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"' OR '1'='1\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-09-15\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"manager01\",\"state\":7,\"travelDateEnd\":\"2025-12-31 23:59:59\",\"travelDateStart\":\"' OR '1'='1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -136947,6 +138315,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v233_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, boughtDateEnd, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-06, boughtDateEnd=2026-06-01, travelDateEnd=2026-06-01 12:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v233_fault_Root1_TYPE_MISMATCH");
@@ -137147,7 +138523,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":12345}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2026-06-01 12:00:00\",\"travelDateStart\":12345}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -137155,7 +138531,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":12345}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":88,\"travelDateEnd\":\"2026-06-01 12:00:00\",\"travelDateStart\":12345}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -137538,6 +138914,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v234_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v234_fault_Root1_SEMANTIC_MISMATCH");
@@ -138129,6 +139513,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v235_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableStateQuery, boughtDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=invalid-date, enableBoughtDateQuery=true, enableStateQuery=false, boughtDateEnd=invalid-date, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v235_fault_Root1_OVERFLOW");
@@ -138329,7 +139721,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":90,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":90,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -138337,7 +139729,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-20\",\"boughtDateStart\":\"2023-06-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":90,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"invalid-date\",\"boughtDateStart\":\"invalid-date\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":90,\"travelDateEnd\":\"2013-05-04 09:51:52\",\"travelDateStart\":\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -138720,6 +140112,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v236_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=2026-05-25}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v236_fault_Root1_SPECIAL_CHARACTERS");
@@ -139311,6 +140711,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v237_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, enableTravelDateQuery, enableStateQuery, boughtDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-01-01, enableBoughtDateQuery=true, loginId=invalid_user, enableTravelDateQuery=false, enableStateQuery=false, boughtDateEnd=2026-12-31, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v237_fault_Root1_TYPE_MISMATCH");
@@ -139511,7 +140919,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"customer123\",\"state\":89,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":-999}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-12-31\",\"boughtDateStart\":\"2026-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":89,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":-999}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -139519,7 +140927,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"customer123\",\"state\":89,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":-999}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-12-31\",\"boughtDateStart\":\"2026-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":89,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":-999}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -139902,6 +141310,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v238_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v238_fault_Root1_SEMANTIC_MISMATCH");
@@ -140493,6 +141909,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v239_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v239_fault_Root1_OVERFLOW");
@@ -141084,6 +142508,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v240_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableTravelDateQuery, boughtDateEnd, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableTravelDateQuery=true, boughtDateEnd=2024-12-31, travelDateEnd=2024-12-31 23:59:59}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v240_fault_Root1_SPECIAL_CHARACTERS");
@@ -141284,7 +142716,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":2,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"1; DELETE FROM users WHERE 1=1\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":2,\"travelDateEnd\":\"2024-12-31 23:59:59\",\"travelDateStart\":\"1; DELETE FROM users WHERE 1=1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -141292,7 +142724,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":2,\"travelDateEnd\":\"2013-05-04 15:51:52\",\"travelDateStart\":\"1; DELETE FROM users WHERE 1=1\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"customer123\",\"state\":2,\"travelDateEnd\":\"2024-12-31 23:59:59\",\"travelDateStart\":\"1; DELETE FROM users WHERE 1=1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -141675,6 +143107,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v241_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2023-08-15 00:00:00, travelDateEnd=2025-06-01 00:00:00}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v241_fault_Root1_TYPE_MISMATCH");
@@ -141875,7 +143315,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":92,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":3.14159}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-15 00:00:00\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":92,\"travelDateEnd\":\"2025-06-01 00:00:00\",\"travelDateStart\":3.14159}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -141883,7 +143323,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":92,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":3.14159}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-15 00:00:00\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":92,\"travelDateEnd\":\"2025-06-01 00:00:00\",\"travelDateStart\":3.14159}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -142266,6 +143706,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v242_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableTravelDateQuery, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, enableTravelDateQuery=false, boughtDateEnd=2025-12-31}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v242_fault_Root1_SEMANTIC_MISMATCH");
@@ -142466,7 +143914,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2025-02-30\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2025-02-30\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -142474,7 +143922,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-08-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2025-02-30\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":88,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"2025-02-30\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -142857,6 +144305,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v243_fault_Root1_OVERFLOW() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v243_fault_Root1_OVERFLOW");
@@ -143448,6 +144904,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v244_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=true, enableStateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v244_fault_Root1_SPECIAL_CHARACTERS");
@@ -144039,6 +145503,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v245_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=2026-05-27}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v245_fault_Root1_TYPE_MISMATCH");
@@ -144630,6 +146102,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v246_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {travelDateEnd=2026-05-31 23:59:59, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v246_fault_Root1_SEMANTIC_MISMATCH");
@@ -144830,7 +146310,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":6,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-32\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":6,\"travelDateEnd\":\"2026-05-31 23:59:59\",\"travelDateStart\":\"2026-05-32\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -144838,7 +146318,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":6,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":\"2026-05-32\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-07-15\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"testuser01\",\"state\":6,\"travelDateEnd\":\"2026-05-31 23:59:59\",\"travelDateStart\":\"2026-05-32\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -145221,6 +146701,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v247_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableTravelDateQuery, boughtDateEnd, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=, enableTravelDateQuery=false, boughtDateEnd=, travelDateEnd=}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v247_fault_Root1_SPECIAL_CHARACTERS");
@@ -145421,7 +146909,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"api_test\",\"state\":0,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"<script>alert('XSS')</script>\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"api_test\",\"state\":0,\"travelDateEnd\":\"\",\"travelDateStart\":\"<script>alert('XSS')</script>\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -145429,7 +146917,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"api_test\",\"state\":0,\"travelDateEnd\":\"2026-05-10\",\"travelDateStart\":\"<script>alert('XSS')</script>\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"\",\"boughtDateStart\":\"\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"api_test\",\"state\":0,\"travelDateEnd\":\"\",\"travelDateStart\":\"<script>alert('XSS')</script>\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -145812,6 +147300,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v248_fault_Root1_TYPE_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-20, enableBoughtDateQuery=false, loginId=operator_5, boughtDateEnd=2026-05-25, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2025-06-01, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v248_fault_Root1_TYPE_MISMATCH");
@@ -146012,7 +147508,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":0,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":false}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":0,\"travelDateEnd\":\"2025-06-01\",\"travelDateStart\":false}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -146020,7 +147516,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":0,\"travelDateEnd\":\"2013-05-04 11:31:52\",\"travelDateStart\":false}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-25\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"operator_5\",\"state\":0,\"travelDateEnd\":\"2025-06-01\",\"travelDateStart\":false}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -146403,6 +147899,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v249_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=fdse_microservice, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v249_fault_Root1_SEMANTIC_MISMATCH");
@@ -146603,7 +148107,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":3,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"x\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"fdse_microservice\",\"state\":3,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"x\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -146611,7 +148115,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"guest\",\"state\":3,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"x\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"fdse_microservice\",\"state\":3,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"x\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -146994,6 +148498,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v250_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-09-10, enableBoughtDateQuery=true, loginId=invalid_user, boughtDateEnd=2026-05-06, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-05-27, state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v250_fault_Root1_SPECIAL_CHARACTERS");
@@ -147194,7 +148706,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"<img src=x onerror=alert('XSS')>\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2024-09-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"<img src=x onerror=alert('XSS')>\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -147202,7 +148714,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-09-10\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"<img src=x onerror=alert('XSS')>\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2024-09-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"invalid_user\",\"state\":4,\"travelDateEnd\":\"2026-05-27\",\"travelDateStart\":\"<img src=x onerror=alert('XSS')>\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -148176,6 +149688,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v252_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=2026-05-07}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v252_fault_Root1_SEMANTIC_MISMATCH");
@@ -148376,7 +149896,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"1\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2026-05-07\",\"travelDateStart\":\"1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -148384,7 +149904,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2026-05-06\",\"travelDateStart\":\"1\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"qa_tester\",\"state\":90,\"travelDateEnd\":\"2026-05-07\",\"travelDateStart\":\"1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -148767,6 +150287,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v253_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=false, enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v253_fault_Root1_SPECIAL_CHARACTERS");
@@ -149949,6 +151477,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v255_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-02-28, enableBoughtDateQuery=true, loginId=testuser1, boughtDateEnd=2026-05-30, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2013-05-04 17:51:52, state=4}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v255_fault_Root1_SEMANTIC_MISMATCH");
@@ -150149,7 +151685,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":4,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"a\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2025-02-28\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":4,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"a\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -150157,7 +151693,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2026-05-30\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":4,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"a\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-30\",\"boughtDateStart\":\"2025-02-28\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"testuser1\",\"state\":4,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"a\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -150540,6 +152076,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v256_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, boughtDateEnd, enableTravelDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-01, enableBoughtDateQuery=true, boughtDateEnd=2026-05-10, enableTravelDateQuery=false, enableStateQuery=true, state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v256_fault_Root1_SPECIAL_CHARACTERS");
@@ -150740,7 +152284,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":6,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"<svg onload=alert('XSS')>\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":6,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"<svg onload=alert('XSS')>\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -150748,7 +152292,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-06\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":6,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"<svg onload=alert('XSS')>\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-05-10\",\"boughtDateStart\":\"2026-05-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"testuser1\",\"state\":6,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"<svg onload=alert('XSS')>\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -151131,6 +152675,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v257_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2026-05-06, enableBoughtDateQuery=false, loginId=manager01, boughtDateEnd=2025-06-01, enableStateQuery=true, enableTravelDateQuery=true, travelDateEnd=2026-05-22, state=93}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v257_fault_Root1_SEMANTIC_MISMATCH");
@@ -151722,6 +153274,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v258_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v258_fault_Root1_SPECIAL_CHARACTERS");
@@ -152313,6 +153873,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v259_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-06-01, enableBoughtDateQuery=false, loginId=guest, boughtDateEnd=2026-06-04, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-05-20, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v259_fault_Root1_SEMANTIC_MISMATCH");
@@ -152513,7 +154081,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"x\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2025-06-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"x\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -152521,7 +154089,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-06-04\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"x\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-04\",\"boughtDateStart\":\"2025-06-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"guest\",\"state\":92,\"travelDateEnd\":\"2026-05-20\",\"travelDateStart\":\"x\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -152904,6 +154472,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v260_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {travelDateEnd=2025-12-31, state=1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v260_fault_Root1_SPECIAL_CHARACTERS");
@@ -153104,7 +154680,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":89,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":89,\"travelDateEnd\":\"2025-12-31\",\"travelDateStart\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -153112,7 +154688,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":89,\"travelDateEnd\":\"FALLBACK_travelDateEnd_0\",\"travelDateStart\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2026-06-01\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"manager01\",\"state\":89,\"travelDateEnd\":\"2025-12-31\",\"travelDateStart\":\"..\\\\..\\\\..\\\\windows\\\\system32\\\\config\\\\sam\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -153495,6 +155071,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v261_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=admin, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v261_fault_Root1_SEMANTIC_MISMATCH");
@@ -153695,7 +155279,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":90,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"1\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":90,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"1\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -153703,7 +155287,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":90,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"1\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2023-08-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"admin\",\"state\":90,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"1\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -154086,6 +155670,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v262_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=fdse_microservice, enableBoughtDateQuery=false, enableTravelDateQuery=false, enableStateQuery=true, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v262_fault_Root1_SPECIAL_CHARACTERS");
@@ -154286,7 +155878,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"customer123\",\"state\":4,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"%2e%2e%2f%2e%2e%2f\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"fdse_microservice\",\"state\":4,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"%2e%2e%2f%2e%2e%2f\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -154294,7 +155886,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"customer123\",\"state\":4,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"%2e%2e%2f%2e%2e%2f\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"2023-08-16\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"fdse_microservice\",\"state\":4,\"travelDateEnd\":\"2026-05-25\",\"travelDateStart\":\"%2e%2e%2f%2e%2e%2f\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -154677,6 +156269,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v263_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v263_fault_Root1_SEMANTIC_MISMATCH");
@@ -155268,6 +156868,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v264_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd, travelDateStart]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=2026-05-27, travelDateStart=; ls -la}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v264_fault_Root1_SPECIAL_CHARACTERS");
@@ -155859,6 +157467,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v265_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=false, loginId=admin, boughtDateEnd=2025-02-27, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-06-01, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v265_fault_Root1_SEMANTIC_MISMATCH");
@@ -156059,7 +157675,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"admin\",\"state\":6,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"-\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-02-27\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"admin\",\"state\":6,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"-\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -156067,7 +157683,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-28\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"admin\",\"state\":6,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"-\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-02-27\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":true,\"enableTravelDateQuery\":true,\"loginId\":\"admin\",\"state\":6,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"-\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -156450,6 +158066,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v266_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, loginId]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, loginId=nonexistent_user}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v266_fault_Root1_SPECIAL_CHARACTERS");
@@ -156650,7 +158274,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":93,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"| cat /etc/passwd\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"nonexistent_user\",\"state\":93,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"| cat /etc/passwd\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -156658,7 +158282,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"FALLBACK_boughtDateStart_0\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"dev_user\",\"state\":93,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"| cat /etc/passwd\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"nonexistent_user\",\"state\":93,\"travelDateEnd\":\"2026-06-01\",\"travelDateStart\":\"| cat /etc/passwd\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -157041,6 +158665,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v267_fault_Root1_SEMANTIC_MISMATCH() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, enableTravelDateQuery, boughtDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2025-01-01, enableBoughtDateQuery=true, enableTravelDateQuery=false, boughtDateEnd=2025-12-31}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v267_fault_Root1_SEMANTIC_MISMATCH");
@@ -157241,7 +158873,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-03-20\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":1,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"?\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":1,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"?\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -157249,7 +158881,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-03-20\",\"boughtDateStart\":\"2026-05-20\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":1,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"?\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-12-31\",\"boughtDateStart\":\"2025-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"qa_tester\",\"state\":1,\"travelDateEnd\":\"2026-05-22\",\"travelDateStart\":\"?\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -157632,6 +159264,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v268_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableStateQuery, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableStateQuery=false, state=0}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v268_fault_Root1_SPECIAL_CHARACTERS");
@@ -158223,6 +159863,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v269_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [boughtDateStart, enableBoughtDateQuery, loginId, boughtDateEnd, enableStateQuery, enableTravelDateQuery, travelDateEnd, state]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {boughtDateStart=2024-01-01, enableBoughtDateQuery=true, loginId=invalid_user, boughtDateEnd=2024-12-31, enableStateQuery=false, enableTravelDateQuery=true, travelDateEnd=2025-12-31 23:59:59, state=-1}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v269_fault_Root1_SPECIAL_CHARACTERS");
@@ -158423,7 +160071,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-03-20\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"jane.smith\",\"state\":90,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"$(cat /etc/passwd)\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":90,\"travelDateEnd\":\"2025-12-31 23:59:59\",\"travelDateStart\":\"$(cat /etc/passwd)\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -158431,7 +160079,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-03-20\",\"boughtDateStart\":\"2026-05-25\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"jane.smith\",\"state\":90,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"$(cat /etc/passwd)\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-12-31\",\"boughtDateStart\":\"2024-01-01\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":true,\"enableTravelDateQuery\":false,\"loginId\":\"invalid_user\",\"state\":90,\"travelDateEnd\":\"2025-12-31 23:59:59\",\"travelDateStart\":\"$(cat /etc/passwd)\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -158814,6 +160462,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v270_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [loginId, enableTravelDateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {loginId=, enableTravelDateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v270_fault_Root1_SPECIAL_CHARACTERS");
@@ -159014,7 +160670,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"customer123\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -159022,7 +160678,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"customer123\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2025-06-01\",\"boughtDateStart\":\"2026-05-10\",\"enableBoughtDateQuery\":false,\"enableStateQuery\":false,\"enableTravelDateQuery\":true,\"loginId\":\"\",\"state\":93,\"travelDateEnd\":\"2026-05-30\",\"travelDateStart\":\"!@#$%^&*(){}[]|\\\\:;\\\"'<>?,./\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
@@ -159405,6 +161061,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v271_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableBoughtDateQuery, enableTravelDateQuery, enableStateQuery]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableBoughtDateQuery=false, enableTravelDateQuery=false, enableStateQuery=false}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v271_fault_Root1_SPECIAL_CHARACTERS");
@@ -159996,6 +161660,14 @@ public class Flow_Scenario_1 {
 
     @Test
     public void test_negative_flow_S1_v272_fault_Root1_SPECIAL_CHARACTERS() throws Exception {
+        // ═══════════════════════════════════════════════════════════════════════
+        // 🔧 ENHANCED TEST - Modified by Test Case Enhancer
+        // Original Status: 200
+        // Enhanced Parameters: [enableTravelDateQuery, travelDateEnd]
+        // ═══════════════════════════════════════════════════════════════════════
+        Allure.label("enhancement", "ENHANCED");
+        Allure.addAttachment("📝 Original Failure", "text/plain", "Original Status: 200\nOriginal Response: {\"status\":1,\"msg\":\"Success\",\"data\":[]}\nEnhanced Parameters: {enableTravelDateQuery=true, travelDateEnd=2024-12-31 23:59:59}");
+
         // Record test execution for fault detection tracking
         es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()
             .recordTestCase(this.getClass().getName(), "test_negative_flow_S1_v272_fault_Root1_SPECIAL_CHARACTERS");
@@ -160196,7 +161868,7 @@ public class Flow_Scenario_1 {
                         RequestSpecification req = RestAssured.given();
                         // 🔥 FIX: Set Content-Type to application/json for requests with bodies
                         req = req.contentType("application/json");
-                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"\\u0000\\u0001\\u0002\"}";
+                        String requestBody1 = "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2024-12-31 23:59:59\",\"travelDateStart\":\"\\u0000\\u0001\\u0002\"}";
                         req = req.body(requestBody1);
                         
                         // Add request body as attachment (AllureRestAssured filter disabled to avoid duplication)
@@ -160204,7 +161876,7 @@ public class Flow_Scenario_1 {
                         if (loginSucceeded.get()) {
                             req = req.header("Authorization", jwtType + " " + jwt);
                         }
-                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2013-05-04 17:51:52\",\"travelDateStart\":\"\\u0000\\u0001\\u0002\"}");
+                        allStepParameters.put("body", "{\"boughtDateEnd\":\"2024-11-30\",\"boughtDateStart\":\"2026-05-06\",\"enableBoughtDateQuery\":true,\"enableStateQuery\":false,\"enableTravelDateQuery\":false,\"loginId\":\"support_agent\",\"state\":93,\"travelDateEnd\":\"2024-12-31 23:59:59\",\"travelDateStart\":\"\\u0000\\u0001\\u0002\"}");
                         // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases
                         stepResponse1 = req.when().post("/api/v1/orderOtherService/orderOther/refresh")
                                .then().log().ifValidationFails()
