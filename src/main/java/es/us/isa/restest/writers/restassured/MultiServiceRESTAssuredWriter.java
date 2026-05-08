@@ -1205,8 +1205,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         if (allureReport && mstc.isStatusCodeExplorationTest()) {
                             int targetCode = mstc.getTargetStatusCode();
                             String targetDescription = mstc.getTargetStatusCodeDescription();
-                            
-                            System.out.println("DEBUG: Adding exploration test metadata for: " + testMethodName + " targeting " + targetCode);
+
                             pw.println("        // 🎯 STATUS CODE EXPLORATION TEST METADATA");
                             pw.println("        Allure.parameter(\"🎯 Test Type\", \"STATUS CODE EXPLORATION\");");
                             pw.println("        Allure.parameter(\"🔍 Target Status Code\", \"" + targetCode + "\");");
