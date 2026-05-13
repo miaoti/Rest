@@ -51,6 +51,9 @@ public class ZeroShotLLMGenerator {
         // List of LLM-related properties to load
         String[] llmProperties = {
             "llm.enabled", "llm.model.type",
+            "llm.openai_compatible.enabled", "llm.openai_compatible.url",
+            "llm.openai_compatible.model", "llm.openai_compatible.api.key",
+            // Legacy llm.local.* keys — accepted as deprecated aliases for backward compat
             "llm.local.enabled", "llm.local.url", "llm.local.model", "llm.local.api.key",
             "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
             "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",

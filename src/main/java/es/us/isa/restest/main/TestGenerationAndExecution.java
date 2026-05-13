@@ -898,7 +898,7 @@ public class TestGenerationAndExecution {
 		String registryPath = System.getProperty("smart.input.fetch.registry.path", "not set");
 
 		String llmEnabled = System.getProperty("llm.enabled", "false");
-		String llmModelType = System.getProperty("llm.model.type", "local");
+		String llmModelType = System.getProperty("llm.model.type", "openai_compatible");
 		String geminiApiKey = System.getProperty("llm.gemini.api.key", "not set");
 		String ollamaEnabled = System.getProperty("llm.ollama.enabled", "false");
 		String ollamaModel = System.getProperty("llm.ollama.model", "not set");

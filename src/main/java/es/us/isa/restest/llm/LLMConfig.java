@@ -4,30 +4,79 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Configuration class for LLM settings supporting both local and Gemini models
+ * Configuration class for LLM settings supporting OpenAI-compatible HTTP
+ * endpoints (DeepSeek, OpenAI, OpenRouter, Together, Groq, ...), Google Gemini,
+ * and Ollama.
+ *
+ * <p>The {@code OPENAI_COMPATIBLE} backend covers any provider that implements
+ * OpenAI's {@code /v1/chat/completions} request/response shape — it is NOT
+ * limited to OpenAI itself. The default test target in this repo is DeepSeek;
+ * the same code path also drives self-hosted OpenAI shims like {@code gpt4all}
+ * or {@code llama.cpp --api}. Authentication is by optional bearer token
+ * ({@code llm.openai_compatible.api.key}), which may be empty for
+ * unauthenticated self-hosted servers.
+ *
+ * <p>Historical note: prior versions called this backend {@code LOCAL} /
+ * {@code llm.local.*} — a misnomer, because the typical deployment is a
+ * REMOTE hosted API authenticated with a bearer token. Legacy
+ * {@code llm.local.*} keys and {@code llm.model.type=local} are still accepted
+ * as deprecated aliases (see {@link #fromProperties}) so existing configs keep
+ * working; a one-line warning is logged on first use.
+ *
+ * <p><b>Treat instances returned by {@link #fromProperties} as immutable.</b> They
+ * are shared across callers via {@link #CONFIG_CACHE}, so mutating one (via the
+ * package-private setters retained for reflective/builder use) would pollute every
+ * subsequent caller in the same JVM. The setters exist for legacy reasons; new
+ * call sites should not invoke them.</p>
  */
 public class LLMConfig {
-    
+
     private static final Logger logger = LogManager.getLogger(LLMConfig.class);
-    
+
+    /**
+     * Cache of previously-loaded configurations keyed by a snapshot of the
+     * LLM-relevant entries from the supplied properties map. {@link #fromProperties}
+     * is called once per scenario during MST runs (~526 times per run), and each
+     * invocation re-reads identical properties, re-resolves the same {@code ${ENV_VAR}}
+     * placeholders, and re-emits the same 3 INFO log lines. Memoizing here keeps
+     * the first-load logs (so operators can still verify configuration on startup)
+     * while making subsequent identical loads silent and effectively free.
+     *
+     * <p>Keyed on a content-snapshot string rather than {@code Map} identity because
+     * callers (e.g. {@code LLMService.getInstance}, {@code ZeroShotLLMGenerator})
+     * construct a fresh {@link java.util.HashMap} from {@code System.getProperty(...)}
+     * on every call, so identity-based caching would never hit.
+     */
+    private static final ConcurrentHashMap<String, LLMConfig> CONFIG_CACHE = new ConcurrentHashMap<>();
+
     public enum ModelType {
-        LOCAL, GEMINI, OLLAMA
+        /**
+         * Any OpenAI-compatible chat-completions HTTP endpoint: DeepSeek,
+         * OpenAI, OpenRouter, Together, Groq, gpt4all, llama.cpp, ...
+         */
+        OPENAI_COMPATIBLE,
+        GEMINI,
+        OLLAMA
     }
-    
+
     // General LLM settings
     private boolean enabled;
     private ModelType modelType;
-    
-    // Local LLM settings (OpenAI-compatible endpoint; covers DeepSeek, OpenAI, gpt4all, etc.)
-    private boolean localEnabled;
-    private String localUrl;
-    private String localModel;
-    /** Optional bearer token for OpenAI-compatible hosted APIs (DeepSeek, OpenAI, etc.).
-     *  Empty for true local servers like gpt4all. Resolved from ${ENV_VAR} syntax in properties. */
-    private String localApiKey;
-    
+
+    // OpenAI-compatible HTTP endpoint settings.
+    // The {@code url} is the full chat-completions endpoint; the bearer token
+    // ({@code apiKey}) is optional (empty for unauthenticated self-hosted
+    // servers).
+    private boolean openaiCompatibleEnabled;
+    private String openaiCompatibleUrl;
+    private String openaiCompatibleModel;
+    /** Bearer token sent as {@code Authorization: Bearer <key>} when non-empty.
+     *  Resolved from {@code ${ENV_VAR}} syntax in properties. */
+    private String openaiCompatibleApiKey;
+
     // Gemini API settings
     private boolean geminiEnabled;
     private String geminiApiKey;
@@ -42,15 +91,15 @@ public class LLMConfig {
     // Rate limiting settings
     private int maxRetries;
     private boolean rateLimitRetryEnabled;
-    
+
     // Default constructor with sensible defaults
     public LLMConfig() {
         this.enabled = true;
-        this.modelType = ModelType.LOCAL;
-        this.localEnabled = true;
-        this.localUrl = "http://localhost:4891/v1/chat/completions";
-        this.localModel = "llama-3-8b-instruct";
-        this.localApiKey = "";
+        this.modelType = ModelType.OPENAI_COMPATIBLE;
+        this.openaiCompatibleEnabled = true;
+        this.openaiCompatibleUrl = "http://localhost:4891/v1/chat/completions";
+        this.openaiCompatibleModel = "llama-3-8b-instruct";
+        this.openaiCompatibleApiKey = "";
         this.geminiEnabled = false;
         this.geminiApiKey = "";
         this.geminiModel = "gemini-2.0-flash-exp";
@@ -61,17 +110,78 @@ public class LLMConfig {
         this.maxRetries = 3;
         this.rateLimitRetryEnabled = true;
     }
-    
+
     /**
-     * Create LLMConfig from properties map
+     * Create LLMConfig from properties map.
+     *
+     * <p>Accepts the canonical {@code llm.openai_compatible.*} keys and the
+     * legacy {@code llm.local.*} keys (deprecated alias). When the canonical
+     * key is missing, the legacy key is read as a fallback and a one-time
+     * deprecation warning is logged.
+     *
+     * <p>Memoized: the first call with a given set of LLM-relevant property values
+     * runs the full load (resolving {@code ${ENV_VAR}} placeholders, emitting INFO
+     * logs about key resolution and final model selection). Subsequent calls with
+     * the same property values return the cached instance silently — this is what
+     * keeps a 526-scenario run from producing 1,578 redundant INFO log lines.
      */
     public static LLMConfig fromProperties(Map<String, String> properties) {
+        String cacheKey = buildCacheKey(properties);
+        LLMConfig cached = CONFIG_CACHE.get(cacheKey);
+        if (cached != null) {
+            logger.debug("LLMConfig cache hit (key hash={})", cacheKey.hashCode());
+            return cached;
+        }
+        // computeIfAbsent ensures only one thread runs the load + logs for a given
+        // key even under contention; later callers wait briefly and then reuse the
+        // same instance.
+        return CONFIG_CACHE.computeIfAbsent(cacheKey, k -> loadFromProperties(properties));
+    }
+
+    /**
+     * Build a stable cache key from only the LLM-relevant properties. Listing the
+     * keys explicitly (rather than hashing the whole map) means unrelated entries
+     * like {@code base.url} or per-scenario settings don't cause false cache misses,
+     * and that callers using a {@link java.util.HashMap} (unordered iteration) still
+     * hit the cache.
+     *
+     * <p><b>Maintenance:</b> if you add a new {@code llm.*} property that
+     * {@link #loadFromProperties} reads, add it here too — otherwise the cache will
+     * silently mask its effect. The key uses the raw property text (including any
+     * {@code ${VAR}} placeholders); env-var resolution is captured into the cached
+     * instance once and assumed stable for the JVM's lifetime.</p>
+     */
+    private static String buildCacheKey(Map<String, String> properties) {
+        if (properties == null) {
+            return "<null>";
+        }
+        String[] keys = {
+            "llm.enabled", "llm.model.type",
+            "llm.local.enabled", "llm.local.url", "llm.local.model", "llm.local.api.key",
+            "llm.gemini.enabled", "llm.gemini.api.key", "llm.gemini.model", "llm.gemini.api.url",
+            "llm.ollama.enabled", "llm.ollama.url", "llm.ollama.model",
+            "llm.rate.limit.max.retries", "llm.rate.limit.retry.enabled"
+        };
+        StringBuilder sb = new StringBuilder(256);
+        for (String key : keys) {
+            sb.append(key).append('=').append(properties.getOrDefault(key, "")).append('|');
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Actual load logic. Pulled out of {@link #fromProperties} so that the cache
+     * can sit in front of it. Keeps all original INFO log lines so first-load
+     * diagnostics are unchanged.
+     */
+    private static LLMConfig loadFromProperties(Map<String, String> properties) {
         LLMConfig config = new LLMConfig();
-        
+
         config.enabled = Boolean.parseBoolean(
             properties.getOrDefault("llm.enabled", "true"));
-        
-        String modelTypeStr = properties.getOrDefault("llm.model.type", "local").toLowerCase();
+
+        String modelTypeStr = properties.getOrDefault(
+                "llm.model.type", "openai_compatible").toLowerCase();
         switch (modelTypeStr) {
             case "gemini":
                 config.modelType = ModelType.GEMINI;
@@ -80,29 +190,50 @@ public class LLMConfig {
                 config.modelType = ModelType.OLLAMA;
                 break;
             case "local":
+                logger.warn("llm.model.type=local is a deprecated alias for "
+                        + "'openai_compatible'; please update your *.properties "
+                        + "files. The old name was misleading because this "
+                        + "backend is typically a REMOTE hosted API "
+                        + "(DeepSeek/OpenAI/OpenRouter/...), not a local model.");
+                config.modelType = ModelType.OPENAI_COMPATIBLE;
+                break;
+            case "openai":
+                // Short alias accepted for ergonomics, but not the canonical name —
+                // we deliberately avoid 'openai' alone because this backend works
+                // with DeepSeek, OpenRouter, Together, and any other provider that
+                // speaks the OpenAI chat-completions HTTP shape, not just OpenAI.
+                config.modelType = ModelType.OPENAI_COMPATIBLE;
+                break;
+            case "openai_compatible":
+            case "openai-compatible":
             default:
-                config.modelType = ModelType.LOCAL;
+                config.modelType = ModelType.OPENAI_COMPATIBLE;
                 break;
         }
-        
-        // Local LLM settings
-        config.localEnabled = Boolean.parseBoolean(
-            properties.getOrDefault("llm.local.enabled", "true"));
-        config.localUrl = properties.getOrDefault(
-            "llm.local.url", "http://localhost:4891/v1/chat/completions");
-        config.localModel = properties.getOrDefault(
-            "llm.local.model", "llama-3-8b-instruct");
+
+        // OpenAI-compatible endpoint settings.
+        // Read the canonical llm.openai_compatible.* keys first, fall back to
+        // legacy llm.local.* when the canonical key is absent so existing
+        // configs keep working.
+        config.openaiCompatibleEnabled = Boolean.parseBoolean(
+            firstDefined(properties, "llm.openai_compatible.enabled", "llm.local.enabled", "true"));
+        config.openaiCompatibleUrl = firstDefined(properties,
+            "llm.openai_compatible.url", "llm.local.url", "http://localhost:4891/v1/chat/completions");
+        config.openaiCompatibleModel = firstDefined(properties,
+            "llm.openai_compatible.model", "llm.local.model", "llama-3-8b-instruct");
         // Resolve ${ENV_VAR} in api.key so the secret never has to be committed
         // to the .properties file. Falls back to the literal value when no
         // ${...} placeholder is used.
-        String rawApiKey = properties.getOrDefault("llm.local.api.key", "");
-        config.localApiKey = resolveEnvPlaceholder(rawApiKey);
+        String rawApiKey = firstDefined(properties,
+            "llm.openai_compatible.api.key", "llm.local.api.key", "");
+        config.openaiCompatibleApiKey = resolveEnvPlaceholder(rawApiKey);
+        warnIfLegacyOpenaiCompatibleKeysUsed(properties);
         // Diagnostic: surface key-resolution health (length only, never the value)
         // so production failures are debuggable without leaking the secret.
         if (rawApiKey != null && !rawApiKey.isEmpty()) {
             boolean isPlaceholder = rawApiKey.trim().startsWith("${")
                                     && rawApiKey.trim().endsWith("}");
-            int resolvedLen = config.localApiKey == null ? 0 : config.localApiKey.length();
+            int resolvedLen = config.openaiCompatibleApiKey == null ? 0 : config.openaiCompatibleApiKey.length();
             String source;
             if (!isPlaceholder) {
                 source = "literal";
@@ -111,15 +242,15 @@ public class LLMConfig {
             } else {
                 source = "resolved";
             }
-            logger.info("LLM local api.key: raw='{}' (placeholder={}), resolvedLength={}, source={}",
+            logger.info("LLM openai_compatible api.key: raw='{}' (placeholder={}), resolvedLength={}, source={}",
                     isPlaceholder ? rawApiKey.trim() : "<literal>", isPlaceholder, resolvedLen, source);
         }
-        
+
         // Gemini API settings
         config.geminiEnabled = Boolean.parseBoolean(
             properties.getOrDefault("llm.gemini.enabled", "false"));
-        // Same ${VAR} resolution as the local key, so gemini secrets can stay
-        // out of the .properties file too.
+        // Same ${VAR} resolution as the openai_compatible key, so gemini
+        // secrets can stay out of the .properties file too.
         config.geminiApiKey = resolveEnvPlaceholder(
             properties.getOrDefault("llm.gemini.api.key", ""));
         config.geminiModel = properties.getOrDefault(
@@ -145,9 +276,9 @@ public class LLMConfig {
         // This makes configuration resilient when a launcher overrides llm.model.type inconsistently
         ModelType originalType = config.modelType;
         if (!config.isValid()) {
-            // Prefer LOCAL if enabled
-            if (config.localEnabled && config.localUrl != null && !config.localUrl.trim().isEmpty()) {
-                config.modelType = ModelType.LOCAL;
+            // Prefer OPENAI_COMPATIBLE if enabled
+            if (config.openaiCompatibleEnabled && config.openaiCompatibleUrl != null && !config.openaiCompatibleUrl.trim().isEmpty()) {
+                config.modelType = ModelType.OPENAI_COMPATIBLE;
             } else if (config.ollamaEnabled && config.ollamaUrl != null && !config.ollamaUrl.trim().isEmpty()) {
                 config.modelType = ModelType.OLLAMA;
             } else if (config.geminiEnabled && config.geminiApiKey != null && !config.geminiApiKey.trim().isEmpty()) {
@@ -159,41 +290,41 @@ public class LLMConfig {
             logger.warn("LLMConfig: Overriding modelType {} -> {} based on enabled providers to ensure a valid configuration", originalType, config.modelType);
         }
 
-        logger.info("LLMConfig initialized: enabled={}, modelType={}, localEnabled={}, geminiEnabled={}, ollamaEnabled={}, maxRetries={}, rateLimitRetryEnabled={}",
-                   config.enabled, config.modelType, config.localEnabled, config.geminiEnabled, config.ollamaEnabled, config.maxRetries, config.rateLimitRetryEnabled);
-        
+        logger.info("LLMConfig initialized: enabled={}, modelType={}, openaiCompatibleEnabled={}, geminiEnabled={}, ollamaEnabled={}, maxRetries={}, rateLimitRetryEnabled={}",
+                   config.enabled, config.modelType, config.openaiCompatibleEnabled, config.geminiEnabled, config.ollamaEnabled, config.maxRetries, config.rateLimitRetryEnabled);
+
         // Automatically ensure only the selected model type is enabled
         config.enforceModelTypeConsistency();
-        
+
         return config;
     }
-    
+
     /**
      * Ensure only the selected model type is enabled, disable others
      */
     private void enforceModelTypeConsistency() {
         switch (this.modelType) {
-            case LOCAL:
-                this.localEnabled = true;
+            case OPENAI_COMPATIBLE:
+                this.openaiCompatibleEnabled = true;
                 this.geminiEnabled = false;
                 this.ollamaEnabled = false;
-                logger.info("Enforcing LOCAL model configuration - disabled Gemini and Ollama");
+                logger.info("Enforcing OPENAI_COMPATIBLE model configuration - disabled Gemini and Ollama");
                 break;
             case GEMINI:
-                this.localEnabled = false;
+                this.openaiCompatibleEnabled = false;
                 this.geminiEnabled = true;
                 this.ollamaEnabled = false;
-                logger.info("Enforcing GEMINI model configuration - disabled Local and Ollama");
+                logger.info("Enforcing GEMINI model configuration - disabled OpenAI-compatible and Ollama");
                 break;
             case OLLAMA:
-                this.localEnabled = false;
+                this.openaiCompatibleEnabled = false;
                 this.geminiEnabled = false;
                 this.ollamaEnabled = true;
-                logger.info("Enforcing OLLAMA model configuration - disabled Local and Gemini");
+                logger.info("Enforcing OLLAMA model configuration - disabled OpenAI-compatible and Gemini");
                 break;
         }
     }
-    
+
     /**
      * Validate the configuration
      */
@@ -201,11 +332,11 @@ public class LLMConfig {
         if (!enabled) {
             return true; // Valid to be disabled
         }
-        
+
         switch (modelType) {
-            case LOCAL:
-                return localEnabled && localUrl != null && !localUrl.trim().isEmpty()
-                       && localModel != null && !localModel.trim().isEmpty();
+            case OPENAI_COMPATIBLE:
+                return openaiCompatibleEnabled && openaiCompatibleUrl != null && !openaiCompatibleUrl.trim().isEmpty()
+                       && openaiCompatibleModel != null && !openaiCompatibleModel.trim().isEmpty();
             case GEMINI:
                 return geminiEnabled && geminiApiKey != null && !geminiApiKey.trim().isEmpty()
                        && geminiModel != null && !geminiModel.trim().isEmpty()
@@ -217,25 +348,73 @@ public class LLMConfig {
                 return false;
         }
     }
-    
+
     // Getters and setters
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
-    
+
     public ModelType getModelType() { return modelType; }
     public void setModelType(ModelType modelType) { this.modelType = modelType; }
-    
-    public boolean isLocalEnabled() { return localEnabled; }
-    public void setLocalEnabled(boolean localEnabled) { this.localEnabled = localEnabled; }
-    
-    public String getLocalUrl() { return localUrl; }
-    public void setLocalUrl(String localUrl) { this.localUrl = localUrl; }
-    
-    public String getLocalModel() { return localModel; }
-    public void setLocalModel(String localModel) { this.localModel = localModel; }
 
-    public String getLocalApiKey() { return localApiKey; }
-    public void setLocalApiKey(String localApiKey) { this.localApiKey = localApiKey; }
+    public boolean isOpenaiCompatibleEnabled() { return openaiCompatibleEnabled; }
+    public void setOpenaiCompatibleEnabled(boolean openaiCompatibleEnabled) { this.openaiCompatibleEnabled = openaiCompatibleEnabled; }
+
+    public String getOpenaiCompatibleUrl() { return openaiCompatibleUrl; }
+    public void setOpenaiCompatibleUrl(String openaiCompatibleUrl) { this.openaiCompatibleUrl = openaiCompatibleUrl; }
+
+    public String getOpenaiCompatibleModel() { return openaiCompatibleModel; }
+    public void setOpenaiCompatibleModel(String openaiCompatibleModel) { this.openaiCompatibleModel = openaiCompatibleModel; }
+
+    public String getOpenaiCompatibleApiKey() { return openaiCompatibleApiKey; }
+    public void setOpenaiCompatibleApiKey(String openaiCompatibleApiKey) { this.openaiCompatibleApiKey = openaiCompatibleApiKey; }
+
+    /**
+     * Return the first non-null/non-empty value for {@code newKey} or
+     * {@code legacyKey}, falling back to {@code defaultValue}. Used so that
+     * legacy {@code llm.local.*} keys keep working after the rename to
+     * {@code llm.openai_compatible.*}.
+     */
+    private static String firstDefined(Map<String, String> properties,
+                                       String newKey, String legacyKey,
+                                       String defaultValue) {
+        String fromNew = properties.get(newKey);
+        if (fromNew != null && !fromNew.isEmpty()) {
+            return fromNew;
+        }
+        String fromLegacy = properties.get(legacyKey);
+        if (fromLegacy != null && !fromLegacy.isEmpty()) {
+            return fromLegacy;
+        }
+        return defaultValue;
+    }
+
+    /**
+     * Log a single deprecation warning if any legacy {@code llm.local.*} key
+     * is present and the canonical {@code llm.openai_compatible.*} equivalent
+     * is not.
+     */
+    private static void warnIfLegacyOpenaiCompatibleKeysUsed(Map<String, String> properties) {
+        String[][] pairs = new String[][] {
+            {"llm.openai_compatible.enabled", "llm.local.enabled"},
+            {"llm.openai_compatible.url",     "llm.local.url"},
+            {"llm.openai_compatible.model",   "llm.local.model"},
+            {"llm.openai_compatible.api.key", "llm.local.api.key"},
+        };
+        for (String[] pair : pairs) {
+            String newVal = properties.get(pair[0]);
+            String legacyVal = properties.get(pair[1]);
+            if ((newVal == null || newVal.isEmpty())
+                    && legacyVal != null && !legacyVal.isEmpty()) {
+                logger.warn("Legacy LLM property keys detected (llm.local.*). "
+                        + "Please rename to llm.openai_compatible.* in your "
+                        + "*.properties files. The new prefix reflects that this "
+                        + "backend is an OpenAI-compatible HTTP endpoint "
+                        + "(DeepSeek, OpenAI, OpenRouter, Together, ...), not a "
+                        + "local model.");
+                return;
+            }
+        }
+    }
 
     /**
      * Resolve a property value that may be a literal, an environment-variable
@@ -330,16 +509,16 @@ public class LLMConfig {
         }
         return null;
     }
-    
+
     public boolean isGeminiEnabled() { return geminiEnabled; }
     public void setGeminiEnabled(boolean geminiEnabled) { this.geminiEnabled = geminiEnabled; }
-    
+
     public String getGeminiApiKey() { return geminiApiKey; }
     public void setGeminiApiKey(String geminiApiKey) { this.geminiApiKey = geminiApiKey; }
-    
+
     public String getGeminiModel() { return geminiModel; }
     public void setGeminiModel(String geminiModel) { this.geminiModel = geminiModel; }
-    
+
     public String getGeminiApiUrl() { return geminiApiUrl; }
     public void setGeminiApiUrl(String geminiApiUrl) { this.geminiApiUrl = geminiApiUrl; }
 
@@ -357,14 +536,14 @@ public class LLMConfig {
 
     public boolean isRateLimitRetryEnabled() { return rateLimitRetryEnabled; }
     public void setRateLimitRetryEnabled(boolean rateLimitRetryEnabled) { this.rateLimitRetryEnabled = rateLimitRetryEnabled; }
-    
+
     @Override
     public String toString() {
         return String.format(
-            "LLMConfig{enabled=%s, modelType=%s, localEnabled=%s, localUrl='%s', localModel='%s', " +
+            "LLMConfig{enabled=%s, modelType=%s, openaiCompatibleEnabled=%s, openaiCompatibleUrl='%s', openaiCompatibleModel='%s', " +
             "geminiEnabled=%s, geminiModel='%s', geminiApiUrl='%s', ollamaEnabled=%s, ollamaUrl='%s', ollamaModel='%s', " +
             "maxRetries=%d, rateLimitRetryEnabled=%s}",
-            enabled, modelType, localEnabled, localUrl, localModel,
+            enabled, modelType, openaiCompatibleEnabled, openaiCompatibleUrl, openaiCompatibleModel,
             geminiEnabled, geminiModel, geminiApiUrl, ollamaEnabled, ollamaUrl, ollamaModel,
             maxRetries, rateLimitRetryEnabled
         );

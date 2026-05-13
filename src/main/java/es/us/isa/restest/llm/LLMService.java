@@ -12,8 +12,9 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Unified LLM service that can route requests to either local model or Gemini API
- * based on configuration
+ * Unified LLM service that routes requests to an OpenAI-compatible HTTP
+ * endpoint (DeepSeek, OpenAI, OpenRouter, Together, ..., or a self-hosted
+ * OpenAI shim like gpt4all), Google Gemini, or Ollama, based on configuration.
  */
 public class LLMService {
     
@@ -73,11 +74,11 @@ public class LLMService {
         }
 
         // Initialize Ollama client whenever URL+model are configured, even when
-        // the active modelType is LOCAL or GEMINI. This makes Ollama available
-        // as a per-call fallback when the primary backend (e.g. a flaky DeepSeek
-        // HTTP/2 stream) times out or returns null. enforceModelTypeConsistency
-        // sets ollamaEnabled=false for non-Ollama primaries; that flag governs
-        // routing, not whether the local client should exist.
+        // the active modelType is OPENAI_COMPATIBLE or GEMINI. This makes Ollama
+        // available as a per-call fallback when the primary backend (e.g. a
+        // flaky DeepSeek HTTP/2 stream) times out or returns null.
+        // enforceModelTypeConsistency sets ollamaEnabled=false for non-Ollama
+        // primaries; that flag governs routing, not whether the client exists.
         boolean ollamaConfigured = config.getOllamaUrl() != null
                 && !config.getOllamaUrl().trim().isEmpty()
                 && config.getOllamaModel() != null
@@ -195,8 +196,8 @@ public class LLMService {
                 case GEMINI:
                     result = generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
                     break;
-                case LOCAL:
-                    result = generateWithLocal(systemPrompt, userPrompt, maxTokens, temperature);
+                case OPENAI_COMPATIBLE:
+                    result = generateWithOpenAICompatible(systemPrompt, userPrompt, maxTokens, temperature);
                     break;
                 case OLLAMA:
                     result = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
@@ -208,10 +209,10 @@ public class LLMService {
             }
 
             // Per-call fallback to a local Ollama model when the hosted primary
-            // (LOCAL → DeepSeek/OpenAI/etc., or GEMINI) returns null because of
-            // a timeout, 401, parse failure, etc. The fallback is *per call only*
-            // — the next call routes to the primary again so a transient hosted-
-            // API stall doesn't permanently demote the run to local quality.
+            // (OPENAI_COMPATIBLE → DeepSeek/OpenAI/etc., or GEMINI) returns null
+            // because of a timeout, 401, parse failure, etc. The fallback is
+            // *per call only* — the next call routes to the primary again so a
+            // transient hosted-API stall doesn't permanently demote the run.
             // If Ollama also fails, return null and let the upstream caller
             // (SmartInputFetcher / ZeroShotLLMGenerator) hit its placeholder
             // fallback as before.
@@ -234,7 +235,7 @@ public class LLMService {
             errorMessage = e.getMessage();
             logger.error("Error during LLM generation: {}", errorMessage, e);
             // Same per-call cascade on hard exceptions, e.g. SocketTimeoutException
-            // bubbled out of OkHttp before generateWithLocal could swallow it.
+            // bubbled out of OkHttp before generateWithOpenAICompatible could swallow it.
             if (result == null
                     && ollamaClient != null
                     && config.getModelType() != LLMConfig.ModelType.OLLAMA) {
@@ -277,10 +278,12 @@ public class LLMService {
     }
     
     /**
-     * Generate text using local LLM
+     * Generate text against an OpenAI-compatible chat-completions endpoint
+     * (DeepSeek, OpenAI, OpenRouter, Together, ..., or a self-hosted OpenAI
+     * shim like gpt4all or llama.cpp --api).
      */
-    private String generateWithLocal(String systemPrompt, String userPrompt, int maxTokens, double temperature) {
-        logger.debug("[LLMService] Using local LLM for generation");
+    private String generateWithOpenAICompatible(String systemPrompt, String userPrompt, int maxTokens, double temperature) {
+        logger.debug("[LLMService] Using OpenAI-compatible LLM endpoint for generation");
         
         try {
             // Build the request body compatible with OpenAI API format (which gpt4all supports)
@@ -293,13 +296,13 @@ public class LLMService {
             messages.put(new JSONObject().put("role", "user").put("content", userPrompt));
             
             JSONObject requestBody = new JSONObject()
-                    .put("model", config.getLocalModel())
+                    .put("model", config.getOpenaiCompatibleModel())
                     .put("messages", messages)
                     .put("max_tokens", maxTokens)
                     .put("temperature", temperature);
             
-            logger.debug("[Local LLM] Sending request to: {}", config.getLocalUrl());
-            logger.debug("[Local LLM] Request body: {}", requestBody.toString());
+            logger.debug("[OpenAI-compatible LLM] Sending request to: {}", config.getOpenaiCompatibleUrl());
+            logger.debug("[OpenAI-compatible LLM] Request body: {}", requestBody.toString());
             
             RequestBody body = RequestBody.create(
                     requestBody.toString(),
@@ -307,19 +310,19 @@ public class LLMService {
             );
             
             Request.Builder reqBuilder = new Request.Builder()
-                    .url(config.getLocalUrl())
+                    .url(config.getOpenaiCompatibleUrl())
                     .post(body)
                     .addHeader("Content-Type", "application/json");
-            // OpenAI-compatible hosted endpoints (DeepSeek, OpenAI, ...) need
-            // an Authorization header. Local-only servers (gpt4all) leave the
-            // key empty and skip the header.
-            String apiKey = config.getLocalApiKey();
+            // Hosted OpenAI-compatible endpoints (DeepSeek, OpenAI, OpenRouter,
+            // ...) need an Authorization header. Self-hosted OpenAI shims like
+            // gpt4all leave the key empty and skip the header.
+            String apiKey = config.getOpenaiCompatibleApiKey();
             if (apiKey != null && !apiKey.isEmpty()) {
                 reqBuilder.addHeader("Authorization", "Bearer " + apiKey);
-            } else if (looksLikeHostedEndpoint(config.getLocalUrl())) {
+            } else if (looksLikeHostedEndpoint(config.getOpenaiCompatibleUrl())) {
                 // Loud warning the first time we hit this — better one ugly log line
                 // up front than thousands of silent 401s downstream.
-                warnMissingKeyOnce(config.getLocalUrl());
+                warnMissingKeyOnce(config.getOpenaiCompatibleUrl());
             }
             Request request = reqBuilder.build();
 
@@ -330,7 +333,7 @@ public class LLMService {
             // timeouts inherit from the pooled connection's parent client and a
             // shared pool would re-import the zero timeout (observed in 22:56 run:
             // readTimeout(120) ignored, JVM blocked 3+ min in Http2Stream.waitForIo).
-            boolean hosted = looksLikeHostedEndpoint(config.getLocalUrl());
+            boolean hosted = looksLikeHostedEndpoint(config.getOpenaiCompatibleUrl());
             OkHttpClient perCallClient = hosted ? hostedHttpClient : httpClient;
 
             // Belt-and-braces watchdog: schedule call.cancel() at deadline+5s in
@@ -343,8 +346,8 @@ public class LLMService {
             if (hosted) {
                 watchdog = WATCHDOG.schedule(() -> {
                     if (!call.isExecuted() || !call.isCanceled()) {
-                        logger.warn("[Local LLM] Watchdog firing — cancelling stalled call to {}",
-                                config.getLocalUrl());
+                        logger.warn("[OpenAI-compatible LLM] Watchdog firing — cancelling stalled call to {}",
+                                config.getOpenaiCompatibleUrl());
                         call.cancel();
                     }
                 }, 185, TimeUnit.SECONDS);
@@ -353,15 +356,15 @@ public class LLMService {
             try (Response response = call.execute()) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-                    logger.debug("[Local LLM] Response: {}", responseBody);
+                    logger.debug("[OpenAI-compatible LLM] Response: {}", responseBody);
 
-                    return parseLocalLLMResponse(responseBody);
+                    return parseOpenAICompatibleResponse(responseBody);
                 } else {
                     String errorBody = "";
                     try {
                         errorBody = response.body() != null ? response.body().string() : "No error body";
                     } catch (Exception ignore) { }
-                    logger.error("[Local LLM] Request failed with code {}: {}", response.code(), errorBody);
+                    logger.error("[OpenAI-compatible LLM] Request failed with code {}: {}", response.code(), errorBody);
                     return null;
                 }
             } finally {
@@ -371,15 +374,16 @@ public class LLMService {
             }
 
         } catch (Exception e) {
-            logger.error("[Local LLM] Error calling local LLM API: {}", e.getMessage(), e);
+            logger.error("[OpenAI-compatible LLM] Error calling OpenAI-compatible API: {}", e.getMessage(), e);
             return null;
         }
     }
-    
+
     /**
-     * Parse local LLM response (OpenAI format)
+     * Parse an OpenAI-compatible chat-completions response (DeepSeek, OpenAI,
+     * OpenRouter, etc. all share this response shape).
      */
-    private String parseLocalLLMResponse(String responseBody) {
+    private String parseOpenAICompatibleResponse(String responseBody) {
         try {
             JSONObject jsonResponse = new JSONObject(responseBody);
             
@@ -390,16 +394,16 @@ public class LLMService {
                     JSONObject message = choice.getJSONObject("message");
                     String content = message.getString("content").trim();
                     
-                    logger.debug("[Local LLM] Successfully extracted content: {}", content);
+                    logger.debug("[OpenAI-compatible LLM] Successfully extracted content: {}", content);
                     return content;
                 }
             }
             
-            logger.warn("[Local LLM] No choices in response");
+            logger.warn("[OpenAI-compatible LLM] No choices in response");
             return null;
             
         } catch (Exception e) {
-            logger.error("[Local LLM] Error parsing response: {}", e.getMessage(), e);
+            logger.error("[OpenAI-compatible LLM] Error parsing response: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -438,8 +442,8 @@ public class LLMService {
         switch (config.getModelType()) {
             case GEMINI:
                 return config.getGeminiModel();
-            case LOCAL:
-                return config.getLocalModel();
+            case OPENAI_COMPATIBLE:
+                return config.getOpenaiCompatibleModel();
             case OLLAMA:
                 return config.getOllamaModel();
             default:
@@ -454,8 +458,8 @@ public class LLMService {
         switch (config.getModelType()) {
             case GEMINI:
                 return config.getGeminiApiUrl();
-            case LOCAL:
-                return config.getLocalUrl();
+            case OPENAI_COMPATIBLE:
+                return config.getOpenaiCompatibleUrl();
             case OLLAMA:
                 return config.getOllamaUrl();
             default:
@@ -495,10 +499,10 @@ public class LLMService {
 
     private static void warnMissingKeyOnce(String url) {
         if (MISSING_KEY_WARNED.compareAndSet(false, true)) {
-            logger.error("[Local LLM] Hosted endpoint detected ({}) but llm.local.api.key resolved to "
-                    + "an empty value. Every request will return 401. Either set DEEPSEEK_API_KEY "
-                    + "(or your provider's env var) before launching, or write the key to "
-                    + ".api_keys/<VAR_NAME> in the project root. Suppressing further warnings.", url);
+            logger.error("[OpenAI-compatible LLM] Hosted endpoint detected ({}) but llm.openai_compatible.api.key "
+                    + "(or legacy llm.local.api.key) resolved to an empty value. Every request will return 401. "
+                    + "Either set DEEPSEEK_API_KEY (or your provider's env var) before launching, or write the key "
+                    + "to .api_keys/<VAR_NAME> in the project root. Suppressing further warnings.", url);
         }
     }
 }

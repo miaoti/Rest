@@ -836,7 +836,7 @@ flowchart LR
     B -->|Yes| D[Log LLM request]
     D --> E{model type}
     E -- GEMINI --> F[GeminiApiClient]
-    E -- LOCAL --> G[Local HTTP w/ optional Bearer auth]
+    E -- OPENAI_COMPATIBLE --> G[HTTP /v1/chat/completions w/ optional Bearer auth]
     E -- OLLAMA --> H[OllamaApiClient]
     F --> I
     G --> I
@@ -848,17 +848,17 @@ flowchart LR
 **Backends**:
 - **OLLAMA** — local Ollama daemon (default for TrainTicket: `qwen2.5-coder:14b` at `http://localhost:11434`).
 - **GEMINI** — Google Gemini REST API.
-- **LOCAL** — any OpenAI-compatible chat-completions endpoint. Covers true local servers (`gpt4all`, `llama.cpp`'s OpenAI shim) and **hosted OpenAI-compatible APIs** (DeepSeek, OpenAI, etc.). When `llm.local.api.key` is non-empty, `LLMService.generateWithLocal` adds an `Authorization: Bearer <key>` header; when empty it sends an unauthenticated request as before.
+- **OPENAI_COMPATIBLE** — any provider speaking OpenAI's `/v1/chat/completions` shape. Covers hosted APIs (DeepSeek — the default test target — plus OpenAI, OpenRouter, Together, Groq, Mistral, ...) and self-hosted OpenAI shims (`gpt4all`, `llama.cpp --api`). When `llm.openai_compatible.api.key` is non-empty, `LLMService.generateWithOpenAICompatible` adds an `Authorization: Bearer <key>` header; when empty it sends an unauthenticated request. The deprecated `llm.local.*` property keys are still accepted as aliases — the new name reflects that this backend is not "local" in the typical case.
 
-**`llm.local.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `src/test/java/es/us/isa/restest/llm/LLMConfigEnvResolverTest.java`.
+**`llm.openai_compatible.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `src/test/java/es/us/isa/restest/llm/LLMConfigEnvResolverTest.java`.
 
 **DeepSeek example** (no edits to the existing `trainticket-demo.properties` needed; copy `deepseek-config.properties` or set these four lines):
 
 ```properties
-llm.model.type=local
-llm.local.url=https://api.deepseek.com/v1/chat/completions
-llm.local.model=deepseek-chat
-llm.local.api.key=${DEEPSEEK_API_KEY}
+llm.model.type=openai_compatible
+llm.openai_compatible.url=https://api.deepseek.com/v1/chat/completions
+llm.openai_compatible.model=deepseek-chat
+llm.openai_compatible.api.key=${DEEPSEEK_API_KEY}
 ```
 
 Local copies of properties files that carry a literal API key should be named `*-local.properties` or `*-secret.properties` (gitignored).
@@ -1037,8 +1037,8 @@ flowchart TD
 - smart.input.fetch.cache.enabled / ttl: cache values and TTL
 
 **LLM Configuration:**
-- llm.enabled: enables LLM; llm.model.type: gemini/local/ollama
-- llm.gemini.*, llm.local.*, llm.ollama.*: backend-specific
+- llm.enabled: enables LLM; llm.model.type: gemini / openai_compatible / ollama (legacy `local` accepted as deprecated alias for openai_compatible)
+- llm.gemini.*, llm.openai_compatible.* (legacy llm.local.*), llm.ollama.*: backend-specific
 - llm.rate.limit.retry.enabled / max.retries: retry policy
 
 **LLM Response Validation (Soft Error Detection):**
@@ -1669,4 +1669,176 @@ After a run, `target/soft-error-rule-cache.json` looks like:
 - For a run with ~2400 tests across ~20 APIs → typically ~20–40 LLM calls instead of ~2400
 - Cache grows incrementally and is always correct — no speculation, no false positives
 - Shared across all test classes in the same JVM via singleton pattern
+
+---
+
+## 9. Parameter Error Analysis Cache + Trace Pre-Extractor
+
+### Problem
+
+Every failed test (non-2XX response with technical errors) calls `ParameterErrorAnalyzer`
+(PEA), which sends the failure trace to the LLM to identify which input parameter caused
+the failure. On a representative run this produced ~2,351 PEA LLM calls (~38 min of
+LLM time). Analysis of those calls revealed two large redundancies:
+
+- Only **10 unique** `(service, operation, status, exception)` signatures appeared
+  across 1,815 prompts → **99.4% of LLM calls** were asking the same question.
+- **17.5%** of error messages already name the failing parameter in plain text via
+  Jackson's `(through reference chain: ... ["paramName"])` annotation — the LLM was
+  being asked a question the trace already answered.
+
+This section adds two complementary optimizations on PEA's hot path — mirroring the
+soft-error cache (§ 8), but on the **failure branch** rather than the 2XX branch:
+
+1. **Verdict cache** keyed by failure signature.
+2. **Trace pre-extractor** that resolves the verdict deterministically from the trace
+   error message when possible, bypassing the LLM entirely.
+
+### Decision Order
+
+When a failed span enters PEA, it tries each step in turn and falls through on miss:
+
+```mermaid
+flowchart TD
+    A[Failed span enters PEA] --> B{Cache has verdict<br/>for this signature?}
+    B -- Yes --> C["Return cached verdict<br/>(0 LLM calls)"]
+    B -- No --> D{"Trace contains<br/>'reference chain'?"}
+    D -- Yes --> E["Extract param from<br/>['paramName'] in chain<br/>+ categorize from text"]
+    E --> F["Cache verdict<br/>(future hits free)"]
+    F --> C
+    D -- No --> G[Build LLM prompt with<br/>trace + test parameters]
+    G --> H[Call LLM]
+    H --> I[Parse YES/NO/param/type]
+    I --> J["Cache verdict<br/>(YES or explicit NO)"]
+    J --> K[Return verdict]
+```
+
+### Cache: `ParameterErrorAnalysisCache`
+
+Stores verdicts (from either the pre-extractor or the LLM) keyed by the dimensions the
+LLM actually sees in the prompt.
+
+**Key**: `service | operation | status | exceptionType`
+
+Empirically chosen: this tuple yielded 99.4% hit rate over a 1,815-call sample. Adding
+the exception type costs nothing and acts as a safety discriminator if a single
+endpoint can fail for distinct reasons.
+
+**Value (`CachedVerdict`)**:
+
+| Field | Meaning |
+|-------|---------|
+| `isParameterError` | `true` if the failure IS a parameter error; `false` if not |
+| `parameterName` | The failing parameter (set only when `isParameterError == true`) |
+| `errorType` | One of `TYPE_MISMATCH`, `FORMAT_ERROR`, `VALIDATION_ERROR`, `NULL_ERROR`, `CONSTRAINT_ERROR` (set only when `isParameterError == true`) |
+
+**Caching policy**:
+
+- Positive verdicts (`PARAMETER_ERROR: YES` with param + type) → cached.
+- Explicit negative verdicts (`PARAMETER_ERROR: NO`) → cached. Negative verdicts are
+  about half of LLM answers on observed runs, so caching them matters.
+- Malformed / empty LLM responses → **not** cached. This leaves the next attempt free
+  to produce a clean answer.
+- Trace pre-extractor matches → cached (same shape as a positive LLM verdict).
+
+### Pre-Extractor: `extractParameterErrorFromTrace`
+
+Runs after a cache miss, before any LLM call. Pure regex against the joined error
+messages.
+
+**Pattern**:
+```
+\["([^"]+)"\]    (only inside the (through reference chain: ...) parenthesized block)
+```
+
+**Logic**:
+
+1. Locate `reference chain` in the error text. If absent, return `null` → caller
+   falls through to LLM.
+2. Bound the search to the next `)` after `reference chain` (Jackson wraps the chain
+   in parens). Any bracketed strings outside the chain cannot pollute the match.
+3. Find every `["param"]` in the bounded substring. The deepest (last-matched) name is
+   the actual failing field — Jackson nests outer→inner, and deserialization fails at
+   the innermost reachable field.
+4. Categorize: text contains `out of range` → `CONSTRAINT_ERROR`; everything else with
+   a reference chain → `TYPE_MISMATCH` (Jackson's most common failure mode).
+5. Return a `ParameterError` immediately; the caller also writes the verdict to the
+   cache so future identical signatures are an even cheaper cache hit.
+
+**Precision over recall**: the extractor only fires when the parameter name is explicit
+in the trace. The ~306 PEA calls per run that have `Cannot deserialize` errors
+**without** a reference chain (e.g. `Cannot deserialize instance of int out of START_ARRAY token`)
+still go to the LLM — pre-extracting them would require guessing against
+`testParameters`, which `performFallbackAnalysis` already does as a separate fallback
+when the LLM itself is unavailable.
+
+### Concrete Example
+
+A failed `POST /api/v1/orderOtherService/orderOther/refresh` call yields the error:
+
+```
+JSON parse error: Cannot deserialize value of type `boolean` from String "no":
+only "true" or "false" recognized; nested exception is
+com.fasterxml.jackson.databind.exc.InvalidFormatException ...
+at [Source: (PushbackInputStream); line: 1, column: 110]
+(through reference chain: other.entity.QueryInfo["enableStateQuery"])
+```
+
+**First time this signature is seen**:
+
+- Cache key: `ts-order-other-service | OrderOtherController.queryOrdersForRefresh | 0 | org.springframework.http.converter.HttpMessageNotReadableException`
+- Cache miss → pre-extractor runs → finds `enableStateQuery` in the reference chain
+- `out of range` absent → `TYPE_MISMATCH`
+- Returns `ParameterError(TYPE_MISMATCH, …, apiEndpoint, "enableStateQuery")` immediately
+- Verdict cached: `{ isParameterError: true, parameterName: "enableStateQuery", errorType: "TYPE_MISMATCH" }`
+- **No LLM call.**
+
+**All subsequent failures** with the same signature → cache hit → same verdict instantly.
+
+### Configuration
+
+| Property | Default | Purpose |
+|----------|---------|---------|
+| `parameter.error.analysis.cache.path` | `target/parameter-error-analysis-cache.json` | File path for the persisted PEA cache |
+
+The cache file is auto-created on the first `put()`. Delete it to reset.
+
+### Cache JSON Example
+
+After a run, `target/parameter-error-analysis-cache.json` looks like:
+
+```json
+{
+  "ts-order-other-service|OrderOtherController.queryOrdersForRefresh|0|org.springframework.http.converter.HttpMessageNotReadableException": {
+    "isParameterError": true,
+    "parameterName": "enableStateQuery",
+    "errorType": "TYPE_MISMATCH"
+  },
+  "ts-gateway-service|POST|403|none": {
+    "isParameterError": false,
+    "parameterName": null,
+    "errorType": null
+  }
+}
+```
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|----------------|
+| `ParameterErrorAnalyzer` | Top-level analyzer. New decision order: cache → trace pre-extractor → LLM. Existing prompt construction, LLM call, and `performFallbackAnalysis` are unchanged. |
+| `ParameterErrorAnalyzer.extractParameterErrorFromTrace` | Deterministic regex extractor for Jackson reference chains. Returns `null` on no-match so the LLM path runs unchanged. |
+| `ParameterErrorAnalysisCache` | Singleton per-file cache. Stores `CachedVerdict` entries; persists to JSON. Mirrors `SoftErrorRuleCache`. |
+| `ParameterErrorAnalysisCache.CachedVerdict` | Three-field value: `{ isParameterError, parameterName?, errorType? }` |
+
+### Expected Impact
+
+- **First round (cold cache)**: ~17.5% of failures resolved by the pre-extractor with
+  zero LLM cost; the remaining ones populate the cache as they go.
+- **Subsequent rounds**: ~99.4% of failures resolve from the cache (~10 unique
+  signatures observed across thousands of failures).
+- **Combined**: PEA LLM calls drop from ~2,350 per run to ~10–20 (cold-start only).
+- Cache persists across the three test execution rounds in a JVM run; re-runs of the
+  same failing endpoints are free after first classification.
+- Shared across all test classes in the same JVM via singleton pattern.
 

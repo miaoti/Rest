@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2026
 - 5
-- 6
-- 17
-- 24
-- 40
-- 933361057
+- 13
+- 15
+- 12
+- 51
+- 696067352
 parameterMappings:
   boughtDateStart:
   - endpoint: "/api/v1/orderservice/order"
@@ -50,12 +50,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 0
-    - 16
-    - 289734606
-    successRate: 0.5217031000000001
+    - 13
+    - 13
+    - 49
+    - 21
+    - 737773335
+    successRate: 0.5695327900000001
     description: null
     consumerApiKey: null
   loginId:
@@ -67,12 +67,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 7
-    - 46
-    - 815383170
-    successRate: 3.615523803035038E-14
+    - 13
+    - 13
+    - 50
+    - 4
+    - 394408173
+    successRate: 6.029674740268482E-15
     description: null
     consumerApiKey: null
   orderId:
@@ -84,12 +84,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 25
-    - 521498858
-    successRate: 3.442108673624493E-49
+    - 13
+    - 13
+    - 56
+    - 35
+    - 176802066
+    successRate: 9.003486739534374E-55
     description: null
     consumerApiKey: null
   trainType:
@@ -100,13 +100,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2026
-    - 3
-    - 25
-    - 15
-    - 28
-    - 9
-    - 935365480
-    successRate: 0.271
+    - 5
+    - 13
+    - 13
+    - 50
+    - 24
+    - 31483531
+    successRate: 0.34390000000000004
     description: null
     consumerApiKey: null
   confortClass:
@@ -134,12 +134,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 40
-    - 264829059
-    successRate: 0.5163886900000001
+    - 13
+    - 13
+    - 53
+    - 8
+    - 449808941
+    successRate: 0.6082748389000001
     description: null
     consumerApiKey: null
   contactsDocumentNumber:
@@ -151,12 +151,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 27
-    - 509755165
-    successRate: 0.050216847117884926
+    - 13
+    - 13
+    - 46
+    - 17
+    - 459441147
+    successRate: 0.14519516240609642
     description: null
     consumerApiKey: null
   coachNumber:
@@ -168,12 +168,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 22
-    - 670593630
-    successRate: 0.5217031000000001
+    - 13
+    - 13
+    - 46
+    - 13
+    - 278867862
+    successRate: 0.5695327900000001
     description: null
     consumerApiKey: null
   enableBoughtDateQuery:
@@ -201,12 +201,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 0
-    - 27
-    - 45475403
-    successRate: 0.40951000000000004
+    - 13
+    - 13
+    - 49
+    - 28
+    - 188273428
+    successRate: 0.46855900000000006
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/waitorderservice/orders"
@@ -250,12 +250,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 50
-    - 189368602
-    successRate: 0.5217031000000001
+    - 13
+    - 13
+    - 56
+    - 56
+    - 822994047
+    successRate: 0.6125795110000001
     description: null
     consumerApiKey: null
   price:
@@ -283,12 +283,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 57
-    - 945263564
-    successRate: 0.22084982100000003
+    - 13
+    - 13
+    - 46
+    - 45
+    - 846458699
+    successRate: 0.29876483890000005
     description: null
     consumerApiKey: null
   economyClass:
@@ -332,12 +332,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 35
-    - 968598124
-    successRate: 0.40951000000000004
+    - 13
+    - 13
+    - 53
+    - 4
+    - 433426081
+    successRate: 0.5217031000000001
     description: null
     consumerApiKey: null
   terminalStationName:
@@ -348,13 +348,13 @@ parameterMappings:
     priority: 7
     lastUsed:
     - 2026
-    - 3
-    - 25
-    - 15
-    - 30
-    - 47
-    - 441195367
-    successRate: 0.0
+    - 5
+    - 13
+    - 13
+    - 45
+    - 13
+    - 128521573
+    successRate: 0.1
     description: null
     consumerApiKey: null
   handleDate:
@@ -398,12 +398,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 15
-    - 763432126
-    successRate: 0.13851000000000002
+    - 13
+    - 13
+    - 50
+    - 38
+    - 20464386
+    successRate: 0.22465900000000003
     description: null
     consumerApiKey: null
   from:
@@ -415,12 +415,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 51
-    - 276042780
-    successRate: 0.717570463519
+    - 13
+    - 13
+    - 46
+    - 38
+    - 89943667
+    successRate: 0.7458134171671
     description: null
     consumerApiKey: null
   startStation:
@@ -432,12 +432,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 7
-    - 4
-    - 387815561
-    successRate: 0.41048379
+    - 13
+    - 13
+    - 47
+    - 44
+    - 624244096
+    successRate: 0.4694354110000001
     description: null
     consumerApiKey: null
   state:
@@ -481,12 +481,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 1
-    - 1
-    - 882169102
-    successRate: 0.45609310000000003
+    - 13
+    - 13
+    - 49
+    - 42
+    - 169399713
+    successRate: 0.51048379
     description: null
     consumerApiKey: null
   id:
@@ -498,12 +498,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 46
-    - 143171338
-    successRate: 0.9576088417247838
+    - 13
+    - 13
+    - 56
+    - 53
+    - 30821487
+    successRate: 0.9749684449500675
     description: null
     consumerApiKey: null
   startPlace:
@@ -531,12 +531,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 20
-    - 971281686
-    successRate: 0.6125795110000001
+    - 13
+    - 13
+    - 44
+    - 25
+    - 103001801
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   endStation:
@@ -580,12 +580,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 7
-    - 15
-    - 164389105
-    successRate: 0.271
+    - 13
+    - 13
+    - 47
+    - 35
+    - 953431179
+    successRate: 0.34390000000000004
     description: null
     consumerApiKey: "POST /api/v1/adminrouteservice/adminroute"
   travelTime:
@@ -597,12 +597,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 5
-    - 9
-    - 538969878
-    successRate: 0.559435411
+    - 13
+    - 13
+    - 47
+    - 24
+    - 912133692
+    successRate: 0.6034918699
     description: null
     consumerApiKey: null
   consignee:
@@ -630,12 +630,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 55
-    - 455965541
-    successRate: 0.271
+    - 13
+    - 13
+    - 50
+    - 30
+    - 342462297
+    successRate: 0.34390000000000004
     description: null
     consumerApiKey: null
   targetDate:
@@ -663,12 +663,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 1
-    - 92942473
-    successRate: 0.40951000000000004
+    - 13
+    - 13
+    - 50
+    - 55
+    - 821444066
+    successRate: 0.46855900000000006
     description: null
     consumerApiKey: null
   distanceList:
@@ -680,12 +680,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 7
-    - 46
-    - 773541163
-    successRate: 8.528957334833746E-13
+    - 13
+    - 13
+    - 47
+    - 31
+    - 87236930
+    successRate: 3.6714364681349195E-13
     description: null
     consumerApiKey: null
   weight:
@@ -713,12 +713,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 42
-    - 564386504
-    successRate: 0.34390000000000004
+    - 13
+    - 13
+    - 51
+    - 2
+    - 754677287
+    successRate: 0.40951000000000004
     description: null
     consumerApiKey: null
   stations:
@@ -747,12 +747,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 40
-    - 991120289
-    successRate: 0.009847709021836121
+    - 13
+    - 13
+    - 46
+    - 27
+    - 596212186
+    successRate: 0.005814973700304013
     description: null
     consumerApiKey: null
   accountId:
@@ -764,12 +764,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 14
-    - 198630090
-    successRate: 0.523108867905351
+    - 13
+    - 13
+    - 51
+    - 13
+    - 445467344
+    successRate: 0.42371818300333436
     description: null
     consumerApiKey: null
   boughtDateEnd:
@@ -813,12 +813,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 0
-    - 4
-    - 838136232
-    successRate: 0.5695327900000001
+    - 13
+    - 13
+    - 49
+    - 16
+    - 776673582
+    successRate: 0.6125795110000001
     description: null
     consumerApiKey: null
   enableStateQuery:
@@ -846,12 +846,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 0
-    - 35
-    - 48075009
-    successRate: 0.6125795110000001
+    - 13
+    - 13
+    - 49
+    - 32
+    - 855050534
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   phone:
@@ -863,12 +863,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 9
-    - 164327285
-    successRate: 1.3248013910276865E-17
+    - 13
+    - 13
+    - 50
+    - 48
+    - 570477299
+    successRate: 0.10000000000000002
     description: null
     consumerApiKey: null
   name:
@@ -880,11 +880,11 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 51
-    - 129120585
+    - 13
+    - 13
+    - 57
+    - 1
+    - 868757219
     successRate: 0.0
     description: null
     consumerApiKey: null
@@ -913,12 +913,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 1
-    - 23
-    - 829432439
-    successRate: 0.6125795110000001
+    - 13
+    - 13
+    - 49
+    - 54
+    - 702955110
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   trainNumber:
@@ -930,12 +930,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 4
-    - 52
-    - 907071385
-    successRate: 0.51048379
+    - 13
+    - 13
+    - 47
+    - 14
+    - 748091386
+    successRate: 0.559435411
     description: null
     consumerApiKey: null
   trainTypeName:
@@ -946,13 +946,13 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2026
-    - 3
-    - 23
-    - 12
-    - 21
-    - 7
-    - 444997384
-    successRate: 0.0
+    - 5
+    - 13
+    - 13
+    - 45
+    - 20
+    - 745610488
+    successRate: 0.1
     description: null
     consumerApiKey: null
   status:
@@ -964,12 +964,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 4
-    - 30
-    - 270246959
-    successRate: 0.46855900000000006
+    - 13
+    - 13
+    - 47
+    - 1
+    - 175674081
+    successRate: 0.5217031000000001
     description: null
     consumerApiKey: null
   departureTime:
@@ -981,12 +981,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
+    - 13
+    - 13
+    - 44
     - 14
-    - 704526196
-    successRate: 0.6125795110000001
+    - 79996300
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   documentType:
@@ -998,12 +998,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 48
-    - 456733463
-    successRate: 0.34390000000000004
+    - 13
+    - 13
+    - 46
+    - 31
+    - 927098258
+    successRate: 0.40951000000000004
     description: null
     consumerApiKey: "POST /api/v1/adminorderservice/adminorder"
   - endpoint: "/api/v1/adminorderservice/adminorder"
@@ -1038,6 +1038,152 @@ parameterMappings:
     successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/adminorderservice/adminorder"
+  stationsName:
+  - endpoint: "/api/v1/stationservice/stations"
+    method: "GET"
+    service: "ts-station-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 45
+    - 0
+    - 168508699
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/adminbasicservice/adminbasic/stations"
+    method: "GET"
+    service: "ts-admin-basic-info-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 45
+    - 7
+    - 367939255
+    successRate: 0.1
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/basicservice/basic/{stationName}"
+    method: "GET"
+    service: "ts-basic-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 45
+    - 4
+    - 75048167
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  tripId:
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 45
+    - 25
+    - 694087418
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/travel2service/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 45
+    - 31
+    - 25230186
+    successRate: 0.1
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/basicservice/basic/{stationName}"
+    method: "GET"
+    service: "ts-basic-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 45
+    - 28
+    - 603104394
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/travelservice/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 57
+    - 5
+    - 762079573
+    successRate: 0.0
+    description: null
+    consumerApiKey: "DELETE /api/v1/admintravelservice/admintravel/{tripId}"
+  - endpoint: "/api/v1/travel2service/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 57
+    - 11
+    - 901524501
+    successRate: 0.1
+    description: null
+    consumerApiKey: "DELETE /api/v1/admintravelservice/admintravel/{tripId}"
+  - endpoint: "/api/v1/orderservice/order/{travelDate}/{trainNumber}"
+    method: "GET"
+    service: "ts-order-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 57
+    - 9
+    - 771310847
+    successRate: 0.0
+    description: null
+    consumerApiKey: "DELETE /api/v1/admintravelservice/admintravel/{tripId}"
   contactsName:
   - endpoint: "/api/v1/contactservice/contacts"
     method: "GET"
@@ -1079,12 +1225,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 35
-    - 8194649
-    successRate: 0.51048379
+    - 13
+    - 13
+    - 46
+    - 24
+    - 210262297
+    successRate: 0.559435411
     description: null
     consumerApiKey: null
   seatNumber:
@@ -1096,12 +1242,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 4
-    - 21
-    - 350433527
-    successRate: 0.5695327900000001
+    - 13
+    - 13
+    - 46
+    - 57
+    - 282764804
+    successRate: 0.6125795110000001
     description: null
     consumerApiKey: null
   routeId:
@@ -1112,13 +1258,13 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2026
-    - 3
-    - 25
-    - 15
-    - 27
-    - 56
-    - 449550314
-    successRate: 0.1539
+    - 5
+    - 13
+    - 13
+    - 50
+    - 19
+    - 556477729
+    successRate: 0.06624890361900002
     description: null
     consumerApiKey: null
   seatClass:
@@ -1130,12 +1276,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 4
-    - 12
-    - 897204758
-    successRate: 0.402949
+    - 13
+    - 13
+    - 46
+    - 50
+    - 38096126
+    successRate: 0.46265410000000007
     description: null
     consumerApiKey: null
   startTime:
@@ -1178,15 +1324,64 @@ parameterMappings:
     priority: 9
     lastUsed:
     - 2026
-    - 3
-    - 25
-    - 15
-    - 30
-    - 32
-    - 991479154
-    successRate: 0.19
+    - 5
+    - 13
+    - 13
+    - 44
+    - 54
+    - 71283380
+    successRate: 0.271
     description: null
     consumerApiKey: null
+  startStationName:
+  - endpoint: "/api/v1/stationservice/stations"
+    method: "GET"
+    service: "ts-station-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 44
+    - 45
+    - 455591254
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/basicservice/basic/{stationName}"
+    method: "GET"
+    service: "ts-basic-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 44
+    - 46
+    - 431012964
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
+  - endpoint: "/api/v1/routeservice/routes/{start}/{end}"
+    method: "GET"
+    service: "ts-route-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 44
+    - 49
+    - 182530611
+    successRate: 0.1
+    description: null
+    consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
   enableTravelDateQuery:
   - endpoint: "/api/v1/travelservice/trips"
     method: "GET"
@@ -1212,12 +1407,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 0
-    - 44
-    - 224160514
-    successRate: 0.40951000000000004
+    - 13
+    - 13
+    - 49
+    - 36
+    - 393083552
+    successRate: 0.46855900000000006
     description: null
     consumerApiKey: null
   within:
@@ -1245,14 +1440,63 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 48
-    - 284382360
-    successRate: 0.271
+    - 13
+    - 13
+    - 51
+    - 6
+    - 553279881
+    successRate: 0.34390000000000004
     description: null
     consumerApiKey: null
+  firstClassPriceRate:
+  - endpoint: "/api/v1/priceservice/prices"
+    method: "GET"
+    service: "ts-price-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 7
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 50
+    - 11
+    - 238400079
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/adminbasicservice/adminbasic/prices"
+  - endpoint: "/api/v1/travelservice/trips"
+    method: "GET"
+    service: "ts-travel-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 8
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 50
+    - 11
+    - 960218269
+    successRate: 0.0
+    description: null
+    consumerApiKey: "POST /api/v1/adminbasicservice/adminbasic/prices"
+  - endpoint: "/api/v1/travel2service/trips/{tripId}"
+    method: "GET"
+    service: "ts-travel2-service"
+    extractPath: "DIRECT_EXTRACTION"
+    priority: 9
+    lastUsed:
+    - 2026
+    - 5
+    - 13
+    - 13
+    - 50
+    - 16
+    - 126671002
+    successRate: 0.1
+    description: null
+    consumerApiKey: "POST /api/v1/adminbasicservice/adminbasic/prices"
   travelDateEnd:
   - endpoint: "/api/v1/travelservice/trips"
     method: "GET"
@@ -1278,12 +1522,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 1
-    - 10
-    - 231887211
-    successRate: 0.46855900000000006
+    - 13
+    - 13
+    - 49
+    - 47
+    - 642466733
+    successRate: 0.5217031000000001
     description: null
     consumerApiKey: null
   averageSpeed:
@@ -1311,12 +1555,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 28
-    - 397682419
-    successRate: 0.5695327900000001
+    - 13
+    - 13
+    - 53
+    - 10
+    - 902196811
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   endPlace:
@@ -1328,12 +1572,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 9
-    - 17
-    - 651722381
-    successRate: 0.68618940391
+    - 13
+    - 13
+    - 44
+    - 20
+    - 138064551
+    successRate: 0.717570463519
     description: null
     consumerApiKey: null
   basicPriceRate:
@@ -1343,14 +1587,14 @@ parameterMappings:
     extractPath: "DIRECT_EXTRACTION"
     priority: 8
     lastUsed:
-    - 2025
-    - 11
-    - 12
+    - 2026
+    - 5
     - 13
-    - 39
-    - 22
-    - 971419100
-    successRate: 0.19
+    - 13
+    - 50
+    - 8
+    - 434239699
+    successRate: 0.271
     description: null
     consumerApiKey: null
   travelDate:
@@ -1362,12 +1606,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 4
-    - 57
-    - 752462902
-    successRate: 0.043465905664425916
+    - 13
+    - 13
+    - 47
+    - 18
+    - 378270009
+    successRate: 0.0316866452293665
     description: null
     consumerApiKey: null
   boughtDate:
@@ -1379,12 +1623,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 3
-    - 14
-    - 444054801
-    successRate: 0.010941898913151246
+    - 13
+    - 13
+    - 46
+    - 6
+    - 198390000
+    successRate: 0.007178979876918534
     description: null
     consumerApiKey: null
   stationList:
@@ -1396,12 +1640,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 7
-    - 9
-    - 864108968
-    successRate: 0.34390000000000004
+    - 13
+    - 13
+    - 47
+    - 49
+    - 179555911
+    successRate: 0.40951000000000004
     description: null
     consumerApiKey: null
   endTime:
@@ -1428,13 +1672,13 @@ parameterMappings:
     priority: 8
     lastUsed:
     - 2026
-    - 3
-    - 25
-    - 15
-    - 30
-    - 7
-    - 812134346
-    successRate: 0.1
+    - 5
+    - 13
+    - 13
+    - 44
+    - 32
+    - 508572772
+    successRate: 0.19
     description: null
     consumerApiKey: null
   to:
@@ -1462,12 +1706,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 23
-    - 8
-    - 37
-    - 78221875
-    successRate: 0.5082748389000001
+    - 13
+    - 13
+    - 47
+    - 9
+    - 397028776
+    successRate: 0.5574473550100001
     description: null
     consumerApiKey: null
 servicePatterns:
@@ -1567,6 +1811,21 @@ parameterErrors:
       - 51
       - 23
       - 989692178
+      additionalInfo: null
+  /api/v1/routeservice/routes/nanjing/shanghai:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/nanjing/shanghai"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 16
+      - 31
+      - 387336915
       additionalInfo: null
   /api/v1/consignservice/consigns/account/finance45678:
     accountId:
@@ -2310,11 +2569,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 22
-      - 41
-      - 14
-      - 442131091
+      - 13
+      - 15
+      - 10
+      - 36
+      - 3541128
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3070,11 +3329,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 22
-      - 39
-      - 35
-      - 260719559
+      - 13
+      - 15
+      - 1
+      - 51
+      - 150601291
       additionalInfo: null
     - errorType: "NULL_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -3345,11 +3604,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 22
-      - 43
-      - 11
-      - 601592880
+      - 13
+      - 14
+      - 46
+      - 58
+      - 654826608
       additionalInfo: null
     - errorType: "SECURITY_RISK"
       errorReason: "Unknown (HTTP 400)"
@@ -4702,6 +4961,21 @@ parameterErrors:
       - 29
       - 266428900
       additionalInfo: null
+  /api/v1/routeservice/routes/hangzhou/wuhan:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/hangzhou/wuhan"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 19
+      - 36
+      - 822922701
+      additionalInfo: null
   /api/v1/executeservice/execute/execute/%257B%257D:
     orderId:
     - errorType: "FORMAT_ERROR"
@@ -4717,6 +4991,22 @@ parameterErrors:
       - 55
       - 7
       - 897125311
+      additionalInfo: null
+  /api/v1/routeservice/routes/;ls-la/guangzhou:
+    routeId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/routeservice/routes/;ls-la/guangzhou"
+      parameterName: "routeId"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 26
+      - 22
+      - 547052801
       additionalInfo: null
   /api/v1/consignservice/consigns/order/ABC123XYZ:
     orderId:
@@ -4747,6 +5037,21 @@ parameterErrors:
       - 4
       - 59
       - 175533881
+      additionalInfo: null
+  /api/v1/routeservice/routes/fallback_startplace_1/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fallback_startplace_1/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 19
+      - 56
+      - 262520576
       additionalInfo: null
   ? /api/v1/consignservice/consigns/order/%2521%2540%2523%2524%2525%255E%2526*%2528%2529%257B%257D%255B%255D%257C%255C%253A%253B%2522%2527%253C%253E%252C.%252F
   : id:
@@ -5307,6 +5612,21 @@ parameterErrors:
       - 15
       - 43
       - 794583818
+      additionalInfo: null
+  /api/v1/routeservice/routes/fallback_startplace_0/shanghai:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fallback_startplace_0/shanghai"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 19
+      - 44
+      - 215225705
       additionalInfo: null
   /api/v1/consignservice/consigns/account/-99:
     accountId:
@@ -7562,6 +7882,21 @@ parameterErrors:
       - 32
       - 564365700
       additionalInfo: null
+  /api/v1/routeservice/routes/xi'an/guangzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/xi'an/guangzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 31
+      - 1
+      - 587879510
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/indicator23456:
     indicator23456:
     - errorType: "FORMAT_ERROR"
@@ -7622,6 +7957,21 @@ parameterErrors:
       - 51
       - 26
       - 100520500
+      additionalInfo: null
+  /api/v1/routeservice/routes/12345/nanjing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/12345/nanjing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 26
+      - 46
+      - 66582010
       additionalInfo: null
   /api/v1/consignservice/consigns/order/D444555666:
     orderId:
@@ -7741,6 +8091,36 @@ parameterErrors:
       - 12
       - 33
       - 657166307
+      additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 13
+      - 55
+      - 57340450
+      additionalInfo: null
+  /api/v1/routeservice/routes/shenzhen/zhengzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shenzhen/zhengzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 25
+      - 36
+      - 676539555
       additionalInfo: null
   /api/v1/routeservice/routes/123/shanghai:
     startPlace:
@@ -8382,6 +8762,36 @@ parameterErrors:
       - 11
       - 381457151
       additionalInfo: null
+  /api/v1/routeservice/routes/suzhou/shenzhen:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/suzhou/shenzhen"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 15
+      - 22
+      - 309875346
+      additionalInfo: null
+  /api/v1/routeservice/routes/nonexistentstation/nanjing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/nonexistentstation/nanjing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 29
+      - 14
+      - 530275447
+      additionalInfo: null
   /api/v1/consignservice/consigns/order/%255Cx00%255Cx01%255Cx02:
     id:
     - errorType: "VALIDATION_ERROR"
@@ -8871,6 +9281,21 @@ parameterErrors:
       - 2
       - 508209251
       additionalInfo: null
+  /api/v1/routeservice/routes/shenzhen/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shenzhen/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 24
+      - 1
+      - 456580046
+      additionalInfo: null
   ? /api/v1/contactservice/contacts/account/%2521%2540%2523%2524%2525%255E%2526*%2528%2529%257B%257D%255B%255D%257C%255C%253A%253B%2522%2527%253C%253E%253F%252C.%252F
   : accountId:
     - errorType: "FORMAT_ERROR"
@@ -8929,6 +9354,21 @@ parameterErrors:
       - 17
       - 36
       - 984140932
+      additionalInfo: null
+  /api/v1/routeservice/routes/kunming/wuhan:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/kunming/wuhan"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 14
+      - 19
+      - 464401163
       additionalInfo: null
   ? /api/v1/admintravelservice/admintravel/%2521%2540%2523%2524%2525%255E%2526*%2528%2529%257B%257D%255B%255D%257C%255C%253A%253B%2522%2527%253C%253E%253F%252C.%252F
   : tripId:
@@ -9007,6 +9447,21 @@ parameterErrors:
       - 28
       - 208098500
       additionalInfo: null
+  /api/v1/routeservice/routes/shenzhen/changsha:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shenzhen/changsha"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 16
+      - 19
+      - 488918594
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/444555666:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -9036,6 +9491,21 @@ parameterErrors:
       - 46
       - 15
       - 924240885
+      additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/xx:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/xx"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 13
+      - 11
+      - 164733992
       additionalInfo: null
   /api/v1/consignservice/consigns/account/mnop9012qrst:
     accountId:
@@ -9125,6 +9595,36 @@ parameterErrors:
       - 59
       - 3
       - 759001559
+      additionalInfo: null
+  /api/v1/routeservice/routes/shenzhen/xian:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shenzhen/xian"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 27
+      - 19
+      - 687786808
+      additionalInfo: null
+  /api/v1/routeservice/routes/suzhou/!@:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/suzhou/!@"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 31
+      - 22
+      - 482365829
       additionalInfo: null
   /api/v1/stationservice/stations/idlist:
     loginId:
@@ -9334,6 +9834,21 @@ parameterErrors:
       - 36
       - 4
       - 313897600
+      additionalInfo: null
+  /api/v1/routeservice/routes/kunming/guangzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/kunming/guangzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 31
+      - 35
+      - 543555484
       additionalInfo: null
   /api/v1/consignservice/consigns/order/%2520%2520%2520:
     id:
@@ -9663,6 +10178,21 @@ parameterErrors:
       - 9
       - 226734000
       additionalInfo: null
+  /api/v1/routeservice/routes/nanjing/guangzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/nanjing/guangzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 15
+      - 3
+      - 165430743
+      additionalInfo: null
   /api/v1/consignservice/consigns/order/%2520%2509%2520%250A%2520:
     id:
     - errorType: "SECURITY_ERROR"
@@ -9842,6 +10372,21 @@ parameterErrors:
       - 44
       - 561296660
       additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/wuhan:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/wuhan"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 21
+      - 39
+      - 554124996
+      additionalInfo: null
   /api/v1/routeservice/routes/losangeles/newyorkcity:
     departureTime:
     - errorType: "TYPE_MISMATCH"
@@ -9959,6 +10504,21 @@ parameterErrors:
       - 48
       - 15
       - 556757800
+      additionalInfo: null
+  /api/v1/routeservice/routes/xi'an/nanjing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/xi'an/nanjing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 22
+      - 27
+      - 202080535
       additionalInfo: null
   /api/v1/consignservice/consigns/account/1122334455:
     accountId:
@@ -10087,12 +10647,12 @@ parameterErrors:
       parameterName: "departureTime"
       timestamp:
       - 2026
-      - 2
-      - 1
-      - 16
-      - 40
-      - 42
-      - 656311800
+      - 5
+      - 13
+      - 14
+      - 30
+      - 23
+      - 617047876
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "java. lang"
@@ -10119,6 +10679,20 @@ parameterErrors:
       - 43
       - 1
       - 522989800
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 29
+      - 38
+      - 178651583
       additionalInfo: null
     startPlace:
     - errorType: "VALIDATION_ERROR"
@@ -10299,12 +10873,12 @@ parameterErrors:
       parameterName: "endPlace"
       timestamp:
       - 2026
-      - 2
-      - 1
-      - 15
-      - 36
-      - 35
-      - 877112100
+      - 5
+      - 13
+      - 14
+      - 23
+      - 42
+      - 904682925
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -10319,6 +10893,34 @@ parameterErrors:
       - 57
       - 27
       - 470644200
+      additionalInfo: null
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "JSON parse error: Cannot deserialize instance of `java"
+      apiEndpoint: "/api/v1/travelplanservice/travelPlan/minStation"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 28
+      - 41
+      - 32438578
+      additionalInfo: null
+  /api/v1/routeservice/routes/hangzhou/chengdu:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/hangzhou/chengdu"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 22
+      - 7
+      - 76942538
       additionalInfo: null
   /api/v1/consignservice/consigns/account/infinity:
     accountId:
@@ -10409,6 +11011,21 @@ parameterErrors:
       - 21
       - 34
       - 390975678
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/'unionselect*frompasswords--:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/'unionselect*frompasswords--"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 17
+      - 13
+      - 856224334
       additionalInfo: null
   /api/v1/consignservice/consigns/account/1234567:
     accountId:
@@ -10530,6 +11147,21 @@ parameterErrors:
       - 14
       - 58
       - 85602096
+      additionalInfo: null
+  /api/v1/routeservice/routes/..\..\..\windows\system32\config\sam/changsha:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/routeservice/routes/..%5C..%5C..%5Cwindows%5Csystem32%5Cconfig%5Csam/changsha"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 21
+      - 32
+      - 600396398
       additionalInfo: null
   /api/v1/executeservice/execute/collected/%2527%2520OR%2520%25271%2527%253D%25271:
     orderId:
@@ -11124,6 +11756,21 @@ parameterErrors:
       - 44
       - 35
       - 176904920
+      additionalInfo: null
+  /api/v1/routeservice/routes/javascript:alert('xss')/changsha:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/javascript:alert('xss')/changsha"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 26
+      - 14
+      - 556394205
       additionalInfo: null
   /api/v1/consignservice/consigns/account/%253Cscript%253Ealert%2528%2527test%2527%2529%253C%252Fscript%253E:
     id:
@@ -14136,6 +14783,36 @@ parameterErrors:
       - 3
       - 682593647
       additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/shenzhen:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/shenzhen"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 22
+      - 57
+      - 648480482
+      additionalInfo: null
+  /api/v1/routeservice/routes/suzhou/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/suzhou/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 28
+      - 9
+      - 753017644
+      additionalInfo: null
   /api/v1/routeservice/routes/newyork/losangeles:
     departureTime:
     - errorType: "VALIDATION_ERROR"
@@ -14256,6 +14933,21 @@ parameterErrors:
       - 14
       - 870209413
       additionalInfo: null
+  /api/v1/routeservice/routes/beijing/changsha:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/changsha"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 16
+      - 12
+      - 300315703
+      additionalInfo: null
   /api/v1/routeservice/routes/beijingrailwaystation/parisgaredelyon:
     departureTime:
     - errorType: "FORMAT_ERROR"
@@ -14345,6 +15037,21 @@ parameterErrors:
       - 22
       - 35
       - 817004227
+      additionalInfo: null
+  /api/v1/routeservice/routes/'or'1'='1/shenzhen:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/'or'1'='1/shenzhen"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 12
+      - 16
+      - 221853827
       additionalInfo: null
   /api/v1/admintravelservice/admintravel/%3B%20ls%20-la:
     tripId:
@@ -14651,6 +15358,21 @@ parameterErrors:
       - 51
       - 529255455
       additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/<svgonload=alert('xss')>:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/%3Csvgonload=alert('xss')%3E"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 28
+      - 59
+      - 508375714
+      additionalInfo: null
   /api/v1/contactservice/contacts/account/%257C%2520cat%2520%252Fetc%252Fpasswd:
     accountId:
     - errorType: "VALIDATION_ERROR"
@@ -14800,6 +15522,21 @@ parameterErrors:
       - 5
       - 32
       - 35510571
+      additionalInfo: null
+  /api/v1/routeservice/routes/kunming/shanghai:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/kunming/shanghai"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 17
+      - 53
+      - 420356452
       additionalInfo: null
   /api/v1/consignservice/consigns/account/3.14159:
     accountId:
@@ -14979,6 +15716,21 @@ parameterErrors:
       - 59
       - 30
       - 438784645
+      additionalInfo: null
+  /api/v1/routeservice/routes/suzhou/\x00\x01\x02:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/routeservice/routes/suzhou/%5Cx00%5Cx01%5Cx02"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 25
+      - 10
+      - 36606542
       additionalInfo: null
   /api/v1/contactservice/contacts/account/%2521%2540%2523%2524%2525%255E%2526*%2528%2529:
     accountId:
@@ -15424,6 +16176,21 @@ parameterErrors:
       - 42
       - 796303569
       additionalInfo: null
+  /api/v1/routeservice/routes/fallback_startplace_1/xian:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fallback_startplace_1/xian"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 29
+      - 26
+      - 481830910
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/summary78901:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -15640,6 +16407,21 @@ parameterErrors:
       - 1
       - 16
       - 215383843
+      additionalInfo: null
+  /api/v1/routeservice/routes/kunming/xian:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/kunming/xian"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 19
+      - 16
+      - 746760922
       additionalInfo: null
   /api/v1/consignpriceservice/consignprice/45.78/true:
     handleDate:
@@ -24968,6 +25750,21 @@ parameterErrors:
       - 59
       - 256603200
       additionalInfo: null
+  /api/v1/routeservice/routes/fallback_startplace_0/hangzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fallback_startplace_0/hangzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 30
+      - 5
+      - 10463277
+      additionalInfo: null
   /api/v1/routeservice/routes/undefined/nanjing:
     startPlace:
     - errorType: "NULL_ERROR"
@@ -25057,6 +25854,22 @@ parameterErrors:
       - 35
       - 40
       - 423319862
+      additionalInfo: null
+  /api/v1/routeservice/routes/%2e%2e%2f%2e%2e%2f/beijing:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/routeservice/routes/%252e%252e%252f%252e%252e%252f/beijing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 25
+      - 24
+      - 844560385
       additionalInfo: null
   /api/v1/consignservice/consigns/account/Z:
     accountId:
@@ -25333,6 +26146,21 @@ parameterErrors:
       - 37
       - 3
       - 177305032
+      additionalInfo: null
+  /api/v1/routeservice/routes/hangzhou/false:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/hangzhou/false"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 10
+      - 25
+      - 388947344
       additionalInfo: null
   /api/v1/consignservice/consigns/account/balance_032:
     accountId:
@@ -25650,6 +26478,36 @@ parameterErrors:
       - 42
       - 161428175
       additionalInfo: null
+  /api/v1/routeservice/routes/-999/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/-999/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 24
+      - 51
+      - 508251134
+      additionalInfo: null
+  /api/v1/routeservice/routes/chengdu/chongqing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/chengdu/chongqing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 16
+      - 0
+      - 129168218
+      additionalInfo: null
   /api/v1/executeservice/execute/collected/.%252C%252F:
     orderId:
     - errorType: "FORMAT_ERROR"
@@ -25754,6 +26612,36 @@ parameterErrors:
       - 27
       - 106694200
       additionalInfo: null
+  /api/v1/routeservice/routes/chongqing/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/chongqing/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 24
+      - 20
+      - 814485449
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/shenzhen:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/shenzhen"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 17
+      - 6
+      - 509431960
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/NonExistent1:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -25768,6 +26656,21 @@ parameterErrors:
       - 40
       - 19
       - 871519063
+      additionalInfo: null
+  /api/v1/routeservice/routes/shenzhen/nanjing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shenzhen/nanjing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 27
+      - 12
+      - 320267563
       additionalInfo: null
   /api/v1/admintravelservice/admintravel/%257B%2522key%2522%253A%2522value%2522%257D:
     tripId:
@@ -26114,6 +27017,21 @@ parameterErrors:
       - 6
       - 67980368
       additionalInfo: null
+  /api/v1/routeservice/routes/ab/shanghai:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/ab/shanghai"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 23
+      - 4
+      - 897310269
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/planning12345:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -26275,6 +27193,21 @@ parameterErrors:
       - 45
       - 898239063
       additionalInfo: null
+  /api/v1/routeservice/routes/<imgsrc=xonerror=alert('xss')>/guangzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/%3Cimgsrc=xonerror=alert('xss')%3E/guangzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 31
+      - 11
+      - 179491937
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/3030303030:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -26348,6 +27281,22 @@ parameterErrors:
       - 31
       - 15
       - 810262166
+      additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/%2e%2e%2f%2e%2e%2f:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/%252e%252e%252f%252e%252e%252f"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 12
+      - 46
+      - 824124999
       additionalInfo: null
   /api/v1/executeservice/execute/collected/%255B%255D:
     orderId:
@@ -26452,6 +27401,22 @@ parameterErrors:
       - 1
       - 20
       - 456840000
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/;ls-la:
+    routeId:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/;ls-la"
+      parameterName: "routeId"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 14
+      - 50
+      - 901380155
       additionalInfo: null
   /api/v1/trainservice/trains/byName/AB2PW6Ne:
     <unknown>:
@@ -27533,6 +28498,21 @@ parameterErrors:
       - 18
       - 826287005
       additionalInfo: null
+  /api/v1/routeservice/routes/nanjing/fakecity123:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/nanjing/fakecity123"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 28
+      - 17
+      - 320427687
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/7778889999:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -27770,6 +28750,21 @@ parameterErrors:
       - 43
       - 53
       - 189956395
+      additionalInfo: null
+  /api/v1/routeservice/routes/beijing/nanjing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/beijing/nanjing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 16
+      - 50
+      - 435068872
       additionalInfo: null
   /api/v1/consignservice/consigns/account/%2560whoami%2560:
     id:
@@ -28321,12 +29316,12 @@ parameterErrors:
       parameterName: "endPlace"
       timestamp:
       - 2026
-      - 1
-      - 31
-      - 22
-      - 8
-      - 52
-      - 472553100
+      - 5
+      - 13
+      - 14
+      - 25
+      - 17
+      - 4780287
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL was not normalized"
@@ -28409,6 +29404,21 @@ parameterErrors:
       - 4
       - 33
       - 342348036
+      additionalInfo: null
+  /api/v1/routeservice/routes/$(cat/etc/passwd)/nanjing:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/$(cat/etc/passwd)/nanjing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 29
+      - 7
+      - 188479519
       additionalInfo: null
   /api/v1/executeservice/execute/execute/%2560%2560%2560:
     orderId:
@@ -29021,6 +30031,22 @@ parameterErrors:
       - 26
       - 34
       - 422854751
+      additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/1;deletefromuserswhere1=1:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/1;deletefromuserswhere1=1"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 11
+      - 9
+      - 665919372
       additionalInfo: null
   /api/v1/consignservice/consigns/account/consign12345:
     accountId:
@@ -32100,6 +33126,21 @@ parameterErrors:
       - 24
       - 106175
       additionalInfo: null
+  /api/v1/routeservice/routes/chongqing/xi'an:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/chongqing/xi'an"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 29
+      - 57
+      - 809178249
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/019_location:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -32174,6 +33215,21 @@ parameterErrors:
       - 36
       - 48
       - 513208630
+      additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/suzhou:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/suzhou"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 20
+      - 3
+      - 329292792
       additionalInfo: null
   /api/v1/executeservice/execute/execute/%253B%2520ls%2520-la:
     orderId:
@@ -33131,6 +34187,21 @@ parameterErrors:
       - 35
       - 240548302
       additionalInfo: null
+  /api/v1/routeservice/routes/chengdu/shanghai:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/chengdu/shanghai"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 28
+      - 2
+      - 653426975
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_48:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -33250,6 +34321,21 @@ parameterErrors:
       - 26
       - 185872362
       additionalInfo: null
+  /api/v1/routeservice/routes/chengdu/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/chengdu/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 8
+      - 46
+      - 967701090
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/false:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -33325,6 +34411,22 @@ parameterErrors:
       - 6
       - 10
       - 938149800
+      additionalInfo: null
+  /api/v1/routeservice/routes/';droptableusers;--/shanghai:
+    departureTime:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \""
+      apiEndpoint: "/api/v1/routeservice/routes/';droptableusers;--/shanghai"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 18
+      - 9
+      - 411091290
       additionalInfo: null
   /api/v1/consignservice/consigns/order/-5:
     orderId:
@@ -33551,6 +34653,21 @@ parameterErrors:
       - 54
       - 0
       - 242879200
+      additionalInfo: null
+  /api/v1/routeservice/routes/kunming/nanjing:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/kunming/nanjing"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 20
+      - 15
+      - 170248017
       additionalInfo: null
   /api/v1/routeservice/routes/fakecity/chengdu:
     startPlace:
@@ -34386,6 +35503,21 @@ parameterErrors:
       - 36
       - 982993900
       additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/shanghai:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/shanghai"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 21
+      - 51
+      - 625646320
+      additionalInfo: null
   ? /api/v1/executeservice/execute/execute/%2521%2540%2523%2524%2525%255E%2526*%2528%2529%257B%257D%255B%255D%257C%255C%253A%253B%2522%2527%253C%253E%252C.%252F
   : orderId:
     - errorType: "FORMAT_ERROR"
@@ -34417,6 +35549,21 @@ parameterErrors:
       - 35
       - 0
       - 907779700
+      additionalInfo: null
+  /api/v1/routeservice/routes/'unionselect*frompasswords--/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/'unionselect*frompasswords--/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 27
+      - 4
+      - 765744752
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FAKE-ID-999:
     accountId:
@@ -35058,6 +36205,21 @@ parameterErrors:
       - 30
       - 745277135
       additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/$(cat/etc/passwd):
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/$(cat/etc/passwd)"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 21
+      - 0
+      - 831425471
+      additionalInfo: null
   ? /api/v1/consignservice/consigns/account/%2521%2540%2523%2524%2525%255E%2526*%2528%2529%257B%257D%255B%255D%257C%255C%253A%253B%2522%2527%253C%253E%253F%252C.%252F
   : id:
     - errorType: "FORMAT_ERROR"
@@ -35133,6 +36295,21 @@ parameterErrors:
       - 58
       - 14
       - 599225968
+      additionalInfo: null
+  /api/v1/routeservice/routes/chongqing/shenzhen:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/chongqing/shenzhen"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 20
+      - 27
+      - 236202968
       additionalInfo: null
   /api/v1/consignservice/consigns/account/entry23456:
     accountId:
@@ -35364,6 +36541,21 @@ parameterErrors:
       - 7
       - 489838800
       additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/`whoami`:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/%60whoami%60"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 29
+      - 46
+      - 191751945
+      additionalInfo: null
   /api/v1/routeservice/routes/chicago/losangeles:
     departureTime:
     - errorType: "FORMAT_ERROR"
@@ -35378,6 +36570,21 @@ parameterErrors:
       - 21
       - 23
       - 478455900
+      additionalInfo: null
+  /api/v1/routeservice/routes/chengdu/<script>alert('xss')</script>:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/chengdu/%3Cscript%3Ealert('xss')%3C/script%3E"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 30
+      - 12
+      - 189529458
       additionalInfo: null
   /api/v1/consignservice/consigns/order/A123456789:
     orderId:
@@ -35632,6 +36839,21 @@ parameterErrors:
       - 48
       - 17
       - 140292025
+      additionalInfo: null
+  /api/v1/routeservice/routes/\x00\x01\x02/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "Unknown (HTTP 400)"
+      apiEndpoint: "/api/v1/routeservice/routes/%5Cx00%5Cx01%5Cx02/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 30
+      - 53
+      - 871363207
       additionalInfo: null
   /api/v1/consignservice/consigns/order/adminAccess:
     orderId:
@@ -41679,6 +42901,36 @@ parameterErrors:
       - 30
       - 535161195
       additionalInfo: null
+  /api/v1/routeservice/routes/|cat/etc/passwd/chongqing:
+    departureTime:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/%7Ccat/etc/passwd/chongqing"
+      parameterName: "departureTime"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 27
+      - 31
+      - 406115805
+      additionalInfo: null
+  /api/v1/routeservice/routes/wuhan/nonexistentplace:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/wuhan/nonexistentplace"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 24
+      - 13
+      - 301520000
+      additionalInfo: null
   /api/v1/contactservice/contacts/account/%2520%2520%2520:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -41991,6 +43243,21 @@ parameterErrors:
       - 56
       - 449129600
       additionalInfo: null
+  /api/v1/routeservice/routes/suzhou/kunming:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/suzhou/kunming"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 30
+      - 34
+      - 821558757
+      additionalInfo: null
   /api/v1/routeservice/routes/wuhan/guangzhou:
     startPlace:
     - errorType: "FORMAT_ERROR"
@@ -42052,6 +43319,21 @@ parameterErrors:
       - 11
       - 31
       - 713680626
+      additionalInfo: null
+  /api/v1/routeservice/routes/kunming/tianjin:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/kunming/tianjin"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 11
+      - 51
+      - 894663657
       additionalInfo: null
   /api/v1/consignservice/consigns/account/abcd:
     accountId:
@@ -42416,11 +43698,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 8
-      - 24
-      - 8
-      - 46629992
+      - 13
+      - 15
+      - 12
+      - 51
+      - 592007670
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -42625,11 +43907,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 3
-      - 1
-      - 7
-      - 36
-      - 304172995
+      - 13
+      - 15
+      - 8
+      - 37
+      - 860958734
       additionalInfo: null
     - errorType: "LENGTH_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -43633,6 +44915,21 @@ parameterErrors:
       - 53
       - 353031400
       additionalInfo: null
+  /api/v1/routeservice/routes/fallback_startplace_0/javascript:alert('xss'):
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fallback_startplace_0/javascript:alert('xss')"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 13
+      - 42
+      - 924037370
+      additionalInfo: null
   /api/v1/routeservice/routes/newyork/'or'1'='1:
     endPlace:
     - errorType: "VALIDATION_ERROR"
@@ -43662,6 +44959,21 @@ parameterErrors:
       - 21
       - 10
       - 786441507
+      additionalInfo: null
+  /api/v1/routeservice/routes/fakecity123/wuhan:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fakecity123/wuhan"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 9
+      - 49
+      - 634867459
       additionalInfo: null
   ? /api/v1/consignservice/consigns/order/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   : orderId:
@@ -44127,6 +45439,21 @@ parameterErrors:
       - 37
       - 56
       - 983926587
+      additionalInfo: null
+  /api/v1/routeservice/routes/hangzhou/12345:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/hangzhou/12345"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 8
+      - 54
+      - 347517077
       additionalInfo: null
   /api/v1/consignservice/consigns/account/account_001:
     account_001:
@@ -48359,6 +49686,21 @@ parameterErrors:
       - 4
       - 221520018
       additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/changsha:
+    endPlace:
+    - errorType: "TYPE_MISMATCH"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/changsha"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 13
+      - 14
+      - 15
+      - 52
+      - 476495283
+      additionalInfo: null
   /api/v1/consignpriceservice/consignprice/-Infinity/true:
     orderId:
     - errorType: "TYPE_MISMATCH"
@@ -48441,11 +49783,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 8
-      - 29
-      - 29
-      - 344417075
+      - 13
+      - 15
+      - 10
+      - 1
+      - 892045132
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -48704,11 +50046,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 8
-      - 28
-      - 33
-      - 952187367
+      - 13
+      - 15
+      - 9
+      - 54
+      - 308260375
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -48887,11 +50229,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 8
-      - 1
-      - 42
-      - 232278707
+      - 13
+      - 15
+      - 10
+      - 47
+      - 588245111
       additionalInfo: null
     - errorType: "XSS_ATTEMPT"
       errorReason: "Unknown (HTTP 400)"

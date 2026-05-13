@@ -585,7 +585,13 @@ public class TraceErrorAnalyzer {
             llmProperties.put("llm.enabled", System.getProperty("llm.enabled", "true"));
             llmProperties.put("llm.model.type", System.getProperty("llm.model.type", "ollama")); // Default from properties
             
-            // Add all LLM-related system properties
+            // Add all LLM-related system properties.
+            // Canonical llm.openai_compatible.* keys first; the legacy llm.local.*
+            // keys are also forwarded so existing *.properties files keep working.
+            llmProperties.put("llm.openai_compatible.enabled", System.getProperty("llm.openai_compatible.enabled", "false"));
+            llmProperties.put("llm.openai_compatible.url", System.getProperty("llm.openai_compatible.url", "http://localhost:4891/v1/chat/completions"));
+            llmProperties.put("llm.openai_compatible.model", System.getProperty("llm.openai_compatible.model", "llama-3-8b-instruct"));
+            llmProperties.put("llm.openai_compatible.api.key", System.getProperty("llm.openai_compatible.api.key", ""));
             llmProperties.put("llm.local.enabled", System.getProperty("llm.local.enabled", "false"));
             llmProperties.put("llm.local.url", System.getProperty("llm.local.url", "http://localhost:4891/v1/chat/completions"));
             llmProperties.put("llm.local.model", System.getProperty("llm.local.model", "llama-3-8b-instruct"));

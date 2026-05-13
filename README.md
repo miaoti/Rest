@@ -42,7 +42,7 @@ ollama pull qwen2.5-coder:14b
 #    open src/main/resources/My-Example/trainticket-mst.properties and set:
 #       llm.model.type=ollama
 #       llm.ollama.enabled=true
-#       llm.local.enabled=false
+#       llm.openai_compatible.enabled=false
 
 # 4. Generate + execute against the bundled TrainTicket demo
 java -jar target/restest.jar src/main/resources/My-Example/trainticket-demo.properties
@@ -63,8 +63,8 @@ mvn clean install -DskipTests
 # 2. Provide an API key (resolved by ${DEEPSEEK_API_KEY} placeholder in the MST file)
 export DEEPSEEK_API_KEY=sk-...
 
-# 3. The bundled demo is already wired for DeepSeek (llm.model.type=local,
-#    llm.local.url=https://api.deepseek.com/v1/chat/completions). Just run:
+# 3. The bundled demo is already wired for DeepSeek (llm.model.type=openai_compatible,
+#    llm.openai_compatible.url=https://api.deepseek.com/v1/chat/completions). Just run:
 java -jar target/restest.jar src/main/resources/My-Example/trainticket-demo.properties
 
 # 4-5. Same Allure rendering as above
@@ -151,7 +151,9 @@ src/main/resources/My-Example/
 
 ## LLM backends
 
-Set `llm.model.type` in `*-mst.properties` to one of `local`, `gemini`, `ollama`. The unused backends can be left in the file with `*.enabled=false` — only the selected one is contacted.
+Set `llm.model.type` in `*-mst.properties` to one of `openai_compatible`, `gemini`, or `ollama`. The unused backends can be left in the file with `*.enabled=false` — only the selected one is contacted.
+
+> **Heads-up on naming.** Earlier versions called the OpenAI-compatible backend `local` (`llm.model.type=local`, `llm.local.*`). That was misleading — DeepSeek, OpenAI, and the like are *remote hosted APIs*, not local models. The new canonical name is `openai_compatible`, but the old `local` value and `llm.local.*` keys are still accepted as deprecated aliases (you'll see a one-time deprecation warning on startup).
 
 ### Ollama (fully local, default in flow.md examples)
 
@@ -163,13 +165,23 @@ llm.ollama.model=qwen2.5-coder:14b
 
 Start the daemon (`ollama serve`) and pull the model (`ollama pull qwen2.5-coder:14b`). No API key required.
 
-### DeepSeek / OpenAI / any OpenAI-compatible endpoint
+### OpenAI-compatible HTTP endpoint (DeepSeek, OpenAI, OpenRouter, Together, ...)
+
+Anything that implements OpenAI's `/v1/chat/completions` request/response shape works here — that includes DeepSeek (the bundled default), OpenAI itself, OpenRouter, Together, Groq, Mistral's hosted API, and self-hosted OpenAI shims like `gpt4all` or `llama.cpp --api`. To swap providers, change just the URL, model name, and API-key env var below.
 
 ```properties
-llm.model.type=local
-llm.local.url=https://api.deepseek.com/v1/chat/completions
-llm.local.model=deepseek-chat
-llm.local.api.key=${DEEPSEEK_API_KEY}
+llm.model.type=openai_compatible
+llm.openai_compatible.url=https://api.deepseek.com/v1/chat/completions
+llm.openai_compatible.model=deepseek-chat
+llm.openai_compatible.api.key=${DEEPSEEK_API_KEY}
+```
+
+For a self-hosted server (e.g. `gpt4all` on localhost), leave `api.key` empty:
+
+```properties
+llm.openai_compatible.url=http://localhost:4891/v1/chat/completions
+llm.openai_compatible.model=Meta-Llama-3-8B-Instruct.Q4_0.gguf
+llm.openai_compatible.api.key=
 ```
 
 The `${VAR}` syntax is resolved at startup — see *API keys* below.
@@ -187,7 +199,7 @@ llm.gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models
 
 ## API keys
 
-`llm.local.api.key`, `llm.gemini.api.key`, and any other secret-bearing key supports `${VAR}` and `${VAR:default}` placeholder syntax. The resolver tries, in order:
+`llm.openai_compatible.api.key`, `llm.gemini.api.key`, and any other secret-bearing key supports `${VAR}` and `${VAR:default}` placeholder syntax. The resolver tries, in order:
 
 1. `System.getenv("VAR")` — `export DEEPSEEK_API_KEY=sk-...` before launching.
 2. `System.getProperty("VAR")` — `-DDEEPSEEK_API_KEY=sk-...` on the JVM command line (handy for IntelliJ run configs).

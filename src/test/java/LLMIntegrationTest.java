@@ -12,28 +12,29 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class to verify LLM integration works with both local and Gemini models
+ * Test class to verify LLM integration works with the OpenAI-compatible and
+ * Gemini backends.
  */
 public class LLMIntegrationTest {
     
-    private Map<String, String> localProperties;
+    private Map<String, String> openaiCompatibleProperties;
     private Map<String, String> geminiProperties;
-    
+
     @BeforeEach
     void setUp() {
-        // Setup properties for local model
-        localProperties = new HashMap<>();
-        localProperties.put("llm.enabled", "true");
-        localProperties.put("llm.model.type", "local");
-        localProperties.put("llm.local.enabled", "true");
-        localProperties.put("llm.local.url", "http://localhost:4891/v1/chat/completions");
-        localProperties.put("llm.local.model", "llama-3-8b-instruct");
-        
-        // Setup properties for Gemini model (only Gemini enabled)
+        // Setup properties for the OpenAI-compatible backend (DeepSeek-style).
+        openaiCompatibleProperties = new HashMap<>();
+        openaiCompatibleProperties.put("llm.enabled", "true");
+        openaiCompatibleProperties.put("llm.model.type", "openai_compatible");
+        openaiCompatibleProperties.put("llm.openai_compatible.enabled", "true");
+        openaiCompatibleProperties.put("llm.openai_compatible.url", "http://localhost:4891/v1/chat/completions");
+        openaiCompatibleProperties.put("llm.openai_compatible.model", "llama-3-8b-instruct");
+
+        // Setup properties for Gemini model (only Gemini enabled).
         geminiProperties = new HashMap<>();
         geminiProperties.put("llm.enabled", "true");
         geminiProperties.put("llm.model.type", "gemini");
-        geminiProperties.put("llm.local.enabled", "false");
+        geminiProperties.put("llm.openai_compatible.enabled", "false");
         geminiProperties.put("llm.gemini.enabled", "true");
         geminiProperties.put("llm.gemini.api.key", "AIzaSyANJa0k_Ap8JROFtAh7BbxQo3XrVGHLR-c");
         geminiProperties.put("llm.gemini.model", "gemini-2.0-flash-exp");
@@ -42,12 +43,12 @@ public class LLMIntegrationTest {
     
     @Test
     void testLLMConfigCreation() {
-        // Test local config
-        LLMConfig localConfig = LLMConfig.fromProperties(localProperties);
-        assertNotNull(localConfig);
-        assertTrue(localConfig.isEnabled());
-        assertEquals(LLMConfig.ModelType.LOCAL, localConfig.getModelType());
-        assertTrue(localConfig.isValid());
+        // Test OpenAI-compatible config
+        LLMConfig openaiCompatibleConfig = LLMConfig.fromProperties(openaiCompatibleProperties);
+        assertNotNull(openaiCompatibleConfig);
+        assertTrue(openaiCompatibleConfig.isEnabled());
+        assertEquals(LLMConfig.ModelType.OPENAI_COMPATIBLE, openaiCompatibleConfig.getModelType());
+        assertTrue(openaiCompatibleConfig.isValid());
         
         // Test Gemini config
         LLMConfig geminiConfig = LLMConfig.fromProperties(geminiProperties);
@@ -59,11 +60,11 @@ public class LLMIntegrationTest {
     
     @Test
     void testLLMServiceCreation() {
-        // Test local service creation
-        LLMService localService = LLMService.getInstance(localProperties);
-        assertNotNull(localService);
-        assertTrue(localService.isReady());
-        assertEquals(LLMConfig.ModelType.LOCAL, localService.getConfig().getModelType());
+        // Test OpenAI-compatible service creation
+        LLMService openaiCompatibleService = LLMService.getInstance(openaiCompatibleProperties);
+        assertNotNull(openaiCompatibleService);
+        assertTrue(openaiCompatibleService.isReady());
+        assertEquals(LLMConfig.ModelType.OPENAI_COMPATIBLE, openaiCompatibleService.getConfig().getModelType());
         
         // Test Gemini service creation
         LLMService geminiService = LLMService.getInstance(geminiProperties);
@@ -136,12 +137,12 @@ public class LLMIntegrationTest {
         LLMConfig config = LLMConfig.fromProperties(upperCaseProps);
         assertEquals(LLMConfig.ModelType.GEMINI, config.getModelType());
 
-        // Test default to local for unknown types
-        Map<String, String> unknownProps = new HashMap<>(localProperties);
+        // Test default to OPENAI_COMPATIBLE for unknown types
+        Map<String, String> unknownProps = new HashMap<>(openaiCompatibleProperties);
         unknownProps.put("llm.model.type", "unknown");
 
         LLMConfig defaultConfig = LLMConfig.fromProperties(unknownProps);
-        assertEquals(LLMConfig.ModelType.LOCAL, defaultConfig.getModelType());
+        assertEquals(LLMConfig.ModelType.OPENAI_COMPATIBLE, defaultConfig.getModelType());
     }
 
     @Test
@@ -205,16 +206,16 @@ public class LLMIntegrationTest {
         // Test that only Gemini is enabled when configured
         LLMConfig geminiConfig = LLMConfig.fromProperties(geminiProperties);
         assertTrue(geminiConfig.isGeminiEnabled());
-        assertFalse(geminiConfig.isLocalEnabled()); // Should be false based on our properties
+        assertFalse(geminiConfig.isOpenaiCompatibleEnabled()); // Should be false based on our properties
         assertEquals(LLMConfig.ModelType.GEMINI, geminiConfig.getModelType());
 
-        // Test that only local is enabled when configured
-        Map<String, String> localOnlyProps = new HashMap<>(localProperties);
-        localOnlyProps.put("llm.gemini.enabled", "false");
+        // Test that only the OpenAI-compatible backend is enabled when configured
+        Map<String, String> openaiCompatibleOnlyProps = new HashMap<>(openaiCompatibleProperties);
+        openaiCompatibleOnlyProps.put("llm.gemini.enabled", "false");
 
-        LLMConfig localConfig = LLMConfig.fromProperties(localOnlyProps);
-        assertTrue(localConfig.isLocalEnabled());
-        assertFalse(localConfig.isGeminiEnabled());
-        assertEquals(LLMConfig.ModelType.LOCAL, localConfig.getModelType());
+        LLMConfig openaiCompatibleConfig = LLMConfig.fromProperties(openaiCompatibleOnlyProps);
+        assertTrue(openaiCompatibleConfig.isOpenaiCompatibleEnabled());
+        assertFalse(openaiCompatibleConfig.isGeminiEnabled());
+        assertEquals(LLMConfig.ModelType.OPENAI_COMPATIBLE, openaiCompatibleConfig.getModelType());
     }
 }

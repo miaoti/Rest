@@ -59,6 +59,22 @@ public class SmartInputFetcher {
     private Map<String, CachedValue> cache;
     private Map<String, List<String>> diverseValueCache;
     private Map<String, Integer> valueRotationIndex;
+    /**
+     * Bug fix (success-then-reject loop): track consecutive validation-failure counts per
+     * (cacheKey, mappingEndpoint) pair. When a mapping repeatedly returns values that pass
+     * the API-response check but fail {@link #isValidValueForParameter} (e.g. orderId UUID
+     * {@code 03e27662-...} 122 times in one run), we quarantine that mapping for the rest
+     * of the JVM lifetime so subsequent fetches skip it instead of looping. In-memory only;
+     * no persistent registry change. Bounded LRU so a long-running soak test cannot leak.
+     */
+    private Map<String, Integer> mappingFailureCounts;
+    /**
+     * Quarantine threshold: after this many consecutive validation failures from the same
+     * mapping for the same parameter cache-key, the mapping is skipped for the rest of the
+     * run. Tuned conservatively — a healthy upstream that briefly emits a stale value will
+     * recover within 3 attempts before being benched.
+     */
+    private static final int MAPPING_QUARANTINE_THRESHOLD = 3;
     private String baseUrl;
 
     /**
@@ -169,6 +185,8 @@ public class SmartInputFetcher {
         this.cache = boundedLruMap(cacheCap);
         this.diverseValueCache = boundedLruMap(cacheCap);
         this.valueRotationIndex = boundedLruMap(cacheCap);
+        // Failure counters reuse the same LRU bound so they cannot outgrow the value caches.
+        this.mappingFailureCounts = boundedLruMap(cacheCap);
 
         // Reviewer Comment 1 + Fresh-review F11: persist Priority-1 mutations on JVM exit
         // via a SINGLE class-level shutdown hook (was previously one per fetcher → leak).
@@ -211,10 +229,11 @@ public class SmartInputFetcher {
      * Load LLM properties from system properties.
      *
      * <p>Fresh-review Finding F2: replaced the explicit allowlist (which silently dropped
-     * {@code llm.local.api.key} — critical for DeepSeek/OpenAI-compatible auth per
-     * {@code flow.md:851-862}) with a prefix-based filter that forwards every system
-     * property starting with {@code llm.} or {@code auth.admin.}. New LLM properties are
-     * automatically picked up without touching this method.</p>
+     * {@code llm.openai_compatible.api.key} / legacy {@code llm.local.api.key} — critical
+     * for DeepSeek/OpenAI-compatible auth per {@code flow.md:851-862}) with a prefix-based
+     * filter that forwards every system property starting with {@code llm.} or
+     * {@code auth.admin.}. New LLM properties are automatically picked up without touching
+     * this method.</p>
      */
     private Map<String, String> loadLLMProperties() {
         Map<String, String> properties = new HashMap<>();
@@ -228,13 +247,21 @@ public class SmartInputFetcher {
             }
         }
 
-        // If model type is set to ollama but local is enabled, prefer LOCAL to match user's intent
-        String modelType = properties.getOrDefault("llm.model.type", "local").toLowerCase();
-        String localEnabled = properties.getOrDefault("llm.local.enabled", "false");
+        // If model type is set to ollama but the OpenAI-compatible backend is
+        // enabled, prefer OPENAI_COMPATIBLE to match the user's intent.
+        // Read the canonical llm.openai_compatible.enabled, then fall back to
+        // the legacy llm.local.enabled, so both old and new configs work.
+        String modelType = properties.getOrDefault("llm.model.type", "openai_compatible").toLowerCase();
+        String openaiCompatibleEnabled = properties.getOrDefault(
+                "llm.openai_compatible.enabled",
+                properties.getOrDefault("llm.local.enabled", "false"));
         String ollamaEnabled = properties.getOrDefault("llm.ollama.enabled", "false");
-        if ("ollama".equals(modelType) && Boolean.parseBoolean(localEnabled) && !Boolean.parseBoolean(ollamaEnabled)) {
-            properties.put("llm.model.type", "local");
-            log.warn("LLM config: Overriding llm.model.type=ollama -> local because llm.local.enabled=true and llm.ollama.enabled=false");
+        if ("ollama".equals(modelType)
+                && Boolean.parseBoolean(openaiCompatibleEnabled)
+                && !Boolean.parseBoolean(ollamaEnabled)) {
+            properties.put("llm.model.type", "openai_compatible");
+            log.warn("LLM config: Overriding llm.model.type=ollama -> openai_compatible "
+                    + "because the OpenAI-compatible backend is enabled and Ollama is not");
         }
 
         return properties;
@@ -319,13 +346,23 @@ public class SmartInputFetcher {
                 ApiMapping traceMapping = new ApiMapping(endpoint, "trace-observed", "DIRECT_EXTRACTION");
                 traceMapping.setPriority(10);
                 applyMappingTuning(traceMapping);
+                // Bug fix (success-then-reject loop): skip mappings that have already failed
+                // validation N times in a row for this parameter in this run.
+                if (isMappingQuarantined(parameterInfo, traceMapping)) {
+                    log.debug("Skipping quarantined trace-observed endpoint {} for '{}'", endpoint, paramName);
+                    continue;
+                }
                 try {
                     String value = fetchFromApiMapping(traceMapping, parameterInfo);
                     if (value != null && !value.trim().isEmpty() && isValidValueForParameter(value, parameterInfo)) {
+                        resetMappingFailure(parameterInfo, traceMapping);
                         cacheValue(parameterInfo, value);
                         log.info("Trace-Aware Fetch → {} = '{}' (from observed producer endpoint {})",
                                 paramName, value, endpoint);
                         return value;
+                    } else if (value != null && !value.trim().isEmpty()) {
+                        // Value was fetched but failed validation — record for quarantine.
+                        recordMappingFailure(parameterInfo, traceMapping);
                     }
                 } catch (Exception e) {
                     log.debug("Trace-observed endpoint {} failed for '{}': {}", endpoint, paramName, e.getMessage());
@@ -357,6 +394,15 @@ public class SmartInputFetcher {
                 .limit(config.getMaxCandidates())
                 .collect(Collectors.toList())) {
 
+            // Bug fix (success-then-reject loop): skip mappings that have already failed
+            // validation N times in a row for this parameter. Prevents the 122x re-fetch of
+            // the same UUID seen in the trainticket run.
+            if (isMappingQuarantined(parameterInfo, mapping)) {
+                log.debug("Skipping quarantined mapping '{}' for parameter '{}'",
+                        mapping.getEndpoint(), paramName);
+                continue;
+            }
+
             try {
                 String value = fetchFromApiMapping(mapping, parameterInfo);
                 if (value != null && !value.trim().isEmpty()) {
@@ -365,6 +411,7 @@ public class SmartInputFetcher {
                         // Update success rate and cache only valid values
                         mapping.updateSuccessRate(true);
                         registryDirty = true;
+                        resetMappingFailure(parameterInfo, mapping);
                         cacheValue(parameterInfo, value);
 
                         log.debug("Successfully fetched valid value '{}' for parameter '{}' from {}",
@@ -375,6 +422,7 @@ public class SmartInputFetcher {
                                 value, paramName, mapping.getEndpoint());
                         mapping.updateSuccessRate(false);
                         registryDirty = true;
+                        recordMappingFailure(parameterInfo, mapping);
                     }
                 }
             } catch (Exception e) {
@@ -603,7 +651,12 @@ public class SmartInputFetcher {
             // Use direct value extraction instead of JSONPath
             String result = extractValueDirectlyFromResponse(responseBody, parameterInfo);
             if (result != null && !result.trim().isEmpty()) {
-                log.info("✅ Smart Fetch Success: {} = '{}' (from {})",
+                // Bug fix (success-then-reject loop): this is a CANDIDATE value pre-validation.
+                // The caller (fetchFromSmartSource / trace-aware loop) still runs
+                // {@link #isValidValueForParameter} and may reject it. Logging
+                // "Smart Fetch Success" here was misleading and produced 122 rejected-after-
+                // success entries in a single run. The true success log lives on the caller.
+                log.info("🔍 Smart Fetch Candidate: {} = '{}' (from {}) — awaiting validation",
                         parameterInfo.getName(), result, mapping.getService());
                 return result;
             } else {
@@ -1042,7 +1095,12 @@ public class SmartInputFetcher {
 
             prompt.append("Which field is most relevant for parameter '").append(paramName).append("'?");
 
-            if (prompt.length() > 1200) {
+            // Bug fix (stale 1200-char cap): raised from 1200 to 30000. The static template
+            // alone runs ~1100-1500 chars, so the previous threshold rejected nearly every
+            // realistic prompt (12 silent skips observed at 1241–1467 chars). 30000 chars
+            // (~7.5k tokens) is well within any modern model's context window while still
+            // catching pathologically large payloads.
+            if (prompt.length() > 30000) {
                 log.warn("Semantic matching prompt too long ({} chars), skipping LLM", prompt.length());
                 return null;
             }
@@ -1420,6 +1478,49 @@ public class SmartInputFetcher {
     }
 
     /**
+     * Compute the quarantine key for a (parameter, mapping) pair. Combines the parameter
+     * cache key (which already encodes name/type/format/bounds/regex) with the mapping's
+     * endpoint so two mappings serving the same parameter quarantine independently.
+     */
+    private String mappingQuarantineKey(ParameterInfo parameterInfo, ApiMapping mapping) {
+        String endpoint = (mapping != null && mapping.getEndpoint() != null) ? mapping.getEndpoint() : "";
+        return buildCacheKey(parameterInfo) + "::" + endpoint;
+    }
+
+    /**
+     * Bug fix (success-then-reject loop): returns true when a mapping has produced
+     * {@value #MAPPING_QUARANTINE_THRESHOLD} consecutive invalid values for this parameter.
+     * Quarantined mappings are skipped for the rest of the run to break the fetch-reject loop.
+     */
+    private boolean isMappingQuarantined(ParameterInfo parameterInfo, ApiMapping mapping) {
+        Integer count = mappingFailureCounts.get(mappingQuarantineKey(parameterInfo, mapping));
+        return count != null && count >= MAPPING_QUARANTINE_THRESHOLD;
+    }
+
+    /**
+     * Increment the consecutive-failure counter for a (parameter, mapping) pair and log
+     * when the threshold is crossed for the first time.
+     */
+    private void recordMappingFailure(ParameterInfo parameterInfo, ApiMapping mapping) {
+        String key = mappingQuarantineKey(parameterInfo, mapping);
+        Integer updated = mappingFailureCounts.compute(key, (k, v) -> v == null ? 1 : v + 1);
+        if (updated != null && updated == MAPPING_QUARANTINE_THRESHOLD) {
+            log.warn("🚫 Quarantining mapping '{}' for parameter '{}' after {} consecutive validation failures; will skip for rest of run",
+                    mapping != null ? mapping.getEndpoint() : "<null>",
+                    parameterInfo.getName(),
+                    MAPPING_QUARANTINE_THRESHOLD);
+        }
+    }
+
+    /**
+     * Reset the consecutive-failure counter on a successful validation so transient upstream
+     * blips don't permanently bench a mapping.
+     */
+    private void resetMappingFailure(ParameterInfo parameterInfo, ApiMapping mapping) {
+        mappingFailureCounts.remove(mappingQuarantineKey(parameterInfo, mapping));
+    }
+
+    /**
      * Clear invalid cached values for a parameter
      */
     private void clearInvalidCachedValues(ParameterInfo parameterInfo) {
@@ -1480,6 +1581,12 @@ public class SmartInputFetcher {
         }
         if (cache != null) {
             cache.clear();
+        }
+        // Bug fix (success-then-reject loop): clear per-mapping failure counts at scenario
+        // boundary too, mirroring the value-cache reset. A scenario quarantine should not
+        // survive across independent scenarios since the underlying upstream may recover.
+        if (mappingFailureCounts != null) {
+            mappingFailureCounts.clear();
         }
         // Reviewer Comment 1: persist Priority-1 mutations at scenario boundary too — the
         // shutdown hook is the safety net but a per-scenario flush keeps recent learning

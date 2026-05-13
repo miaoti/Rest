@@ -156,6 +156,11 @@ public class TraceErrorAnalysisMain {
             String[] llmProperties = {
                 "llm.enabled",
                 "llm.model.type",
+                "llm.openai_compatible.enabled",
+                "llm.openai_compatible.url",
+                "llm.openai_compatible.model",
+                "llm.openai_compatible.api.key",
+                // Legacy llm.local.* keys — accepted as deprecated aliases for backward compat
                 "llm.local.enabled",
                 "llm.local.url",
                 "llm.local.model",

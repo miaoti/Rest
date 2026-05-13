@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -21,7 +22,15 @@ import java.util.regex.Pattern;
 public class ParameterErrorAnalyzer {
     
     private static final Logger log = LogManager.getLogger(ParameterErrorAnalyzer.class);
-    
+
+    /**
+     * Jackson annotates JSON deserialization failures with a reference chain that
+     * explicitly names the failing field, e.g. {@code ["paramName"]}. The deepest
+     * (last-matched) bracketed name is the actual parameter. Used by
+     * {@link #extractParameterErrorFromTrace} for deterministic pre-LLM matching.
+     */
+    private static final Pattern REF_CHAIN_PARAM = Pattern.compile("\\[\"([^\"]+)\"\\]");
+
     /**
      * Represents the result of parameter error analysis
      */
@@ -137,6 +146,18 @@ public class ParameterErrorAnalyzer {
                 return new ParameterErrorAnalysisResult(apiEndpoint, httpMethod, errors, details.toString());
             }
 
+            // Trace-pattern pre-extractor: when the trace error message explicitly
+            // names the failing parameter (Jackson "reference chain"), skip the LLM
+            // and produce the verdict deterministically.
+            ParameterError extracted = extractParameterErrorFromTrace(failure, apiEndpoint);
+            if (extracted != null) {
+                errors.add(extracted);
+                details.append("Trace-Pattern Extraction: Parameter-related error detected\n");
+                cache.put(cacheKey, new ParameterErrorAnalysisCache.CachedVerdict(
+                        true, extracted.getParameterName(), extracted.getErrorType()));
+                return new ParameterErrorAnalysisResult(apiEndpoint, httpMethod, errors, details.toString());
+            }
+
             // Prepare context for LLM analysis
             String errorContext = buildErrorContext(failure, testParameters);
 
@@ -244,9 +265,53 @@ public class ParameterErrorAnalyzer {
     }
     
     /**
+     * Deterministic pre-LLM extractor: when Jackson's "reference chain" annotation
+     * is present, the failing parameter is named explicitly in the error text.
+     * Returns a {@link ParameterError} on confident match, or {@code null} to let
+     * the caller fall through to the LLM.
+     * <p>
+     * Categorization is intentionally coarse: numeric "out of range" maps to
+     * {@code CONSTRAINT_ERROR}; everything else with a reference chain maps to
+     * {@code TYPE_MISMATCH} (Jackson's most common failure mode).
+     */
+    private static ParameterError extractParameterErrorFromTrace(
+            TraceErrorAnalyzer.FailedSpan failure, String apiEndpoint) {
+        if (failure.getErrorMessages().isEmpty()) {
+            return null;
+        }
+        String errorText = String.join(" ", failure.getErrorMessages());
+
+        int chainAt = errorText.indexOf("reference chain");
+        if (chainAt < 0) {
+            return null;
+        }
+
+        // Bound the search to the "(through reference chain: ...)" block so that
+        // any bracketed strings appearing after it can't pollute the match.
+        int chainEnd = errorText.indexOf(')', chainAt);
+        String chain = (chainEnd > chainAt) ? errorText.substring(chainAt, chainEnd) : errorText.substring(chainAt);
+
+        // Successive ["param"] tokens form the deserialization path; the deepest
+        // (last-matched) name is the actual failing field.
+        Matcher m = REF_CHAIN_PARAM.matcher(chain);
+        String paramName = null;
+        while (m.find()) {
+            paramName = m.group(1);
+        }
+        if (paramName == null) {
+            return null;
+        }
+
+        String errorType = errorText.toLowerCase().contains("out of range")
+                ? "CONSTRAINT_ERROR"
+                : "TYPE_MISMATCH";
+        return new ParameterError(errorType, extractConciseErrorMessage(failure), apiEndpoint, paramName);
+    }
+
+    /**
      * Parses parameter error information from LLM response and extracts actual error message
      */
-    private static ParameterError parseParameterErrorFromLLM(String llmResponse, String apiEndpoint, 
+    private static ParameterError parseParameterErrorFromLLM(String llmResponse, String apiEndpoint,
                                                             TraceErrorAnalyzer.FailedSpan failure) {
         try {
             // Check if LLM identified this as a parameter error
