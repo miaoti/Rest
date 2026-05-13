@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"Downtown Station","id":"A123456","loginId":"adminUser123","startStation":"Stop E","stationList":"a, 0, -, FAKE-ROUTE-999, invalid_id"}

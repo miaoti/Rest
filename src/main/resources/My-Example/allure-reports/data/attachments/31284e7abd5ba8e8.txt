@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-travel-service` `TravelController.queryInfo` throws `java.lang.NullPointerException` at 42.188ms execution time. The null reference is likely from a database query returning null (e.g., `TravelRepository.findByTripId` returning null) or an uninitialized object field being accessed without null check.
+
+FIX: Add null check for the object returned by the database query in `TravelController.queryInfo`. Specifically, verify the result from `TravelRepository.findByTripId()` (or equivalent) is not null before calling any method on it. If null, return a proper error response (e.g., HTTP 404) instead of allowing NPE propagation.

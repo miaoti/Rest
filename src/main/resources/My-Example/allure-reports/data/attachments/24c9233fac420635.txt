@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: ts-gateway-service POST operation failed with HTTP 403 in 1.103ms. The 403 status code indicates an authorization failure, likely due to missing, invalid, or expired authentication token in the request headers, or insufficient permissions for the requested endpoint.
+
+FIX: Verify authentication token is present and valid in the request to ts-gateway-service. Ensure the token has the necessary permissions for the target endpoint. Check gateway service configuration for allowed roles/permissions and validate token parsing logic.

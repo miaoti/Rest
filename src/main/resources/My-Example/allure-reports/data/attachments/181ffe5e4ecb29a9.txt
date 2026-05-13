@@ -1,0 +1,1 @@
+{"boughtDateEnd":"2025-05-15","boughtDateStart":"'; DROP TABLE users; --","enableBoughtDateQuery":false,"enableStateQuery":false,"enableTravelDateQuery":false,"loginId":"admin005","state":22,"travelDateEnd":"2026-05-24","travelDateStart":"FALLBACK_travelDateStart_0"}

@@ -1,1 +1,0 @@
-{"departureTime":"; ls -la","endPlace":"Paris","startPlace":"New York City, NY"}

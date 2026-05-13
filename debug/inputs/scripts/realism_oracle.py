@@ -142,9 +142,26 @@ class RealismOracle:
 
     def _token_match(self, norm_value: str) -> bool:
         """True when any whitespace- or punctuation-separated token (≥ 3
-        chars) of the value matches an offline entry."""
+        chars) of the value matches an offline entry, OR when the value
+        starts with a known multi-word entity prefix (catches concatenated
+        forms like 'chicagounionstation' that contain 'chicago' or
+        'shanghaihongqiao' that contain 'shanghai')."""
         for tok in re.split(r"[\s,;/_\-]+", norm_value):
             if len(tok) >= TOKEN_MIN_LENGTH and tok in self.entities:
+                return True
+            # Concatenated form: token may not split cleanly but contains a
+            # known city name as a prefix. Only try this when the candidate
+            # is at least 8 chars to avoid overly-aggressive false positives.
+            if len(tok) >= 8 and self._prefix_match(tok):
+                return True
+        return False
+
+    def _prefix_match(self, tok: str) -> bool:
+        """Return True iff some offline entity (≥ 4 chars) is a prefix of `tok`.
+        Used to catch concatenated forms like `chicagounionstation` →
+        `chicago` is the prefix → match."""
+        for ent in self.entities:
+            if len(ent) >= 4 and tok.startswith(ent):
                 return True
         return False
 

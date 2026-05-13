@@ -198,7 +198,13 @@ def main(argv: list[str]) -> int:
                         sub = (body_schema.get("properties") or {}).get(parameter)
                     if sub is not None:
                         schema = sub
-                        coerced = parse_body(value)
+                        # Use type-aware coercion: mine_test_inputs.py already
+                        # unwrapped the JSON value (`"price":"1.0"` → "1.0"
+                        # string in CSV). Calling json.loads again would re-
+                        # parse "1.0" as a float and break string-typed schemas
+                        # whose values happen to look numeric. Match the same
+                        # per-type rules as query/path/header parameters.
+                        coerced = coerce_query_value(value, schema)
                     elif body_schema is None:
                         schema = None
                         coerced = value

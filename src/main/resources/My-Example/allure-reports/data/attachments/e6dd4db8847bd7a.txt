@@ -1,0 +1,1 @@
+{"boughtDateEnd":"| cat /etc/passwd","boughtDateStart":"2026-06-01","enableBoughtDateQuery":true,"enableStateQuery":true,"enableTravelDateQuery":true,"loginId":"tsadmin3","state":24,"travelDateEnd":"2026-06-05","travelDateStart":"2026-05-09"}

@@ -1,0 +1,1 @@
+{"averageSpeed":"1","confortClass":7,"economyClass":170,"id":"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7","name":"ICE-4 InterCityExpress"}

@@ -1,0 +1,9 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE:  
+- **Failing operation:** `GET /api/v1/executeservice/execute/execute/{orderId}` in `ts-execute-service`  
+- **Reason:** Request rejected by Spring Security firewall due to a double-URL-encoded malicious string (`%25`). The `%25` is the URL-encoded form of `%`, indicating the client sent a value with an extra encoding layer (e.g., `%2525` → decoded to `%25`), triggering the `RequestRejectedException` at the security layer before any business logic executed.
+
+FIX:  
+1. **Immediate:** Sanitize or reject requests containing `%25` at the gateway (`ts-gateway-service`) before forwarding to `ts-execute-service`. Add a filter in `ts-gateway-service` to validate and normalize URL parameters, ensuring no double-encoding reaches downstream services.  
+2. **Long-term:** Configure Spring

@@ -1,0 +1,42 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel-plan-service
+Method: POST
+Path: /api/v1/travelplanservice/travelPlan/cheapest
+Operation: POST /api/v1/travelplanservice/travelPlan/cheapest
+Request Start (μs): 1778302938175000
+Search Window: 1778302928175000 to 1778302968175000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778302928175000&end=1778302968175000
+Response Status: 200
+Response Body Length: 317140
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=1135, APIs=7, hasTarget=true, timeDiff=20033000μs, spans=18
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +13 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=10759000μs, spans=18
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +13 more
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 4: score=1545, APIs=9, hasTarget=true, timeDiff=9237000μs, spans=22
+  Operations: TravelPlanController.getByC..., POST, POST /api/v1/travelplanserv..., POST, FilteringWebHandler.handle, +17 more
+Trace 5: score=4035, APIs=7, hasTarget=true, timeDiff=1351000μs, spans=18
+  Operations: BasicErrorController.error, POST, TravelPlanController.getByC..., POST /api/v1/travelplanserv..., POST, +13 more
+Trace 6: score=1135, APIs=7, hasTarget=true, timeDiff=29730000μs, spans=18
+  Operations: TravelPlanController.getByC..., POST, BasicErrorController.error, POST /api/v1/travelplanserv..., POST, +13 more
+
+Selected trace 5 with score 4035 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: f7329db35ca50277c6e74489b6d68f13
+✅ Complete trace fetched with 18 spans
+✅ Updated global best trace (score: 4035, timeDiff: 1.351s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 4035, timeDiff: 1.351s)

@@ -1,0 +1,15 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-execute-service` GET /api/v1/executeservice/execute/execute/{orderId} rejected due to Spring Security's HTTP firewall detecting URL-encoded double percent sign (`%25`) in the request path, throwing `RequestRejectedException`.
+
+FIX: 
+1. Add `%25` to the allowed URL encodings in Spring Security's `StrictHttpFirewall` configuration:
+```java
+@Bean
+public HttpFirewall allowUrlEncodedPercentSign() {
+    StrictHttpFirewall firewall = new StrictHttpFirewall();
+    firewall.setAllowUrlEncodedPercent(true);
+    return firewall;
+}
+```
+2. Alternatively, sanitize the `orderId` parameter at the gateway level (`ts-gateway-service`) to strip or encode `%25` before forwarding requests to `ts-execute-service`.

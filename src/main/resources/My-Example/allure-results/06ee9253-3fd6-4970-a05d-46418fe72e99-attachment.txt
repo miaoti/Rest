@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"staffLogin101","routeId":"Route001","startStationName":"X","startTime":"2026-04-01T09:00:00Z","stationsName":"Chicago Union Station","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"TrainJourney1234"}

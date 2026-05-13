@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"d6872127-4155-45b5-94e0-2cb4b28889a2","orderId":"","accountId":"","handleDate":"invalid-date","targetDate":"invalid-date","from":"'","to":"New York City","consignee":"","phone":"1234567890","weight":0.5,"price":8.0}}

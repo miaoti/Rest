@@ -1,1 +1,0 @@
-{"distanceList":"12.5,8.2,15.7,3.4","endStation":"East End Depot","id":"A123456","loginId":"adminUser123","startStation":"Station A","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

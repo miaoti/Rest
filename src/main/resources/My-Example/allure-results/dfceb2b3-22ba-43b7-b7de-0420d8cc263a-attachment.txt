@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Midtown Terminal","startTime":"","stationsName":"Chicago Union Station","terminalStationName":"atlanta","trainTypeName":"High-Speed Train","tripId":"TRIP-00789"}

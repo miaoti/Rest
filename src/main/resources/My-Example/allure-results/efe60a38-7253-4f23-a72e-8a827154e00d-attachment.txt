@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"1f3783ee-3173-47a9-84d6-d22f99ff2557","orderId":"","accountId":"","handleDate":"2026-04-15T10:30","targetDate":"2026-04-05T10:00","from":"123","to":"","consignee":"","phone":"(703) 555-","weight":0.5,"price":8.0}}

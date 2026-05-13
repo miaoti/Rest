@@ -1,0 +1,1 @@
+{"id":"existing-station-id-here","name":"Existing Station Name","stayTime":5}

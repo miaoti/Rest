@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"047daeb0-8c2c-49ea-86d8-aa602c43bf26","orderId":"ORD-1234567890","accountId":"client_id_6789","handleDate":"2027-03-...
-Enhanced Parameters: {price=negative_value, weight=-0.5}

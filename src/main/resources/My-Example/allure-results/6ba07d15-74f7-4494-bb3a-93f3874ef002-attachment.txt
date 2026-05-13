@@ -1,1 +1,0 @@
-{"accountId":"user_7890","consignee":"Jane Smith","from":"Chicago","handleDate":"2023-01-08 11:56:02","id":"A123456","orderId":"ORD-XYZ789DEF","phone":"415-555-0199","targetDate":"2024-11-10","to":"New York City","weight":5.7,"within":"false"}

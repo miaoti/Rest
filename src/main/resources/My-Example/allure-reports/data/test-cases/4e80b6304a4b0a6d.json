@@ -1,0 +1,195 @@
+{
+  "uid" : "4e80b6304a4b0a6d",
+  "name" : "test_negative_flow_S420_v55_fault_Root1_NULL_INPUT",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_420.test_negative_flow_S420_v55_fault_Root1_NULL_INPUT",
+  "historyId" : "c4eaac48f830f8daa79a89c12250218e",
+  "time" : {
+    "start" : 1778306019370,
+    "stop" : 1778306033061,
+    "duration" : 13691
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778306019371,
+        "stop" : 1778306019371,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-execute-service GET /api/v1/executeservice/execute/execute/None [expect not 200]",
+      "time" : {
+        "start" : 1778306021371,
+        "stop" : 1778306033060,
+        "duration" : 11689
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "8c071b680b89b506",
+        "name" : "\uD83D\uDCE5 Response (403)",
+        "source" : "8c071b680b89b506.txt",
+        "type" : "application/json",
+        "size" : 144
+      }, {
+        "uid" : "bd49c1c22bf56b0d",
+        "name" : "\uD83E\uDD16 INTELLIGENT ANALYSIS (Based on Trace)",
+        "source" : "bd49c1c22bf56b0d.txt",
+        "type" : "text/plain",
+        "size" : 795
+      }, {
+        "uid" : "d1a626fa6f1a1982",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "d1a626fa6f1a1982.txt",
+        "type" : "text/plain",
+        "size" : 1332
+      }, {
+        "uid" : "6170f0b4bf15cb08",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "6170f0b4bf15cb08.txt",
+        "type" : "text/plain",
+        "size" : 359
+      }, {
+        "uid" : "c55daaf75bc75a34",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "c55daaf75bc75a34.txt",
+        "type" : "application/json",
+        "size" : 14014
+      }, {
+        "uid" : "2228c0e41e4c5734",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "2228c0e41e4c5734.txt",
+        "type" : "text/plain",
+        "size" : 14765
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_420"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_negative_flow_S420_v55_fault_Root1_NULL_INPUT"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_420 | GET /api/v1/executeservice/execute/execute/{orderId}"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "feature",
+    "value" : "ts-execute-service"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-execute-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Fault: GET__api_v1_executeservice_execute_execute__orderId_] NULL_INPUT (v55)"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (403 in 14ms)"
+  }, {
+    "name" : "\uD83C\uDFAF Target API",
+    "value" : "Root 1"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-execute-service"
+  }, {
+    "name" : "\uD83D\uDCA5 Fault Type",
+    "value" : "NULL_INPUT"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "GET"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/executeservice/execute/execute/None"
+  }, {
+    "name" : "\uD83D\uDD34 Injected Payload",
+    "value" : "orderId=None"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDEA8 Test Type",
+    "value" : "NEGATIVE (Targeted Fault Injection)"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "4e80b6304a4b0a6d.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (403 in 14ms)", "Root 1", "ts-execute-service", "NULL_INPUT", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "GET", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/executeservice/execute/execute/None", "orderId=None", "▶️ EXECUTE - All dependencies satisfied", "NEGATIVE (Targeted Fault Injection)" ]
+}

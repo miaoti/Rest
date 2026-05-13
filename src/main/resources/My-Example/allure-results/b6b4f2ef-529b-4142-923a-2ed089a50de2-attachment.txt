@@ -1,1 +1,0 @@
-{"departureTime":"2026-05-01","endPlace":"ABCDEfghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890","startPlace":"Chicago, IL"}

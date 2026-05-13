@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"51b2f40f-dffd-480f-89d2-f67645986f69","orderId":"ORD-INVALID","accountId":"invalid_account_id","handleDate":"2026-13-15T10:30:00Z","targetDate":"'; DROP TABLE--","from":"Invalid City","to":"Invalid Destination","consignee":"","phone":"1234567890","weight":0.5,"price":8.0}}

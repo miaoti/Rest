@@ -1,1 +1,0 @@
-{"endTime":"a","loginId":"adminUser123","routeId":"Route789ABC","startStationName":"Midtown Terminal","startTime":"2026-04-01T09:00:00Z","stationsName":"Chicago Union Station","terminalStationName":"Pennsylvania Station","trainTypeName":"Night Train","tripId":"TRIP-00789"}

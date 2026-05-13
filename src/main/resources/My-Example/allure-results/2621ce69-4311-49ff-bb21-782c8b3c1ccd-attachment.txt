@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"RouteXYZ123","startStationName":"'; DROP TABLE--","startTime":"2026-04-01T09:00:00Z","stationsName":"Grand Central Station","terminalStationName":"denton","trainTypeName":"Express Train","tripId":"A1B2C3D4E5F6"}

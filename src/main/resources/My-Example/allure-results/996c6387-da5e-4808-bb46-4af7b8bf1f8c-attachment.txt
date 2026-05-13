@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"e5f82536-0cbd-4e0c-b1f5-3b855c3e8947","trainType":"Express Train","routeId":"abcd","basicPriceRate":0.75,"firstClassPriceRate":89.95}}
-Enhanced Parameters: {basicPriceRate=-0.1}

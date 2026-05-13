@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"'","routeId":"Route-12345","startStationName":"Times Square Station","startTime":"2013-05-04 19:51:52","stationsName":"Chicago Union Station","terminalStationName":"Grand Central Terminal","trainTypeName":"Express Train","tripId":"Trip98765"}

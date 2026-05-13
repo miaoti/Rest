@@ -1,0 +1,195 @@
+{
+  "uid" : "d7cf3f4dd0b522bb",
+  "name" : "test_negative_flow_S749_v134_fault_Root1_SPECIAL_CHARACTERS",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_749.test_negative_flow_S749_v134_fault_Root1_SPECIAL_CHARACTERS",
+  "historyId" : "ba985bfa434651500aa5b8d01dad765f",
+  "time" : {
+    "start" : 1778305232397,
+    "stop" : 1778305237510,
+    "duration" : 5113
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778305232398,
+        "stop" : 1778305232398,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-travel2-service POST /api/v1/travel2service/trips/left [expect not 200]",
+      "time" : {
+        "start" : 1778305234398,
+        "stop" : 1778305237508,
+        "duration" : 3110
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "4a0780dfdba1cf13",
+        "name" : "\uD83D\uDCE4 Request Body",
+        "source" : "4a0780dfdba1cf13.txt",
+        "type" : "application/json",
+        "size" : 110
+      }, {
+        "uid" : "56d7547a0b2b488a",
+        "name" : "\uD83D\uDCE5 Response (500)",
+        "source" : "56d7547a0b2b488a.txt",
+        "type" : "application/json",
+        "size" : 146
+      }, {
+        "uid" : "a9066bf4afc6a472",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "a9066bf4afc6a472.txt",
+        "type" : "text/plain",
+        "size" : 1323
+      }, {
+        "uid" : "b2af9976a758d5a",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "b2af9976a758d5a.txt",
+        "type" : "text/plain",
+        "size" : 363
+      }, {
+        "uid" : "702a8fdf6153c6ad",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "702a8fdf6153c6ad.txt",
+        "type" : "application/json",
+        "size" : 12597
+      }, {
+        "uid" : "c307631c666e6c5",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "c307631c666e6c5.txt",
+        "type" : "text/plain",
+        "size" : 2118
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_749"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_negative_flow_S749_v134_fault_Root1_SPECIAL_CHARACTERS"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_749 | POST /api/v1/travel2service/trips/left"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "feature",
+    "value" : "ts-travel2-service"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-travel2-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Fault: POST__api_v1_travel2service_trips_left] SPECIAL_CHARACTERS (v134)"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (500 in 80ms)"
+  }, {
+    "name" : "\uD83C\uDFAF Target API",
+    "value" : "Root 1"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-travel2-service"
+  }, {
+    "name" : "\uD83D\uDCA5 Fault Type",
+    "value" : "SPECIAL_CHARACTERS"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/travel2service/trips/left"
+  }, {
+    "name" : "\uD83D\uDD34 Injected Payload",
+    "value" : "endPlace=..\\..\\..\\windows\\system32\\config\\sam"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDEA8 Test Type",
+    "value" : "NEGATIVE (Targeted Fault Injection)"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "d7cf3f4dd0b522bb.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (500 in 80ms)", "Root 1", "ts-travel2-service", "SPECIAL_CHARACTERS", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "POST", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/travel2service/trips/left", "endPlace=..\\..\\..\\windows\\system32\\config\\sam", "▶️ EXECUTE - All dependencies satisfied", "NEGATIVE (Targeted Fault Injection)" ]
+}

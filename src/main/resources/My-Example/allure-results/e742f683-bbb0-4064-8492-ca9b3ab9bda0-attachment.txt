@@ -1,1 +1,0 @@
-{"basicPriceRate":"1; DROP TABLE--","firstClassPriceRate":10.99,"id":"E567890","routeId":"RouteXYZ123","trainType":"TeKuai"}

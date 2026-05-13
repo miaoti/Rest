@@ -1,0 +1,201 @@
+{
+  "uid" : "c43dea213460c837",
+  "name" : "test_negative_flow_S3_v26_fault_Root1_SEMANTIC_MISMATCH",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_3.test_negative_flow_S3_v26_fault_Root1_SEMANTIC_MISMATCH",
+  "historyId" : "e9e3c7a00d6f31cc4f2cd92affa42ac6",
+  "time" : {
+    "start" : 1778308593091,
+    "stop" : 1778308607297,
+    "duration" : 14206
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778308593091,
+        "stop" : 1778308593091,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-admin-basic-info-service POST /api/v1/adminbasicservice/adminbasic/trains [expect not 200]",
+      "time" : {
+        "start" : 1778308595092,
+        "stop" : 1778308607296,
+        "duration" : 12204
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "ae1c89368cba2734",
+        "name" : "\uD83D\uDCE4 Request Body",
+        "source" : "ae1c89368cba2734.txt",
+        "type" : "application/json",
+        "size" : 137
+      }, {
+        "uid" : "d811c5be1905648b",
+        "name" : "\uD83D\uDCE5 Response (403)",
+        "source" : "d811c5be1905648b.txt",
+        "type" : "application/json",
+        "size" : 144
+      }, {
+        "uid" : "203ab0754029610b",
+        "name" : "\uD83E\uDD16 INTELLIGENT ANALYSIS (Based on Trace)",
+        "source" : "203ab0754029610b.txt",
+        "type" : "text/plain",
+        "size" : 824
+      }, {
+        "uid" : "b6d02b6eaa0b4bef",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "b6d02b6eaa0b4bef.txt",
+        "type" : "text/plain",
+        "size" : 1342
+      }, {
+        "uid" : "f21d45a374be1bc7",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "f21d45a374be1bc7.txt",
+        "type" : "text/plain",
+        "size" : 372
+      }, {
+        "uid" : "a0c1cecdc4317b0e",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "a0c1cecdc4317b0e.txt",
+        "type" : "application/json",
+        "size" : 9741
+      }, {
+        "uid" : "98b8e917d3874b31",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "98b8e917d3874b31.txt",
+        "type" : "text/plain",
+        "size" : 17537
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 7,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 7,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_3"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_negative_flow_S3_v26_fault_Root1_SEMANTIC_MISMATCH"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_3 | POST /api/v1/adminbasicservice/adminbasic/trains"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "feature",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Fault: POST__api_v1_adminbasicservice_adminbasic_trains] SEMANTIC_MISMATCH (v26)"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (403 in 13ms)"
+  }, {
+    "name" : "\uD83C\uDFAF Target API",
+    "value" : "Root 1"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "\uD83D\uDCA5 Fault Type",
+    "value" : "SEMANTIC_MISMATCH"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/adminbasicservice/adminbasic/trains"
+  }, {
+    "name" : "\uD83D\uDD34 Injected Payload",
+    "value" : "confortClass=-1"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDEA8 Test Type",
+    "value" : "NEGATIVE (Targeted Fault Injection)"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "c43dea213460c837.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (403 in 13ms)", "Root 1", "ts-admin-basic-info-service", "SEMANTIC_MISMATCH", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "POST", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/adminbasicservice/adminbasic/trains", "confortClass=-1", "▶️ EXECUTE - All dependencies satisfied", "NEGATIVE (Targeted Fault Injection)" ]
+}

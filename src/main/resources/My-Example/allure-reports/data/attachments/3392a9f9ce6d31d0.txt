@@ -1,0 +1,9 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: Travel2Controller.queryInfo in ts-travel2-service failed with NullPointerException after 37.047ms. The exception occurred during POST request processing, likely from accessing a null object (e.g., uninitialized request body, null query parameter, or missing database result).
+
+FIX: 
+1. Add null checks before object dereference in Travel2Controller.queryInfo method
+2. Validate POST request body/parameters at controller entry point (e.g., @Valid or manual null check)
+3. Check for null returns from downstream calls or data access layer in the same service
+4. Add try-catch with specific NullPointerException handling and return appropriate HTTP error response (e.g., 400 Bad Request or 500 Internal Server Error)

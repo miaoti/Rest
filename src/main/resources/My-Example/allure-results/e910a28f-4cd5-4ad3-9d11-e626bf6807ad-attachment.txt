@@ -1,1 +1,0 @@
-{"accountId":12345,"consignee":"","from":"","handleDate":"2025-13-25T15:30:00","id":"97f85671-d69d-41db-9642-cf10f250d4ee","orderId":"","phone":"1234567890","targetDate":"2026-02-29T10:00:00Z","to":"","weight":25.3,"within":true}

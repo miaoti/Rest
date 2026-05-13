@@ -1,1 +1,0 @@
-{"accountId":"","consignee":"","from":"Chicago","handleDate":"2026-04-15T10:30:00Z","id":"A123456","orderId":"","phone":"","targetDate":"2026-04-05T10:00:00Z","to":"abcde","weight":0.5,"within":true}

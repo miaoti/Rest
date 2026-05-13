@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-order-other-service` `OrderOtherController.queryOrdersForRefresh` fails to deserialize JSON because the `state` field in `other.entity.QueryInfo` receives string `"infinity"` which cannot be parsed as `int`. This causes HTTP 400 in `ts-gateway-service` POST.
+
+FIX: Validate `state` field in client request before sending to `ts-order-other-service`. Ensure the value is a valid integer. On the server, add `@JsonFormat` or custom deserializer to handle or reject non-integer values gracefully, returning a clear error message instead of throwing `HttpMessageNotReadableException`.

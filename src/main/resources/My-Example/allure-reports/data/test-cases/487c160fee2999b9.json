@@ -1,0 +1,189 @@
+{
+  "uid" : "487c160fee2999b9",
+  "name" : "test_positive_flow_S475_v8",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_475.test_positive_flow_S475_v8",
+  "historyId" : "631cef28b26571469ec72baac64b1ca3",
+  "time" : {
+    "start" : 1778300662798,
+    "stop" : 1778300672143,
+    "duration" : 9345
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778300662798,
+        "stop" : 1778300662798,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-order-other-service POST /api/v1/orderOtherService/orderOther/refresh [expect 200]",
+      "time" : {
+        "start" : 1778300664799,
+        "stop" : 1778300672141,
+        "duration" : 7342
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "e8896a668f80bedf",
+        "name" : "\uD83D\uDCE4 Request Body",
+        "source" : "e8896a668f80bedf.txt",
+        "type" : "application/json",
+        "size" : 235
+      }, {
+        "uid" : "8277ec286912f6a4",
+        "name" : "\uD83E\uDD16 INTELLIGENT ANALYSIS (Positive Test)",
+        "source" : "8277ec286912f6a4.txt",
+        "type" : "text/plain",
+        "size" : 712
+      }, {
+        "uid" : "c637a2f3ec968f91",
+        "name" : "\uD83D\uDCE5 Response (200)",
+        "source" : "c637a2f3ec968f91.txt",
+        "type" : "application/json",
+        "size" : 38
+      }, {
+        "uid" : "a169d6603e16ea1b",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "a169d6603e16ea1b.txt",
+        "type" : "text/plain",
+        "size" : 1337
+      }, {
+        "uid" : "a3958b8a49b21eb3",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "a3958b8a49b21eb3.txt",
+        "type" : "text/plain",
+        "size" : 363
+      }, {
+        "uid" : "2c864679fcf2f386",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "2c864679fcf2f386.txt",
+        "type" : "application/json",
+        "size" : 12201
+      }, {
+        "uid" : "a590427b32391eac",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "a590427b32391eac.txt",
+        "type" : "text/plain",
+        "size" : 24944
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 7,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 7,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_475"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_positive_flow_S475_v8"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_475 | POST /api/v1/orderOtherService/orderOther/refresh"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "feature",
+    "value" : "ts-order-other-service"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-order-other-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Valid] v8"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (200 in 15ms)"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-order-other-service"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/orderOtherService/orderOther/refresh"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "487c160fee2999b9.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (200 in 15ms)", "ts-order-other-service", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "POST", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/orderOtherService/orderOther/refresh", "▶️ EXECUTE - All dependencies satisfied" ]
+}

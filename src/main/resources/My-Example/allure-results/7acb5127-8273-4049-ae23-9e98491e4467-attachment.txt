@@ -1,1 +1,0 @@
-{"basicPriceRate":0.75,"firstClassPriceRate":89.95,"id":"A123456","routeId":"TrainRoute456","trainType":"DongCheOne"}

@@ -1,0 +1,19 @@
+🎯 TRACE SUMMARY
+═══════════════
+
+📊 API Call Statistics:
+   Total API Calls: 5
+   ✅ Successful: 0
+   ❌ Failed: 5
+   🏢 Services Involved: 3
+
+⏱️ Performance Metrics:
+   Total Duration: 234.4ms
+   Average Duration: 46.9ms
+   Fastest Call: 44.0ms
+   Slowest Call: 50.9ms
+
+🏢 Services in Trace:
+   • ts-travel-service
+   • ts-route-plan-service
+   • ts-travel-plan-service

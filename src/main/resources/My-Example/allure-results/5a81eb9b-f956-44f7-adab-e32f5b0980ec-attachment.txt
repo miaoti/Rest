@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 56.6","data":{"id":"724dbe3f-e923-4964-b5f3-5a829b578027","orderId":"ORD-1234567890","accountId":"acc12345","handleDate":"2026-04-15T10:30:00Z","targetDate":"2025-03-30","from":"New York","to":"Los Angeles","consignee":"Bob Brown","phone":"+44 20 7946 0958","weight":25.3,"price":56.6}}

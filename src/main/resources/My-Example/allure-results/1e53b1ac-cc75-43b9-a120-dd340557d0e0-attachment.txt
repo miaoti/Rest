@@ -1,1 +1,0 @@
-{"accountId":"acc12345","boughtDate":"2026-04-01T14:30:00Z","coachNumber":456,"contactsDocumentNumber":"A123456789","contactsName":"","differenceMoney":"-5.75","documentType":100,"from":"Miami","id":"A123456","price":"10.99","seatClass":3,"seatNumber":"A01","status":2,"to":"New York City","trainNumber":"Train101","travelDate":"2026-04-01","travelTime":"04:30 PM"}

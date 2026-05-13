@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"null","id":"C345678","loginId":"adminUser123","startStation":"Station A","stationList":"Central Park Zoo,Museum of Modern Art,Empire State Building"}

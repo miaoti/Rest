@@ -1,1 +1,0 @@
-{"accountId":"invalidAccountId","consignee":"","from":"","handleDate":"'; DROP TABLE--","id":"1234567890","orderId":"ORD-0000000000","phone":"invalidPhoneNumber","targetDate":"not-a-date","to":"","weight":0.5,"within":true}

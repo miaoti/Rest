@@ -1,0 +1,36 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel-plan-service
+Method: POST
+Path: /api/v1/travelplanservice/travelPlan/cheapest
+Operation: POST /api/v1/travelplanservice/travelPlan/cheapest
+Request Start (μs): 1778302657627000
+Search Window: 1778302647627000 to 1778302687627000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778302647627000&end=1778302687627000
+Response Status: 200
+Response Body Length: 208507
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1135, APIs=7, hasTarget=true, timeDiff=25368000μs, spans=13
+  Operations: TravelPlanController.getByC..., POST, BasicErrorController.error, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=11375000μs, spans=18
+  Operations: TravelPlanController.getByC..., POST, BasicErrorController.error, POST /api/v1/travelplanserv..., POST, +13 more
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 3: score=4035, APIs=7, hasTarget=true, timeDiff=1505000μs, spans=18
+  Operations: POST /api/v1/routeplanservi..., RoutePlanController.getChea..., BasicErrorController.error, POST, TripRepository.findAll, +13 more
+
+Selected trace 3 with score 4035 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 8c49f85ed3e431a1e7a8201fe1675223
+✅ Complete trace fetched with 18 spans
+✅ Updated global best trace (score: 4035, timeDiff: 1.505s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 4035, timeDiff: 1.505s)

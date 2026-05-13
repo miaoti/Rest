@@ -223,10 +223,15 @@ fi
 
 # ---- Stage 2b: D4–D7 validation ----
 if [[ -s "$OUT_DIR/provenance.csv" ]]; then
-    "$PYTHON_BIN" "$SCRIPT_DIR/validate_d4.py" \
-        --inputs "$OUT_DIR/inputs.csv" \
-        --provenance "$OUT_DIR/provenance.csv" \
+    D4_ARGS=(
+        --inputs "$OUT_DIR/inputs.csv"
+        --provenance "$OUT_DIR/provenance.csv"
         --out-dir "$OUT_DIR"
+    )
+    if [[ -s "$OUT_DIR/llm_pairs.csv" ]]; then
+        D4_ARGS+=(--llm-pairs "$OUT_DIR/llm_pairs.csv")
+    fi
+    "$PYTHON_BIN" "$SCRIPT_DIR/validate_d4.py" "${D4_ARGS[@]}"
 else
     echo '{"metric":"D4 Smart-Fetch Hit Rate","status":"no exec log mined","sfhr_conservative":null}' > "$OUT_DIR/d4_summary.json"
 fi

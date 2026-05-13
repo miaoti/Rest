@@ -1,1 +1,0 @@
-{"timestamp":"2026-03-26T16:13:09.952+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/consignservice/consigns/account/a1b2c3d4-e5f6-7890-qrs9-tuv8wxy7zab6cd5"}

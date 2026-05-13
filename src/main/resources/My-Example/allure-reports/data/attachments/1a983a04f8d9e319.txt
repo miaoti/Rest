@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: ts-gateway-service POST operation failed with HTTP 403 (Forbidden) in 1.014ms. The gateway rejected the request before forwarding to ts-admin-basic-info-service, indicating an authentication or authorization failure.
+
+FIX: Check ts-gateway-service authentication/authorization configuration. Verify API token or credentials in the POST request headers. Ensure the request includes valid authentication for accessing the admin service endpoint.

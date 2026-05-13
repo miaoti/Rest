@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: TravelController.queryInfo in ts-travel-service throws java.lang.NullPointerException at 56.514ms execution time. HTTP status 0 indicates the request failed before generating a proper response, likely due to null object dereference in query processing logic.
+
+FIX: Add null checks in TravelController.queryInfo method. Specifically validate all input parameters and intermediate objects before method calls. Implement try-catch block to handle NullPointerException and return proper HTTP 400/500 error response instead of failing silently.

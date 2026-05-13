@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"Downtown Station","id":"```","loginId":"staffLogin101","startStation":"Terminal B","stationList":"Los Angeles International Airport,Santa Monica Pier,Hollywood Bowl"}

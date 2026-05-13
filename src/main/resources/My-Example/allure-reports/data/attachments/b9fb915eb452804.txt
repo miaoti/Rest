@@ -1,0 +1,1 @@
+{"timestamp":"2026-05-09T06:38:50.738+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/trains"}

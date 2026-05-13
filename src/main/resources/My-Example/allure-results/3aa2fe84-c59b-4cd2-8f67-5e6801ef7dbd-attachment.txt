@@ -1,1 +1,0 @@
-{"accountId":"acc12345","consignee":"John Doe","from":"```","handleDate":"2026-04-15T10:30:00Z","id":"5f5d9134-c415-43f8-adea-ef526ea6eaf1","orderId":"ORD-1234567890","phone":"+44 20 7946 0958","targetDate":"2026-04-05T10:00:00Z","to":"Houston","weight":0.5,"within":false}

@@ -1,0 +1,1 @@
+{"name":"Test Train","averageSpeed":"200","id":"G1234","confortClass":"1","economyClass":"100"}

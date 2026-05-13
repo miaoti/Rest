@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"f59d4de6-7e00-4864-8163-7d84ff58a0ee","orderId":"ORD-MYORDER456","accountId":"client_id_1234","handleDate":"2026-05-15T09:30:00Z","targetDate":"2026-05-03T09:00:00Z","from":"abcd","to":"Los Angeles","consignee":"Jane Smith","phone":"646.555.0200 x456","weight":0.5,"price":8.0}}

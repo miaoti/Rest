@@ -1,0 +1,201 @@
+{
+  "uid" : "57a3bf4f5dac5fb8",
+  "name" : "test_negative_flow_S276_v63_fault_Root1_OVERFLOW",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_276.test_negative_flow_S276_v63_fault_Root1_OVERFLOW",
+  "historyId" : "f5d7d516796ec2a9d6b4426573adb57",
+  "time" : {
+    "start" : 1778302655627,
+    "stop" : 1778302663937,
+    "duration" : 8310
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778302655627,
+        "stop" : 1778302655627,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-travel-plan-service POST /api/v1/travelplanservice/travelPlan/cheapest [expect not 200]",
+      "time" : {
+        "start" : 1778302657628,
+        "stop" : 1778302663935,
+        "duration" : 6307
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "73680f756b32c87",
+        "name" : "\uD83D\uDCE4 Request Body",
+        "source" : "73680f756b32c87.txt",
+        "type" : "application/json",
+        "size" : 1069
+      }, {
+        "uid" : "1ccd4a0e9be9b0d4",
+        "name" : "\uD83D\uDCE5 Response (500)",
+        "source" : "1ccd4a0e9be9b0d4.txt",
+        "type" : "application/json",
+        "size" : 158
+      }, {
+        "uid" : "e8c4d3f95bd1783d",
+        "name" : "\uD83E\uDD16 INTELLIGENT ANALYSIS (Based on Trace)",
+        "source" : "e8c4d3f95bd1783d.txt",
+        "type" : "text/plain",
+        "size" : 558
+      }, {
+        "uid" : "96f0082713b74389",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "96f0082713b74389.txt",
+        "type" : "text/plain",
+        "size" : 1744
+      }, {
+        "uid" : "7751d00c6a423f0f",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "7751d00c6a423f0f.txt",
+        "type" : "text/plain",
+        "size" : 422
+      }, {
+        "uid" : "986dc525b2a87bbb",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "986dc525b2a87bbb.txt",
+        "type" : "application/json",
+        "size" : 70399
+      }, {
+        "uid" : "a17482262c09c24",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "a17482262c09c24.txt",
+        "type" : "text/plain",
+        "size" : 2013
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 7,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 7,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_276"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_negative_flow_S276_v63_fault_Root1_OVERFLOW"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_276 | POST /api/v1/travelplanservice/travelPlan/cheapest"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "feature",
+    "value" : "ts-travel-plan-service"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-travel-plan-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Fault: POST__api_v1_travelplanservice_travelPlan_cheapest] OVERFLOW (v63)"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (500 in 21ms)"
+  }, {
+    "name" : "\uD83C\uDFAF Target API",
+    "value" : "Root 1"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-travel-plan-service"
+  }, {
+    "name" : "\uD83D\uDCA5 Fault Type",
+    "value" : "OVERFLOW"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/travelplanservice/travelPlan/cheapest"
+  }, {
+    "name" : "\uD83D\uDD34 Injected Payload",
+    "value" : "startPlace=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDEA8 Test Type",
+    "value" : "NEGATIVE (Targeted Fault Injection)"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "57a3bf4f5dac5fb8.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (500 in 21ms)", "Root 1", "ts-travel-plan-service", "OVERFLOW", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "POST", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/travelplanservice/travelPlan/cheapest", "startPlace=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "▶️ EXECUTE - All dependencies satisfied", "NEGATIVE (Targeted Fault Injection)" ]
+}

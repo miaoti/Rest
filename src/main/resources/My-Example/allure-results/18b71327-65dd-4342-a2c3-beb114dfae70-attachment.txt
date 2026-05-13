@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"You have consigned successfully! The price is 56.6","data":{"id":"fd6e17bf-f5cf-4f90-ab7d-e59789581a7f","orderId":"ORD-1234567890","accountId":"acc12345","handleDate":"2026-04-15T10...
-Enhanced Parameters: {from=New York, to=Los Angeles}

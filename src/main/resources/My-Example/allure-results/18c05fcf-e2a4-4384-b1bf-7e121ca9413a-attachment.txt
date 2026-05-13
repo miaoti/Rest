@@ -1,1 +1,0 @@
-{"basicPriceRate":0.75,"firstClassPriceRate":"<script>alert('XSS')</script>","id":"A123456","routeId":"Route001","trainType":"WacoFast"}

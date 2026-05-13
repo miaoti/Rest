@@ -1,1 +1,0 @@
-{"boughtDateEnd":"'; DROP TABLE--","boughtDateStart":"2023-04-10T00:00:00Z","enableBoughtDateQuery":true,"enableStateQuery":true,"enableTravelDateQuery":true,"loginId":"superAdmin202","state":50,"travelDateEnd":"2026-04-15T09:00:00Z","travelDateStart":"2026-04-01T08:00:00Z"}

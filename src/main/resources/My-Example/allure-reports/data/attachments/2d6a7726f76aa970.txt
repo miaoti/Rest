@@ -1,0 +1,314 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-basic-info-service
+Method: POST
+Path: /api/v1/adminbasicservice/adminbasic/trains
+Operation: POST /api/v1/adminbasicservice/adminbasic/trains
+Request Start (μs): 1778310297827000
+Search Window: 1778310287827000 to 1778310327827000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 31673
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 3: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 3 with score 1515 (matched but not current - possibly previous execution)
+
+🔄 Fetching complete trace for ID: b9f71dacb1bd3817508788854a4b480f
+✅ Complete trace fetched with 6 spans
+✅ Updated global best trace (score: 1515, timeDiff: 5.124s)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 29442
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 2 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778310287827000&end=1778310327827000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-basic-info-service&operation=POST+%2Fapi%2Fv1%2Fadminbasicservice%2Fadminbasic%2Ftrains&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 29442
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 2 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-basic-info-service&operation=POST&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-admin-basic-info-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 31695
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 3: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 3 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+🔄 RETRY 1: Searching again for current execution trace...
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 31673
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 3: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 3 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 29442
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 2 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778310287827000&end=1778310327827000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-basic-info-service&operation=POST+%2Fapi%2Fv1%2Fadminbasicservice%2Fadminbasic%2Ftrains&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 29442
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 2 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-basic-info-service&operation=POST&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-admin-basic-info-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 31695
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 2 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+🔄 RETRY 2: Searching again for current execution trace...
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 31673
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 3: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 1 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 29442
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 1 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778310287827000&end=1778310327827000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-basic-info-service&operation=POST+%2Fapi%2Fv1%2Fadminbasicservice%2Fadminbasic%2Ftrains&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 29442
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 2 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-admin-basic-info-service&operation=POST&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-admin-basic-info-service&start=1778310287827000&end=1778310327827000
+Response Status: 200
+Response Body Length: 31695
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=5124000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=8154000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 3: score=1215, APIs=3, hasTarget=true, timeDiff=17929000μs, spans=6
+  Operations: POST, FilteringWebHandler.handle, POST /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+
+Selected trace 0 with score 1515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+✅ Using best trace found (score: 1515, timeDiff: 5.124s)

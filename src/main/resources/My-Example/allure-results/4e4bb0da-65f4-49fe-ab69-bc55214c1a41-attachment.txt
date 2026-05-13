@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"Downtown Station","startTime":"2026-04-01T09:00:00Z","stationsName":"X","terminalStationName":"Times Square Station","trainTypeName":"Express Train","tripId":"TRIP-00789"}

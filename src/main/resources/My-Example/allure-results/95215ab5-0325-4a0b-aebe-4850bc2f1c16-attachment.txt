@@ -1,1 +1,0 @@
-{"accountId":"","consignee":"X","from":"","handleDate":"2021-11-30 17:15:45","id":"A123456","orderId":"ORD-1234567890","phone":"415-555-0199","targetDate":"2024-08-10","to":"","weight":0.5,"within":true}

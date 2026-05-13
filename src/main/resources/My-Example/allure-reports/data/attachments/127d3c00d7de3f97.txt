@@ -1,0 +1,1 @@
+{"averageSpeed":450,"confortClass":11,"economyClass":160,"id":"'; DROP TABLE users; --","name":"HST-2000 Shinkansen"}

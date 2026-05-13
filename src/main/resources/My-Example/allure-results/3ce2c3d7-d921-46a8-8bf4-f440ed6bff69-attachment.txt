@@ -1,1 +1,0 @@
-{"accountId":"acc12345","boughtDate":"2026-04-01T14:30:00Z","coachNumber":456,"contactsDocumentNumber":"A123456789","contactsName":"John Doe","differenceMoney":"500.00","documentType":520,"from":"Los Angeles","id":"A123456","price":"-999","seatClass":1,"seatNumber":"A01","status":0,"to":"Los Angeles","trainNumber":"Train101","travelDate":"2026-04-01","travelTime":"04:30 PM"}

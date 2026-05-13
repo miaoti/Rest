@@ -1,0 +1,17 @@
+🎯 TRACE SUMMARY
+═══════════════
+
+📊 API Call Statistics:
+   Total API Calls: 1
+   ✅ Successful: 0
+   ❌ Failed: 1
+   🏢 Services Involved: 1
+
+⏱️ Performance Metrics:
+   Total Duration: 915μs
+   Average Duration: 915μs
+   Fastest Call: 915μs
+   Slowest Call: 915μs
+
+🏢 Services in Trace:
+   • ts-consign-service

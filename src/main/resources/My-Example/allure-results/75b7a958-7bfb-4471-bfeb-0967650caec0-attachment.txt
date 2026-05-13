@@ -1,1 +1,0 @@
-{"accountId":"acc12345","boughtDate":"2026-03-30T18:00:00Z","coachNumber":456,"contactsDocumentNumber":"A123456789","contactsName":"Jane Smith","differenceMoney":"0.00","documentType":310,"from":"Chicago","id":"A123456","price":"10.99","seatClass":1,"seatNumber":"PremiumClass-89","status":2,"to":"Houston","trainNumber":"Train101","travelDate":"2026-02-30","travelTime":"04:30 PM"}

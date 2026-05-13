@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-travel2-service` → `Travel2Controller.queryInfo` → `java.lang.NullPointerException` at 38.616ms. The service returns HTTP status 0, indicating the exception prevented any HTTP response. The failure propagates to 3 downstream spans (likely gateway timeout/error handling due to missing response).
+
+FIX: Inspect `Travel2Controller.queryInfo` method for uninitialized object or null return from a dependency (e.g., database query, cache, or another service call). Add null checks before dereferencing objects. If the failure is intermittent, implement retry logic or circuit breaker for the upstream call in `ts-travel2-service`. Ensure the controller returns a proper HTTP error response (e.g., 500) with error details instead of crashing.

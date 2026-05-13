@@ -1,1 +1,0 @@
-{"basicPriceRate":1.5,"firstClassPriceRate":"","id":"A123456","routeId":"Route001","trainType":"KuaiSu"}

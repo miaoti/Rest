@@ -1,0 +1,1 @@
+{"averageSpeed":380,"confortClass":2,"economyClass":false,"id":"train-011","name":"Zefiro 380A"}

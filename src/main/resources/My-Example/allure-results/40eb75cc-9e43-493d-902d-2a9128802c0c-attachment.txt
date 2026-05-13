@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"staffLogin101","routeId":"RouteXYZ123","startStationName":"Chicago Union Station","startTime":"2013-05-04 11:31:52","stationsName":"Downtown Station,Union Station","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"TRIP-00789"}

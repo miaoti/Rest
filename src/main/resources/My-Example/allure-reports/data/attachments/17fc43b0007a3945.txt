@@ -1,0 +1,40 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel2-service
+Method: POST
+Path: /api/v1/travel2service/trips/left
+Operation: POST /api/v1/travel2service/trips/left
+Request Start (μs): 1778304972013000
+Search Window: 1778304962013000 to 1778305002013000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778304962013000&end=1778305002013000
+Response Status: 200
+Response Body Length: 48722
+Traces Found: 6
+Analyzing 6 traces for API calls...
+Trace 0: score=1215, APIs=3, hasTarget=true, timeDiff=11805000μs, spans=5
+  Operations: POST, FilteringWebHandler.handle, POST /*, POST /api/v1/travel2service..., Travel2Controller.queryInfo
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=9632000μs, spans=10
+  Operations: SELECT ts.trip2, POST, FilteringWebHandler.handle, POST /*, POST /api/v1/travel2service..., +5 more
+Trace 3: score=1115, APIs=3, hasTarget=true, timeDiff=24903000μs, spans=9
+  Operations: SELECT ts.trip2, POST /api/v1/travel2service..., SELECT Trip, Transaction.commit, Travel2Controller.queryInfo, +4 more
+Trace 4: score=6015, APIs=3, hasTarget=true, timeDiff=866997μs, spans=5
+  Operations: POST /api/v1/travel2service..., Travel2Controller.queryInfo, POST, FilteringWebHandler.handle, POST /*
+Trace 5: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 4 with score 6015 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 2d4b59b13b7122ddbd9df507285c081c
+✅ Complete trace fetched with 5 spans
+✅ Updated global best trace (score: 6015, timeDiff: 0.866997s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 6015, timeDiff: 0.866997s)

@@ -1,0 +1,1 @@
+{"averageSpeed":150,"confortClass":1,"economyClass":50,"id":"G1234","name":"Beijing-Shanghai High Speed"}

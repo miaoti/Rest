@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: POST operation on ts-route-plan-service returned HTTP 400 status in 1.203ms. This indicates the request was malformed or contained invalid parameters (likely missing/invalid travel plan data or route constraints) as it failed immediately without downstream processing.
+
+FIX: Validate input payload structure and required fields in ts-route-plan-service's POST endpoint. Check for null/empty route plan parameters, incorrect data types, or missing required fields in the request body. Add input validation middleware to reject invalid requests before reaching business logic. Ensure upstream services (ts-travel-plan-service) send correctly formatted data.

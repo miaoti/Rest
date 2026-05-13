@@ -1,1 +1,0 @@
-{"departureTime":"2026-04-10T12:00:00Z","endPlace":"","startPlace":"Los Angeles, CA"}

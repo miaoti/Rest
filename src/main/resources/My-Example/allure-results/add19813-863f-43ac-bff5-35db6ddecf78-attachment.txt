@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":0,"msg":"some station not exists","data":["Union Square Station","Union Station"]}
-Enhanced Parameters: {terminalStationName=Pennsylvania Station, startStationName=Grand Central Station}

@@ -1,0 +1,36 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel2-service
+Method: POST
+Path: /api/v1/travel2service/trips/left
+Operation: POST /api/v1/travel2service/trips/left
+Request Start (μs): 1778304865860000
+Search Window: 1778304855860000 to 1778304895860000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778304855860000&end=1778304895860000
+Response Status: 200
+Response Body Length: 41582
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=25273000μs, spans=9
+  Operations: SELECT Trip, SELECT ts.trip2, Travel2Controller.queryInfo, TripRepository.findAll, Transaction.commit, +4 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=12349000μs, spans=9
+  Operations: POST, FilteringWebHandler.handle, POST /*, SELECT ts.trip2, Transaction.commit, +4 more
+Trace 3: score=4015, APIs=3, hasTarget=true, timeDiff=1150957μs, spans=10
+  Operations: POST, FilteringWebHandler.handle, POST /*, Transaction.commit, SELECT ts.trip2, +5 more
+
+Selected trace 3 with score 4015 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 7f7594515d827cb1f3c680707600b4ba
+✅ Complete trace fetched with 10 spans
+✅ Updated global best trace (score: 4015, timeDiff: 1.150957s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 4015, timeDiff: 1.150957s)

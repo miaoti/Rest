@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"aea720fd-c038-4ba7-8984-9d05aabe0d45","orderId":"ORD-1234567890","accountId":"user_7890","handleDate":"2026-04-15T10:30:00Z","targetDate":"2026-04-05T10:00:00Z","from":"Los Angeles","to":"New York City","consignee":"Alice Johnson","phone":"(703) 555-0184","weight":0.5,"price":8.0}}

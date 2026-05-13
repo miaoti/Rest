@@ -1,0 +1,10 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+**ROOT CAUSE:**  
+`ts-gateway-service` GET request failed with HTTP 403 (Forbidden) in 1.071ms. This indicates an authorization/authentication failure at the API gateway level, likely due to missing or invalid credentials/token for the requested endpoint. No downstream calls were made.
+
+**FIX:**  
+1. Verify authentication token is present and valid in the request header (e.g., `Authorization: Bearer <token>`).  
+2. Check `ts-gateway-service` security configuration (e.g., Spring Security, OAuth2, or custom filter) for the specific endpoint’s access rules.  
+3. Ensure the caller (e.g., UI or client) has the required role/permission for the endpoint (`ts-consign-service` related).  
+4. If token validation fails, inspect token expiry, signature, or issuer mismatch.

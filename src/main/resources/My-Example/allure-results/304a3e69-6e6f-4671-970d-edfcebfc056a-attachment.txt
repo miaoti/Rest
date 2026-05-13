@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"Downtown Station","id":123,"loginId":"adminUser123","startStation":"Station A","stationList":"Shanghai,Beijing,Nanjing"}

@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"user_admin456","routeId":"Route001","startStationName":"A","startTime":"2026-04-15T11:00:00Z","stationsName":"London Victoria Coach Station","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"TRIP-00789"}

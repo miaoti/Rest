@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Success","data":[]}
-Enhanced Parameters: {boughtDateStart=2023-10-15T00:00:00Z, travelDateEnd=2023-10-20T18:45:00Z, travelDateStart=2023-10-10T08:00:00Z}

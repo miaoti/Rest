@@ -1,0 +1,1 @@
+{"averageSpeed":300,"confortClass":"1","economyClass":70,"id":"train-008","name":"Frecciarossa 1000"}

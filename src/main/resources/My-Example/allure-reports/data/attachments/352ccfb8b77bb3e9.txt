@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-gateway-service` GET operation returned HTTP 403 Forbidden in 3.255ms. The gateway rejected the request before reaching `ts-admin-order-service`, indicating an authentication or authorization failure at the API gateway layer.
+
+FIX: Verify JWT token validity and permissions in the request header sent to `ts-gateway-service`. Ensure the token contains required roles for `/api/v1/admin/**` endpoints. Check gateway security configuration for missing or expired credentials.

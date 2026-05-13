@@ -1,0 +1,3 @@
+Original Status: 403
+Original Response: {"timestamp":"2026-05-09T03:18:04.685+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/trains"}
+Enhanced Parameters: {confortClass=1, economyClass=50, name=Beijing-Shanghai Express, averageSpeed=200, id=aefcef3f-3f42-46e8-afd7-6cb2a928bd3d}

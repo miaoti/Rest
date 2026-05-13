@@ -1,1 +1,0 @@
-{"departureTime":"undefined","endPlace":"New York City","startPlace":"Los Angeles, CA"}

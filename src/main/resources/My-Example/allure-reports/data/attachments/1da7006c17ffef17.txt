@@ -1,0 +1,3 @@
+Original Status: 403
+Original Response: {"timestamp":"2026-05-09T02:31:24.815+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/stations"}
+Enhanced Parameters: {stayTime=5, name=Shanghai Station, id=S001}

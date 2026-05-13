@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-gateway-service` POST operation returned HTTP 403 Forbidden in 1.093ms. This is an authentication/authorization failure, likely due to missing or invalid credentials/token in the request to the gateway.
+
+FIX: Verify the request includes a valid authentication token or API key. Check gateway security configuration (e.g., JWT validation, OAuth scopes, IP whitelist). Ensure the client is authorized to access the target endpoint. If using service-to-service auth, confirm the internal service credentials are correct.

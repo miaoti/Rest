@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: ts-gateway-service GET operation failed with HTTP 403 (Forbidden) in 2.068ms. The gateway rejected the request before proxying to ts-consign-service, indicating an authentication/authorization failure, likely missing or invalid JWT token, API key, or insufficient permissions.
+
+FIX: Verify authentication token validity and permissions in the request headers sent to ts-gateway-service. Check gateway security configuration (auth filters, API key validation, OAuth/JWT verification). Ensure the requesting client includes proper credentials.

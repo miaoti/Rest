@@ -1,1 +1,0 @@
-{"accountId":"acc12345","consignee":"Bob Brown","from":"Chicago","handleDate":"2026-04-15T10:30:00Z","id":"INVALID_ID","orderId":"ORD-1234567890","phone":"415-555-0199","targetDate":"2026-03-29T15:30:00Z","to":"New York City","weight":0.5,"within":"true"}

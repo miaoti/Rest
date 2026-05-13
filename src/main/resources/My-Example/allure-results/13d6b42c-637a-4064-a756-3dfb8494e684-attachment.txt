@@ -1,1 +1,0 @@
-{"accountId":"acc12345","consignee":"John Doe","from":"Chicago","handleDate":"2026-04-05T15:20:00Z","id":"'; DROP TABLE--","orderId":"ORD-ABC123XYZ","phone":"415-555-0199","targetDate":"2026-03-26T09:00:00Z","to":"Miami","weight":0.5,"within":true}

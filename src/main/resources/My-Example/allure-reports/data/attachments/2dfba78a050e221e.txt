@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-order-other-service` fails to deserialize JSON payload at field `state` in `other.entity.QueryInfo`. The client sends `true` (boolean) but service expects `int` type. `ts-gateway-service` returns HTTP 400 due to propagated deserialization error.
+
+FIX: Correct client request to send integer value for `state` field (e.g., `1` or `0`) instead of boolean `true`. Alternatively, update `QueryInfo.state` type in `ts-order-other-service` to `Boolean` if boolean representation is intended.

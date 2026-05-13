@@ -1,0 +1,1 @@
+{"boughtDateEnd":"2025-05-15","boughtDateStart":"<img src=x onerror=alert('XSS')>","enableBoughtDateQuery":false,"enableStateQuery":true,"enableTravelDateQuery":false,"loginId":"admin-001","state":25,"travelDateEnd":"2025-05-12","travelDateStart":"2025-05-01"}

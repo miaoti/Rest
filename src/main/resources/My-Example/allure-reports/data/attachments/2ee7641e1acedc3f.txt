@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-gateway-service` PUT operation failed with HTTP 403 in 1.041ms. 403 indicates authentication/authorization failure, likely missing or invalid JWT token, expired credentials, or insufficient permissions for the PUT endpoint.
+
+FIX: Verify authentication token is valid and includes required roles/permissions for the PUT request. Check `ts-gateway-service` authorization filter configuration. Ensure token is passed correctly in request headers. Validate user/API key has write access to the target resource.

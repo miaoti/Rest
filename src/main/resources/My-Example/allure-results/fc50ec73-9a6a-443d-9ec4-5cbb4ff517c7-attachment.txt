@@ -1,1 +1,0 @@
-{"accountId":"acc12345","boughtDate":"2026-04-01T14:30:00Z","coachNumber":456,"contactsDocumentNumber":"A123456789","contactsName":"John Doe","differenceMoney":"0.00","documentType":100,"from":"Miami","id":"A123456","price":"8.0, 2.0, 4.0","seatClass":1,"seatNumber":"C23","status":0,"to":"","trainNumber":"Train101","travelDate":"2026-04-01","travelTime":"04:30 PM"}

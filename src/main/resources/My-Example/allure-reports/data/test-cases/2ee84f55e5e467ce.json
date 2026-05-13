@@ -1,0 +1,195 @@
+{
+  "uid" : "2ee84f55e5e467ce",
+  "name" : "test_negative_flow_S749_v44_fault_Root1_TYPE_MISMATCH",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_749.test_negative_flow_S749_v44_fault_Root1_TYPE_MISMATCH",
+  "historyId" : "414795412d5c4c41489b507396dc55d9",
+  "time" : {
+    "start" : 1778305571164,
+    "stop" : 1778305576299,
+    "duration" : 5135
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778305571165,
+        "stop" : 1778305571165,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-travel2-service POST /api/v1/travel2service/trips/left [expect not 200]",
+      "time" : {
+        "start" : 1778305573166,
+        "stop" : 1778305576299,
+        "duration" : 3133
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "78dac2cf82f1dfa9",
+        "name" : "\uD83D\uDCE4 Request Body",
+        "source" : "78dac2cf82f1dfa9.txt",
+        "type" : "application/json",
+        "size" : 79
+      }, {
+        "uid" : "ce110d528f4422d8",
+        "name" : "\uD83D\uDCE5 Response (400)",
+        "source" : "ce110d528f4422d8.txt",
+        "type" : "application/json",
+        "size" : 136
+      }, {
+        "uid" : "3f06da755a32ba5f",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "3f06da755a32ba5f.txt",
+        "type" : "text/plain",
+        "size" : 1323
+      }, {
+        "uid" : "408dc4c412a3bb72",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "408dc4c412a3bb72.txt",
+        "type" : "text/plain",
+        "size" : 363
+      }, {
+        "uid" : "9e1b69d45b3c2a17",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "9e1b69d45b3c2a17.txt",
+        "type" : "application/json",
+        "size" : 12596
+      }, {
+        "uid" : "2dabbf4e8a72ca1a",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "2dabbf4e8a72ca1a.txt",
+        "type" : "text/plain",
+        "size" : 2341
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_749"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_negative_flow_S749_v44_fault_Root1_TYPE_MISMATCH"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_749 | POST /api/v1/travel2service/trips/left"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "feature",
+    "value" : "ts-travel2-service"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-travel2-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Fault: POST__api_v1_travel2service_trips_left] TYPE_MISMATCH (v44)"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (400 in 14ms)"
+  }, {
+    "name" : "\uD83C\uDFAF Target API",
+    "value" : "Root 1"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-travel2-service"
+  }, {
+    "name" : "\uD83D\uDCA5 Fault Type",
+    "value" : "TYPE_MISMATCH"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "POST"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/travel2service/trips/left"
+  }, {
+    "name" : "\uD83D\uDD34 Injected Payload",
+    "value" : "departureTime={key=value}"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDEA8 Test Type",
+    "value" : "NEGATIVE (Targeted Fault Injection)"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "2ee84f55e5e467ce.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (400 in 14ms)", "Root 1", "ts-travel2-service", "TYPE_MISMATCH", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "POST", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/travel2service/trips/left", "departureTime={key=value}", "▶️ EXECUTE - All dependencies satisfied", "NEGATIVE (Targeted Fault Injection)" ]
+}

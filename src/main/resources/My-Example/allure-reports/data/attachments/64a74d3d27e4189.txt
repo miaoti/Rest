@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-gateway-service` GET operation returned HTTP 403 Forbidden in 1.102ms. This is an authorization failure, likely due to missing or invalid authentication token, insufficient permissions, or a blocked IP/request at the gateway level. The failure is not propagated to downstream `ts-consign-service`, indicating the gateway rejected the request before forwarding.
+
+FIX: Verify authentication credentials (e.g., JWT token, API key) in the request header. Check gateway authorization rules for the specific endpoint. Ensure the requesting user/role has `GET` permission for the target resource. If IP whitelisting is active, confirm the client IP is allowed. Review gateway logs for exact rejection reason (e.g., token expired, missing role).

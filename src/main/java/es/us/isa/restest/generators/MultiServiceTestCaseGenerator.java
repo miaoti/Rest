@@ -65,6 +65,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     // decomposeMultiRootScenarios() so decomposed _RT baselines don't duplicate standalone ones.
     private final Set<String> seenSingleRootApis = new LinkedHashSet<>();
 
+    // Identity-based set of WorkflowScenario instances that have already been accepted by
+    // a prior pass of applySingleRootDedup().  Used to prevent a later pass (e.g. Phase 3.5
+    // post-shatter dedup) from dropping the very 1-root scenarios that Phase 2.5 just kept —
+    // their API keys are now present in seenSingleRootApis, so without this pass-through the
+    // second dedup call would treat them as "redundant" and silently discard them.
+    private final Set<WorkflowScenario> dedupApprovedScenarios =
+            Collections.newSetFromMap(new IdentityHashMap<>());
+
     /**
      * Represents a single fault-injection target: one invalid value fired at
      * one parameter of one specific root API in a multi-root sequence.
@@ -189,31 +197,56 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private void initializeSmartInputFetching() {
         try {
             log.info("🔧 Initializing Smart Input Fetching System for MultiServiceTestCaseGenerator...");
-            
-            // Load configuration from system properties
+
+            // Load configuration from system properties.
+            //
+            // We include both prefixes:
+            //   * "smart.input.fetch.*" — this module's own settings; also gates the
+            //     "no smart-fetch config" early return below.
+            //   * "auth.*"              — consumed by SmartFetchAuthManager (admin
+            //     username/password, login path/fields, token path, validity).  Before
+            //     this fix the filter dropped them, leaving smart-fetch unauthenticated;
+            //     every admin-routed parameter-discovery call then returned HTTP 403 and
+            //     tests fell back to placeholder values like "FALLBACK_id_10".
             Map<String, String> properties = new HashMap<>();
-            System.getProperties().entrySet().stream()
-                    .filter(entry -> entry.getKey().toString().startsWith("smart.input.fetch"))
-                    .forEach(entry -> {
-                        properties.put(entry.getKey().toString(), entry.getValue().toString());
-                        log.debug("Found smart property: {} = {}", entry.getKey(), entry.getValue());
-                    });
-            
+            int smartFetchKeyCount = 0;
+            for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+                String key = entry.getKey().toString();
+                String value = entry.getValue() == null ? "" : entry.getValue().toString();
+                if (key.startsWith("smart.input.fetch")) {
+                    properties.put(key, value);
+                    smartFetchKeyCount++;
+                } else if (key.startsWith("auth.")) {
+                    properties.put(key, value);
+                }
+            }
+
             // Also load base.url
             if (System.getProperty("base.url") != null) {
                 properties.put("base.url", System.getProperty("base.url"));
                 log.debug("Found base.url: {}", System.getProperty("base.url"));
             }
-            
-            if (properties.isEmpty()) {
+
+            if (smartFetchKeyCount == 0) {
                 log.warn("❌ No smart input fetching properties found, using traditional LLM generation only");
                 log.warn("   Make sure properties like 'smart.input.fetch.enabled=true' are in your properties file");
                 return;
             }
-            
-            log.info("✅ Found {} smart input fetching properties", properties.size());
+
+            log.info("✅ Found {} smart input fetching properties (+ auth/base passthrough, {} total keys)",
+                    smartFetchKeyCount, properties.size());
             for (String key : properties.keySet()) {
-                log.info("   - {}: {}", key, properties.get(key));
+                String value = properties.get(key);
+                // Redact secret-like values so passwords / tokens are not written to the
+                // log file at INFO level.
+                String displayValue = value;
+                String lowerKey = key.toLowerCase(java.util.Locale.ROOT);
+                if (value != null && !value.isEmpty()
+                        && (lowerKey.contains("password") || lowerKey.contains("token")
+                            || lowerKey.contains("secret"))) {
+                    displayValue = "<redacted, len=" + value.length() + ">";
+                }
+                log.info("   - {}: {}", key, displayValue);
             }
             
             smartFetchConfig = SmartInputFetchConfig.fromProperties(properties);
@@ -3078,8 +3111,18 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         List<WorkflowScenario> deduplicated = new ArrayList<>();
 
         for (WorkflowScenario sc : scenarios) {
+            // Scenarios that were already accepted by an earlier dedup pass pass through
+            // unchanged.  Re-evaluating them against seenSingleRootApis would always fail
+            // (their API key is already in the set from the earlier pass) and silently drop
+            // them — that's the bug this guard prevents.
+            if (dedupApprovedScenarios.contains(sc)) {
+                deduplicated.add(sc);
+                continue;
+            }
+
             if (sc.getRootSteps().size() != 1) {
                 deduplicated.add(sc);
+                dedupApprovedScenarios.add(sc);
                 continue;
             }
 
@@ -3088,11 +3131,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             if (apiKey == null) {
                 // Cannot determine API key — keep the scenario to be safe
                 deduplicated.add(sc);
+                dedupApprovedScenarios.add(sc);
                 continue;
             }
 
             if (seenSingleRootApis.add(apiKey)) {
                 deduplicated.add(sc);
+                dedupApprovedScenarios.add(sc);
             } else {
                 log.debug("Skipping redundant 1-root scenario for API: {}", apiKey);
             }

@@ -113,11 +113,33 @@ public class ParameterErrorAnalyzer {
         
         List<ParameterError> errors = new ArrayList<>();
         StringBuilder details = new StringBuilder();
-        
+
         try {
+            // Cache lookup: skip LLM if we've already classified this failure signature.
+            String cachedException = failure.getExceptionTypes().isEmpty() ? null : failure.getExceptionTypes().get(0);
+            String cacheKey = ParameterErrorAnalysisCache.buildKey(
+                    failure.getServiceName(),
+                    failure.getOperationName(),
+                    failure.getHttpStatusCode(),
+                    cachedException);
+            ParameterErrorAnalysisCache cache = ParameterErrorAnalysisCache.getInstance(
+                    System.getProperty("parameter.error.analysis.cache.path", "target/parameter-error-analysis-cache.json"));
+            Optional<ParameterErrorAnalysisCache.CachedVerdict> cached = cache.get(cacheKey);
+            if (cached.isPresent()) {
+                ParameterErrorAnalysisCache.CachedVerdict v = cached.get();
+                if (v.isParameterError()) {
+                    String actualErrorMessage = extractConciseErrorMessage(failure);
+                    errors.add(new ParameterError(v.getErrorType(), actualErrorMessage, apiEndpoint, v.getParameterName()));
+                    details.append("Cached Classification: Parameter-related error detected\n");
+                } else {
+                    details.append("Cached Classification: Not a parameter-related error\n");
+                }
+                return new ParameterErrorAnalysisResult(apiEndpoint, httpMethod, errors, details.toString());
+            }
+
             // Prepare context for LLM analysis
             String errorContext = buildErrorContext(failure, testParameters);
-            
+
             // Ask LLM to classify if this is a parameter-related error and identify which parameter
             String prompt = String.format(
                 "Analyze this API failure to determine if it's caused by an input parameter:\n\n" +
@@ -133,20 +155,28 @@ public class ParameterErrorAnalyzer {
                 "Respond ONLY in the specified format.",
                 errorContext
             );
-            
+
             LLMService llmService = LLMService.getInstance(llmProperties);
             String llmResponse = llmService.generateText(
-                "You are an API testing expert. Analyze API failures to identify which parameter caused the issue.", 
+                "You are an API testing expert. Analyze API failures to identify which parameter caused the issue.",
                 prompt
             );
-            
+
             if (llmResponse != null && !llmResponse.trim().isEmpty()) {
                 ParameterError paramError = parseParameterErrorFromLLM(llmResponse, apiEndpoint, failure);
                 if (paramError != null) {
                     errors.add(paramError);
                     details.append("LLM Classification: Parameter-related error detected\n");
+                    cache.put(cacheKey, new ParameterErrorAnalysisCache.CachedVerdict(
+                            true, paramError.getParameterName(), paramError.getErrorType()));
                 } else {
                     details.append("LLM Classification: Not a parameter-related error\n");
+                    // Only cache an explicit "NO" verdict — leave malformed/empty responses
+                    // uncached so future tries can produce a clean answer.
+                    String yesNo = extractField(llmResponse, "PARAMETER_ERROR:");
+                    if (yesNo != null && yesNo.trim().equalsIgnoreCase("NO")) {
+                        cache.put(cacheKey, new ParameterErrorAnalysisCache.CachedVerdict(false, null, null));
+                    }
                 }
             } else {
                 // Fallback analysis if LLM is unavailable
@@ -156,7 +186,7 @@ public class ParameterErrorAnalyzer {
                     details.append("Fallback Analysis: Pattern-based error detection\n");
                 }
             }
-            
+
         } catch (Exception e) {
             log.warn("Error during parameter error analysis for {}: {}", apiEndpoint, e.getMessage());
             details.append("Analysis failed: ").append(e.getMessage()).append("\n");

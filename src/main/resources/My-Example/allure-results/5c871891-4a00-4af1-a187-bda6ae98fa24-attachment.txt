@@ -1,3 +1,0 @@
-Original Status: 0
-Original Response: 
-Enhanced Parameters: {endpoint=/valid_endpoint, body={"key": "value"}}

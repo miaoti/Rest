@@ -1,1 +1,0 @@
-{"basicPriceRate":0.75,"firstClassPriceRate":30.5,"id":"D901234","routeId":"Route001","trainType":"Express Train"}

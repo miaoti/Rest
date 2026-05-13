@@ -1,0 +1,195 @@
+{
+  "uid" : "706a0288237c3d7f",
+  "name" : "test_negative_flow_S420_v73_fault_Root1_SPECIAL_CHARACTERS",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_420.test_negative_flow_S420_v73_fault_Root1_SPECIAL_CHARACTERS",
+  "historyId" : "82da1dc38fabe892b7cf206dba5e2bbe",
+  "time" : {
+    "start" : 1778306235453,
+    "stop" : 1778306248697,
+    "duration" : 13244
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "passed",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "passed",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778306235453,
+        "stop" : 1778306235453,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-execute-service GET /api/v1/executeservice/execute/execute/%5Cx00%5Cx01%5Cx02 [expect not 200]",
+      "time" : {
+        "start" : 1778306237454,
+        "stop" : 1778306248696,
+        "duration" : 11242
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "5095143e0322e7d3",
+        "name" : "\uD83D\uDCE5 Response (403)",
+        "source" : "5095143e0322e7d3.txt",
+        "type" : "application/json",
+        "size" : 0
+      }, {
+        "uid" : "f3e3ba8a8ddb5ec0",
+        "name" : "\uD83E\uDD16 INTELLIGENT ANALYSIS (Based on Trace)",
+        "source" : "f3e3ba8a8ddb5ec0.txt",
+        "type" : "text/plain",
+        "size" : 666
+      }, {
+        "uid" : "9558261fddcd28c7",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "9558261fddcd28c7.txt",
+        "type" : "text/plain",
+        "size" : 1389
+      }, {
+        "uid" : "fc092e2fb4aeb986",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "fc092e2fb4aeb986.txt",
+        "type" : "text/plain",
+        "size" : 359
+      }, {
+        "uid" : "b178e2e89537e84e",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "b178e2e89537e84e.txt",
+        "type" : "application/json",
+        "size" : 14184
+      }, {
+        "uid" : "bc6178aff6488c07",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "bc6178aff6488c07.txt",
+        "type" : "text/plain",
+        "size" : 15162
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 6,
+      "shouldDisplayMessage" : false,
+      "hasContent" : true
+    } ],
+    "attachments" : [ ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 6,
+    "shouldDisplayMessage" : false,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_420"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_negative_flow_S420_v73_fault_Root1_SPECIAL_CHARACTERS"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_420 | GET /api/v1/executeservice/execute/execute/{orderId}"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "feature",
+    "value" : "ts-execute-service"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-execute-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Fault: GET__api_v1_executeservice_execute_execute__orderId_] SPECIAL_CHARACTERS (v73)"
+  }, {
+    "name" : "severity",
+    "value" : "normal"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ SUCCESS (403 in 14ms)"
+  }, {
+    "name" : "\uD83C\uDFAF Target API",
+    "value" : "Root 1"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-execute-service"
+  }, {
+    "name" : "\uD83D\uDCA5 Fault Type",
+    "value" : "SPECIAL_CHARACTERS"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "✅ ALL STEPS PASSED (1/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "GET"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/executeservice/execute/execute/%5Cx00%5Cx01%5Cx02"
+  }, {
+    "name" : "\uD83D\uDD34 Injected Payload",
+    "value" : "orderId=\\x00\\x01\\x02"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  }, {
+    "name" : "\uD83D\uDEA8 Test Type",
+    "value" : "NEGATIVE (Targeted Fault Injection)"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "normal",
+    "retries" : [ ],
+    "categories" : [ ],
+    "tags" : [ ]
+  },
+  "source" : "706a0288237c3d7f.json",
+  "parameterValues" : [ "200", "✅ READY", "✅ SUCCESS (403 in 14ms)", "Root 1", "ts-execute-service", "SPECIAL_CHARACTERS", "✅ ALL STEPS PASSED (1/1 steps)", "R1", "GET", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/executeservice/execute/execute/%5Cx00%5Cx01%5Cx02", "orderId=\\x00\\x01\\x02", "▶️ EXECUTE - All dependencies satisfied", "NEGATIVE (Targeted Fault Injection)" ]
+}

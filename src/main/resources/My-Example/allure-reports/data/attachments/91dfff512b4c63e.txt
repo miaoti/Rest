@@ -1,0 +1,341 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-travel-plan-service
+Method: POST
+Path: /api/v1/travelplanservice/travelPlan/cheapest
+Operation: POST /api/v1/travelplanservice/travelPlan/cheapest
+Request Start (μs): 1778302523342000
+Search Window: 1778302513342000 to 1778302553342000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 156881
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 1: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 2: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 1 with score 2535 (matched but not current - possibly previous execution)
+
+🔄 Fetching complete trace for ID: 527a1df789a08e33eae28fdcfa8c5493
+✅ Complete trace fetched with 13 spans
+✅ Updated global best trace (score: 2535, timeDiff: 3.681s)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 154650
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 1: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 2: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 1 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778302513342000&end=1778302553342000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-travel-plan-service&operation=POST+%2Fapi%2Fv1%2Ftravelplanservice%2FtravelPlan%2Fcheapest&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 154650
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 1: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 2: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 1 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-travel-plan-service&operation=POST&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 131236
+Traces Found: 2
+Analyzing 2 traces for API calls...
+Trace 0: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 0 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-travel-plan-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 159124
+Traces Found: 5
+Analyzing 5 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 2: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 4: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+
+Selected trace 1 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+🔄 RETRY 1: Searching again for current execution trace...
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 156881
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 2: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 3: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 2 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 154650
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 1: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 2: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 1 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778302513342000&end=1778302553342000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-travel-plan-service&operation=POST+%2Fapi%2Fv1%2Ftravelplanservice%2FtravelPlan%2Fcheapest&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 154650
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+Trace 2: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+
+Selected trace 0 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-travel-plan-service&operation=POST&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 131236
+Traces Found: 2
+Analyzing 2 traces for API calls...
+Trace 0: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 0 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-travel-plan-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 159124
+Traces Found: 5
+Analyzing 5 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 3: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 4: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 3 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+🔄 RETRY 2: Searching again for current execution trace...
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 156881
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 2: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 3: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 2 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 154650
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+Trace 2: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+
+Selected trace 0 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778302513342000&end=1778302553342000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-travel-plan-service&operation=POST+%2Fapi%2Fv1%2Ftravelplanservice%2FtravelPlan%2Fcheapest&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 154650
+Traces Found: 3
+Analyzing 3 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 1: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 2: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 1 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-travel-plan-service&operation=POST&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 131236
+Traces Found: 2
+Analyzing 2 traces for API calls...
+Trace 0: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 1: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 0 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-travel-plan-service&start=1778302513342000&end=1778302553342000
+Response Status: 200
+Response Body Length: 159124
+Traces Found: 5
+Analyzing 5 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=1115, APIs=3, hasTarget=true, timeDiff=21677000μs, spans=7
+  Operations: POST, POST /*, FilteringWebHandler.handle, TravelPlanController.getByC..., OnCommittedResponseWrapper...., +2 more
+Trace 2: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 3: score=2535, APIs=7, hasTarget=true, timeDiff=3681000μs, spans=13
+  Operations: TravelPlanController.getByC..., BasicErrorController.error, POST, POST /api/v1/travelplanserv..., POST, +8 more
+Trace 4: score=1235, APIs=7, hasTarget=true, timeDiff=12597000μs, spans=13
+  Operations: RoutePlanController.getChea..., POST /api/v1/routeplanservi..., BasicErrorController.error, POST, TravelController.queryInfo, +8 more
+
+Selected trace 3 with score 2535 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+✅ Using best trace found (score: 2535, timeDiff: 3.681s)

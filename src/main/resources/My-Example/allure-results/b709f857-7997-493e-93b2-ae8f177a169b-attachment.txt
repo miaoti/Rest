@@ -1,1 +1,0 @@
-{"accountId":"acc12345","boughtDate":"2026-04-01T14:30:00Z","coachNumber":456,"contactsDocumentNumber":"A123456789","contactsName":"John Doe","differenceMoney":"500.00","documentType":100,"from":"Chicago","id":"B789012","price":"10.99","seatClass":1,"seatNumber":"5A","status":1,"to":"New York City","trainNumber":"Train101","travelDate":"2026-04-01","travelTime":"04:30 PM"}

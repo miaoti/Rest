@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"superAdmin202","routeId":"Route001","startStationName":"Grand Central","startTime":"2026-04-01T09:00:00Z","stationsName":"Grand Central,Union Station","terminalStationName":"Union Station","trainTypeName":"High-Speed Train","tripId":"TRIP-00789"}

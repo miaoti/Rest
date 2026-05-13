@@ -1,1 +1,0 @@
-{"departureTime":"2026-04-10","endPlace":"New York City","startPlace":"Another extremely long string, exceeding the maximum character limit by far, to ensure robustness of the system against excessive input."}

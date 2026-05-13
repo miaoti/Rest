@@ -1,1 +1,0 @@
-{"accountId":"admin_order_001","consignee":"John Doe","from":"Chicago","handleDate":"2026-04-15T10:30:00Z","id":"C345678","orderId":"ORD-XYZ789DEF","phone":"917.555.0100 x123","targetDate":"2026-04-05T10:00:00Z","to":"New York City","weight":0.5,"within":true}

@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"f8a8cfd5-99ac-4cf5-b656-00f26703d5b2","trainType":"GaoTieOne","routeId":"RouteXYZ123","basicPriceRate":0.75,"firstClassPriceRate":54.75}}
-Enhanced Parameters: {basicPriceRate=-0.75, firstClassPriceRate=-54.75}

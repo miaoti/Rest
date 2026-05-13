@@ -1,0 +1,1 @@
+{"averageSpeed":250,"confortClass":4,"economyClass":60,"id":[1,2,3],"name":"CRH380A Harmony"}

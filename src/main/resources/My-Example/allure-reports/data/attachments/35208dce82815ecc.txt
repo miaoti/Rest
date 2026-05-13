@@ -1,0 +1,1 @@
+{"boughtDateEnd":"' UNION SELECT * FROM passwords --","boughtDateStart":"2026-05-22","enableBoughtDateQuery":false,"enableStateQuery":true,"enableTravelDateQuery":true,"loginId":"admin008","state":25,"travelDateEnd":"2026-05-26","travelDateStart":"2026-05-20"}

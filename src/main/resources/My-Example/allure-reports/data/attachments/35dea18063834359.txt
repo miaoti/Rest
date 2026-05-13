@@ -1,0 +1,1 @@
+{"averageSpeed":"999999999","confortClass":13,"economyClass":1,"id":"train-010","name":"TGV Duplex 800"}

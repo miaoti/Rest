@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":123,"startStationName":"Downtown Station","startTime":"2013-05-04 17:31:52","stationsName":"Tokyo Station","terminalStationName":"Union Station","trainTypeName":"Express Train","tripId":"TrainJourney1234"}

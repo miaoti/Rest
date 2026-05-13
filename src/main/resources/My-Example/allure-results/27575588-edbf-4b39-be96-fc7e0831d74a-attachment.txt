@@ -1,1 +1,0 @@
-{"accountId":"","consignee":"","from":"","handleDate":"invalid-date","id":"","orderId":"","phone":"invalid-phone","targetDate":"invalid-date","to":"Chicago","weight":0.5,"within":true}

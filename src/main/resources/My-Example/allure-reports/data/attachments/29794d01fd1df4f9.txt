@@ -1,0 +1,1 @@
+{"averageSpeed":350,"confortClass":-9223372036854775808,"economyClass":150,"id":"train-007","name":"HST-2000 Shinkansen"}

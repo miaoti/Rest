@@ -1,0 +1,1 @@
+{"averageSpeed":"","confortClass":13,"economyClass":60,"id":"train-005","name":"Siemens Velaro D"}

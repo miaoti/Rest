@@ -1,1 +1,0 @@
-{"distanceList":"8.5","endStation":"999","id":"A123456","loginId":"adminUser123","startStation":"Platform D","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

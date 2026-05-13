@@ -1,1 +1,0 @@
-{"distanceList":"<script>alert('XSS')</script>","endStation":"Downtown Station","id":"C345678","loginId":"adminUser123","startStation":"Station A","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

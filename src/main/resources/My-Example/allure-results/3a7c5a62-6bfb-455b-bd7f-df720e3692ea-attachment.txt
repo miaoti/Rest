@@ -1,1 +1,0 @@
-{"status":0,"msg":"Order rejected: contactsName cannot be null or empty","data":{"faultName":"INVALID_CONTACTS_NAME_FAULT","message":"Order rejected: contactsName cannot be null or empty","details":null,"injected":true}}

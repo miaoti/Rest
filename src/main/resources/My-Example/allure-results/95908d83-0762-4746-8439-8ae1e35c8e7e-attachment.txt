@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"Broadway Station","id":"B789012","loginId":"adminUser123","startStation":"Grand Central Terminal","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

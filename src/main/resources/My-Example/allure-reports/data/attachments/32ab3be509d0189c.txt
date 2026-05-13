@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: ts-gateway-service GET operation failed with HTTP 403 status in 1.055ms. The 403 Forbidden error indicates authentication or authorization failure at the gateway level, likely due to missing or invalid API key, JWT token, or insufficient permissions for the requested endpoint.
+
+FIX: Verify the API key or authentication token sent in the request headers is valid and has access to the target endpoint. Check ts-gateway-service configuration for correct auth middleware rules, token validation, and permission mapping. Ensure the requesting client includes proper Authorization header.

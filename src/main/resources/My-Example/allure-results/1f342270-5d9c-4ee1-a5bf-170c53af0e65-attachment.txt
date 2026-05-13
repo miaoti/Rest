@@ -1,1 +1,0 @@
-{"timestamp":"2026-03-26T17:28:22.988+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/travelservice/trips/left"}

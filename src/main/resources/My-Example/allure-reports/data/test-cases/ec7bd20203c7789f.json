@@ -1,0 +1,220 @@
+{
+  "uid" : "ec7bd20203c7789f",
+  "name" : "test_positive_flow_S994_v22",
+  "fullName" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_994.test_positive_flow_S994_v22",
+  "historyId" : "9731b6dcf725249a3d81f8faaacf7557",
+  "time" : {
+    "start" : 1778308073499,
+    "stop" : 1778308086270,
+    "duration" : 12771
+  },
+  "description" : "Microservice test scenario with 1 steps.",
+  "descriptionHtml" : "<p>Microservice test scenario with 1 steps.</p>\n",
+  "status" : "failed",
+  "statusMessage" : "Scenario FAILED: 1 out of 1 steps failed. In microservice testing, all workflow steps must succeed for end-to-end validation.",
+  "statusTrace" : "java.lang.AssertionError: Scenario FAILED: 1 out of 1 steps failed. In microservice testing, all workflow steps must succeed for end-to-end validation.\n\tat org.junit.Assert.fail(Assert.java:89)\n\tat trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_994.test_positive_flow_S994_v22(Unknown Source)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:569)\n\tat org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)\n\tat org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)\n\tat org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)\n\tat org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)\n\tat org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)\n\tat org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)\n\tat org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)\n\tat org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:413)\n\tat org.junit.runners.Suite.runChild(Suite.java:128)\n\tat org.junit.runners.Suite.runChild(Suite.java:27)\n\tat org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)\n\tat org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:413)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:137)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:115)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:105)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:94)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeTestsWithCollector(TestGenerationAndExecution.java:1601)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeTestsWithCollector(TestGenerationAndExecution.java:1462)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeWithEnhancement(TestGenerationAndExecution.java:1217)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.main(TestGenerationAndExecution.java:277)\n",
+  "flaky" : false,
+  "newFailed" : false,
+  "beforeStages" : [ ],
+  "testStage" : {
+    "description" : "Microservice test scenario with 1 steps.",
+    "status" : "failed",
+    "statusMessage" : "Scenario FAILED: 1 out of 1 steps failed. In microservice testing, all workflow steps must succeed for end-to-end validation.",
+    "statusTrace" : "java.lang.AssertionError: Scenario FAILED: 1 out of 1 steps failed. In microservice testing, all workflow steps must succeed for end-to-end validation.\n\tat org.junit.Assert.fail(Assert.java:89)\n\tat trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_994.test_positive_flow_S994_v22(Unknown Source)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:569)\n\tat org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)\n\tat org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)\n\tat org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)\n\tat org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)\n\tat org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)\n\tat org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)\n\tat org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)\n\tat org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:413)\n\tat org.junit.runners.Suite.runChild(Suite.java:128)\n\tat org.junit.runners.Suite.runChild(Suite.java:27)\n\tat org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)\n\tat org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:413)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:137)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:115)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:105)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:94)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeTestsWithCollector(TestGenerationAndExecution.java:1601)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeTestsWithCollector(TestGenerationAndExecution.java:1462)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeWithEnhancement(TestGenerationAndExecution.java:1217)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.main(TestGenerationAndExecution.java:277)\n",
+    "steps" : [ {
+      "name" : "\uD83D\uDD10 Step 0: Authentication",
+      "time" : {
+        "start" : 1778308073502,
+        "stop" : 1778308073502,
+        "duration" : 0
+      },
+      "status" : "passed",
+      "steps" : [ ],
+      "attachments" : [ ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 0,
+      "shouldDisplayMessage" : false,
+      "hasContent" : false
+    }, {
+      "name" : "Root 1: ts-admin-basic-info-service PUT /api/v1/adminbasicservice/adminbasic/stations [expect 200]",
+      "time" : {
+        "start" : 1778308075502,
+        "stop" : 1778308086269,
+        "duration" : 10767
+      },
+      "status" : "broken",
+      "statusMessage" : "Root 1: ts-admin-basic-info-service PUT /api/v1/adminbasicservice/adminbasic/stations [expect 200] failed: Expected vs actual status code mismatch (Status Code Mismatch)",
+      "statusTrace" : "java.lang.RuntimeException: Root 1: ts-admin-basic-info-service PUT /api/v1/adminbasicservice/adminbasic/stations [expect 200] failed: Expected vs actual status code mismatch (Status Code Mismatch)\n\tat trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_994.lambda$test_positive_flow_S994_v22$82(Unknown Source)\n\tat io.qameta.allure.Allure.lambda$step$0(Allure.java:113)\n\tat io.qameta.allure.Allure.lambda$step$1(Allure.java:127)\n\tat io.qameta.allure.Allure.step(Allure.java:181)\n\tat io.qameta.allure.Allure.step(Allure.java:125)\n\tat io.qameta.allure.Allure.step(Allure.java:112)\n\tat trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_994.test_positive_flow_S994_v22(Unknown Source)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:569)\n\tat org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)\n\tat org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)\n\tat org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)\n\tat org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)\n\tat org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)\n\tat org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)\n\tat org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)\n\tat org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)\n\tat org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:413)\n\tat org.junit.runners.Suite.runChild(Suite.java:128)\n\tat org.junit.runners.Suite.runChild(Suite.java:27)\n\tat org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)\n\tat org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)\n\tat org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)\n\tat org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)\n\tat org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)\n\tat org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)\n\tat org.junit.runners.ParentRunner.run(ParentRunner.java:413)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:137)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:115)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:105)\n\tat org.junit.runner.JUnitCore.run(JUnitCore.java:94)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeTestsWithCollector(TestGenerationAndExecution.java:1601)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeTestsWithCollector(TestGenerationAndExecution.java:1462)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.executeWithEnhancement(TestGenerationAndExecution.java:1217)\n\tat es.us.isa.restest.main.TestGenerationAndExecution.main(TestGenerationAndExecution.java:277)\nCaused by: java.lang.AssertionError: Expected status code 200, but got: 403\n\t... 45 more\n",
+      "steps" : [ ],
+      "attachments" : [ {
+        "uid" : "25ace35cece56b0e",
+        "name" : "\uD83D\uDCE4 Request Body",
+        "source" : "25ace35cece56b0e.txt",
+        "type" : "application/json",
+        "size" : 77
+      }, {
+        "uid" : "95c11a451628a38",
+        "name" : "\uD83D\uDCE5 Response (403)",
+        "source" : "95c11a451628a38.txt",
+        "type" : "application/json",
+        "size" : 146
+      }, {
+        "uid" : "b98f6e4530a800f7",
+        "name" : "\uD83E\uDD16 INTELLIGENT ANALYSIS (Based on Trace)",
+        "source" : "b98f6e4530a800f7.txt",
+        "type" : "text/plain",
+        "size" : 593
+      }, {
+        "uid" : "590631dfc07e4f19",
+        "name" : "\uD83D\uDD17 API Call Trace",
+        "source" : "590631dfc07e4f19.txt",
+        "type" : "text/plain",
+        "size" : 1343
+      }, {
+        "uid" : "73eb411d7cff2d3b",
+        "name" : "\uD83D\uDCCA Trace Summary",
+        "source" : "73eb411d7cff2d3b.txt",
+        "type" : "text/plain",
+        "size" : 372
+      }, {
+        "uid" : "966aba2fc812944e",
+        "name" : "\uD83D\uDCC8 Raw Trace Data",
+        "source" : "966aba2fc812944e.txt",
+        "type" : "application/json",
+        "size" : 9823
+      }, {
+        "uid" : "78f3c3a1f3bc0249",
+        "name" : "\uD83D\uDD0D Query Debug Info",
+        "source" : "78f3c3a1f3bc0249.txt",
+        "type" : "text/plain",
+        "size" : 17476
+      } ],
+      "parameters" : [ ],
+      "stepsCount" : 0,
+      "attachmentsCount" : 7,
+      "shouldDisplayMessage" : true,
+      "hasContent" : true
+    } ],
+    "attachments" : [ {
+      "uid" : "7338498e5bc0776c",
+      "name" : "\uD83D\uDCDD Original Failure",
+      "source" : "7338498e5bc0776c.txt",
+      "type" : "text/plain",
+      "size" : 278
+    } ],
+    "parameters" : [ ],
+    "stepsCount" : 2,
+    "attachmentsCount" : 8,
+    "shouldDisplayMessage" : true,
+    "hasContent" : true
+  },
+  "afterStages" : [ ],
+  "labels" : [ {
+    "name" : "package",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929"
+  }, {
+    "name" : "testClass",
+    "value" : "trainticket_twostage_test.TrainTicketTwoStageTest_1778271990929.Flow_Scenario_994"
+  }, {
+    "name" : "testMethod",
+    "value" : "test_positive_flow_S994_v22"
+  }, {
+    "name" : "suite",
+    "value" : "Flow_Scenario_994 | PUT /api/v1/adminbasicservice/adminbasic/stations"
+  }, {
+    "name" : "host",
+    "value" : "HNK-354-05"
+  }, {
+    "name" : "thread",
+    "value" : "1526207@HNK-354-05.main(1)"
+  }, {
+    "name" : "framework",
+    "value" : "junit4"
+  }, {
+    "name" : "language",
+    "value" : "java"
+  }, {
+    "name" : "feature",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "epic",
+    "value" : "Baseline Tests"
+  }, {
+    "name" : "enhancement",
+    "value" : "ENHANCED"
+  }, {
+    "name" : "parentSuite",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "subSuite",
+    "value" : "[Valid] v22"
+  }, {
+    "name" : "severity",
+    "value" : "critical"
+  }, {
+    "name" : "resultFormat",
+    "value" : "allure2"
+  } ],
+  "parameters" : [ {
+    "name" : "\uD83C\uDFAF Expected Status",
+    "value" : "200"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "✅ READY"
+  }, {
+    "name" : "\uD83C\uDFAF Result",
+    "value" : "❌ FAILED (Status Code Mismatch, status: 403, 15ms)"
+  }, {
+    "name" : "\uD83C\uDFE2 Failed Service",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "\uD83C\uDFE2 Service",
+    "value" : "ts-admin-basic-info-service"
+  }, {
+    "name" : "\uD83D\uDCCA Scenario Result",
+    "value" : "❌ ALL STEPS FAILED (0/1 steps)"
+  }, {
+    "name" : "\uD83D\uDCCC Step ID",
+    "value" : "R1"
+  }, {
+    "name" : "\uD83D\uDCE1 Failed Method",
+    "value" : "PUT"
+  }, {
+    "name" : "\uD83D\uDCE1 HTTP Method",
+    "value" : "PUT"
+  }, {
+    "name" : "\uD83D\uDD0D Failure Reason",
+    "value" : "Expected vs actual status code mismatch"
+  }, {
+    "name" : "\uD83D\uDD10 Auth Mode",
+    "value" : "PER_JVM"
+  }, {
+    "name" : "\uD83D\uDD17 Dependency Type",
+    "value" : "INDEPENDENT (can execute regardless of other step results)"
+  }, {
+    "name" : "\uD83D\uDD17 Endpoint",
+    "value" : "/api/v1/adminbasicservice/adminbasic/stations"
+  }, {
+    "name" : "\uD83D\uDD17 Failed Endpoint",
+    "value" : "/api/v1/adminbasicservice/adminbasic/stations"
+  }, {
+    "name" : "\uD83D\uDEA6 Execution Decision",
+    "value" : "▶️ EXECUTE - All dependencies satisfied"
+  } ],
+  "links" : [ ],
+  "hidden" : false,
+  "retry" : false,
+  "extra" : {
+    "severity" : "critical",
+    "retries" : [ ],
+    "categories" : [ {
+      "name" : "Product defects",
+      "matchedStatuses" : [ ],
+      "flaky" : false
+    } ],
+    "tags" : [ ]
+  },
+  "source" : "ec7bd20203c7789f.json",
+  "parameterValues" : [ "200", "✅ READY", "❌ FAILED (Status Code Mismatch, status: 403, 15ms)", "ts-admin-basic-info-service", "ts-admin-basic-info-service", "❌ ALL STEPS FAILED (0/1 steps)", "R1", "PUT", "PUT", "Expected vs actual status code mismatch", "PER_JVM", "INDEPENDENT (can execute regardless of other step results)", "/api/v1/adminbasicservice/adminbasic/stations", "/api/v1/adminbasicservice/adminbasic/stations", "▶️ EXECUTE - All dependencies satisfied" ]
+}

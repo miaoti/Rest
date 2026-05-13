@@ -1,1 +1,0 @@
-{"distanceList":123,"endStation":"Downtown Station","id":"A123456","loginId":"adminUser123","startStation":"Gate C","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

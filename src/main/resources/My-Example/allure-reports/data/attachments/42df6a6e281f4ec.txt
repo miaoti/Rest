@@ -1,0 +1,7 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-consign-service` GET /api/v1/consignservice/consigns/order/{id} fails with HTTP 403 due to `RequestRejectedException` when URL contains `%25` (URL-encoded `%`). The `%25` is decoded by the web server to `%`, which is then interpreted as a new URL encoding prefix, triggering Spring Security's firewall to reject it as a potential double-encoding attack.
+
+FIX: In `ts-consign-service`, either:
+1. Add `%25` to the allowed URL patterns in Spring Security's `StrictHttpFirewall` configuration by overriding `getEncodedPathsPermitted()` or `getEncodedQueryParametersPermitted()`.
+2. Decode the `%25` at the gateway layer (ts-gateway-service) before forwarding the request to `ts-consign-service`, so the internal service never receives double-encoded URLs

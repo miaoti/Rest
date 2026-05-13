@@ -1,1 +1,0 @@
-{"basicPriceRate":0.75,"firstClassPriceRate":"9999999999999999999999","id":"5d9ce4c8-08df-41bf-9c0d-4f7b828599ea","routeId":"RouteXYZ123","trainType":"WacoExpress"}

@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"Downtown Station","id":"A123456","loginId":false,"startStation":"Station A","stationList":"Central Park Zoo,Museum of Modern Art,Empire State Building"}

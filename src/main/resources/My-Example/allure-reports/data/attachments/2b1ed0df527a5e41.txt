@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-order-other-service` `OrderOtherController.queryOrdersForRefresh` fails due to JSON deserialization error: field `enableStateQuery` receives string `"no"` but expects boolean type (only `"true"` or `"false"` accepted). The `ts-gateway-service` returns HTTP 400 as downstream consequence.
+
+FIX: In the client sending the POST request to `ts-order-other-service`, change the value of `enableStateQuery` from `"no"` to `false`. Alternatively, modify the `QueryInfo` entity in `ts-order-other-service` to change `enableStateQuery` field type from `boolean` to `String` and add appropriate conversion logic.

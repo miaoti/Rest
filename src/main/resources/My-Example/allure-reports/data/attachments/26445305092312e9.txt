@@ -1,0 +1,1 @@
+{"averageSpeed":150,"confortClass":13,"economyClass":1,"id":"-","name":"Talgo 350 SRO"}

@@ -1,0 +1,1 @@
+{"departureTime":"2026-05-10","endPlace":"Chengdu","startPlace":"javascript:alert('XSS')"}

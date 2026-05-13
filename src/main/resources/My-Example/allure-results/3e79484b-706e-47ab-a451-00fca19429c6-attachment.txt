@@ -1,1 +1,0 @@
-{"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"340203a6-5027-421f-9fd3-13185928bf21","orderId":"ORD-1234567890","accountId":"","handleDate":"2026-04-15T10:30:00Z","targetDate":"2026-04-05T10:00:00Z","from":"San Francisco","to":"New York City","consignee":"Charlie Davis","phone":"415-555-0199","weight":0.5,"price":8.0}}

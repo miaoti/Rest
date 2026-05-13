@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `Travel2Controller.queryInfo` in `ts-travel2-service` throws `NullPointerException` at 37.886ms execution time. The HTTP status 0 indicates the request failed before generating an HTTP response, likely due to null object dereference in query logic. The error propagates through 3 additional spans across `ts-travel2-service` and `ts-gateway-service`.
+
+FIX: Add null checks for the object being dereferenced in `Travel2Controller.queryInfo`. Identify the specific line (likely accessing a method or field on a null object from database query, request parameter, or service call). Implement defensive programming: validate input parameters, ensure database results are non-null, and add try-catch blocks with proper error responses (e.g., 400 Bad Request or 500 Internal Server Error). Consider adding structured logging at the failure point to capture the null object source.

@@ -1,0 +1,416 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-order-other-service
+Method: POST
+Path: /api/v1/orderOtherService/orderOther/refresh
+Operation: POST /api/v1/orderOtherService/orderOther/refresh
+Request Start (μs): 1778301122357000
+Search Window: 1778301112357000 to 1778301152357000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 99199
+Traces Found: 8
+Analyzing 8 traces for API calls...
+Trace 0: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 1: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 2: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 3: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 7: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+
+Selected trace 2 with score 2515 (matched but not current - possibly previous execution)
+
+🔄 Fetching complete trace for ID: 4dd2f58a474e1754bf73654c52797623
+✅ Complete trace fetched with 8 spans
+✅ Updated global best trace (score: 2515, timeDiff: 4.441s)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 96968
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 3: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 5: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 6: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+
+Selected trace 0 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778301112357000&end=1778301152357000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-order-other-service&operation=POST+%2Fapi%2Fv1%2ForderOtherService%2ForderOther%2Frefresh&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 96968
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 1: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 2: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 3: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+
+Selected trace 2 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-order-other-service&operation=POST&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-order-other-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 101446
+Traces Found: 9
+Analyzing 9 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 3: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 4: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 5: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 7: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 8: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 6 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+🔄 RETRY 1: Searching again for current execution trace...
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 99199
+Traces Found: 8
+Analyzing 8 traces for API calls...
+Trace 0: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 1: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 2: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 3: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 7: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+
+Selected trace 3 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 96968
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 2: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 3: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+
+Selected trace 4 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778301112357000&end=1778301152357000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-order-other-service&operation=POST+%2Fapi%2Fv1%2ForderOtherService%2ForderOther%2Frefresh&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 96968
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 3: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 4: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+
+Selected trace 5 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-order-other-service&operation=POST&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-order-other-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 101446
+Traces Found: 9
+Analyzing 9 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 2: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 3: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 7: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 8: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 4 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+🔄 RETRY 2: Searching again for current execution trace...
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 99199
+Traces Found: 8
+Analyzing 8 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 3: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 4: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 5: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 7: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+
+Selected trace 6 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 1 failed, trying next...
+
+Query 2: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-gateway-service&operation=POST&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 96968
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 2: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 3: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 4: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+
+Selected trace 5 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 2 failed, trying next...
+
+Query 3: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=gateway-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 3 failed, trying next...
+
+Query 4: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=api-gateway&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 4 failed, trying next...
+
+Query 5: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&start=1778301112357000&end=1778301152357000
+Response Status: 400
+HTTP Error: 400
+
+Query 6: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-order-other-service&operation=POST+%2Fapi%2Fv1%2ForderOtherService%2ForderOther%2Frefresh&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 96968
+Traces Found: 7
+Analyzing 7 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 2: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 3: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+
+Selected trace 4 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 6 failed, trying next...
+
+Query 7: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=50&service=ts-order-other-service&operation=POST&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 56
+Traces Found: 0
+No traces found in response
+Query 7 failed, trying next...
+
+Query 8: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-order-other-service&start=1778301112357000&end=1778301152357000
+Response Status: 200
+Response Body Length: 101446
+Traces Found: 9
+Analyzing 9 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=9841000μs, spans=8
+  Operations: SELECT Order, SELECT ts.orders_other, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 1: score=1215, APIs=3, hasTarget=true, timeDiff=19698000μs, spans=8
+  Operations: OrderOtherRepository.findBy..., SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., +3 more
+Trace 2: score=1115, APIs=3, hasTarget=true, timeDiff=24749000μs, spans=7
+  Operations: OrderOtherController.queryO..., OnCommittedResponseWrapper...., BasicErrorController.error, POST /api/v1/orderOtherServ..., POST, +2 more
+Trace 3: score=2515, APIs=3, hasTarget=true, timeDiff=4786000μs, spans=8
+  Operations: SELECT ts.orders_other, SELECT Order, OrderOtherController.queryO..., POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 4: score=2515, APIs=3, hasTarget=true, timeDiff=4441000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 5: score=1115, APIs=3, hasTarget=true, timeDiff=29799000μs, spans=8
+  Operations: SELECT Order, OrderOtherController.queryO..., SELECT ts.orders_other, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 6: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+Trace 7: score=1515, APIs=3, hasTarget=true, timeDiff=9503000μs, spans=8
+  Operations: SELECT ts.orders_other, OrderOtherController.queryO..., SELECT Order, POST /api/v1/orderOtherServ..., OrderOtherRepository.findBy..., +3 more
+Trace 8: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 4 with score 2515 (matched but not current - possibly previous execution)
+⏭️ Continuing to search for more recent trace...
+Query 8 failed, trying next...
+
+Query 9: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=200&lookback=10m
+Response Status: 400
+HTTP Error: 400
+
+
+✅ Using best trace found (score: 2515, timeDiff: 4.441s)

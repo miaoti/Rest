@@ -1,0 +1,3 @@
+Original Status: 200
+Original Response: {"status":1,"msg":"Success","data":[]}
+Enhanced Parameters: {enableBoughtDateQuery=true, boughtDateEnd=2023-12-31, enableStateQuery=false, enableTravelDateQuery=false, travelDateEnd=2026-12-31, state=1, travelDateStart=2026-01-01}

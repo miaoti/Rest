@@ -1,1 +1,0 @@
-{"status":0,"msg":"Trip deletion rejected: tripId length must be between 4 and 20 characters","data":{"faultName":"INVALID_TRIP_ID_LENGTH_FAULT","message":"Trip deletion rejected: tripId length must be between 4 and 20 characters","details":"TripID: '11', Length: 2","injected":true}}

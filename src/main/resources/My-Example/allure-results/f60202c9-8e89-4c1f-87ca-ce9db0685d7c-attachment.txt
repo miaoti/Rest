@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"10f90556-48a2-4fd7-a43a-25f142963231","trainType":"<script>alert('XSS')</script>","routeId":"Route001","basicPriceRate":0.75,"firstClassPriceRate":10.9...
-Enhanced Parameters: {basicPriceRate=-0.1, id=12345-ABCDE}

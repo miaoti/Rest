@@ -1,1 +1,0 @@
-{"accountId":"acc12345","consignee":"John Doe","from":"Beijing","handleDate":"2025-12-31 12:00:00","id":"","orderId":"","phone":"(703) 555-0184","targetDate":"","to":"Los Angeles","weight":5.7,"within":false}

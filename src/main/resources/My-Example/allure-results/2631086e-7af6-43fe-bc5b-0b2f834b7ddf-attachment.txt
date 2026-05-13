@@ -1,1 +1,0 @@
-{"distanceList":"-5.6","endStation":"Airport Hub","id":"A123456","loginId":"adminUser123","startStation":"Station A","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

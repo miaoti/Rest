@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-travel-service.TravelController.queryInfo` throws `NullPointerException` at 74.266ms execution time, causing 9 propagated failures across 4 services (ts-gateway-service, ts-route-plan-service, ts-travel-service, ts-travel-plan-service) via 6 POST endpoints.
+
+FIX: Add null checks for object returned from upstream dependency or database call in `TravelController.queryInfo` method. Specifically, verify the response object or input parameter is not null before accessing its properties/methods. Implement try-catch or Optional pattern to handle null gracefully and return appropriate error response (HTTP 4xx/5xx) instead of propagating NPE.

@@ -1,0 +1,1 @@
+{"averageSpeed":480,"confortClass":12,"economyClass":0,"id":12345,"name":"JR-East E235 Series"}

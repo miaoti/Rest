@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"You have consigned successfully! The price is 8.0","data":{"id":"8eced4a0-1d53-419c-9bf9-3d52cd812791","orderId":"ORD-1234567890","accountId":"acc12345","handleDate":"2026-04-15T10:...
-Enhanced Parameters: {accountId=, consignee=, orderId=, phone=}

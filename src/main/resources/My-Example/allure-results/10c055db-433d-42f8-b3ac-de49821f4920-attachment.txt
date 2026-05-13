@@ -1,1 +1,0 @@
-{"departureTime":"2026-03-24","endPlace":"Chicago, IL","startPlace":"Los Angeles, CA"}

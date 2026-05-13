@@ -1,0 +1,19 @@
+----------------------------------------------------------------------------------------
+                           🔗 MICROSERVICE API CALL TRACE                           
+----------------------------------------------------------------------------------------
+Trace ID: 635525e87e775f6aa40674725cf4b4a5
+Jaeger UI: http://129.62.148.112:30005/jaeger/ui/trace/635525e87e775f6aa40674725cf4b4a5
+────────────────────────────────────────────────────────────────────────────────────────
+🌐 API CALL HIERARCHY (Parent → Child Relationships)
+────────────────────────────────────────────────────────────────────────────────────────
+[1] ❌ travel-plan POST 500(51.3ms)
+    ↳ /api/v1/travelplanservice/travelPlan/cheapest
+[2] ❌ travel-plan POST 500(48.4ms)
+    ↳ http://10.244.0.116:14578/api/v1/routeplanservice/routePlan/cheapestRoute
+  ├─[3] ❌ route-plan POST 500(48.0ms)
+     ↳ /api/v1/routeplanservice/routePlan/cheapestRoute
+[4] ❌ route-plan POST 500(44.8ms)
+    ↳ http://10.244.0.125:12346/api/v1/travelservice/trips/left
+  ├─[5] ❌ travel POST 500(44.3ms)
+     ↳ /api/v1/travelservice/trips/left
+████████████████████████████████████████████████████████████████████████████████████████

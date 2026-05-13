@@ -63,10 +63,44 @@ def load_provenance(path: Path) -> dict[tuple[str, str], str]:
     return out
 
 
+def load_llm_value_set(path: Path) -> tuple[set[tuple[str, str]], list[str]]:
+    """Build (a) a `(parameter, value)` set and (b) a flat corpus of LLM
+    response strings from llm_pairs.csv.
+
+    The pair set credits clean per-parameter LLM responses (`positive_gen`,
+    `simple_gen`). The corpus catches structured envelope responses
+    emitted by TestCaseEnhancer-style flows where mine_llm_log.py records
+    a JSON literal like `{"name": "id", "value": "existing-station-id"}`
+    in a single row with empty `parameter` — the per-parameter join fails
+    but the value is still verifiably an LLM emission. validate_d4 then
+    falls back to substring containment.
+    """
+    pairs: set[tuple[str, str]] = set()
+    corpus: list[str] = []
+    if not path or not path.is_file():
+        return pairs, corpus
+    try:
+        with path.open("r", encoding="utf-8", newline="") as fh:
+            for row in csv.DictReader(fh):
+                p = (row.get("parameter") or "").strip()
+                v = (row.get("value") or "").strip()
+                if not v:
+                    continue
+                if p:
+                    pairs.add((p, v))
+                corpus.append(v)
+    except (OSError, csv.Error):
+        pass
+    return pairs, corpus
+
+
 def main(argv: list[str]) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--inputs", required=True, type=Path, help="inputs.csv")
     p.add_argument("--provenance", required=True, type=Path, help="provenance.csv")
+    p.add_argument("--llm-pairs", type=Path, default=None,
+                   help="Optional llm_pairs.csv from mine_llm_log.py; lets D4 credit "
+                        "LLM-direct values that bypass SmartInputFetcher's logging.")
     p.add_argument("--out-dir", required=True, type=Path)
     p.add_argument("--include-negatives", action="store_true",
                    help="Also score ID-typed parameters in negative variants "
@@ -76,6 +110,12 @@ def main(argv: list[str]) -> int:
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     prov = load_provenance(args.provenance)
+    llm_pairs, llm_corpus = (
+        load_llm_value_set(args.llm_pairs) if args.llm_pairs else (set(), [])
+    )
+    # Joined string for fast substring tests against envelope-wrapped values.
+    # We add a sentinel between entries so a value can't span two log rows.
+    llm_corpus_blob = "\n␞\n".join(llm_corpus) if llm_corpus else ""
 
     # Counters
     counts = {
@@ -115,6 +155,18 @@ def main(argv: list[str]) -> int:
 
             value = row["value"]
             provenance = prov.get((param, value), "UNKNOWN")
+            # If exec-log provenance miss but the value appears in the LLM
+            # communication log — either as a clean (param, value) pair or
+            # embedded in an envelope-wrapped response — credit it as LLM.
+            if provenance == "UNKNOWN":
+                if (param, value) in llm_pairs:
+                    provenance = "LLM"
+                elif (
+                    llm_corpus_blob
+                    and len(value) >= 4  # avoid trivial single-char matches
+                    and value in llm_corpus_blob
+                ):
+                    provenance = "LLM"
             if provenance in SMART_FETCH_TIERS:
                 cls = "smart_fetch"
                 counts["smart_fetch"] += 1

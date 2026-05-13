@@ -1,0 +1,36 @@
+🔍 Jaeger Query Debug Info:
+Target Service: ts-admin-basic-info-service
+Method: PUT
+Path: /api/v1/adminbasicservice/adminbasic/trains
+Operation: PUT /api/v1/adminbasicservice/adminbasic/trains
+Request Start (μs): 1778312070302000
+Search Window: 1778312060302000 to 1778312100302000 (μs)
+Time Window: 40 seconds
+🚪 Gateway Strategy: Searching ts-gateway-service first (HTTP traces usually there)
+⏱️ Test Separation: 2-second delay enforced between executions for unique traces
+🔄 Trace Propagation: 3-second delay after execution for Jaeger indexing
+🔄 Retry Strategy: Multiple attempts to find current execution trace
+
+Query 1: http://129.62.148.112:30005/jaeger/ui/api/traces?limit=100&service=ts-gateway-service&start=1778312060302000&end=1778312100302000
+Response Status: 200
+Response Body Length: 31718
+Traces Found: 4
+Analyzing 4 traces for API calls...
+Trace 0: score=1515, APIs=3, hasTarget=true, timeDiff=8440000μs, spans=6
+  Operations: PUT, FilteringWebHandler.handle, PUT /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 1: score=1115, APIs=3, hasTarget=true, timeDiff=21704000μs, spans=6
+  Operations: PUT, FilteringWebHandler.handle, PUT /*, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 2: score=4015, APIs=3, hasTarget=true, timeDiff=1274272μs, spans=6
+  Operations: PUT /*, PUT, FilteringWebHandler.handle, BasicErrorController.error, OnCommittedResponseWrapper...., +1 more
+Trace 3: score=0, APIs=0, hasTarget=false, timeDiff=N/A, spans=1
+  Operations: NacosWatch$$Lambda$.run
+
+Selected trace 2 with score 4015 (CURRENT EXECUTION - perfect match!)
+
+🔄 Fetching complete trace for ID: 942268e5c93c77f243d538f41c98a87c
+✅ Complete trace fetched with 6 spans
+✅ Updated global best trace (score: 4015, timeDiff: 1.274272s)
+✅ Found current execution trace - stopping search
+✅ Found current execution trace, stopping retries.
+
+✅ Using best trace found (score: 4015, timeDiff: 1.274272s)

@@ -1,1 +1,0 @@
-{"distanceList":"10.3","endStation":"Yankee Stadium","id":"A123456","loginId":"adminUser123","startStation":"Citi Field","stationList":"Citi Field,Yankee Stadium,Fordham University"}

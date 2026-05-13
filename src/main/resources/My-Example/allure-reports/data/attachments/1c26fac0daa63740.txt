@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: ts-gateway-service PUT operation failed with HTTP 403 Forbidden in 1.034ms. The 403 status indicates an authorization failure—the gateway rejected the request before reaching ts-admin-basic-info-service. No propagated failures confirm this is an isolated access control issue.
+
+FIX: Verify authentication token or API key in the PUT request to ts-gateway-service. Ensure the caller has required permissions for the target endpoint. Check gateway access control rules and update if needed.

@@ -1,0 +1,1 @@
+{"averageSpeed":380,"confortClass":12,"economyClass":110,"id":"train-006","name":"KTX-Sancheon 201"}

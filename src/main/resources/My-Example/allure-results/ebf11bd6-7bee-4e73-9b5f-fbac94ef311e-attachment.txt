@@ -1,1 +1,0 @@
-{"endTime":"2026-04-01T08:00:00Z","loginId":"adminUser123","routeId":"Route001","startStationName":"King's Cross Station","startTime":"2026-04-01T09:00:00Z","stationsName":"Baker Street, Oxford Circus","terminalStationName":"Paddington Station","trainTypeName":"Regional Express","tripId":"TRIP-00789"}

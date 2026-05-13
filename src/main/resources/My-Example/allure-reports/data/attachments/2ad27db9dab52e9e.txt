@@ -1,0 +1,5 @@
+🔍 ROOT CAUSE ANALYSIS
+─────────────────────
+ROOT CAUSE: `ts-travel2-service` -> `Travel2Controller.queryInfo` throws `java.lang.NullPointerException` at 38.224ms. HTTP status 0 indicates the request failed before any HTTP response was generated, likely due to an unhandled null reference in the query logic (e.g., null object dereference, missing database result, or uninitialized variable).
+
+FIX: Add null checks or defensive programming in `Travel2Controller.queryInfo` method. Specifically, verify all object references (e.g., request parameters, service returns, or database queries) for null before use. Use `Optional` or explicit `if (x == null)` checks and return a proper error response (e.g., 400 Bad Request or 500 Internal Server Error). Also, review the service interaction from `ts-gateway-service` to ensure the POST payload is valid and complete.
