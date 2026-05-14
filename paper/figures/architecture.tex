@@ -1,8 +1,5 @@
 % Figure 1: MIST architecture, full-width sigconf version.
-% Balanced layout: top row of four components, Inputs descriptor and
-% Sniper Mutator and Outputs descriptor on the bottom row, SUT
-% cluster on the right.  Dashed Jaeger->Oracle return arrow routes
-% through the gap between the oracle and the SUT box.
+% Each component box has a fontawesome icon, a bold name, and a subtitle.
 \begin{tikzpicture}[
   font=\small,
   >={Stealth[length=2.4mm]},
@@ -14,30 +11,25 @@
                    align=center, inner sep=2pt, font=\footnotesize},
   sutgap/.style  ={align=center, inner sep=1pt, font=\footnotesize\itshape,
                    text=gray!70},
-  inputbox/.style={draw=gray!50, line width=0.5pt, rounded corners=2.5pt,
-                   fill=gray!4, minimum height=17mm, minimum width=68mm,
-                   align=left, inner sep=4pt, text depth=0pt,
-                   font=\footnotesize},
+  inputbox/.style ={draw=gray!50, line width=0.5pt, rounded corners=2.5pt,
+                    fill=gray!4, minimum height=17mm, minimum width=68mm,
+                    align=left, inner sep=4pt, text depth=0pt, font=\footnotesize},
   outputbox/.style={draw=gray!50, line width=0.5pt, rounded corners=2.5pt,
                     fill=gray!4, minimum height=17mm, minimum width=38mm,
-                    align=left, inner sep=4pt, text depth=0pt,
-                    font=\footnotesize},
+                    align=left, inner sep=4pt, text depth=0pt, font=\footnotesize},
   flow/.style    ={->, thick, >=Stealth, draw=black!75},
   backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
 ]
 
-% --- Top row: four pipeline components. ---
-\node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits config}}};
-\node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep. Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
-\node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{5-phase trace mining, Root API Mode}}};
-\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace-Aware Oracle}\\{\scriptsize \textcolor{gray!50!black}{status + body + span + attribution}}};
+\node[comp] (ingest) at (0.0,0) {\faIcon{file-code}~\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits config}}};
+\node[comp] (registry) at (3.8,0) {\faIcon{network-wired}~\textbf{(ii) Semantic Dep. Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
+\node[comp] (gen) at (7.6,0) {\faIcon{cogs}~\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{5-phase trace mining, Root API Mode}}};
+\node[comp] (oracle) at (11.4,0) {\faIcon{search}~\textbf{(v) Trace-Aware Oracle}\\{\scriptsize \textcolor{gray!50!black}{status + body + span + attribution}}};
 
-% --- Bottom row: Inputs / Sniper / Outputs. ---
-\node[inputbox] (inputs) at (1.9,-2.5) {\textbf{Inputs}\\\scriptsize\\\enspace$\bullet$ OpenAPI specification (one file or aggregated /v3/api-docs)\\\enspace$\bullet$ Jaeger / OpenTelemetry traces (one file or a directory)\\\enspace$\bullet$ run configuration (	exttt{.properties} file)};
-\node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
-\node[outputbox] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
+\node[inputbox] (inputs) at (1.9,-2.5) {\faIcon{file-alt}~\textbf{Inputs}\\\scriptsize\\\enspace$\bullet$ OpenAPI specification (one file or aggregated /v3/api-docs)\\\enspace$\bullet$ Jaeger / OpenTelemetry traces (one file or a directory)\\\enspace$\bullet$ run configuration (\texttt{.properties} file)};
+\node[comp] (mut) at (7.6,-2.5) {\faIcon{bolt}~\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
+\node[outputbox] (out) at (11.4,-2.5) {\faIcon{file-archive}~\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
 
-% --- System Under Test cluster (bigger items, more spacing). ---
 \node[sut]    (gw)   at (15.0, 1.05)  {Gateway};
 \node[sut]    (svc1) at (15.0, 0.40)  {ts-route};
 \node[sut]    (svc2) at (15.0,-0.25)  {ts-order};
@@ -49,27 +41,18 @@
         label={[font=\footnotesize\bfseries, gray!50!black]above:System Under Test}] {};
 \end{scope}
 
-% --- Wires ---
-% Main horizontal pipeline
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
 \draw[flow] (gen)      -- (oracle);
 
-% Gen -> Sniper (vertical down)
 \draw[flow] (gen.south) -- (mut.north);
 
-% Sniper -> Oracle, right-angle path in the gap between rows
-\draw[flow] (mut.north east) -| ([xshift=-3mm]oracle.south);
+\draw[flow] (mut.north east) -- ++(0,0.3) -| ([xshift=-3mm]oracle.south);
 
-% Oracle -> Gateway (HTTP requests, solid arrow)
 \draw[flow] ([yshift= 1.5mm]oracle.east) -- ([yshift= 1.5mm]oracle.east -| gw.west);
 
-% Jaeger -> Oracle (dashed trace return).  Vertical segment routed
-% in the gap between oracle.east (x=12.9) and SUT.west (~13.8) at
-% x=13.4 (5mm left of jgr.west).
 \draw[backflow] (jgr.west) -- ([xshift=-5mm]jgr.west) |- ([yshift=-1.5mm]oracle.east);
 
-% Oracle -> Outputs label (vertical drop)
 \draw[flow] (oracle.south) -- (out.north);
 
 \end{tikzpicture}
