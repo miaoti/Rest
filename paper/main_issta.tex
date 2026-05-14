@@ -101,7 +101,7 @@ MIST closes both gaps with three design choices. The Sniper Mutator targets exac
 
 Consider \texttt{POST /api/v1/adminroute\-service/admin\-route} on TrainTicket, which creates a route from a \texttt{startStation}, an \texttt{endStation}, and a \texttt{stationList}. On a negative variant whose end station is absent from the station list, the service answers \emph{HTTP 200} with a soft-error envelope---\texttt{status:0}, \texttt{data:null}, and an explanatory \texttt{msg} field (Figure~\ref{fig:trace} renders the full body).
 
-A status-class oracle records this as a pass: every span in the captured Jaeger trace has \texttt{http.status\_code}\,=\,200, and no span sets \texttt{otel.status\_code} to \texttt{ERROR} anywhere in the tree---every network-level signal confirms a clean 200. The only failure evidence is the envelope itself. A trace-aware oracle with a per-API body-pattern rule catches it and reads off the trace which service produced the rejection (\texttt{ts-admin-route-service}).
+A status-class oracle records this as a pass: every span in the captured Jaeger trace returns 200, and no span sets an OpenTelemetry error status anywhere in the tree---every network-level signal confirms a clean 200. The only failure evidence is the envelope itself. A trace-aware oracle with a per-API body-pattern rule catches it and pins the rejection to \texttt{ts-admin-route-service}.
 
 % =============================================================================
 \section{Tool Overview and Architecture}\label{sec:arch}
