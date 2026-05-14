@@ -30,11 +30,11 @@
 \node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
 \node[outputbox] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
 
-\node[sut]    (gw)   at (15.0, 1.05)  {Gateway};
-\node[sut]    (svc1) at (15.0, 0.40)  {ts-route};
-\node[sut]    (svc2) at (15.0,-0.25)  {ts-order};
-\node[sutgap] (dots) at (15.0,-0.70)  {$\vdots$};
-\node[sut]    (jgr)  at (15.0,-1.20)  {Jaeger};
+\node[sut]    (gw)   at (15.0, 0.05)  {Gateway};
+\node[sut]    (svc1) at (15.0,-0.60)  {ts-route};
+\node[sut]    (svc2) at (15.0,-1.25)  {ts-order};
+\node[sutgap] (dots) at (15.0,-1.70)  {$\vdots$};
+\node[sut]    (jgr)  at (15.0,-2.20)  {Jaeger};
 \begin{scope}[on background layer]
   \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
         fit=(gw)(jgr),
@@ -49,9 +49,9 @@
 
 \draw[flow] (mut.north east) -- ++(0,0.3) -| ([xshift=-3mm]oracle.south);
 
-\draw[flow] ([yshift= 1.5mm]oracle.east) -- ([yshift= 1.5mm]oracle.east -| gw.west);
+\draw[flow] (oracle.east) -- (gw.west);
 
-\draw[backflow] (jgr.west) -- ([xshift=-5mm]jgr.west) |- ([yshift=-1.5mm]oracle.east);
+\draw[backflow] (jgr.west) -- ([xshift=-4mm]jgr.west) |- ([yshift=-1.5mm]oracle.east);
 
 \draw[flow] (oracle.south) -- (out.north);
 
