@@ -1,74 +1,52 @@
-% Figure 2: Real captured Jaeger trace from a fault-injecting MIST run.
-% Trace ID: d4c577d47bcba04a00ef9b3edcbcacf6
-% Source: src/main/resources/My-Example/trainticket/allure-results/4a67e7c8-4fd2-4b6a-a698-1b1cec487a6d-attachment.txt
-% Test:   test_negative_POST_1_81  (negative variant, expected non-2xx)
-% Result: every span carries http.status_code=200 and no otel.status_code=ERROR
-% Body:   {"status":0,"msg":"start or end station not include in stationList.","data":null}
+% Figure 2: Real captured Jaeger trace from a Sniper negative variant
+% against POST /api/v1/adminrouteservice/adminroute on TrainTicket.
+% Trace ID: d4c577d47bcba04a00ef9b3edcbcacf6 (test_negative_POST_1_81).
+% Source: src/main/resources/My-Example/trainticket/allure-results/
+%         4a67e7c8-4fd2-4b6a-a698-1b1cec487a6d-attachment.txt
 %
-% This is the strongest version of the trace-as-oracle pitch: the HTTP-status
-% class oracle would pass the test (200 OK on every span), and only the cached
-% per-API body-pattern rule -- one of the four assertion families the
-% Trace-Aware Oracle evaluates -- catches the soft error.  The trace also
-% pinpoints the rejecting service (ts-admin-route-service).
+% Layout: 5-span parent-child cascade on the top, Trace-Aware Oracle
+% verdict in prose underneath.  Designed to fit acmart sigconf full
+% width (figure*) with the 'review' line-number gutters subtracted
+% from the usable canvas.
 \begin{tikzpicture}[
-    font=\small,
+    font=\footnotesize,
     >={Stealth[length=2mm]},
-    every node/.style={inner sep=2pt},
-    span/.style={draw, rounded corners=1pt, minimum height=4.6mm, align=left},
-    spangood/.style={span, fill=green!10},
+    span/.style={draw, rounded corners=1pt, minimum height=4.4mm,
+                 align=left, inner sep=2pt, font=\footnotesize},
+    spanok/.style={span, fill=green!10},
     spansoft/.style={span, fill=orange!18, draw=orange!70, very thick},
-    edge/.style={->, thick},
-    annot/.style={align=left, anchor=west, font=\footnotesize}
+    edge/.style={->, thick}
 ]
 
-% Root: gateway, status 200
-\node[spangood] (s1) at (0,0)
-  {\textbf{POST /adminrouteservice/adminroute}\quad{\footnotesize @ ts-gateway-service}\quad{\footnotesize 200, 6.1\,ms}};
-
-% Filter handler
-\node[spangood] (s2) at (0.6,-0.95)
-  {FilteringWebHandler.handle\quad{\footnotesize @ ts-gateway-service}\quad{\footnotesize 5.6\,ms}};
-
-% Outgoing client call (still 200)
-\node[spangood] (s3) at (1.2,-1.90)
-  {POST (gateway client)\quad{\footnotesize @ ts-gateway-service $\to$ ts-admin-route-service}\quad{\footnotesize 200, 4.0\,ms}};
-
-% Server-side admin-route span -- here is where the soft-error happens; HTTP is still 200
-\node[spansoft] (s4) at (1.8,-2.85)
-  {POST /adminrouteservice/adminroute\quad{\footnotesize @ ts-admin-route-service}\quad{\footnotesize 200, 3.6\,ms}};
-
-% Controller
-\node[spangood] (s5) at (2.4,-3.80)
-  {AdminRouteController.addRoute\quad{\footnotesize @ ts-admin-route-service}\quad{\footnotesize 1.0\,ms}};
-
-% Response body sticky-note attached to s4
-\node[draw, fill=orange!8, rounded corners=2pt, font=\footnotesize\ttfamily, anchor=west, align=left]
-  (body) at (10.5,-2.85)
-  {Response body:\\
-   \{\textbackslash"status\textbackslash":0,\\
-   \ \ \textbackslash"msg\textbackslash":\textbackslash"start or end\\
-   \ \ \ station not include\\
-   \ \ \ in stationList.\textbackslash",\\
-   \ \ \textbackslash"data\textbackslash":null\}};
-\draw[->, thick, orange!70] (s4.east) -- (body.west);
+% --- Spans: indented cascade, parent -> child ---
+\node[spanok]  (s1) at (0.00, 0)
+  {\textbf{POST /adminroute} \quad @ ts-gateway-service \quad \textbf{200}, 6.1\,ms};
+\node[spanok]  (s2) at (0.35,-0.75)
+  {FilteringWebHandler.handle \quad @ ts-gateway-service \quad 5.6\,ms};
+\node[spanok]  (s3) at (0.70,-1.50)
+  {POST (gateway client) \quad @ ts-gateway-service$\to$admin-route \quad \textbf{200}, 4.0\,ms};
+\node[spansoft](s4) at (1.05,-2.25)
+  {POST /adminroute \quad @ ts-admin-route-service \quad \textbf{200}, 3.6\,ms};
+\node[spanok]  (s5) at (1.40,-3.00)
+  {AdminRouteController.addRoute \quad @ ts-admin-route-service \quad 1.0\,ms};
 
 % Parent-child arrows
-\draw[edge] (s1.south west) ++ (0.10,0) |- (s2.west);
-\draw[edge] (s2.south west) ++ (0.10,0) |- (s3.west);
-\draw[edge] (s3.south west) ++ (0.10,0) |- (s4.west);
-\draw[edge] (s4.south west) ++ (0.10,0) |- (s5.west);
+\draw[edge] (s1.south west) ++(0.05,0) |- (s2.west);
+\draw[edge] (s2.south west) ++(0.05,0) |- (s3.west);
+\draw[edge] (s3.south west) ++(0.05,0) |- (s4.west);
+\draw[edge] (s4.south west) ++(0.05,0) |- (s5.west);
 
-% Annotation: Trace-as-Oracle reads four assertion families
-\node[annot] at (10.5, -0.5)
-  {\textbf{Trace-as-Oracle reads:}\\[1pt]
-   \textbullet\ HTTP status class: \textbf{passes} (every span is 200)\\
-   \textbullet\ otel.status\_code=ERROR: \textbf{absent}\\
-   \textbullet\ \textbf{Per-API body rule}: \textbf{fails}\\
-     \quad(\texttt{status=0, data=null} learned\\
-     \quad on first observation of this API,\\
-     \quad cached to \texttt{soft-error-rule-cache.json})\\
-   \textbullet\ Attribution: rejecting service\\
-     \quad pinpointed as\\
-     \quad\texttt{ts-admin-route-service}};
+% --- Trace-Aware Oracle verdict, in prose, below the trace ---
+\node[align=left, anchor=north west, font=\footnotesize, text width=16cm]
+  at (0,-3.7) {%
+    \textbf{Trace-Aware Oracle verdict.}\quad
+    HTTP status class \emph{passes} (every span returns 200);
+    no span carries \texttt{otel.status\_code=ERROR}.
+    The Per-API body-pattern rule \emph{fails} on the response body
+    \texttt{\{"status":0, "msg":"start or end station not include in stationList.", "data":null\}}
+    --- the rule was learned by a one-shot LLM call on the first 2xx response for this endpoint
+    and cached for the rest of the run.
+    The rejection is attributed to the shaded span on \texttt{ts-admin-route-service}.%
+  };
 
 \end{tikzpicture}
