@@ -128,6 +128,13 @@ Figure~\ref{fig:arch} shows the five components.
 % =============================================================================
 \section{Design}\label{sec:design}
 
+\begin{figure*}[t]
+  \centering
+  \input{figures/trace_oracle.tex}
+  \caption{Captured Jaeger trace from a Sniper negative variant against \texttt{POST /api/v1/admin\-route\-service/admin\-route} on TrainTicket (trace ID \texttt{d4c577d4\dots\,acf6}; from this repository's Allure attachments). Every span carries \texttt{http.status\_code=200} and no \texttt{otel.status\_code=ERROR} is set; the Trace-Aware Oracle catches the failure via the cached body-pattern rule and pins the rejection to \texttt{ts-admin-route-service}.}
+  \label{fig:trace}
+\end{figure*}
+
 The Sniper Mutator's single-fault discipline is what makes the Trace-Aware Oracle's downstream signals causally interpretable, and Root API Mode's external-only driving is what lets the trace stay clean of confounding internal calls. None of the three could close the oracle and state-fabrication gaps alone; the combination is what does.
 
 \subsection{Sniper Mutator}\label{sec:sniper}
@@ -153,13 +160,6 @@ Internal microservice endpoints presuppose state that only specific upstream cal
 Root API Mode sidesteps that problem. The generator keeps only the gateway-entry HTTP spans of each Jaeger scenario---those with no HTTP parent---and replays them externally; the internal behaviour they trigger is observed through the captured trace, not driven. The writer emits one JUnit step per root call, and a Jaeger fetch attached to each step pulls back the full causal subtree. The mode toggles on a single property (\texttt{mst.gener\-ate.only.first.step}); this paper reports only the default root-only mode.
 
 \subsection{Trace-Aware Oracle}\label{sec:traceoracle}
-
-\begin{figure*}[t]
-  \centering
-  \input{figures/trace_oracle.tex}
-  \caption{Captured Jaeger trace from a Sniper negative variant against \texttt{POST /api/v1/admin\-route\-service/admin\-route} on TrainTicket (trace ID \texttt{d4c577d4\dots\,acf6}; from this repository's Allure attachments). Every span carries \texttt{http.status\_code=200} and no \texttt{otel.status\_code=ERROR} is set; the Trace-Aware Oracle catches the failure via the cached body-pattern rule and pins the rejection to \texttt{ts-admin-route-service}.}
-  \label{fig:trace}
-\end{figure*}
 
 For the trace in Figure~\ref{fig:trace} the status-class check passes (200 on every span). The Trace-Aware Oracle reaches the right verdict by combining three further signals. \emph{Span causality} checks that the trace tree matches the structural pattern recorded in the original scenario, so a missing internal call surfaces even when every observed call returns 200. \emph{Error-status propagation} fails the test if any descendant span carries \texttt{otel.status\_code=ERROR} or \texttt{http.status\_code}~$\geq 400$. \emph{Soft-error body rules}, learned by a one-shot LLM call and cached per API,\footnote{The cache lives at \texttt{target/soft-error-rule-cache.json}. Each distinct API costs roughly two LLM calls regardless of how many tests touch it, so the validation budget is amortised across the run.} catch envelope patterns such as \texttt{status:0, data:null} on a 2xx response. The oracle also matches the response \texttt{faultName} against the injected-fault registry to attribute a confirmed failure to the recorded $(r, p, c, v)$ mutation.
 
