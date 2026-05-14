@@ -37,9 +37,10 @@
 \node[sut]    (jgr)  at (15.0,-2.20)  {Jaeger};
 \begin{scope}[on background layer]
   \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
-        fit=(gw)(jgr),
-        label={[font=\footnotesize\bfseries, gray!50!black]above:System Under Test}] {};
+        fit=(gw)(jgr)] (sutbox) {};
 \end{scope}
+\node[font=\footnotesize\bfseries, text=gray!50!black, fill=white, inner sep=2pt]
+     at (sutbox.north) {System Under Test};
 
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
