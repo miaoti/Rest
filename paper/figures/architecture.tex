@@ -1,15 +1,12 @@
 % Figure 1: MIST architecture, full-width sigconf version.
-% Each component carries a one-line subtitle so the boxes are
-% information-dense; the pipeline spans the page width so there
-% are no large empty margins on the left or right.
+% Each component carries a one-line subtitle (inline-formatted)
+% so the boxes are information-dense.
 \begin{tikzpicture}[
   font=\small,
   >={Stealth[length=2.4mm]},
   comp/.style    ={draw=blue!50!gray, line width=0.6pt, rounded corners=2.5pt,
                    fill=blue!4, minimum width=30mm, minimum height=17mm,
                    align=center, inner sep=2pt, text depth=0pt},
-  cname/.style   ={font=\small\bfseries},
-  cdesc/.style   ={font=\scriptsize, text=gray!50!black},
   sut/.style     ={draw=gray!50, line width=0.5pt, rounded corners=2pt,
                    fill=gray!8, minimum height=6.5mm, minimum width=20mm,
                    align=center, inner sep=2pt, font=\footnotesize},
@@ -20,20 +17,20 @@
   backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
 ]
 
-% --- Four components on the main row.  Each box is a single node
-%     whose label is a tabular-aligned name + subtitle. ---
-\node[comp] (ingest) at (0.0,0) {\cname{(i) Spec Ingestor}\\\cdesc{OpenAPI parser, emits config}};
-\node[comp] (registry) at (3.8,0) {\cname{(ii) Semantic Dep. Registry}\\\cdesc{ID-stem producer/consumer index}};
-\node[comp] (gen) at (7.6,0) {\cname{(iii) Sequence Generator}\\\cdesc{5-phase trace mining, Root API Mode}};
-\node[comp] (oracle) at (11.4,0) {\cname{(v) Trace-Aware Oracle}\\\cdesc{status + body + span + attribution}};
-\node[comp] (mut) at (7.6,-2.8) {\cname{(iv) Sniper Mutator}\\\cdesc{one fault per variant, round-robin}};
+% --- Four components on the main row.  Each label is bold name +
+%     small gray subtitle, inline-formatted (no custom macros). ---
+\node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits config}}};
+\node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep. Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
+\node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{5-phase trace mining, Root API Mode}}};
+\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace-Aware Oracle}\\{\scriptsize \textcolor{gray!50!black}{status + body + span + attribution}}};
+\node[comp] (mut) at (7.6,-2.8) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
 
 % --- System Under Test cluster on the right. ---
 \node[sut]    (gw)   at (14.7, 1.30)  {Gateway};
 \node[sut]    (svc1) at (14.7, 0.45)  {ts-route};
 \node[sut]    (svc2) at (14.7,-0.40)  {ts-order};
-\node[sutgap] (dots) at (14.7,-1.10)  {$\vdots$}};
-\node[sut]    (svcn) at (14.7,-1.75)  {ts-\dots}};
+\node[sutgap] (dots) at (14.7,-1.10)  {$\vdots$};
+\node[sut]    (svcn) at (14.7,-1.75)  {ts-\dots};
 \node[sut]    (jgr)  at (14.7,-2.60)  {Jaeger};
 \begin{scope}[on background layer]
   \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
@@ -50,20 +47,16 @@
 \draw[flow] (registry) -- (gen);
 \draw[flow] (gen)      -- (oracle);
 
-% --- Generator -> Mutator (clean vertical). ---
 \draw[flow] (gen.south) -- (mut.north);
 
-% --- Mutator -> Oracle, approaching south of oracle from the left. ---
 \draw[flow] (mut.east) -| ([xshift=-4mm]oracle.south);
 
-% --- Oracle <-> SUT.  Distinct y-shifts for the two arrows. ---
 \draw[flow]     ([yshift= 1.5mm]oracle.east)
             -- ([yshift= 1.5mm]oracle.east -| gw.west);
 \draw[backflow] (jgr.west)
             -- ([yshift=-1.5mm]oracle.east -| jgr.west)
             -- ([yshift=-1.5mm]oracle.east);
 
-% --- Oracle -> output (drops right of mut->oracle wire). ---
 \draw[flow] ([xshift=4mm]oracle.south) -- ([xshift=4mm]oracle.south |- out.north);
 
 \end{tikzpicture}
