@@ -1,0 +1,52 @@
+% Figure 1: MIST architecture. Five components, dotted SUT boundary,
+% offline (build-time) vs online (run-time) split shown by row position.
+\begin{tikzpicture}[
+    font=\small,
+    >={Stealth[length=2mm]},
+    box/.style={draw, rounded corners=2pt, minimum height=8mm, align=center, inner sep=2pt},
+    comp/.style={box, fill=gray!8, minimum width=22mm},
+    sut/.style={box, fill=blue!5, minimum width=14mm, minimum height=6mm},
+    art/.style={font=\footnotesize\itshape, align=center},
+    flow/.style={->, thick},
+    backflow/.style={->, thick, dashed},
+    sutbox/.style={draw, dotted, thick, rounded corners=4pt, inner sep=4mm}
+]
+
+% --- Inputs (left column) ---
+\node[art] (oas) at (0,0)         {OpenAPI\\spec};
+\node[art] (traces) at (0,-1.4)   {Jaeger\\traces};
+\node[art] (props) at (0,-2.8)    {.properties\\config};
+
+% --- Components (middle, top-to-bottom = pipeline order) ---
+\node[comp] (ingest)  at (3.4,0)   {(i) Spec\\Ingestor};
+\node[comp] (registry) at (3.4,-1.4) {(ii) Semantic\\Dependency\\Registry};
+\node[comp] (gen)     at (7.0,-0.7) {(iii) Sequence\\Generator\\(Root API Mode)};
+\node[comp] (mut)     at (7.0,-2.6) {(iv) Sniper\\Mutator};
+\node[comp] (oracle)  at (10.6,-1.6) {(v) Trace-Aware\\Oracle};
+
+% --- System Under Test (right side) ---
+\node[sut] (gw)     at (14.4, 0.4) {Gateway};
+\node[sut] (svcA)   at (14.4,-0.7) {ts-$\cdots$};
+\node[sut] (svcB)   at (14.4,-1.8) {ts-$\cdots$};
+\node[sut] (jaegerd) at (14.4,-3.0) {Jaeger};
+\begin{scope}[on background layer]
+  \node[sutbox, fit=(gw) (svcA) (svcB) (jaegerd), label={[font=\footnotesize\bfseries]above:System Under Test}] {};
+\end{scope}
+
+% --- Output (bottom) ---
+\node[art] (out) at (10.6,-3.6) {JUnit tests + Allure\\+ fault detection report};
+
+% --- Wires ---
+\draw[flow] (oas) -- (ingest);
+\draw[flow] (ingest) -- (registry);
+\draw[flow] (registry) -- (gen);
+\draw[flow] (traces) -- ++(2.0,0) |- (gen);
+\draw[flow] (props) -- ++(2.0,0) |- (mut);
+\draw[flow] (gen.east) -- (mut.west |- gen.east) -- (mut.north);
+\draw[flow] (gen) -- (oracle);
+\draw[flow] (mut) -- (oracle);
+\draw[flow, transform canvas={yshift=1.5mm}] (oracle.east) -- ++(1.6,0) -- (gw.west);
+\draw[backflow, transform canvas={yshift=-1.5mm}] (jaegerd.west) -- ++(-1.6,0) |- (oracle.east);
+\draw[flow] (oracle) -- (out);
+
+\end{tikzpicture}

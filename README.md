@@ -1,12 +1,12 @@
-# RESTest-MST — Trace-Driven, LLM-Assisted Multi-Service Test Generation
+# MIST — Microservice Integration & Scenario Tester
 
-> An MST (Multi-Service Testing) mode on top of [RESTest](https://github.com/isa-group/RESTest) that turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable, cross-service workflow tests with LLM-generated parameters, fault injection, and Allure reports. Submitted to **ICSME 2026 — Tool Demonstration and Data Showcase Track**.
+> **MIST** (Microservice Integration & Scenario Tester) turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable, cross-service workflow tests for microservice REST APIs. Built on the MST mode of [RESTest](https://github.com/isa-group/RESTest), MIST adds a single-fault Sniper Strategy, a Root API Mode that drives only entry-point APIs, and a Trace-as-Oracle layer. Submitted to **ICSME 2026 — Tool Demonstration and Data Showcase Track**.
 
 ---
 
 ## Inputs (every run needs these)
 
-A single MST run is fully described by one core `.properties` file. That file points at — and these are the four logical inputs you control:
+A single MIST run is fully described by one core `.properties` file. That file points at — and these are the four logical inputs you control:
 
 | Input | Configured via | Bundled demo value |
 |---|---|---|
@@ -15,7 +15,7 @@ A single MST run is fully described by one core `.properties` file. That file po
 | **Jaeger / OpenTelemetry traces** (single file *or* directory of `.json` / `.jsonl`) | `trace.file.path` | `src/main/resources/My-Example/trainticket/test-trace` |
 | **Target system base URL** | `base.url` | `http://129.62.148.112:32677` |
 
-Two more sit in the *MST* properties file (`trainticket-mst.properties`):
+Two more sit in the MIST-mode properties file (`trainticket-mst.properties`):
 
 | Input | Configured via | Where to put the secret |
 |---|---|---|
@@ -106,7 +106,7 @@ After any run, the fault-detection report lands under `logs/fault-detection-repo
 
 ## What this does
 
-For each microservice scenario reconstructed from a Jaeger trace, RESTest-MST emits one JUnit class that:
+For each microservice scenario reconstructed from a Jaeger trace, MIST emits one JUnit class that:
 
 1. **logs in once per JVM** (configurable; see *Auth strategy*),
 2. **replays each root API in order**, wiring data between steps via cross-trace data-dependency inference and a JIT producer-binding registry built from the OpenAPI spec,
@@ -245,8 +245,8 @@ The TrainTicket dataset bundled with the tool, all under `src/main/resources/My-
 
 | Asset | Description |
 |---|---|
-| `merged_openapi_spec 1.yaml` | 265-operation merged OpenAPI spec across 41 TrainTicket microservices |
-| `real-system-conf.yaml` | Auto-generated MST test configuration (do not edit by hand — re-run `MicroserviceConfBuilderMain`) |
+| `merged_openapi_spec 1.yaml` | 265-operation merged OpenAPI spec; MIST's black-box scope covers the 37 REST-exposed services |
+| `real-system-conf.yaml` | Auto-generated MIST test configuration (do not edit by hand — re-run `MicroserviceConfBuilderMain`) |
 | `test-trace/*.json` | OpenTelemetry traces used to mine workflow scenarios |
 | `injectedFaults/injected-faults.json` | Ground-truth fault registry for detection-rate evaluation |
 | `flow.md` | Full algorithm documentation (extraction → merging → shattering → generation) |
@@ -274,8 +274,8 @@ For classic RESTest modes (RT/CBT/ART/FT/LLM), see the upstream wiki: <https://g
 ## Citation
 
 ```bibtex
-@inproceedings{RESTestMST2026,
-  title     = {{RESTest-MST: Trace-Driven, LLM-Assisted Multi-Service Test Generation}},
+@inproceedings{MIST2026,
+  title     = {{MIST: Trace-Driven, LLM-Assisted Multi-Service Test Generation}},
   author    = {<authors>},
   booktitle = {Proceedings of the 42nd IEEE International Conference on Software Maintenance and Evolution},
   series    = {ICSME '26},
