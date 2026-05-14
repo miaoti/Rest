@@ -30,10 +30,10 @@
 \node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
 \node[outputbox] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
 
-\node[sut]    (gw)   at (15.0, 0.05)  {Gateway};
-\node[sut]    (svc1) at (15.0,-0.60)  {ts-route};
-\node[sut]    (svc2) at (15.0,-1.25)  {ts-order};
-\node[sutgap] (dots) at (15.0,-1.95)  {$\vdots$};
+\node[sut]    (gw)   at (15.0,-0.30)  {Gateway};
+\node[sut]    (svc1) at (15.0,-0.90)  {ts-route};
+\node[sut]    (svc2) at (15.0,-1.50)  {ts-order};
+\node[sutgap] (dots) at (15.0,-2.10)  {$\vdots$};
 \node[sut]    (jgr)  at (15.0,-2.70)  {Jaeger};
 \begin{scope}[on background layer]
   \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
