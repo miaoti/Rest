@@ -22,10 +22,12 @@ directory. Fetch the latest release before building:
   uses via `\bibliographystyle{ACM-Reference-Format}`.
 
 The ICSME variant (`main.tex`) needs `IEEEtran.cls` and `IEEEtran.bst` from
-https://www.ieee.org/conferences/publishing/templates.html. Both files
-currently live elsewhere on the build host; the placeholder `IEEEtran.cls`
-in this directory is a stub that loads `article` as a fallback for casual
-inspection only.
+https://www.ieee.org/conferences/publishing/templates.html or CTAN
+(https://ctan.org/pkg/ieeetran). Do **not** drop a stub `IEEEtran.cls` into
+this directory: the local copy is searched before system-wide TeX paths,
+so a stub will mask the real class and the build will fail at line 2
+(`\IEEEoverridecommandlockouts`). Overleaf, MiKTeX (with auto-install),
+and full TeX Live all ship `IEEEtran.cls`; leave them to supply it.
 
 ## Build
 
