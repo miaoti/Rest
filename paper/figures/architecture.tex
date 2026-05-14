@@ -1,6 +1,9 @@
 % Figure 1: MIST architecture, full-width sigconf version.
-% Each component carries a one-line subtitle (inline-formatted)
-% so the boxes are information-dense.
+% Information-dense component boxes (name + 1-line subtitle).  SUT
+% cluster compacted vertically (5 items at 0.55cm spacing) so its
+% height matches the component row; the dashed Jaeger->Oracle
+% arrow routes via the right edge so it does not cross the output
+% label below the oracle.
 \begin{tikzpicture}[
   font=\small,
   >={Stealth[length=2.4mm]},
@@ -8,7 +11,7 @@
                    fill=blue!4, minimum width=30mm, minimum height=17mm,
                    align=center, inner sep=2pt, text depth=0pt},
   sut/.style     ={draw=gray!50, line width=0.5pt, rounded corners=2pt,
-                   fill=gray!8, minimum height=6.5mm, minimum width=20mm,
+                   fill=gray!8, minimum height=5.5mm, minimum width=20mm,
                    align=center, inner sep=2pt, font=\footnotesize},
   sutgap/.style  ={align=center, inner sep=1pt, font=\footnotesize\itshape,
                    text=gray!70},
@@ -17,21 +20,20 @@
   backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
 ]
 
-% --- Four components on the main row.  Each label is bold name +
-%     small gray subtitle, inline-formatted (no custom macros). ---
+% --- Four components on the main row. ---
 \node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits config}}};
 \node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep. Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
 \node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{5-phase trace mining, Root API Mode}}};
 \node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace-Aware Oracle}\\{\scriptsize \textcolor{gray!50!black}{status + body + span + attribution}}};
 \node[comp] (mut) at (7.6,-2.8) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
 
-% --- System Under Test cluster on the right. ---
-\node[sut]    (gw)   at (14.7, 1.30)  {Gateway};
-\node[sut]    (svc1) at (14.7, 0.45)  {ts-route};
-\node[sut]    (svc2) at (14.7,-0.40)  {ts-order};
-\node[sutgap] (dots) at (14.7,-1.10)  {$\vdots$};
-\node[sut]    (svcn) at (14.7,-1.75)  {ts-\dots};
-\node[sut]    (jgr)  at (14.7,-2.60)  {Jaeger};
+% --- System Under Test cluster: 5 items, 0.55cm spacing,
+%     total height ~2.3cm (matches component-row height). ---
+\node[sut]    (gw)   at (14.7, 0.85)  {Gateway};
+\node[sut]    (svc1) at (14.7, 0.30)  {ts-route};
+\node[sut]    (svc2) at (14.7,-0.25)  {ts-order};
+\node[sutgap] (dots) at (14.7,-0.65)  {$\vdots$};
+\node[sut]    (jgr)  at (14.7,-1.10)  {Jaeger};
 \begin{scope}[on background layer]
   \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
         fit=(gw)(jgr),
@@ -49,14 +51,21 @@
 
 \draw[flow] (gen.south) -- (mut.north);
 
+% --- Mutator -> Oracle (from below). ---
 \draw[flow] (mut.east) -| ([xshift=-4mm]oracle.south);
 
-\draw[flow]     ([yshift= 1.5mm]oracle.east)
-            -- ([yshift= 1.5mm]oracle.east -| gw.west);
-\draw[backflow] (jgr.west)
-            -- ([yshift=-1.5mm]oracle.east -| jgr.west)
-            -- ([yshift=-1.5mm]oracle.east);
+% --- Oracle -> SUT (HTTP requests; top arrow). ---
+\draw[flow] ([yshift= 1.5mm]oracle.east)
+        -- ([yshift= 1.5mm]oracle.east -| gw.west);
 
+% --- Jaeger -> Oracle (dashed trace return).  Routed via the right
+%     edge of the SUT cluster (vertical first, then a single short
+%     horizontal at y=oracle.south + epsilon) so it never enters the
+%     output-label area below the oracle. ---
+\draw[backflow] (jgr.west) -- ([xshift=-3mm]jgr.west)
+        |- ([yshift=-1.5mm]oracle.east);
+
+% --- Oracle -> output (drops straight down, offset right of mut->oracle). ---
 \draw[flow] ([xshift=4mm]oracle.south) -- ([xshift=4mm]oracle.south |- out.north);
 
 \end{tikzpicture}
