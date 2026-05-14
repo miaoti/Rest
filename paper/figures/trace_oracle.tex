@@ -3,49 +3,143 @@
 % Trace ID: d4c577d47bcba04a00ef9b3edcbcacf6 (test_negative_POST_1_81).
 % Source: src/main/resources/My-Example/trainticket/allure-results/
 %   4a67e7c8-4fd2-4b6a-a698-1b1cec487a6d-attachment.txt
-
+%
+% Layout: Gantt-style timeline + tabular metadata, the standard for
+% distributed-trace figures (cf. Sigelman et al., Dapper; Jaeger UI;
+% Mace et al., Pivot Tracing).  Each span is one row; columns are
+%   span name | service | HTTP | timeline bar | duration.
+% The highlighted row is the span the Trace-Aware Oracle pins the
+% rejection to; a "soft error" tag links it to the captured body.
 \begin{tikzpicture}[
   font=\footnotesize,
   >={Stealth[length=2mm]},
-  span/.style={draw=gray!50, line width=0.4pt, rounded corners=1.5pt,
-               minimum height=4.5mm, align=left, inner sep=3pt,
-               text depth=0pt},
-  spangw/.style={span, fill=blue!5},
-  spanar/.style={span, fill=orange!10},
-  spanhi/.style={span, fill=orange!22, draw=orange!70!black, line width=0.8pt},
-  bodybox/.style={draw=orange!60!black, line width=0.6pt, rounded corners=2pt,
-                  fill=orange!6, align=left, inner sep=4pt,
-                  font=\scriptsize\ttfamily, text width=4.6cm},
-  vbox/.style={draw=gray!55, line width=0.5pt, rounded corners=2pt,
-               fill=gray!5, align=left, inner sep=5pt,
-               font=\footnotesize, text width=15.5cm},
-  edge/.style={->, thick, draw=black!75}
+  % --- Row text styles ---
+  spanlbl/.style ={anchor=base west, inner sep=1pt, text depth=0pt},
+  svclbl/.style  ={anchor=base west, inner sep=1pt, text depth=0pt,
+                   font=\scriptsize, text=gray!50!black},
+  statlbl/.style ={anchor=base, inner sep=1pt, text depth=0pt,
+                   font=\scriptsize\bfseries, text=gray!25!black},
+  durlbl/.style  ={anchor=base east, inner sep=1pt, text depth=0pt,
+                   font=\scriptsize, text=gray!45!black},
+  hdrlbl/.style  ={anchor=base west, inner sep=1pt,
+                   font=\scriptsize\itshape, text=gray!55!black},
+  % --- Bar styles (Gantt segments) ---
+  bargw/.style   ={draw=blue!55!gray, fill=blue!18, line width=0.35pt,
+                   rounded corners=0.4pt, minimum height=2.6mm,
+                   inner sep=0pt, anchor=west},
+  barar/.style   ={draw=orange!50!brown, fill=orange!20, line width=0.35pt,
+                   rounded corners=0.4pt, minimum height=2.6mm,
+                   inner sep=0pt, anchor=west},
+  barhi/.style   ={draw=orange!75!black, fill=orange!42, line width=0.8pt,
+                   rounded corners=0.4pt, minimum height=2.9mm,
+                   inner sep=0pt, anchor=west},
+  % --- Tree connector (left-margin hierarchy) ---
+  treeln/.style  ={draw=gray!55, line width=0.4pt},
+  % --- Bottom-row boxes ---
+  vbox/.style    ={draw=gray!55, line width=0.5pt, rounded corners=2pt,
+                   fill=gray!5, align=left, inner sep=5pt,
+                   font=\footnotesize, text width=9.6cm},
+  bodybox/.style ={draw=orange!60!black, line width=0.6pt, rounded corners=2pt,
+                   fill=orange!6, align=left, inner sep=5pt,
+                   font=\scriptsize\ttfamily, text width=5.6cm}
 ]
 
-% --- Spans: indented parent-child cascade.  Service color coding:
-%     gateway = light blue (spangw); admin-route = light orange (spanar);
-%     the soft-error producer is highlighted (spanhi). ---
-\node[spangw] (s1) at (0.00,0.00) {\textbf{POST /adminroute}\quad @ ts-gateway-service\quad \textbf{200},  6.1\,ms};
-\node[spangw] (s2) at (0.40,-0.75) {FilteringWebHandler.handle\quad @ ts-gateway-service\quad 5.6\,ms};
-\node[spangw] (s3) at (0.80,-1.50) {POST (gateway client)\quad @ ts-gateway-service$\to$admin-route\quad \textbf{200},  4.0\,ms};
-\node[spanhi] (s4) at (1.20,-2.25) {\textbf{POST /adminroute}\quad @ ts-admin-route-service\quad \textbf{200},  3.6\,ms};
-\node[spanar] (s5) at (1.60,-3.00) {AdminRouteController.addRoute\quad @ ts-admin-route-service\quad 1.0\,ms};
+% =============================================================
+% Header row
+% =============================================================
+\node[hdrlbl] at (0.00, 0.55) {Span (parent\,$\to$\,child)};
+\node[hdrlbl] at (6.00, 0.55) {Service};
+\node[hdrlbl, anchor=base] at (9.75, 0.55) {HTTP};
+\node[hdrlbl] at (10.10, 0.55)
+  {Timeline\quad\textit{\scriptsize(1\,ms\,$\approx$\,0.72\,cm)}};
+\node[hdrlbl, anchor=base east] at (16.95, 0.55) {Duration};
+\draw[gray!45, line width=0.3pt] (-0.05, 0.30) -- (16.98, 0.30);
 
-% --- Parent->child wiring ---
-\draw[edge] (s1.south west) ++(0.05,0) |- (s2.west);
-\draw[edge] (s2.south west) ++(0.05,0) |- (s3.west);
-\draw[edge] (s3.south west) ++(0.05,0) |- (s4.west);
-\draw[edge] (s4.south west) ++(0.05,0) |- (s5.west);
+% =============================================================
+% Span rows.
+% Layout columns (cm):
+%   span name col      x in [0.00, 5.90]   (indent steps 0.18..1.46)
+%   service col        x in [6.00, 9.50]
+%   HTTP status col    x  = 9.75 (centred)
+%   timeline bar col   x in [10.10, 14.95]   (1 ms = 0.72 cm)
+%   duration col       right-aligned at x = 16.95
+% Bars are drawn with anchor=west and a small upward offset (0.08 cm)
+% so they centre on the row's x-height rather than the text baseline.
+% Bar starts are staggered to suggest call nesting (parent starts
+% first, child starts slightly later, etc.).
+% =============================================================
 
-% --- Soft-error tag next to the rejecting span ---
-\node[anchor=west, font=\scriptsize\bfseries, text=orange!60!black,
-      inner sep=1pt] (tag) at ([xshift=2mm]s4.east) {soft error};
+% Row A : POST /adminroute  @ ts-gateway-service     6.1 ms, 200
+\node[spanlbl] at (0.18,  0.00) {\textbf{POST /adminroute}};
+\node[svclbl]  at (6.00,  0.00) {ts-gateway-service};
+\node[statlbl] at (9.75,  0.00) {200};
+\node[bargw, minimum width=4.392cm] at (10.100,  0.08) {};
+\node[durlbl]  at (16.95, 0.00) {6.1\,ms};
 
-% --- Response body callout, color matched to the soft-error span ---
-\node[bodybox] (body) at (12.5,-2.25) {Response body (HTTP 200):\\{"status":0,\\ "msg":"start or end station\\        not include in stationList.",\\ "data":null}};
-\draw[->, thick, orange!70!black] (tag.east) -- (body.west);
+% Row B : FilteringWebHandler.handle  @ ts-gateway-service     5.6 ms
+\node[spanlbl] at (0.50, -0.55) {FilteringWebHandler.handle};
+\node[svclbl]  at (6.00, -0.55) {ts-gateway-service};
+\node[bargw, minimum width=4.032cm] at (10.244, -0.47) {};
+\node[durlbl]  at (16.95, -0.55) {5.6\,ms};
 
-% --- Trace-Aware Oracle verdict, structured as a labelled tabular ---
-\node[vbox, anchor=north west] (vrd) at (0,-3.95) {\textbf{Trace-Aware Oracle verdict.}\\ \begin{tabular}{@{}l@{\quad}p{13cm}@{}} \textbf{HTTP status class}    & passes (every span returns 200). \\ \textbf{Span error frame}     & no span carries \texttt{otel.status\_code=ERROR}. \\ \textbf{Per-API body rule}    & \emph{fails} on \texttt{\{status:0, data:null\}}; rule learned from the first 2xx response, then cached. \\ \textbf{Attribution}          & rejection pinned to \texttt{ts-admin-route-service} (highlighted span). \end{tabular}};
+% Row C : POST (gateway client)  ts-gateway -> ts-admin-route     4.0 ms, 200
+\node[spanlbl] at (0.82, -1.10) {POST (gateway~client)};
+\node[svclbl]  at (6.00, -1.10) {ts-gateway-service};
+\node[statlbl] at (9.75, -1.10) {200};
+\node[bargw, minimum width=2.880cm] at (10.460, -1.02) {};
+\node[durlbl]  at (16.95, -1.10) {4.0\,ms};
+
+% Row D : POST /adminroute  @ ts-admin-route-service     3.6 ms, 200  [highlighted]
+\node[spanlbl] at (1.14, -1.65) {\textbf{POST /adminroute}};
+\node[svclbl]  at (6.00, -1.65) {ts-admin-route-service};
+\node[statlbl] at (9.75, -1.65) {200};
+\node[barhi, minimum width=2.592cm] at (10.604, -1.57) {};
+\node[durlbl]  at (16.95, -1.65) {3.6\,ms};
+
+% Row E : AdminRouteController.addRoute  @ ts-admin-route-service     1.0 ms
+\node[spanlbl] at (1.46, -2.20) {AdminRouteController.addRoute};
+\node[svclbl]  at (6.00, -2.20) {ts-admin-route-service};
+\node[barar, minimum width=0.720cm] at (11.540, -2.12) {};
+\node[durlbl]  at (16.95, -2.20) {1.0\,ms};
+
+% --- Hierarchical tree connectors in the left margin.
+%     Each level indents 0.32 cm; the small "L" connects parent
+%     vertical to child horizontal stub.
+\draw[treeln] (0.06, -0.08) -- (0.06, -0.55) -- (0.14, -0.55);
+\draw[treeln] (0.38, -0.63) -- (0.38, -1.10) -- (0.46, -1.10);
+\draw[treeln] (0.70, -1.18) -- (0.70, -1.65) -- (0.78, -1.65);
+\draw[treeln] (1.02, -1.73) -- (1.02, -2.20) -- (1.10, -2.20);
+
+% --- Soft-error tag, anchored just past the end of the highlighted bar
+\node[anchor=base west, font=\scriptsize\bfseries, text=orange!70!black,
+      inner sep=1pt] (softtag) at (13.30, -1.65) {soft error};
+
+% =============================================================
+% Trace-Aware Oracle verdict (bottom-left)
+% =============================================================
+\node[vbox, anchor=north west] (vrd) at (-0.05, -2.85) {%
+\textbf{Trace-Aware Oracle verdict.}\\[2pt]
+\begin{tabular}{@{}l@{\hspace{0.7em}}p{6.0cm}@{}}
+\textbf{HTTP status class} & passes (every span returns 200). \\
+\textbf{Span error frame}  & no span carries \texttt{otel.status\_code=ERROR}. \\
+\textbf{Per-API body rule} & \emph{fails} on \texttt{\{status:0,\,data:null\}}; rule learned from the first 2xx response, then cached. \\
+\textbf{Attribution}       & rejection pinned to \texttt{ts-admin-route-service} (highlighted span). \\
+\end{tabular}};
+
+% =============================================================
+% Response body callout (bottom-right)
+% =============================================================
+\node[bodybox, anchor=north east] (body) at (16.95, -2.85) {%
+\textnormal{\footnotesize\textbf{Response body}} (HTTP 200):\\[2pt]
+\{\\
+\ \ "status": 0,\\
+\ \ "msg": "start or end station\\
+\ \ \ \ \ \ \ \ \ not include in stationList.",\\
+\ \ "data": null\\
+\}};
+
+% --- Arrow: soft-error tag drops straight down to the body callout ---
+\draw[->, thick, orange!70!black]
+     (softtag.south) -- (softtag.south |- body.north);
 
 \end{tikzpicture}
