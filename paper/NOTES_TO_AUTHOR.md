@@ -341,6 +341,106 @@ New placeholders introduced by fix #2 (grep for "TODO-" or "TODO "):
 * `\email{todo@example.invalid}` (placeholder address; replace verbatim)
 
 
+### Section-by-section professional revision (from agent review)
+
+Pass triggered by author's read of the v1 ISSTA draft: it read amateurish
+in every section, especially S4.3.  Survey done on 4 to 6 recent ACM /
+IEEE tool-demo papers (RESTest ISSTA 2021, AutoRestTest ICSE 2025,
+InfraFix ISSTA 2025, ASTRAL ISSTA 2025, Kitten ISSTA 2025, ARAT-RL ASE
+2023 for citation-density comparison).  Recurring patterns across the
+demos: 5-6 sections (Intro, Tool/Approach with subsections per module,
+Evaluation/Usage, Related Work, Conclusion, Tool Availability); no
+section titled "Core Innovations"; algorithm pseudocode rare and short
+when present; bullet lists used sparingly; "we present" appears at most
+once.  See the trip report at the head of this revision for citations.
+
+Edits applied (all in paper/main_issta.tex; do not propagate to
+paper/main.tex):
+
+| Section | Before | After | Why |
+|---|---|---|---|
+| Abstract | "We present MIST, an open-source tool..."  "MIST is built around three named contributions: a Sniper Strategy..." | "MIST turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable workflow tests."  "Three design choices distinguish it..." | Dropped "we present" and the over-formal "three named contributions" framing.  Demos in the survey state what the tool does, not what its named contributions are. |
+| S1 | Contributions presented as a 3-item bullet list with each bullet 1-2 lines | One dense paragraph with the same three sentences | Bullet lists in a 4-page demo eat vertical space.  None of the surveyed demos bullet-list contributions in the Intro. |
+| S1 citations | 10-tool parenthetical dump | 6-tool dump (kept EvoMaster, RESTest, RESTler, Morest, DeepREST, AutoRestTest) | An 8-10 citation parenthetical in a single sentence reads stuffed.  Six tools is the density InfraFix uses for its analogous "prior work" line. |
+| S2 | "This is exactly the situation MIST is built for." | sentence removed | Marketing flourish; the figure and the body already make the case. |
+| S3 intro | "Figure 1 shows the five components. All numbers in this paper come from a MIST run against the bundled TrainTicket deployment described in Section 5." | "Figure 1 shows the five components." | The second sentence was bookkeeping that belongs in the case-study section, not the architecture section. |
+| S3.(i) protected framing | (unchanged) | (unchanged) | "obtained from the SUT operator or aggregated from per-service /v3/api-docs endpoints" preserved verbatim per the user's hard constraint. |
+| S3.(ii) | "Semantic Dependency Registry with JIT Binding"; mentioned findProducer, ProducerBinding | "Semantic Dependency Registry"; jargon dropped, behaviour described in prose | The dependency-registry component does not need the JIT-Binding suffix in the heading; the body sentence explains the just-in-time behaviour. |
+| S3.(iii) | "Sequence Generator (Root API Mode)" header parenthetical | "Sequence Generator" header, Root API Mode introduced one sentence into the body with a forward Section 4.2 reference | The parenthetical pre-empted Section 4.2.  Cross-reference is cleaner. |
+| S3.(iv) | "TYPE_MISMATCH, REGEX_MISMATCH, ... EMPTY/NULL, ..." | "TYPE_MISMATCH, REGEX_MISMATCH, ... EMPTY, NULL, ..." | The previous draft collapsed EMPTY and NULL into "EMPTY/NULL", but flow.md and the verification list both name eight categories with EMPTY and NULL as separate ones. |
+| S4 section title | "Core Innovations" | "Design" | None of the surveyed demos has a "Core Innovations" section; InfraFix and Kitten use the tool name or "Design" or "Approach" for the same purpose.  The three contributions are still named in the Abstract and in S1; they no longer need a re-introduction in S4. |
+| S4 intro paragraph | 3 sentences | 2 sentences (kept the protected interlock sentence verbatim) | The third sentence was an abstract claim that the subsections already make. |
+| S4.1 subsection header | "Sniper Strategy" | "Sniper Mutator" | Aligns with the component name in S3.(iv) and with the code (InvalidInputGenerator + MultiServiceTestCaseGenerator round-robin path).  The Abstract and S1 still use "Sniper" as the headline noun. |
+| Algorithm 1 | \Procedure...\EndProcedure with 7 numbered lines plus 1 \Statex continuation | 4 numbered lines, no \Procedure wrapper, no return statement | A 10-line algorithm box for a 4-step procedure in a 4-page demo is over-formalised.  4 lines preserves the named environment for the cross-reference but reads as a sketch, which is what the surveyed demos do (when they have an algorithm at all, which most do not). |
+| S4.1 closing paragraph | "Compared with conventional black-box fuzzing where multiple parameter mutations interact \cite{...}, the Sniper Strategy trades..." | paragraph removed | Restated the abstraction in a different register.  The point ("causal attributability") is already made in the subsection opener. |
+| S4.2 | "The mode is one boolean (...). Disabling it falls back to a multi-step replay where every internal HTTP span also becomes a step. This paper reports only the root-only mode." | "The mode toggles on a single property (mst.generate.only.first.step); this paper reports only the default root-only mode." | Saved two sentences while keeping the configurable / paper-scope statements. |
+| S4.3 | 4-bullet itemize listing the four assertion families | One prose paragraph with three named signals plus a closing sentence on registry matching; soft-error-rule-cache pushed to a footnote per the brief | Author's specific complaint.  The bullet list duplicated information already present in S3.(v) and pushed the soft-error-rule-cache sentence into the body when it earned its place only as an aside. |
+| S4.3 figure caption | 3 sentences, "source: this repository's Allure attachments" included as parenthetical sub-clause | 2 sentences, same captured-trace claim, repository source still credited inside the parenthetical | Captions in the surveyed demos are 1 to 2 sentences; trimming aligns with style. |
+| S5 section title | "Usage Scenarios and Case Study" | "Usage and Case Study" | "Scenarios" is implicit. |
+| S5.A title | "Scenario A: targeted regression after a change" | "Targeted regression after a change" | "Scenario A:" prefix is redundant. |
+| S5.B title | "Scenario B: exploratory fault detection across the system" | "Exploratory fault detection" | Same.  "Across the system" added no information. |
+| S5.B paragraph | 4 sentences plus a separate "All ten injected faults are detected." sentence after the table reference | Merged into one paragraph ending "all ten injected faults caught", and trimmed the LLM-cost prose ("approximately 20 h, of which roughly 12 h is LLM (DeepSeek deepseek-chat) inference latency. The bulk of LLM cost is..." -> "$\sim$12 h is LLM inference (DeepSeek deepseek-chat). Almost all LLM cost is...") | Saves ~1 line and keeps every protected number (2733, 20 h, 12 h, testsperoperation=100, ~2 prompts per API). |
+| Table I caption | "TrainTicket 10-fault injected-fault corpus, detection on the most recent end-to-end MIST run." | "Detection on the bundled TrainTicket 10-fault corpus." | Caption did not need to repeat "MIST" or "end-to-end". |
+| S5 closing paragraph | "The mechanism column is to be filled per-row from the most-current fault detection report (see ...). Four mechanism kinds are recognised: ..." | "The Mechanism column records which of four signals triggered detection: ..." | One sentence shorter, still names all four mechanisms, still references NOTES_TO_AUTHOR.md Q2. |
+| S6 header | "Related Work and Conclusion" | Split into "\section{Related Work}" + "\section{Conclusion}" | All five surveyed demos use separate Related Work + Conclusion; none of them uses a hybrid header. |
+| S6 (now Related Work) | 8-tool parenthetical citation dump after EvoMaster/RESTest | Two-sentence flow that names RESTler, Morest, Schemathesis one tool per clause, then bundles the LLM/RL line into a single 5-citation parenthetical | Per-tool naming reads less stuffed; the LLM/RL bundle is genuinely a single line of prior art. |
+| S7 (now Conclusion) | "Conclusion." inline label inside the hybrid section, 1 paragraph | Standalone section, 1 paragraph rewritten to drop "\url{...}" repeat (URL is already in Tool Availability) | Conclusion does not need to re-state the repo URL. |
+| S8 (now Tool Availability) | "MIST is open-source and available at <URL>..." | "The MIST source code is at <URL> under LGPL-3.0..." | "open-source and available" is filler; the LGPL-3.0 statement is informative and the URL is still the first artifact mentioned. |
+| Figure 2 annotation | "Trace-as-Oracle reads:" label inside the TikZ | "Trace-Aware Oracle reads:" inside the TikZ | Matches the component name MIST uses in S3.(v) and the new S4.3 subsection title.  No semantic change. |
+
+Protected items left untouched: the protected interlock sentence in S4
+intro ("None of the three could close the oracle and state-fabrication
+gaps alone; the combination is what does."); the S3.(i) framing about
+the OpenAPI spec source; all concrete numbers (37, 265, 2733, 20 h,
+12 h, 10 faults, deepseek-chat); the Table I row structure and ten
+\todo{mech} placeholders; the Figure 2 captured-trace claim and trace
+ID d4c577d4...acf6; the Tool Availability repository URL, screencast
+placeholder, and Zenodo placeholder.  None of the compile fixes are
+undone (no \usepackage{amssymb}, no \acmPrice, no \todo{...} inside
+\url{}, \email{}, \author{}, \affiliation{}, etc.).
+
+### Estimated page count after this revision
+
+Cuts (net) versus the v1 ISSTA draft, in approximate line-equivalents
+at acmart sigconf two-column 10pt:
+
+* S1 bullet list -> dense paragraph: ~0 lines (the dense paragraph is
+  roughly the same height as 3 bullets with their indent and spacing)
+* S3.(ii) - (v) compression: ~3 lines saved
+* S4 intro paragraph trim: ~1 line saved
+* Algorithm 1 from 9 lines to 4 lines: ~5 lines saved
+* S4.1 closing paragraph removed: ~3 lines saved
+* S4.2 last paragraph compression: ~2 lines saved
+* S4.3 4-bullet itemize -> 1 paragraph + footnote: ~4 lines saved (the
+  footnote takes column-bottom space but the body block shrinks more)
+* S5 subsection-title trims and case-study paragraph merge: ~1 line
+* S6 hybrid split into S6 + S7: ~0 lines (gains a new section heading,
+  loses an inline \textbf{Conclusion.} label and the duplicate URL in
+  the Conclusion paragraph)
+* Table I caption trim: ~0.5 line
+
+Net cut: ~19 line-equivalents = ~0.3 page.
+
+Pre-revision estimate (NOTES Phase 2): 4.6 to 4.9 pages.
+Post-revision estimate: 4.3 to 4.6 pages, comfortably inside the
+4 body + 1 ref budget.  If the first compile of the revised version
+runs slightly longer (acmart's column rules sometimes float
+differently than the v1 estimate assumed), the next available cut is
+the S2 listing's "data":null field (move to inline prose).
+
+### Sanity checks after revision
+
+Greps run after the edits:
+
+* `\b(novel|elegant|powerful|comprehensive|extensively)\b` (case-insensitive): 0 matches in body text.
+* `incremental`: 0 matches.
+* `\acmPrice`: only the explanatory `% \acmPrice is obsolete in modern acmart; removed.` comment from the compile-fix pass; no real `\acmPrice` directive.
+* `\usepackage{amssymb`: 0 matches.
+* `\url{.*\todo`: 0 matches.
+* The protected interlock sentence "None of the three could close the oracle and state-fabrication gaps alone; the combination is what does." is present at line 136.
+* Backspace bytes (\x08): 0 matches in `main_issta.tex` and `figures/trace_oracle.tex`.
+* All ten Table I `\todo{mech}` placeholders preserved.
+
 ### Second compile-fix pass (acmart's \url{} verbatim-mode)
 
 Symptom: at `\maketitle` (l.85) acmart's xstring layer crashed with

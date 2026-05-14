@@ -1,84 +1,78 @@
-% Figure 1: MIST architecture.  Five components in a single horizontal
-% pipeline.  Inputs feed from the left, the System Under Test boxes on
-% the right, and the run's output drops below the row.  The Sniper
-% Mutator sits directly below the Sequence Generator so the gen->mut
-% wire is a clean vertical, and the mutator feeds back up into the
-% main pipeline via a short corner path to the oracle's south side.
+% Figure 1: MIST architecture.  Plain pipeline of five components +
+% SUT cluster + run output.  Inputs (OpenAPI spec, Jaeger traces,
+% .properties file) are NOT drawn on the canvas; they are named in the
+% figure caption.  This keeps the figure free of crossing wires and
+% matches the convention in recent tool-demo figures (RESTest @ ISSTA
+% 2021, AutoRestTest @ ICSE 2025, ASTRAL @ ISSTA 2025).
 \begin{tikzpicture}[
     font=\small,
     >={Stealth[length=2.4mm]},
+    % All component boxes use a fixed height so the row is uniform.
     comp/.style={draw, rounded corners=2pt, fill=gray!8,
-                 minimum height=11mm, minimum width=23mm,
-                 align=center, inner sep=3pt},
+                 minimum height=12mm, minimum width=24mm,
+                 align=center, inner sep=3pt, text depth=0pt},
     sut/.style ={draw, rounded corners=2pt, fill=blue!5,
-                 minimum height=6.5mm, minimum width=17mm,
+                 minimum height=7mm, minimum width=18mm,
                  align=center, inner sep=2pt, font=\footnotesize},
-    inlbl/.style={font=\footnotesize\itshape, align=right, anchor=east},
     outlbl/.style={font=\footnotesize\itshape, align=center, anchor=north},
     flow/.style={->, thick, >=Stealth},
     backflow/.style={->, thick, dashed, >=Stealth}
 ]
 
-% --- 5 components: 4 on the main row (y=0), Sniper directly below the generator ---
+% --- Four components on the main row (y=0); uniform two-line labels
+%     so every box has the same height. ---
 \node[comp] (ingest)   at ( 0.0, 0)   {(i) Spec\Ingestor};
 \node[comp] (registry) at ( 3.5, 0)   {(ii) Semantic\Dep.\ Registry};
-\node[comp] (gen)      at ( 7.0, 0)   {(iii) Sequence\Generator\\footnotesize(Root API Mode)};
+\node[comp] (gen)      at ( 7.0, 0)   {(iii) Sequence\Generator};
 \node[comp] (oracle)   at (11.0, 0)   {(v) Trace-Aware\Oracle};
-\node[comp] (mut)      at ( 7.0,-2.5) {(iv) Sniper\Mutator};
 
-% --- Inputs (placed clear of the component row to avoid wire crossings) ---
-\node[inlbl] (oas)   at (-2.6, 1.3)  {OpenAPI\spec};
-\node[inlbl] (trc)   at (-2.6,-1.3)  {Jaeger\traces};
-\node[inlbl] (props) at (-2.6,-2.5)  {.properties\config};
+% --- Sniper Mutator directly below the Generator. ---
+\node[comp] (mut)      at ( 7.0,-2.6) {(iv) Sniper\Mutator};
 
-% --- System Under Test cluster ---
-\node[sut] (gw)   at (14.0, 0.95) {Gateway};
-\node[sut] (svc1) at (14.0, 0.20) {ts-$\cdots$};
-\node[sut] (svc2) at (14.0,-0.55) {ts-$\cdots$};
-\node[sut] (jgr)  at (14.0,-1.30) {Jaeger};
+% --- System Under Test cluster on the right.  Concrete service stubs
+%     so the figure does not need \cdots; the two `ts-*' rows hint at
+%     TrainTicket without naming any specific service. ---
+\node[sut] (gw)   at (14.0, 1.1)  {Gateway};
+\node[sut] (svc1) at (14.0, 0.25) {ts-route};
+\node[sut] (svc2) at (14.0,-0.60) {ts-order};
+\node[sut] (jgr)  at (14.0,-1.45) {Jaeger};
 \begin{scope}[on background layer]
   \node[draw, dotted, thick, rounded corners=4pt, inner sep=3mm,
         fit=(gw)(jgr),
         label={[font=\footnotesize\bfseries]above:System Under Test}] {};
 \end{scope}
 
-% --- Output: dropped below the oracle, well clear of the mutator and the
-%     mut->oracle wire (which curves up at x=11.0). ---
-\node[outlbl] (out) at (11.0,-2.5)
-  {JUnit tests + Allure\+ fault-detection report};
+% --- Run output drops below the oracle.  Anchored north so the label
+%     grows downward and never collides with the mut->oracle wire that
+%     approaches the oracle's south edge. ---
+\node[outlbl] (out) at (11.0,-2.6)
+  {JUnit tests, Allure report,\fault-detection report};
 
-% --- Input wires: each routed above or below the component row ---
-\draw[flow] (oas.east)   -| (ingest.north);   % horizontal at y=1.3, then down
-\draw[flow] (trc.east)   -| (gen.south);      % horizontal at y=-1.3, then up
-\draw[flow] (props.east) -- (mut.west);       % straight at y=-2.5
-
-% --- Main horizontal pipeline (left -> right) ---
+% --- Main horizontal pipeline (left to right). ---
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
 \draw[flow] (gen)      -- (oracle);
 
-% --- Generator -> Sniper Mutator: clean vertical arrow ---
+% --- Generator down to Sniper Mutator (clean vertical). ---
 \draw[flow] (gen.south) -- (mut.north);
 
-% --- Mutator -> Oracle: corner path that approaches the oracle from below.
-%     The vertical segment at x=11.0 lands at the oracle's south side; the
-%     output label sits below at the same x but is anchored=north so its
-%     top edge is at y=-2.5 and the label grows downward, leaving the
-%     mut->oracle wire's terminus (at y=-0.55) untouched. ---
-\draw[flow] (mut.east) -| ([xshift=-3mm]oracle.south);
+% --- Sniper Mutator back up into the Oracle, approaching from below.
+%     Corner path: right at y=-2.6 then up at x just left of oracle.south,
+%     so the rising segment does NOT collide with the output label that
+%     sits directly below oracle.south. ---
+\draw[flow] (mut.east) -| ([xshift=-4mm]oracle.south);
 
-% --- Oracle <-> SUT: HTTP requests out (top), Jaeger trace back (bottom).
-%     Top arrow terminates at the Gateway's west; bottom arrow originates
-%     at the bundled Jaeger box's west, both routed with explicit y-offsets
-%     so the two are visually distinct. ---
+% --- Oracle <-> SUT: HTTP requests out (top), Jaeger trace back
+%     (bottom).  Two parallel arrows with explicit +/- 1.5mm y-shift so
+%     they remain visually distinct in print. ---
 \draw[flow]     ([yshift= 1.5mm]oracle.east)
             -- ([yshift= 1.5mm]oracle.east -| gw.west);
 \draw[backflow] (jgr.west)
             -- ([yshift=-1.5mm]oracle.east -| jgr.west)
             -- ([yshift=-1.5mm]oracle.east);
 
-% --- Oracle -> output (drops straight down from oracle.south, terminates
-%     above the output text since the output is anchor=north). ---
-\draw[flow] ([xshift=3mm]oracle.south) -- ([xshift=3mm]oracle.south |- out.north);
+% --- Oracle to output (vertical, offset right of the mut->oracle wire
+%     so the two do not overlap at the same x-coordinate). ---
+\draw[flow] ([xshift=4mm]oracle.south) -- ([xshift=4mm]oracle.south |- out.north);
 
 \end{tikzpicture}

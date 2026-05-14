@@ -79,7 +79,7 @@
 \email{todo@example.invalid}
 
 \begin{abstract}
-Microservice systems make REST API testing simultaneously more important and harder. Black-box test generators must reason about cross-service workflows that are not declared in any single OpenAPI specification, and the dominant ``HTTP 2xx is a pass'' oracle silently accepts soft errors that downstream services have already flagged. We present \textbf{MIST} (Microservice Integration \& Scenario Tester), an open-source tool that turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable, cross-service workflow tests. MIST is built around three named contributions: a \emph{Sniper Strategy} that injects exactly one fault at exactly one root API per negative variant so that any downstream anomaly is causally attributable, a \emph{Root API Mode} that exercises only entry-point APIs and observes internal behaviour through traces (avoiding state fabrication on internal endpoints), and a \emph{Trace-as-Oracle} layer that promotes span causality, error-status propagation, and soft-error patterns to checkable assertions. We bundle a TrainTicket \cite{Zhou2021TrainTicket} case study with a 10-fault injected-fault corpus and a public deployment, all reproducible from one properties file. Source code is at \url{https://github.com/miaoti/Rest/}. Screencast: \url{https://TODO-screencast.example.invalid}.
+Microservice REST APIs expose cross-service workflows that no single OpenAPI specification describes, and the dominant ``HTTP 2xx is a pass'' oracle accepts soft errors that downstream services have already flagged. \textbf{MIST} (Microservice Integration \& Scenario Tester) turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable workflow tests for such systems. Three design choices distinguish it from prior REST API testers. A \emph{Sniper Mutator} picks one parameter and one fault category per negative variant, so each downstream anomaly is attributable to a specific mutation. A \emph{Root API Mode} drives only gateway-entry calls and reads internal behaviour off the trace, sidestepping state fabrication on internal endpoints. A \emph{Trace-Aware Oracle} replaces the status-class check with span causality, error-status propagation, response-body soft-error rules, and root-cause matching. MIST ships with a TrainTicket~\cite{Zhou2021TrainTicket} case study, a 10-fault injected-fault corpus, and a public deployment; the bundled demo runs from one properties file. Source: \url{https://github.com/miaoti/Rest/}. Screencast: \url{https://TODO-screencast.example.invalid}.
 \end{abstract}
 
 \maketitle
@@ -88,33 +88,25 @@ Microservice systems make REST API testing simultaneously more important and har
 % =============================================================================
 \section{Introduction}\label{sec:intro}
 
-Microservice systems exchange business state across deeply coupled REST endpoints; testing that state from outside the system is now the bottleneck for black-box validation. Two gaps in the current generation of REST testing tools \cite{Arcuri2019EvoMasterTOSEM,MartinLopez2021RESTest,Atlidakis2019RESTler,HatfieldDodds2022Schemathesis,Liu2022MoRest,Kim2023ARATRL,Kim2024RESTGPT,Stennett2025AutoRestTest,Kim2025LlamaRestTest,Corradini2024DeepREST} stand out.
+Microservice systems exchange business state across deeply coupled REST endpoints, and validating that state from outside the system is now the bottleneck for black-box test generation. Two gaps in current REST testing tools \cite{Arcuri2019EvoMasterTOSEM,MartinLopez2021RESTest,Atlidakis2019RESTler,Liu2022MoRest,Corradini2024DeepREST,Stennett2025AutoRestTest} are particularly painful in this setting.
 
-\textbf{Weak oracles.} The de facto oracle--the response status class--accepts as ``passing'' any 2xx body whose envelope contains \texttt{status:0, error:...}, a pattern endemic to enterprise REST APIs. Soft errors silently accumulate in test reports and never trigger a regression flag.
+\emph{Weak oracles.} The de facto oracle---the response status class---accepts any 2xx response, even when the body carries a soft-error envelope (\texttt{status:0, msg:...}) that a downstream service has already produced to flag a rejection. Such soft errors accumulate in test reports unflagged.
 
-\textbf{State fabrication on internal endpoints.} Driving every API directly demands fabricating consistent state across many services. Generators that fall back to randomly-typed UUIDs end up exercising rejection paths instead of the intended business logic.
+\emph{State fabrication on internal endpoints.} Driving every API directly requires fabricating consistent state across many services. Generators that fall back to random UUIDs exercise rejection paths instead of business logic.
 
-MIST addresses these gaps with three contributions, each implemented and shipped:
-
-\begin{itemize}
-  \item \textbf{Sniper Strategy}: every negative variant injects exactly one fault at exactly one root API, isolating the causal signal so downstream anomalies are attributable to a known mutation.
-  \item \textbf{Root API Mode}: only entry-point APIs are exercised externally; the internal behaviour they trigger is observed through distributed traces, avoiding the state-fabrication problem.
-  \item \textbf{Trace-as-Oracle}: span causality, error-status propagation, and soft-error patterns become first-class assertions that complement the response status class.
-\end{itemize}
-
-The artifact is open source at \url{https://github.com/miaoti/Rest/} and includes a TrainTicket \cite{Zhou2021TrainTicket} case study with a 10-fault injected-fault corpus reproducible from one properties file.
+MIST closes both gaps with three design choices. The Sniper Mutator targets exactly one parameter on exactly one root API per negative variant, so any downstream anomaly traces back to a known mutation. Root API Mode drives only gateway-entry calls and reads internal behaviour off the captured Jaeger trace, so MIST never has to fabricate internal state. The Trace-Aware Oracle replaces the lone status-class check with four assertion families derived from the trace and the response body. The artifact is open source at \url{https://github.com/miaoti/Rest/}, includes a TrainTicket~\cite{Zhou2021TrainTicket} case study with a 10-fault injected-fault corpus, and runs from a single properties file.
 
 % =============================================================================
 \section{Background and Motivating Example}\label{sec:bg}
 
-Consider \texttt{POST /api/v1/adminroute\-ser\-vi\-ce/admin\-route} on TrainTicket, a request to create a route given a \texttt{startStation}, \texttt{endStation} and a \texttt{stationList}. On a sniper-mutated negative variant where the end station does not appear in the station list, the service replies \emph{HTTP 200 OK} along with the body
+Consider \texttt{POST /api/v1/adminroute\-service/admin\-route} on TrainTicket, which creates a route from a \texttt{startStation}, an \texttt{endStation}, and a \texttt{stationList}. On a negative variant whose end station is absent from the station list, the service answers \emph{HTTP 200} with the body
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,frame=none,numbers=none]
 {"status":0,
  "msg":"start or end station not include in
         stationList.",
  "data":null}
 \end{lstlisting}
-A status-class oracle reports this run as a pass. The captured Jaeger trace (Figure~\ref{fig:trace}) shows that every span carries \texttt{http.status\_code=200} and no \texttt{otel.status\_code=ERROR} is set anywhere in the tree -- the network-level signals all confirm a clean 200. The only failure evidence lives in the response body, in the soft-error envelope (\texttt{status=0}, \texttt{data=null}). A trace-aware oracle that learns and caches per-API body-pattern rules catches this; it also reads off the trace which service rejected the request (\texttt{ts-admin-route-service}). This is exactly the situation MIST is built for.
+A status-class oracle records this as a pass. The captured Jaeger trace (Figure~\ref{fig:trace}) shows every span carrying \texttt{http.status\_code=200} and no \texttt{otel.status\_code=ERROR} anywhere in the tree; every network-level signal confirms a clean 200. The only failure evidence is the soft-error envelope (\texttt{status=0}, \texttt{data=null}) in the response body. A trace-aware oracle with a per-API body-pattern rule catches it and reads off the trace which service produced the rejection (\texttt{ts-admin-route-service}).
 
 % =============================================================================
 \section{Tool Overview and Architecture}\label{sec:arch}
@@ -122,99 +114,78 @@ A status-class oracle reports this run as a pass. The captured Jaeger trace (Fig
 \begin{figure*}[t]
   \centering
   \input{figures/architecture.tex}
-  \caption{MIST architecture. Five components are arranged left-to-right by data flow; the dotted box is the System Under Test. Solid arrows are HTTP requests issued by MIST; the dashed arrow is the Jaeger trace pulled back per step by the Trace-Aware Oracle.}
+  \caption{MIST architecture. The Spec Ingestor (i) reads an OpenAPI specification; the Sequence Generator (iii) consumes Jaeger traces to mine workflow scenarios; the Sniper Mutator (iv) consumes the run's \texttt{.properties} configuration. The dotted box is the System Under Test. Solid arrows are HTTP requests issued by MIST; the dashed arrow is the Jaeger trace pulled back per step by the Trace-Aware Oracle.}
   \label{fig:arch}
 \end{figure*}
 
-Figure~\ref{fig:arch} shows the five components. All numbers in this paper come from a MIST run against the bundled TrainTicket deployment described in Section~\ref{sec:case}.
+Figure~\ref{fig:arch} shows the five components.
 
-\textbf{(i) Spec Ingestor.} Parses an OpenAPI specification --- obtained from the SUT operator or aggregated from per-service \texttt{/v3/api-docs} endpoints --- and emits a multi-service test configuration. The bundled TrainTicket spec contains 265 operations across 37 REST-exposed services, defining MIST's test scope. Components without a discoverable HTTP surface (asynchronous workers, message brokers, internal-only RPC services) lie outside any black-box tool's reach by construction.
+\textbf{(i) Spec Ingestor.} Parses an OpenAPI specification---obtained from the SUT operator or aggregated from per-service \texttt{/v3/api-docs} endpoints---and emits a multi-service test configuration. The bundled TrainTicket spec contains 265 operations across 37 REST-exposed services, which defines MIST's test scope. Components without a discoverable HTTP surface (async workers, message brokers, internal-only RPC) lie outside any black-box tool's reach by construction.
 
-\textbf{(ii) Semantic Dependency Registry with JIT Binding.} A producer/consumer index over the spec records, for every parameter whose name ends in \texttt{Id}/\texttt{ID}/\texttt{uuid}, the API and JSON path that historically produces it. At generation time the registry's \texttt{findProducer} call returns a \texttt{ProducerBinding} that the Sequence Generator wires \emph{just-in-time}, so a value computed at runtime by an earlier step in the same scenario is plugged into the right field of a later step.
+\textbf{(ii) Semantic Dependency Registry.} A producer/consumer index over the spec. For every parameter whose name ends in \texttt{Id}/\texttt{ID}/\texttt{uuid}, it records the API and JSON path that historically produces a matching value. At generation time the registry returns a binding that the Sequence Generator wires just-in-time, so a value computed at runtime by an earlier step plugs into the right field of a later step.
 
-\textbf{(iii) Sequence Generator (Root API Mode).} Mines workflow scenarios from Jaeger traces through a five-phase pipeline: cross-trace data-dependency merging, session/time-window merging, single-root deduplication, weakly-connected-component shattering on the dependency graph, and missing-baseline decomposition. With Root API Mode enabled (\texttt{mst.gener\-ate.only.first.step=true}, the default) the generator preserves all gateway-entry calls in a scenario but prunes internal step-API spans, since those are observed through the trace rather than driven directly. A scenario with three root calls produces a 3-step JUnit test.
+\textbf{(iii) Sequence Generator.} Mines workflow scenarios from Jaeger traces through a five-phase pipeline: cross-trace data-dependency merging, session/time-window merging, single-root deduplication, weakly-connected-component shattering on the dependency graph, and missing-baseline decomposition. Under Root API Mode (\texttt{mst.gener\-ate.only.first.step=true}, the default; Section~\ref{sec:rootmode}) the generator keeps every gateway-entry call in a scenario and prunes internal step-API spans. A scenario with three root calls becomes a 3-step JUnit test.
 
-\textbf{(iv) Sniper Mutator.} Builds an \texttt{InvalidInputPool} per parameter, drawing from eight schema-aware fault categories (TYPE\_MISMATCH, REGEX\_MISMATCH, SEMANTIC\_MISMATCH, OVERFLOW, EMPTY/NULL, SPECIAL\_CHARACTERS, BOUNDARY\_VIOLATION). For every negative variant it picks exactly one parameter at exactly one root call and exactly one fault value (Section~\ref{sec:sniper}).
+\textbf{(iv) Sniper Mutator.} Builds an invalid-input pool per parameter from eight schema-aware fault categories (TYPE\_MISMATCH, REGEX\_MISMATCH, SEMANTIC\_MISMATCH, OVERFLOW, EMPTY, NULL, SPECIAL\_CHARACTERS, BOUNDARY\_VIOLATION). For each negative variant it locks one parameter, one fault category, and one fault value at one root call (Section~\ref{sec:sniper}).
 
-\textbf{(v) Trace-Aware Oracle.} Each emitted JUnit test, after firing a request, fetches the corresponding Jaeger trace and evaluates four assertion families: HTTP status class, response-body soft-error pattern (LLM-inferred rule cached per API), span error-status propagation, and root-cause matching against the injected-fault registry.
+\textbf{(v) Trace-Aware Oracle.} After each request, it fetches the corresponding Jaeger trace and evaluates four assertion families: HTTP status class, response-body soft-error pattern (LLM-inferred, cached per API), span error-status propagation, and root-cause matching against the injected-fault registry.
 
 % =============================================================================
-\section{Core Innovations}\label{sec:innov}
+\section{Design}\label{sec:design}
 
-The three contributions interlock. The Sniper Strategy's single-fault discipline is what makes Trace-as-Oracle's downstream signals causally interpretable; Root API Mode's external-only driving is what allows traces to be the primary oracle without confounding from direct internal calls. None of the three could close the oracle and state-fabrication gaps alone; the combination is what does.
+The Sniper Mutator's single-fault discipline is what makes the Trace-Aware Oracle's downstream signals causally interpretable, and Root API Mode's external-only driving is what lets the trace stay clean of confounding internal calls. None of the three could close the oracle and state-fabrication gaps alone; the combination is what does.
 
-\subsection{Sniper Strategy}\label{sec:sniper}
+\subsection{Sniper Mutator}\label{sec:sniper}
 
-A negative test that mutates several parameters at once leaves the oracle unable to attribute any observed downstream anomaly to a specific cause; symmetrically, a single-fault test on a non-root call cannot be reasoned about either, because the trace prefix is itself driven by other, possibly mutated values. The Sniper Strategy isolates cause from effect by tightening both axes at once.
+A test that mutates several parameters at once leaves the oracle unable to attribute a downstream anomaly to any specific cause; a single-fault test on a non-root call has the dual problem, because the trace prefix is itself driven by other, possibly mutated, values. The Sniper Mutator tightens both axes by picking one parameter and one fault category per variant at the first root call in the scenario (Algorithm~\ref{alg:sniper}).
 
 \begin{algorithm}[H]
-\caption{Sniper Strategy (per negative variant)}\label{alg:sniper}
+\caption{Sniper variant generation.}\label{alg:sniper}
 \begin{algorithmic}[1]
-\Procedure{Sniper}{$scenario, params, pools$}
-  \State $r \gets$ the first root call in $scenario$
-  \State $p \gets$ select one parameter from $params(r)$ via round-robin
-  \State $c \gets$ select one applicable fault category for $p$'s schema
-  \State $v \gets pools[r][p][c].\text{nextRoundRobin}()$
-  \State \textbf{lock} parameter $p$ on root $r$ to value $v$
-  \State all other parameters on $r$ and all later roots are filled
-  \Statex \quad\quad from positive sources (shared pool, smart fetch, JIT bind)
-  \State \textbf{record} $(r, p, c, v)$ on the test case as the fault target
-  \State \Return rendered \texttt{MultiServiceTestCase}
-\EndProcedure
+\State $r \gets$ first root call in the scenario
+\State $p,\, c \gets$ round-robin pick of one parameter on $r$ and one fault category applicable to its schema
+\State lock $(r, p, c, v)$ on the variant; fill other parameters from positive sources (shared pool, smart fetch, just-in-time bind)
+\State record $(r, p, c, v)$ as the fault target on the test case
 \end{algorithmic}
 \end{algorithm}
 
-The schema-applicability filter (\texttt{InvalidInputType.appliesTo}) drops nonsense combinations: a boolean parameter never receives a 5000-character OVERFLOW payload labelled OVERFLOW, because the value would actually be a TYPE\_MISMATCH wearing the wrong label. Round-robin scheduling guarantees coverage breadth: each parameter is targeted with each applicable category before any combination repeats. The pre-recorded \texttt{(r,p,c,v)} tuple flows straight into the fault-detection report so every observed failure is attributable to one specific mutation.
-
-Compared with conventional black-box fuzzing where multiple parameter mutations interact \cite{Arcuri2019EvoMasterTOSEM,Atlidakis2019RESTler,HatfieldDodds2022Schemathesis}, the Sniper Strategy trades exhaustive combinatorial coverage for causal attributability--the property that makes the trace-aware oracle's downstream signals interpretable.
+A schema-applicability filter rejects nonsense combinations such as a 5000-character OVERFLOW string on a boolean parameter (which would in fact be a TYPE\_MISMATCH). Round-robin scheduling visits each applicable $(p, c)$ pair before any repeats, so coverage breadth does not depend on randomness. The recorded $(r, p, c, v)$ tuple is the only piece of information the report needs to attribute a failure to its mutation.
 
 \subsection{Root API Mode}\label{sec:rootmode}
 
-Internal microservice endpoints typically presuppose state that can only be created through specific upstream calls (an \texttt{orderId} that exists in the database, a session whose token has not expired, a route that has stations). Black-box generators that drive those endpoints directly must fabricate the state, and a fabrication failure looks identical to a real test failure.
+Internal microservice endpoints presuppose state that only specific upstream calls can create: an \texttt{orderId} that exists in the database, a session whose token has not expired, a route that has stations. A generator that drives those endpoints directly has to fabricate the state, and a fabrication failure is indistinguishable from a real test failure.
 
-Root API Mode bypasses the problem. The generator extracts only the \emph{root} API calls from each Jaeger scenario--the gateway-entry HTTP spans that have no HTTP parent--and replays only those externally. The internal behaviour they trigger is observed through the captured trace, not driven. Concretely, the writer emits one JUnit step per root call, and an attached Jaeger fetch reads back the full causal subtree.
+Root API Mode sidesteps that problem. The generator keeps only the gateway-entry HTTP spans of each Jaeger scenario---those with no HTTP parent---and replays them externally; the internal behaviour they trigger is observed through the captured trace, not driven. The writer emits one JUnit step per root call, and a Jaeger fetch attached to each step pulls back the full causal subtree. The mode toggles on a single property (\texttt{mst.gener\-ate.only.first.step}); this paper reports only the default root-only mode.
 
-The mode is one boolean (\texttt{mst.gener\-ate.only.first.step}, default \texttt{true}). Disabling it falls back to a multi-step replay where every internal HTTP span also becomes a step. This paper reports only the root-only mode.
-
-\subsection{Trace-as-Oracle}\label{sec:traceoracle}
+\subsection{Trace-Aware Oracle}\label{sec:traceoracle}
 
 \begin{figure*}[t]
   \centering
   \input{figures/trace_oracle.tex}
-  \caption{Real captured Jaeger trace from a MIST sniper-mutated negative variant against \texttt{POST /api/v1/admin\-route\-ser\-vice/admin\-route} on TrainTicket (trace ID \texttt{d4c577d4\dots\,acf6}; source: this repository's Allure attachments). Every span carries \texttt{http.status\_code=200} and no \texttt{otel.status\_code=ERROR} is set --- the network-level oracles all pass. The Trace-Aware Oracle catches the failure through the cached per-API body-pattern rule, and uses the trace to attribute the rejection to \texttt{ts-admin-route-service}.}
+  \caption{Captured Jaeger trace from a Sniper negative variant against \texttt{POST /api/v1/admin\-route\-service/admin\-route} on TrainTicket (trace ID \texttt{d4c577d4\dots\,acf6}; from this repository's Allure attachments). Every span carries \texttt{http.status\_code=200} and no \texttt{otel.status\_code=ERROR} is set; the Trace-Aware Oracle catches the failure via the cached body-pattern rule and pins the rejection to \texttt{ts-admin-route-service}.}
   \label{fig:trace}
 \end{figure*}
 
-Figure~\ref{fig:trace} renders an actual trace from the repository's captured Allure attachments. The HTTP-status-class oracle, on its own, would only see ``200 OK on the root call'' and pass the test. The Trace-Aware Oracle additionally evaluates:
-\begin{itemize}
-  \item span causality (does the trace tree match the structural pattern derived from the original recorded scenario?),
-  \item error-status propagation (no descendant carries \texttt{otel.status\_code=ERROR} or \texttt{http.status\_code} $\geq 400$),
-  \item LLM-inferred soft-error rules cached per API in \texttt{target/soft-error-rule-cache.json}, so that envelope-level signals such as \texttt{status:0} are recognised on the very first 2xx response and reused thereafter without further LLM calls,
-  \item root-cause matching of the response \texttt{faultName} against the injected-fault registry.
-\end{itemize}
-
-The cache makes the LLM cost bounded: roughly two calls per distinct API regardless of how many tests touch that API.
+For the trace in Figure~\ref{fig:trace} the status-class check passes (200 on every span). The Trace-Aware Oracle reaches the right verdict by combining three further signals. \emph{Span causality} checks that the trace tree matches the structural pattern recorded in the original scenario, so a missing internal call surfaces even when every observed call returns 200. \emph{Error-status propagation} fails the test if any descendant span carries \texttt{otel.status\_code=ERROR} or \texttt{http.status\_code}~$\geq 400$. \emph{Soft-error body rules}, learned by a one-shot LLM call and cached per API,\footnote{The cache lives at \texttt{target/soft-error-rule-cache.json}. Each distinct API costs roughly two LLM calls regardless of how many tests touch it, so the validation budget is amortised across the run.} catch envelope patterns such as \texttt{status:0, data:null} on a 2xx response. The oracle also matches the response \texttt{faultName} against the injected-fault registry to attribute a confirmed failure to the recorded $(r, p, c, v)$ mutation.
 
 % =============================================================================
-\section{Usage Scenarios and Case Study}\label{sec:case}
+\section{Usage and Case Study}\label{sec:case}
 
-\subsection{Scenario A: targeted regression after a change}
+\subsection{Targeted regression after a change}
 
-A developer changes the \texttt{ts-admin-route-service} input validation. The relevant scenarios are already mined; a single re-run with \texttt{faulty.ratio=0.8} re-exercises the service with the same Sniper-tightened negative variants and surfaces any regression in the fault-detection report:
+A developer modifies the \texttt{ts-admin-route-service} input validation. The relevant scenarios are already mined; a single re-run with \texttt{faulty.ratio=0.8} re-exercises the service with the same Sniper negative variants and surfaces any regression in the fault-detection report:
 \begin{lstlisting}[basicstyle=\footnotesize\ttfamily,frame=none,numbers=none]
 $ java -jar target/restest.jar \
    src/main/resources/My-Example/trainticket-demo.properties
 \end{lstlisting}
 
-\subsection{Scenario B: exploratory fault detection across the system}
+\subsection{Exploratory fault detection}
 
-A QA engineer runs the bundled demo end-to-end. The configuration emits and executes 2733 test cases\footnote{Variant count from a representative MIST run on the bundled deployment, fault-detection report \texttt{trainticket\_twostage\_test\_1778039778981}.} on the deployed TrainTicket against the 10-fault injected-fault corpus described in \texttt{INJECTED\_FAULTS.md}. End-to-end wall-clock time is approximately 20\,h, of which roughly 12\,h is LLM (DeepSeek \texttt{deepseek-chat}) inference latency. The bulk of LLM cost is positive-input synthesis (one prompt per parameter per variant under \texttt{tests\-per\-oper\-a\-tion=100}); the soft-error rule cache contributes a one-time $\sim$2 prompts per distinct API and is amortised across the run. The remaining $\sim$8\,h covers scenario extraction, variant generation, JUnit emission, in-process execution, and trace-aware oracle evaluation.
-
-Table~\ref{tab:faults} reports detection on the most recent end-to-end run. All ten injected faults are detected.
+A QA engineer runs the bundled demo end-to-end. The configuration emits and executes 2733 test cases\footnote{Variant count from a representative run on the bundled deployment, fault-detection report \texttt{trainticket\_twostage\_test\_1778039778981}.} on TrainTicket against the 10-fault corpus described in \texttt{INJECTED\_FAULTS.md}. Wall-clock time is roughly 20\,h, of which $\sim$12\,h is LLM inference (DeepSeek \texttt{deepseek-chat}). Almost all LLM cost is positive-input synthesis---one prompt per parameter per variant under \texttt{tests\-per\-oper\-a\-tion=100}---while the soft-error rule cache contributes a one-time $\sim$2 prompts per distinct API. The remaining $\sim$8\,h covers scenario extraction, variant generation, JUnit emission, in-process execution, and trace-aware oracle evaluation. Table~\ref{tab:faults} shows detection on the most recent end-to-end run: all ten injected faults caught.
 
 \begin{table}[t]
 \centering
-\caption{TrainTicket 10-fault injected-fault corpus, detection on the most recent end-to-end MIST run.}
+\caption{Detection on the bundled TrainTicket 10-fault corpus.}
 \label{tab:faults}
 \footnotesize
 \begin{tabular}{@{}llcl@{}}
@@ -235,25 +206,26 @@ Table~\ref{tab:faults} reports detection on the most recent end-to-end run. All 
 \end{tabular}
 \end{table}
 
-The mechanism column is to be filled per-row from the most-current fault detection report (see \texttt{NOTES\_TO\_AUTHOR.md}, Q2). Four mechanism kinds are recognised: HTTP $\geq 4xx$, LLM soft-error rule, Jaeger error span, and injected-fault registry match.
+The Mechanism column records which of four signals triggered detection: HTTP $\geq 4xx$, LLM soft-error rule, Jaeger error span, or injected-fault registry match. The values are filled from the current fault-detection report (see \texttt{NOTES\_TO\_AUTHOR.md}, Q2).
 
 % =============================================================================
-\section{Related Work and Conclusion}\label{sec:rw}
+\section{Related Work}\label{sec:rw}
 
-\textbf{REST API testing.} EvoMaster \cite{Arcuri2017EvoMaster,Arcuri2019EvoMasterTOSEM} pioneered evolutionary search-based test generation; RESTest \cite{MartinLopez2021RESTest}, on which MIST is built, contributed the constraint-based and ART generators. Related schema-driven, feedback-guided, and LLM-integrated generators \cite{Atlidakis2019RESTler,HatfieldDodds2022Schemathesis,Liu2022MoRest,Kim2023ARATRL,Corradini2024DeepREST,Kim2024RESTGPT,Kim2025LlamaRestTest,Stennett2025AutoRestTest} target single-service APIs and use status-class oracles, not cross-service trace-as-oracle reasoning.
+EvoMaster~\cite{Arcuri2017EvoMaster,Arcuri2019EvoMasterTOSEM} pioneered evolutionary search-based REST API test generation. RESTest~\cite{MartinLopez2021RESTest}, on which MIST builds, added constraint-based and ART generators. RESTler~\cite{Atlidakis2019RESTler} introduced stateful fuzzing; Morest~\cite{Liu2022MoRest} added execution feedback over a request graph; Schemathesis~\cite{HatfieldDodds2022Schemathesis} derives property-based fuzzers from the schema. A more recent line uses LLMs or reinforcement learning for input synthesis~\cite{Kim2023ARATRL,Corradini2024DeepREST,Kim2024RESTGPT,Kim2025LlamaRestTest,Stennett2025AutoRestTest}. All of the above target single-service APIs and rely on the HTTP status class as the primary oracle. Distributed tracing itself originates with Dapper~\cite{Sigelman2010Dapper} and is now standardised by OpenTelemetry~\cite{OpenTelemetry} and Jaeger~\cite{Jaeger}; the TrainTicket benchmark~\cite{Zhou2021TrainTicket} is the canonical microservice testbed. To our knowledge, MIST is the first openly available REST API testing tool that mines workflow scenarios from traces and treats span-level evidence as a primary oracle.
 
-\textbf{Trace-based testing.} Distributed tracing originates with Dapper \cite{Sigelman2010Dapper}; OpenTelemetry \cite{OpenTelemetry} and Jaeger \cite{Jaeger} are the contemporary open standards. The TrainTicket benchmark \cite{Zhou2021TrainTicket} is the canonical microservice testbed and ships with documented fault patterns. To our knowledge, MIST is the first openly available REST API testing tool that mines workflow scenarios from production traces and uses span-level evidence as a primary oracle.
+% =============================================================================
+\section{Conclusion}\label{sec:concl}
 
-\textbf{Conclusion.} MIST closes two oracle and state-fabrication gaps that are particularly painful in microservice REST APIs: it sniper-mutates one root API per variant, observes downstream behaviour through traces rather than driving internal endpoints, and elevates trace-derived properties to checkable assertions. The artifact, the TrainTicket case study, and the 10-fault corpus are open at \url{https://github.com/miaoti/Rest/}.
+MIST attacks two gaps that hurt REST testing on microservices: the weak status-class oracle and the state-fabrication burden of internal endpoints. The Sniper Mutator localises the cause of each variant, Root API Mode hides internal state behind the trace, and the Trace-Aware Oracle combines status, structure, and body-pattern signals into a single verdict. The TrainTicket case study, the 10-fault corpus, and the bundled deployment are reproducible from one properties file.
 
 
 
 % =============================================================================
 \section{Tool Availability}\label{sec:avail}
 
-MIST is open-source and available at \url{https://github.com/miaoti/Rest/}, with documentation covering installation, configuration, and a TrainTicket walkthrough. A screencast demonstrating MIST on the TrainTicket benchmark is at \url{https://TODO-screencast.example.invalid}. The archived snapshot used in this paper is available at \url{https://TODO-zenodo-doi.example.invalid}.
+The MIST source code is at \url{https://github.com/miaoti/Rest/} under LGPL-3.0, with documentation for installation, configuration, and the TrainTicket walkthrough. A screencast on the bundled demo is at \url{https://TODO-screencast.example.invalid}, and the archived snapshot used in this paper is at \url{https://TODO-zenodo-doi.example.invalid}.
 
-\textbf{Data Availability.} All artifacts referenced in this paper --- the MIST source code, the TrainTicket merged OpenAPI specification, the 10-fault injection registry, captured Jaeger traces, and fault-detection reports --- are included in the public repository and the Zenodo snapshot.
+\textbf{Data Availability.} The MIST source code, the merged TrainTicket OpenAPI specification, the 10-fault injection registry, captured Jaeger traces, and fault-detection reports are all included in the public repository and the Zenodo snapshot.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
