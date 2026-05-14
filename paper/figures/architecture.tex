@@ -50,9 +50,9 @@
 
 \draw[flow] (mut.north east) -- ++(0,0.3) -| ([xshift=-3mm]oracle.south);
 
-\draw[flow] (oracle.east) -- (gw.west);
+\draw[flow] (oracle.east) -- ([yshift=3mm]gw.west);
 
-\draw[backflow] (jgr.west) -- ([xshift=-4mm]jgr.west) |- ([yshift=-1.5mm]oracle.east);
+\draw[backflow] (jgr.west) -- ([xshift=-4mm]jgr.west) |- ([yshift=-3mm]oracle.east);
 
 \draw[flow] (oracle.south) -- (out.north);
 
