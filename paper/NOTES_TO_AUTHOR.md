@@ -339,3 +339,35 @@ New placeholders introduced by fix #2 (grep for "TODO-" or "TODO "):
 * `\city{TODO City}`
 * `\country{TODO Country}`
 * `\email{todo@example.invalid}` (placeholder address; replace verbatim)
+
+
+### Second compile-fix pass (acmart's \url{} verbatim-mode)
+
+Symptom: at `\maketitle` (l.85) acmart's xstring layer crashed with
+`Use of \xs_IfSubStr__ doesn't match its definition`, `Argument of
+\xs_execfirst has an extra }`, and `Use of \affiliation doesn't match
+its definition`.  The root cause was the abstract's
+`Screencast: \url{\todo{SCREENCAST-URL}}` -- `\url{}` parses verbatim-
+like and chokes on user macros; the same problem hit two more sites in
+the Tool Availability section.
+
+Fix: three URL placeholders rewritten as plain ASCII URLs that the
+human can grep for:
+
+* `\url{https://TODO-screencast.example.invalid}` (appears in the
+  abstract and in §7 Tool Availability)
+* `\url{https://TODO-zenodo-doi.example.invalid}` (in §7 Tool
+  Availability)
+
+The Table~I `\todo{mech}` cells, which sit inside ordinary `\textsc{}`-
+flanked cells and not inside `\url{}` / `\email{}` / acmart rights
+fields, are unaffected and stay as `\todo{...}` markers.
+
+Updated set of placeholder grep targets:
+
+* `TODO-ISBN`, `TODO-DOI` (preamble)
+* `TODO Author Name`, `TODO Institution`, `TODO City`, `TODO Country`
+* `todo@example.invalid` (email; replace verbatim)
+* `TODO-screencast.example.invalid` (two sites)
+* `TODO-zenodo-doi.example.invalid`
+* `\todo{mech}` (Table I)
