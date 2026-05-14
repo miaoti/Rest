@@ -33,13 +33,13 @@
 \node[sut]    (gw)   at (15.0, 0.05)  {Gateway};
 \node[sut]    (svc1) at (15.0,-0.60)  {ts-route};
 \node[sut]    (svc2) at (15.0,-1.25)  {ts-order};
-\node[sutgap] (dots) at (15.0,-1.70)  {$\vdots$};
-\node[sut]    (jgr)  at (15.0,-2.20)  {Jaeger};
+\node[sutgap] (dots) at (15.0,-1.95)  {$\vdots$};
+\node[sut]    (jgr)  at (15.0,-2.70)  {Jaeger};
 \begin{scope}[on background layer]
   \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
         fit=(gw)(jgr)] (sutbox) {};
 \end{scope}
-\node[font=\footnotesize\bfseries, text=gray!50!black, fill=white, inner sep=2pt]
+\node[font=\scriptsize\bfseries, text=gray!50!black, fill=white, inner sep=1pt]
      at (sutbox.north) {System Under Test};
 
 \draw[flow] (ingest)   -- (registry);
