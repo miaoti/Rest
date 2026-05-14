@@ -18,7 +18,10 @@
                    fill=gray!4, minimum height=17mm, minimum width=68mm,
                    align=left, inner sep=4pt, text depth=0pt,
                    font=\footnotesize},
-  outlbl/.style  ={font=\footnotesize, align=center, anchor=center},
+  outputbox/.style={draw=gray!50, line width=0.5pt, rounded corners=2.5pt,
+                    fill=gray!4, minimum height=17mm, minimum width=38mm,
+                    align=left, inner sep=4pt, text depth=0pt,
+                    font=\footnotesize},
   flow/.style    ={->, thick, >=Stealth, draw=black!75},
   backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
 ]
@@ -32,7 +35,7 @@
 % --- Bottom row: Inputs / Sniper / Outputs. ---
 \node[inputbox] (inputs) at (1.9,-2.5) {\textbf{Inputs}\\\scriptsize\\\enspace$\bullet$ OpenAPI specification (one file or aggregated /v3/api-docs)\\\enspace$\bullet$ Jaeger / OpenTelemetry traces (one file or a directory)\\\enspace$\bullet$ run configuration (	exttt{.properties} file)};
 \node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
-\node[outlbl] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\JUnit tests, Allure report,\\fault-detection report};
+\node[outputbox] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
 
 % --- System Under Test cluster (bigger items, more spacing). ---
 \node[sut]    (gw)   at (15.0, 1.05)  {Gateway};
