@@ -230,3 +230,80 @@ Do **not** cut: the motivating example in §2 (it is the visual hook), Figure 1 
 - [ ] All figure captions self-contained
 - [ ] Most-current fault-detection report copied onto submission machine and Table I mechanism column populated
 - [ ] Inconsistency §2 (`injected` vs `isInjected`) fixed in repo's `INJECTED_FAULTS.md` if author chooses
+
+
+---
+
+## ISSTA 2026 conversion
+
+`paper/main.tex` (ICSME 2026, IEEEtran) is preserved unchanged. The ACM
+sigconf variant lives at `paper/main_issta.tex`. Build instructions for both
+are in `paper/README_ISSTA.md`.
+
+### Mechanical changes
+
+| Change | From | To |
+|---|---|---|
+| Document class | `\documentclass[conference]{IEEEtran}` | `\documentclass[sigconf,screen,review]{acmart}` |
+| IEEE override | `\IEEEoverridecommandlockouts` | removed |
+| Package list | `cite, url, hyperref` (and `cite`) loaded explicitly | removed; acmart loads them internally and a second load would clash |
+| Title block | IEEEtran `	hanks{...}` in `	itle` | `cmConference[...]` + `cmBooktitle{...}` |
+| Author block | `uthor{\IEEEauthorblockN{...}\IEEEauthorblockA{...}}` | `uthor{...}ffiliation{\institution\city\country}\email{...}` (single-blind: all `	odo{...}` placeholders, visible at submission) |
+| Bibliography style | `\bibliographystyle{IEEEtran}` | `\bibliographystyle{ACM-Reference-Format}` |
+| Maketitle ordering | `\maketitle` before `\begin{abstract}` | `\maketitle` after `\end{abstract}` (acmart convention) |
+| ACM metadata added | n/a | `\setcopyright{rightsretained}`, `cmISBN`, `cmDOI`, `cmPrice`, `cmYear`, `\copyrightyear`, `cmConference`, `cmBooktitle` |
+| CCS concepts added | n/a | one primary (`Software testing and debugging`, 500), one secondary (`Network services`, 300) |
+| Keywords added | n/a | REST API testing, microservices, distributed tracing, fault injection, large language models |
+
+### Content changes (compression for the 4+1 page budget)
+
+| Cut | Location | Justification |
+|---|---|---|
+| §3 final paragraph "End-to-end flow" | end of architecture section | redundant with Figure 1; compression target #1 from the task spec |
+| Related Work first paragraph | §6 | tightened from a list of eight named tools to two named comparisons (EvoMaster, RESTest) + one parenthetical citation block covering the other six; compression target #2 from the task spec |
+| Figure 2 caption | §4.3 | trimmed from three sentences to two (removed the redundant "source: this repository's Allure attachments" sub-clause) |
+| Algorithm 1 lines 6-7 | §4.1 | merged the "lock" and "fill from positive sources" lines into a single Algorithmic line |
+
+### Content added (ISSTA-specific)
+
+* **§7 Tool Availability** (mandatory for ISSTA Tool Demos): repository URL, screencast URL placeholder, Zenodo DOI placeholder.
+* **Data Availability** subsection inside §7: not strictly required for the Tool Demos track, but recommended by ISSTA's review culture. One paragraph naming each artifact bundled with the public repository and the Zenodo snapshot.
+
+### Unchanged (deliberately)
+
+* Three named contributions (Sniper Strategy, Root API Mode, Trace-as-Oracle) and their headline status.
+* §4 interlock sentence ("None of the three could close the oracle and state-fabrication gaps alone; the combination is what does"). The earlier `"incremental"` phrasing has been verified absent from `main_issta.tex` as well.
+* §3.(i) black-box framing ("obtained from the SUT operator or aggregated from per-service /v3/api-docs endpoints").
+* All concrete numbers: 37 services, 265 operations, 2733 variants, 20 h runtime, 12 h LLM latency.
+* Table I structure and the ten fault rows (mechanism column still `	odo{mech}` until the most-current report is on this machine).
+* Figures and TikZ sources (`figures/architecture.tex`, `figures/trace_oracle.tex`).
+* `refs.bib`: same file, same entries. ACM-Reference-Format accepts the same BibTeX entry types as IEEEtran; the per-entry `note = {TODO-...}` lines for recent DBLP-uncertain entries (RESTGPT, LlamaRestTest, AutoRestTest, DeepREST, TrainTicket secondary) still apply.
+
+### New `	odo{}` markers introduced by the conversion
+
+| Marker | Location | When to resolve |
+|---|---|---|
+| `	odo{ISBN}` | `cmISBN{...}` in preamble | camera-ready |
+| `	odo{DOI}` | `cmDOI{...}` in preamble | camera-ready |
+| `	odo{Author Name}` | `uthor{...}` | before submission |
+| `	odo{Institution}` / `	odo{City}` / `	odo{Country}` / `	odo{email@domain}` | `ffiliation{}` and `\email{}` | before submission |
+| `	odo{SCREENCAST-URL}` | abstract and §7 | before submission (existed pre-conversion; kept) |
+| `	odo{ZENODO-DOI}` | §7 Tool Availability | before submission or camera-ready |
+
+### Estimated page count
+
+Without a local TeX compile against the real `acmart.cls`, the estimate is based on the IEEEtran density observed for `main.tex` (~5.0 to 5.2 pages) plus the known density delta:
+
+* acmart sigconf two-column body is roughly 5–10 percent more compact per page than IEEEtran conference (smaller margins, smaller default font for figure captions and listings).
+* The compression cuts (End-to-end flow paragraph + Related Work tightening + Figure 2 caption + Algorithm 1 line merge) collectively save ~0.4 page.
+* The Tool Availability section adds ~0.3 page (two short paragraphs + section header).
+
+**Net estimate: 4.6 to 4.9 pages including references.** This fits the 4 body + 1 ref budget with margin. If the compile lands long, the next compression in order would be the §4.3 bullet list (merge "span causality" + "error-status propagation" since both express the same idea at different levels of granularity), saving ~0.1 page.
+
+### Rendering issues to inspect manually after first build
+
+1. **Algorithm 1**: IEEEtran rendered `\begin{algorithm}` + `algorithmic` package as an indented numbered block. acmart sigconf may or may not adjust the spacing; if the algorithm shrinks or expands beyond comfort, consider switching to `algorithm2e` (one-line install change in the preamble).
+2. **Figure 1** (full-page `figure*`): the architecture diagram was sized for IEEEtran's column width. acmart sigconf columns are slightly narrower; the diagram's right-hand "System Under Test" cluster may push out of the column. If so, tighten `inner sep` and `minimum width` in `figures/architecture.tex` rather than re-laying out by hand.
+3. **Listings**: the JSON snippets in §2 and the CLI snippet in §5 use `listings` with `frame=none`. ACM's referee-mode line numbering does not interfere with `listings` numbering, but the two number sequences sit on opposite gutters. If reviewers complain, set `numbers=none` on listings.
+4. **Bibliography**: ACM-Reference-Format prefers `doi` fields and is stricter about `@misc` minimum content. After `bibtex` runs, scan the rendered list for warnings; entries without DOIs (RESTGPT, LlamaRestTest, AutoRestTest, DeepREST) will render but may look thin. Adding the URL to the proceedings PDF or arXiv mirror in a `url = {...}` field is the easiest fix.
+5. **Title hyphenation**: `Multi-Service` is hyphenated across lines in the IEEEtran title; acmart may break differently or not at all. Re-check the title typesetting in the first PDF.
