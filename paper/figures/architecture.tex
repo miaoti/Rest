@@ -21,13 +21,13 @@
 
 % --- Four components on the main row (y=0); uniform two-line labels
 %     so every box has the same height. ---
-\node[comp] (ingest)   at ( 0.0, 0)   {(i) Spec\Ingestor};
-\node[comp] (registry) at ( 3.5, 0)   {(ii) Semantic\Dep.\ Registry};
-\node[comp] (gen)      at ( 7.0, 0)   {(iii) Sequence\Generator};
-\node[comp] (oracle)   at (11.0, 0)   {(v) Trace-Aware\Oracle};
+\node[comp] (ingest)   at ( 0.0, 0)   {(i) Spec\\Ingestor};
+\node[comp] (registry) at ( 3.5, 0)   {(ii) Semantic\\Dep.\ Registry};
+\node[comp] (gen)      at ( 7.0, 0)   {(iii) Sequence\\Generator};
+\node[comp] (oracle)   at (11.0, 0)   {(v) Trace-Aware\\Oracle};
 
 % --- Sniper Mutator directly below the Generator. ---
-\node[comp] (mut)      at ( 7.0,-2.6) {(iv) Sniper\Mutator};
+\node[comp] (mut)      at ( 7.0,-2.6) {(iv) Sniper\\Mutator};
 
 % --- System Under Test cluster on the right.  Concrete service stubs
 %     so the figure does not need \cdots; the two `ts-*' rows hint at
@@ -46,7 +46,7 @@
 %     grows downward and never collides with the mut->oracle wire that
 %     approaches the oracle's south edge. ---
 \node[outlbl] (out) at (11.0,-2.6)
-  {JUnit tests, Allure report,\fault-detection report};
+  {JUnit tests, Allure report,\\fault-detection report};
 
 % --- Main horizontal pipeline (left to right). ---
 \draw[flow] (ingest)   -- (registry);
