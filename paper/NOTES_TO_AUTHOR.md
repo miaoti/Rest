@@ -307,3 +307,35 @@ Without a local TeX compile against the real `acmart.cls`, the estimate is based
 3. **Listings**: the JSON snippets in §2 and the CLI snippet in §5 use `listings` with `frame=none`. ACM's referee-mode line numbering does not interfere with `listings` numbering, but the two number sequences sit on opposite gutters. If reviewers complain, set `numbers=none` on listings.
 4. **Bibliography**: ACM-Reference-Format prefers `doi` fields and is stricter about `@misc` minimum content. After `bibtex` runs, scan the rendered list for warnings; entries without DOIs (RESTGPT, LlamaRestTest, AutoRestTest, DeepREST) will render but may look thin. Adding the URL to the proceedings PDF or arXiv mirror in a `url = {...}` field is the easiest fix.
 5. **Title hyphenation**: `Multi-Service` is hyphenated across lines in the IEEEtran title; acmart may break differently or not at all. Re-check the title typesetting in the first PDF.
+
+
+### Compile fix on first build (acmart 2025)
+
+The first `pdflatex main_issta.tex` exposed three acmart edge cases that the
+template silently tolerates in the IEEEtran variant but rejects in acmart:
+
+1. `\Bbbk` already defined.  acmart pulls in `amssymb` itself via `amsmath`,
+   so the explicit `\usepackage{amssymb}` in the preamble re-defines `\Bbbk`.
+   Fix: the line `\usepackage{amsmath,amssymb,amsfonts}` has been removed.
+   `\boldsymbol` and the AMS math symbols stay available via acmart's own
+   loads.
+2. `\email{...}` parse error.  acmart's `\email`, `\acmISBN`, `\acmDOI`,
+   `\author`, `\institution`, `\city`, `\country` macros use low-level
+   token expansion (`\xs_arg_ii`, `\xs_call`) that does not tolerate a
+   user-defined macro inside the argument.  My `\todo{...}` macro is fine
+   in body text but fails in those fields.  Fix: those seven fields now
+   contain plain ASCII placeholder strings of the form `TODO-FIELD` or
+   `TODO Field`.  Grep for `TODO-` or `^\(author|institution|city|`
+   `country\)` to find them before submission.  The body-text `\todo{...}`
+   markers (mechanism column of Table I, the SCREENCAST-URL, ZENODO-DOI)
+   are unaffected.
+3. `\acmPrice` is obsolete.  Removed.
+
+New placeholders introduced by fix #2 (grep for "TODO-" or "TODO "):
+* `\acmISBN{TODO-ISBN}`
+* `\acmDOI{TODO-DOI}`
+* `\author{TODO Author Name}`
+* `\institution{TODO Institution}`
+* `\city{TODO City}`
+* `\country{TODO Country}`
+* `\email{todo@example.invalid}` (placeholder address; replace verbatim)

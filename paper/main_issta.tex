@@ -2,7 +2,8 @@
 
 % --- Packages (acmart loads hyperref/url/cite/natbib internally - do NOT
 %     reload them here, an option clash will follow). ---
-\usepackage{amsmath,amssymb,amsfonts}
+% amsmath/amssymb/amsfonts removed: acmart loads them, and an explicit
+% load would re-define \Bbbk (clash from amssymb).
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{graphicx}
@@ -36,9 +37,9 @@
 \setcopyright{rightsretained}
 \acmConference[ISSTA '26 Tool Demonstrations]{Proceedings of the 35th ACM SIGSOFT International Symposium on Software Testing and Analysis Tool Demonstrations}{October 3--9, 2026}{Oakland, CA, USA}
 \acmBooktitle{Proceedings of the 35th ACM SIGSOFT International Symposium on Software Testing and Analysis Tool Demonstrations (ISSTA '26 Tool Demonstrations), October 3--9, 2026, Oakland, CA, USA}
-\acmISBN{\todo{ISBN}}
-\acmDOI{\todo{DOI}}
-\acmPrice{15.00}
+\acmISBN{TODO-ISBN}
+\acmDOI{TODO-DOI}
+% \acmPrice is obsolete in modern acmart; removed.
 \acmYear{2026}
 \copyrightyear{2026}
 
@@ -69,13 +70,13 @@
 
 % Single-blind track: author block is visible. Replace \todo{...} placeholders
 % before submission.
-\author{\todo{Author Name}}
+\author{TODO Author Name}
 \affiliation{%
-  \institution{\todo{Institution}}
-  \city{\todo{City}}
-  \country{\todo{Country}}
+  \institution{TODO Institution}
+  \city{TODO City}
+  \country{TODO Country}
 }
-\email{\todo{email@domain}}
+\email{todo@example.invalid}
 
 \begin{abstract}
 Microservice systems make REST API testing simultaneously more important and harder. Black-box test generators must reason about cross-service workflows that are not declared in any single OpenAPI specification, and the dominant ``HTTP 2xx is a pass'' oracle silently accepts soft errors that downstream services have already flagged. We present \textbf{MIST} (Microservice Integration \& Scenario Tester), an open-source tool that turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable, cross-service workflow tests. MIST is built around three named contributions: a \emph{Sniper Strategy} that injects exactly one fault at exactly one root API per negative variant so that any downstream anomaly is causally attributable, a \emph{Root API Mode} that exercises only entry-point APIs and observes internal behaviour through traces (avoiding state fabrication on internal endpoints), and a \emph{Trace-as-Oracle} layer that promotes span causality, error-status propagation, and soft-error patterns to checkable assertions. We bundle a TrainTicket \cite{Zhou2021TrainTicket} case study with a 10-fault injected-fault corpus and a public deployment, all reproducible from one properties file. Source code is at \url{https://github.com/miaoti/Rest/}. Screencast: \url{\todo{SCREENCAST-URL}}.
