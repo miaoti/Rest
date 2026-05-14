@@ -58,14 +58,14 @@
 
 % Gen -> Sniper (vertical), Sniper -> Oracle (corner)
 \draw[flow] (gen.south) -- (mut.north);
-\draw[flow] (mut.east) -- (oracle.south west);
+\draw[flow] (mut.north east) -| ([xshift=-3mm]oracle.south);
 
 % Oracle -> SUT (HTTP requests, top arrow)
 \draw[flow] ([yshift= 1.5mm]oracle.east) -- ([yshift= 1.5mm]oracle.east -| gw.west);
 
 % Jaeger -> Oracle (dashed return).  Routed via the right edge of
 % the SUT cluster (vertical first), well clear of the output label.
-\draw[backflow] (jgr.west) -- ([xshift=-3mm]jgr.west) |- ([yshift=-1.5mm]oracle.east);
+\draw[backflow] (jgr.west) -- ([xshift=-12mm]jgr.west) |- ([yshift=-1.5mm]oracle.east);
 
 % Oracle -> Outputs label (vertical drop)
 \draw[flow] (oracle.south) -- (out.north);
