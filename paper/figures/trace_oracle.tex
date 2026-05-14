@@ -1,52 +1,51 @@
-% Figure 2: Real captured Jaeger trace from a Sniper negative variant
-% against POST /api/v1/adminrouteservice/adminroute on TrainTicket.
+% Figure 2: Captured Jaeger trace, a Sniper negative variant against
+% POST /api/v1/adminrouteservice/adminroute on TrainTicket.
 % Trace ID: d4c577d47bcba04a00ef9b3edcbcacf6 (test_negative_POST_1_81).
 % Source: src/main/resources/My-Example/trainticket/allure-results/
-%         4a67e7c8-4fd2-4b6a-a698-1b1cec487a6d-attachment.txt
-%
-% Layout: 5-span parent-child cascade on the top, Trace-Aware Oracle
-% verdict in prose underneath.  Designed to fit acmart sigconf full
-% width (figure*) with the 'review' line-number gutters subtracted
-% from the usable canvas.
+%   4a67e7c8-4fd2-4b6a-a698-1b1cec487a6d-attachment.txt
+
 \begin{tikzpicture}[
-    font=\footnotesize,
-    >={Stealth[length=2mm]},
-    span/.style={draw, rounded corners=1pt, minimum height=4.4mm,
-                 align=left, inner sep=2pt, font=\footnotesize},
-    spanok/.style={span, fill=green!10},
-    spansoft/.style={span, fill=orange!18, draw=orange!70, very thick},
-    edge/.style={->, thick}
+  font=\footnotesize,
+  >={Stealth[length=2mm]},
+  span/.style={draw=gray!50, line width=0.4pt, rounded corners=1.5pt,
+               minimum height=4.5mm, align=left, inner sep=3pt,
+               text depth=0pt},
+  spangw/.style={span, fill=blue!5},
+  spanar/.style={span, fill=orange!10},
+  spanhi/.style={span, fill=orange!22, draw=orange!70!black, line width=0.8pt},
+  bodybox/.style={draw=orange!60!black, line width=0.6pt, rounded corners=2pt,
+                  fill=orange!6, align=left, inner sep=4pt,
+                  font=\scriptsize\ttfamily, text width=4.6cm},
+  vbox/.style={draw=gray!55, line width=0.5pt, rounded corners=2pt,
+               fill=gray!5, align=left, inner sep=5pt,
+               font=\footnotesize, text width=15.5cm},
+  edge/.style={->, thick, draw=black!75}
 ]
 
-% --- Spans: indented cascade, parent -> child ---
-\node[spanok]  (s1) at (0.00, 0)
-  {\textbf{POST /adminroute} \quad @ ts-gateway-service \quad \textbf{200}, 6.1\,ms};
-\node[spanok]  (s2) at (0.35,-0.75)
-  {FilteringWebHandler.handle \quad @ ts-gateway-service \quad 5.6\,ms};
-\node[spanok]  (s3) at (0.70,-1.50)
-  {POST (gateway client) \quad @ ts-gateway-service$\to$admin-route \quad \textbf{200}, 4.0\,ms};
-\node[spansoft](s4) at (1.05,-2.25)
-  {POST /adminroute \quad @ ts-admin-route-service \quad \textbf{200}, 3.6\,ms};
-\node[spanok]  (s5) at (1.40,-3.00)
-  {AdminRouteController.addRoute \quad @ ts-admin-route-service \quad 1.0\,ms};
+% --- Spans: indented parent-child cascade.  Service color coding:
+%     gateway = light blue (spangw); admin-route = light orange (spanar);
+%     the soft-error producer is highlighted (spanhi). ---
+\node[spangw] (s1) at (0.00,0.00) {\textbf{POST /adminroute}\quad @ ts-gateway-service\quad \textbf{200},  6.1\,ms};
+\node[spangw] (s2) at (0.40,-0.75) {FilteringWebHandler.handle\quad @ ts-gateway-service\quad 5.6\,ms};
+\node[spangw] (s3) at (0.80,-1.50) {POST (gateway client)\quad @ ts-gateway-service$\to$admin-route\quad \textbf{200},  4.0\,ms};
+\node[spanhi] (s4) at (1.20,-2.25) {\textbf{POST /adminroute}\quad @ ts-admin-route-service\quad \textbf{200},  3.6\,ms};
+\node[spanar] (s5) at (1.60,-3.00) {AdminRouteController.addRoute\quad @ ts-admin-route-service\quad 1.0\,ms};
 
-% Parent-child arrows
+% --- Parent->child wiring ---
 \draw[edge] (s1.south west) ++(0.05,0) |- (s2.west);
 \draw[edge] (s2.south west) ++(0.05,0) |- (s3.west);
 \draw[edge] (s3.south west) ++(0.05,0) |- (s4.west);
 \draw[edge] (s4.south west) ++(0.05,0) |- (s5.west);
 
-% --- Trace-Aware Oracle verdict, in prose, below the trace ---
-\node[align=left, anchor=north west, font=\footnotesize, text width=16cm]
-  at (0,-3.7) {%
-    \textbf{Trace-Aware Oracle verdict.}\quad
-    HTTP status class \emph{passes} (every span returns 200);
-    no span carries \texttt{otel.status\_code=ERROR}.
-    The Per-API body-pattern rule \emph{fails} on the response body
-    \texttt{\{"status":0, "msg":"start or end station not include in stationList.", "data":null\}}
-    --- the rule was learned by a one-shot LLM call on the first 2xx response for this endpoint
-    and cached for the rest of the run.
-    The rejection is attributed to the shaded span on \texttt{ts-admin-route-service}.%
-  };
+% --- Soft-error tag next to the rejecting span ---
+\node[anchor=west, font=\scriptsize\bfseries, text=orange!60!black,
+      inner sep=1pt] (tag) at ([xshift=2mm]s4.east) {soft error};
+
+% --- Response body callout, color matched to the soft-error span ---
+\node[bodybox] (body) at (12.5,-2.25) {Response body (HTTP 200):\\{"status":0,\\ "msg":"start or end station\\        not include in stationList.",\\ "data":null}};
+\draw[->, thick, orange!70!black] (tag.east) -- (body.west);
+
+% --- Trace-Aware Oracle verdict, structured as a labelled tabular ---
+\node[vbox, anchor=north west] (vrd) at (0,-3.95) {\textbf{Trace-Aware Oracle verdict.}\\ \begin{tabular}{@{}l@{\quad}p{13cm}@{}} \textbf{HTTP status class}    & passes (every span returns 200). \\ \textbf{Span error frame}     & no span carries \texttt{otel.status\_code=ERROR}. \\ \textbf{Per-API body rule}    & \emph{fails} on \texttt{\{status:0, data:null\}}; rule learned from the first 2xx response, then cached. \\ \textbf{Attribution}          & rejection pinned to \texttt{ts-admin-route-service} (highlighted span). \end{tabular}};
 
 \end{tikzpicture}

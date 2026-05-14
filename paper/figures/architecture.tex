@@ -1,78 +1,69 @@
-% Figure 1: MIST architecture.  Plain pipeline of five components +
-% SUT cluster + run output.  Inputs (OpenAPI spec, Jaeger traces,
-% .properties file) are NOT drawn on the canvas; they are named in the
-% figure caption.  This keeps the figure free of crossing wires and
-% matches the convention in recent tool-demo figures (RESTest @ ISSTA
-% 2021, AutoRestTest @ ICSE 2025, ASTRAL @ ISSTA 2025).
+% Figure 1: MIST architecture.  Polished sigconf-friendly version.
+% Pipeline of five components + SUT cluster + run output.  Inputs are
+% described in the caption, not drawn on the canvas, so no input-feed
+% wires can clip box text.
 \begin{tikzpicture}[
     font=\small,
     >={Stealth[length=2.4mm]},
-    % All component boxes use a fixed height so the row is uniform.
-    comp/.style={draw, rounded corners=2pt, fill=gray!8,
-                 minimum height=12mm, minimum width=24mm,
-                 align=center, inner sep=3pt, text depth=0pt},
-    sut/.style ={draw, rounded corners=2pt, fill=blue!5,
-                 minimum height=7mm, minimum width=18mm,
-                 align=center, inner sep=2pt, font=\footnotesize},
-    outlbl/.style={font=\footnotesize\itshape, align=center, anchor=north},
-    flow/.style={->, thick, >=Stealth},
-    backflow/.style={->, thick, dashed, >=Stealth}
+    comp/.style    ={draw=blue!40!gray, line width=0.6pt, rounded corners=2.5pt,
+                     fill=blue!4, minimum height=12mm, minimum width=24mm,
+                     align=center, inner sep=3pt, text depth=0pt},
+    sut/.style     ={draw=gray!50, line width=0.5pt, rounded corners=2pt,
+                     fill=gray!8, minimum height=6.5mm, minimum width=18mm,
+                     align=center, inner sep=2pt, font=\footnotesize},
+    sutgap/.style  ={align=center, inner sep=1pt, font=\footnotesize\itshape,
+                     text=gray!70},
+    outlbl/.style  ={font=\footnotesize, align=center, anchor=north},
+    flow/.style    ={->, thick, >=Stealth, draw=black!75},
+    backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
 ]
 
-% --- Four components on the main row (y=0); uniform two-line labels
-%     so every box has the same height. ---
+% --- Four components on the main row at y=0. ---
 \node[comp] (ingest)   at ( 0.0, 0)   {(i) Spec\\Ingestor};
 \node[comp] (registry) at ( 3.5, 0)   {(ii) Semantic\\Dep.\ Registry};
 \node[comp] (gen)      at ( 7.0, 0)   {(iii) Sequence\\Generator};
 \node[comp] (oracle)   at (11.0, 0)   {(v) Trace-Aware\\Oracle};
-
-% --- Sniper Mutator directly below the Generator. ---
 \node[comp] (mut)      at ( 7.0,-2.6) {(iv) Sniper\\Mutator};
 
-% --- System Under Test cluster on the right.  Concrete service stubs
-%     so the figure does not need \cdots; the two `ts-*' rows hint at
-%     TrainTicket without naming any specific service. ---
-\node[sut] (gw)   at (14.0, 1.1)  {Gateway};
-\node[sut] (svc1) at (14.0, 0.25) {ts-route};
-\node[sut] (svc2) at (14.0,-0.60) {ts-order};
-\node[sut] (jgr)  at (14.0,-1.45) {Jaeger};
+% --- System Under Test cluster.  Explicit 'ts-...' row between named
+%     services so the figure tells the reader 'these two are
+%     representative of many'. ---
+\node[sut]   (gw)   at (14.0, 1.30)  {Gateway};
+\node[sut]   (svc1) at (14.0, 0.45)  {ts-route};
+\node[sut]   (svc2) at (14.0,-0.40)  {ts-order};
+\node[sutgap](dots) at (14.0,-1.10)  {$\vdots$};
+\node[sut]   (svcn) at (14.0,-1.75)  {ts-\dots};
+\node[sut]   (jgr)  at (14.0,-2.60)  {Jaeger};
+
 \begin{scope}[on background layer]
-  \node[draw, dotted, thick, rounded corners=4pt, inner sep=3mm,
+  \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
         fit=(gw)(jgr),
-        label={[font=\footnotesize\bfseries]above:System Under Test}] {};
+        label={[font=\footnotesize\bfseries, gray!50!black]above:System Under Test}] {};
 \end{scope}
 
-% --- Run output drops below the oracle.  Anchored north so the label
-%     grows downward and never collides with the mut->oracle wire that
-%     approaches the oracle's south edge. ---
+% --- Run output below the oracle, offset right of the mut->oracle wire. ---
 \node[outlbl] (out) at (11.0,-2.6)
   {JUnit tests, Allure report,\\fault-detection report};
 
-% --- Main horizontal pipeline (left to right). ---
+% --- Main horizontal pipeline. ---
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
 \draw[flow] (gen)      -- (oracle);
 
-% --- Generator down to Sniper Mutator (clean vertical). ---
+% --- Generator -> Sniper Mutator (clean vertical). ---
 \draw[flow] (gen.south) -- (mut.north);
 
-% --- Sniper Mutator back up into the Oracle, approaching from below.
-%     Corner path: right at y=-2.6 then up at x just left of oracle.south,
-%     so the rising segment does NOT collide with the output label that
-%     sits directly below oracle.south. ---
+% --- Sniper Mutator -> Oracle. ---
 \draw[flow] (mut.east) -| ([xshift=-4mm]oracle.south);
 
-% --- Oracle <-> SUT: HTTP requests out (top), Jaeger trace back
-%     (bottom).  Two parallel arrows with explicit +/- 1.5mm y-shift so
-%     they remain visually distinct in print. ---
+% --- Oracle <-> SUT.  Two parallel arrows distinguished by +/- 1.5mm y-shift. ---
 \draw[flow]     ([yshift= 1.5mm]oracle.east)
             -- ([yshift= 1.5mm]oracle.east -| gw.west);
 \draw[backflow] (jgr.west)
             -- ([yshift=-1.5mm]oracle.east -| jgr.west)
             -- ([yshift=-1.5mm]oracle.east);
 
-% --- Oracle to output (vertical, offset right of the mut->oracle wire
-%     so the two do not overlap at the same x-coordinate). ---
+% --- Oracle -> output (drops straight down, offset right of mut->oracle). ---
 \draw[flow] ([xshift=4mm]oracle.south) -- ([xshift=4mm]oracle.south |- out.north);
 
 \end{tikzpicture}
