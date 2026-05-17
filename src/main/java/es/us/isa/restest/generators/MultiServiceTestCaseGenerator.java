@@ -366,6 +366,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             smartFetcher.resetValueRotation();
         }
 
+        // ── 0. Pre-traversal scenario buildability check ──────────────
+        // traverse() returns 0 steps when no root step (or descendant) maps to a
+        // service present in serviceConfigs — i.e. the scenario is entirely
+        // gateway-only or routes to services whose OpenAPI specs are not loaded.
+        // Without this check the variant loop would run N times and each variant
+        // would silently produce an empty test case, emitting one WARN per variant
+        // (600+ identical warnings in observed runs). Detect that condition once,
+        // up front, log a single explanation, and skip the scenario entirely so
+        // missing-coverage signal is preserved without log spam.
+        if (!scenarioHasBuildableRoot(sc)) {
+            log.warn("Skipping scenario {} entirely — no root step resolves to a service in serviceConfigs "
+                    + "(likely gateway-only or unconfigured downstream services). 0 variants generated.",
+                    baseCounter);
+            return variants;
+        }
+
         int configuredVariantCount = getVariantCountFromProperties();
 
         log.info("=== TARGETED FAULT INJECTION MATRIX ===");
@@ -409,6 +425,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         } else {
             scenarioId = "Flow_Scenario_" + baseCounter;
         }
+
+        // Early-exit guards (per scenario).
+        //   zeroStepStreak — consecutive variants whose traverse() emitted 0 steps.
+        //     The upfront scenarioHasBuildableRoot() check filters whole-scenario
+        //     gateway-only cases; this guard catches a more subtle case where a few
+        //     individual variants still come out empty (e.g. all sub-paths happen to
+        //     skip via gotoChildren). After K_ZERO_STEP in a row we bail out.
+        //   dedupExhaustionStreak — consecutive variants whose 5-retry dedup loop
+        //     failed to produce a fresh fingerprint. Late variants commonly fail
+        //     14-16x in a row when the random-draw space is exhausted; the inner
+        //     5-retry cap stays, but at K_DEDUP_EXHAUSTED in a row we stop issuing
+        //     new variants for this scenario (pool is finite, no point trying more).
+        int zeroStepStreak = 0;
+        int dedupExhaustionStreak = 0;
+        final int K_ZERO_STEP = 3;
+        final int K_DEDUP_EXHAUSTED = 10;
 
         ConsoleProgressBar.begin("Variants", variantCount);
         for (int v = 0; v < variantCount; v++) {
@@ -524,11 +556,22 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             if (tc.getSteps().isEmpty()) {
                 log.warn("Discarding variant {} — traversal produced 0 steps (service config missing or gateway-only scenario)",
                         v + 1);
+                zeroStepStreak++;
+                if (zeroStepStreak >= K_ZERO_STEP) {
+                    log.warn("Aborting scenario {} after {} consecutive 0-step variants — "
+                            + "no further variants will be issued (suppressing what would have been "
+                            + "{} more empty-traversal warnings).",
+                            baseCounter, zeroStepStreak, variantCount - (v + 1));
+                    ConsoleProgressBar.update("v" + (v + 1) + " EMPTY");
+                    break;
+                }
             } else {
+                zeroStepStreak = 0;
                 // Global payload deduplication for positive variants
                 String fingerprint = buildPayloadFingerprint(tc);
                 if (tc.getFaulty() || seenPayloads.add(fingerprint)) {
                     variants.add(tc);
+                    dedupExhaustionStreak = 0;
                 } else {
                     // Duplicate detected — retry with fresh random draws
                     boolean unique = false;
@@ -549,11 +592,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         if (seenPayloads.add(fingerprint)) {
                             unique = true;
                             variants.add(tc);
+                            dedupExhaustionStreak = 0;
                             log.info("Dedup retry {}: found unique combination for variant {}", retry + 1, v + 1);
                         }
                     }
                     if (!unique) {
                         log.warn("Dedup: variant {} still duplicate after 5 retries — skipping", v + 1);
+                        dedupExhaustionStreak++;
+                        if (dedupExhaustionStreak >= K_DEDUP_EXHAUSTED) {
+                            // Exhaustion break: the random-draw space for this scenario is
+                            // finite, and K_DEDUP_EXHAUSTED back-to-back failures indicate
+                            // the unique-fingerprint pool is fully drained. Issuing more
+                            // variants will only burn CPU on retries that cannot succeed.
+                            log.warn("Aborting scenario {} after {} consecutive dedup-exhausted variants — "
+                                    + "fingerprint pool is drained; {} remaining variant slots will be skipped.",
+                                    baseCounter, dedupExhaustionStreak, variantCount - (v + 1));
+                            ConsoleProgressBar.update("v" + (v + 1) + " EXHAUSTED");
+                            break;
+                        }
                     }
                 }
             }
@@ -2842,6 +2898,40 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             }
         }
         return null;
+    }
+
+    /**
+     * Fast pre-filter: returns true iff the scenario has at least one root step
+     * whose subtree contains a span whose service name is in {@code serviceConfigs}.
+     *
+     * <p><b>Necessary, not sufficient.</b> traverse() additionally requires the
+     * span to be an HTTP entry, not a login/auth op, and have a non-null
+     * {@code findOperation} result. A scenario that passes this filter can still
+     * yield 0 steps for those reasons — the in-loop {@code zeroStepStreak} guard
+     * below catches that residual case. The cheap filter here just kills the
+     * obvious gateway-only / unconfigured-service scenarios early so we don't
+     * burn 100+ variants on them.</p>
+     */
+    private boolean scenarioHasBuildableRoot(WorkflowScenario scenario) {
+        for (WorkflowStep root : scenario.getRootSteps()) {
+            if (subtreeHasConfiguredService(root)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean subtreeHasConfiguredService(WorkflowStep step) {
+        String service = step.getServiceName();
+        if (service != null && serviceConfigs.containsKey(service)) {
+            return true;
+        }
+        for (WorkflowStep child : step.getChildren()) {
+            if (subtreeHasConfiguredService(child)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

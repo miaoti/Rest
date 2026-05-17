@@ -216,7 +216,23 @@ public final class MstAuthHandler {
         String token = overrideToken;
         if (token == null) token = getDefaultToken();
         if (token == null || token.isEmpty()) return req;
-        return req.header(tokenHeader, tokenPrefix + token);
+        return req.header(tokenHeader, joinPrefixAndToken(tokenPrefix, token));
+    }
+
+    /**
+     * Join the configured prefix and the JWT, defensively normalizing the
+     * separator. RFC 6750 requires exactly one space between the auth scheme
+     * ("Bearer") and the token. Some property files set
+     * {@code auth.token.prefix=Bearer} without a trailing space — naive
+     * concatenation produces {@code BearereyJ...}, which the server's
+     * {@code JWTFilter} silently rejects (it does {@code startsWith("Bearer ")}),
+     * leading to a 403 on every protected endpoint. We strip any whitespace
+     * the user happened to put on the prefix and re-insert exactly one space.
+     * An empty prefix is passed through unchanged for non-Bearer schemes.
+     */
+    private static String joinPrefixAndToken(String prefix, String token) {
+        if (prefix == null || prefix.isEmpty()) return token;
+        return prefix.trim() + " " + token;
     }
 
     /** Convenience for callers that have no per-test override / disable flag. */

@@ -946,6 +946,27 @@ public class TraceWorkflowExtractor {
             group.sort(Comparator.comparingLong(WorkflowScenario::getStartTimeMicros));
 
             // 3. Sliding window merge
+            //
+            // The `absorbed` set above is correctly scoped to this single call: within one
+            // invocation, each `WorkflowScenario` object is either the accumulator (assigned
+            // once on entry, replaced only when a `next` falls outside the window) or absorbed
+            // exactly once.  Double-absorption inside one call is therefore impossible.
+            //
+            // However, `mergeScenariosBySessionTimeWindow` runs ONCE PER INPUT TRACE FILE
+            // (called from `extractScenariosFromFile`, line 509).  If the SAME Jaeger trace
+            // ID appears as input in multiple `.json` files (which happens routinely when
+            // the same captured trace is included in several recorded test sessions), each
+            // file's invocation independently rebuilds its own `WorkflowScenario` objects
+            // for that trace ID and may absorb them into a different parent.  That is by
+            // design — each input file represents a distinct test session — and is the
+            // reason the "appending trace [X]" log can legitimately repeat for the same X.
+            // Downstream global dedup (Phase 2.5 / `deduplicateSingleRootScenarios` in
+            // `MultiServiceTestCaseGenerator`) handles cross-file duplicates among
+            // single-root scenarios; multi-root scenarios that share a trace ID across
+            // files are preserved intentionally.
+            //
+            // The per-absorb message is logged at DEBUG to keep INFO logs readable; the
+            // aggregate "absorbed N single-trace scenarios" message below remains at INFO.
             WorkflowScenario accumulator = group.get(0);
             for (int i = 1; i < group.size(); i++) {
                 WorkflowScenario next = group.get(i);
@@ -955,7 +976,7 @@ public class TraceWorkflowExtractor {
                 boolean underLimit = accumulator.getRootSteps().size() < effectiveMaxRoots;
 
                 if (withinWindow && underLimit) {
-                    log.info("Session merge [{}]: appending trace {} (gap={}µs) → now {} roots",
+                    log.debug("Session merge [{}]: appending trace {} (gap={}µs) → now {} roots",
                             session, next.getTraceIds(),
                             gap, accumulator.getRootSteps().size() + next.getRootSteps().size());
                     accumulator.appendSequentialScenario(next);

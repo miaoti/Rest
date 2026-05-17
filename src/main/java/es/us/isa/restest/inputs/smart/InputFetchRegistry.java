@@ -211,6 +211,19 @@ public class InputFetchRegistry {
     private static final int MAX_ERROR_REASON_CHARS = 1024;
 
     /**
+     * In-place truncate {@code error.errorReason} to {@link #MAX_ERROR_REASON_CHARS}.
+     * Shared by {@link #addParameterError} (which then runs the similarity check) and
+     * {@link #isAlreadyRegistered} (which gates the YAML save on that same check) —
+     * they must see the same normalized form or the dedup decision diverges.
+     */
+    private static void truncateReasonIfNeeded(ParameterError error) {
+        if (error != null && error.getErrorReason() != null
+                && error.getErrorReason().length() > MAX_ERROR_REASON_CHARS) {
+            error.setErrorReason(error.getErrorReason().substring(0, MAX_ERROR_REASON_CHARS) + "...");
+        }
+    }
+
+    /**
      * Add a parameter error for specific API endpoint and parameter.
      * Decodes percent-encoded URL segments before keying so {@code /foo/%25} and
      * {@code /foo/%} collapse into one bucket (Bug audit Finding #40). Caps total entries
@@ -219,10 +232,7 @@ public class InputFetchRegistry {
      */
     public void addParameterError(String apiEndpoint, String parameterName, ParameterError error) {
         String key = decodeUrlForKey(apiEndpoint);
-        if (error != null && error.getErrorReason() != null
-                && error.getErrorReason().length() > MAX_ERROR_REASON_CHARS) {
-            error.setErrorReason(error.getErrorReason().substring(0, MAX_ERROR_REASON_CHARS) + "...");
-        }
+        truncateReasonIfNeeded(error);
         Map<String, List<ParameterError>> endpointErrors = parameterErrors.computeIfAbsent(key, k -> new HashMap<>());
         List<ParameterError> paramErrors = endpointErrors.computeIfAbsent(parameterName, k -> new ArrayList<>());
 
@@ -264,6 +274,32 @@ public class InputFetchRegistry {
         String key = decodeUrlForKey(apiEndpoint);
         return parameterErrors.getOrDefault(key, new HashMap<>())
                 .getOrDefault(parameterName, new ArrayList<>());
+    }
+
+    /**
+     * Returns {@code true} when calling {@link #addParameterError} with {@code candidate}
+     * would not mutate the registry. Callers gate the YAML flush on this so we don't
+     * write to disk when nothing on-disk would change.
+     *
+     * <p>Mirrors the same predicate {@link #addParameterError} uses internally:
+     * {@link #findSemanticallyEquivalentError} + {@link #shouldUpdateExistingError}. A
+     * bit-exact-only check would miss the semantic-similar-but-no-update case and still
+     * trigger a redundant save.</p>
+     */
+    public boolean isAlreadyRegistered(String apiEndpoint, String parameterName, ParameterError candidate) {
+        if (candidate == null) return false;
+        // Symmetry: addParameterError truncates the reason in-place before the similarity
+        // check, so we must compare against the same truncated form. Without this, a long
+        // reason can look "not similar" here but be a no-op inside addParameterError, which
+        // would still flip registryChanged and force a wasted YAML write.
+        truncateReasonIfNeeded(candidate);
+        List<ParameterError> existing = getParameterErrors(apiEndpoint, parameterName);
+        ParameterError similar = findSemanticallyEquivalentError(existing, candidate);
+        // No similar error → addParameterError would add a new entry → caller must save.
+        if (similar == null) return false;
+        // Similar exists → addParameterError would mutate iff shouldUpdateExistingError;
+        // if it would NOT update, the registry is effectively unchanged.
+        return !shouldUpdateExistingError(similar, candidate);
     }
 
     /**

@@ -2,6 +2,7 @@ package es.us.isa.restest.auth;
 
 import io.restassured.filter.OrderedFilter;
 import io.restassured.filter.FilterContext;
+import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.specification.FilterableRequestSpecification;
 import io.restassured.specification.FilterableResponseSpecification;
@@ -49,6 +50,12 @@ public final class MstAuthRefreshFilter implements OrderedFilter {
 
     public static final MstAuthRefreshFilter INSTANCE = new MstAuthRefreshFilter();
 
+    // Reentry guard. The retry below re-issues via requestSpec.request(...) which
+    // re-runs the full filter chain (and therefore this filter), so without a
+    // guard a still-bad token would loop forever. ThreadLocal because RestAssured
+    // executes filters on the calling thread.
+    private static final ThreadLocal<Boolean> RETRYING = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
     private MstAuthRefreshFilter() {}
 
     @Override
@@ -58,6 +65,7 @@ public final class MstAuthRefreshFilter implements OrderedFilter {
         Response response = ctx.next(requestSpec, responseSpec);
 
         if (response == null) return response;
+        if (RETRYING.get()) return response;
         int status = response.getStatusCode();
         // Refresh on either 401 (Unauthorized — well-behaved services) or 403
         // (Forbidden — services that route expired/invalid-JWT failures through
@@ -87,7 +95,32 @@ public final class MstAuthRefreshFilter implements OrderedFilter {
         requestSpec.removeHeader(header);
         requestSpec.header(header, MstAuthHandler.getTokenPrefix() + newToken);
 
-        Response retried = ctx.next(requestSpec, responseSpec);
+        // Why: RestAssured 4.2.0's FilterContextImpl backs ctx.next() with a
+        // single-pass iterator over the filter chain. The first ctx.next()
+        // above already drained it (the terminal SendRequestFilter ran), so a
+        // second ctx.next() falls through to `return null` and the caller's
+        // ".then()" NPEs. Re-issue through the request spec instead — that
+        // builds a fresh filter chain. The RETRYING flag short-circuits this
+        // filter on the recursive entry so we don't loop on a still-bad token.
+        Response retried;
+        RETRYING.set(Boolean.TRUE);
+        try {
+            Method httpMethod = Method.valueOf(requestSpec.getMethod().toUpperCase());
+            // Strip any pre-serialized query string before re-issuing: RestAssured
+            // 4.2.0 still has the spec's queryParam state populated, so passing a
+            // URL that already contains "?a=1" would result in "?a=1&a=1" after
+            // the spec re-applies its query params on top. If getURI() returns no
+            // query string, the substring is a no-op.
+            String uri = requestSpec.getURI();
+            int q = uri.indexOf('?');
+            String uriWithoutQuery = (q >= 0) ? uri.substring(0, q) : uri;
+            retried = requestSpec.request(httpMethod, uriWithoutQuery);
+        } finally {
+            // remove() instead of set(FALSE) so the ThreadLocal map entry does not
+            // outlive this thread (matters for thread pools where the same Thread
+            // is reused across many tests).
+            RETRYING.remove();
+        }
         if (retried != null) {
             int retriedStatus = retried.getStatusCode();
             if (retriedStatus == 401 || retriedStatus == 403) {
@@ -96,7 +129,10 @@ public final class MstAuthRefreshFilter implements OrderedFilter {
                         retriedStatus);
             }
         }
-        return retried;
+        // Preserve the original 401/403 if the retry produced null — gives the
+        // caller a meaningful status to react to instead of the NPE-via-null
+        // chain we just fixed.
+        return retried != null ? retried : response;
     }
 
     /** Run after the auth header is already on the request. */
