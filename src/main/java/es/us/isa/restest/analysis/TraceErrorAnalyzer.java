@@ -464,7 +464,16 @@ public class TraceErrorAnalyzer {
         if (!analysis.hasErrors()) {
             return "✅ Trace executed successfully with no errors detected. All services are functioning normally.";
         }
-        
+
+        // Cache lookup: identical failure-mode signatures across traces reuse the same diagnosis.
+        String cacheKey = buildIntelligentAnalysisCacheKey(analysis);
+        IntelligentAnalysisCache cache = IntelligentAnalysisCache.getInstance(
+                System.getProperty("intelligent.analysis.cache.path", "target/intelligent-analysis-cache.json"));
+        Optional<String> cached = cache.get(cacheKey);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+
         try {
             // Prepare context for LLM analysis
             StringBuilder context = new StringBuilder();
@@ -613,15 +622,35 @@ public class TraceErrorAnalyzer {
             );
             
             if (llmResponse != null && !llmResponse.trim().isEmpty()) {
-                return formatLLMResponse(llmResponse);
+                String formatted = formatLLMResponse(llmResponse);
+                cache.put(cacheKey, formatted);
+                return formatted;
             } else {
                 return getFallbackAnalysis(analysis);
             }
-            
+
         } catch (Exception e) {
             System.err.println("⚠️ LLM analysis failed: " + e.getMessage());
             return getFallbackAnalysis(analysis);
         }
+    }
+
+    /**
+     * Build a stable cache key for {@link #generateIntelligentAnalysis} from the
+     * sorted set of root-cause failure signatures. Two traces with the same set
+     * of {@code (service, operation, status, exception)} root-cause failures
+     * receive the same diagnosis (and so reuse the cache entry).
+     */
+    private static String buildIntelligentAnalysisCacheKey(ErrorAnalysisResult analysis) {
+        List<String> sigs = new ArrayList<>();
+        for (FailedSpan failure : analysis.getRootCauseFailures()) {
+            String svc = (failure.getServiceName() == null || failure.getServiceName().isEmpty()) ? "none" : failure.getServiceName();
+            String op = (failure.getOperationName() == null || failure.getOperationName().isEmpty()) ? "none" : failure.getOperationName();
+            String exc = failure.getExceptionTypes().isEmpty() ? "none" : failure.getExceptionTypes().get(0);
+            sigs.add(svc + "|" + op + "|" + failure.getHttpStatusCode() + "|" + exc);
+        }
+        Collections.sort(sigs);
+        return String.join(";;", sigs);
     }
     
     /**

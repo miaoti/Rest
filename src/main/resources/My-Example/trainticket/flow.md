@@ -1842,3 +1842,101 @@ After a run, `target/parameter-error-analysis-cache.json` looks like:
   same failing endpoints are free after first classification.
 - Shared across all test classes in the same JVM via singleton pattern.
 
+---
+
+## 10. Intelligent Analysis Cache
+
+### Problem
+
+Every failed test with technical errors triggers
+`TraceErrorAnalyzer.generateIntelligentAnalysis`, which sends the failure trace to
+the LLM to produce a "ROOT CAUSE / FIX" diagnosis attached to the Allure report.
+On the canonical benchmark run this hot path produced:
+
+- **9,145 LLM calls** (one per failed test) — *the single biggest LLM consumer in
+  the run*.
+- **6.0 h of LLM time** (out of 9.5 h total LLM time, 36.5 h wall time).
+- Severe rate-limiting pressure on DeepSeek (1,130 HTTP 429 responses, 8.3% of all
+  LLM requests throttled).
+
+Yet only **~10 unique failure-mode signatures** appeared across those 9,145 calls —
+the same redundancy that motivated the PEA cache in § 9. The output flows only to
+`Allure.addAttachment("🤖 INTELLIGENT ANALYSIS (Based on Trace)", ...)` and a
+standalone CLI's `System.out.println`; no test logic, fault-detection metric, or
+input-generation step reads it. Caching it is therefore a pure speedup with no
+effect on test correctness or any paper-reported metric.
+
+### Cache: `IntelligentAnalysisCache`
+
+Stores the final formatted analysis string keyed by the failure-mode signature.
+
+**Key**: the sorted set of root-cause failure signatures, each formatted as
+`service | operation | status | exceptionType`, joined by `;;`.
+
+Two traces that fail in exactly the same way (same set of root causes regardless of
+order) hit the same cache entry. Empty fields are normalized to `none` (matches the
+convention used by `ParameterErrorAnalysisCache` in § 9).
+
+**Value**: the complete formatted output of `formatLLMResponse(llmResponse)` — i.e.,
+exactly what `generateIntelligentAnalysis` would have returned on a fresh LLM call.
+No decoration, no "cached" marker — the Allure attachment is indistinguishable
+between hit and miss.
+
+### Flow
+
+```mermaid
+flowchart TD
+    A["generateIntelligentAnalysis(analysis, trace)"] --> B{Errors present?}
+    B -- No --> C["Return canned success string"]
+    B -- Yes --> D["Build key from sorted<br/>root-cause signatures"]
+    D --> E{Cache has entry?}
+    E -- Yes --> F["Return cached string<br/>(0 LLM calls)"]
+    E -- No --> G[Build prompt + call LLM]
+    G --> H{LLM succeeded?}
+    H -- Yes --> I["formatLLMResponse(...)"]
+    I --> J["cache.put(key, formatted)"]
+    J --> K[Return formatted]
+    H -- No --> L["getFallbackAnalysis(...)<br/>(NOT cached)"]
+```
+
+### Configuration
+
+| Property | Default | Purpose |
+|----------|---------|---------|
+| `intelligent.analysis.cache.path` | `target/intelligent-analysis-cache.json` | File path for the persisted cache |
+
+The cache file is auto-created on the first `put()`. Delete it to reset.
+
+### Cache JSON Example
+
+After a run, `target/intelligent-analysis-cache.json` looks like:
+
+```json
+{
+  "ts-order-other-service|OrderOtherController.queryOrdersForRefresh|0|org.springframework.http.converter.HttpMessageNotReadableException": "🔍 ROOT CAUSE ANALYSIS\n─────────────────────\nROOT CAUSE: `ts-order-other-service` fails JSON deserialization ...",
+  "ts-gateway-service|POST|400|none;;ts-route-plan-service|POST|400|none": "🔍 ROOT CAUSE ANALYSIS\n─────────────────────\nROOT CAUSE: The route plan service rejects ..."
+}
+```
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|----------------|
+| `TraceErrorAnalyzer.generateIntelligentAnalysis` | Now consults the cache before building the LLM prompt; writes the formatted result back on miss. Existing prompt construction, fallback, and CLI consumer unchanged. |
+| `TraceErrorAnalyzer.buildIntelligentAnalysisCacheKey` | Builds the deterministic key from `ErrorAnalysisResult.getRootCauseFailures()`. |
+| `IntelligentAnalysisCache` | Singleton per-file cache. Stores `String` entries; persists to JSON. Mirrors `ParameterErrorAnalysisCache` and `SoftErrorRuleCache`. |
+
+### Expected Impact
+
+- **First encounter of a given failure-mode signature**: full LLM call, written to
+  cache.
+- **All subsequent failures with the same signature**: instant byte-identical return,
+  zero LLM cost.
+- On the canonical benchmark run, expected LLM-call count for this path drops from
+  9,145 to roughly the number of distinct root-cause signatures (~10–30).
+- Wall-time savings: ~6 of 9.5 LLM hours eliminated; secondary effect: DeepSeek
+  rate-limiting drops from ~8% of requests to a small residual since total LLM
+  volume falls by ~70%.
+- Allure attachments and standalone CLI output unchanged; no paper-reported metric
+  (status-code matrices, fault detection rate, trace evidence) is affected.
+
