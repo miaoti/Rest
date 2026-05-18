@@ -101,6 +101,59 @@ industrial partnership.
 
 ---
 
+### 0.6 Preconditions from CRITICAL_FIXES_S_A_1_6
+Path B assumes **all six fixes** in `CRITICAL_FIXES_S_A_1_6.md` have
+already landed on `inject-detection` and the demo runs cleanly under
+`-Drandom.seed=42`. The rebuild builds **on top of**, not in parallel
+with, that state.  The executing agent must therefore assume the
+following pre-existing components and contracts:
+
+| From fix | New class / file | Public surface Path B relies on |
+|---|---|---|
+| S-4 | `io.us.isa.restest.llm.LLMCallCache` | File-backed JSON cache; called from `LLMService.generateText` |
+| S-4 | `LLMConfig.getTemperature()` (modified) | Returns `0.0` when `random.seed` is set; makes all LLM calls reproducible |
+| A-6 | `es.us.isa.restest.configuration.MstConfig` (POJO) | Singleton via `MstConfig.instance()`; immutable; sub-records `core()`, `smartFetch()`, `llm()`, `faulty()`, `scenarioMerge()`, `scenarioShattering()`, `softErrorCache()`, `statusCodeExploration()`, `enhancer()`, `jaeger()`; factory `MstConfig.fromSystemProperties()` |
+| A-6 | `MstConfigValidator` | Optional strict-mode key validation |
+| A-6 | (effect) | Zero `System.getProperty("mst.*"\|"smart.input.fetch.*"\|...)` calls in MST code |
+| S-2 | `es.us.isa.restest.workflow.NounKeyMap` | YAML-driven noun → key map; loaded from `mist/noun-map.default.yaml` plus optional per-SUT override |
+| S-2 | (effect) | `TraceWorkflowExtractor.NOUN_TO_KEY` is no longer hard-coded; hyphenated and nested URL path params are extracted |
+| S-3 | `WorkflowScenario.approvedInDedupPass` (new field) | Tag carried through Phase 3 shattering |
+| S-3 | `MultiServiceTestCaseGenerator.approvedApiKeys` (new field) | Replaces `seenSingleRootApis` for dedup correctness |
+| S-3 | `runSingleRootDedupPass(label, scenarios, approvedKeys)` | Single method replacing `deduplicateSingleRootScenarios()` + `applySingleRootDedup()` |
+| S-3 | (deleted) | `dedupApprovedScenarios` field is gone |
+| S-1 | `es.us.isa.restest.workflow.pipeline.WorkflowPipeline` | Sequential phase orchestrator |
+| S-1 | `es.us.isa.restest.workflow.pipeline.PipelineStage` (interface) | Implemented by each phase |
+| S-1 | `es.us.isa.restest.workflow.pipeline.PipelineContext` | Shared state container |
+| S-1 | Five stage classes under `workflow/pipeline/stages/` | `Phase25DedupStage`, `SharedPoolGenerationStage`, `Phase3ShatteringStage`, `Phase35DedupStage`, `Phase4DecompositionStage` |
+| S-1 | (effect) | `MultiServiceTestCaseGenerator` shrunk by ≥ 200 lines; phase methods moved to stages |
+| A-5 | `InvalidInputPool` key | Now `(rootApiKey, paramName, paramLocation)` instead of `(rootApiKey, paramName)` |
+| A-5 | (effect) | Path / header / cookie parameters are enrolled in the fault pool; `FaultTarget` count up ≥ 30 % on TrainTicket |
+
+**What is unchanged by the fixes** (Path B is the first place these
+change):
+- `InvalidInputType` (the 8-category enum) **still exists**. Phase 3
+  of Path B is what retires it.
+- `SoftErrorRuleCache` **still exists**. Phase 2 of Path B is what
+  subsumes it into `ResponseEnvelopeInvariant`.
+- All MIST code **still lives** under `es.us.isa.restest.*` packages.
+  Phase 1.C of Path B moves it into `io.mist.core.*`.
+- The CLI entry point **is still** `es.us.isa.restest.main.TestGenerationAndExecution`.
+  Phase 1.A lifts the MST branch out into `MistRunner`; Phase 1.B
+  introduces the new `MistMain` entry point and `mist.jar`.
+- `TestCaseEnhancer`, `StatusCodeExplorationEnhancer`,
+  `ParameterErrorAnalysisCache` are still bolted on the writer. Path B
+  does not refactor them in the current task; they may become
+  appendix material in the future-task paper.
+
+**Pre-flight invariant.** Before Phase 0 begins, the agent must
+verify (one command, listed in § 7.1) that
+`MstConfig.instance()` resolves, the new pipeline stages exist, and
+`LLMCallCache` is on the classpath. If any of these fail, **do not
+start Path B**; instead, escalate to the user that the fix branch is
+incomplete.
+
+---
+
 ## 1. Rules of engagement
 
 ### 1.1 Branching and integration
@@ -187,12 +240,21 @@ flowchart TB
         WR_ABS[Abstract writer interfaces]
     end
 
-    subgraph MIST_TODAY[MIST today - lives inside RESTest packages]
+    subgraph MIST_TODAY[MIST today - lives inside RESTest packages, post-fix]
+        CFG[MstConfig - from A-6]
+        NKM[NounKeyMap - from S-2]
         EXTR[TraceWorkflowExtractor]
         REG[SemanticDependencyRegistry]
         OPT[ScenarioOptimizer / WCC]
-        GEN[MultiServiceTestCaseGenerator - god class]
-        POOL[InvalidInputPool]
+        subgraph PIPE[WorkflowPipeline from S-1]
+            P25[Phase25DedupStage]
+            SPG[SharedPoolGenerationStage]
+            P3[Phase3ShatteringStage]
+            P35[Phase35DedupStage]
+            P4[Phase4DecompositionStage]
+        end
+        GEN[MultiServiceTestCaseGenerator<br/>variant loop + fault queue<br/>still ~2800 LOC]
+        POOL[InvalidInputPool<br/>keyed on rootApi,param,location<br/>from A-5]
         SF[SmartInputFetcher]
         WR[MultiServiceRESTAssuredWriter]
         ANALYZE[TraceErrorAnalyzer]
@@ -206,13 +268,17 @@ flowchart TB
         LLMSVC[LLMService]
         AID[AiDrivenLLMGenerator]
         ZERO[ZeroShotLLMGenerator]
-        CACHE_LLM[LLMCallCache - new from S-4]
+        CACHE_LLM[LLMCallCache - from S-4]
     end
 
+    INPUT --> CFG
+    CFG --> GEN
     INPUT --> EXTR
+    EXTR --> NKM
     EXTR --> REG
     EXTR --> OPT
-    OPT --> GEN
+    OPT --> PIPE
+    PIPE --> GEN
     REG --> GEN
     POOL --> GEN
     SF --> GEN
@@ -639,14 +705,17 @@ extraction.
    `mist-cli/src/main/java/io/mist/cli/MistRunner.java`), declare:
    ```java
    public final class MistRunner {
-       public MistRunner(Properties config, Path workdir, ...);
+       public MistRunner(MstConfig config, Path workdir);
        public MistRunResult run();   // synchronous, returns paths + stats
    }
    ```
-   The constructor takes the same configuration `Properties` object
-   the main class would otherwise read; it does not consult
-   `System.getProperty` directly — only the constructor argument.
-   This is critical for testability.
+   The constructor takes the `MstConfig` POJO produced by Fix A-6;
+   it does **not** consult `System.getProperty` or hold any other
+   ambient state. (`MstConfig.fromSystemProperties()` is the
+   standard factory; tests can pass a hand-rolled `MstConfig` for
+   isolation.) This is critical for testability and is what makes
+   `MistRunner` portable to the new `MistMain` entry point in
+   Stage 1.B.
 3. **Move the MST blocks into MistRunner.** For each recorded block,
    copy the code verbatim into a private method of `MistRunner`. The
    static field reads become instance-field reads on `MistRunner`;
@@ -693,17 +762,28 @@ without invoking any class under `es.us.isa.restest.main`.
            Path propsFile = Path.of(args.length > 0
                ? args[0]
                : "src/main/resources/My-Example/trainticket-demo.properties");
-           Properties props = MistConfigLoader.load(propsFile);
+           // Load the .properties file and push every key into System
+           // properties so existing MstConfig.fromSystemProperties()
+           // (delivered by Fix A-6) sees the values, matching the
+           // behaviour of TestGenerationAndExecution exactly.
+           Properties props = new Properties();
+           try (var in = Files.newInputStream(propsFile)) { props.load(in); }
+           props.forEach((k, v) ->
+               System.setProperty(String.valueOf(k), String.valueOf(v)));
+           MstConfig config = MstConfig.fromSystemProperties();
            Path workdir = Path.of(System.getProperty("user.dir"));
-           MistRunResult result = new MistRunner(props, workdir).run();
+           MistRunResult result = new MistRunner(config, workdir).run();
            result.summarise(System.out);
            System.exit(result.exitCode());
        }
    }
    ```
-   `MistMain` does **not** import any class under `es.us.isa.restest`.
-   It uses `MistRunner` (and `MistConfigLoader`, a small reuse-MstConfig
-   shim) only.
+   `MistMain` does **not** import any class under
+   `es.us.isa.restest.main.*` (it must not call back into the
+   RESTest main entry). It does import `MstConfig` from
+   `es.us.isa.restest.configuration` until Stage 1.C moves it into
+   `io.mist.core.config.MistConfig`. After 1.C, the import becomes
+   `io.mist.core.config.MistConfig`.
 3. **Wire shading.** Configure `mist-cli`'s POM to produce a
    `Main-Class: io.mist.cli.MistMain` fat jar named `mist.jar`. Put it
    in `target/mist-cli/mist.jar` or, when the module is in its own
@@ -779,9 +859,12 @@ preserves the ICSME 2026 demo workflow.
    at the top of `main` becomes:
    ```java
    if ("MST".equals(generator)) {
-       Properties props = readPropertiesAsObject(propertiesFilePath);
+       // properties already loaded by readParameterValues() and
+       // (for MST) loadMstConfig() above; MstConfig.fromSystemProperties()
+       // (Fix A-6) is the single source of truth at this point.
+       MstConfig config = MstConfig.fromSystemProperties();
        Path workdir = Path.of(System.getProperty("user.dir"));
-       int code = new MistRunner(props, workdir).run().exitCode();
+       int code = new MistRunner(config, workdir).run().exitCode();
        System.exit(code);
    }
    // classic RESTest below
@@ -1145,11 +1228,14 @@ flowchart LR
    specific bounds.
 
 ##### Phase 3.D — InvalidInputPool v2 (1 week)
-1. Re-key the pool from `(rootApi, param, oldEnum)` to
-   `(rootApi, param, faultType.id)`.
+1. Re-key the pool from `(rootApi, param, paramLocation, oldEnum)` —
+   the key shape produced by Fix A-5 — to
+   `(rootApi, param, paramLocation, faultType.id)`. The `paramLocation`
+   axis is preserved; only the fault dimension changes from enum to
+   `FaultType.id`.
 2. Persist pool state file format bumps version: the old
-   `target/invalid-input-pool.json` becomes v2; v1 files are read but
-   migrated on first save.
+   `target/invalid-input-pool.json` becomes v2; v1 files (the post-A-5,
+   pre-Phase-3 format) are read but migrated on first save.
 3. The Sniper Strategy's round-robin cursor follows the registry's
    declared order: default types first (TYPE_MISMATCH …
    SEMANTIC_MISMATCH), then mined types.
@@ -1283,6 +1369,23 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
       `inject-detection` and the demo runs cleanly with
       `-Drandom.seed=42` producing byte-identical output across two
       consecutive runs.
+- [ ] Pre-flight smoke (verify the post-fix state Path B assumes):
+      ```
+      # All commands must exit 0 / return non-empty
+      grep -rn 'class MstConfig\b' src/main/java/es/us/isa/restest/configuration
+      grep -rn 'class LLMCallCache\b' src/main/java/es/us/isa/restest/llm
+      grep -rn 'class NounKeyMap\b' src/main/java/es/us/isa/restest/workflow
+      grep -rn 'class WorkflowPipeline\b' src/main/java/es/us/isa/restest/workflow/pipeline
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase25DedupStage.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/SharedPoolGenerationStage.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase3ShatteringStage.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase35DedupStage.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase4DecompositionStage.java
+      ! grep -rn 'dedupApprovedScenarios' src/main/java/es/us/isa/restest    # negated: must be empty
+      ! grep -rn 'NOUN_TO_KEY\s*\.\s*put' src/main/java/es/us/isa/restest    # negated: hard-coded map gone
+      ```
+      If any of the above fails, the fix branch is incomplete; do
+      **not** start Phase 0. Report back to the user.
 - [ ] Branch `mist-2.x/path-b` created off `inject-detection` HEAD.
 - [ ] User has read this plan and approved the three-named-contribution
       pitch.
@@ -1298,7 +1401,7 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
 ### 7.3 Phase 1 — Decouple
 **Stage 1.A — Lift MST branch into MistRunner**
 - [ ] `phase-1a-mst-branch-map.txt` saved.
-- [ ] `MistRunner` exists; constructor takes `Properties` (no `System.getProperty`).
+- [ ] `MistRunner` exists; constructor takes `MstConfig` (from A-6) and never calls `System.getProperty`.
 - [ ] `grep -c '"MST".equals' TestGenerationAndExecution.java` ≤ 2.
 - [ ] Before/after seeded demo diff is empty.
 
