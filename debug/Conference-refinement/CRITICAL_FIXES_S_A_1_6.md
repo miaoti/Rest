@@ -1,7 +1,7 @@
 # MIST — Critical Architecture Fixes (S-tier + A-tier issues 1-6)
 
 > **Audience.** This document is a self-contained execution brief for an
-> agent (Claude Code or equivalent) that will land six surgical fixes on
+> agent (Claude Code or equivalent) that will land seven surgical fixes on
 > the MIST tool. The agent has read access to the whole repo and write
 > access via `Read`/`Edit`/`Write`/`Bash`. **Do not deviate from this brief.**
 
@@ -54,7 +54,7 @@ You **may not** modify:
 - For every fix, run `mvn -q -DskipTests compile` after edits to verify
   the codebase still builds. If `compile` fails, **stop and fix the
   compile error before continuing**.
-- After all six fixes land, run `mvn -q test` once. New tests added by
+- After all seven fixes land, run `mvn -q test` once. New tests added by
   this brief must pass; pre-existing failures are documented in
   § 9 and may be tolerated only if they predate your branch.
 - Invoke the `simplify` skill on every fix before committing it.
@@ -96,6 +96,9 @@ Fix A-6 (MstConfig POJO)     ─┘                                    │
                                                                    │
                                                                    ▼
                                                           Fix A-5 (Sniper coverage)
+                                                                   │
+                                                                   ▼
+                                                          Fix A-7 (cache .mist/ migration)
 ```
 
 **Rationale.** S-4 and A-6 are isolated infrastructure (LLM cache, config
@@ -104,7 +107,11 @@ S-2 reads the new config (A-6 first). S-3 (dedup correctness) must
 precede S-1 (phase extraction) because S-1 will lift the dedup code
 into its own phase class, which is only safe once the dedup itself is
 correct. A-5 (Sniper coverage) edits the new phase boundary, so it must
-come last.
+come after S-1. A-7 (cache `.mist/` migration) is independent of every
+other fix on the code level, but lands last because (a) it needs the
+`/.mist/` gitignore entry added by S-4, and (b) it adjusts default
+values inside `MstConfig.Llm` and related sub-records that A-6
+introduces.
 
 ### 0.7 Per-fix commit policy
 - Each fix lands as exactly one commit (plus its test commit if a test
@@ -444,12 +451,13 @@ target and is a conventional dotdir for tool state.
 - Do **not** add a "clear cache" CLI command. The user runs `rm
   .mist/llm-call-cache.json` (or the path their override points at).
   One file, no ceremony.
-- Do **not** migrate the other in-`target/` caches (the existing
-  `target/soft-error-rule-cache.json` from flow.md § 8, and
-  `target/invalid-input-pool.json`) to `.mist/` in this fix. They
-  have the same `mvn clean` vulnerability, but fixing them is out of
-  scope here. Note the issue in the project's TODO / Path B follow-up
-  list — they should likely move to `.mist/` too in a separate change.
+- Do **not** migrate the other in-`target/` caches
+  (`target/soft-error-rule-cache.json`,
+  `target/parameter-error-analysis-cache.json`,
+  `target/intelligent-analysis-cache.json`) in this fix. They have the
+  same `mvn clean` vulnerability and are handled by **Fix A-7**, which
+  lands last in the DAG. S-4 is scoped to the LLM call cache only;
+  do not bleed into A-7's surface.
 - Do **not** merge the cache with `LLMCommunicationLogger`. They have
   incompatible formats and incompatible update semantics.
 - Do **not** make the cache lookup async / non-blocking. The
@@ -910,7 +918,231 @@ paramLocation)`, the new tuple shape is compatible with the existing
 
 ---
 
-## 7. Global verification (run after all six fixes land)
+## Fix A-7 — Migrate persistent caches from `target/` to `.mist/`
+
+### Problem
+Fix S-4 fixed the `mvn clean` vulnerability for the new LLM cache by
+defaulting it to `.mist/llm-call-cache.json`. **Three other persistent
+caches in the codebase have the exact same vulnerability** and were
+deliberately left out of S-4's scope:
+
+| File | Default in code | Property |
+|---|---|---|
+| `target/soft-error-rule-cache.json` | `MultiServiceRESTAssuredWriter.java:206` (embedded in the generated test code template) AND `src/main/resources/My-Example/trainticket-mst.properties:194` (explicit demo override) | `soft.error.cache.path` |
+| `target/parameter-error-analysis-cache.json` | `ParameterErrorAnalyzer.java:135` | `parameter.error.analysis.cache.path` |
+| `target/intelligent-analysis-cache.json` | `TraceErrorAnalyzer.java:471` | `intelligent.analysis.cache.path` |
+
+All three are persistent caches whose entire purpose is to **avoid
+re-asking the LLM the same question across runs** (soft-error
+classification, parameter-error attribution, intelligent failure
+analysis). Each `mvn clean install` wipes them, forcing a cold relearn
+on the next run. Just like the LLM call cache (S-4), they:
+- are gitignored (because `/target` is gitignored), so cannot be shipped
+  in an artifact bundle, and
+- are deleted by the documented Quick Start command, so the "increment-
+  not-overwrite" semantics that S-4's operating-modes table guarantees
+  do not hold here either.
+
+A-7 mechanically applies the S-4 pattern to all three.
+
+### What is **not** migrated (and why)
+Inspection of the codebase finds the following `target/`-located files
+that look like state but should **stay** in `target/`:
+
+- `target/enhancer/{testId}/round-N/...` (TestCaseEnhancer): per-run
+  forensics, scoped to a single execution. Wiping on `mvn clean` is
+  correct behaviour.
+- `target/test-cases/Flow_Scenario_*.java`: generated source code,
+  always re-emitted each run.
+- `target/test-classes/`, `target/dependency/`, `target/allure-results/`,
+  `target/allure-report/`: standard Maven / Allure build outputs.
+- `target/semantic-registry-dump.json`: a debug/evaluation snapshot
+  written by `SemanticRegistryDumper`; consumed by
+  `SemanticRegistryEvaluator` in the same JVM run, then discarded.
+  Not a cross-run cache.
+
+The fix touches **only the three caches in the problem table**.
+
+### Files
+- `src/main/java/es/us/isa/restest/validation/SoftErrorRuleCache.java`
+  (edit: add one-shot migration in `getInstance(String)`)
+- `src/main/java/es/us/isa/restest/inputs/smart/ParameterErrorAnalyzer.java`
+  (edit: change default at line ~135; add migration)
+- `src/main/java/es/us/isa/restest/analysis/TraceErrorAnalyzer.java`
+  (edit: change default at line ~471; add migration)
+- `src/main/java/es/us/isa/restest/writers/restassured/MultiServiceRESTAssuredWriter.java`
+  (edit: change the embedded fallback string at line ~206 so newly
+  generated test code uses the new default)
+- `src/main/resources/My-Example/trainticket-mst.properties`
+  (edit: delete the `soft.error.cache.path=target/...` line at
+  ~line 194 so the new Java default takes effect — do **not** replace
+  with a `.mist/...` override, the Java default already points there)
+- `src/main/java/es/us/isa/restest/configuration/MstConfig.java`
+  (edit: A-6 has already absorbed these properties into sub-records
+  `softErrorCache`, `enhancer`, and `jaeger` — update their default
+  values to `.mist/...`)
+- The `.gitignore` `/.mist/` entry from S-4 already covers all three
+  new locations. **No `.gitignore` edit in this fix.**
+
+### Surgical change
+
+This fix follows the same pattern for each of the three caches.
+
+#### Step 1 — Change the default in the Java owner
+
+For each of the three classes, change the fallback string in the
+`System.getProperty("X.cache.path", "target/Y.json")` call from
+`target/Y.json` to `.mist/Y.json`. Verbatim list of changes:
+
+| File | Line | Old default | New default |
+|---|---|---|---|
+| `MultiServiceRESTAssuredWriter.java` | ~206 | `target/soft-error-rule-cache.json` | `.mist/soft-error-rule-cache.json` |
+| `ParameterErrorAnalyzer.java` | ~135 | `target/parameter-error-analysis-cache.json` | `.mist/parameter-error-analysis-cache.json` |
+| `TraceErrorAnalyzer.java` | ~471 | `target/intelligent-analysis-cache.json` | `.mist/intelligent-analysis-cache.json` |
+
+The writer change is special: line 206 emits a `pw.println(...)` that
+writes the fallback string **into the generated test code**. The fix
+edits the string literal inside the `pw.println(...)`. Tests generated
+**before** this fix landed still embed the old fallback; they are
+regenerated on the next `java -jar restest.jar`, after which the new
+fallback takes effect.
+
+#### Step 2 — Add one-shot migration
+
+In each cache owner (`SoftErrorRuleCache.getInstance`,
+`ParameterErrorAnalyzer.<load method>`,
+`TraceErrorAnalyzer.<load method>`), insert at the top of the load
+path:
+
+```java
+Path resolved = Path.of(cachePath);              // the new .mist/... path
+Path legacy   = Path.of("target/" + resolved.getFileName());
+if (!Files.exists(resolved) && Files.exists(legacy)) {
+    Files.createDirectories(resolved.getParent());
+    Files.move(legacy, resolved, StandardCopyOption.REPLACE_EXISTING);
+    log.info("Migrated cache: {} -> {}", legacy, resolved);
+}
+```
+
+The migration is **one-shot, opportunistic, and silent on the happy
+path**. It runs every JVM start but its body fires at most once per
+cache, the first time a user upgrades. After that the legacy `target/`
+copy no longer exists, so the `Files.exists(legacy)` guard skips it.
+
+The migration **must not** fire when the user has explicitly overridden
+the path via property (e.g. an artifact submission that points
+`soft.error.cache.path` at a committable resource location). Use the
+literal `target/<filename>` check above, not a generic "scan for any
+legacy location" — the migration is targeted at the specific old
+default, nothing else.
+
+#### Step 3 — Update demo property file
+
+In `src/main/resources/My-Example/trainticket-mst.properties`, **delete**
+the line:
+```
+soft.error.cache.path=target/soft-error-rule-cache.json
+```
+The Java default in `MultiServiceRESTAssuredWriter` (after Step 1) now
+points at `.mist/...`, so removing the explicit override lets the new
+default take effect. **Do not** replace it with a `.mist/...` override
+— that would defeat A-6's MstConfig consolidation.
+
+If grep finds other property files (search
+`src/main/resources/**/*.properties`) that explicitly set any of the
+three paths to `target/...`, delete those lines too. Per-SUT overrides
+that point at `src/main/resources/.../X.json` (a committable location
+for artifact bundles) are **kept**.
+
+#### Step 4 — Update MstConfig defaults
+
+A-6 has already absorbed these three properties into
+`MstConfig.SoftErrorCache.cachePath()` and analogous accessors. Find
+those default values and change them from `target/...` to
+`.mist/...`. This is one-line edits inside `MstConfig.java`.
+
+If A-6's POJO does not yet contain accessors for
+`parameter.error.analysis.cache.path` or
+`intelligent.analysis.cache.path` (because A-6 grouped them under a
+broader sub-record), add them in the analogous sub-record. This is the
+**one** place where the executing agent may extend A-6's sub-record
+list — A-7 is the legitimate consumer of these properties.
+
+### Acceptance criteria
+- [ ] After `mvn clean install -DskipTests` on a fresh checkout, the
+      three caches at `.mist/{soft-error-rule-cache, parameter-error-
+      analysis-cache, intelligent-analysis-cache}.json` are **not**
+      deleted (they don't exist on a fresh checkout, but the
+      `target/` versions also don't exist — the check is that
+      `mvn clean` doesn't touch `.mist/`).
+- [ ] On a user who has pre-existing `target/soft-error-rule-cache.json`
+      (e.g. from a run before this fix), the next JVM start with the
+      fix applied logs `Migrated cache: target/... -> .mist/...` and
+      the cache content survives. Verify by hand:
+      ```
+      mkdir -p target
+      echo '{"GET /api/test": {"fieldChecks":[]}}' \
+          > target/soft-error-rule-cache.json
+      java -jar target/restest.jar trainticket-demo.properties
+      ls .mist/soft-error-rule-cache.json   # exists
+      ls target/soft-error-rule-cache.json  # gone (Files.move)
+      ```
+- [ ] After running the bundled demo, `.mist/` contains
+      `llm-call-cache.json` (from S-4) plus any of the three new
+      caches that were populated during the run.
+- [ ] `grep -rnE 'target/(soft-error-rule|parameter-error-analysis|intelligent-analysis)' src/main/java`
+      returns nothing (the migration code uses `Path.of` arithmetic,
+      not literal `target/...` strings).
+- [ ] `trainticket-mst.properties` no longer mentions
+      `target/soft-error-rule-cache.json`.
+- [ ] `MstConfig.SoftErrorCache.cachePath()` returns
+      `.mist/soft-error-rule-cache.json` by default; analogous
+      accessors return their `.mist/...` defaults.
+- [ ] `mvn -q -DskipTests compile` succeeds.
+- [ ] All tests added by previous fixes still pass.
+
+### Tests to add
+- `src/test/java/es/us/isa/restest/validation/SoftErrorRuleCacheMigrationTest.java`:
+  - Pre-create a `target/soft-error-rule-cache.json`, call
+    `SoftErrorRuleCache.getInstance(".mist/soft-error-rule-cache.json")`,
+    verify the file moved.
+  - Pre-create both `target/...` and `.mist/...` files; verify the
+    `.mist/...` content wins and `target/...` is unchanged (no
+    accidental overwrite).
+  - User-overridden path (e.g. `src/main/resources/foo.json`): verify
+    no migration happens (the legacy guard uses the literal
+    `target/<filename>` shape).
+- `src/test/java/es/us/isa/restest/inputs/smart/ParameterErrorAnalyzerMigrationTest.java`:
+  - Same matrix.
+- `src/test/java/es/us/isa/restest/analysis/TraceErrorAnalyzerMigrationTest.java`:
+  - Same matrix.
+
+(Three small test classes, each one isolated — they share the same
+test logic, but separate test classes keep failure attribution clean
+when one cache's migration breaks.)
+
+### Rollback
+- Revert the branch.
+- Users who already migrated will have files only in `.mist/`. They can
+  manually copy them back to `target/` if they want pre-A-7 behaviour,
+  but most likely they will not — the new location is strictly better.
+
+### Explicit non-goals
+- Do **not** unify the three caches behind a common abstraction
+  ("`.mist/` cache manager"). Each cache has its own loader, its own
+  schema, its own update semantics. A shared abstraction is premature.
+- Do **not** add file locking, multi-process coordination, or
+  network-shared cache support. The caches are single-JVM single-host.
+- Do **not** migrate `target/semantic-registry-dump.json`,
+  `target/enhancer/...`, or any per-run artifact. Their `target/`
+  location is correct.
+- Do **not** rewrite the migration check after this fix. If a future
+  fix introduces a new cache file, it lands at `.mist/...` from day
+  one with no `target/...` precursor — no migration needed.
+
+---
+
+## 7. Global verification (run after all seven fixes land)
 
 ```bash
 # 1. Build
@@ -1035,6 +1267,27 @@ Tick each box only after the acceptance criteria for that fix pass.
   - [ ] Path-parameter negative variant exists
   - [ ] Header-parameter negative variant exists
   - [ ] Two new tests pass
+  - [ ] `simplify` skill invoked
+  - [ ] Single commit pushed
+
+- [ ] Branch `claude/fix-mst-07-cache-mist-dir` created from A-5 tip
+  - [ ] `SoftErrorRuleCache`, `ParameterErrorAnalyzer`,
+        `TraceErrorAnalyzer` default paths changed from
+        `target/*.json` to `.mist/*.json`
+  - [ ] `MultiServiceRESTAssuredWriter.java:206` template emits
+        `.mist/soft-error-rule-cache.json` (not `target/...`)
+  - [ ] `trainticket-mst.properties` line
+        `soft.error.cache.path=target/...` deleted; no replacement
+        line added (Java default takes effect)
+  - [ ] One-shot migration in each cache's load path:
+        `target/X.json` -> `.mist/X.json` if old exists and new
+        doesn't
+  - [ ] `MstConfig` sub-record defaults updated to `.mist/...`
+  - [ ] `grep -rnE 'target/(soft-error-rule|parameter-error-analysis|intelligent-analysis)' src/main/java`
+        returns empty
+  - [ ] After `mvn clean install -DskipTests`, `.mist/` directory
+        contents preserved
+  - [ ] Three migration test classes pass
   - [ ] `simplify` skill invoked
   - [ ] Single commit pushed
 
