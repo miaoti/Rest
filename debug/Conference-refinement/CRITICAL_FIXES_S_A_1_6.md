@@ -245,24 +245,25 @@ time:
 1. **Blessed machine, blessed run** (you, once). On the machine you
    intend to declare as the canonical environment in the paper, run
    the demo with `-Drandom.seed=42`. The cache populates from
-   scratch. Inspect `target/test-cases/` and confirm the generated
-   tests are sensible.
-2. **Promote the cache file.** The default cache location is
-   `target/llm-call-cache.json`, which is gitignored (Maven cleans
-   `target/`). For artifact submission, **copy** it to a committable
-   location and point the property at it:
+   scratch into `.mist/llm-call-cache.json` at the repo root.
+   Inspect `target/test-cases/` and confirm the generated tests are
+   sensible.
+2. **Un-gitignore `.mist/`.** The fix's `.gitignore` patch adds
+   `/.mist/` so day-to-day development does not accidentally commit
+   the cache. For artifact submission, **remove that line** (or use
+   a targeted negation like `!/.mist/llm-call-cache.json`) so the
+   cache file becomes trackable:
    ```
-   cp target/llm-call-cache.json \
-      src/main/resources/My-Example/trainticket/llm-call-cache.json
+   # before:    /.mist/
+   # after:     # (deleted, or:)
+   #            !/.mist/llm-call-cache.json
    ```
-   Then in `trainticket-demo.properties` (or whatever properties
-   file the artifact uses), add:
-   ```
-   mist.llm.cache.path=src/main/resources/My-Example/trainticket/llm-call-cache.json
-   ```
-3. **Commit the cache file.** This is data, not code. Treat it like
-   the bundled traces or the injected-faults JSON — it is part of the
-   reproduction package.
+   **No `cp` is needed.** The cache is already in the repo root; you
+   are only changing whether git tracks it.
+3. **Commit the cache file.** `git add .mist/llm-call-cache.json &&
+   git commit -m "data: bundle blessed LLM cache for artifact"`.
+   This is data, not code. Treat it like the bundled traces or the
+   injected-faults JSON — it is part of the reproduction package.
 4. **Reviewer reproduction.** A reviewer pulls the repo, sets the
    same `-Drandom.seed=42`, runs the demo. Their LLM calls all hit
    the cache, so they get byte-identical generated tests — even if
@@ -272,14 +273,24 @@ time:
    (e.g. update Smart Fetch's discovery prompt), the SHA-256 key
    changes, so the old cache entry is a miss. The next seeded run
    re-fills it. To force a full rebuild: `rm
-   target/llm-call-cache.json` (and the committed copy if you have
-   one).
+   .mist/llm-call-cache.json`.
+
+**Why not `target/`?** The first draft of this fix put the cache in
+`.mist/llm-call-cache.json`. That was wrong on two counts: (a) the
+project's `.gitignore` already excludes `/target`, so the file would
+not have been committable anyway, and (b) the documented Quick Start
+command is `mvn clean install -DskipTests`, which would wipe the
+cache before every fresh build. `.mist/` is outside Maven's clean
+target and is a conventional dotdir for tool state.
 
 ### Files
 - `src/main/java/es/us/isa/restest/llm/LLMService.java` (edit)
 - `src/main/java/es/us/isa/restest/llm/LLMCallCache.java` *(new)*
 - `src/main/java/es/us/isa/restest/llm/LLMConfig.java` (edit:
   `getTemperature()` becomes seed-gated)
+- `.gitignore` (edit: add `/.mist/` so the dev-mode cache is not
+  accidentally committed; users will remove this line manually when
+  preparing an artifact bundle)
 - The pre-existing
   `src/main/java/es/us/isa/restest/util/LLMCommunicationLogger.java`
   is **not** modified by this fix.
@@ -332,12 +343,17 @@ time:
    no edits to call sites.
 4. **Cache file location** is the value of
    `System.getProperty("mist.llm.cache.path",
-   "target/llm-call-cache.json")`. This is the only new system
+   ".mist/llm-call-cache.json")`. This is the only new system
    property introduced by this fix. Fix A-6 will absorb it into
    `MstConfig.Llm.cachePath()`; until then, the call site reads the
-   property directly. Default location is gitignored by Maven; users
-   may point it at a committable path for artifact workflows (see
-   above).
+   property directly. The default location is **outside** `target/`
+   on purpose — `mvn clean` (which the bundled README's Quick Start
+   recommends) wipes `target/`, so a cache there would be deleted
+   before every fresh build. `.mist/` survives `mvn clean` and
+   follows the dotdir convention. The fix also patches `.gitignore`
+   to add `/.mist/` so the cache is not accidentally committed
+   during dev; the artifact workflow above documents how to opt-in
+   to committing it.
 5. **The cache MUST also honour Gemini's and OpenAI-compatible's
    `seed` parameter when `random.seed` is set.** Even though cache
    hits short-circuit, the cache cold-fill path still calls the
@@ -378,10 +394,10 @@ time:
       every prompt, no reads from cache. Verify by removing the seed
       and confirming the per-step Allure attachments differ between
       two consecutive runs.
-- [ ] `target/llm-call-cache.json` exists after a run, parses as
+- [ ] `.mist/llm-call-cache.json` exists after a run, parses as
       valid JSON, and the keys are 64-hex-char strings.
 - [ ] A deliberately corrupted cache file (`echo '{bad json' >
-      target/llm-call-cache.json`) causes the next JVM start with
+      .mist/llm-call-cache.json`) causes the next JVM start with
       `random.seed` set to **exit non-zero** with a clear error
       message. The fix is to delete or fix the file, not to silently
       ignore it.
@@ -414,7 +430,9 @@ time:
     we want a regression test).
 
 ### Rollback
-- Delete `target/llm-call-cache.json` (or the user's promoted copy).
+- Delete `.mist/llm-call-cache.json` (or the path the user pointed
+  `mist.llm.cache.path` at).
+- Revert the `.gitignore` `/.mist/` addition.
 - Revert the branch.
 - The `LLMCommunicationLogger` is untouched and continues to function.
 
@@ -424,8 +442,14 @@ time:
 - Do **not** add cache TTL / eviction. The cache is meant to be
   artifact-stable; entries should not silently expire.
 - Do **not** add a "clear cache" CLI command. The user runs `rm
-  target/llm-call-cache.json` (or the promoted path). One file, no
-  ceremony.
+  .mist/llm-call-cache.json` (or the path their override points at).
+  One file, no ceremony.
+- Do **not** migrate the other in-`target/` caches (the existing
+  `target/soft-error-rule-cache.json` from flow.md § 8, and
+  `target/invalid-input-pool.json`) to `.mist/` in this fix. They
+  have the same `mvn clean` vulnerability, but fixing them is out of
+  scope here. Note the issue in the project's TODO / Path B follow-up
+  list — they should likely move to `.mist/` too in a separate change.
 - Do **not** merge the cache with `LLMCommunicationLogger`. They have
   incompatible formats and incompatible update semantics.
 - Do **not** make the cache lookup async / non-blocking. The
@@ -465,7 +489,7 @@ scattered across the code. Two specific harms:
    - `smartFetch`
    - `llm` (LLM backend + cache; **must include `cachePath` —
      absorbs the `mist.llm.cache.path` property that Fix S-4
-     introduced**, default `target/llm-call-cache.json`)
+     introduced**, default `.mist/llm-call-cache.json`)
    - `faulty` (negative test config)
    - `scenarioMerge` (Phase 1/2 thresholds)
    - `scenarioShattering`
@@ -926,6 +950,11 @@ Tick each box only after the acceptance criteria for that fix pass.
       `origin/inject-detection`
   - [ ] `LLMCallCache.java` added (file-backed JSON, atomic rename,
         debounced writes, fatal exception on corrupt-file startup)
+  - [ ] Cache default location is `.mist/llm-call-cache.json` at
+        the repo root — **not** in `target/` (would be wiped by
+        `mvn clean`)
+  - [ ] `.gitignore` patched to add `/.mist/` so dev runs do not
+        accidentally commit the cache
   - [ ] `LLMService.generateText` wraps backend calls: cache-read on
         seed-set, cache-write always
   - [ ] `LLMConfig.getTemperature()` returns `0.0` when
@@ -933,10 +962,13 @@ Tick each box only after the acceptance criteria for that fix pass.
   - [ ] Backend `seed` parameter forwarded to Ollama/Gemini/OpenAI-
         compatible when `random.seed` is set (best-effort)
   - [ ] `mist.llm.cache.path` property read (default
-        `target/llm-call-cache.json`); to be absorbed by A-6
+        `.mist/llm-call-cache.json`); to be absorbed by A-6
   - [ ] `LLMCommunicationLogger` untouched and still writes per-
         session log files
   - [ ] `LLMCallCacheTest` and `LLMConfigSeedGateTest` pass
+  - [ ] After `mvn clean install -DskipTests`, the cache file at
+        `.mist/llm-call-cache.json` still exists (smoke test that
+        Maven clean does NOT touch it)
   - [ ] Two seeded runs produce byte-identical
         `Flow_Scenario_*.java` files (`diff run1.sums run2.sums` empty)
   - [ ] Run 2 logs `LLMCallCache: read hit` and zero backend
