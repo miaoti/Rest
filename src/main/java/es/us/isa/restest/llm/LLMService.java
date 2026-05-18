@@ -1,6 +1,7 @@
 package es.us.isa.restest.llm;
 
 import es.us.isa.restest.util.LLMCommunicationLogger;
+import es.us.isa.restest.util.SeededRandom;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -177,14 +178,34 @@ public class LLMService {
             return null;
         }
 
-        // Log the request
+        // Reproducibility: when a seed is configured the LLM is forced into
+        // greedy decoding and prior cached responses short-circuit the backend
+        // entirely. Unseeded runs still write through so future seeded runs
+        // can replay them.
+        double effectiveTemperature = LLMConfig.applySeedGate(temperature);
+
         String modelType = config.getModelType().toString();
         String modelName = getModelName();
         String endpoint = getEndpoint();
-        Object metadata = createMetadata(maxTokens, temperature);
+        Object metadata = createMetadata(maxTokens, effectiveTemperature);
+
+        String backendName = config.getModelType().name();
+        String cacheKey = LLMCallCache.key(modelType, modelName, backendName,
+                systemPrompt, userPrompt, effectiveTemperature, maxTokens);
+        LLMCallCache cache = LLMCallCache.getInstance();
 
         LLMCommunicationLogger.LLMRequestContext context = communicationLogger.logRequest(
             modelType, modelName, systemPrompt, userPrompt, endpoint, metadata);
+
+        if (System.getProperty("random.seed") != null) {
+            String hit = cache.get(cacheKey);
+            if (hit != null) {
+                logger.info("LLMCallCache: read hit for key {} (backend {})",
+                        abbreviateKey(cacheKey), backendName);
+                communicationLogger.logResponse(context, hit, true, null);
+                return hit;
+            }
+        }
 
         long startTime = System.currentTimeMillis();
         String result = null;
@@ -194,13 +215,13 @@ public class LLMService {
         try {
             switch (config.getModelType()) {
                 case GEMINI:
-                    result = generateWithGemini(systemPrompt, userPrompt, maxTokens, temperature);
+                    result = generateWithGemini(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                     break;
                 case OPENAI_COMPATIBLE:
-                    result = generateWithOpenAICompatible(systemPrompt, userPrompt, maxTokens, temperature);
+                    result = generateWithOpenAICompatible(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                     break;
                 case OLLAMA:
-                    result = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
+                    result = generateWithOllama(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                     break;
                 default:
                     errorMessage = "Unknown model type: " + config.getModelType();
@@ -220,7 +241,8 @@ public class LLMService {
                     && ollamaClient != null
                     && config.getModelType() != LLMConfig.ModelType.OLLAMA) {
                 logger.warn("[LLM] Primary {} returned null — falling back to Ollama for this call", config.getModelType());
-                String fallback = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
+                // effectiveTemperature keeps the seed gate active across the cascade.
+                String fallback = generateWithOllama(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                 if (fallback != null) {
                     result = fallback;
                     logger.info("[LLM] Ollama fallback succeeded ({} chars)", fallback.length());
@@ -241,7 +263,7 @@ public class LLMService {
                     && config.getModelType() != LLMConfig.ModelType.OLLAMA) {
                 try {
                     logger.warn("[LLM] Primary threw '{}' — falling back to Ollama for this call", errorMessage);
-                    result = generateWithOllama(systemPrompt, userPrompt, maxTokens, temperature);
+                    result = generateWithOllama(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                     if (result != null) {
                         logger.info("[LLM] Ollama fallback succeeded after exception ({} chars)", result.length());
                     }
@@ -254,9 +276,23 @@ public class LLMService {
             communicationLogger.logResponse(context, result, success, errorMessage);
         }
 
+        // Unseeded runs feed the cache so a future seeded run can replay them.
+        // Empty strings (content-filter refusals, etc.) are skipped — caching
+        // those would prevent retries from ever recovering.
+        if (result != null && !result.isEmpty()) {
+            cache.put(cacheKey, result);
+            logger.debug("LLMCallCache: write hit for key {} (backend {})",
+                    abbreviateKey(cacheKey), backendName);
+        }
+
         return result;
     }
-    
+
+    private static final int LOG_KEY_PREFIX_LEN = 16;
+    private static String abbreviateKey(String key) {
+        return key.length() > LOG_KEY_PREFIX_LEN ? key.substring(0, LOG_KEY_PREFIX_LEN) : key;
+    }
+
     /**
      * Convenience method with default parameters
      */
@@ -300,7 +336,15 @@ public class LLMService {
                     .put("messages", messages)
                     .put("max_tokens", maxTokens)
                     .put("temperature", temperature);
-            
+
+            // Providers that honour `seed` (OpenAI gpt-4o, DeepSeek, OpenRouter,
+            // Together, Groq, vLLM) combine it with temperature=0 for byte-stable
+            // output; others silently drop the field.
+            Long seed = SeededRandom.getBaseSeed();
+            if (seed != null) {
+                requestBody.put("seed", seed);
+            }
+
             logger.debug("[OpenAI-compatible LLM] Sending request to: {}", config.getOpenaiCompatibleUrl());
             logger.debug("[OpenAI-compatible LLM] Request body: {}", requestBody.toString());
             

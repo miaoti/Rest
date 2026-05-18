@@ -537,6 +537,18 @@ public class LLMConfig {
     public boolean isRateLimitRetryEnabled() { return rateLimitRetryEnabled; }
     public void setRateLimitRetryEnabled(boolean rateLimitRetryEnabled) { this.rateLimitRetryEnabled = rateLimitRetryEnabled; }
 
+    /**
+     * Seed-gated temperature override. When {@code -Drandom.seed} is set
+     * (regardless of value), returns {@code 0.0} to force greedy decoding so
+     * cached responses replay byte-deterministically. The gate intentionally
+     * fires on "set" rather than "parseable" — a non-numeric seed is still a
+     * deliberate determinism request. Numeric forwarding to backends is
+     * handled separately via {@link es.us.isa.restest.util.SeededRandom}.
+     */
+    public static double applySeedGate(double configuredTemperature) {
+        return System.getProperty("random.seed") != null ? 0.0 : configuredTemperature;
+    }
+
     @Override
     public String toString() {
         return String.format(

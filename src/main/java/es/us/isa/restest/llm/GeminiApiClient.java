@@ -1,6 +1,7 @@
 package es.us.isa.restest.llm;
 
 import es.us.isa.restest.util.LLMCommunicationLogger;
+import es.us.isa.restest.util.SeededRandom;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,6 +83,12 @@ public class GeminiApiClient {
             JSONObject generationConfig = new JSONObject();
             generationConfig.put("maxOutputTokens", maxTokens);
             generationConfig.put("temperature", temperature);
+            // Gemini 2.0+ honours generationConfig.seed; older models ignore it,
+            // which is fine — temperature=0 still drives toward greedy decoding.
+            Long seed = SeededRandom.getBaseSeed();
+            if (seed != null) {
+                generationConfig.put("seed", seed);
+            }
             requestBody.put("generationConfig", generationConfig);
             
             // Add contents (messages)

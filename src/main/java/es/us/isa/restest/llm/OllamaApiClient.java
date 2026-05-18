@@ -1,6 +1,7 @@
 package es.us.isa.restest.llm;
 
 import es.us.isa.restest.util.LLMCommunicationLogger;
+import es.us.isa.restest.util.SeededRandom;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -97,6 +98,10 @@ public class OllamaApiClient {
                 JSONObject options = new JSONObject();
                 options.put("temperature", temperature);
                 // NOT adding num_predict - it breaks content generation
+                Long seed = SeededRandom.getBaseSeed();
+                if (seed != null) {
+                    options.put("seed", seed);
+                }
                 requestBody.put("options", options);
                 
                 logger.debug("[Ollama API] Request URL: {}", url);

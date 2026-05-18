@@ -5,6 +5,9 @@
 /.project/
 /bin/
 /target
+# MIST runtime state (LLM cache, etc.). Survives `mvn clean`; un-ignore
+# for artifact bundles to commit a blessed cache for reproducibility.
+/.mist/
 /log/*
 
 /allure-results/
