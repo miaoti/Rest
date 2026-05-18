@@ -632,40 +632,32 @@ public class TraceWorkflowExtractor {
             "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}");
     private static final Pattern LONG_ID_PATTERN = Pattern.compile("^\\d{5,}$");
 
-    private static final Map<String, String> NOUN_TO_KEY = new HashMap<>();
-    static {
-        NOUN_TO_KEY.put("orders",     "orderId");
-        NOUN_TO_KEY.put("order",      "orderId");
-        NOUN_TO_KEY.put("trips",      "tripId");
-        NOUN_TO_KEY.put("trip",       "tripId");
-        NOUN_TO_KEY.put("routes",     "routeId");
-        NOUN_TO_KEY.put("route",      "routeId");
-        NOUN_TO_KEY.put("accounts",   "accountId");
-        NOUN_TO_KEY.put("account",    "accountId");
-        NOUN_TO_KEY.put("contacts",   "contactId");
-        NOUN_TO_KEY.put("contact",    "contactId");
-        NOUN_TO_KEY.put("users",      "userId");
-        NOUN_TO_KEY.put("user",       "userId");
-        NOUN_TO_KEY.put("trains",     "trainNumber");
-        NOUN_TO_KEY.put("train",      "trainNumber");
-        NOUN_TO_KEY.put("stations",   "stationId");
-        NOUN_TO_KEY.put("station",    "stationId");
-        NOUN_TO_KEY.put("seats",      "seatId");
-        NOUN_TO_KEY.put("seat",       "seatId");
-        NOUN_TO_KEY.put("prices",     "priceId");
-        NOUN_TO_KEY.put("price",      "priceId");
-        NOUN_TO_KEY.put("configs",    "configId");
-        NOUN_TO_KEY.put("config",     "configId");
-        NOUN_TO_KEY.put("consigns",   "consignId");
-        NOUN_TO_KEY.put("consign",    "consignId");
-        NOUN_TO_KEY.put("foods",      "foodId");
-        NOUN_TO_KEY.put("food",       "foodId");
-        NOUN_TO_KEY.put("assurances", "assuranceId");
-        NOUN_TO_KEY.put("assurance",  "assuranceId");
-        NOUN_TO_KEY.put("vouchers",   "voucherId");
-        NOUN_TO_KEY.put("voucher",    "voucherId");
-        NOUN_TO_KEY.put("payments",   "paymentId");
-        NOUN_TO_KEY.put("payment",    "paymentId");
+    /**
+     * Lazily-initialized noun-to-key map. Loaded once on first use from the
+     * path configured via {@link MstConfig.Core#nounMapPath()}. When the
+     * configured path equals the bundled default classpath resource we load
+     * directly from the classpath; otherwise we load from the filesystem and
+     * overlay it on top of the default map (see {@link NounKeyMap#fromPath}).
+     */
+    private static volatile NounKeyMap NOUN_KEY_MAP;
+
+    private static NounKeyMap nounKeyMap() {
+        NounKeyMap local = NOUN_KEY_MAP;
+        if (local == null) {
+            synchronized (TraceWorkflowExtractor.class) {
+                local = NOUN_KEY_MAP;
+                if (local == null) {
+                    String configured = MstConfig.instance().core().nounMapPath();
+                    if (configured == null || configured.equals("mist/noun-map.default.yaml")) {
+                        local = NounKeyMap.fromDefault();
+                    } else {
+                        local = NounKeyMap.fromPath(java.nio.file.Paths.get(configured));
+                    }
+                    NOUN_KEY_MAP = local;
+                }
+            }
+        }
+        return local;
     }
 
     /**
@@ -703,6 +695,7 @@ public class TraceWorkflowExtractor {
         if (qMark >= 0) path = path.substring(0, qMark);
 
         String[] segments = path.split("/");
+        NounKeyMap nk = nounKeyMap();
 
         for (int i = 0; i < segments.length; i++) {
             String seg = segments[i];
@@ -720,12 +713,13 @@ public class TraceWorkflowExtractor {
             String key = null;
             if (i > 0) {
                 String prev = segments[i - 1].toLowerCase();
-                key = NOUN_TO_KEY.get(prev);
+                key = nk.keyFor(prev);
                 if (key == null && isMeaningfulPathNoun(prev)) {
-                    // Derive a key: strip trailing 's' for plural (only when not a protected
-                    // non-plural like "news"/"address"), append "Id".
-                    String singular = stripPluralForUrlSegment(prev);
-                    key = singular + "Id";
+                    // Fallback: derive a camelCase + "Id" key. Handles hyphen/underscore
+                    // joining (e.g. "order-items" -> "orderItemId") and plural stripping
+                    // via stripPluralForUrlSegment.
+                    key = deriveFallbackKey(prev);
+                    log.debug("nounKeyMap miss for '{}' — derived '{}'", prev, key);
                 }
             }
             // If we couldn't derive a semantic name, skip the segment entirely. The previous
@@ -741,16 +735,46 @@ public class TraceWorkflowExtractor {
         }
     }
 
-    /** True when the path segment is plausibly a resource noun (not a version, scheme, etc.). */
+    /**
+     * True when the path segment is plausibly a resource noun (not a version, scheme, etc.).
+     * Accepts lowercase alphabetic words optionally joined by single hyphens or underscores
+     * (e.g. {@code orders}, {@code order-items}, {@code order_items}). Rejects UUIDs, pure
+     * numeric segments, version stamps like {@code v1}, and entries in {@link #PATH_NOISE_TOKENS}.
+     */
     private static boolean isMeaningfulPathNoun(String seg) {
         if (seg == null || seg.length() < 3) return false;
-        // Must be lowercase letters only (rules out "v1", "api/v2", numeric IDs, etc.).
-        for (int i = 0; i < seg.length(); i++) {
-            char c = seg.charAt(i);
-            if (c < 'a' || c > 'z') return false;
+        if (PATH_NOISE_TOKENS.contains(seg)) return false;
+        // Allow lowercase letter groups joined by single hyphens or underscores.
+        // String.matches is implicitly anchored, so no leading ^ / trailing $ is needed.
+        if (!seg.matches("[a-z]+([-_][a-z]+)*")) return false;
+        // Reject UUIDs and pure-numeric segments — those look like IDs, not nouns.
+        if (UUID_PATTERN.matcher(seg).matches()) return false;
+        if (LONG_ID_PATTERN.matcher(seg).matches()) return false;
+        return true;
+    }
+
+    /**
+     * Fallback key derivation for path nouns absent from the configured map.
+     * Strips a trailing plural {@code s} (protected by
+     * {@link #stripPluralForUrlSegment}), camel-cases hyphen/underscore-joined
+     * tokens (e.g. {@code order-items} → {@code orderItem}), then appends
+     * {@code Id}.
+     */
+    private static String deriveFallbackKey(String segment) {
+        String s = stripPluralForUrlSegment(segment);
+        StringBuilder sb = new StringBuilder(s.length() + 2);
+        boolean upperNext = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '-' || c == '_') {
+                upperNext = true;
+                continue;
+            }
+            sb.append(upperNext ? Character.toUpperCase(c) : c);
+            upperNext = false;
         }
-        // Reject common non-resource path tokens.
-        return !PATH_NOISE_TOKENS.contains(seg);
+        sb.append("Id");
+        return sb.toString();
     }
 
     private static final java.util.Set<String> PATH_NOISE_TOKENS = new java.util.HashSet<>(
