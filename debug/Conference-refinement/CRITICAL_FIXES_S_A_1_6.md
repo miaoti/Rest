@@ -132,64 +132,310 @@ Note: a `random.seed` system property is already honoured by
 `SeededRandom.create(scope)` for Java-side randomness (see flow.md
 § "Reproducibility"). The gap is the LLM side.
 
+### Why the existing `LLMCommunicationLogger` does NOT solve this
+
+The codebase already has
+`src/main/java/es/us/isa/restest/util/LLMCommunicationLogger.java`,
+which writes every request + response to a per-session text file under
+`logs/llm-communications/llm-communication-{timestamp}.log`. **This is
+a forensic log, not a cache.** Five concrete reasons it cannot be
+repurposed:
+
+1. **Output format is human-readable, not machine-replayable.**
+   Records are delimited by emoji-decorated banner lines (`🚀 LLM
+   REQUEST #N` / `🎯 LLM RESPONSE #N` / `---...---`). Prompts and
+   responses are free-form text; the moment a prompt contains a `---`
+   in its body (common in OpenAPI descriptions), a parser breaks.
+2. **Content is truncated.** `maxContentLength` defaults to 10 000
+   chars (line 68 of the logger). Any prompt longer than that gets a
+   `... [TRUNCATED]` marker, and the hash of the truncated prompt is
+   not the hash of the original — a cache built on this would
+   miss on every truncated entry.
+3. **No read path exists.** The logger only writes (`logWriter.println`,
+   `logWriter.flush`). Nothing in the codebase reads these files. To
+   turn them into a cache, you would have to add a parser + an
+   in-memory index + a lookup path — i.e. write the cache anyway, just
+   with a worse on-disk format.
+4. **Per-session files, no cross-run sharing.** Each JVM start creates
+   a new timestamped file (line 277-278 of the logger). Run 1 records
+   its 200 LLM calls into file A; Run 2 starts file B empty — even if
+   you wanted to replay, the data is in the wrong file.
+5. **Even with a perfect log, you still cannot replay.** The logger
+   records "what happened" but does not intercept "what will happen
+   next". Two runs with the same `random.seed` but different LLM
+   non-determinism still diverge — the log just documents the
+   divergence; it does not prevent it.
+
+**The logger stays as-is.** S-4 adds `LLMCallCache` as a parallel
+mechanism with a different purpose. Logger = forensics; cache =
+determinism. They write to different files; they do not interact.
+
+### Why hosted APIs cannot be made strictly deterministic on the client side
+
+Three of MIST's four backend options have different determinism
+guarantees:
+
+| Backend | `temperature=0` honoured? | `seed` parameter honoured? | Server-side variance |
+|---|---|---|---|
+| **Ollama** (local) | ✅ yes | ✅ yes (`options.seed`) | None — you own the weights |
+| **OpenAI-compatible** (DeepSeek, OpenAI, OpenRouter, ...) | ✅ yes | ⚠️ OpenAI's `seed` is documented as "best-effort, not strictly deterministic"; DeepSeek accepts the field with the same caveat; pure-proxy services (OpenRouter) may strip it | Model versioning, request routing, KV-cache batching — all can produce different tokens even with `temperature=0` |
+| **Gemini** | ✅ yes | ⚠️ `generationConfig.seed` added mid-2024 with the same "may produce different outputs across runs" disclaimer | Same as above |
+
+In short: **on hosted APIs you can tell the server `temperature=0,
+seed=42`, but you cannot make the server obey strictly.** This is the
+provider's choice, not a bug in your code, and it cannot be fixed at
+the client layer.
+
+**`LLMCallCache` exists precisely to sidestep this.** Once a prompt's
+response is in the cache, the cache is the source of truth — the
+backend is not called again, so the backend's non-determinism is
+irrelevant for cached entries.
+
+### Design: the "reproducibility switch"
+
+The master toggle is the JVM system property `-Drandom.seed=<long>`.
+It is **off by default**, because day-to-day development does not need
+byte-determinism, and forcing every dev run through the cache would
+prevent exploring fresh LLM responses.
+
+When the switch is **off** (`random.seed` unset):
+- `LLMService.generateText` calls the backend exactly as today.
+- Every (model, backend, prompt, temperature, max_tokens) → response
+  pair is **written** to `LLMCallCache` opportunistically, so that
+  the next person who turns the switch on benefits from this run's
+  work.
+- The cache is never read. Dev runs are non-deterministic by design.
+
+When the switch is **on** (`-Drandom.seed=42` or similar):
+- Before every backend call, `LLMService.generateText` consults
+  `LLMCallCache` using the same key.
+- **Cache hit** → return the cached response. Backend is **not**
+  called. This is what makes the second run byte-identical to the
+  first.
+- **Cache miss** → call the backend with `temperature` forced to `0.0`
+  (regardless of what `LLMConfig.getTemperature()` would otherwise
+  return), `seed` passed if the backend supports it, then store the
+  response and return it.
+- `SeededRandom.create(scope)` (already in the codebase) covers the
+  Java-side RNG. Combined with the cache, this closes the
+  determinism loop.
+
+The switch must be a **single point of control**. No separate
+`mist.llm.cache.enabled` property, no `--reproducible-mode` flag.
+The presence of `random.seed` is the toggle. Adding a second toggle
+creates four states; one toggle creates two.
+
+### Operating modes (the 2×2 matrix the executing agent must implement)
+
+|   | Cache file does NOT exist on disk | Cache file exists on disk |
+|---|---|---|
+| **`random.seed` unset** (dev) | Backend is called for every prompt. Each response is **written** to a freshly-created cache file. Run output may differ between consecutive runs (LLM non-determinism). | Backend is called for every prompt. Each response **overwrites** the cache entry if the key matches; new keys are appended. Run output may differ between consecutive runs. |
+| **`random.seed` set** (reproducible mode) | First seeded run = warm-up. Backend is called for every prompt; responses populate the cache. Run output is whatever the backend returned this time. | **Cache hits short-circuit backend calls.** Every key already in the cache returns its stored response. New keys (e.g. because you changed the OpenAPI spec) hit the backend, get cached, and on the next seeded run also short-circuit. Run output is byte-identical to whatever produced the cache entries. |
+
+The bottom-right quadrant is what makes artifact reproducibility
+possible: ship the cache file with the artifact, set `random.seed`,
+run.
+
+### Workflow for artifact / paper reproducibility
+
+This is the workflow the executing agent must enable but not
+*execute* — execution is a future user-driven step at publication
+time:
+
+1. **Blessed machine, blessed run** (you, once). On the machine you
+   intend to declare as the canonical environment in the paper, run
+   the demo with `-Drandom.seed=42`. The cache populates from
+   scratch. Inspect `target/test-cases/` and confirm the generated
+   tests are sensible.
+2. **Promote the cache file.** The default cache location is
+   `target/llm-call-cache.json`, which is gitignored (Maven cleans
+   `target/`). For artifact submission, **copy** it to a committable
+   location and point the property at it:
+   ```
+   cp target/llm-call-cache.json \
+      src/main/resources/My-Example/trainticket/llm-call-cache.json
+   ```
+   Then in `trainticket-demo.properties` (or whatever properties
+   file the artifact uses), add:
+   ```
+   mist.llm.cache.path=src/main/resources/My-Example/trainticket/llm-call-cache.json
+   ```
+3. **Commit the cache file.** This is data, not code. Treat it like
+   the bundled traces or the injected-faults JSON — it is part of the
+   reproduction package.
+4. **Reviewer reproduction.** A reviewer pulls the repo, sets the
+   same `-Drandom.seed=42`, runs the demo. Their LLM calls all hit
+   the cache, so they get byte-identical generated tests — even if
+   their LLM backend is offline, mis-configured, or returns different
+   tokens than yours did.
+5. **Cache refresh on intentional change.** If you change a prompt
+   (e.g. update Smart Fetch's discovery prompt), the SHA-256 key
+   changes, so the old cache entry is a miss. The next seeded run
+   re-fills it. To force a full rebuild: `rm
+   target/llm-call-cache.json` (and the committed copy if you have
+   one).
+
 ### Files
-- `src/main/java/es/us/isa/restest/llm/LLMService.java`
+- `src/main/java/es/us/isa/restest/llm/LLMService.java` (edit)
 - `src/main/java/es/us/isa/restest/llm/LLMCallCache.java` *(new)*
-- `src/main/java/es/us/isa/restest/llm/LLMConfig.java` (read only;
-  no writes)
+- `src/main/java/es/us/isa/restest/llm/LLMConfig.java` (edit:
+  `getTemperature()` becomes seed-gated)
+- The pre-existing
+  `src/main/java/es/us/isa/restest/util/LLMCommunicationLogger.java`
+  is **not** modified by this fix.
 
 ### Surgical change
-1. Create `LLMCallCache` (~120 LOC, single file). It is a file-backed
-   JSON cache. Key = SHA-256 of
-   `(model_id || backend || prompt || temperature || max_tokens)`.
-   Value = the model's text response. Cache file is one JSON object
-   keyed by hash, written via atomic rename (write `tmp` then rename).
-   Lookup and store are both `O(1)` after the file is loaded.
-2. In `LLMService.generateText`, wrap the existing backend dispatch
-   (`GeminiApiClient` / OpenAI-compatible HTTP / `OllamaApiClient`)
-   with a cache check:
-   - If `random.seed` system property is set AND the cache has a hit,
-     return the cached value.
-   - Otherwise call the backend as today and *also* store the response
-     in the cache (so a subsequent seeded run benefits from this run's
-     cold call).
-3. When `random.seed` is set, force `temperature = 0` on every
-   backend's request payload. The `LLMConfig.getTemperature()` accessor
-   should be gated to return `0.0` when `random.seed` is set. Implement
-   this gating inside `LLMConfig` (not in every call site).
-4. The cache file location is `${user.dir}/target/llm-call-cache.json`.
-   No new property — it's a fixed path. If the file doesn't exist,
-   start empty.
+1. **Create `LLMCallCache`** (~150 LOC, single file).
+   - File-backed JSON, one object keyed by SHA-256 of
+     `(modelType || modelName || backend || systemPrompt ||
+     userPrompt || temperature || maxTokens)`. All eight fields go
+     into the hash; the cache key collides only when all eight are
+     identical.
+   - Value is the model's raw text response string.
+   - On startup, read the cache file once into a
+     `ConcurrentHashMap<String, String>`. Loading errors (file
+     corrupt, JSON malformed) **must** throw a fatal exception at
+     startup — silent fallback to an empty cache would let a
+     corrupted artifact go undetected.
+   - Writes go to a `.tmp` sibling first, then atomic rename, to
+     avoid leaving a half-written file on a JVM crash.
+   - Writes are debounced: batch multiple `put` calls into one flush
+     per N seconds (default 5) to avoid hammering the filesystem
+     when 1000+ LLM calls fire in a generation pass.
+   - Thread-safe (it sits behind a `synchronized` write path; reads
+     are lock-free against the `ConcurrentHashMap`).
+2. **In `LLMService.generateText`**, wrap the existing backend
+   dispatch (`GeminiApiClient` / OpenAI-compatible HTTP /
+   `OllamaApiClient`):
+   ```java
+   String seed = System.getProperty("random.seed");
+   String key = LLMCallCache.key(modelType, modelName, backend,
+                                 systemPrompt, userPrompt,
+                                 temperature, maxTokens);
+   if (seed != null) {
+       String hit = cache.get(key);
+       if (hit != null) return hit;       // short-circuit, no backend call
+   }
+   String response = dispatchToBackend(...);  // existing code
+   cache.put(key, response);                  // always write
+   return response;
+   ```
+3. **In `LLMConfig.getTemperature()`**, gate by `random.seed`:
+   ```java
+   public double getTemperature() {
+       if (System.getProperty("random.seed") != null) return 0.0;
+       return this.configuredTemperature;
+   }
+   ```
+   Implement the gating **in `LLMConfig`**, not at the call site.
+   Every place that reads temperature already calls `getTemperature()`;
+   no edits to call sites.
+4. **Cache file location** is the value of
+   `System.getProperty("mist.llm.cache.path",
+   "target/llm-call-cache.json")`. This is the only new system
+   property introduced by this fix. Fix A-6 will absorb it into
+   `MstConfig.Llm.cachePath()`; until then, the call site reads the
+   property directly. Default location is gitignored by Maven; users
+   may point it at a committable path for artifact workflows (see
+   above).
+5. **The cache MUST also honour Gemini's and OpenAI-compatible's
+   `seed` parameter when `random.seed` is set.** Even though cache
+   hits short-circuit, the cache cold-fill path still calls the
+   backend, and we want that one call to be as deterministic as the
+   backend allows. Pass the same numeric `random.seed` value into
+   `GeminiApiClient.request.generationConfig.seed` and into the
+   OpenAI-compatible payload's `seed` field. Ollama already accepts
+   it via `options.seed`. This is best-effort; the cache is the
+   actual guarantee.
 
 ### Acceptance criteria
-- [ ] Two consecutive runs with `-Drandom.seed=42` produce byte-identical
-  generated test classes for the same scenario set. Verify by running:
-  ```
-  java -Drandom.seed=42 -jar target/restest.jar <demo>.properties \
-      ; sha256sum target/test-cases/Flow_Scenario_1.java
-  ```
-  twice, comparing checksums.
-- [ ] When `random.seed` is unset, behaviour is unchanged from
-  `inject-detection` HEAD (cache writes happen, cache reads do not).
-- [ ] `target/llm-call-cache.json` exists after a run and parses as
-  valid JSON.
-- [ ] No new system property is introduced (the cache path is fixed;
-  the seed property already exists).
+- [ ] Two consecutive runs with `-Drandom.seed=42` produce
+      byte-identical generated test classes for the same scenario set.
+      Verify:
+      ```
+      mvn -q clean package -DskipTests
+      java -Drandom.seed=42 -jar target/restest.jar \
+           src/main/resources/My-Example/trainticket-demo.properties \
+           > run1.log 2>&1
+      find target/test-cases -name 'Flow_Scenario_*.java' \
+           -exec sha256sum {} \; | sort > run1.sums
+
+      mvn -q clean package -DskipTests
+      java -Drandom.seed=42 -jar target/restest.jar \
+           src/main/resources/My-Example/trainticket-demo.properties \
+           > run2.log 2>&1
+      find target/test-cases -name 'Flow_Scenario_*.java' \
+           -exec sha256sum {} \; | sort > run2.sums
+
+      diff run1.sums run2.sums   # must be empty
+      ```
+- [ ] Run 1 above logs `LLMCallCache: write hit` lines (cold fill).
+- [ ] Run 2 above logs `LLMCallCache: read hit` lines and zero
+      `LLMService: dispatching to <backend>` lines for any prompt
+      that already appeared in Run 1.
+- [ ] When `random.seed` is unset, behaviour matches
+      `inject-detection` HEAD before this fix: backend is called for
+      every prompt, no reads from cache. Verify by removing the seed
+      and confirming the per-step Allure attachments differ between
+      two consecutive runs.
+- [ ] `target/llm-call-cache.json` exists after a run, parses as
+      valid JSON, and the keys are 64-hex-char strings.
+- [ ] A deliberately corrupted cache file (`echo '{bad json' >
+      target/llm-call-cache.json`) causes the next JVM start with
+      `random.seed` set to **exit non-zero** with a clear error
+      message. The fix is to delete or fix the file, not to silently
+      ignore it.
+- [ ] `LLMConfig.getTemperature()` returns `0.0` when `random.seed`
+      is set, regardless of the configured value. Verify via
+      `LLMConfigSeedGateTest`.
+- [ ] `LLMCommunicationLogger` continues to write logs as before,
+      unaffected by the new cache. Verify by inspecting
+      `logs/llm-communications/` after both seeded and unseeded runs.
 - [ ] `mvn -q -DskipTests compile` succeeds.
 
 ### Tests to add
 - `src/test/java/es/us/isa/restest/llm/LLMCallCacheTest.java`:
-  unit tests for put/get/round-trip, key collision (different prompts
-  ⇒ different keys), atomic rename behaviour (corrupt write does not
-  leave a half-written file).
+  unit tests for
+  - `put` then `get` round-trip on the same key
+  - different prompts produce different keys (no collision)
+  - same prompt + different temperature produce different keys
+  - same prompt + different backend produce different keys
+  - atomic rename: kill the JVM after `tmp` is written but before
+    rename, verify the canonical cache file is unchanged
+  - corrupt cache file at startup throws fatal exception (no silent
+    fallback)
+- `src/test/java/es/us/isa/restest/llm/LLMConfigSeedGateTest.java`:
+  unit tests for
+  - `getTemperature()` returns `0.0` when `random.seed` is set
+  - `getTemperature()` returns the configured value when
+    `random.seed` is unset
+  - thread-safety: setting/unsetting `random.seed` concurrently does
+    not corrupt the gating (this is a `System.getProperty` read, but
+    we want a regression test).
 
 ### Rollback
-The cache file is the only side effect. To roll back: delete
-`target/llm-call-cache.json` and revert the branch.
+- Delete `target/llm-call-cache.json` (or the user's promoted copy).
+- Revert the branch.
+- The `LLMCommunicationLogger` is untouched and continues to function.
+
+### Explicit non-goals (do not extend this fix)
+- Do **not** add a separate `mist.llm.cache.enabled` property. The
+  `random.seed` property is the only switch.
+- Do **not** add cache TTL / eviction. The cache is meant to be
+  artifact-stable; entries should not silently expire.
+- Do **not** add a "clear cache" CLI command. The user runs `rm
+  target/llm-call-cache.json` (or the promoted path). One file, no
+  ceremony.
+- Do **not** merge the cache with `LLMCommunicationLogger`. They have
+  incompatible formats and incompatible update semantics.
+- Do **not** make the cache lookup async / non-blocking. The
+  short-circuit must be synchronous so that the cached response is
+  returned in the same JVM frame the LLM call would have been made.
 
 ---
 
 ## Fix A-6 — MstConfig POJO (LAND SECOND)
+
 
 ### Problem
 30+ MST-related system properties are read with `System.getProperty(...)`
@@ -217,7 +463,9 @@ scattered across the code. Two specific harms:
    Group the fields into sub-records by area:
    - `core` (MST primary toggles)
    - `smartFetch`
-   - `llm`
+   - `llm` (LLM backend + cache; **must include `cachePath` —
+     absorbs the `mist.llm.cache.path` property that Fix S-4
+     introduced**, default `target/llm-call-cache.json`)
    - `faulty` (negative test config)
    - `scenarioMerge` (Phase 1/2 thresholds)
    - `scenarioShattering`
@@ -676,19 +924,36 @@ Tick each box only after the acceptance criteria for that fix pass.
 
 - [ ] Branch `claude/fix-mst-04-llm-determinism` created from
       `origin/inject-detection`
-  - [ ] `LLMCallCache.java` added
-  - [ ] `LLMService.generateText` wraps backend calls with cache
-  - [ ] `LLMConfig.getTemperature()` gated by `random.seed`
-  - [ ] `LLMCallCacheTest` passes
-  - [ ] Two seeded runs produce identical scenario files
+  - [ ] `LLMCallCache.java` added (file-backed JSON, atomic rename,
+        debounced writes, fatal exception on corrupt-file startup)
+  - [ ] `LLMService.generateText` wraps backend calls: cache-read on
+        seed-set, cache-write always
+  - [ ] `LLMConfig.getTemperature()` returns `0.0` when
+        `random.seed` is set
+  - [ ] Backend `seed` parameter forwarded to Ollama/Gemini/OpenAI-
+        compatible when `random.seed` is set (best-effort)
+  - [ ] `mist.llm.cache.path` property read (default
+        `target/llm-call-cache.json`); to be absorbed by A-6
+  - [ ] `LLMCommunicationLogger` untouched and still writes per-
+        session log files
+  - [ ] `LLMCallCacheTest` and `LLMConfigSeedGateTest` pass
+  - [ ] Two seeded runs produce byte-identical
+        `Flow_Scenario_*.java` files (`diff run1.sums run2.sums` empty)
+  - [ ] Run 2 logs `LLMCallCache: read hit` and zero backend
+        dispatches for previously-seen prompts
+  - [ ] Corrupted cache file → next seeded JVM start exits non-zero
+        with a clear error
   - [ ] `simplify` skill invoked, no unused additions
   - [ ] Single commit pushed; PR not opened (user merges)
 
 - [ ] Branch `claude/fix-mst-06-mst-config` created from S-4 tip
   - [ ] `MstConfig` POJO + sub-records
+  - [ ] `MstConfig.Llm.cachePath()` absorbs the `mist.llm.cache.path`
+        property introduced by S-4; S-4's direct `System.getProperty`
+        read is replaced by `cfg.llm().cachePath()`
   - [ ] `MstConfigValidator` checks unknown keys, ranges, conflicts
   - [ ] All `System.getProperty("mst.*"|"smart.input.fetch.*"|…)`
-        replaced; grep returns empty
+        replaced; grep returns empty (including `mist.llm.cache.path`)
   - [ ] `mst.config.strict=true` exits non-zero on typo
   - [ ] `MstConfigValidatorTest` passes
   - [ ] `simplify` skill invoked
