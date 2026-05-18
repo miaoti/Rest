@@ -2406,11 +2406,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             log.info("Dynamic Pool Scaling → API '{}': {} params, {} variants → targetPoolSize={}",
                     rootApiKey, numParams, variantCount, targetPoolSize);
 
+            // Per-location enrolment breakdown so operators reviewing the run
+            // log can confirm path / header / cookie params got enrolled — the
+            // previous symptom was a silently empty pool for those locations.
+            Map<String, Integer> sharedLocationBreakdown = new LinkedHashMap<>();
+            sharedLocationBreakdown.put("path", 0);
+            sharedLocationBreakdown.put("query", 0);
+            sharedLocationBreakdown.put("header", 0);
+            sharedLocationBreakdown.put("cookie", 0);
+            sharedLocationBreakdown.put("body", 0);
+            sharedLocationBreakdown.put("other", 0);
+
             // Build API name for context
             String apiName = verb.toUpperCase() + " " + route;
 
             ConsoleProgressBar.begin("params", opCfg.getTestParameters().size());
             for (TestParameter p : opCfg.getTestParameters()) {
+                String sharedNormalisedIn = normaliseParamLocation(p.getIn());
+                sharedLocationBreakdown.merge(sharedNormalisedIn, 1, Integer::sum);
                 ParameterInfo info = createParameterInfoWithContext(p, apiName, service, allParamNames);
                 Set<String> uniqueValues = new LinkedHashSet<>();
 
@@ -2482,10 +2495,20 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
                 parameterPool.put(p.getName(), new ArrayList<>(uniqueValues));
                 ConsoleProgressBar.update(p.getName());
-                log.info("Generated shared pool for parameter '{}': {} unique values (target was {})",
-                        p.getName(), parameterPool.get(p.getName()).size(), targetPoolSize);
+                log.info("Generated shared pool for parameter '{}' (in={}): {} unique values (target was {})",
+                        p.getName(), sharedNormalisedIn,
+                        parameterPool.get(p.getName()).size(), targetPoolSize);
             }
             ConsoleProgressBar.complete();
+
+            log.info("Shared pool enrolment by location for '{}': path={} query={} header={} cookie={} body={} other={}",
+                    rootApiKey,
+                    sharedLocationBreakdown.get("path"),
+                    sharedLocationBreakdown.get("query"),
+                    sharedLocationBreakdown.get("header"),
+                    sharedLocationBreakdown.get("cookie"),
+                    sharedLocationBreakdown.get("body"),
+                    sharedLocationBreakdown.get("other"));
         }
 
         return parameterPool;
@@ -2672,15 +2695,48 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             }
             String apiName = verb.toUpperCase() + " " + route;
 
+            // Cover every parameter location. The previous queue silently
+            // dropped path / header / cookie params, breaking the
+            // "8-fault coverage per parameter" guarantee for endpoints that
+            // use them. Location normalisation folds OpenAPI 2 'formData'
+            // into 'body' and defaults null/empty to 'body' to match the
+            // writer's body-path conventions.
+            int preCount = faultyPool.size();
+            Map<String, Integer> locationBreakdown = new LinkedHashMap<>();
+            locationBreakdown.put("path", 0);
+            locationBreakdown.put("query", 0);
+            locationBreakdown.put("header", 0);
+            locationBreakdown.put("cookie", 0);
+            locationBreakdown.put("body", 0);
+            locationBreakdown.put("other", 0);
+            log.info("Fault enrolment (root='{}'): pre={} parameters in pool",
+                    rootApiKey, preCount);
+
             ConsoleProgressBar.begin("params", opCfg.getTestParameters().size());
             for (TestParameter p : opCfg.getTestParameters()) {
+                String normalisedIn = normaliseParamLocation(p.getIn());
+                locationBreakdown.merge(normalisedIn, 1, Integer::sum);
+
                 ParameterInfo info = createParameterInfoWithContext(p, apiName, service, allParamNames);
                 InvalidInputPool pool = llmGen.generateInvalidInputPool(info);
                 faultyPool.put(p.getName(), pool);
                 ConsoleProgressBar.update(p.getName());
-                log.debug("  Invalid pool for '{}': {}", p.getName(), pool.getTotalCount());
+                log.debug("  Invalid pool for '{}' (in={}): {}",
+                        p.getName(), normalisedIn, pool.getTotalCount());
             }
             ConsoleProgressBar.complete();
+
+            int postCount = faultyPool.size();
+            log.info("Fault enrolment (root='{}'): post={} parameters in pool (delta={})",
+                    rootApiKey, postCount, postCount - preCount);
+            log.info("Fault enrolment by location for '{}': path={} query={} header={} cookie={} body={} other={}",
+                    rootApiKey,
+                    locationBreakdown.get("path"),
+                    locationBreakdown.get("query"),
+                    locationBreakdown.get("header"),
+                    locationBreakdown.get("cookie"),
+                    locationBreakdown.get("body"),
+                    locationBreakdown.get("other"));
         }
 
         int totalInvalidValues = faultyPool.values().stream()
@@ -2688,6 +2744,30 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("Faulty pool for '{}': {} params, {} total invalid values",
                 rootApiKey, faultyPool.size(), totalInvalidValues);
         return faultyPool;
+    }
+
+    /**
+     * Normalise an OpenAPI parameter location to one of
+     * {@code path|query|header|cookie|body|other}, lowercased. {@code formData}
+     * (OpenAPI 2) folds into {@code body}; null/empty defaults to {@code body}
+     * to match the writer's body-path conventions. Package-private so the
+     * pipeline-stage tests can verify the contract via reflection.
+     */
+    static String normaliseParamLocation(String in) {
+        if (in == null || in.trim().isEmpty()) return "body";
+        String lower = in.trim().toLowerCase(Locale.ROOT);
+        switch (lower) {
+            case "path":
+            case "query":
+            case "header":
+            case "cookie":
+            case "body":
+                return lower;
+            case "formdata":
+                return "body";
+            default:
+                return "other";
+        }
     }
 
     /**
