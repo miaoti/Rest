@@ -1,5 +1,6 @@
 package es.us.isa.restest.inputs;
 
+import es.us.isa.restest.configuration.MstConfig;
 import es.us.isa.restest.configuration.TestConfigurationVisitor;
 import es.us.isa.restest.configuration.pojos.GenParameter;
 import es.us.isa.restest.configuration.pojos.Generator;
@@ -95,9 +96,8 @@ public class TestDataGeneratorFactory {
 	}
 
 	private static ITestDataGenerator createLLMParameterGenerator(Generator generator) {
-		// Check if smart input fetching is enabled via system properties
-		boolean smartFetchEnabled = Boolean.parseBoolean(
-			System.getProperty("smart.input.fetch.enabled", "false"));
+		// Check if smart input fetching is enabled via the MST config POJO.
+		boolean smartFetchEnabled = MstConfig.instance().smartFetch().enabled();
 		
 		if (smartFetchEnabled) {
 			// Use the enhanced SmartLLMParameterGenerator that includes intelligent fetching

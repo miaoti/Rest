@@ -263,10 +263,16 @@ public class TestGenerationAndExecution {
 				// For MST mode, find the actual generated test classes and execute them individually
 				String actualPackageName = packageName + "." + className;
 				
-				// Check if Test Case Enhancer is enabled
-				boolean enhancerEnabled = Boolean.parseBoolean(System.getProperty("test.enhancer.enabled", "false"));
-				int enhancerRounds = Integer.parseInt(System.getProperty("test.enhancer.rounds", "1"));
-				boolean skip5xx = Boolean.parseBoolean(System.getProperty("test.enhancer.skip.5xx", "true"));
+				// Check if Test Case Enhancer is enabled. We use the FQN here
+				// because this file already imports the legacy
+				// es.us.isa.restest.configuration.multiservice.MstConfig
+				// (Properties-file loader), and the new typed POJO lives at
+				// es.us.isa.restest.configuration.MstConfig.
+				es.us.isa.restest.configuration.MstConfig.Enhancer enhancerCfg =
+						es.us.isa.restest.configuration.MstConfig.instance().enhancer();
+				boolean enhancerEnabled = enhancerCfg.enabled();
+				int enhancerRounds = enhancerCfg.rounds();
+				boolean skip5xx = enhancerCfg.skip5xx();
 				
 				if (enhancerEnabled) {
 					logger.info("═══════════════════════════════════════════════════════════════════════════");
@@ -893,9 +899,11 @@ public class TestGenerationAndExecution {
 			}
 		}
 
-		String enabled = System.getProperty("smart.input.fetch.enabled", "false");
-		String percentage = System.getProperty("smart.input.fetch.percentage", "0.0");
-		String registryPath = System.getProperty("smart.input.fetch.registry.path", "not set");
+		es.us.isa.restest.configuration.MstConfig mstCfg = es.us.isa.restest.configuration.MstConfig.instance();
+		es.us.isa.restest.configuration.MstConfig.SmartFetch sfCfg = mstCfg.smartFetch();
+		boolean enabled = sfCfg.enabled();
+		double percentage = sfCfg.percentage();
+		String registryPath = sfCfg.registryPath();
 
 		String llmEnabled = System.getProperty("llm.enabled", "false");
 		String llmModelType = System.getProperty("llm.model.type", "openai_compatible");
@@ -905,7 +913,7 @@ public class TestGenerationAndExecution {
 
 		logger.info("📊 Smart Fetching Settings:");
 		logger.info("   - Enabled: {}", enabled);
-		logger.info("   - Percentage: {}% smart fetching", Float.parseFloat(percentage) * 100);
+		logger.info("   - Percentage: {}% smart fetching", percentage * 100);
 		logger.info("   - Registry: {}", registryPath);
 
 		logger.info("🤖 LLM Settings:");
@@ -915,16 +923,17 @@ public class TestGenerationAndExecution {
 		logger.info("   - Ollama Enabled: {}", ollamaEnabled);
 		logger.info("   - Ollama Model: {}", ollamaModel);
 
-		String llmValidationEnabled = System.getProperty("llm.response.validation.enabled", "false");
-		String llmValidationOnly2xx = System.getProperty("llm.response.validation.only.2xx", "true");
-		String llmValidationRca = System.getProperty("llm.response.validation.include.rca", "true");
+		es.us.isa.restest.configuration.MstConfig.Llm llmCfg = mstCfg.llm();
+		boolean llmValidationEnabled = llmCfg.responseValidationEnabled();
+		boolean llmValidationOnly2xx = llmCfg.responseValidationOnly2xx();
+		boolean llmValidationRca = llmCfg.responseValidationIncludeRca();
 
 		logger.info("🔍 LLM Response Validation (Soft Error Detection):");
 		logger.info("   - Enabled: {}", llmValidationEnabled);
 		logger.info("   - Only 2XX responses: {}", llmValidationOnly2xx);
 		logger.info("   - Include RCA in reports: {}", llmValidationRca);
 
-		if ("true".equals(enabled)) {
+		if (enabled) {
 			logger.info("🎯 Smart Input Fetching is ENABLED - you should see 'Smart Fetch' logs during test generation!");
 		} else {
 			logger.warn("❌ Smart Input Fetching is DISABLED - enable it by setting smart.input.fetch.enabled=true in the MST configuration file");
@@ -1147,12 +1156,11 @@ public class TestGenerationAndExecution {
 		String enhancerOutputDir = "target/enhancer/" + testId;
 		
 		// Check if status code exploration is enabled
-		boolean statusCodeExplorationEnabled = Boolean.parseBoolean(
-			System.getProperty("status.code.exploration.enabled", "false"));
-		int maxExplorationPerTest = Integer.parseInt(
-			System.getProperty("status.code.exploration.max.per.test", "3"));
-		int maxExplorationPerRound = Integer.parseInt(
-			System.getProperty("status.code.exploration.max.per.round", "20"));
+		es.us.isa.restest.configuration.MstConfig.StatusCodeExploration sceCfg =
+				es.us.isa.restest.configuration.MstConfig.instance().statusCodeExploration();
+		boolean statusCodeExplorationEnabled = sceCfg.enabled();
+		int maxExplorationPerTest = sceCfg.maxPerTest();
+		int maxExplorationPerRound = sceCfg.maxPerRound();
 		
 		if (statusCodeExplorationEnabled) {
 			logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");

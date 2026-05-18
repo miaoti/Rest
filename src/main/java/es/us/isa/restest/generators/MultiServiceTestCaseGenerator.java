@@ -1,5 +1,6 @@
 package es.us.isa.restest.generators;
 
+import es.us.isa.restest.configuration.MstConfig;
 import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
@@ -175,14 +176,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         // as its own step (Multi-Step Replay) — much larger test suites, rarely desired.
         // Default flipped to true so runs with a bare properties file don't silently
         // enter Multi-Step Replay.  Property name kept for backward compatibility.
-        this.onlyFirstBusinessStep = Boolean.parseBoolean(System.getProperty("mst.generate.only.first.step", "true"));
+        MstConfig mstCfg = MstConfig.instance();
+        this.onlyFirstBusinessStep = mstCfg.core().generateOnlyFirstStep();
         log.info("Root API mode: onlyFirstBusinessStep={} (true → prune step-API spans, default)", this.onlyFirstBusinessStep);
-        this.faultyRatio = Float.parseFloat(System.getProperty("faulty.ratio", "0.1"));
-        this.faultyRoundRobin = Boolean.parseBoolean(System.getProperty("faulty.round-robin", "true"));
+        this.faultyRatio = (float) mstCfg.faulty().ratio();
+        this.faultyRoundRobin = mstCfg.faulty().roundRobin();
         this.dependencyRegistry = SemanticDependencyRegistry.build(serviceConfigs, serviceSpecs, scenarios);
 
         log.info("=== NEGATIVE TEST CONFIGURATION ===");
-        log.info("faulty.ratio from system property: {}", System.getProperty("faulty.ratio", "0.1"));
+        log.info("faulty.ratio from MstConfig: {}", mstCfg.faulty().ratio());
         log.info("Parsed faultyRatio: {}", this.faultyRatio);
         log.info("This means {}% of test variants will be negative tests (invalid inputs)", this.faultyRatio * 100);
         log.info("Invalid parameter selection mode: {}", this.faultyRoundRobin ? "ROUND-ROBIN" : "RANDOM");
@@ -299,8 +301,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
         // Phase 3: Scenario Shattering — partition fat multi-root scenarios into
         // semantically cohesive components using the dependency graph.
-        boolean shatterEnabled = Boolean.parseBoolean(
-                System.getProperty("scenario.shattering.enabled", "true"));
+        boolean shatterEnabled = MstConfig.instance().scenarioShattering().enabled();
         if (shatterEnabled) {
             new ScenarioOptimizer(dependencyRegistry).optimizeScenarios(scenarios);
             // Phase 3.5: Shattering can emit NEW 1-root partitions (isolated connected

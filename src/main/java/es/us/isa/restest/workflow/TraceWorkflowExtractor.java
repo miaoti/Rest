@@ -22,6 +22,8 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import es.us.isa.restest.configuration.MstConfig;
+
 /**
  * Utility class to extract workflow scenarios from OpenTelemetry trace data.
  *
@@ -502,10 +504,9 @@ public class TraceWorkflowExtractor {
         // Phase 2: Heuristic session-based merge for traces that share the same
         // client IP and are temporally adjacent (covers the common case where OTel
         // does not capture response/request bodies).
-        long maxGapMicros = Long.parseLong(
-                System.getProperty("trace.merge.max.session.gap.micros", "60000000")); // 60s default
-        int maxRootsPerScenario = Integer.parseInt(
-                System.getProperty("trace.merge.max.roots.per.scenario", "10"));
+        MstConfig.ScenarioMerge mergeCfg = MstConfig.instance().scenarioMerge();
+        long maxGapMicros = mergeCfg.maxSessionGapMicros();
+        int maxRootsPerScenario = mergeCfg.maxRootsPerScenario();
         mergeScenariosBySessionTimeWindow(scenarios, maxGapMicros, maxRootsPerScenario);
 
         return scenarios;

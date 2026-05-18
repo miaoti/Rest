@@ -2,6 +2,7 @@ package es.us.isa.restest.inputs.smart;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import es.us.isa.restest.configuration.MstConfig;
 import es.us.isa.restest.inputs.llm.LLMParameterGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.specification.OpenAPIParameter;
@@ -246,7 +247,7 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
     private ParameterInfo createParameterInfoWithErrorContext() {
         ParameterInfo pinfo = createParameterInfo();
         try {
-            String registryPath = System.getProperty("smart.input.fetch.registry.path");
+            String registryPath = MstConfig.instance().smartFetch().registryPath();
             InputFetchRegistry registry = sharedRegistry(registryPath);
             if (registry != null) {
                 String apiEndpoint = getOperationPath();

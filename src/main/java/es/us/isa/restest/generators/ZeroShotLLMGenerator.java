@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import es.us.isa.restest.configuration.MstConfig;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.llm.LLMService;
 import es.us.isa.restest.llm.LLMConfig;
@@ -166,7 +167,7 @@ public class ZeroShotLLMGenerator {
      * </ul>
      */
     public es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
-        String mode = System.getProperty("negative.input.generation.mode", "smart")
+        String mode = MstConfig.instance().faulty().negativeInputGenerationMode()
                 .toLowerCase(java.util.Locale.ROOT)
                 .trim();
 
