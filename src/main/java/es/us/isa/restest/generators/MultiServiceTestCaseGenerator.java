@@ -61,18 +61,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private List<String> parameterRotation = new ArrayList<>();
     private int currentFaultyParamIndex = 0;
 
-    // Global deduplication: tracks normalized API keys (e.g. "GET__api_v1_...") for 1-root
-    // scenarios that already have a representative in the generation pipeline.  Shared with
-    // decomposeMultiRootScenarios() so decomposed _RT baselines don't duplicate standalone ones.
-    private final Set<String> seenSingleRootApis = new LinkedHashSet<>();
-
-    // Identity-based set of WorkflowScenario instances that have already been accepted by
-    // a prior pass of applySingleRootDedup().  Used to prevent a later pass (e.g. Phase 3.5
-    // post-shatter dedup) from dropping the very 1-root scenarios that Phase 2.5 just kept —
-    // their API keys are now present in seenSingleRootApis, so without this pass-through the
-    // second dedup call would treat them as "redundant" and silently discard them.
-    private final Set<WorkflowScenario> dedupApprovedScenarios =
-            Collections.newSetFromMap(new IdentityHashMap<>());
+    // Normalised API keys (e.g. "GET__api_v1_...") of 1-root scenarios that have been
+    // APPROVED (kept) by a prior dedup pass.  Shared across Phase 2.5, Phase 3.5, and
+    // Phase 4 so each pass dedups against the same canonical set.  The earlier
+    // "every key ever seen" set over-suppressed shattered components because Phase 3
+    // returns new WorkflowScenario instances whose keys were already marked as seen;
+    // tracking ONLY approved keys plus the approvedInDedupPass tag fixes that.
+    private final Set<String> approvedApiKeys = new LinkedHashSet<>();
 
     /**
      * Represents a single fault-injection target: one invalid value fired at
@@ -290,7 +285,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         int counter = 1;
 
         // Phase 2.5: Collapse duplicate 1-root scenarios before any downstream processing
-        deduplicateSingleRootScenarios();
+        runSingleRootDedupPass("PHASE 2.5: SINGLE-ROOT SCENARIO DEDUPLICATION",
+                scenarios, approvedApiKeys);
 
         // Pre-process: Group scenarios by root API and generate shared parameter pools
         log.info("=== PRE-PROCESSING: Grouping scenarios by root API ===");
@@ -306,10 +302,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             new ScenarioOptimizer(dependencyRegistry).optimizeScenarios(scenarios);
             // Phase 3.5: Shattering can emit NEW 1-root partitions (isolated connected
             // components) that never went through the Phase 2.5 dedup filter. Re-apply
-            // the 1-root dedup here against the same seenSingleRootApis set to prevent
+            // the 1-root dedup here against the same approvedApiKeys set to prevent
             // byte-identical duplicate test classes like Flow_Scenario_671 /
-            // Flow_Scenario_7473 for the same parameterless endpoint.
-            deduplicatePostShatter();
+            // Flow_Scenario_7473 for the same parameterless endpoint.  Phase 3 propagates
+            // the approvedInDedupPass tag to each shattered child so the pass-through
+            // guard in runSingleRootDedupPass keeps Phase-2.5-approved scenarios intact
+            // even after they are reconstructed as new instances.
+            runSingleRootDedupPass("PHASE 3.5: POST-SHATTER SINGLE-ROOT DEDUPLICATION",
+                    scenarios, approvedApiKeys);
         }
 
         // Phase 4: Trace Decomposition — extract individual 1-Root baseline
@@ -3164,82 +3164,67 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     /* ============================================================ */
 
     /**
-     * Pre-generation filter: collapse duplicate 1-root scenarios that target the
-     * same API endpoint into a single representative.
+     * Unified single-root dedup pass invoked from both Phase 2.5 (pre-shatter) and
+     * Phase 3.5 (post-shatter). Scenarios tagged via
+     * {@link WorkflowScenario#isApprovedInDedupPass()} pass through unchanged so that
+     * Phase 3's newly-constructed shattered children inherit their parent's approval.
+     * Newly-encountered scenarios register their normalised API key in
+     * {@code approvedKeys} and are tagged on the way out; subsequently-shattered
+     * duplicates of the same endpoint are dropped against that shared set. Multi-root
+     * scenarios are always retained — only true 1-root duplicates collapse.
      *
-     * <p>When Jaeger records N identical traces for the same stateless GET endpoint
-     * (e.g. repeated page loads), the trace extractor emits N separate 1-root
-     * {@link WorkflowScenario} objects.  Without deduplication every one of them
-     * becomes its own {@code Flow_Scenario_N.java} test class — producing massive
-     * redundancy for parameterless endpoints.
-     *
-     * <p>This method keeps the <em>first</em> 1-root scenario per normalised API
-     * key ({@code VERB__path}) and discards the rest.  Multi-root scenarios are
-     * always retained because their downstream call chains may differ even when
-     * they share a root API.  The surviving API keys are recorded in
-     * {@link #seenSingleRootApis} so that {@link #decomposeMultiRootScenarios()}
-     * can skip decomposed {@code _RT} baselines for endpoints already covered.
+     * <p>The {@code approvedKeys} parameter is the per-instance {@link #approvedApiKeys}
+     * in production; tests inject their own set so each case can assert on it
+     * independently without reaching into instance state.
      */
-    private void deduplicateSingleRootScenarios() {
-        applySingleRootDedup("PHASE 2.5: SINGLE-ROOT SCENARIO DEDUPLICATION");
-    }
-
-    /**
-     * Re-apply the 1-root dedup filter after Phase 3 (ScenarioOptimizer shattering).
-     * Shattering can emit brand-new 1-root partitions from multi-root scenarios without
-     * any dedup check. Running the filter a second time against the shared
-     * {@link #seenSingleRootApis} set catches those duplicates and also registers any
-     * legitimately new 1-root partitions so Phase 4 decomposition sees a consistent view.
-     */
-    private void deduplicatePostShatter() {
-        applySingleRootDedup("PHASE 3.5: POST-SHATTER SINGLE-ROOT DEDUPLICATION");
-    }
-
-    private void applySingleRootDedup(String phaseLabel) {
-        log.info("=== {} ===", phaseLabel);
+    private void runSingleRootDedupPass(String label,
+                                        List<WorkflowScenario> scenarios,
+                                        Set<String> approvedKeys) {
+        log.info("=== {} ===", label);
         int originalSize = scenarios.size();
+        int kept = 0;
+        int dropped = 0;
 
-        List<WorkflowScenario> deduplicated = new ArrayList<>();
+        Iterator<WorkflowScenario> it = scenarios.iterator();
+        while (it.hasNext()) {
+            WorkflowScenario sc = it.next();
 
-        for (WorkflowScenario sc : scenarios) {
-            // Scenarios that were already accepted by an earlier dedup pass pass through
-            // unchanged.  Re-evaluating them against seenSingleRootApis would always fail
-            // (their API key is already in the set from the earlier pass) and silently drop
-            // them — that's the bug this guard prevents.
-            if (dedupApprovedScenarios.contains(sc)) {
-                deduplicated.add(sc);
+            if (sc.isApprovedInDedupPass()) {
+                kept++;
                 continue;
             }
 
             if (sc.getRootSteps().size() != 1) {
-                deduplicated.add(sc);
-                dedupApprovedScenarios.add(sc);
+                // Multi-root scenarios are never collapsed here; tag them so the next
+                // pass also treats them as approved.
+                sc.setApprovedInDedupPass(true);
+                kept++;
                 continue;
             }
 
             WorkflowStep soleRoot = sc.getRootSteps().get(0);
             String apiKey = extractRootApiFromStep(soleRoot);
             if (apiKey == null) {
-                // Cannot determine API key — keep the scenario to be safe
-                deduplicated.add(sc);
-                dedupApprovedScenarios.add(sc);
+                // Cannot determine API key — keep the scenario to be safe.
+                sc.setApprovedInDedupPass(true);
+                kept++;
                 continue;
             }
 
-            if (seenSingleRootApis.add(apiKey)) {
-                deduplicated.add(sc);
-                dedupApprovedScenarios.add(sc);
-            } else {
+            if (approvedKeys.contains(apiKey)) {
                 log.debug("Skipping redundant 1-root scenario for API: {}", apiKey);
+                it.remove();
+                dropped++;
+                continue;
             }
+
+            approvedKeys.add(apiKey);
+            sc.setApprovedInDedupPass(true);
+            kept++;
         }
 
-        int removed = originalSize - deduplicated.size();
-        scenarios.clear();
-        scenarios.addAll(deduplicated);
-
-        log.info("Single-Root Deduplication: removed {} redundant scenarios (kept {} unique 1-root APIs, {} total scenarios remain)",
-                removed, seenSingleRootApis.size(), scenarios.size());
+        log.info("{} — kept {} / dropped {} duplicate(s) (approved keys so far: {}; {} of {} scenarios remain)",
+                label, kept, dropped, approvedKeys.size(), scenarios.size(), originalSize);
     }
 
     /**
@@ -3254,7 +3239,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * </ul>
      *
      * <p>Deduplication is performed by fingerprint ({@code serviceName::operationName})
-     * <em>and</em> by normalised API key via {@link #seenSingleRootApis}.  If a
+     * <em>and</em> by normalised API key via {@link #approvedApiKeys}.  If a
      * standalone 1-root scenario already covers an endpoint, the decomposed
      * {@code _RT} baseline for that same endpoint is skipped.
      *
@@ -3299,7 +3284,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 // Cross-check with the global single-root dedup set: if a standalone
                 // 1-root scenario already covers this API, skip the decomposed _RT baseline.
                 String apiKey = extractRootApiFromStep(root);
-                if (apiKey != null && seenSingleRootApis.contains(apiKey)) {
+                if (apiKey != null && approvedApiKeys.contains(apiKey)) {
                     log.info("  Root {} (RT{}) API '{}' already covered by standalone 1-root scenario — skipping",
                             ri + 1, ri + 1, apiKey);
                     extractedFingerprints.add(fingerprint);
@@ -3308,7 +3293,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
                 extractedFingerprints.add(fingerprint);
                 if (apiKey != null) {
-                    seenSingleRootApis.add(apiKey);
+                    approvedApiKeys.add(apiKey);
                 }
 
                 // Deep-copy the root step tree to avoid aliasing with the original

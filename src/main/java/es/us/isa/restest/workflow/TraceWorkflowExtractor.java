@@ -985,7 +985,7 @@ public class TraceWorkflowExtractor {
             // for that trace ID and may absorb them into a different parent.  That is by
             // design — each input file represents a distinct test session — and is the
             // reason the "appending trace [X]" log can legitimately repeat for the same X.
-            // Downstream global dedup (Phase 2.5 / `deduplicateSingleRootScenarios` in
+            // Downstream global dedup (Phase 2.5 / `runSingleRootDedupPass` in
             // `MultiServiceTestCaseGenerator`) handles cross-file duplicates among
             // single-root scenarios; multi-root scenarios that share a trace ID across
             // files are preserved intentionally.

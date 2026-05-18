@@ -44,11 +44,22 @@ public class WorkflowScenario {
      */
     private int parentScenarioIndex = -1;
 
+    /**
+     * Phase-tag set by Phase 2.5 / Phase 3.5 dedup pass.  Survives shattering
+     * because Phase 3 propagates it from a parent scenario to every child
+     * component constructed during partitioning.  Mutable so the optimizer
+     * can transfer it onto newly-constructed instances.
+     */
+    private boolean approvedInDedupPass = false;
+
     public String getDecomposedTag() { return decomposedTag; }
     public void setDecomposedTag(String tag) { this.decomposedTag = tag; }
 
     public int getParentScenarioIndex() { return parentScenarioIndex; }
     public void setParentScenarioIndex(int idx) { this.parentScenarioIndex = idx; }
+
+    public boolean isApprovedInDedupPass() { return approvedInDedupPass; }
+    public void setApprovedInDedupPass(boolean v) { this.approvedInDedupPass = v; }
 
     /** Creates an empty WorkflowScenario. */
     public WorkflowScenario() {
