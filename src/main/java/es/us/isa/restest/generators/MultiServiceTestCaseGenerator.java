@@ -12,10 +12,17 @@ import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
-import es.us.isa.restest.workflow.ScenarioOptimizer;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry;
 import es.us.isa.restest.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.WorkflowStep;
+import es.us.isa.restest.workflow.pipeline.PipelineContext;
+import es.us.isa.restest.workflow.pipeline.PipelineStage;
+import es.us.isa.restest.workflow.pipeline.WorkflowPipeline;
+import es.us.isa.restest.workflow.pipeline.stages.Phase25DedupStage;
+import es.us.isa.restest.workflow.pipeline.stages.Phase35DedupStage;
+import es.us.isa.restest.workflow.pipeline.stages.Phase3ShatteringStage;
+import es.us.isa.restest.workflow.pipeline.stages.Phase4DecompositionStage;
+import es.us.isa.restest.workflow.pipeline.stages.SharedPoolGenerationStage;
 
 import es.us.isa.restest.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;
@@ -284,37 +291,21 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         List<TestCase> out = new ArrayList<>();
         int counter = 1;
 
-        // Phase 2.5: Collapse duplicate 1-root scenarios before any downstream processing
-        runSingleRootDedupPass("PHASE 2.5: SINGLE-ROOT SCENARIO DEDUPLICATION",
-                scenarios, approvedApiKeys);
-
-        // Pre-process: Group scenarios by root API and generate shared parameter pools
-        log.info("=== PRE-PROCESSING: Grouping scenarios by root API ===");
-        Map<String, List<WorkflowScenario>> groupedScenarios = groupScenariosByRootApi();
-        
-        // Generate shared parameter pools for each root API group
-        generateSharedParameterPools(groupedScenarios);
-
-        // Phase 3: Scenario Shattering — partition fat multi-root scenarios into
-        // semantically cohesive components using the dependency graph.
-        boolean shatterEnabled = MstConfig.instance().scenarioShattering().enabled();
-        if (shatterEnabled) {
-            new ScenarioOptimizer(dependencyRegistry).optimizeScenarios(scenarios);
-            // Phase 3.5: Shattering can emit NEW 1-root partitions (isolated connected
-            // components) that never went through the Phase 2.5 dedup filter. Re-apply
-            // the 1-root dedup here against the same approvedApiKeys set to prevent
-            // byte-identical duplicate test classes like Flow_Scenario_671 /
-            // Flow_Scenario_7473 for the same parameterless endpoint.  Phase 3 propagates
-            // the approvedInDedupPass tag to each shattered child so the pass-through
-            // guard in runSingleRootDedupPass keeps Phase-2.5-approved scenarios intact
-            // even after they are reconstructed as new instances.
-            runSingleRootDedupPass("PHASE 3.5: POST-SHATTER SINGLE-ROOT DEDUPLICATION",
-                    scenarios, approvedApiKeys);
-        }
-
-        // Phase 4: Trace Decomposition — extract individual 1-Root baseline
-        // scenarios from multi-root workflows to guarantee per-API coverage.
-        decomposeMultiRootScenarios();
+        // Phase pipeline: Phase 2.5 dedup → shared pool generation → Phase 3
+        // shattering (gated) → Phase 3.5 post-shatter dedup (gated) → Phase 4
+        // decomposition.  Stages mutate `scenarios` and `approvedApiKeys`
+        // in place via the shared PipelineContext, byte-for-byte identical
+        // to the previous inline sequence — see workflow.pipeline.stages.
+        PipelineContext ctx = new PipelineContext(
+                scenarios, serviceSpecs, serviceConfigs,
+                dependencyRegistry, approvedApiKeys, MstConfig.instance());
+        java.util.List<PipelineStage> stages = java.util.Arrays.asList(
+                new Phase25DedupStage(this),
+                new SharedPoolGenerationStage(this),
+                new Phase3ShatteringStage(),
+                new Phase35DedupStage(this),
+                new Phase4DecompositionStage(this));
+        new WorkflowPipeline(stages).execute(ctx);
 
         // Dump registry for manual auditing
         dependencyRegistry.dumpRegistryToFile("target/semantic-registry-dump.json");
@@ -2208,7 +2199,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     /**
      * Group scenarios by their root API (method + path) to enable parameter sharing
      */
-    private Map<String, List<WorkflowScenario>> groupScenariosByRootApi() {
+    public Map<String, List<WorkflowScenario>> groupScenariosByRootApi() {
         Map<String, List<WorkflowScenario>> groups = new LinkedHashMap<>();
         
         for (WorkflowScenario sc : scenarios) {
@@ -2319,7 +2310,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     /**
      * Generate shared parameter pools for each root API group
      */
-    private void generateSharedParameterPools(Map<String, List<WorkflowScenario>> groupedScenarios) {
+    public void generateSharedParameterPools(Map<String, List<WorkflowScenario>> groupedScenarios) {
         log.info("=== GENERATING SHARED PARAMETER POOLS ===");
 
         ConsoleProgressBar.begin("Pool Gen", groupedScenarios.size());
@@ -3177,9 +3168,9 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * in production; tests inject their own set so each case can assert on it
      * independently without reaching into instance state.
      */
-    private void runSingleRootDedupPass(String label,
-                                        List<WorkflowScenario> scenarios,
-                                        Set<String> approvedKeys) {
+    public void runSingleRootDedupPass(String label,
+                                       List<WorkflowScenario> scenarios,
+                                       Set<String> approvedKeys) {
         log.info("=== {} ===", label);
         int originalSize = scenarios.size();
         int kept = 0;
@@ -3246,7 +3237,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
      * <p>The original multi-root scenario is preserved unchanged so the Generator
      * still produces end-to-end flow tests alongside the baseline tests.
      */
-    private void decomposeMultiRootScenarios() {
+    public void decomposeMultiRootScenarios() {
         log.info("=== PHASE 4: TRACE DECOMPOSITION — extracting 1-Root baselines ===");
 
         // Fingerprints already extracted: prevent duplicate baseline scenarios
