@@ -14,9 +14,13 @@
 # Stage 1.C: Maven reactor — also ignore target/ inside every module
 **/target/
 /logs/
+# Stage 1.C: Maven reactor — also ignore logs/ inside every module
+**/logs/
 # MIST runtime state (LLM cache, etc.). Survives `mvn clean`; un-ignore
 # for artifact bundles to commit a blessed cache for reproducibility.
 /.mist/
+# Stage 1.C: Maven reactor — also ignore .mist/ inside every module
+**/.mist/
 /log/*
 
 /allure-results/
@@ -28,6 +32,15 @@
 /src/test/resources/csvData/test-results-coverage.csv
 /src/test/resources/csvData/test-coverage.json
 /src/test/resources/csvData/test-coverage.csv
+# Stage 1.C: Maven reactor — generated csvData artifacts inside every module
+**/src/test/resources/csvData/csvSample.csv
+**/src/test/resources/csvData/coverage-results.csv
+**/src/test/resources/csvData/test-cases.csv
+**/src/test/resources/csvData/test-cases-coverage.csv
+**/src/test/resources/csvData/test-results.csv
+**/src/test/resources/csvData/test-results-coverage.csv
+**/src/test/resources/csvData/test-coverage.json
+**/src/test/resources/csvData/test-coverage.csv
 /src/test/resources/auth/*
 /src/test/resources/auth/Sample
 /src/test/resources/auth/Sample/*
@@ -44,6 +57,10 @@ src/main/resources/TestConfigurationMetamodel/configuration-model-output.yaml
 src/test/resources/restest-test-resources/compare2.postman_collection.json
 src/test/resources/restest-test-resources/test_collection.postman_collection.json
 src/test/resources/restest-test-resources/test_collection_urlencoded.postman_collection.json
+# Stage 1.C: Maven reactor — generated postman exports inside every module
+**/src/test/resources/restest-test-resources/compare2.postman_collection.json
+**/src/test/resources/restest-test-resources/test_collection.postman_collection.json
+**/src/test/resources/restest-test-resources/test_collection_urlencoded.postman_collection.json
 src/main/resources/GoogleNews-vectors-negative300.bin
 src/main/resources/GoogleNews-vectors-negative300.zip
 src/main/resources/ml/model.onnx
