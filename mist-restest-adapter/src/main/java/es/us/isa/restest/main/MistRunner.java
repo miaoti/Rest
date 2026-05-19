@@ -991,6 +991,14 @@ public final class MistRunner {
                     Runtime.getRuntime().availableProcessors(),
                     __llmValidationOn ? "on" : "off");
 
+            // Bridge writer-emitted test-runtime properties from .properties into
+            // System properties so the generated tests' System.getProperty(…) lookups
+            // actually see the operator's configuration. Without this, only the
+            // -D form worked for these keys and .properties values were silently
+            // ignored at test runtime. -D continues to win because the bridge only
+            // promotes keys that are currently unset.
+            propagateTestRuntimePropertiesFromConfig();
+
             int __aggRun = 0, __aggFailure = 0, __aggIgnore = 0;
             long __aggRunTime = 0L;
             java.util.List<Failure> __aggFailures = new ArrayList<>();
@@ -2417,6 +2425,66 @@ public final class MistRunner {
         if (a != null && !a.trim().isEmpty()) return a;
         if (b != null && !b.trim().isEmpty()) return b;
         return fallback;
+    }
+
+    /**
+     * Writer-emitted test-runtime properties that the generated test code reads
+     * via {@link System#getProperty}. The .properties file is otherwise invisible
+     * to the generated tests, so without this bridge a user setting e.g.
+     * {@code mst.test.inter.scenario.delay.ms=200} in their .properties would
+     * find the tests still using the writer-template default. Keys are paired
+     * 1:1 with the {@code System.getProperty(…, "…")} lookups emitted in
+     * {@link MultiServiceRESTAssuredWriter}; adding a new lookup there means
+     * adding the key here.
+     */
+    static final String[] BRIDGED_TEST_RUNTIME_PROPERTIES = {
+        "mst.test.parallelism",
+        "mst.test.inter.scenario.delay.ms",
+        "mst.test.jaeger.propagation.delay.ms",
+        "llm.response.validation.enabled",
+        "llm.response.validation.only.2xx",
+        "llm.response.validation.include.rca",
+        "jaeger.enabled",
+        "jaeger.base.url",
+        "jaeger.lookback",
+        "http.connect.timeout.ms",
+        "http.socket.timeout.ms",
+        "smart.input.fetch.registry.path",
+    };
+
+    /**
+     * For every key in {@link #BRIDGED_TEST_RUNTIME_PROPERTIES}, promote the
+     * .properties value to a System property when no {@code -D} override is
+     * already present. {@code -D} wins because it was set on the JVM command
+     * line and should not be silently overridden mid-run.
+     */
+    void propagateTestRuntimePropertiesFromConfig() {
+        bridgeProperties(
+                BRIDGED_TEST_RUNTIME_PROPERTIES,
+                this::readParameterValue,
+                System::getProperty,
+                System::setProperty,
+                (key, value) -> logger.info("Bridged .properties → System.setProperty: {}={}", key, value));
+    }
+
+    /**
+     * Pure-static bridge over (configSource, systemGetter, systemSetter, logger).
+     * Extracted from {@link #propagateTestRuntimePropertiesFromConfig} so the
+     * promote-but-don't-override semantics can be unit-tested without mutating
+     * the JVM's real System properties or constructing a MistRunner.
+     */
+    static void bridgeProperties(String[] keys,
+                                 java.util.function.Function<String, String> configSource,
+                                 java.util.function.Function<String, String> systemGetter,
+                                 java.util.function.BiConsumer<String, String> systemSetter,
+                                 java.util.function.BiConsumer<String, String> onBridge) {
+        for (String key : keys) {
+            if (systemGetter.apply(key) != null) continue;
+            String value = configSource.apply(key);
+            if (value == null || value.isEmpty()) continue;
+            systemSetter.accept(key, value);
+            if (onBridge != null) onBridge.accept(key, value);
+        }
     }
 
     /**

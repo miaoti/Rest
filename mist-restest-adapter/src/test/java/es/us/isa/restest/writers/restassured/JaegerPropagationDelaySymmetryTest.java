@@ -97,5 +97,40 @@ public class JaegerPropagationDelaySymmetryTest {
                 posBody.contains("Thread.sleep(3000)"));
         assertFalse("negative must not regress to Thread.sleep(3000)",
                 negBody.contains("Thread.sleep(3000)"));
+
+        // Both default values must be "0" (marker-first polling inside
+        // attachJaegerTrace handles propagation; the pre-sleep is a legacy
+        // safety wait). A regression to "1000" or "3000" re-introduces
+        // ~1s of per-step idle time.
+        String defaultZero = "System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"0\")";
+        assertTrue("positive jaeger propagation default must be 0",
+                posBody.contains(defaultZero));
+        assertTrue("negative jaeger propagation default must be 0",
+                negBody.contains(defaultZero));
+    }
+
+    @Test
+    public void interScenarioDelayDefaultIsZero() throws Exception {
+        File outDir = tmp.newFolder("out");
+        MultiServiceRESTAssuredWriter w = new MultiServiceRESTAssuredWriter(
+                SPEC_PATH, CONF_PATH, outDir.getAbsolutePath(),
+                "InterScenarioDelaySuite", "gen", "http://localhost", false);
+        w.setAllureReport(true);
+
+        List<TestCase> cases = new ArrayList<>();
+        cases.add(singleStepCase("InterScenarioPositive", false));
+        w.write(cases);
+
+        File pos = new File(outDir, "gen/InterScenarioDelaySuite/InterScenarioPositive.java");
+        assertTrue("positive emitted: " + pos, pos.exists());
+        String body = new String(Files.readAllBytes(pos.toPath()), StandardCharsets.UTF_8);
+
+        // Default must be "0" — the W3C traceparent marker correlates
+        // traces without timing, so the historical 500ms/2000ms pause is
+        // unnecessary. Operators on rate-limited SUTs bump it explicitly.
+        assertTrue("inter-scenario delay default must be 0",
+                body.contains("System.getProperty(\"mst.test.inter.scenario.delay.ms\", \"0\")"));
+        assertFalse("must not regress to default 500",
+                body.contains("System.getProperty(\"mst.test.inter.scenario.delay.ms\", \"500\")"));
     }
 }

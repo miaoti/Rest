@@ -118,4 +118,81 @@ public class TestParallelismResolutionTest {
         assertFalse(MistRunner.parseBooleanProperty(null, null, false));
         assertTrue(MistRunner.parseBooleanProperty(null, null, true));
     }
+
+    // ──────────────────── .properties → System property bridge ────────────────────
+    // The bridge wires writer-emitted test-runtime properties from .properties
+    // into System.setProperty so the generated test classes' System.getProperty
+    // lookups see them. -D must always win because it was set on the JVM
+    // command line and represents an explicit operator override.
+
+    @Test
+    public void bridgePromotesPropertyWhenSystemUnset() {
+        java.util.Map<String, String> set = new java.util.HashMap<>();
+        MistRunner.bridgeProperties(
+                new String[] { "k1" },
+                key -> "k1".equals(key) ? "from-properties" : null,
+                key -> null,           // System.getProperty stub: nothing set
+                set::put,              // System.setProperty stub: capture
+                null);
+        assertEquals("from-properties", set.get("k1"));
+    }
+
+    @Test
+    public void bridgeLeavesSystemPropertyAloneWhenAlreadySet() {
+        // -D wins: when the system property is already set, the bridge must
+        // not touch it even if a .properties value exists.
+        java.util.Map<String, String> set = new java.util.HashMap<>();
+        MistRunner.bridgeProperties(
+                new String[] { "k2" },
+                key -> "from-properties",
+                key -> "k2".equals(key) ? "from-cli-D" : null,
+                set::put,
+                null);
+        assertFalse("bridge must not overwrite -D", set.containsKey("k2"));
+    }
+
+    @Test
+    public void bridgeSkipsAbsentOrEmptyPropertiesValues() {
+        // No .properties value → no System.setProperty side effect.
+        java.util.Map<String, String> set = new java.util.HashMap<>();
+        MistRunner.bridgeProperties(
+                new String[] { "k3", "k4" },
+                key -> "k3".equals(key) ? "" : null,   // empty / null
+                key -> null,
+                set::put,
+                null);
+        assertTrue("no keys should be bridged", set.isEmpty());
+    }
+
+    @Test
+    public void bridgeIteratesAllKeysIndependently() {
+        // Mixed scenario: k1 promoted, k2 already in System (skipped),
+        // k3 absent from .properties (skipped). Only k1 should land.
+        java.util.Map<String, String> set = new java.util.HashMap<>();
+        java.util.Map<String, String> cfg = new java.util.HashMap<>();
+        cfg.put("k1", "v1");
+        cfg.put("k2", "would-have-been-v2");
+        java.util.Map<String, String> sys = new java.util.HashMap<>();
+        sys.put("k2", "from-cli-D");
+        MistRunner.bridgeProperties(
+                new String[] { "k1", "k2", "k3" },
+                cfg::get,
+                sys::get,
+                set::put,
+                null);
+        assertEquals(1, set.size());
+        assertEquals("v1", set.get("k1"));
+    }
+
+    @Test
+    public void bridgedKeyListContainsCriticalRuntimeProperties() {
+        // Defensive: the bridge list must include the per-step timing keys
+        // that the writer emits and the LLM flags the resolver consults.
+        // A regression here means user .properties silently has no effect.
+        java.util.List<String> keys = java.util.Arrays.asList(MistRunner.BRIDGED_TEST_RUNTIME_PROPERTIES);
+        assertTrue(keys.contains("mst.test.parallelism"));
+        assertTrue(keys.contains("mst.test.inter.scenario.delay.ms"));
+        assertTrue(keys.contains("mst.test.jaeger.propagation.delay.ms"));
+        assertTrue(keys.contains("llm.response.validation.enabled"));
+    }
 }

@@ -1618,17 +1618,18 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("        ");
                             // Inter-scenario delay. The historical default was 2000ms with the
                             // rationale 'prevents tests from executing so rapidly that they find
-                            // the same traces'.  Traces are now correlated by traceId rather than
-                            // by timing, so the delay is only there to give Jaeger ingestion a
-                            // moment to settle.  Property mst.test.inter.scenario.delay.ms lets
-                            // the operator tune the wait; default lowered to 500ms.  On a 5,000-
-                            // scenario run this saves ~2 hours of idle time.
+                            // the same traces'.  Traces are now correlated by traceId via the
+                            // W3C traceparent marker, so the timing-collision concern is gone
+                            // and the only remaining use of this delay is per-thread SUT rate-
+                            // limit pacing.  Default lowered to 0 (no delay); operators on
+                            // throttled APIs can set mst.test.inter.scenario.delay.ms to a
+                            // positive integer in their .properties file or via -D.
                             pw.println("        long __interScenarioDelayMs;");
                             pw.println("        try {");
                             pw.println("            __interScenarioDelayMs = Long.parseLong(");
-                            pw.println("                System.getProperty(\"mst.test.inter.scenario.delay.ms\", \"500\"));");
+                            pw.println("                System.getProperty(\"mst.test.inter.scenario.delay.ms\", \"0\"));");
                             pw.println("        } catch (NumberFormatException nfe) {");
-                            pw.println("            __interScenarioDelayMs = 500L;");
+                            pw.println("            __interScenarioDelayMs = 0L;");
                             pw.println("        }");
                             pw.println("        if (__interScenarioDelayMs > 0) {");
                             pw.println("            try {");
@@ -2135,15 +2136,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            // Add response as attachment (AllureRestAssured filter disabled to avoid duplication)");
                             pw.println("                            Allure.addAttachment(\"📥 Response (\" + actualStatus + \")\", \"application/json\", responseBody);");
                             // Wait for Jaeger to ingest the trace before attachJaegerTrace() tries to
-                            // fetch it. Mirrors the failure-path delay at line 2249 — both call sites
+                            // fetch it. Mirrors the failure-path delay below — both call sites
                             // pull from the same {@code mst.test.jaeger.propagation.delay.ms} system
-                            // property (default 1000ms). Was hardcoded at 3000ms before this fix; on
-                            // a positive-heavy run that single line dominated the per-step idle floor.
+                            // property (default 0ms). The marker-first lookup INSIDE attachJaegerTrace
+                            // polls 5×200ms for ingest, which already handles propagation delay; this
+                            // pre-sleep is a legacy safety wait for SUTs that don't honor W3C
+                            // traceparent. Operators on such SUTs can bump this back up.
                             pw.println("                            long __jaegerPropagationDelayMs;");
                             pw.println("                            try {");
                             pw.println("                                __jaegerPropagationDelayMs = Long.parseLong(");
-                            pw.println("                                    System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"1000\"));");
-                            pw.println("                            } catch (NumberFormatException nfe) { __jaegerPropagationDelayMs = 1000L; }");
+                            pw.println("                                    System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"0\"));");
+                            pw.println("                            } catch (NumberFormatException nfe) { __jaegerPropagationDelayMs = 0L; }");
                             pw.println("                            if (__jaegerPropagationDelayMs > 0) {");
                             pw.println("                                try { Thread.sleep(__jaegerPropagationDelayMs); }");
                             pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
@@ -2302,17 +2305,17 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                        ");
                         // Remove detailed failure analysis - replaced by intelligent analysis
                         // Wait for Jaeger to ingest the failed call's spans before searching for
-                        // the trace.  The historical default was 3000ms; property
-                        // mst.test.jaeger.propagation.delay.ms exposes this so operators can
-                        // shorten the wait on fast Jaeger deployments or skip it (0) when running
-                        // against a mock collector.  Default lowered to 1000ms based on observed
-                        // ingestion latency on the bundled TrainTicket cluster; on a 2,876-failure
-                        // run this saves ~1.6h.
+                        // the trace.  Default lowered to 0ms: the marker-first lookup INSIDE
+                        // attachJaegerTrace polls 5×200ms for ingest to settle, which is the
+                        // correct mechanism for propagation. Property
+                        // mst.test.jaeger.propagation.delay.ms remains exposed for operators
+                        // running against SUTs that do not honor W3C traceparent — in that
+                        // case the fallback time-window heuristic benefits from a pre-sleep.
                         pw.println("                        long __jaegerPropagationDelayMs;");
                         pw.println("                        try {");
                         pw.println("                            __jaegerPropagationDelayMs = Long.parseLong(");
-                        pw.println("                                System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"1000\"));");
-                        pw.println("                        } catch (NumberFormatException nfe) { __jaegerPropagationDelayMs = 1000L; }");
+                        pw.println("                                System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"0\"));");
+                        pw.println("                        } catch (NumberFormatException nfe) { __jaegerPropagationDelayMs = 0L; }");
                         pw.println("                        if (__jaegerPropagationDelayMs > 0) {");
                         pw.println("                            try { Thread.sleep(__jaegerPropagationDelayMs); }");
                         pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
