@@ -5,6 +5,8 @@
 /.project/
 /bin/
 /target
+# Stage 1.C: Maven reactor — also ignore target/ inside every module
+**/target/
 /logs/
 # MIST runtime state (LLM cache, etc.). Survives `mvn clean`; un-ignore
 # for artifact bundles to commit a blessed cache for reproducibility.
