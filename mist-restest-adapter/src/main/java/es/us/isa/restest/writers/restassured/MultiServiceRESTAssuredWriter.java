@@ -2078,8 +2078,20 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            ");
                             pw.println("                            // Add response as attachment (AllureRestAssured filter disabled to avoid duplication)");
                             pw.println("                            Allure.addAttachment(\"📥 Response (\" + actualStatus + \")\", \"application/json\", responseBody);");
-                            pw.println("                            // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)");
-                            pw.println("                            try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
+                            // Wait for Jaeger to ingest the trace before attachJaegerTrace() tries to
+                            // fetch it. Mirrors the failure-path delay at line 2249 — both call sites
+                            // pull from the same {@code mst.test.jaeger.propagation.delay.ms} system
+                            // property (default 1000ms). Was hardcoded at 3000ms before this fix; on
+                            // a positive-heavy run that single line dominated the per-step idle floor.
+                            pw.println("                            long __jaegerPropagationDelayMs;");
+                            pw.println("                            try {");
+                            pw.println("                                __jaegerPropagationDelayMs = Long.parseLong(");
+                            pw.println("                                    System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"1000\"));");
+                            pw.println("                            } catch (NumberFormatException nfe) { __jaegerPropagationDelayMs = 1000L; }");
+                            pw.println("                            if (__jaegerPropagationDelayMs > 0) {");
+                            pw.println("                                try { Thread.sleep(__jaegerPropagationDelayMs); }");
+                            pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
+                            pw.println("                            }");
                             pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false);");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
