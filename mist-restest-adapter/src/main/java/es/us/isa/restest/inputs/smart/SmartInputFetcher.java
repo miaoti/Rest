@@ -2,6 +2,7 @@ package es.us.isa.restest.inputs.smart;
 
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.value.ResolvedValue;
 import io.mist.llm.LLMService;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -268,54 +269,78 @@ public class SmartInputFetcher {
     }
 
     /**
-     * Main method to fetch a smart input value for a parameter
+     * Fetch a smart input value for a parameter. Convenience wrapper that
+     * discards provenance; new code should prefer
+     * {@link #fetchSmartInputWithProvenance(ParameterInfo)} so the caller
+     * can record how the value was obtained.
      */
     public String fetchSmartInput(ParameterInfo parameterInfo) {
+        return fetchSmartInputWithProvenance(parameterInfo)
+                .map(ResolvedValue::value)
+                .orElse(null);
+    }
+
+    /**
+     * Same fetch pipeline as {@link #fetchSmartInput(ParameterInfo)}, but each
+     * returned value is tagged with the {@link io.mist.core.value.ValueProvenance}
+     * describing how it was obtained:
+     * <ul>
+     *   <li>{@link io.mist.core.value.ValueProvenance#RESOLVED_CACHE} — a
+     *       diverse value rotated from the smart-fetch cache;</li>
+     *   <li>{@link io.mist.core.value.ValueProvenance#RESOLVED_LIVE} — a value
+     *       returned by the smart-source pipeline (trace producer, registry
+     *       mapping, or LLM-discovered endpoint);</li>
+     *   <li>{@link io.mist.core.value.ValueProvenance#LLM_GENERATED} — the
+     *       smart pipeline declined / failed and the LLM produced a realistic
+     *       value (still a positive value, not a placeholder).</li>
+     * </ul>
+     * Returns {@link Optional#empty()} only when even the LLM fallback yields
+     * a null or empty string.
+     */
+    public Optional<ResolvedValue> fetchSmartInputWithProvenance(ParameterInfo parameterInfo) {
         if (!config.isEnabled()) {
             log.debug("Smart fetching disabled, using LLM for parameter '{}'", parameterInfo.getName());
-            return fallbackToLLM(parameterInfo);
+            return wrapLlm(fallbackToLLM(parameterInfo));
         }
 
-        // FIXED: Decide whether to use smart fetching or LLM based on configured percentage
         double randomValue = random.nextDouble();
         if (randomValue < config.getSmartFetchPercentage()) {
-            // Use smart fetching (e.g., 90% of the time if percentage = 0.9)
             log.info("🎯 Smart Fetch Decision → {} (random: {} < {}%)",
                      parameterInfo.getName(),
                      String.format("%.3f", randomValue),
                      String.format("%.1f", config.getSmartFetchPercentage() * 100));
 
-            // Clear any invalid cached values before proceeding
             clearInvalidCachedValues(parameterInfo);
 
-            // First, try to get a diverse cached value
             String diverseValue = getNextDiverseValue(parameterInfo);
             if (diverseValue != null) {
                 log.info("🔄 Using diverse cached value → {} = {} ✅", parameterInfo.getName(), diverseValue);
-                return diverseValue;
+                return Optional.of(ResolvedValue.cache(diverseValue));
             }
 
             try {
                 String result = fetchFromSmartSource(parameterInfo);
                 if (result != null) {
                     log.info("Smart Fetch → {} = {} ✅", parameterInfo.getName(), result);
-                    return result;
-                } else {
-                    log.info("Smart Fetch → {} = FAILED (no good matches found), falling back to LLM", parameterInfo.getName());
-                    return fallbackToLLM(parameterInfo);
+                    return Optional.of(ResolvedValue.live(result));
                 }
+                log.info("Smart Fetch → {} = FAILED (no good matches found), falling back to LLM", parameterInfo.getName());
+                return wrapLlm(fallbackToLLM(parameterInfo));
             } catch (Exception e) {
                 log.info("Smart Fetch → {} = ERROR ({}), falling back to LLM", parameterInfo.getName(), e.getMessage());
-                return fallbackToLLM(parameterInfo);
+                return wrapLlm(fallbackToLLM(parameterInfo));
             }
-        } else {
-            // Use traditional LLM generation (e.g., 10% of the time if percentage = 0.9)
-            log.info("🤖 LLM Decision → {} (random: {} >= {}%)",
-                     parameterInfo.getName(),
-                     String.format("%.3f", randomValue),
-                     String.format("%.1f", config.getSmartFetchPercentage() * 100));
-            return fallbackToLLM(parameterInfo);
         }
+
+        log.info("🤖 LLM Decision → {} (random: {} >= {}%)",
+                 parameterInfo.getName(),
+                 String.format("%.3f", randomValue),
+                 String.format("%.1f", config.getSmartFetchPercentage() * 100));
+        return wrapLlm(fallbackToLLM(parameterInfo));
+    }
+
+    private static Optional<ResolvedValue> wrapLlm(String s) {
+        return (s == null || s.trim().isEmpty()) ? Optional.empty() : Optional.of(ResolvedValue.llm(s));
     }
 
     /**
