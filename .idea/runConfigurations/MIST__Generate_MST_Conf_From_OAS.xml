@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="MIST: Generate MST Conf From OAS" type="Application" factoryName="Application">
+    <!-- One-time MST configuration generator. Takes an OpenAPI spec
+         and produces the MST YAML referenced by `conf.path` in the
+         demo .properties. Edit PROGRAM_PARAMETERS to point at your
+         own spec / output, or override at run-time via the IntelliJ
+         "Edit Configurations…" dialog. -->
+    <option name="MAIN_CLASS_NAME" value="es.us.isa.restest.main.MicroserviceConfBuilderMain" />
+    <module name="mist-restest-adapter" />
+    <option name="PROGRAM_PARAMETERS" value="mist-restest-adapter/src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml mist-restest-adapter/src/main/resources/My-Example/trainticket/real-system-conf.yaml" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
