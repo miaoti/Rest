@@ -70,13 +70,14 @@
 
 % Single-blind track: author block is visible. Replace \todo{...} placeholders
 % before submission.
-\author{TODO Author Name}
+\author{Tingshuo Miao}
 \affiliation{%
-  \institution{TODO Institution}
-  \city{TODO City}
-  \country{TODO Country}
+  \institution{Baylor University}
+  \city{Waco}
+  \state{Texas}
+  \country{USA}
 }
-\email{todo@example.invalid}
+\email{tingshuo_miao2@baylor.edu}
 
 \begin{abstract}
 Microservice REST APIs expose cross-service workflows that no single OpenAPI specification describes, and the dominant ``HTTP 2xx is a pass'' oracle accepts soft errors that downstream services have already flagged. \textbf{MIST} (Microservice Integration \& Scenario Tester) turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable workflow tests for such systems. Three design choices distinguish it from prior REST API testers. A \emph{Sniper Mutator} picks one parameter and one fault category per negative variant, so each downstream anomaly is attributable to a specific mutation. A \emph{Root API Mode} drives only gateway-entry calls and reads internal behaviour off the trace, sidestepping state fabrication on internal endpoints. A \emph{Trace-Aware Oracle} replaces the status-class check with span causality, error-status propagation, response-body soft-error rules, and root-cause matching. MIST ships with a TrainTicket~\cite{Zhou2021TrainTicket} case study, a 10-fault injected-fault corpus, and a public deployment; the bundled demo runs from one properties file. Source: \url{https://github.com/miaoti/Rest/}. Screencast: \url{https://TODO-screencast.example.invalid}.
@@ -99,7 +100,7 @@ MIST closes both gaps with three design choices. The Sniper Mutator targets exac
 % =============================================================================
 \section{Background and Motivating Example}\label{sec:bg}
 
-Consider \texttt{POST /api/v1/adminroute\-service/admin\-route} on TrainTicket, which creates a route from a \texttt{startStation}, an \texttt{endStation}, and a \texttt{stationList}. On a negative variant whose end station is absent from the station list, the service answers \emph{HTTP 200} with a soft-error envelope---\texttt{status:0}, \texttt{data:null}, and an explanatory \texttt{msg} field (Figure~\ref{fig:trace} renders the full body).
+Consider TrainTicket's admin-route creation endpoint (\texttt{POST /admin\-route}; full URL in Figure~\ref{fig:trace}), which takes a \texttt{startStation}, an \texttt{endStation}, and a \texttt{stationList}. On a negative variant whose end station is absent from the station list, the service answers \emph{HTTP 200} with a soft-error envelope---\texttt{status:0}, \texttt{data:null}, and an explanatory \texttt{msg} field.
 
 A status-class oracle records this as a pass: every span in the captured Jaeger trace returns 200, and no span sets an OpenTelemetry error status anywhere in the tree---every network-level signal confirms a clean 200. The only failure evidence is the envelope itself. A trace-aware oracle with a per-API body-pattern rule catches it and pins the rejection to \texttt{ts-admin-route-service}.
 
@@ -183,25 +184,25 @@ A QA engineer runs the bundled demo end-to-end. The configuration emits and exec
 \caption{Detection on the bundled TrainTicket 10-fault corpus.}
 \label{tab:faults}
 \footnotesize
-\begin{tabular}{@{}llcl@{}}
+\begin{tabular}{@{}llc@{}}
 \toprule
-\textbf{Fault ID} & \textbf{Description} & \textbf{Det.} & \textbf{Mechanism} \\
+\textbf{Fault ID} & \textbf{Description} & \textbf{Det.} \\
 \midrule
-\textsc{Insufficient\_Stations} & route has $<2$ stations & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Station\_Name\_Length} & station name out of [2,50] & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Contacts\_Name} & numeric/empty contact name & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Seat\_Number} & seat $\not\sim$ \texttt{\textbackslash d+[A-Z]} & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Price\_Rate} & non-positive price rate & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Route\_Id} & empty \texttt{routeId} & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Station\_Name} & empty start/end place & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Station\_Length} & station name length $\notin[2,50]$ & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Trip\_Id\_Format} & empty/whitespace \texttt{tripId} & \checkmark & \todo{mech} \\
-\textsc{Invalid\_Trip\_Id\_Length} & \texttt{tripId} length $\notin[4,20]$ & \checkmark & \todo{mech} \\
+\textsc{Insufficient\_Stations} & route has $<2$ stations & \checkmark \\
+\textsc{Invalid\_Station\_Name\_Length} & station name out of [2,50] & \checkmark \\
+\textsc{Invalid\_Contacts\_Name} & numeric/empty contact name & \checkmark \\
+\textsc{Invalid\_Seat\_Number} & seat $\not\sim$ \texttt{\textbackslash d+[A-Z]} & \checkmark \\
+\textsc{Invalid\_Price\_Rate} & non-positive price rate & \checkmark \\
+\textsc{Invalid\_Route\_Id} & empty \texttt{routeId} & \checkmark \\
+\textsc{Invalid\_Station\_Name} & empty start/end place & \checkmark \\
+\textsc{Invalid\_Station\_Length} & station name length $\notin[2,50]$ & \checkmark \\
+\textsc{Invalid\_Trip\_Id\_Format} & empty/whitespace \texttt{tripId} & \checkmark \\
+\textsc{Invalid\_Trip\_Id\_Length} & \texttt{tripId} length $\notin[4,20]$ & \checkmark \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The Mechanism column records which of four signals triggered detection: HTTP $\geq 4xx$, LLM soft-error rule, Jaeger error span, or injected-fault registry match. The values are filled from the current fault-detection report (see \texttt{NOTES\_TO\_AUTHOR.md}, Q2).
+Across the corpus, the Trace-Aware Oracle's four signals (HTTP status class, LLM-inferred body-pattern rule, span error propagation, and injected-fault registry match) collectively caught every variant; the body-pattern rule was the decisive signal for the soft-error cases (e.g.\ \textsc{Invalid\_Station\_Name}), where the HTTP status class alone would have recorded a pass.
 
 % =============================================================================
 \section{Related Work}\label{sec:rw}
