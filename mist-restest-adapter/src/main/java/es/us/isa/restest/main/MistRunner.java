@@ -96,10 +96,10 @@ public final class MistRunner {
     }
 
     /**
-     * Holds the RESTest-core scalars that MistRunner needs. These are parsed by
-     * {@link TestGenerationAndExecution#readParameterValues()} before
-     * delegating to {@link #run()} so MistRunner does not have to re-parse
-     * args.
+     * Holds the MIST-core scalars that MistRunner needs. These are parsed by
+     * {@link TestGenerationAndExecution#readParameterValues()} (or by
+     * {@code MistMain} directly) before delegating to {@link #run()} so
+     * MistRunner does not have to re-parse args.
      */
     public static final class Inputs {
         private final String testClassName;
@@ -597,19 +597,19 @@ public final class MistRunner {
     }
 
     /**
-     * Bridge a handful of RESTest-core values that MST generators read via
-     * System.getProperty (oas.path, base.url) and log a summary of the
+     * Bridge a handful of MIST-core values that downstream generators read
+     * via System.getProperty (oas.path, base.url) and log a summary of the
      * MST configuration that was already pushed to System properties.
      *
      * The bulk MST-key propagation lives in
-     * {@code MstConfig#applyToSystemProperties()} - this method does not
+     * {@code MstConfig#applyToSystemProperties()} — this method does not
      * re-list every MST key.
      */
     private void passSmartInputFetchingProperties() {
-        logger.info("🔧 Bridging RESTest-core values for MST and logging MST configuration summary...");
+        logger.info("🔧 Bridging MIST-core values for MST and logging MST configuration summary...");
 
-        // RESTest-core values that the smart fetcher / generators read via
-        // System.getProperty - these live in the core file, not the MST file,
+        // MIST-core values that the smart fetcher / generators read via
+        // System.getProperty — these live in the core file, not the MST file,
         // so MstConfig.applyToSystemProperties() does not cover them.
         for (String coreKey : new String[] { "oas.path", "base.url" }) {
             String value = readParameterValue(coreKey);

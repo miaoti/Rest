@@ -573,8 +573,8 @@ public class TestGenerationAndExecution {
 	 * readers (writers, generators, smart fetcher, generated test code) that
 	 * use {@code System.getProperty} pick the values up unchanged.
 	 *
-	 * Called once from {@link #main(String[])} after the RESTest-core file has
-	 * been read and only when {@code generator=MST}.
+	 * Called once from {@link #main(String[])} after the core .properties
+	 * file has been read and only when {@code generator=MST}.
 	 */
 	private static void loadMstConfig() {
 		String mstPath = readParameterValue("mst.config.path");
