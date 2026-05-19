@@ -102,55 +102,81 @@ industrial partnership.
 ---
 
 ### 0.6 Preconditions from CRITICAL_FIXES_S_A_1_6
-Path B assumes **all six fixes** in `CRITICAL_FIXES_S_A_1_6.md` have
-already landed on `inject-detection` and the demo runs cleanly under
-`-Drandom.seed=42`. The rebuild builds **on top of**, not in parallel
-with, that state.  The executing agent must therefore assume the
-following pre-existing components and contracts:
+Path B assumes **all seven critical fixes** in
+`CRITICAL_FIXES_S_A_1_6.md` (S-4, A-6, S-2, S-3, S-1, A-5, A-7) **plus
+the four follow-up fixes** that closed S-1's and A-5's gaps (S-1b,
+A-5b, Mockito 5.10.0 upgrade, `/logs/` gitignore) **plus the A-5b ↔
+S-1b integration patch (commit `ee561b46`)** have already landed on
+`inject-detection` and the demo runs cleanly under `-Drandom.seed=42`.
+The rebuild builds **on top of**, not in parallel with, that state.
+The 60-test verification suite at end-of-fixes reports 60 pass, 0 fail.
+
+The executing agent must therefore assume the following pre-existing
+components and contracts:
 
 | From fix | New class / file | Public surface Path B relies on |
 |---|---|---|
-| S-4 | `io.us.isa.restest.llm.LLMCallCache` | File-backed JSON cache; called from `LLMService.generateText` |
-| S-4 | `LLMConfig.getTemperature()` (modified) | Returns `0.0` when `random.seed` is set; makes all LLM calls reproducible |
-| A-6 | `es.us.isa.restest.configuration.MstConfig` (POJO) | Singleton via `MstConfig.instance()`; immutable; sub-records `core()`, `smartFetch()`, `llm()`, `faulty()`, `scenarioMerge()`, `scenarioShattering()`, `softErrorCache()`, `statusCodeExploration()`, `enhancer()`, `jaeger()`; factory `MstConfig.fromSystemProperties()` |
-| A-6 | `MstConfigValidator` | Optional strict-mode key validation |
-| A-6 | (effect) | Zero `System.getProperty("mst.*"\|"smart.input.fetch.*"\|...)` calls in MST code |
-| S-2 | `es.us.isa.restest.workflow.NounKeyMap` | YAML-driven noun → key map; loaded from `mist/noun-map.default.yaml` plus optional per-SUT override |
-| S-2 | (effect) | `TraceWorkflowExtractor.NOUN_TO_KEY` is no longer hard-coded; hyphenated and nested URL path params are extracted |
-| S-3 | `WorkflowScenario.approvedInDedupPass` (new field) | Tag carried through Phase 3 shattering |
-| S-3 | `MultiServiceTestCaseGenerator.approvedApiKeys` (new field) | Replaces `seenSingleRootApis` for dedup correctness |
-| S-3 | `runSingleRootDedupPass(label, scenarios, approvedKeys)` | Single method replacing `deduplicateSingleRootScenarios()` + `applySingleRootDedup()` |
+| S-4 | `es.us.isa.restest.llm.LLMCallCache` | File-backed JSON cache; SHA-256-keyed on `(model, backend, prompt, temperature, max_tokens)`; default path `.mist/llm-call-cache.json` overridable via `mist.llm.cache.path` |
+| S-4 | `LLMConfig.applySeedGate(double)` static helper | Returns `0.0` when `-Drandom.seed` is set; cuts the LLM temperature in the dispatch path |
+| S-4 | `.gitignore` `/.mist/` entry | Dev-mode cache stays untracked by default; artifact-bundling removes the line |
+| A-6 | `es.us.isa.restest.configuration.MstConfig` (POJO) | `MstConfig.instance()` singleton; `MstConfig.fromSystemProperties()` factory; immutable sub-records `core()`, `smartFetch()`, `llm()`, `faulty()`, `scenarioMerge()`, `scenarioShattering()`, `softErrorCache()`, `statusCodeExploration()`, `enhancer()`, `jaeger()` |
+| A-6 | `MstConfigValidator` | Strict-mode unknown-key/conflict check gated by `mst.config.strict=true` |
+| A-6 | (effect) | Zero `System.getProperty("mst.*"\|"smart.input.fetch.*"\|...)` calls outside `MstConfig` itself |
+| S-2 | `es.us.isa.restest.workflow.NounKeyMap` | YAML-driven noun→key map; default `classpath:/mist/noun-map.default.yaml`; optional per-SUT override |
+| S-2 | `TraceWorkflowExtractor.isMeaningfulPathNoun` regex | `[a-z]+([-_][a-z]+)*` — accepts hyphenated and underscored nouns |
+| S-2 | (effect) | Hard-coded `NOUN_TO_KEY.put(...)` block removed from `TraceWorkflowExtractor`; hyphenated and nested URL path params are extracted |
+| S-3 | `WorkflowScenario.approvedInDedupPass` (new field, getter/setter) | Tag carried through Phase 3 shattering so re-deduplication does not drop legitimate components |
+| S-3 | `MultiServiceTestCaseGenerator.approvedApiKeys` (new field, package-private) | Replaces `seenSingleRootApis` |
+| S-3 | `MultiServiceTestCaseGenerator.runSingleRootDedupPass(label, scenarios, approvedKeys)` public | Single method replacing `deduplicateSingleRootScenarios()` + `applySingleRootDedup()`. **Note**: still on the generator (called by Phase25DedupStage and Phase35DedupStage), but other phase methods were lifted (see S-1b) |
 | S-3 | (deleted) | `dedupApprovedScenarios` field is gone |
-| S-1 | `es.us.isa.restest.workflow.pipeline.WorkflowPipeline` | Sequential phase orchestrator |
-| S-1 | `es.us.isa.restest.workflow.pipeline.PipelineStage` (interface) | Implemented by each phase |
-| S-1 | `es.us.isa.restest.workflow.pipeline.PipelineContext` | Shared state container |
+| S-1 | `es.us.isa.restest.workflow.pipeline.{WorkflowPipeline, PipelineStage, PipelineContext}` | Sequential phase orchestrator interface; `PipelineContext` carries `scenarios`, `serviceConfigs`, `dependencyRegistry`, `approvedApiKeys`, pool maps, etc. |
 | S-1 | Five stage classes under `workflow/pipeline/stages/` | `Phase25DedupStage`, `SharedPoolGenerationStage`, `Phase3ShatteringStage`, `Phase35DedupStage`, `Phase4DecompositionStage` |
-| S-1 | (effect) | `MultiServiceTestCaseGenerator` shrunk by ≥ 200 lines; phase methods moved to stages |
-| A-5 | `InvalidInputPool` key | Now `(rootApiKey, paramName, paramLocation)` instead of `(rootApiKey, paramName)` |
-| A-5 | (effect) | Path / header / cookie parameters are enrolled in the fault pool; `FaultTarget` count up ≥ 30 % on TrainTicket |
+| **S-1b** | `workflow.pipeline.stages.SharedPoolSupport` (**public final**, made public by `ee561b46`) | The shared-pool generator helper that was lifted out of `MultiServiceTestCaseGenerator`; ~445 LOC; package-private static `generateFaultyPoolForSingleRoot(...)` accepts explicit args instead of reading generator fields |
+| **S-1b** | `workflow.pipeline.stages.DedupSupport` (package-private) | The dedup helper lifted out of the generator; ~89 LOC |
+| **S-1b** | `workflow.pipeline.stages.DecompositionSupport` (package-private) | The Phase 4 helper lifted out of the generator; ~134 LOC |
+| **S-1b** | `workflow.pipeline.stages.StageSupport` (package-private) | Common stage utilities; ~305 LOC |
+| S-1 + S-1b | (effect) | `MultiServiceTestCaseGenerator` shrunk from 3422 to **2906 lines** (-516). Four phase methods (`groupScenariosByRootApi`, `generateSharedParameterPools`, `decomposeMultiRootScenarios`, and the shattering wrapper) **deleted from the generator**. Stage classes own real logic. |
+| A-5 | `MultiServiceTestCaseGenerator.normaliseParamLocation(String)` static | Canonicalises OpenAPI `in` to `{path,query,header,cookie,body}` (`formData`→`body`, null→`body`) |
+| A-5 | (effect) | All five parameter locations enroll in the fault pool; `FaultTarget` count up ≥ 30 % on TrainTicket; per-location enrolment count logged at INFO |
+| **A-5b** | `MultiServiceTestCaseGenerator.PoolKey` (**public static final** nested class) | `record`-shaped `(paramName, paramLocation)` with `equals` / `hashCode` |
+| **A-5b** | `MultiServiceTestCase.targetFaultParamLocation` field | Tells the writer which slot (path/query/header/cookie/body) receives the invalid value |
+| **A-5b** | Pool shape `Map<String, Map<PoolKey, InvalidInputPool>>` | Outer key = `rootApiKey`; inner key = `PoolKey(name, location)`; same-name parameters at different locations no longer collide |
+| **A-5b** | `MultiServiceRESTAssuredWriter` emits `req.header(name, invalid)` and `req.cookie(name, invalid)` | Negative variants targeting header/cookie parameters reach the wire (not just enrol in the queue) |
+| A-7 | `.mist/{soft-error-rule-cache,parameter-error-analysis-cache,intelligent-analysis-cache}.json` | Three persistent caches under `.mist/`; survive `mvn clean` |
+| A-7 | One-shot migration in each cache's load path | `target/X.json` → `.mist/X.json` when legacy exists and new does not; uses `Files.move(legacy, path, REPLACE_EXISTING)` |
+| A-7 | `trainticket-mst.properties` `soft.error.cache.path=target/...` line removed | Java default (`.mist/...`) takes effect |
+| **Mockito upgrade** | `pom.xml` `mockito-core` 5.10.0 | Required for JDK 21 test compatibility; resolves `Unknown Java version: 21` errors in tests using `Mockito.CALLS_REAL_METHODS` |
+| **/logs/ gitignore** | `.gitignore` line 8: `/logs/` | `LLMCommunicationLogger` per-session log files no longer flagged as untracked |
+| **ee561b46** | `SharedPoolSupport` visibility promoted from package-private to `public final` | Lets `generators`-package tests reflect on the class directly via `.class` |
 
 **What is unchanged by the fixes** (Path B is the first place these
 change):
-- `InvalidInputType` (the 8-category enum) **still exists**. Phase 3
-  of Path B is what retires it.
-- `SoftErrorRuleCache` **still exists**. Phase 2 of Path B is what
-  subsumes it into `ResponseEnvelopeInvariant`.
+- `InvalidInputType` (the 8-category enum at
+  `es.us.isa.restest.inputs.InvalidInputType`) **still exists**.
+  Phase 3 of Path B retires it. The pool's outer key is `PoolKey` and
+  the inner fault category is still this enum.
+- `SoftErrorRuleCache` **still exists** at
+  `es.us.isa.restest.validation.SoftErrorRuleCache`. Phase 2 of Path
+  B subsumes it into `ResponseEnvelopeInvariant`.
 - All MIST code **still lives** under `es.us.isa.restest.*` packages.
-  Phase 1.C of Path B moves it into `io.mist.core.*`.
-- The CLI entry point **is still** `es.us.isa.restest.main.TestGenerationAndExecution`.
-  Phase 1.A lifts the MST branch out into `MistRunner`; Phase 1.B
-  introduces the new `MistMain` entry point and `mist.jar`.
+  No `io.mist.*` package exists yet. Phase 1.C of Path B moves it.
+- The CLI entry point **is still**
+  `es.us.isa.restest.main.TestGenerationAndExecution`. It now has
+  ~10 `"MST".equals(generator)` branches (down from the audit-time
+  73 thanks to upstream commit `67337db9`, but still concentrated in
+  the same main class). Phase 1.A lifts the remaining MST branch out
+  into `MistRunner`; Phase 1.B introduces the new `MistMain` entry
+  point and `mist.jar`.
 - `TestCaseEnhancer`, `StatusCodeExplorationEnhancer`,
   `ParameterErrorAnalysisCache` are still bolted on the writer. Path B
   does not refactor them in the current task; they may become
   appendix material in the future-task paper.
 
 **Pre-flight invariant.** Before Phase 0 begins, the agent must
-verify (one command, listed in § 7.1) that
-`MstConfig.instance()` resolves, the new pipeline stages exist, and
-`LLMCallCache` is on the classpath. If any of these fail, **do not
-start Path B**; instead, escalate to the user that the fix branch is
-incomplete.
+verify (commands in § 7.1) that the new symbols exist, the old ones
+are gone, and the demo compiles. If any pre-flight check fails, **do
+not start Path B**; instead, escalate to the user that the fix branch
+is incomplete.
 
 ---
 
@@ -224,7 +250,7 @@ incomplete.
 
 ## 2. Current vs. target architecture
 
-### 2.1 Current architecture (`inject-detection` HEAD, after the six fixes)
+### 2.1 Current architecture (`inject-detection` HEAD, after all eleven fixes)
 
 ```mermaid
 flowchart TB
@@ -253,8 +279,8 @@ flowchart TB
             P35[Phase35DedupStage]
             P4[Phase4DecompositionStage]
         end
-        GEN[MultiServiceTestCaseGenerator<br/>variant loop + fault queue<br/>still ~2800 LOC]
-        POOL[InvalidInputPool<br/>keyed on rootApi,param,location<br/>from A-5]
+        GEN[MultiServiceTestCaseGenerator<br/>variant loop + fault queue<br/>2906 LOC after S-1 + S-1b<br/>down from 3422]
+        POOL[InvalidInputPool<br/>outer key rootApiKey<br/>inner key PoolKey name,location<br/>from A-5 + A-5b]
         SF[SmartInputFetcher]
         WR[MultiServiceRESTAssuredWriter]
         ANALYZE[TraceErrorAnalyzer]
@@ -568,7 +594,7 @@ a tool" claim.
 ```mermaid
 flowchart LR
     USER[user: java -jar restest.jar config.properties]
-    MAIN[TestGenerationAndExecution.main<br/>2,415 lines<br/>73 MST/mst references]
+    MAIN[TestGenerationAndExecution.main<br/>~2,423 lines<br/>~10 MST/mst dispatch references<br/>down from 73 at audit time]
     BRANCH{generator == MST?}
     MST_CLASSIC[classic RESTest modes:<br/>RT, CBT, FT, ART, LLM]
     MST_PATH[MST branch:<br/>line 199-onwards,<br/>~hundreds of inline LOC,<br/>property load, generator,<br/>writer, statistics, fault<br/>detection, status code<br/>exploration, enhancer]
@@ -683,10 +709,19 @@ Two crucial properties after Phase 1:
 
 #### Stage 1.A — Lift the MST branch into MistRunner (3 weeks)
 
-**Goal.** Reduce `TestGenerationAndExecution.main` from a 2,415-line
-class with 73 MST references to a class whose MST branch is one
-delegation call. **No new entry point in this stage**, just internal
-extraction.
+**Goal.** Reduce `TestGenerationAndExecution.main` (currently ~2,423
+lines with ~10 `"MST".equals(generator)` dispatch sites — already
+down from the audit-time 73 thanks to upstream commit `67337db9`) to
+a class whose entire MST branch is one delegation call.  **No new
+entry point in this stage**, just internal extraction.
+
+Note that the original audit found 73 MST references and a 2,415-line
+file.  Upstream `67337db9` consolidated some of those into shared
+helpers, leaving roughly 10 dispatch points and a slightly larger
+main file.  The remaining 10 are still scattered across constructor
+hook-ups, generator selection, writer selection, statistics, fault
+detection, and the run loop — all of which belong on `MistRunner`,
+not on the RESTest entry point.
 
 **Steps.**
 1. **Map the MST branch.** Read
@@ -1228,17 +1263,35 @@ flowchart LR
    specific bounds.
 
 ##### Phase 3.D — InvalidInputPool v2 (1 week)
-1. Re-key the pool from `(rootApi, param, paramLocation, oldEnum)` —
-   the key shape produced by Fix A-5 — to
-   `(rootApi, param, paramLocation, faultType.id)`. The `paramLocation`
-   axis is preserved; only the fault dimension changes from enum to
-   `FaultType.id`.
+The current pool shape (delivered by Fix A-5b, not the original A-5)
+is:
+
+```java
+Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>>
+//   rootApiKey              ^^^^^^^ (paramName, paramLocation)
+```
+
+The **outer** two axes (`rootApiKey` and `PoolKey(name, location)`) are
+correct and stay. Phase 3 only touches the **inner fault dimension**
+that lives **inside** each `InvalidInputPool`.
+
+1. Inside `InvalidInputPool`, replace the internal
+   `Map<InvalidInputType, …>` keyed on the legacy 8-category enum with
+   `Map<String, …>` keyed on `FaultType.id` (the registry-driven
+   identifier from § 3.A). The outer map shape
+   (`Map<String, Map<PoolKey, InvalidInputPool>>`) is **unchanged**.
 2. Persist pool state file format bumps version: the old
-   `target/invalid-input-pool.json` becomes v2; v1 files (the post-A-5,
-   pre-Phase-3 format) are read but migrated on first save.
+   `.mist/invalid-input-pool.json` becomes v2; v1 files (the pre-Phase-3
+   format with enum-name keys) are read once and migrated on first
+   save.
 3. The Sniper Strategy's round-robin cursor follows the registry's
-   declared order: default types first (TYPE_MISMATCH …
-   SEMANTIC_MISMATCH), then mined types.
+   declared order: default types first (`TYPE_MISMATCH …
+   SEMANTIC_MISMATCH`), then mined types.
+4. `MultiServiceTestCase.faultTypeCategory` (currently a string holding
+   the enum `.name()`) is reused verbatim; its value now comes from
+   `FaultType.id`, which preserves the eight default identifiers
+   byte-for-byte so existing Allure attachments and reports do not
+   regress.
 
 ##### Phase 3.E — Reporting and reproducibility (1 week)
 1. Allure attachments now name the `FaultType.id` instead of the
@@ -1365,15 +1418,24 @@ The user ticks the boxes after each phase; the agent only fills in the
 phase-internal acceptance boxes (Section 4's per-phase decision gates).
 
 ### 7.1 Pre-flight
-- [ ] All six fixes in `CRITICAL_FIXES_S_A_1_6.md` have landed on
-      `inject-detection` and the demo runs cleanly with
-      `-Drandom.seed=42` producing byte-identical output across two
-      consecutive runs.
+- [ ] All seven critical fixes in `CRITICAL_FIXES_S_A_1_6.md` (S-4,
+      A-6, S-2, S-3, S-1, A-5, A-7) **plus the four follow-up fixes**
+      (S-1b lift, A-5b pool key + writer, Mockito 5.10.0 upgrade,
+      `/logs/` gitignore) **plus the A-5b ↔ S-1b integration patch**
+      (commit `ee561b46`) have landed on `inject-detection`.
+- [ ] The full 60-test verification suite reports `60 pass / 0 fail
+      / 0 error` (run with the heavy `trainticket_twostage_test/`
+      directory and the two unrelated broken demo tests temporarily
+      moved out of `src/test/java/`).
+- [ ] Demo runs cleanly with `-Drandom.seed=42` producing
+      byte-identical output across two consecutive runs.
 - [ ] Pre-flight smoke (verify the post-fix state Path B assumes):
       ```
-      # All commands must exit 0 / return non-empty
+      # --- Core fix scaffolding: all must return non-empty ---
       grep -rn 'class MstConfig\b' src/main/java/es/us/isa/restest/configuration
+      grep -rn 'class MstConfigValidator\b' src/main/java/es/us/isa/restest/configuration
       grep -rn 'class LLMCallCache\b' src/main/java/es/us/isa/restest/llm
+      grep -rn 'applySeedGate' src/main/java/es/us/isa/restest/llm/LLMConfig.java
       grep -rn 'class NounKeyMap\b' src/main/java/es/us/isa/restest/workflow
       grep -rn 'class WorkflowPipeline\b' src/main/java/es/us/isa/restest/workflow/pipeline
       ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase25DedupStage.java
@@ -1381,8 +1443,32 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
       ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase3ShatteringStage.java
       ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase35DedupStage.java
       ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/Phase4DecompositionStage.java
-      ! grep -rn 'dedupApprovedScenarios' src/main/java/es/us/isa/restest    # negated: must be empty
-      ! grep -rn 'NOUN_TO_KEY\s*\.\s*put' src/main/java/es/us/isa/restest    # negated: hard-coded map gone
+      # --- S-1b: lift helpers exist ---
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/SharedPoolSupport.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/DedupSupport.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/DecompositionSupport.java
+      ls src/main/java/es/us/isa/restest/workflow/pipeline/stages/StageSupport.java
+      grep -E '^public final class SharedPoolSupport' src/main/java/es/us/isa/restest/workflow/pipeline/stages/SharedPoolSupport.java
+      # --- A-5b: PoolKey + writer emission ---
+      grep -nE 'public static final class PoolKey' src/main/java/es/us/isa/restest/generators/MultiServiceTestCaseGenerator.java
+      grep -n 'targetFaultParamLocation' src/main/java/es/us/isa/restest/testcases/MultiServiceTestCase.java
+      grep -nE 'req\.header\(|req\.cookie\(' src/main/java/es/us/isa/restest/writers/restassured/MultiServiceRESTAssuredWriter.java
+      # --- A-7: .mist/ cache migration ---
+      grep -nE '\.mist/(soft-error-rule|parameter-error-analysis|intelligent-analysis)-cache\.json' src/main/java/es/us/isa/restest
+      grep -nE 'Files\.move\(' src/main/java/es/us/isa/restest/{validation/SoftErrorRuleCache.java,inputs/smart/ParameterErrorAnalysisCache.java,analysis/IntelligentAnalysisCache.java}
+      # --- Test infra ---
+      grep -E '<mockito.version>5\.' pom.xml
+      grep -E '^/logs/?$' .gitignore
+      # --- Negated checks: deleted symbols must NOT appear ---
+      ! grep -rn 'dedupApprovedScenarios' src/main/java/es/us/isa/restest
+      ! grep -rn 'NOUN_TO_KEY\s*\.\s*put' src/main/java/es/us/isa/restest
+      ! grep -rnE '(private|public).*void (groupScenariosByRootApi|generateSharedParameterPools|decomposeMultiRootScenarios)\(' src/main/java/es/us/isa/restest/generators/MultiServiceTestCaseGenerator.java
+      # --- Hard size check: generator must have shrunk ---
+      test $(wc -l < src/main/java/es/us/isa/restest/generators/MultiServiceTestCaseGenerator.java) -le 3000
+      # --- 60-test verification suite must pass (move heavy/broken first) ---
+      # mv src/test/java/trainticket_twostage_test /tmp/ ; mv src/test/java/{OpenAPIConfigTest,SmartInputFetchingDemoTest}.java /tmp/
+      # MAVEN_OPTS="-Xmx3g" mvn -q test -Dmaven.compiler.release=11 -Dtest='LLMCallCacheTest,LLMConfigSeedGateTest,MstConfigTest,MstConfigValidatorTest,NounKeyMapTest,PhaseTwoFiveDedupTest,Phase25DedupStageTest,Phase35DedupStageTest,Phase3ShatteringStageTest,Phase4DecompositionStageTest,SharedPoolGenerationStageTest,SharedPoolGenerationStagePathParamTest,SharedPoolGenerationStageHeaderParamTest,SoftErrorRuleCacheMigrationTest,ParameterErrorAnalyzerMigrationTest,TraceErrorAnalyzerMigrationTest,PoolKeyCollisionTest,HeaderFaultEmissionTest,CookieFaultEmissionTest'
+      # Expected: 60 tests, 0 fail, 0 error.  Then restore the moved files.
       ```
       If any of the above fails, the fix branch is incomplete; do
       **not** start Phase 0. Report back to the user.
