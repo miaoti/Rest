@@ -1,7 +1,5 @@
-package es.us.isa.restest.llm;
+package io.mist.llm;
 
-import es.us.isa.restest.util.LLMCommunicationLogger;
-import es.us.isa.restest.util.SeededRandom;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,7 +83,7 @@ public class GeminiApiClient {
             generationConfig.put("temperature", temperature);
             // Gemini 2.0+ honours generationConfig.seed; older models ignore it,
             // which is fine — temperature=0 still drives toward greedy decoding.
-            Long seed = SeededRandom.getBaseSeed();
+            Long seed = configuredBaseSeed();
             if (seed != null) {
                 generationConfig.put("seed", seed);
             }
@@ -285,5 +283,23 @@ public class GeminiApiClient {
      */
     public String generateText(String systemPrompt, String userPrompt) {
         return generateContent(systemPrompt, userPrompt, 200, 0.7);
+    }
+
+    /**
+     * Resolve the configured base random seed, or {@code null} when
+     * {@code -Drandom.seed} is unset or unparseable. Reads the system
+     * property directly so the mist-llm module carries no compile-time edge
+     * to the adapter's {@code SeededRandom}.
+     */
+    private static Long configuredBaseSeed() {
+        String prop = System.getProperty("random.seed");
+        if (prop == null || prop.isEmpty()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(prop);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 }

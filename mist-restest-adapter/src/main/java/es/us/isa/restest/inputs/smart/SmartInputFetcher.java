@@ -2,7 +2,7 @@ package es.us.isa.restest.inputs.smart;
 
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
-import es.us.isa.restest.llm.LLMService;
+import io.mist.llm.LLMService;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

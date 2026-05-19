@@ -1,5 +1,5 @@
-import es.us.isa.restest.llm.LLMConfig;
-import es.us.isa.restest.llm.LLMService;
+import io.mist.llm.LLMConfig;
+import io.mist.llm.LLMService;
 import es.us.isa.restest.generators.ZeroShotLLMGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import org.junit.jupiter.api.Test;
