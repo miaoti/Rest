@@ -45,6 +45,20 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     private boolean outputCoverageEnabled = false;
     private String  proxyHostPort         = null;
 
+    /**
+     * Trace Shape Oracle handle passed in by {@code MistRunner.run()}. The
+     * writer does not invoke {@code evaluate(...)} directly; it only needs to
+     * (1) know the oracle was bootstrapped so generated tests can read the
+     * persisted store, and (2) emit a static field + @BeforeClass init that
+     * reconstructs the same oracle in the generated test class's JVM.
+     *
+     * <p>The store path mirrors what MistRunner wrote so the generated test
+     * loads the exact same invariants this run trained. A null oracle (e.g.
+     * tests that bypass the runner) suppresses the emission cleanly.
+     */
+    private io.mist.core.oracle.shape.TraceShapeOracle traceShapeOracle = null;
+    private String traceShapeStorePath = null;
+
     /* ------------------------------------------------------------------ */
     public MultiServiceRESTAssuredWriter(String openAPIPath,
                                          String testConfPath,
@@ -68,6 +82,19 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
     @Override public void setEnableStats(boolean enableStats)            { super.setEnableStats(enableStats);  this.statsEnabled          = enableStats; }
     @Override public void setEnableOutputCoverage(boolean enableOutput)  { super.setEnableOutputCoverage(enableOutput); this.outputCoverageEnabled = enableOutput; }
     @Override public void setProxy(String proxy)                         { super.setProxy(proxy);              this.proxyHostPort         = proxy; }
+
+    /**
+     * Inject the Trace Shape Oracle and the on-disk store path used by
+     * MistRunner so the writer can emit a re-construction block in the
+     * generated test class. The oracle reference itself is not consumed by
+     * the writer (the generated tests run in a separate JVM and reload the
+     * store from disk), but accepting it preserves the contract MistRunner
+     * documents and lets the writer skip emission when no oracle was set up.
+     */
+    public void setTraceShapeOracle(io.mist.core.oracle.shape.TraceShapeOracle oracle, java.nio.file.Path storePath) {
+        this.traceShapeOracle = oracle;
+        this.traceShapeStorePath = storePath == null ? null : storePath.toString();
+    }
 
 
     /*  WRITE JAVA SOURCE                                           */
@@ -140,9 +167,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("import org.json.JSONObject;");
                 pw.println("import org.json.JSONArray;");
                 pw.println("import es.us.isa.restest.analysis.TraceErrorAnalyzer;");
+                pw.println("import es.us.isa.restest.analysis.TraceShapeAdapter;");
                 pw.println("import es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer;");
                 pw.println("import es.us.isa.restest.inputs.smart.InputFetchRegistry;");
                 pw.println("import es.us.isa.restest.inputs.smart.ParameterError;");
+                pw.println("import io.mist.core.oracle.shape.ShapeInvariantStore;");
+                pw.println("import io.mist.core.oracle.shape.TraceModel;");
+                pw.println("import io.mist.core.oracle.shape.TraceShapeOracle;");
+                pw.println("import io.mist.core.oracle.shape.TraceShapeVerdict;");
                 pw.println("import static org.junit.Assert.*;");
                 pw.println("import es.us.isa.restest.testcases.MultiServiceTestCase;");
 
@@ -203,6 +235,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("    private static final boolean LLM_ONLY_2XX = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
                 pw.println("    private static final boolean LLM_INCLUDE_RCA = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
                 pw.println("    private static es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator;");
+                pw.println();
+
+                // Phase 2.F: Trace Shape Oracle singleton — created once in @BeforeClass.
+                // The oracle reloads the .mist/trace-shape-invariants.json file MistRunner
+                // populated on its cold-start training pass.
+                pw.println("    // Trace Shape Oracle (Phase 2.F) — created ONCE per test class, reads .mist/trace-shape-invariants.json");
+                pw.println("    private static TraceShapeOracle oracle;");
+                pw.println("    // Per-step verdict, populated from inside attachJaegerTrace(...) so the test-method assertion");
+                pw.println("    // path can consult it when deciding whether to flip a negative test from FAIL to PASS.");
+                pw.println("    private static final ThreadLocal<TraceShapeVerdict> LAST_VERDICT = new ThreadLocal<>();");
                 pw.println();
 
                 if (allureReport) {
@@ -560,6 +602,47 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                }");
                     pw.println("                Allure.addAttachment(\"📊 Trace Summary\", \"text/plain\", traceSummary);");
                     pw.println("                Allure.addAttachment(\"📈 Raw Trace Data\", \"application/json\", globalBestTrace.toString());");
+                    pw.println();
+                    pw.println("                // Trace Shape Oracle (Phase 2.F contribution) — runs on the same trace");
+                    pw.println("                // the TraceErrorAnalyzer block just processed. The verdict is attached");
+                    pw.println("                // to the step as a JSON document AND recorded on a thread-local so the");
+                    pw.println("                // surrounding test-method assertion path can consult it (used for the");
+                    pw.println("                // negative-test FAIL->PASS flip on ResponseEnvelope violations).");
+                    pw.println("                if (oracle != null) {");
+                    pw.println("                    try {");
+                    pw.println("                        String rootApiKey = method + \" \" + path;");
+                    pw.println("                        TraceModel model = TraceShapeAdapter.toModel(globalBestTrace, rootApiKey);");
+                    pw.println("                        TraceShapeVerdict verdict = oracle.evaluate(model, rootApiKey);");
+                    pw.println("                        LAST_VERDICT.set(verdict);");
+                    pw.println("                        StringBuilder verdictJson = new StringBuilder();");
+                    pw.println("                        verdictJson.append(\"{\\n  \\\"rootApiKey\\\": \\\"\").append(rootApiKey.replace(\"\\\\\", \"\\\\\\\\\").replace(\"\\\"\", \"\\\\\\\"\")).append(\"\\\",\\n\");");
+                    pw.println("                        verdictJson.append(\"  \\\"passed\\\": \").append(verdict.isPassed()).append(\",\\n\");");
+                    pw.println("                        verdictJson.append(\"  \\\"outcomes\\\": [\\n\");");
+                    pw.println("                        java.util.List<TraceShapeVerdict.InvariantOutcome> outcomes = verdict.getOutcomes();");
+                    pw.println("                        for (int oi = 0; oi < outcomes.size(); oi++) {");
+                    pw.println("                            TraceShapeVerdict.InvariantOutcome o = outcomes.get(oi);");
+                    pw.println("                            verdictJson.append(\"    { \\\"kind\\\": \\\"\").append(o.kind).append(\"\\\",\");");
+                    pw.println("                            verdictJson.append(\" \\\"passed\\\": \").append(o.passed).append(\",\");");
+                    pw.println("                            verdictJson.append(\" \\\"severity\\\": \\\"\").append(o.severity).append(\"\\\",\");");
+                    pw.println("                            String esc = o.detail == null ? \"\" : o.detail.replace(\"\\\\\", \"\\\\\\\\\").replace(\"\\\"\", \"\\\\\\\"\");");
+                    pw.println("                            verdictJson.append(\" \\\"detail\\\": \\\"\").append(esc).append(\"\\\" }\");");
+                    pw.println("                            if (oi < outcomes.size() - 1) verdictJson.append(\",\");");
+                    pw.println("                            verdictJson.append(\"\\n\");");
+                    pw.println("                        }");
+                    pw.println("                        verdictJson.append(\"  ]\\n}\");");
+                    pw.println("                        Allure.addAttachment(\"Trace Shape Oracle Verdict\", \"application/json\", verdictJson.toString());");
+                    pw.println("                        if (!verdict.isPassed()) {");
+                    pw.println("                            for (TraceShapeVerdict.InvariantOutcome o : outcomes) {");
+                    pw.println("                                if (!o.passed && o.severity == TraceShapeVerdict.Severity.ERROR) {");
+                    pw.println("                                    Allure.step(\"❌ shape violation: \" + o.kind + \" \" + o.detail);");
+                    pw.println("                                }");
+                    pw.println("                            }");
+                    pw.println("                        }");
+                    pw.println("                    } catch (Throwable tsoEx) {");
+                    pw.println("                        Allure.addAttachment(\"Trace Shape Oracle Error\", \"text/plain\", \"Oracle evaluation failed: \" + tsoEx.toString());");
+                    pw.println("                    }");
+                    pw.println("                }");
+                    pw.println();
                     pw.println("                Allure.addAttachment(\"🔍 Query Debug Info\", \"text/plain\", debugInfo.toString());");
                     pw.println("            } else {");
                     pw.println("                // No traces found with any query after all retries");
@@ -1074,6 +1157,22 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("        // Initialize LLM validation singletons (ONCE per class, not per test)");
                 pw.println("        if (LLM_VALIDATION_ENABLED) {");
                 pw.println("            llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
+                pw.println("        }");
+                pw.println();
+                // Phase 2.F: reconstruct the Trace Shape Oracle from the JSON file MistRunner
+                // populated. The path mirrors what MistRunner used so the same invariants apply.
+                pw.println("        // Trace Shape Oracle bootstrap (Phase 2.F) — reads the persisted invariant store.");
+                pw.println("        // The file is created/refreshed by MistRunner's bootstrap on its cold-start pass.");
+                pw.println("        try {");
+                if (traceShapeStorePath != null) {
+                    pw.println("            java.nio.file.Path tsoPath = java.nio.file.Paths.get(\"" + escape(traceShapeStorePath) + "\");");
+                    pw.println("            oracle = new TraceShapeOracle(new ShapeInvariantStore(tsoPath));");
+                } else {
+                    pw.println("            oracle = new TraceShapeOracle(new ShapeInvariantStore());");
+                }
+                pw.println("        } catch (Throwable tsoEx) {");
+                pw.println("            System.err.println(\"[Trace Shape Oracle] init failed: \" + tsoEx.getMessage());");
+                pw.println("            oracle = null;");
                 pw.println("        }");
                 pw.println("    }");
                 pw.println();
@@ -1928,6 +2027,26 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
                             pw.println("                        }");
+                            // Phase 2.F: Positive variants whose verdict carries any ERROR-severity
+                            // violation must be marked FAIL — the success path has already attached
+                            // the verdict and Allure step in attachJaegerTrace. We throw here so the
+                            // surrounding catch block records the failure with a clear message.
+                            if (!scenario.getFaulty()) {
+                                pw.println("                        // Phase 2.F: Trace Shape Oracle — positive variant FAILS when verdict");
+                                pw.println("                        // reports any ERROR-severity violation (verdict was attached above).");
+                                pw.println("                        {");
+                                pw.println("                            TraceShapeVerdict tsoPosVerdict = LAST_VERDICT.get();");
+                                pw.println("                            if (tsoPosVerdict != null && !tsoPosVerdict.isPassed()) {");
+                                pw.println("                                StringBuilder vmsg = new StringBuilder(\"Positive variant failed — Trace Shape Oracle verdict has violation(s):\");");
+                                pw.println("                                for (TraceShapeVerdict.InvariantOutcome o : tsoPosVerdict.getOutcomes()) {");
+                                pw.println("                                    if (!o.passed && o.severity == TraceShapeVerdict.Severity.ERROR) {");
+                                pw.println("                                        vmsg.append(\" [\").append(o.kind).append(\": \").append(o.detail).append(\"]\");");
+                                pw.println("                                    }");
+                                pw.println("                                }");
+                                pw.println("                                throw new AssertionError(vmsg.toString());");
+                                pw.println("                            }");
+                                pw.println("                        }");
+                            }
                             
                                                     // 🔥 FIX: Proper FAILURE reporting with correct Allure status
                         pw.println("                    } catch (Throwable t) {");
@@ -2061,6 +2180,28 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                         pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true);");
                         pw.println("                        ");
+                        // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted
+                        // SoftErrorRuleCache used to encode (a soft error in a 2xx response on a
+                        // negative variant flips FAIL -> PASS). The verdict was populated by the
+                        // attachJaegerTrace() call above (it stashes the result on LAST_VERDICT).
+                        if (scenario.getFaulty()) {
+                            pw.println("                        // Phase 2.F: Trace Shape Oracle — flip negative test FAIL -> PASS when");
+                            pw.println("                        // ResponseEnvelopeInvariant reports a violation (the modern replacement for");
+                            pw.println("                        // the deleted SoftErrorRuleCache soft-error contract).");
+                            pw.println("                        TraceShapeVerdict tsoVerdict = LAST_VERDICT.get();");
+                            pw.println("                        if (tsoVerdict != null) {");
+                            pw.println("                            boolean respEnvelopeViolation = false;");
+                            pw.println("                            for (TraceShapeVerdict.InvariantOutcome o : tsoVerdict.getOutcomes()) {");
+                            pw.println("                                if (\"RESPONSE_ENVELOPE\".equals(o.kind) && !o.passed) { respEnvelopeViolation = true; break; }");
+                            pw.println("                            }");
+                            pw.println("                            if (respEnvelopeViolation) {");
+                            pw.println("                                Allure.step(\"✅ negative variant PASSED via ResponseEnvelopeInvariant violation (replaces SoftErrorRuleCache contract)\");");
+                            pw.println("                                System.out.println(\"✅ Negative test PASSED: Trace Shape Oracle detected ResponseEnvelopeInvariant violation\");");
+                            pw.println("                                return; // suppress the wrapping RuntimeException — variant is PASS");
+                            pw.println("                            }");
+                            pw.println("                        }");
+                            pw.println("                        ");
+                        }
                         pw.println("                        // 🔥 CRITICAL: Throw exception to mark step as FAILED (red arrow) in Allure");
                         pw.println("                        throw new RuntimeException(\"" + escape(stepTitle) + " failed: \" + failureReason + \" (\" + errorType + \")\", t);");
                         pw.println("                    }");
