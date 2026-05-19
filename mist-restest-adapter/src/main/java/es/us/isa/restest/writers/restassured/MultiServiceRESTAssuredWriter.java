@@ -247,6 +247,29 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("    private static final ThreadLocal<TraceShapeVerdict> LAST_VERDICT = new ThreadLocal<>();");
                 pw.println();
 
+                // Fix 3 Layer 3: output-coverage backstop. A shared set of response
+                // (status + body hash) fingerprints across all @Test methods in the
+                // class. When a step's response duplicates a previously-seen
+                // response, downstream expensive oracles (LLM validation, Allure
+                // attachment) are short-circuited — the HTTP call has already
+                // landed, so the test still exercises the SUT, but we don't pay
+                // the per-step oracle cost twice for an identical observation.
+                pw.println("    // Output-coverage backstop (Fix 3 Layer 3): shared response-fingerprint set");
+                pw.println("    private static final java.util.Set<String> SEEN_RESPONSE_HASHES = java.util.concurrent.ConcurrentHashMap.newKeySet();");
+                pw.println("    private static String responseFingerprint(int status, String body) {");
+                pw.println("        String payload = status + \"|\" + (body == null ? \"\" : body);");
+                pw.println("        try {");
+                pw.println("            java.security.MessageDigest md = java.security.MessageDigest.getInstance(\"SHA-256\");");
+                pw.println("            byte[] h = md.digest(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));");
+                pw.println("            StringBuilder sb = new StringBuilder(h.length * 2);");
+                pw.println("            for (byte b : h) sb.append(String.format(\"%02x\", b));");
+                pw.println("            return sb.toString();");
+                pw.println("        } catch (java.security.NoSuchAlgorithmException e) {");
+                pw.println("            return Integer.toString(payload.hashCode());");
+                pw.println("        }");
+                pw.println("    }");
+                pw.println();
+
                 if (allureReport) {
                     pw.println("    // Jaeger configuration");
                     pw.println("    private static final boolean JAEGER_ENABLED = Boolean.parseBoolean(System.getProperty(\"jaeger.enabled\", \"true\"));");
@@ -1814,7 +1837,21 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        int actualStatusCode" + stepIdx + " = stepResponse" + stepIdx + ".getStatusCode();");
                             pw.println("                        int expectedStatusCode" + stepIdx + " = " + step.getExpectedStatus() + ";");
                             pw.println("                        ");
-                            
+
+                            // Fix 3 Layer 3: output-coverage backstop. Compute the response
+                            // fingerprint (SHA-256 over status + body) and short-circuit
+                            // expensive per-step oracles (LLM validation) when the same
+                            // fingerprint has already been observed in this class. The
+                            // HTTP call itself has already happened; we only avoid double-
+                            // paying the oracle cost on identical observations.
+                            pw.println("                        // Fix 3 Layer 3: output-coverage backstop");
+                            pw.println("                        String responseFingerprint" + stepIdx + " = responseFingerprint(actualStatusCode" + stepIdx + ", stepResponse" + stepIdx + ".getBody().asString());");
+                            pw.println("                        boolean isDuplicateResponse" + stepIdx + " = !SEEN_RESPONSE_HASHES.add(responseFingerprint" + stepIdx + ");");
+                            pw.println("                        if (isDuplicateResponse" + stepIdx + ") {");
+                            pw.println("                            System.out.println(\"⏭️ Duplicate response observed (hash=\" + responseFingerprint" + stepIdx + ".substring(0, 12) + \"…), skipping LLM validation for step " + stepIdx + "\");");
+                            pw.println("                        }");
+                            pw.println("                        ");
+
                             // 🤖 LLM RESPONSE VALIDATION: uses class-level singleton llmValidator
                             pw.println("                        // 🤖 LLM RESPONSE VALIDATION: uses class-level singletons");
                             pw.println("                        ");
@@ -1858,6 +1895,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        if (responseIsError) {");
                                 pw.println("                            llmRca = \"Skipped: response status \" + actualStatusCode" + stepIdx + " + \" is non-2xx; API rejected invalid input\";");
                                 pw.println("                            System.out.println(\"⚡ Skipping LLM validation: response is non-2xx (\" + actualStatusCode" + stepIdx + " + \")\");");
+                                pw.println("                        } else if (isDuplicateResponse" + stepIdx + ") {");
+                                pw.println("                            llmRca = \"Skipped: response fingerprint already validated in this class\";");
                                 pw.println("                        } else if (LLM_VALIDATION_ENABLED && llmValidator != null) {");
                                 pw.println("                            try {");
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
@@ -1932,7 +1971,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        }");
                                 pw.println("                        ");
                                 pw.println("                        // LLM validation for positive tests - detect soft errors in 2XX responses");
-                                pw.println("                        if (LLM_VALIDATION_ENABLED && llmValidator != null && (!LLM_ONLY_2XX || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
+                                pw.println("                        if (LLM_VALIDATION_ENABLED && llmValidator != null && !isDuplicateResponse" + stepIdx + " && (!LLM_ONLY_2XX || (actualStatusCode" + stepIdx + " >= 200 && actualStatusCode" + stepIdx + " < 300))) {");
                                 pw.println("                            try {");
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
