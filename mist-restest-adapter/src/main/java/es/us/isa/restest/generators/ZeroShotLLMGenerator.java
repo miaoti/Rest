@@ -11,6 +11,7 @@ import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.llm.LLMService;
 import es.us.isa.restest.llm.LLMConfig;
 import es.us.isa.restest.util.PropertyManager;
+import es.us.isa.restest.util.SeededRandom;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import okhttp3.MediaType;
@@ -36,6 +37,12 @@ public class ZeroShotLLMGenerator {
 
     // LLM service for unified model access
     private final LLMService llmService;
+
+    // Reproducible RNG for the LLM-unavailable fallback path; honours
+    // -Drandom.seed so the "test<N>" placeholder values are deterministic
+    // across runs (was: System.currentTimeMillis() % 1000, which broke the
+    // Stage 1.D byte-identical gate).
+    private final Random fallbackRandom = SeededRandom.create("zero-shot-fallback");
 
     public ZeroShotLLMGenerator() {
         // Initialize LLM service with properties
@@ -918,8 +925,10 @@ public class ZeroShotLLMGenerator {
     }
 
     private String generateFallbackValue() {
-        // Generate simple fallback values when LLM is unavailable
-        String fallback = "test" + System.currentTimeMillis() % 1000;
+        // Simple placeholder when the LLM is unavailable. The number is drawn
+        // from a seeded RNG so two runs with the same `-Drandom.seed` produce
+        // the same sequence of fallback values.
+        String fallback = "test" + fallbackRandom.nextInt(1000);
         System.out.println("*** FALLBACK VALUE GENERATED: " + fallback);
         return fallback;
     }
