@@ -15,7 +15,7 @@ import es.us.isa.restest.enhancer.TestFileRegenerator;
 import es.us.isa.restest.enhancer.TestResultCapture;
 import es.us.isa.restest.generators.AbstractTestCaseGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
-import es.us.isa.restest.llm.LLMService;
+import io.mist.llm.LLMService;
 import es.us.isa.restest.registry.RootApiRegistry;
 import es.us.isa.restest.reporting.AllureReportManager;
 import es.us.isa.restest.reporting.StatsReportManager;

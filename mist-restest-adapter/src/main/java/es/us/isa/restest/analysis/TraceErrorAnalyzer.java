@@ -4,7 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
-import es.us.isa.restest.llm.LLMService;
+import io.mist.llm.LLMService;
 
 /**
  * Analyzes Jaeger traces to identify root causes of API failures.

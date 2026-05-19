@@ -22,6 +22,14 @@
 
 	<dependencies>
 
+		<!-- MIST internal modules: the LLM SPI lives in mist-llm so mist-core
+		     can call the LLM without dragging in mist-restest-adapter. -->
+		<dependency>
+			<groupId>es.us.isa</groupId>
+			<artifactId>mist-llm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<!-- JSON (Gson for ShapeInvariantStore / invariants; org.json for TraceModel) -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

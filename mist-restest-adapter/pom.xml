@@ -147,6 +147,11 @@
 			<artifactId>mist-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>es.us.isa</groupId>
+			<artifactId>mist-llm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- SWAGGER DEPENDENCIES -->
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-core -->
