@@ -52,7 +52,7 @@ public class MultiServiceTestCase extends TestCase {
     /** The hierarchical root ID that was targeted by the sniper fault injection (e.g. "Root 2"). */
     private String targetFaultRootId;
 
-    /** The InvalidInputType category used for this negative test (e.g. "OVERFLOW", "BOUNDARY_VIOLATION"). */
+    /** The fault-type id used for this negative test (e.g. "OVERFLOW", "BOUNDARY_VIOLATION"). */
     private String faultTypeCategory;
 
     /** The actual API path of the targeted fault root (e.g. "POST /api/v1/orderservice/order"). */

@@ -208,26 +208,26 @@ public class ZeroShotLLMGenerator {
         HardcodedInvalidInputGenerator hc = hardcodedGen();
 
         // Each fault type only fires when meaningful for the schema type — see
-        // InvalidInputType.appliesTo() for the matrix. This stops boolean
+        // FaultTypeRegistry default YAML for the matrix. This stops boolean
         // params from receiving overflow/boundary/special-char attacks that
         // are really TYPE_MISMATCHES wearing a wrong label.
-        if (es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("TYPE_MISMATCH", paramType))
             hc.generateTypeMismatchInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.OVERFLOW.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("OVERFLOW", paramType))
             hc.generateOverflowInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("EMPTY_INPUT", paramType))
             hc.generateEmptyInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("NULL_INPUT", paramType))
             hc.generateNullInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("SPECIAL_CHARACTERS", paramType))
             hc.generateSpecialCharacterInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("BOUNDARY_VIOLATION", paramType))
             hc.generateBoundaryViolationInputs(param, pool);
 
         // Context-aware categories — LLM earns its keep here.
-        if (es.us.isa.restest.inputs.InvalidInputType.REGEX_MISMATCH.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("REGEX_MISMATCH", paramType))
             generateRegexMismatchInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("SEMANTIC_MISMATCH", paramType))
             generateSemanticMismatchInputs(param, pool);
 
         System.out.println("*** [SMART] Generated invalid input pool:\n" + pool.getPoolSummary());
@@ -245,21 +245,21 @@ public class ZeroShotLLMGenerator {
 
         // Same applicability gating as smart mode — fault types only fire when
         // they have a meaningful interpretation against the schema's primitive type.
-        if (es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("TYPE_MISMATCH", paramType))
             generateTypeMismatchInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.REGEX_MISMATCH.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("REGEX_MISMATCH", paramType))
             generateRegexMismatchInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("SEMANTIC_MISMATCH", paramType))
             generateSemanticMismatchInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.OVERFLOW.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("OVERFLOW", paramType))
             generateOverflowInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("EMPTY_INPUT", paramType))
             generateEmptyInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("NULL_INPUT", paramType))
             generateNullInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("SPECIAL_CHARACTERS", paramType))
             generateSpecialCharacterInputs(param, pool);
-        if (es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION.appliesTo(paramType))
+        if (HardcodedInvalidInputGenerator.applies("BOUNDARY_VIOLATION", paramType))
             generateBoundaryViolationInputs(param, pool);
 
         System.out.println("*** [LLM] Generated invalid input pool:\n" + pool.getPoolSummary());
@@ -307,12 +307,12 @@ public class ZeroShotLLMGenerator {
         for (String line : lines) {
             Object typedValue = parseTypedValue(line, paramType);
             if (typedValue != null) {
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, typedValue);
+                pool.addValue("TYPE_MISMATCH", typedValue);
             }
         }
         
         // Add common type mismatches if LLM didn't provide enough
-        if (pool.getCountForType(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH) < 3) {
+        if (pool.getCountForType("TYPE_MISMATCH") < 3) {
             addDefaultTypeMismatches(paramType, pool);
         }
     }
@@ -426,43 +426,43 @@ public class ZeroShotLLMGenerator {
             case "string":
                 // String expects text — provide a numeric and a boolean. Null values are owned by
                 // the NULL_INPUT category (which is required-only-gated) and must not leak here.
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 12345);
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, true);
+                pool.addValue("TYPE_MISMATCH", 12345);
+                pool.addValue("TYPE_MISMATCH", true);
                 break;
                 
             case "integer":
             case "int":
             case "number":
                 // Number expects integer, provide strings/booleans
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_a_number");
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "12.34abc");
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, false);
+                pool.addValue("TYPE_MISMATCH", "not_a_number");
+                pool.addValue("TYPE_MISMATCH", "12.34abc");
+                pool.addValue("TYPE_MISMATCH", false);
                 break;
                 
             case "boolean":
             case "bool":
                 // Boolean expects true/false, provide strings/numbers
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "yes");
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 1);
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "true");
+                pool.addValue("TYPE_MISMATCH", "yes");
+                pool.addValue("TYPE_MISMATCH", 1);
+                pool.addValue("TYPE_MISMATCH", "true");
                 break;
                 
             case "array":
                 // Array expects list, provide primitives
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_an_array");
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 123);
+                pool.addValue("TYPE_MISMATCH", "not_an_array");
+                pool.addValue("TYPE_MISMATCH", 123);
                 break;
                 
             case "object":
                 // Object expects key-value, provide primitives
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_an_object");
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 456);
+                pool.addValue("TYPE_MISMATCH", "not_an_object");
+                pool.addValue("TYPE_MISMATCH", 456);
                 break;
                 
             default:
                 // Generic type mismatches — null values are owned by NULL_INPUT, not TYPE_MISMATCH.
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, 999);
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.TYPE_MISMATCH, "not_the_expected_type");
+                pool.addValue("TYPE_MISMATCH", 999);
+                pool.addValue("TYPE_MISMATCH", "not_the_expected_type");
                 break;
         }
     }
@@ -489,7 +489,7 @@ public class ZeroShotLLMGenerator {
         
         for (String value : values) {
             if (!value.matches(param.getRegex())) {
-                pool.addValue(es.us.isa.restest.inputs.InvalidInputType.REGEX_MISMATCH, value);
+                pool.addValue("REGEX_MISMATCH", value);
             }
         }
     }
@@ -528,15 +528,15 @@ public class ZeroShotLLMGenerator {
         List<String> values = parseLines(response);
         
         for (String value : values) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, value);
+            pool.addValue("SEMANTIC_MISMATCH", value);
         }
         
         // Also add some hardcoded very short semantic mismatches that LLM might miss
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "x");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "1");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "a");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "-");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SEMANTIC_MISMATCH, "?");
+        pool.addValue("SEMANTIC_MISMATCH", "x");
+        pool.addValue("SEMANTIC_MISMATCH", "1");
+        pool.addValue("SEMANTIC_MISMATCH", "a");
+        pool.addValue("SEMANTIC_MISMATCH", "-");
+        pool.addValue("SEMANTIC_MISMATCH", "?");
     }
     
     /**
@@ -570,14 +570,14 @@ public class ZeroShotLLMGenerator {
         List<String> values = parseLines(response);
         
         for (String value : values) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.OVERFLOW, value);
+            pool.addValue("OVERFLOW", value);
         }
         
         // Add guaranteed overflow values
         if ("string".equals(paramType)) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.OVERFLOW, "A".repeat(10000)); // Very long string
+            pool.addValue("OVERFLOW", "A".repeat(10000)); // Very long string
         } else if (paramType.contains("int")) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.OVERFLOW, Integer.MAX_VALUE);
+            pool.addValue("OVERFLOW", Integer.MAX_VALUE);
         }
     }
     
@@ -597,19 +597,19 @@ public class ZeroShotLLMGenerator {
         String paramType = safeStr(param.getType()).toLowerCase();
 
         // Empty string
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "");
+        pool.addValue("EMPTY_INPUT", "");
 
         // Whitespace only
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, " ");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "   ");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "\t");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "\n");
+        pool.addValue("EMPTY_INPUT", " ");
+        pool.addValue("EMPTY_INPUT", "   ");
+        pool.addValue("EMPTY_INPUT", "\t");
+        pool.addValue("EMPTY_INPUT", "\n");
 
         // Type-specific empty values
         if ("array".equals(paramType)) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "[]");
+            pool.addValue("EMPTY_INPUT", "[]");
         } else if ("object".equals(paramType)) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.EMPTY_INPUT, "{}");
+            pool.addValue("EMPTY_INPUT", "{}");
         }
     }
 
@@ -626,14 +626,14 @@ public class ZeroShotLLMGenerator {
         log.debug("✅ Generating NULL_INPUT for REQUIRED parameter: {}", param.getName());
 
         // Actual null
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, null);
+        pool.addValue("NULL_INPUT", null);
 
         // String representations of null (sometimes APIs parse these)
         // NOTE: Only use lowercase "null" to avoid class name conflicts on case-insensitive filesystems
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "null");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "Null");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "undefined");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.NULL_INPUT, "nil");
+        pool.addValue("NULL_INPUT", "null");
+        pool.addValue("NULL_INPUT", "Null");
+        pool.addValue("NULL_INPUT", "undefined");
+        pool.addValue("NULL_INPUT", "nil");
     }
     
     /**
@@ -656,13 +656,13 @@ public class ZeroShotLLMGenerator {
         List<String> values = parseLines(response);
         
         for (String value : values) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, value);
+            pool.addValue("SPECIAL_CHARACTERS", value);
         }
         
         // Add guaranteed special character values
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, "' OR '1'='1");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, "<script>alert('test')</script>");
-        pool.addValue(es.us.isa.restest.inputs.InvalidInputType.SPECIAL_CHARACTERS, "../../../etc/passwd");
+        pool.addValue("SPECIAL_CHARACTERS", "' OR '1'='1");
+        pool.addValue("SPECIAL_CHARACTERS", "<script>alert('test')</script>");
+        pool.addValue("SPECIAL_CHARACTERS", "../../../etc/passwd");
     }
     
     /**
@@ -684,14 +684,14 @@ public class ZeroShotLLMGenerator {
         List<String> values = parseLines(response);
         
         for (String value : values) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION, value);
+            pool.addValue("BOUNDARY_VIOLATION", value);
         }
         
         // Add common boundary violations
         String paramType = safeStr(param.getType()).toLowerCase();
         if (paramType.contains("int") || paramType.contains("number")) {
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION, -1);
-            pool.addValue(es.us.isa.restest.inputs.InvalidInputType.BOUNDARY_VIOLATION, 0);
+            pool.addValue("BOUNDARY_VIOLATION", -1);
+            pool.addValue("BOUNDARY_VIOLATION", 0);
         }
     }
 

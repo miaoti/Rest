@@ -81,6 +81,21 @@ public final class FaultTypeRegistry {
     }
 
     /**
+     * Returns {@code true} when the fault type with the given id applies to the
+     * given OAS parameter type and location. Either {@code oasType} or
+     * {@code location} may be {@code null}; an absent axis is unfiltered.
+     * Returns {@code false} when {@code faultTypeId} is unknown.
+     */
+    public boolean applies(String faultTypeId, String oasType, String location) {
+        FaultType ft = byId(faultTypeId);
+        if (ft == null) return false;
+        return matches(
+                ft,
+                normalizeOasType(oasType),
+                location == null ? null : location.toLowerCase());
+    }
+
+    /**
      * Fault types that apply to the given OAS type and parameter location.
      * Either argument may be {@code null}, in which case that axis is unfiltered
      * — this mirrors the legacy enum's conservative "when in doubt, applicable"

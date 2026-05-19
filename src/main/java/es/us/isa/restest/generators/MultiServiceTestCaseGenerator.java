@@ -5,7 +5,6 @@ import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.inputs.InvalidInputPool;
-import es.us.isa.restest.inputs.InvalidInputType;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
 import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
@@ -135,12 +134,12 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         final String rootApiKey;      // verb_path key for pool lookup
         final String paramName;       // target parameter
         final String paramLocation;   // normalised OpenAPI location (path|query|header|cookie|body|other)
-        final InvalidInputType type;  // which edge-case category
+        final String type;            // which edge-case category (FaultType id)
         final Object value;           // pre-captured invalid value (replayed at fire time)
 
         FaultTarget(int rootIndex, String rootApiKey, String paramName,
                     String paramLocation,
-                    InvalidInputType type, Object value) {
+                    String type, Object value) {
             this.rootIndex     = rootIndex;
             this.rootApiKey    = rootApiKey;
             this.paramName     = paramName;
@@ -191,10 +190,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 // the pool between build and fire).
                 while (pool.hasNextRoundRobin()) {
                     Object val = pool.getNextRoundRobin();
-                    InvalidInputType lastType = pool.getLastSelectedType();
+                    String lastType = pool.getLastSelectedType();
                     queue.add(new FaultTarget(rootIdx + 1, rootApiKey,
                             key.getParamName(), key.getParamLocation(),
-                            lastType != null ? lastType : InvalidInputType.SEMANTIC_MISMATCH,
+                            lastType != null ? lastType : "SEMANTIC_MISMATCH",
                             val));
                 }
                 pool.resetUsage();
@@ -517,7 +516,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 testName = "test_negative_flow_S" + baseCounter
                         + "_v" + (v + 1)
                         + "_fault_Root" + targetFaultRootIndex
-                        + "_" + currentTarget.type.name();
+                        + "_" + currentTarget.type;
             } else {
                 testName = "test_positive_flow_S" + baseCounter + "_v" + (v + 1);
             }
@@ -529,7 +528,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             // Attach structured fault context so the Writer can emit rich Allure metadata
             if (isFaultyVariant && currentTarget != null) {
                 tc.setTargetFaultRootId("Root " + targetFaultRootIndex);
-                tc.setFaultTypeCategory(currentTarget.type.name());
+                tc.setFaultTypeCategory(currentTarget.type);
                 tc.setTargetFaultRootApiPath(currentTarget.rootApiKey);
                 // Carry the normalised parameter location so the writer can route the
                 // invalid value into the correct request slot (header / cookie / path /
