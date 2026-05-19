@@ -50,6 +50,10 @@ public class FileManager {
     }
 
     public static void deleteDir(String path) {
+        if (path == null || path.isEmpty()) {
+            logger.debug("deleteDir called with null/empty path; skipping");
+            return;
+        }
         File file = new File(path);
         try {
             FileUtils.deleteDirectory(file);

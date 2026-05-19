@@ -575,6 +575,20 @@ public final class MistRunner {
             allureResultsDir = readParameterValue("allure.results.dir");
             allureReportDir = readParameterValue("allure.report.dir");
 
+            // Conventional defaults when the .properties file omits these (matches
+            // the values shipped in config.properties). Without the fallback,
+            // FileManager.deleteDir(null) NPE's before variant generation can even
+            // start, hiding the underlying "you forgot to configure allure paths"
+            // signal behind a useless stack trace.
+            if (allureResultsDir == null || allureResultsDir.isEmpty()) {
+                allureResultsDir = "target/allure-results";
+                logger.info("allure.results.dir not set; defaulting to {}", allureResultsDir);
+            }
+            if (allureReportDir == null || allureReportDir.isEmpty()) {
+                allureReportDir = "target/allure-reports";
+                logger.info("allure.report.dir not set; defaulting to {}", allureReportDir);
+            }
+
             if (Boolean.TRUE.equals(inputs.deletePreviousResults)) {
                 deleteDir(allureResultsDir);
                 deleteDir(allureReportDir);
