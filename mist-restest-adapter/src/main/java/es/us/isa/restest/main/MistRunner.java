@@ -57,6 +57,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -941,26 +946,95 @@ public final class MistRunner {
 
             Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 
-            // Execute all test classes
-            Result result = junit.run(testClasses.toArray(new Class[0]));
+            // Optional parallel execution. Default 1 = sequential, preserving prior
+            // behavior byte-for-byte. mst.test.parallelism=N runs N test classes
+            // concurrently — each on its own JUnitCore with its own AllureJunit4
+            // listener (Allure's lifecycle is thread-local by design). Audit #21
+            // confirmed the 6 shared resources (MstAuth/SmartInputFetcher/
+            // LLMConfig/LLMCallCache/ParameterErrorAnalyzer/generated-test statics)
+            // are safe; #22 added a JVM-wide lock around the writer-emitted
+            // InputFetchRegistry load/mutate/save block; #26 added W3C traceparent
+            // injection so Jaeger trace correlation stays deterministic 1:1 across
+            // concurrent test threads.
+            int __parallelism = Integer.getInteger("mst.test.parallelism", 1);
+            logger.info("Test execution parallelism: mst.test.parallelism={} ({})",
+                    __parallelism, __parallelism <= 1 ? "sequential" : "parallel");
+
+            int __aggRun = 0, __aggFailure = 0, __aggIgnore = 0;
+            long __aggRunTime = 0L;
+            java.util.List<Failure> __aggFailures = new ArrayList<>();
+
+            if (__parallelism <= 1) {
+                // Sequential path — single JUnitCore, prior-equivalent behavior.
+                Result result = junit.run(testClasses.toArray(new Class[0]));
+                __aggRun = result.getRunCount();
+                __aggFailure = result.getFailureCount();
+                __aggIgnore = result.getIgnoreCount();
+                __aggRunTime = result.getRunTime();
+                __aggFailures.addAll(result.getFailures());
+            } else {
+                // Parallel path. Each task runs ONE test class on a fresh JUnitCore.
+                // Allure listener is per-task; Allure's AllureLifecycle uses
+                // ThreadLocal context, so per-thread listener instances do not
+                // collide. The original `junit` instance (with the console
+                // RunListener) is not reused here — under parallel execution the
+                // per-test progress logs would interleave to noise; the aggregate
+                // result is logged once at the end.
+                ExecutorService __pool = Executors.newFixedThreadPool(__parallelism);
+                java.util.List<Callable<Result>> __tasks = new ArrayList<>();
+                for (Class<?> __cls : testClasses) {
+                    final Class<?> __c = __cls;
+                    __tasks.add(() -> {
+                        JUnitCore __local = new JUnitCore();
+                        __local.addListener(new AllureJunit4());
+                        return __local.run(__c);
+                    });
+                }
+                long __wallStart = System.currentTimeMillis();
+                try {
+                    java.util.List<Future<Result>> __futures = __pool.invokeAll(__tasks);
+                    __pool.shutdown();
+                    if (!__pool.awaitTermination(24, TimeUnit.HOURS)) {
+                        logger.warn("Parallel execution did not complete within 24h cap; forcing shutdown");
+                        __pool.shutdownNow();
+                    }
+                    for (Future<Result> __fut : __futures) {
+                        try {
+                            Result __r = __fut.get();
+                            __aggRun += __r.getRunCount();
+                            __aggFailure += __r.getFailureCount();
+                            __aggIgnore += __r.getIgnoreCount();
+                            __aggFailures.addAll(__r.getFailures());
+                        } catch (Exception __taskEx) {
+                            logger.error("Parallel test-class execution threw: {}", __taskEx.toString());
+                            __aggFailure++;
+                        }
+                    }
+                } catch (InterruptedException __ie) {
+                    Thread.currentThread().interrupt();
+                    __pool.shutdownNow();
+                    logger.error("Parallel execution interrupted; partial results follow");
+                }
+                __aggRunTime = System.currentTimeMillis() - __wallStart;
+            }
 
             Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 
             // Log results
             logger.info("=== TEST EXECUTION RESULTS (NEWLY GENERATED TESTS ONLY) ===");
-            logger.info("Tests run: {}", result.getRunCount());
-            logger.info("Failures: {}", result.getFailureCount());
-            logger.info("Ignored: {}", result.getIgnoreCount());
-            logger.info("Run time: {} ms", result.getRunTime());
+            logger.info("Tests run: {}", __aggRun);
+            logger.info("Failures: {}", __aggFailure);
+            logger.info("Ignored: {}", __aggIgnore);
+            logger.info("Run time: {} ms", __aggRunTime);
 
-            if (result.getFailureCount() > 0) {
+            if (__aggFailure > 0) {
                 logger.error("=== FAILURES ===");
-                for (Failure failure : result.getFailures()) {
+                for (Failure failure : __aggFailures) {
                     logger.error("Failed: {} - {}", failure.getDescription().getDisplayName(), failure.getMessage());
                 }
             }
 
-            if (result.wasSuccessful()) {
+            if (__aggFailure == 0) {
                 logger.info("✅ All newly generated tests executed successfully!");
             } else {
                 logger.warn("❌ Some newly generated tests failed. Check the logs above for details.");

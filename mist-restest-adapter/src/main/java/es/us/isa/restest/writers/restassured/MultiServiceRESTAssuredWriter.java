@@ -279,7 +279,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
                     pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
                     pw.println();
-                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed) {");
+                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String traceId) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
@@ -334,6 +334,44 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            JSONObject globalBestTrace = null;  // Track best trace across all queries");
                     pw.println("            long globalBestDiff = Long.MAX_VALUE;");
                     pw.println("            int globalBestScore = -1;");
+                    pw.println("            ");
+                    pw.println("            // ── Marker-first exact-ID lookup (W3C trace context) ──");
+                    pw.println("            // Test client injects traceparent: 00-<traceId>-...-01 on every HTTP request.");
+                    pw.println("            // Jaeger ingests SUT spans under exactly that traceId, so GET /traces/<id> is a");
+                    pw.println("            // deterministic 1:1 lookup — no time-window ambiguity under parallel execution.");
+                    pw.println("            // Poll 5×200ms for ingest to settle; fallthrough to heuristic if SUT doesn't honor");
+                    pw.println("            // W3C traceparent or ingest is unusually delayed.");
+                    pw.println("            if (traceId != null && !traceId.isEmpty()) {");
+                    pw.println("                debugInfo.append(\"🎯 Marker-first query: \").append(JAEGER_BASE_URL).append(\"/traces/\").append(traceId).append(\"\\n\");");
+                    pw.println("                for (int __markAttempt = 0; __markAttempt < 5 && globalBestTrace == null; __markAttempt++) {");
+                    pw.println("                    try {");
+                    pw.println("                        HttpRequest __mreq = HttpRequest.newBuilder(");
+                    pw.println("                            java.net.URI.create(JAEGER_BASE_URL + \"/traces/\" + traceId)).GET().build();");
+                    pw.println("                        HttpResponse<String> __mres = HttpClient.newHttpClient().send(__mreq, HttpResponse.BodyHandlers.ofString());");
+                    pw.println("                        if (__mres.statusCode() == 200) {");
+                    pw.println("                            JSONObject __mjson = new JSONObject(__mres.body());");
+                    pw.println("                            JSONArray __mdata = __mjson.optJSONArray(\"data\");");
+                    pw.println("                            if (__mdata != null && __mdata.length() > 0) {");
+                    pw.println("                                JSONObject __mt = __mdata.getJSONObject(0);");
+                    pw.println("                                JSONArray __mspans = __mt.optJSONArray(\"spans\");");
+                    pw.println("                                if (__mspans != null && __mspans.length() > 0) {");
+                    pw.println("                                    globalBestTrace = __mt;");
+                    pw.println("                                    globalBestScore = Integer.MAX_VALUE;");
+                    pw.println("                                    foundCurrentTrace = true;");
+                    pw.println("                                    debugInfo.append(\"✅ Marker match at attempt \").append(__markAttempt + 1)");
+                    pw.println("                                             .append(\" (\").append(__mspans.length()).append(\" spans)\\n\");");
+                    pw.println("                                }");
+                    pw.println("                            }");
+                    pw.println("                        }");
+                    pw.println("                    } catch (Exception __markEx) { /* swallow + retry */ }");
+                    pw.println("                    if (globalBestTrace == null) {");
+                    pw.println("                        try { Thread.sleep(200); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }");
+                    pw.println("                    }");
+                    pw.println("                }");
+                    pw.println("                if (globalBestTrace == null) {");
+                    pw.println("                    debugInfo.append(\"⚠️ Marker query exhausted; falling back to time-window heuristic\\n\");");
+                    pw.println("                }");
+                    pw.println("            }");
                     pw.println("            ");
                     pw.println("            for (int retry = 0; retry < maxRetries && !foundCurrentTrace; retry++) {");
                     pw.println("                if (retry > 0) {");
@@ -1110,6 +1148,15 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                        java.io.File registryFile = new java.io.File(registryPath);");
                     pw.println("                        es.us.isa.restest.inputs.smart.InputFetchRegistry registry;");
                     pw.println("                        ");
+                    pw.println("                        // JVM-wide lock on the registry class serialises load+mutate+save across");
+                    pw.println("                        // parallel test threads. Audit (#21) flagged: only saveToFile() is");
+                    pw.println("                        // synchronized today, but each thread instantiates its own registry via");
+                    pw.println("                        // loadFromFile, so the per-instance lock provides no cross-thread guard.");
+                    pw.println("                        // Without this monitor, two threads racing on load/mutate/save would");
+                    pw.println("                        // produce a lost-update where the second writer overwrites the first's");
+                    pw.println("                        // contribution. Performance cost: the registry write path is failure-only");
+                    pw.println("                        // and the critical section is small relative to per-scenario cost.");
+                    pw.println("                        synchronized (es.us.isa.restest.inputs.smart.InputFetchRegistry.class) {");
                     pw.println("                        if (registryFile.exists()) {");
                     pw.println("                            registry = es.us.isa.restest.inputs.smart.InputFetchRegistry.loadFromFile(registryFile);");
                     pw.println("                        } else {");
@@ -1132,6 +1179,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                            registry.saveToFile(registryFile);");
                     pw.println("                            System.out.println(\"💾 Updated parameter error registry at: \" + registryPath);");
                     pw.println("                        }");
+                    pw.println("                        } // end synchronized(InputFetchRegistry.class)");
                     pw.println("                        ");
                     pw.println("                    } catch (Exception e) {");
                     pw.println("                        System.err.println(\"⚠️ Failed to update parameter error registry: \" + e.getMessage());");
@@ -1828,6 +1876,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                        allStepParameters.put(\"body\", \"" + escape(requestBody) + "\");");
                             }
                             
+                            // ── W3C traceparent header (parallel-safe trace correlation) ──
+                            // Generates a fresh trace ID per step. SUT honors W3C Trace Context
+                            // (verified by curl: train-ticket OpenTelemetry attaches downstream spans
+                            // under this traceId). attachJaegerTrace later queries /traces/<id>
+                            // for an exact 1:1 match — no race even with N parallel test threads.
+                            pw.println("                        String __mstTraceId" + stepIdx + " = java.util.UUID.randomUUID().toString().replace(\"-\", \"\");");
+                            pw.println("                        String __mstSpanId" + stepIdx + " = java.util.UUID.randomUUID().toString().replace(\"-\", \"\").substring(0, 16);");
+                            pw.println("                        req = req.header(\"traceparent\", \"00-\" + __mstTraceId" + stepIdx + " + \"-\" + __mstSpanId" + stepIdx + " + \"-01\");");
                             pw.println("                        // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases");
                             pw.println("                        stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");
                             pw.println("                               .then().log().ifValidationFails()");
@@ -2092,7 +2148,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                                try { Thread.sleep(__jaegerPropagationDelayMs); }");
                             pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                             pw.println("                            }");
-                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false);");
+                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ");");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
                             pw.println("                        }");
@@ -2261,7 +2317,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                            try { Thread.sleep(__jaegerPropagationDelayMs); }");
                         pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                         pw.println("                        }");
-                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true);");
+                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ");");
                         pw.println("                        ");
                         // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted
                         // SoftErrorRuleCache used to encode (a soft error in a 2xx response on a
