@@ -46,10 +46,34 @@ public final class MstConfigValidator {
                 // Core
                 "mst.generate.only.first.step",
                 "mist.noun.map.path",
-                // SmartFetch
+                // SmartFetch — full read surface (some keys are read by helper
+                // classes via Properties rather than System.getProperty, but they
+                // all land in System.properties via the multiservice.MstConfig
+                // loader, so the validator sees them and must whitelist them).
                 "smart.input.fetch.enabled",
                 "smart.input.fetch.percentage",
                 "smart.input.fetch.registry.path",
+                "smart.input.fetch.openapi.spec.path",
+                "smart.input.fetch.cache.enabled",
+                "smart.input.fetch.cache.llm.fallback",
+                "smart.input.fetch.cache.ttl.seconds",
+                "smart.input.fetch.connect.timeout.ms",
+                "smart.input.fetch.read.timeout.ms",
+                "smart.input.fetch.decay.days",
+                "smart.input.fetch.default.priority",
+                "smart.input.fetch.dependency.resolution.enabled",
+                "smart.input.fetch.discovery.timeout.ms",
+                "smart.input.fetch.diverse.target.count",
+                "smart.input.fetch.ema.alpha",
+                "smart.input.fetch.http.content.type",
+                "smart.input.fetch.http.success.code",
+                "smart.input.fetch.llm.discovery.enabled",
+                "smart.input.fetch.llm.discovery.priority",
+                "smart.input.fetch.llm.endpoint.selection.enabled",
+                "smart.input.fetch.max.candidates",
+                "smart.input.fetch.max.prompt.chars",
+                "smart.input.fetch.pattern.discovery.priority",
+                "smart.input.fetch.schema.discovery.timeout.ms",
                 // Llm
                 "mist.llm.cache.path",
                 "llm.response.validation.enabled",
@@ -58,6 +82,7 @@ public final class MstConfigValidator {
                 // Faulty
                 "faulty.ratio",
                 "faulty.round-robin",
+                "faulty.dependency.ratio",
                 "negative.input.generation.mode",
                 // ScenarioMerge
                 "trace.merge.max.session.gap.micros",
@@ -83,6 +108,9 @@ public final class MstConfigValidator {
                 "jaeger.enabled",
                 "jaeger.base.url",
                 "jaeger.lookback",
+                // Bootstrap loader (consumed by multiservice.MstConfig before
+                // the validator runs, but stays in System.properties)
+                "mst.config.path",
                 // Validator's own switch
                 "mst.config.strict"
         ));
