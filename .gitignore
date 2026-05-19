@@ -3,6 +3,8 @@
 # gets the right Working Directory + program arguments.
 /.idea/*
 !/.idea/runConfigurations/
+# Claude Code's per-agent worktrees / scratch state.
+/.claude/
 /.settings/
 /.vscode/
 /.classpath/
