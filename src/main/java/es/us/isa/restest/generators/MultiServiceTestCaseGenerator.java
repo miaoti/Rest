@@ -16,7 +16,6 @@ import es.us.isa.restest.workflow.SemanticDependencyRegistry;
 import es.us.isa.restest.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.WorkflowStep;
 import es.us.isa.restest.workflow.pipeline.PipelineContext;
-import es.us.isa.restest.workflow.pipeline.PipelineStage;
 import es.us.isa.restest.workflow.pipeline.WorkflowPipeline;
 import es.us.isa.restest.workflow.pipeline.stages.Phase25DedupStage;
 import es.us.isa.restest.workflow.pipeline.stages.Phase35DedupStage;
@@ -293,19 +292,23 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
 
         // Phase pipeline: Phase 2.5 dedup → shared pool generation → Phase 3
         // shattering (gated) → Phase 3.5 post-shatter dedup (gated) → Phase 4
-        // decomposition.  Stages mutate `scenarios` and `approvedApiKeys`
-        // in place via the shared PipelineContext, byte-for-byte identical
-        // to the previous inline sequence — see workflow.pipeline.stages.
+        // decomposition.  Each stage owns its own phase logic; the
+        // PipelineContext threads the mutable scenarios list, dedup approval
+        // set, and the LLM / smart-fetch state through so the stages do not
+        // need a reference back to this generator instance.  The shared and
+        // faulty pool maps are the SAME instances this generator reads from
+        // in the variant loop below — the stage writes through them in place.
         PipelineContext ctx = new PipelineContext(
                 scenarios, serviceSpecs, serviceConfigs,
-                dependencyRegistry, approvedApiKeys, MstConfig.instance());
-        java.util.List<PipelineStage> stages = java.util.Arrays.asList(
-                new Phase25DedupStage(this),
-                new SharedPoolGenerationStage(this),
+                dependencyRegistry, approvedApiKeys, MstConfig.instance(),
+                llmGen, smartFetcher, smartFetchConfig, useLLM,
+                sharedParameterPools, faultyParameterPools);
+        new WorkflowPipeline(java.util.Arrays.asList(
+                new Phase25DedupStage(),
+                new SharedPoolGenerationStage(),
                 new Phase3ShatteringStage(),
-                new Phase35DedupStage(this),
-                new Phase4DecompositionStage(this));
-        new WorkflowPipeline(stages).execute(ctx);
+                new Phase35DedupStage(),
+                new Phase4DecompositionStage())).execute(ctx);
 
         // Dump registry for manual auditing
         dependencyRegistry.dumpRegistryToFile("target/semantic-registry-dump.json");
@@ -2197,46 +2200,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
-     * Group scenarios by their root API (method + path) to enable parameter sharing
-     */
-    public Map<String, List<WorkflowScenario>> groupScenariosByRootApi() {
-        Map<String, List<WorkflowScenario>> groups = new LinkedHashMap<>();
-        
-        for (WorkflowScenario sc : scenarios) {
-            String rootApiKey = getRootApiKey(sc);
-            if (rootApiKey != null) {
-                groups.computeIfAbsent(rootApiKey, k -> new ArrayList<>()).add(sc);
-                log.info("Grouped scenario {} under root API: {}", sc.getSourceFileName(), rootApiKey);
-            } else {
-                // Fallback: use scenario-specific key for scenarios without clear root API
-                String fallbackKey = "scenario_" + sc.getSourceFileName();
-                groups.computeIfAbsent(fallbackKey, k -> new ArrayList<>()).add(sc);
-                log.warn("Using fallback key for scenario {}: {}", sc.getSourceFileName(), fallbackKey);
-            }
-        }
-        
-        log.info("=== GROUPED {} scenarios into {} root API groups ===", scenarios.size(), groups.size());
-        for (Map.Entry<String, List<WorkflowScenario>> entry : groups.entrySet()) {
-            log.info("Root API '{}' has {} scenarios", entry.getKey(), entry.getValue().size());
-        }
-        
-        return groups;
-    }
-
-    /**
-     * Extract root API key (method_path) from a scenario's first business operation
-     */
-    private String getRootApiKey(WorkflowScenario scenario) {
-        for (WorkflowStep rootStep : scenario.getRootSteps()) {
-            String apiKey = extractRootApiFromStep(rootStep);
-            if (apiKey != null) {
-                return apiKey;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Recursively find the first business API operation and return method_path key
      */
     private String extractRootApiFromStep(WorkflowStep step) {
@@ -2308,213 +2271,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
-     * Generate shared parameter pools for each root API group
-     */
-    public void generateSharedParameterPools(Map<String, List<WorkflowScenario>> groupedScenarios) {
-        log.info("=== GENERATING SHARED PARAMETER POOLS ===");
-
-        ConsoleProgressBar.begin("Pool Gen", groupedScenarios.size());
-        for (Map.Entry<String, List<WorkflowScenario>> entry : groupedScenarios.entrySet()) {
-            String rootApiKey = entry.getKey();
-            List<WorkflowScenario> scenariosInGroup = entry.getValue();
-
-            log.info("Generating shared parameters for root API: {} (scenarios: {})",
-                    rootApiKey, scenariosInGroup.size());
-
-            // Use the first scenario in the group to extract parameter structure
-            WorkflowScenario representativeScenario = scenariosInGroup.get(0);
-            Map<String, List<String>> parameterPool = generateParameterPoolForRootApi(representativeScenario, rootApiKey);
-
-            sharedParameterPools.put(rootApiKey, parameterPool);
-            ConsoleProgressBar.update(rootApiKey);
-
-            log.info("Generated parameter pool for '{}' with {} parameters",
-                    rootApiKey, parameterPool.size());
-        }
-        ConsoleProgressBar.complete();
-
-        log.info("=== COMPLETED: {} shared parameter pools generated ===", sharedParameterPools.size());
-        
-        // Generate faulty parameter pools
-        generateFaultyParameterPools(groupedScenarios);
-    }
-
-    /**
-     * Generate a parameter pool for a specific root API using the first scenario as reference
-     */
-    private Map<String, List<String>> generateParameterPoolForRootApi(WorkflowScenario scenario, String rootApiKey) {
-        Map<String, List<String>> parameterPool = new HashMap<>();
-        
-        // Find the first business API step to extract its parameters
-        WorkflowStep firstBusinessStep = findFirstBusinessStep(scenario);
-        if (firstBusinessStep == null) {
-            log.warn("No business step found for root API: {}", rootApiKey);
-            return parameterPool;
-        }
-        
-        // Extract HTTP operation info
-        String service = firstBusinessStep.getServiceName();
-        String opName = firstBusinessStep.getOperationName();
-        
-        String verb = null, route = null;
-        Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
-        if (httpMatcher.matches()) {
-            verb = httpMatcher.group(1).toLowerCase();
-            route = httpMatcher.group(2);
-        } else {
-            // Try extracting from trace data
-            Map<String, String> outputs = firstBusinessStep.getOutputFields();
-            String httpMethod = outputs.get("http.method");
-            String httpTarget = outputs.get("http.target");
-            
-            if (httpMethod != null && httpTarget != null) {
-                verb = httpMethod.toLowerCase();
-                route = httpTarget;
-            }
-        }
-        
-        if (verb == null || route == null) {
-            log.warn("Could not extract HTTP method/path for root API: {}", rootApiKey);
-            return parameterPool;
-        }
-        
-        // Get service configuration
-        TestConfigurationObject cfg = serviceConfigs.get(service);
-        if (cfg == null) {
-            log.warn("No configuration for service '{}' for root API: {}", service, rootApiKey);
-            return parameterPool;
-        }
-        
-        Operation opCfg = findOperation(cfg, verb, route);
-        if (opCfg == null) {
-            log.warn("No operation config for {} {} in service '{}' for root API: {}", verb, route, service, rootApiKey);
-            return parameterPool;
-        }
-        
-        // Generate parameter values for all parameters in this operation
-        if (opCfg.getTestParameters() != null && useLLM) {
-            // Collect all parameter names for context
-            List<String> allParamNames = new java.util.ArrayList<>();
-            for (TestParameter tp : opCfg.getTestParameters()) {
-                allParamNames.add(tp.getName());
-            }
-
-            int numParams = allParamNames.size();
-            int variantCount = getVariantCountFromProperties();
-            int targetPoolSize = computeTargetPoolSize(numParams, variantCount);
-
-            log.info("Dynamic Pool Scaling → API '{}': {} params, {} variants → targetPoolSize={}",
-                    rootApiKey, numParams, variantCount, targetPoolSize);
-
-            // Per-location enrolment breakdown so operators reviewing the run
-            // log can confirm path / header / cookie params got enrolled — the
-            // previous symptom was a silently empty pool for those locations.
-            Map<String, Integer> sharedLocationBreakdown = new LinkedHashMap<>();
-            sharedLocationBreakdown.put("path", 0);
-            sharedLocationBreakdown.put("query", 0);
-            sharedLocationBreakdown.put("header", 0);
-            sharedLocationBreakdown.put("cookie", 0);
-            sharedLocationBreakdown.put("body", 0);
-            sharedLocationBreakdown.put("other", 0);
-
-            // Build API name for context
-            String apiName = verb.toUpperCase() + " " + route;
-
-            ConsoleProgressBar.begin("params", opCfg.getTestParameters().size());
-            for (TestParameter p : opCfg.getTestParameters()) {
-                String sharedNormalisedIn = normaliseParamLocation(p.getIn());
-                sharedLocationBreakdown.merge(sharedNormalisedIn, 1, Integer::sum);
-                ParameterInfo info = createParameterInfoWithContext(p, apiName, service, allParamNames);
-                Set<String> uniqueValues = new LinkedHashSet<>();
-
-                // Phase 1: Smart Input Fetching
-                if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
-                    try {
-                        for (int i = 0; i < targetPoolSize && uniqueValues.size() < targetPoolSize; i++) {
-                            String smartValue = smartFetcher.fetchSmartInput(info);
-                            if (smartValue != null && !smartValue.trim().isEmpty()) {
-                                uniqueValues.add(smartValue);
-                            }
-                        }
-                        if (!uniqueValues.isEmpty()) {
-                            log.info("Smart Fetch Pool → parameter '{}': {} unique smart values",
-                                    p.getName(), uniqueValues.size());
-                        }
-                    } catch (Exception e) {
-                        log.debug("Smart fetching failed for shared pool parameter '{}': {}",
-                                 p.getName(), e.getMessage());
-                    }
-                }
-
-                // Phase 2: LLM top-up with dynamic howMany
-                if (uniqueValues.size() < targetPoolSize) {
-                    int needed = targetPoolSize - uniqueValues.size();
-                    log.info("Smart fetch provided {} values for '{}', requesting {} more from LLM",
-                            uniqueValues.size(), p.getName(), needed);
-
-                    List<String> llmValues = llmGen.generateParameterValues(info, Math.min(needed, 50));
-                    if (!llmValues.isEmpty()) {
-                        uniqueValues.addAll(llmValues);
-                        log.info("LLM Pool → parameter '{}': {} values added (total unique: {})",
-                                p.getName(), llmValues.size(), uniqueValues.size());
-                    } else {
-                        log.warn("LLM returned no values for parameter '{}', using fallback", p.getName());
-                    }
-                }
-
-                // Phase 3: Fallback padding to guarantee minimum pool size.
-                // The padded value must be parseable as the parameter's declared type,
-                // otherwise every variant that draws this value triggers a noisy
-                // 'Failed to convert value FALLBACK_X to type integer' warning and
-                // sends a string into a typed body slot. Type-aware padding keeps the
-                // pool semantically valid even when smart-fetch and the LLM both fail.
-                //
-                // CRITICAL: closed-domain types (boolean, enum-constrained) have a
-                // FINITE valid value space. Padding past that capacity produces only
-                // duplicates, which a LinkedHashSet silently rejects — the previous
-                // unbounded `while` then spun forever. We cap the loop at a safety
-                // ceiling proportional to targetPoolSize and break out as soon as
-                // padding stops making progress.
-                int fallbackIdx = 0;
-                int safetyCeiling = Math.max(targetPoolSize * 2, 64);
-                int prevSize = -1;
-                while (uniqueValues.size() < targetPoolSize && fallbackIdx < safetyCeiling) {
-                    int sizeBefore = uniqueValues.size();
-                    uniqueValues.add(typeAwareFallbackValue(p, fallbackIdx++));
-                    if (uniqueValues.size() == sizeBefore && uniqueValues.size() == prevSize) {
-                        // Two consecutive padding attempts produced no new value —
-                        // we've hit the closed-domain ceiling. Stop padding; the pool
-                        // is as large as it can legitimately be for this parameter.
-                        log.debug("Pool padding for '{}' reached closed-domain ceiling at "
-                                + "{} unique values (target was {})",
-                                p.getName(), uniqueValues.size(), targetPoolSize);
-                        break;
-                    }
-                    prevSize = sizeBefore;
-                }
-
-                parameterPool.put(p.getName(), new ArrayList<>(uniqueValues));
-                ConsoleProgressBar.update(p.getName());
-                log.info("Generated shared pool for parameter '{}' (in={}): {} unique values (target was {})",
-                        p.getName(), sharedNormalisedIn,
-                        parameterPool.get(p.getName()).size(), targetPoolSize);
-            }
-            ConsoleProgressBar.complete();
-
-            log.info("Shared pool enrolment by location for '{}': path={} query={} header={} cookie={} body={} other={}",
-                    rootApiKey,
-                    sharedLocationBreakdown.get("path"),
-                    sharedLocationBreakdown.get("query"),
-                    sharedLocationBreakdown.get("header"),
-                    sharedLocationBreakdown.get("cookie"),
-                    sharedLocationBreakdown.get("body"),
-                    sharedLocationBreakdown.get("other"));
-        }
-
-        return parameterPool;
-    }
-
-    /**
      * Produce a padding value for the shared pool that is parseable as the parameter's
      * declared type. The previous always-string {@code FALLBACK_<name>_<i>} pad worked
      * for string params but produced 'Failed to convert' warnings (and string-typed body
@@ -2568,182 +2324,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             sb.append("##");
         }
         return sb.toString();
-    }
-
-    /**
-     * Compute the target pool size per parameter based on API complexity.
-     * Low-parameter APIs need larger pools to avoid combinatorial exhaustion.
-     */
-    private int computeTargetPoolSize(int numParams, int variantCount) {
-        if (numParams <= 1) {
-            return variantCount + 10;
-        } else if (numParams == 2) {
-            return Math.max(25, (int) Math.sqrt(variantCount) * 2);
-        } else if (numParams <= 5) {
-            return Math.max(20, (int) Math.ceil(Math.pow(variantCount, 1.0 / numParams)) + 5);
-        } else {
-            return 15;
-        }
-    }
-
-    /**
-     * Generate faulty parameter pools for every root API across all scenarios.
-     * For multi-root sequences (A->B merged by data dependency), this builds
-     * separate pools keyed by each root's own verb_path, enabling negative
-     * injection into any root in the sequence.
-     */
-    private void generateFaultyParameterPools(Map<String, List<WorkflowScenario>> groupedScenarios) {
-        log.info("=== GENERATING FAULTY PARAMETER POOLS (ALL ROOTS) ===");
-        log.info("Number of scenario groups: {}", groupedScenarios.size());
-
-        // Pre-count total roots for progress tracking
-        int totalRoots = 0;
-        for (List<WorkflowScenario> group : groupedScenarios.values()) {
-            totalRoots += group.get(0).getRootSteps().size();
-        }
-        int rootProgress = 0;
-        ConsoleProgressBar.begin("Faulty Pools", totalRoots);
-
-        for (Map.Entry<String, List<WorkflowScenario>> entry : groupedScenarios.entrySet()) {
-            String groupKey = entry.getKey();
-            WorkflowScenario representativeScenario = entry.getValue().get(0);
-
-            List<WorkflowStep> roots = representativeScenario.getRootSteps();
-            for (int rootIdx = 0; rootIdx < roots.size(); rootIdx++) {
-                WorkflowStep rootStep = roots.get(rootIdx);
-                String rootApiKey = extractRootApiFromStep(rootStep);
-                if (rootApiKey == null) {
-                    rootProgress++;
-                    ConsoleProgressBar.update("skip " + groupKey);
-                    log.debug("Skipping root {} in group '{}' — no HTTP info", rootIdx, groupKey);
-                    continue;
-                }
-                if (faultyParameterPools.containsKey(rootApiKey)) {
-                    rootProgress++;
-                    ConsoleProgressBar.update("reuse " + rootApiKey);
-                    log.debug("Faulty pool for '{}' already generated, reusing", rootApiKey);
-                    continue;
-                }
-
-                log.info("Processing root {}/{} with key '{}' in group '{}'",
-                        rootIdx + 1, roots.size(), rootApiKey, groupKey);
-
-                Map<String, InvalidInputPool> faultyPool =
-                        generateFaultyPoolForSingleRoot(rootStep, rootApiKey);
-
-                faultyParameterPools.put(rootApiKey, faultyPool);
-                rootProgress++;
-                ConsoleProgressBar.update(rootApiKey);
-                log.info("Generated faulty pool for '{}' with {} parameters: {}",
-                        rootApiKey, faultyPool.size(), faultyPool.keySet());
-            }
-        }
-        ConsoleProgressBar.complete();
-
-        log.info("=== COMPLETED: {} faulty parameter pools generated ===", faultyParameterPools.size());
-        log.info("All faulty pool keys: {}", faultyParameterPools.keySet());
-    }
-
-    /**
-     * Build an InvalidInputPool for a single root step (not just the first business step).
-     * Reuses the same LLM-driven invalid-input generation as before but scoped to
-     * exactly one root's Operation config.
-     */
-    private Map<String, InvalidInputPool> generateFaultyPoolForSingleRoot(
-            WorkflowStep rootStep, String rootApiKey) {
-
-        Map<String, InvalidInputPool> faultyPool = new HashMap<>();
-
-        WorkflowStep businessStep = findFirstBusinessStepRecursive(rootStep);
-        if (businessStep == null) {
-            log.warn("No business step found under root for key '{}'", rootApiKey);
-            return faultyPool;
-        }
-
-        String service = businessStep.getServiceName();
-        String opName  = businessStep.getOperationName();
-        String verb = null, route = null;
-
-        Matcher httpMatcher = HTTP_OPERATION_PATTERN.matcher(opName);
-        if (httpMatcher.matches()) {
-            verb  = httpMatcher.group(1).toLowerCase();
-            route = httpMatcher.group(2);
-        } else {
-            Map<String, String> outputs = businessStep.getOutputFields();
-            String httpMethod = outputs.get("http.method");
-            String httpTarget = outputs.get("http.target");
-            if (httpMethod != null && httpTarget != null) {
-                verb  = httpMethod.toLowerCase();
-                route = httpTarget;
-            }
-        }
-        if (verb == null || route == null) {
-            log.warn("Cannot extract HTTP info for root key '{}'", rootApiKey);
-            return faultyPool;
-        }
-
-        TestConfigurationObject cfg = serviceConfigs.get(service);
-        if (cfg == null) { return faultyPool; }
-
-        Operation opCfg = findOperation(cfg, verb, route);
-        if (opCfg == null) { return faultyPool; }
-
-        if (opCfg.getTestParameters() != null && useLLM) {
-            List<String> allParamNames = new java.util.ArrayList<>();
-            for (TestParameter tp : opCfg.getTestParameters()) {
-                allParamNames.add(tp.getName());
-            }
-            String apiName = verb.toUpperCase() + " " + route;
-
-            // Cover every parameter location. The previous queue silently
-            // dropped path / header / cookie params, breaking the
-            // "8-fault coverage per parameter" guarantee for endpoints that
-            // use them. Location normalisation folds OpenAPI 2 'formData'
-            // into 'body' and defaults null/empty to 'body' to match the
-            // writer's body-path conventions.
-            int preCount = faultyPool.size();
-            Map<String, Integer> locationBreakdown = new LinkedHashMap<>();
-            locationBreakdown.put("path", 0);
-            locationBreakdown.put("query", 0);
-            locationBreakdown.put("header", 0);
-            locationBreakdown.put("cookie", 0);
-            locationBreakdown.put("body", 0);
-            locationBreakdown.put("other", 0);
-            log.info("Fault enrolment (root='{}'): pre={} parameters in pool",
-                    rootApiKey, preCount);
-
-            ConsoleProgressBar.begin("params", opCfg.getTestParameters().size());
-            for (TestParameter p : opCfg.getTestParameters()) {
-                String normalisedIn = normaliseParamLocation(p.getIn());
-                locationBreakdown.merge(normalisedIn, 1, Integer::sum);
-
-                ParameterInfo info = createParameterInfoWithContext(p, apiName, service, allParamNames);
-                InvalidInputPool pool = llmGen.generateInvalidInputPool(info);
-                faultyPool.put(p.getName(), pool);
-                ConsoleProgressBar.update(p.getName());
-                log.debug("  Invalid pool for '{}' (in={}): {}",
-                        p.getName(), normalisedIn, pool.getTotalCount());
-            }
-            ConsoleProgressBar.complete();
-
-            int postCount = faultyPool.size();
-            log.info("Fault enrolment (root='{}'): post={} parameters in pool (delta={})",
-                    rootApiKey, postCount, postCount - preCount);
-            log.info("Fault enrolment by location for '{}': path={} query={} header={} cookie={} body={} other={}",
-                    rootApiKey,
-                    locationBreakdown.get("path"),
-                    locationBreakdown.get("query"),
-                    locationBreakdown.get("header"),
-                    locationBreakdown.get("cookie"),
-                    locationBreakdown.get("body"),
-                    locationBreakdown.get("other"));
-        }
-
-        int totalInvalidValues = faultyPool.values().stream()
-                .mapToInt(InvalidInputPool::getTotalCount).sum();
-        log.info("Faulty pool for '{}': {} params, {} total invalid values",
-                rootApiKey, faultyPool.size(), totalInvalidValues);
-        return faultyPool;
     }
 
     /**
@@ -2960,19 +2540,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     }
 
     /**
-     * Find the first business step (non-login) in a scenario
-     */
-    private WorkflowStep findFirstBusinessStep(WorkflowScenario scenario) {
-        for (WorkflowStep rootStep : scenario.getRootSteps()) {
-            WorkflowStep businessStep = findFirstBusinessStepRecursive(rootStep);
-            if (businessStep != null) {
-                return businessStep;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Fast pre-filter: returns true iff the scenario has at least one root step
      * whose subtree contains a span whose service name is in {@code serviceConfigs}.
      *
@@ -3004,44 +2571,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             }
         }
         return false;
-    }
-
-    /**
-     * Recursively find the first business step
-     */
-    private WorkflowStep findFirstBusinessStepRecursive(WorkflowStep step) {
-        String opName = step.getOperationName();
-        String serviceName = step.getServiceName();
-        
-        // Skip login/auth operations AND gateway operations
-        if (opName != null && serviceName != null) {
-            String opLower = opName.toLowerCase();
-            String serviceLower = serviceName.toLowerCase();
-            
-            // Skip login/auth
-            boolean isLoginAuth = opLower.contains("login") || opLower.contains("auth") || 
-                                  serviceLower.contains("login") || serviceLower.contains("auth") ||
-                                  opLower.contains("signin") || opLower.contains("token");
-            
-            // Skip gateway services (they're just proxies, not business services)
-            boolean isGateway = serviceLower.contains("gateway") || 
-                               opName.equals("POST /*") || opName.equals("GET /*") ||
-                               opName.equals("PUT /*") || opName.equals("DELETE /*");
-            
-            if (!isLoginAuth && !isGateway) {
-                return step; // This is a business step
-            }
-        }
-        
-        // Check children
-        for (WorkflowStep child : step.getChildren()) {
-            WorkflowStep businessStep = findFirstBusinessStepRecursive(child);
-            if (businessStep != null) {
-                return businessStep;
-            }
-        }
-        
-        return null;
     }
 
     /**
@@ -3228,178 +2757,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private String escapeJsonString(String str) {
         if (str == null) return "";
         return escapeJsonStringStatic(str);
-    }
-
-    /* ============================================================ */
-    /*  PHASE 4 — TRACE DECOMPOSITION                               */
-    /* ============================================================ */
-
-    /**
-     * Unified single-root dedup pass invoked from both Phase 2.5 (pre-shatter) and
-     * Phase 3.5 (post-shatter). Scenarios tagged via
-     * {@link WorkflowScenario#isApprovedInDedupPass()} pass through unchanged so that
-     * Phase 3's newly-constructed shattered children inherit their parent's approval.
-     * Newly-encountered scenarios register their normalised API key in
-     * {@code approvedKeys} and are tagged on the way out; subsequently-shattered
-     * duplicates of the same endpoint are dropped against that shared set. Multi-root
-     * scenarios are always retained — only true 1-root duplicates collapse.
-     *
-     * <p>The {@code approvedKeys} parameter is the per-instance {@link #approvedApiKeys}
-     * in production; tests inject their own set so each case can assert on it
-     * independently without reaching into instance state.
-     */
-    public void runSingleRootDedupPass(String label,
-                                       List<WorkflowScenario> scenarios,
-                                       Set<String> approvedKeys) {
-        log.info("=== {} ===", label);
-        int originalSize = scenarios.size();
-        int kept = 0;
-        int dropped = 0;
-
-        Iterator<WorkflowScenario> it = scenarios.iterator();
-        while (it.hasNext()) {
-            WorkflowScenario sc = it.next();
-
-            if (sc.isApprovedInDedupPass()) {
-                kept++;
-                continue;
-            }
-
-            if (sc.getRootSteps().size() != 1) {
-                // Multi-root scenarios are never collapsed here; tag them so the next
-                // pass also treats them as approved.
-                sc.setApprovedInDedupPass(true);
-                kept++;
-                continue;
-            }
-
-            WorkflowStep soleRoot = sc.getRootSteps().get(0);
-            String apiKey = extractRootApiFromStep(soleRoot);
-            if (apiKey == null) {
-                // Cannot determine API key — keep the scenario to be safe.
-                sc.setApprovedInDedupPass(true);
-                kept++;
-                continue;
-            }
-
-            if (approvedKeys.contains(apiKey)) {
-                log.debug("Skipping redundant 1-root scenario for API: {}", apiKey);
-                it.remove();
-                dropped++;
-                continue;
-            }
-
-            approvedKeys.add(apiKey);
-            sc.setApprovedInDedupPass(true);
-            kept++;
-        }
-
-        log.info("{} — kept {} / dropped {} duplicate(s) (approved keys so far: {}; {} of {} scenarios remain)",
-                label, kept, dropped, approvedKeys.size(), scenarios.size(), originalSize);
-    }
-
-    /**
-     * Decompose multi-root scenarios into additional 1-Root baseline scenarios
-     * to guarantee independent coverage for every API endpoint.
-     *
-     * <p>For a scenario with roots [A, B] (indexed as Flow_Scenario_N), this method
-     * creates two new scenarios:
-     * <ul>
-     *   <li>{@code Flow_Scenario_N_RT1} — containing only A's deep-copied step tree</li>
-     *   <li>{@code Flow_Scenario_N_RT2} — containing only B's deep-copied step tree</li>
-     * </ul>
-     *
-     * <p>Deduplication is performed by fingerprint ({@code serviceName::operationName})
-     * <em>and</em> by normalised API key via {@link #approvedApiKeys}.  If a
-     * standalone 1-root scenario already covers an endpoint, the decomposed
-     * {@code _RT} baseline for that same endpoint is skipped.
-     *
-     * <p>The original multi-root scenario is preserved unchanged so the Generator
-     * still produces end-to-end flow tests alongside the baseline tests.
-     */
-    public void decomposeMultiRootScenarios() {
-        log.info("=== PHASE 4: TRACE DECOMPOSITION — extracting 1-Root baselines ===");
-
-        // Fingerprints already extracted: prevent duplicate baseline scenarios
-        Set<String> extractedFingerprints = new LinkedHashSet<>();
-
-        // Collect new scenarios in a separate list to avoid ConcurrentModificationException
-        List<WorkflowScenario> decomposed = new ArrayList<>();
-
-        // Track which index in the original list each scenario occupies.
-        // The counter mirrors the baseCounter logic in the generate() loop.
-        int scenarioCounter = 1;
-
-        for (WorkflowScenario sc : scenarios) {
-            List<WorkflowStep> roots = sc.getRootSteps();
-
-            if (roots.size() <= 1) {
-                // Single-root scenario — no decomposition needed
-                scenarioCounter++;
-                continue;
-            }
-
-            log.info("Decomposing scenario {} ({} roots) into 1-Root baselines",
-                    scenarioCounter, roots.size());
-
-            for (int ri = 0; ri < roots.size(); ri++) {
-                WorkflowStep root = roots.get(ri);
-                String fingerprint = root.getServiceName() + "::" + root.getOperationName();
-
-                if (extractedFingerprints.contains(fingerprint)) {
-                    log.info("  Root {} (RT{}) fingerprint '{}' already extracted — skipping duplicate",
-                            ri + 1, ri + 1, fingerprint);
-                    continue;
-                }
-
-                // Cross-check with the global single-root dedup set: if a standalone
-                // 1-root scenario already covers this API, skip the decomposed _RT baseline.
-                String apiKey = extractRootApiFromStep(root);
-                if (apiKey != null && approvedApiKeys.contains(apiKey)) {
-                    log.info("  Root {} (RT{}) API '{}' already covered by standalone 1-root scenario — skipping",
-                            ri + 1, ri + 1, apiKey);
-                    extractedFingerprints.add(fingerprint);
-                    continue;
-                }
-
-                extractedFingerprints.add(fingerprint);
-                if (apiKey != null) {
-                    approvedApiKeys.add(apiKey);
-                }
-
-                // Deep-copy the root step tree to avoid aliasing with the original
-                WorkflowStep rootCopy = root.deepCopy();
-                // Clear merge metadata — this is now an independent 1-Root scenario
-                rootCopy.setMergedRoot(false);
-                rootCopy.setProducerRootIndex(-1);
-
-                WorkflowScenario singleRoot = new WorkflowScenario();
-                singleRoot.addRootStep(rootCopy);
-                singleRoot.setSourceFileName(sc.getSourceFileName());
-                singleRoot.setSessionIdentifier(sc.getSessionIdentifier());
-                singleRoot.setStartTimeMicros(root.getStartTime());
-                singleRoot.setEndTimeMicros(root.getEndTime());
-
-                // Tag for naming: Flow_Scenario_N_RT(ri+1)
-                singleRoot.setDecomposedTag("_RT" + (ri + 1));
-                singleRoot.setParentScenarioIndex(scenarioCounter);
-
-                decomposed.add(singleRoot);
-
-                log.info("  Created 1-Root baseline: Flow_Scenario_{}_{} [{}]",
-                        scenarioCounter, "RT" + (ri + 1), fingerprint);
-            }
-
-            scenarioCounter++;
-        }
-
-        if (!decomposed.isEmpty()) {
-            scenarios.addAll(decomposed);
-            log.info("Trace Decomposition complete: {} new 1-Root baselines added (total scenarios: {})",
-                    decomposed.size(), scenarios.size());
-        } else {
-            log.info("Trace Decomposition: no multi-root scenarios found — nothing to decompose");
-        }
     }
 
     /**
