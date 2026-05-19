@@ -58,6 +58,15 @@ public class MultiServiceTestCase extends TestCase {
     /** The actual API path of the targeted fault root (e.g. "POST /api/v1/orderservice/order"). */
     private String targetFaultRootApiPath;
 
+    /**
+     * Normalised location of the faulted parameter ({@code path|query|header|cookie|body}).
+     * Recorded so the writer can route the invalid value into the correct request slot
+     * (e.g. {@code .header(name, value)} vs {@code .cookie(name, value)}). The same name
+     * may appear at different locations within one operation (e.g. path {@code {id}} +
+     * header {@code Id}), so the location is required to disambiguate the target.
+     */
+    private String targetFaultParamLocation;
+
     /* -------- status code exploration fields -------- */
     
     /** Flag indicating this test was created for status code exploration */
@@ -103,6 +112,9 @@ public class MultiServiceTestCase extends TestCase {
 
     public String getTargetFaultRootApiPath() { return targetFaultRootApiPath; }
     public void setTargetFaultRootApiPath(String targetFaultRootApiPath) { this.targetFaultRootApiPath = targetFaultRootApiPath; }
+
+    public String getTargetFaultParamLocation() { return targetFaultParamLocation; }
+    public void setTargetFaultParamLocation(String targetFaultParamLocation) { this.targetFaultParamLocation = targetFaultParamLocation; }
 
     /**
      * Pre-recorded invalid value selected for the targeted faulty parameter, captured at
@@ -195,6 +207,14 @@ public class MultiServiceTestCase extends TestCase {
         private final Map<String,String> pathParams;
         private final Map<String,String> queryParams;
         private final Map<String,String> headers;
+        /**
+         * Cookie parameters keyed by cookie name (OpenAPI {@code in: cookie}). Previously
+         * cookie-located parameters were silently dropped on the generator path and
+         * therefore not emitted on the writer side. Initialised to an empty
+         * {@link LinkedHashMap} so legacy {@link StepCall} construction (the 9-arg
+         * ctor) keeps working without a separate cookies argument.
+         */
+        private final Map<String,String> cookies = new LinkedHashMap<>();
         private final String body;                 // JSON or form string
         private final int expectedStatus;
         private List<String> outputKeys;
@@ -254,6 +274,7 @@ public class MultiServiceTestCase extends TestCase {
         public Map<String,String> getPathParams(){ return pathParams; }
         public Map<String,String> getQueryParams(){ return queryParams; }
         public Map<String,String> getHeaders()   { return headers; }
+        public Map<String,String> getCookies()   { return cookies; }
         public String getBody()                  { return body; }
         public int getExpectedStatus()           { return expectedStatus; }
         public Map<String,String> getBodyFields(){ return bodyFields; }

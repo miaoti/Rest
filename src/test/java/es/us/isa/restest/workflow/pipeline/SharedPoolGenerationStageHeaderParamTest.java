@@ -73,6 +73,19 @@ public class SharedPoolGenerationStageHeaderParamTest {
         f.set(target, value);
     }
 
+    /**
+     * Build a {@code PoolKey} reflectively. The class is package-private in
+     * {@code es.us.isa.restest.generators}, so cross-package tests must
+     * construct it through its declared constructor rather than referencing
+     * the type directly.
+     */
+    private static Object poolKey(String paramName, String paramLocation) throws Exception {
+        Class<?> keyCls = Class.forName("es.us.isa.restest.generators.MultiServiceTestCaseGenerator$PoolKey");
+        java.lang.reflect.Constructor<?> ctor = keyCls.getDeclaredConstructor(String.class, String.class);
+        ctor.setAccessible(true);
+        return ctor.newInstance(paramName, paramLocation);
+    }
+
     @Test
     public void headerAndCookieParametersAreEnrolledInFaultPool() throws Exception {
         MultiServiceTestCaseGenerator gen = Mockito.mock(
@@ -94,22 +107,27 @@ public class SharedPoolGenerationStageHeaderParamTest {
                 "generateFaultyPoolForSingleRoot", WorkflowStep.class, String.class);
         m.setAccessible(true);
 
+        // Pool entries are now keyed by PoolKey(paramName, normalisedLocation) so
+        // same-name parameters at different locations do not collide.
+        // PoolKey is package-private, so we reflectively construct the lookup key.
         @SuppressWarnings("unchecked")
-        Map<String, InvalidInputPool> faultyPool =
-                (Map<String, InvalidInputPool>) m.invoke(gen, root, "GET__secure_data");
+        Map<Object, InvalidInputPool> faultyPool =
+                (Map<Object, InvalidInputPool>) m.invoke(gen, root, "GET__secure_data");
 
         assertNotNull(faultyPool);
-        assertTrue("Header parameter 'X-API-Key' must be enrolled in the fault pool",
-                faultyPool.containsKey("X-API-Key"));
-        assertTrue("Cookie parameter 'sessionId' must be enrolled in the fault pool",
-                faultyPool.containsKey("sessionId"));
+        Object headerKey = poolKey("X-API-Key", "header");
+        Object cookieKey = poolKey("sessionId", "cookie");
+        assertTrue("Header parameter 'X-API-Key' must be enrolled in the fault pool under (X-API-Key,header)",
+                faultyPool.containsKey(headerKey));
+        assertTrue("Cookie parameter 'sessionId' must be enrolled in the fault pool under (sessionId,cookie)",
+                faultyPool.containsKey(cookieKey));
 
-        InvalidInputPool headerPool = faultyPool.get("X-API-Key");
+        InvalidInputPool headerPool = faultyPool.get(headerKey);
         assertNotNull(headerPool);
         assertTrue("Header param fault pool must be populated (loop body must fire for it)",
                 headerPool.getTotalCount() > 0);
 
-        InvalidInputPool cookiePool = faultyPool.get("sessionId");
+        InvalidInputPool cookiePool = faultyPool.get(cookieKey);
         assertNotNull(cookiePool);
         assertTrue("Cookie param fault pool must be populated (loop body must fire for it)",
                 cookiePool.getTotalCount() > 0);

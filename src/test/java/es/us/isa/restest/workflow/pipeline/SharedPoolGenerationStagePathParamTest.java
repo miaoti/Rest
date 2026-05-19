@@ -73,6 +73,19 @@ public class SharedPoolGenerationStagePathParamTest {
         f.set(target, value);
     }
 
+    /**
+     * Build a {@code PoolKey} reflectively. The class is package-private in
+     * {@code es.us.isa.restest.generators}, so cross-package tests must
+     * construct it through its declared constructor rather than referencing
+     * the type directly.
+     */
+    private static Object poolKey(String paramName, String paramLocation) throws Exception {
+        Class<?> keyCls = Class.forName("es.us.isa.restest.generators.MultiServiceTestCaseGenerator$PoolKey");
+        java.lang.reflect.Constructor<?> ctor = keyCls.getDeclaredConstructor(String.class, String.class);
+        ctor.setAccessible(true);
+        return ctor.newInstance(paramName, paramLocation);
+    }
+
     @Test
     public void pathParameterIsEnrolledInFaultPool() throws Exception {
         // Real generator instance (via Mockito mock with CALLS_REAL_METHODS) so
@@ -109,16 +122,20 @@ public class SharedPoolGenerationStagePathParamTest {
         m.setAccessible(true);
 
         // The rootApiKey shape matches the verb_normalisedPath convention.
+        // Pool entries are now keyed by PoolKey(paramName, normalisedLocation) so
+        // same-name parameters at different locations do not collide.
+        // PoolKey is package-private, so we reflectively construct the lookup key.
         @SuppressWarnings("unchecked")
-        Map<String, InvalidInputPool> faultyPool =
-                (Map<String, InvalidInputPool>) m.invoke(gen, root, "GET__orders__orderId_");
+        Map<Object, InvalidInputPool> faultyPool =
+                (Map<Object, InvalidInputPool>) m.invoke(gen, root, "GET__orders__orderId_");
 
         assertNotNull("Pool map must be returned even when only path params are present",
                 faultyPool);
-        assertTrue("Path parameter 'orderId' must be enrolled in the fault pool",
-                faultyPool.containsKey("orderId"));
+        Object orderIdKey = poolKey("orderId", "path");
+        assertTrue("Path parameter 'orderId' must be enrolled in the fault pool under (orderId,path)",
+                faultyPool.containsKey(orderIdKey));
 
-        InvalidInputPool pool = faultyPool.get("orderId");
+        InvalidInputPool pool = faultyPool.get(orderIdKey);
         assertNotNull("Enrolled path param must have a non-null InvalidInputPool", pool);
         assertTrue("Path param fault pool must have at least one populated fault category — "
                         + "0 values means the loop body never fired",
