@@ -78,16 +78,37 @@
 
 \title{MIST: A Trace-Driven Tool for Multi-Service REST API Test Generation with Trace-Shape Oracles}
 
-% Single-blind track: author block is visible. Replace \todo{...} placeholders
-% before submission.
-\author{\todo{AUTHOR NAMES}}
+% Single-blind track: author block is visible.
+\author{Tingshuo Miao}
+\email{tingshuo_miao2@baylor.edu}
 \affiliation{%
-  \institution{\todo{INSTITUTION}}
-  \city{\todo{CITY}}
-  \state{\todo{STATE}}
-  \country{\todo{COUNTRY}}
+  \department{Department of Computer Science}
+  \institution{Baylor University}
+  \city{Waco}
+  \state{TX}
+  \country{USA}
 }
-\email{\todo{EMAIL}}
+
+\author{Shaafi Asif Imtiaz}
+\email{asifimtiaz_shaafi1@baylor.edu}
+\affiliation{%
+  \department{Department of Computer Science}
+  \institution{Baylor University}
+  \city{Waco}
+  \state{TX}
+  \country{USA}
+}
+
+\author{Eunjee Song}
+\authornote{Corresponding author.}
+\email{Eunjee_Song@baylor.edu}
+\affiliation{%
+  \department{Department of Computer Science}
+  \institution{Baylor University}
+  \city{Waco}
+  \state{TX}
+  \country{USA}
+}
 
 \begin{abstract}
 Black-box REST API testers sample inputs from the OpenAPI spec and stop at the HTTP status class, missing two failure modes of microservice systems: \emph{soft errors} returned as 2xx bodies, and \emph{state-fabrication failures} caused by driving internal endpoints directly. We present \textbf{MIST} (Microservice Integration \& Scenario Tester), an open-source tool that turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable cross-service workflow tests. MIST ships three named contributions on top of a 4-module Maven reactor: a \emph{Root API Mode} that drives only externally-reachable entry points and reads internal behaviour off the trace; a \emph{Sniper Strategy} that injects exactly one fault per negative variant, keyed on \texttt{(rootApi, paramName, paramLocation)} so each parameter location enrols independently; and a \emph{Trace Shape Oracle} that promotes the trace from a diagnostic side-channel to four checkable invariant families (\textsc{SpanTreeShape}, \textsc{StatusPropagation}, \textsc{TimingEnvelope}, \textsc{ResponseEnvelope}). A bundled TrainTicket~\cite{Zhou2021TrainTicket} demo --- 27 captured traces, 10 injected faults, one properties file --- runs end-to-end via \texttt{java -jar mist.jar}; MIST detects 10/10 versus RESTest~\cite{MartinLopez2021RESTest} 3/10 and EvoMaster~\cite{Arcuri2019EvoMasterTOSEM} 6/10 within a matched 25\,h budget. Source: \url{https://github.com/miaoti/Rest/}. Screencast: \todo{SCREENCAST-URL}.
