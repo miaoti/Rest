@@ -32,6 +32,9 @@ import es.us.isa.restest.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.WorkflowScenarioUtils;
 import es.us.isa.restest.writers.IWriter;
 import es.us.isa.restest.writers.restassured.MultiServiceRESTAssuredWriter;
+import io.mist.core.oracle.shape.ShapeInvariantStore;
+import io.mist.core.oracle.shape.TraceShapeLearner;
+import io.mist.core.oracle.shape.TraceShapeOracle;
 import io.qameta.allure.junit4.AllureJunit4;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +53,9 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,6 +92,15 @@ public final class MistRunner {
     private final List<MultiServiceTestCase> generatedMSTTestCases = new ArrayList<>();
     private long testGenerationStartTime = 0;
     private OpenAPISpecification spec;
+
+    /**
+     * Trace Shape Oracle instance for this MistRunner invocation. Cold start
+     * trains from the labelled seed corpus; subsequent invocations reuse the
+     * {@code .mist/trace-shape-invariants.json} file. See
+     * {@link #bootstrapTraceShapeOracle()}.
+     */
+    private TraceShapeOracle traceShapeOracle = null;
+    private Path traceShapeStorePath = null;
 
     public MistRunner(es.us.isa.restest.configuration.MstConfig config, Path workdir, Inputs inputs) {
         this.config = Objects.requireNonNull(config, "config");
@@ -206,6 +220,12 @@ public final class MistRunner {
         // Create target directory if it does not exist
         createDir(inputs.targetDirJava);
 
+        // Trace Shape Oracle (Phase 2.F): bootstrap before the writer is built
+        // so the writer can be aware of the on-disk invariant store. The oracle
+        // itself is consulted at test-execution time by code emitted into the
+        // generated test class, which re-reads the same JSON file.
+        traceShapeOracle = bootstrapTraceShapeOracle();
+
         // RESTest runner
         AbstractTestCaseGenerator generator = createMstGenerator();
         IWriter writer = createMstWriter();
@@ -242,6 +262,9 @@ public final class MistRunner {
         if (writer instanceof MultiServiceRESTAssuredWriter) {
             ((MultiServiceRESTAssuredWriter) writer).setClassName(className);
             ((MultiServiceRESTAssuredWriter) writer).setTestId(id);
+            // Phase 2.F: hand the writer the Trace Shape Oracle so the emitted
+            // tests carry a verdict block alongside the existing TraceErrorAnalyzer.
+            ((MultiServiceRESTAssuredWriter) writer).setTraceShapeOracle(traceShapeOracle, traceShapeStorePath);
             // Store writer for status code exploration during enhancement
             mstWriter = (MultiServiceRESTAssuredWriter) writer;
         }
@@ -657,6 +680,110 @@ public final class MistRunner {
         } else {
             logger.warn("❌ Smart Input Fetching is DISABLED - enable it by setting smart.input.fetch.enabled=true in the MST configuration file");
         }
+    }
+
+    /**
+     * Bootstrap the {@link TraceShapeOracle} for this MistRunner invocation.
+     *
+     * <p>On cold start (no {@code .mist/trace-shape-invariants.json} file yet)
+     * walks the labelled seed corpus and trains every invariant family — the
+     * resulting store is then flushed to disk. On subsequent invocations the
+     * pre-existing JSON is simply re-loaded; no training fires.
+     *
+     * <p>Logger contract:
+     * <ul>
+     *   <li>INFO when the cache file is created for the first time</li>
+     *   <li>DEBUG when it is reused on a subsequent invocation</li>
+     * </ul>
+     * This method is additive — failures (missing seed labels, unreadable
+     * corpus, etc.) downgrade to WARN; the oracle is still instantiated with
+     * an empty store so {@code evaluate(...)} returns a clean pass.
+     */
+    private TraceShapeOracle bootstrapTraceShapeOracle() {
+        String overridePath = System.getProperty("mist.tso.store.path");
+        traceShapeStorePath = (overridePath != null && !overridePath.isEmpty())
+                ? Paths.get(overridePath)
+                : Paths.get(".mist", "trace-shape-invariants.json");
+
+        boolean coldStart = !Files.exists(traceShapeStorePath);
+
+        ShapeInvariantStore store = new ShapeInvariantStore(traceShapeStorePath);
+
+        if (coldStart) {
+            logger.info("🧬 Trace Shape Oracle: cold start — no {} on disk, training from seed corpus",
+                    traceShapeStorePath);
+            try {
+                Path seedLabels = resolveSeedLabelsPath();
+                Path seedCorpusDir = resolveSeedCorpusDir(seedLabels);
+                if (seedLabels != null && Files.isRegularFile(seedLabels)
+                        && seedCorpusDir != null && Files.isDirectory(seedCorpusDir)) {
+                    TraceShapeLearner.LearnResult lr =
+                            TraceShapeLearner.learn(seedCorpusDir, seedLabels, store);
+                    logger.info("🧬 Trace Shape Oracle: learned invariants for {} root API(s) from {} (corpus={})",
+                            lr.rootApisLearned.size(), seedLabels.getFileName(), seedCorpusDir);
+                } else {
+                    logger.warn("🧬 Trace Shape Oracle: skipping seed-corpus training (labels={}, corpus={}) — empty store written",
+                            seedLabels, seedCorpusDir);
+                    store.flush();
+                }
+            } catch (Exception ex) {
+                logger.warn("🧬 Trace Shape Oracle: seed training failed — empty store written: {}",
+                        ex.getMessage());
+                try { store.flush(); } catch (RuntimeException ignored) { }
+            }
+        } else {
+            logger.debug("🧬 Trace Shape Oracle: loaded {} from disk (warm cache)", traceShapeStorePath);
+        }
+
+        return new TraceShapeOracle(store);
+    }
+
+    /**
+     * Resolve where the labelled seed corpus index lives. Override via
+     * {@code -Dmist.tso.seed.labels=...}; otherwise default to the bundled
+     * artefact at {@code mist-core/src/main/resources/mist/seed-trace-labels.json}
+     * (relative to the workdir).
+     */
+    private Path resolveSeedLabelsPath() {
+        String overridePath = System.getProperty("mist.tso.seed.labels");
+        if (overridePath != null && !overridePath.isEmpty()) {
+            return Paths.get(overridePath);
+        }
+        // Look in the workdir first; this is a versioned artefact in the repo.
+        Path bundled = workdir.resolve("mist-core/src/main/resources/mist/seed-trace-labels.json");
+        if (Files.exists(bundled)) return bundled;
+        // Fallback for callers that run from inside mist-restest-adapter/.
+        Path relative = workdir.resolve("../mist-core/src/main/resources/mist/seed-trace-labels.json").normalize();
+        if (Files.exists(relative)) return relative;
+        return bundled;
+    }
+
+    /**
+     * Resolve the seed corpus directory. The labels JSON optionally carries a
+     * {@code _corpus_root_default} pointer to declare the canonical directory;
+     * fall back to a sibling directory if absent.
+     */
+    private Path resolveSeedCorpusDir(Path seedLabels) {
+        String overridePath = System.getProperty("mist.tso.seed.corpus");
+        if (overridePath != null && !overridePath.isEmpty()) {
+            return Paths.get(overridePath);
+        }
+        if (seedLabels != null && Files.isRegularFile(seedLabels)) {
+            try {
+                String content = new String(Files.readAllBytes(seedLabels), java.nio.charset.StandardCharsets.UTF_8);
+                org.json.JSONObject obj = new org.json.JSONObject(content);
+                String declared = obj.optString("_corpus_root_default", "");
+                if (!declared.isEmpty()) {
+                    Path resolved = workdir.resolve(declared);
+                    if (Files.exists(resolved)) return resolved;
+                    Path relative = workdir.resolve("../" + declared).normalize();
+                    if (Files.exists(relative)) return relative;
+                    return resolved;
+                }
+            } catch (Exception ignored) { }
+        }
+        // Conventional fallback.
+        return workdir.resolve("mist-restest-adapter/src/main/resources/My-Example/trainticket/test-trace");
     }
 
     /**
