@@ -622,288 +622,105 @@ Using system-resident inputs makes tests representative and diagnostic: APIs are
 \subsection{Trace Shape Oracle}\label{ssec:tso}
 
 \paragraph{Motivation.}
-Every component described so far---trace ingestion, Multi-Root Sequence
-assembly, hybrid input generation, Sniper Strategy fault injection---is
-on the \emph{generation} side of the pipeline.  Its task is to produce
-a call that will exercise interesting cross-service behaviour.  The
-\emph{oracle} side has historically been thinner: an HTTP status check
-plus a soft-error rule cache that detects success-coded 2xx responses
-whose body contains a primary-field value outside the learned success
-set.  Both checks operate at the boundary of the call under test; the
-trace, once captured by \textsc{TraceErrorAnalyzer}, was used for
-\emph{diagnosis} of an already-detected failure rather than as a source
-of \emph{detection}.  This is a missed opportunity: the trace carries
-strictly more information than the response (the full induced span
-subtree, every internal status code, every per-span duration), and
-every OpenTelemetry-instrumented microservice already emits it.
+Every component described so far---trace ingestion, multi-root sequence assembly, hybrid input generation, the Sniper Strategy---sits on the \emph{generation} side of the pipeline. Its task is to produce a call that will exercise interesting cross-service behaviour. The \emph{oracle} side has historically been thinner: an HTTP status-code check and a soft-error rule that catches success-coded 2xx responses whose body envelope flags a domain-level failure. Both checks operate at the boundary of the call under test; the captured trace, by contrast, has been used only for \emph{diagnosis} of an already-detected failure, not for detection itself. This is a missed opportunity. The trace carries strictly more information than the response: the full induced span subtree, every internal status code, every per-span duration, and the relative timing of every cross-service hop. Every OpenTelemetry-instrumented microservice already emits this information; modern observability deployments make it cheap to consume.
 
-The Trace Shape Oracle promotes the trace from diagnostic side-channel
-to checkable assertion.  A small, off-line \emph{learner} reads a
-labelled seed corpus of known-good traces; an on-line \emph{oracle}
-consumes the freshly-pulled trace of each test step and produces a
-structured verdict against the learned invariants.  Soft-error
-detection becomes one of four invariant families rather than a
-stand-alone artefact.
+The Trace Shape Oracle promotes the trace from diagnostic side-channel to checkable assertion. An off-line learner reads a small labelled corpus of known-good traces and condenses each root API's induced subtree into four families of per-API invariants. An on-line oracle consumes the freshly-pulled trace of each test step and produces a structured verdict against those invariants. Soft-error detection becomes one of the four families rather than a stand-alone subsystem.
 
-\paragraph{Invariant taxonomy.}
-The oracle decomposes a per-root-API invariant into four families,
-each with a learner and an oracle that share an interface
-\texttt{ShapeInvariant} returning a \texttt{TraceShapeVerdict}
-$\langle \mathit{passed}, \mathit{violations}, \mathit{evidence} \rangle$.
-
-\begin{description}[leftmargin=0pt,style=nextline]
-  \item[\textbf{SpanTreeShapeInvariant.}]  For each root API, the
-        learner records the \emph{set} of $(\textit{parent.service},
-        \textit{child.service})$ edges that appear in at least
-        $K\%$ ($K{=}80$ by default) of known-good traces, together
-        with the per-level fan-out distribution.  At evaluation
-        time, the oracle flags (i)~edges in the live trace that the
-        learned set does not contain (\emph{unexpected downstream
-        service call}), (ii)~edges in the learned set that the live
-        trace does not contain (\emph{dropped downstream service
-        call}), and (iii)~fan-out outliers (a span has three times
-        more children than the learned distribution allows).  Set
-        semantics, not sequence semantics, are used at each level so
-        that the inherently non-deterministic call ordering within a
-        microservice does not produce false positives.
-  \item[\textbf{StatusPropagationInvariant.}]  Per root API and per
-        tree level, the learner records the distribution of
-        \texttt{http.status\_code} and \texttt{otel.status\_code}
-        seen across known-good traces.  The oracle flags any span
-        whose status falls outside the learned distribution at its
-        tree position.  This invariant subsumes the existing
-        \textsc{TraceErrorAnalyzer} rule that treats
-        \texttt{otel.status\_code=ERROR} as a flag, but parameterises
-        the rule per root API so that a service whose 4xx is part of
-        a normal control-flow path is not flagged as a failure.
-  \item[\textbf{TimingEnvelopeInvariant.}]  Per root API, the
-        learner records total-duration percentiles
-        $(p_{50}, p_{95}, p_{99})$ and per-span percentiles.  The
-        oracle flags a trace whose total duration exceeds the
-        learned $p_{99}$ or whose individual span exceeds its learned
-        $p_{99}$ by a factor of at least~2.  Because timing
-        invariants are intrinsically noisy in production microservice
-        workloads, this family ships at \texttt{WARNING} severity
-        rather than \texttt{ERROR}.
-  \item[\textbf{ResponseEnvelopeInvariant.}]  Per root API, the
-        learner records the success-set and failure-set of the
-        primary status field observed in the response body of
-        known-good traces.  The oracle flags a 2xx response whose
-        primary field falls outside the success set; if the value
-        is in the known failure set it is reported as a hard
-        failure; otherwise it is escalated to the LLM classifier
-        used by the legacy soft-error rule cache and the verdict is
-        added to the appropriate set.  This family is the direct
-        successor to \texttt{SoftErrorRuleCache} and preserves its
-        on-disk persistence semantics; the rule cache class is
-        retired.
-\end{description}
-
-\paragraph{Learning algorithm and seed corpus.}
-The learner consumes a directory of trace files plus a manifest
-\texttt{seed-trace-labels.json} that marks each trace as
-\texttt{KNOWN\_GOOD} (default) or \texttt{KNOWN\_BAD}.  For each
-distinct $(\textit{method}, \textit{path})$ root-API tuple, the
-learner groups all known-good traces and computes the four invariants
-above.  Traces marked known-bad are excluded from the per-family
-counts.  The learned invariants are serialised to a JSON file
-(\texttt{target/mist-shape-invariants.json}) by atomic rename so that
-concurrent oracle reads observe consistent versions.  In practice we
-target $N \geq 20$ root APIs with at least~10 occurrences each; on the
-TrainTicket corpus this is comfortably met by the 154 traces
-described in Section~\ref{ssec:multiroot}.
-
-\paragraph{On-line oracle.}
-At test time, after the writer executes a step and pulls the
-corresponding trace from Jaeger, it invokes the oracle:
+\paragraph{An invariant family is a learner-oracle pair.}
+For each root API $r$ and each invariant family $\phi$, the learner ingests the subset of the seed corpus that triggers $r$, condenses it into a parameter set $\theta_{r,\phi}$, and the oracle exposes a decision function
 \[
-  \mathit{verdict} \;=\; \texttt{TraceShapeOracle.evaluate}(\mathit{rootApi}, \mathit{trace}).
+  \phi_{r}\,:\, \mathit{Trace} \;\to\; (b,\,V)
 \]
-The oracle composes the four families with logical conjunction;
-\texttt{verdict.passed} is true iff every family passes, and
-\texttt{verdict.violations} is the union of family-level violation
-lists annotated with the offending span IDs.  Each verdict is
-attached to the Allure step as a structured artefact alongside the
-existing trace tree.  Negative tests interpret a violation as a
-\emph{pass} (the call was supposed to fail), preserving the soft-error
-inversion semantics of Table~\ref{tab:test-types}.
+where $b \in \{\textsc{pass}, \textsc{fail}, \textsc{warn}\}$ is the verdict bit and $V$ is a list of structured violations identifying the offending span(s) and the failed sub-condition. The four families share this contract.
 
-\paragraph{Integration with the rest of the pipeline.}
-The Trace Shape Oracle slots between the existing trace-capture stage
-and the LLM diagnosis stage in Algorithm~\ref{alg:execute}: after
-\textproc{FetchJaegerTraces} populates the trace and before
-\textproc{TraceErrorAnalyzer.analyze} is invoked, the oracle is run
-and its verdict is added to \texttt{stepResults}.  The downstream
-diagnosis engine reads the oracle's structured violations to decide
-which spans to focus the LLM root-cause prompt on.  Crucially, the
-oracle does not depend on the LLM: in the offline learning phase the
-LLM is consulted only for the optional \texttt{ResponseEnvelopeInvariant}
-escalation, and \texttt{LLMCallCache} ensures that under
-\texttt{-Drandom.seed} the entire pipeline is deterministic.
+\paragraph{Span-tree shape.}
+The learner records, for each root API, the set of edges
+\[
+  E_r \;=\; \big\{(s_p, s_c) : \exists\,\text{known-good trace where service } s_p \text{ invokes } s_c \text{ in } K\% \text{ of cases}\big\}
+\]
+(default $K{=}80$) together with the per-tree-level fan-out distribution. At evaluation time, the oracle flags three sub-conditions: an edge present in the live trace but absent from $E_r$ (an unexpected downstream invocation), an edge in $E_r$ but missing from the live trace (a dropped invocation), and a span whose fan-out lies beyond the learned per-level percentiles. Edge membership is by set, not by sequence: within one tree level the ordering of cross-service calls in a microservice deployment is non-deterministic and would produce spurious violations otherwise.
 
-\paragraph{Relation to prior trace-RCA work.}
-Trace-RCA tools such as TraceRCA~\cite{li2021tracerca},
-MicroHECL~\cite{liu2021microhecl}, and
-ImpactTracer~\cite{xie2023impacttracer} rank suspect spans within an
-already-failing trace.  The Trace Shape Oracle, by contrast, decides
-whether a trace is failing in the first place against a
-SUT-specific, per-API specification that is automatically learned
-from a labelled seed corpus.  It complements rather than replaces
-RCA: its violation list narrows the downstream prompt that the
-LLM-based diagnostic engine uses, which makes the engine's job
-strictly easier.
+\paragraph{Status propagation.}
+For each root API and each tree level $\ell$, the learner records the empirical distribution of HTTP status codes and OTel status flags emitted by known-good traces at that level. The oracle flags any span whose status lies outside the learned distribution at its position. This subsumes the legacy ``mark any span tagged $\textsc{error}$ as failed'' rule but conditions on the root API and the tree level, so that a service whose intentional 4xx response is part of a normal control-flow branch is not reported as a failure.
+
+\paragraph{Timing envelope.}
+For each root API, the learner records total-duration and per-span percentiles $(p_{50}, p_{95}, p_{99})$ from known-good traces. The oracle flags a live trace whose total duration exceeds the learned $p_{99}$, or whose individual span exceeds its position's learned $p_{99}$ by a factor of two or more. Timing invariants are intrinsically noisy on real microservice workloads---containers cold-start, GC pauses, network jitter---so this family ships at warning severity by default; operators escalate it to a hard verdict only on services with strict latency SLOs.
+
+\paragraph{Response envelope.}
+For each root API, the learner records the success and failure sets of the response body's primary status field as observed in known-good traces. The oracle reports a 2xx response whose primary field is in the known failure set as a hard failure; one whose primary field is in the known success set as a pass; one whose primary field is in neither is escalated to a language-model classifier that decides, and the verdict is recorded so that subsequent traces with the same value resolve immediately. This family is the direct successor to the legacy soft-error rule cache and inherits its on-disk persistence semantics; the legacy cache class is retired.
+
+\paragraph{Learning algorithm.}
+The learner consumes a directory of trace files together with a small manifest that marks each trace as known-good (the default) or known-bad. For each distinct $(\textit{method}, \textit{path})$ root API, traces marked known-bad are excluded from the per-family parameter computation; the four parameter sets $\theta_{r,\phi}$ are then derived independently from the known-good subset. The learned parameters are serialised by atomic rename so that concurrent oracle reads observe a consistent version. In practice we target at least twenty root APIs with at least ten known-good occurrences each; this threshold is comfortably met by the workload described in \S\ref{ssec:multiroot}.
+
+\paragraph{Oracle composition.}
+At test time, after a step's call returns and the corresponding trace is pulled from the observability backend, the oracle is invoked with the root API and the trace and returns a composite verdict:
+\[
+  V_{r}(t) \;=\; \bigwedge_{\phi \in \Phi}\, \phi_{r}(t),
+\]
+where $\Phi$ is the set of enabled invariant families. The composite passes iff every family passes; the composite violation list is the union of the family-level lists, each entry naming the offending span identifier and the sub-condition that failed. The verdict is attached to the test step alongside the existing trace tree as a structured artefact, so reviewers and downstream automation can read it without parsing the raw trace. Negative tests, which expect the call to fail, interpret any violation as a pass, preserving the verdict-inversion semantics of Table~\ref{tab:test-types}.
+
+\paragraph{Integration in the pipeline.}
+The oracle slots into Algorithm~\ref{alg:execute} between the trace-capture stage and the diagnosis stage: once the trace is in hand, the oracle is consulted first, and its violation list is then passed to the diagnostic engine to narrow the language-model root-cause prompt. The two stages have complementary roles: the oracle decides \emph{whether} a trace deviates from the learned shape; the diagnostic engine decides \emph{why} a span inside that trace failed. Under a fixed seed the cache layer ensures that both decisions are deterministic across runs.
+
+\paragraph{Relation to trace-based root-cause analysis.}
+Trace-RCA tools such as TraceRCA~\cite{li2021tracerca}, MicroHECL~\cite{liu2021microhecl}, and ImpactTracer~\cite{xie2023impacttracer} rank suspect spans within an already-failing trace. The Trace Shape Oracle, by contrast, decides whether a trace is failing in the first place against a per-API specification automatically learned from a labelled corpus. It complements rather than replaces RCA: its violation list strictly narrows the downstream search space, which makes any RCA approach---including the language-model-based diagnosis embedded in this tool---work on a smaller and better-conditioned input.
 
 %--------------------------------------------------------------------
 \subsection{Adaptive Fault Taxonomy}\label{ssec:adaptfault}
 
 \paragraph{Motivation.}
-The Sniper Strategy of Section~\ref{ssec:negtest} draws its invalid
-values from a closed eight-category enumeration:
-\textsc{Type\_Mismatch},
-\textsc{Regex\_Mismatch},
-\textsc{Semantic\_Mismatch},
-\textsc{Overflow},
-\textsc{Empty\_Input},
-\textsc{Null\_Input},
-\textsc{Special\_Characters}, and
-\textsc{Boundary\_Violation}.  These categories are deliberately
-generic: they apply equally to a payments service, a train-booking
-service, and a music streaming service.  Generic categories work, but
-they leave the SUT-specific fault space unexplored.  A booking system
-has a notion of an \emph{invalid station name} that no overflow or
-null check captures; a payments system has a notion of an
-\emph{expired promo code} that no regex mismatch expresses.  These
-domain faults are precisely the ones that survive long enough to
-appear in production incident reports.
+The Sniper Strategy of \S\ref{ssec:negtest} draws its invalid inputs from a closed eight-category catalogue: type mismatch, regex mismatch, semantic mismatch, overflow, empty input, null input, special characters, and boundary violation. These categories are deliberately generic: they apply equally to a payments service, a train-booking service, and a music streaming service. Generic categories work, but they leave the system-specific fault space unexplored. A booking system has a notion of an \emph{invalid station name} that no overflow or null check captures; a payments system has a notion of an \emph{expired promo code} that no regex mismatch expresses. Such domain faults are precisely the ones that escape generic input mutators and survive long enough to appear in production incident reports.
 
-The Adaptive Fault Taxonomy replaces the closed enum with a typed
-registry of \texttt{FaultType} records, and adds an LLM-assisted
-\texttt{FaultMiner} that proposes SUT-specific categories from the
-two artefacts the SUT itself exposes: OpenAPI parameter description
-text and observed 4xx/5xx response bodies from prior test runs.
+The Adaptive Fault Taxonomy replaces the closed eight-category catalogue with an open, typed registry of fault categories, and adds a language-model-driven miner that proposes system-specific categories from the two artefacts the system under test already exposes: the natural-language description text in its OpenAPI specification and the body of every 4xx/5xx response it produced in prior test runs. The Sniper Strategy then ranges over both the default catalogue and the mined categories on equal footing.
 
-\paragraph{FaultType as data, not enum.}
-A fault type is no longer a Java enum constant.  It is a record:
-\begin{center}\small
-\begin{tabular}{@{}l@{}}
-\texttt{record FaultType(} \\
-\quad\texttt{String id,}              \\
-\quad\texttt{String displayName,}     \\
-\quad\texttt{Set<OasType> applicableTo,} \\
-\quad\texttt{Set<String> applicableLocations,} \\
-\quad\texttt{FaultSource source}      \\
-\texttt{)}
-\end{tabular}
-\end{center}
-\noindent The \texttt{id} is a stable identifier suitable for Allure
-attachments and statistical aggregation.  \texttt{applicableTo}
-constrains the fault to a subset of OpenAPI primitive types
-(\texttt{string}, \texttt{integer}, \texttt{number},
-\texttt{boolean}, \texttt{array}, \texttt{object}); the Sniper
-Strategy consults this set when building the
-\texttt{InvalidInputPool} and silently drops nonsensical pairings
-such as \textsc{Overflow} on \texttt{boolean}.  \texttt{applicableLocations}
-constrains the fault by the OpenAPI \texttt{in} value (\texttt{path},
-\texttt{query}, \texttt{header}, \texttt{cookie}, \texttt{body}); a
-fault category that only makes sense for body fields cannot be
-applied to a path segment.  \texttt{source} records whether the
-\texttt{FaultType} was loaded from the default YAML
-(\texttt{DEFAULT}) or proposed by the miner
-(\texttt{MINED}).
+\paragraph{Fault categories as typed records.}
+A fault category is no longer a constant from a fixed enumeration. It is a tuple
+\[
+  f \;=\; \big(\mathit{id},\; T,\; L,\; \mathit{src}\big),
+\]
+where $\mathit{id}$ is a stable upper-snake-case string identifier, $T \subseteq \mathit{OasType}$ is the set of OpenAPI primitive types the category applies to ($\mathit{OasType} = \{\textsf{string}, \textsf{integer}, \textsf{number}, \textsf{boolean}, \textsf{array}, \textsf{object}\}$), $L \subseteq \mathit{Loc}$ is the set of parameter locations the category applies to ($\mathit{Loc} = \{\textsf{path}, \textsf{query}, \textsf{header}, \textsf{cookie}, \textsf{body}\}$), and $\mathit{src} \in \{\textsc{default}, \textsc{mined}\}$ records whether the category was loaded from the default catalogue or proposed by the miner. The pair $(T, L)$ is the category's \emph{applicability domain}; the Sniper Strategy consults it at pool-construction time to drop nonsense pairings such as an overflow on a boolean or a special-character payload on an integer path segment.
 
-\paragraph{FaultTypeRegistry.}
-At startup, \texttt{FaultTypeRegistry} loads the default YAML
-\texttt{fault-types.default.yaml}, which reproduces the eight
-existing categories verbatim with their applicability matrices, and
-optionally a per-SUT YAML pointed to by
-\texttt{mist.fault.types.path}.  The registry is immutable after
-construction except for the miner's atomic add path.  Every
-\texttt{InvalidInputPool} stores its values keyed by
-\texttt{FaultType.id} rather than by the legacy enum's
-\texttt{.name()}; the eight default ids are byte-identical to the
-prior enum names so that existing Allure attachments and
-reproducibility seeds do not regress.
+\paragraph{Default catalogue and registry.}
+The default catalogue reproduces the eight legacy categories with their applicability domains expressed in this typed form. The registry is loaded once at startup from a default YAML, optionally extended by a per-system YAML, and is otherwise immutable except for the miner's atomic-extension path described below. The eight default identifiers are kept byte-identical to their pre-Adaptive-Taxonomy names so that existing test reports and reproducibility seeds remain stable.
 
-\paragraph{FaultMiner.}
-The miner is gated by \texttt{mist.fault.mining.enabled} (default
-\texttt{false} for predictability).  When enabled, it runs after
-each generation cycle:
+\paragraph{Mining system-specific categories.}
+The miner is gated by an explicit configuration flag (default off, so the default catalogue is the predictable baseline) and runs at the end of each generation cycle. Algorithm~\ref{alg:miner} sketches its loop.
 
 \begin{algorithm}[t]
-\caption{FAULT\_MINER}\label{alg:miner}
+\caption{Mining system-specific fault categories.}\label{alg:miner}
 \footnotesize
 \begin{algorithmic}[1]
-\Require\;{OpenAPI spec, observed responses from prior run, current \texttt{FaultTypeRegistry}}
-\Ensure\;{Set of proposed \texttt{FaultType} records}
-\State $proposed \gets \emptyset$
-\ForAll{root API $r$ in spec}
-  \ForAll{parameter $p$ of $r$ with non-trivial \texttt{description}}
-    \State $failures \gets$ subset of observed 4xx/5xx responses for $r$ that mention $p$
-    \State $prompt \gets$ \textproc{BuildMinerPrompt}$(r,\;p,\;failures)$
-    \State $candidates \gets$ \textproc{LLM}$(prompt)$ \Comment{up to 3 candidates}
-    \ForAll{$c \in candidates$}
-      \State $\mathit{ft} \gets$ \textproc{ParseFaultType}$(c)$
-      \If{$\mathit{ft}$.id not in \texttt{registry} \textbf{and} $\mathit{ft}$.id not in $proposed$}
-        \State $proposed \gets proposed \cup \{\mathit{ft}\}$
+\Require\;{OpenAPI spec, observed 4xx/5xx responses from the prior run, current registry $\mathcal{R}$}
+\Ensure\;{Set $P$ of proposed fault categories not yet in $\mathcal{R}$}
+\State $P \gets \emptyset$
+\ForAll{root API $r$ in the spec}
+  \ForAll{parameter $p$ of $r$ with a non-trivial description}
+    \State $F \gets$ observed 4xx/5xx responses for $r$ that mention $p$
+    \State $\mathit{prompt} \gets$ \textproc{BuildPrompt}$(r, p, F)$
+    \State $C \gets$ \textproc{LM}$(\mathit{prompt})$ \Comment{up to three candidates}
+    \ForAll{$c \in C$}
+      \State $f \gets$ \textproc{Parse}$(c)$
+      \If{$f.\mathit{id} \notin \mathcal{R} \cup P$ \textbf{and} $f$ is well-formed}
+        \State $P \gets P \cup \{f\}$
       \EndIf
     \EndFor
   \EndFor
 \EndFor
-\State Persist $proposed$ to \texttt{target/mist-mined-fault-types.yaml}
-\State \Return $proposed$
+\State Persist $P$ for review.
+\State \Return $P$
 \end{algorithmic}
 \end{algorithm}
 
-\noindent The prompt has a strict structure: it summarises the
-parameter's OpenAPI declaration (type, format, constraints,
-description, examples), enumerates the failed responses that
-mention the parameter, and asks for up to three SUT-specific fault
-categories with explicit \texttt{applicableTo} and
-\texttt{applicableLocations} sets.  Candidates are dedup\-licated
-against the default registry and against each other; an id length
-filter rejects degenerate proposals such as
-\textsc{Invalid\_Value}.  Accepted candidates are persisted to a
-timestamped YAML that the user can promote into the per-SUT YAML to
-make them permanent.  Because the miner shares the LLM call cache
-introduced in Section~\ref{ssec:exec}, re-runs under the same
-\texttt{-Drandom.seed} produce the same mined set.
+\noindent The prompt has a strict structure: it summarises the parameter's declared type, format, constraints, description, and examples; enumerates the failure responses that mention the parameter; and asks for up to three system-specific categories with explicit applicability domains. Candidates are deduplicated against the existing registry and against one another; a length filter rejects degenerate proposals such as ``invalid value.'' Surviving candidates are persisted to a timestamped artefact that the operator promotes into the per-system YAML to make them permanent. Because the miner reuses the same cache layer as the rest of the language-model surface, re-runs under a fixed seed produce the same mined set.
 
-\paragraph{Pool integration.}
-The \texttt{InvalidInputPool} class is unchanged in its outer-key
-shape: a pool is still indexed by the
-\texttt{(rootApiKey, PoolKey(name, location))} composite that
-disambiguates same-named parameters at different locations.  The
-inner fault dimension changes from \texttt{Map<InvalidInputType, ...>}
-to \texttt{Map<String, ...>} keyed on \texttt{FaultType.id}.  The
-Sniper Strategy's round-robin cursor visits the default types first
-in the priority order of Section~\ref{ssec:negtest}, then visits
-mined types in the order they were accepted.  A file-format
-migration converts pre-Adaptive-Taxonomy v1 pool files to the v2
-format on first save.
+\paragraph{Integration with the Sniper Strategy.}
+The pool that the Sniper Strategy enumerates is keyed externally on the pair (root API, parameter location): same-named parameters at different locations enrol independently, so a path identifier and a header bearing the same name do not collide. The inner dimension---which fault category is being applied to a given parameter---is keyed on the fault identifier rather than on the legacy enumeration constant. The round-robin cursor visits the default categories in the priority order of \S\ref{ssec:negtest} and then visits the mined categories in acceptance order, so a mined category never starves the default coverage.
 
-\paragraph{Applicability matrix in YAML.}
-The previously code-resident schema-aware applicability matrix
-(\texttt{InvalidInputType.appliesTo(oasType)} switch) is now data:
-each \texttt{FaultType} entry in the default YAML declares an
-explicit \texttt{applicableTo} list.  Mined types inherit a
-permissive default (\texttt{applicableTo: [string, integer]}) unless
-the miner's LLM proposal narrows it.  The Sniper Strategy filters
-the pool by both the parameter's OpenAPI type and its location at
-pool-construction time, so a fault category that only applies to
-\texttt{string} body fields is never enqueued against an
-\texttt{integer} path segment.
+\paragraph{Applicability as data.}
+The applicability matrix that previously lived as a switch in code is now data: each fault category in the default catalogue declares its $T$ and $L$ sets explicitly, and mined categories inherit a conservative default ($T = \{\textsf{string}, \textsf{integer}\}$, $L = \mathit{Loc}$) that the miner's proposal can narrow. The Sniper Strategy filters the pool by both the parameter's OpenAPI type and its location at pool-construction time, so a fault category that only applies to string body fields is never enqueued against an integer path segment.
 
 \paragraph{Reporting and reproducibility.}
-Allure attachments use \texttt{FaultType.id} verbatim.  The strict
-mode flag inherited from configuration validation
-(\texttt{mst.config.strict=true}) extends to fault types: an unknown
-id in a per-SUT YAML fails the run rather than being silently
-ignored.  The mined YAML is timestamped and seedable; in our
-TrainTicket runs the miner consistently proposes domain-specific
-categories such as \textsc{Invalid\_Station\_Name},
-\textsc{Negative\_Train\_Number}, and
-\textsc{Past\_Departure\_Date} that the static eight-category
-taxonomy would never produce.
+Test reports name each fault by its identifier verbatim, so an aggregator can group results across categories without parsing strings. The strict configuration mode inherited from \S\ref{ssec:arch} extends to fault identifiers: an unknown identifier in a per-system YAML fails the run rather than being silently ignored. On the TrainTicket workload, the miner consistently proposes domain-specific categories such as \textsc{invalid-station-name}, \textsc{negative-train-number}, and \textsc{past-departure-date} that no entry in the static eight-category catalogue would have generated.
 
 %--------------------------------------------------------------------
 \subsection{Trace-Driven Test Execution and Post-Execution Analysis}
