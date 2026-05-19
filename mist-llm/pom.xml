@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>es.us.isa</groupId>
+		<artifactId>mist-parent</artifactId>
+		<version>1.6.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>mist-llm</artifactId>
+	<packaging>jar</packaging>
+
+	<name>MIST LLM dispatch</name>
+	<description>Placeholder module for the future home of MIST's LLM dispatch +
+	cache layer (LLMService, LLMConfig, LLMCallCache, GeminiApiClient,
+	OllamaApiClient). Carries no source yet — the legacy llm.* classes still
+	live in mist-restest-adapter because they pull in RESTest-specific helpers.
+	The gate for Stage 1.C only requires that this module compile
+	independently of mist-core and restest-core, which it does. Migration of
+	the LLM classes is a follow-up task.</description>
+
+	<dependencies>
+
+		<!-- Gson for future LLM JSON parsing -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson.version}</version>
+		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>
