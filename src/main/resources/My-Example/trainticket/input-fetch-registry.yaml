@@ -4,10 +4,10 @@ lastUpdated:
 - 2026
 - 5
 - 18
-- 14
-- 3
-- 10
-- 174064048
+- 19
+- 34
+- 48
+- 681528740
 parameterMappings:
   boughtDateStart:
   - endpoint: "/api/v1/orderservice/order"
@@ -1780,6 +1780,22 @@ cache:
   maxEntries: 1000
   ttlSeconds: 300
 parameterErrors:
+  /api/v1/contactservice/contacts/account/%2560whoami%2560:
+    accountId:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/contactservice/contacts/account/%252560whoami%252560"
+      parameterName: "accountId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 14
+      - 37
+      - 21
+      - 909068383
+      additionalInfo: null
   /api/v1/consignservice/consigns/order/FALLBACK_id_27:
     orderId:
     - errorType: "FORMAT_ERROR"
@@ -1790,10 +1806,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 52
-      - 16
-      - 63286444
+      - 15
+      - 14
+      - 21
+      - 916787342
       additionalInfo: null
   /api/v1/consignservice/consigns/order/%60whoami%60:
     id:
@@ -2039,10 +2055,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 27
-      - 7
-      - 945330836
+      - 15
+      - 53
+      - 41
+      - 854169448
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -2084,10 +2100,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 44
-      - 24
-      - 672899061
+      - 15
+      - 7
+      - 1
+      - 207712123
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -2186,11 +2202,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 42
-      - 28
-      - 754256235
+      - 18
+      - 15
+      - 13
+      - 53
+      - 878450820
       additionalInfo: null
   /api/v1/consignpriceservice/consignprice/10.5/true:
     consignee:
@@ -2515,11 +2531,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 44
-      - 39
-      - 374748692
+      - 18
+      - 15
+      - 15
+      - 45
+      - 409894225
       additionalInfo: null
   /api/v1/consignservice/consigns/order/FALLBACK_id_32:
     orderId:
@@ -2531,10 +2547,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 41
-      - 29
-      - 216821486
+      - 15
+      - 3
+      - 39
+      - 211057174
       additionalInfo: null
   /api/v1/consignservice/consigns/order/%253E%2520output.txt:
     id:
@@ -2562,10 +2578,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 41
+      - 15
+      - 3
       - 10
-      - 116615025
+      - 833644420
       additionalInfo: null
   /api/v1/consignservice/consigns/order/..%255C..%255C..%255Cwindows%255Csystem32%255Cconfig%255Csam:
     id:
@@ -2577,11 +2593,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 1
-      - 0
-      - 0
-      - 4
-      - 952285676
+      - 18
+      - 15
+      - 9
+      - 50
+      - 873569571
       additionalInfo: null
   /api/v1/consignservice/consigns/account/uvwx-yzab-cde:
     accountId:
@@ -2691,10 +2707,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 13
-      - 51
-      - 12
-      - 443889455
+      - 14
+      - 7
+      - 40
+      - 245932861
       additionalInfo: null
   /api/v1/routeservice/routes/chicago/newyork:
     departureTime:
@@ -2736,10 +2752,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 45
-      - 39
-      - 791868227
+      - 15
+      - 7
+      - 29
+      - 449732164
       additionalInfo: null
   /api/v1/travelservice/trips/left:
     departureTime:
@@ -4975,10 +4991,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 52
-      - 6
-      - 632497114
+      - 15
+      - 14
+      - 12
+      - 549831954
       additionalInfo: null
   /api/v1/executeservice/execute/collected/%255Cx00%255Cx01%255Cx02:
     orderId:
@@ -5066,10 +5082,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 41
-      - 19
-      - 686121040
+      - 15
+      - 3
+      - 29
+      - 714425251
       additionalInfo: null
   /api/v1/consignservice/consigns/order/123:
     orderId:
@@ -5183,11 +5199,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 1
-      - 36
-      - 22
-      - 356631513
+      - 18
+      - 15
+      - 55
+      - 48
+      - 891718318
       additionalInfo: null
   /api/v1/consignservice/consigns/account/n098765432o:
     accountId:
@@ -5264,6 +5280,21 @@ parameterErrors:
       - 27
       - 49
       - 579392179
+      additionalInfo: null
+  /api/v1/routeservice/routes/hangzhou/javascript:alert('xss'):
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/hangzhou/javascript:alert('xss')"
+      parameterName: "startPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 7
+      - 17
+      - 240484114
       additionalInfo: null
   /api/v1/routeservice/routes/beijingrailwaystation/invalid_value_missing_endplace:
     endPlace:
@@ -5342,6 +5373,21 @@ parameterErrors:
       - 7
       - 897125311
       additionalInfo: null
+  /api/v1/consignservice/consigns/order/FALLBACK_id_55:
+    orderId:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Invalid UUID string: FALLBACK_id_55"
+      apiEndpoint: "/api/v1/consignservice/consigns/order/FALLBACK_id_55"
+      parameterName: "orderId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 3
+      - 1
+      - 351466818
+      additionalInfo: null
   /api/v1/routeservice/routes/;ls-la/guangzhou:
     routeId:
     - errorType: "VALIDATION_ERROR"
@@ -5367,11 +5413,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 35
+      - 18
       - 15
-      - 652230420
+      - 6
+      - 51
+      - 829679751
       additionalInfo: null
   /api/v1/consignservice/consigns/order/FALLBACK_id_52:
     orderId:
@@ -5398,10 +5444,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 51
-      - 29
-      - 71675970
+      - 15
+      - 12
+      - 58
+      - 48810447
       additionalInfo: null
   /api/v1/consignservice/consigns/order/ABC123XYZ:
     orderId:
@@ -5518,11 +5564,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 30
-      - 40
-      - 478047059
+      - 18
+      - 15
+      - 1
+      - 55
+      - 941274285
       additionalInfo: null
   /api/v1/routeservice/routes/beijing/guangzhou:
     departureTime:
@@ -5609,11 +5655,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 31
-      - 1
-      - 228822218
+      - 18
+      - 15
+      - 2
+      - 33
+      - 307838226
       additionalInfo: null
   /api/v1/consignservice/consigns/order/%2560%2560%2560:
     id:
@@ -5670,10 +5716,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 54
-      - 17
-      - 549167669
+      - 15
+      - 16
+      - 31
+      - 906613255
       additionalInfo: null
   /api/v1/routeservice/routes/guangzhou/hangzhou:
     departureTime:
@@ -9577,6 +9623,21 @@ parameterErrors:
       - 39
       - 161741500
       additionalInfo: null
+  /api/v1/routeservice/routes/shanghai/kunming:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/kunming"
+      parameterName: "startPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 1
+      - 46
+      - 780663526
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/%2524%2528cat%2520%252Fetc%252Fpasswd%2529:
     travelDateEnd:
     - errorType: "FORMAT_ERROR"
@@ -9873,10 +9934,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 15
-      - 34
-      - 272808348
+      - 14
+      - 37
+      - 36
+      - 426074290
       additionalInfo: null
   /api/v1/consignservice/consigns/account/1234567890123456789012345678901234567890123456789012345678901234567890123456789:
     accountId:
@@ -9987,11 +10048,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
       - 18
-      - 47
-      - 585732491
+      - 15
+      - 57
+      - 51
+      - 208647681
       additionalInfo: null
     - errorType: "SECURITY_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -10046,11 +10107,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
+      - 18
       - 15
-      - 5
-      - 83160356
+      - 54
+      - 9
+      - 866391272
       additionalInfo: null
     '{id}':
     - errorType: "FORMAT_ERROR"
@@ -10122,10 +10183,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 16
-      - 11
-      - 656261922
+      - 14
+      - 38
+      - 32
+      - 767058273
       additionalInfo: null
   /api/v1/contactservice/contacts/account/%3Cimg%20src%3Dx%20onerror%3Dalert%28%27XSS%27%29%3E:
     accountId:
@@ -10137,11 +10198,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
+      - 18
       - 14
-      - 7
-      - 55
-      - 37
-      - 117032129
+      - 26
+      - 44
+      - 870782755
       additionalInfo: null
   /api/v1/consignservice/consigns/order/User12345:
     orderId:
@@ -10182,11 +10243,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 14
-      - 12
-      - 41
-      - 47
-      - 139848108
+      - 18
+      - 15
+      - 6
+      - 4
+      - 869992074
       additionalInfo: null
   /api/v1/routeservice/routes/nanjing/nowherecity999:
     startPlace:
@@ -10700,6 +10761,22 @@ parameterErrors:
       - 53
       - 444979199
       additionalInfo: null
+  /api/v1/consignservice/consigns/account/%252e%252e%252f%252e%252e%252f:
+    id:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/consignservice/consigns/account/%25252e%25252e%25252f%25252e%25252e%25252f"
+      parameterName: "id"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 59
+      - 53
+      - 496283424
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/..%252F..%252Fetc%252Fpasswd:
     id:
     - errorType: "FORMAT_ERROR"
@@ -10813,11 +10890,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 33
-      - 50
-      - 818396650
+      - 18
+      - 15
+      - 4
+      - 59
+      - 454729563
       additionalInfo: null
   /api/v1/consignservice/consigns/account/%253Csvg%2520onload%253Dalert%2528%2527XSS%2527%2529%253E:
     id:
@@ -10858,10 +10935,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 30
-      - 30
-      - 570540249
+      - 15
+      - 57
+      - 13
+      - 312153875
       additionalInfo: null
     '{id}':
     - errorType: "VALIDATION_ERROR"
@@ -10996,6 +11073,21 @@ parameterErrors:
       - 15
       - 25
       - 561418204
+      additionalInfo: null
+  /api/v1/routeservice/routes/'or'1'='1/beijing:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/'or'1'='1/beijing"
+      parameterName: "startPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 16
+      - 7
+      - 146301780
       additionalInfo: null
   /api/v1/consignservice/consigns/order/customer98765:
     orderId:
@@ -11170,12 +11262,12 @@ parameterErrors:
       parameterName: "id"
       timestamp:
       - 2026
-      - 4
-      - 29
-      - 0
-      - 14
-      - 32
-      - 680394999
+      - 5
+      - 18
+      - 15
+      - 10
+      - 38
+      - 241817937
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -11634,11 +11726,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
       - 18
-      - 51
-      - 29
-      - 826709354
+      - 14
+      - 25
+      - 2
+      - 425528189
       additionalInfo: null
   /api/v1/travelplanservice/travelPlan/minStation:
     departureTime:
@@ -11662,11 +11754,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 24
-      - 12
-      - 615399565
+      - 18
+      - 16
+      - 1
+      - 37
+      - 268616958
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "java. lang"
@@ -11716,10 +11808,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 49
-      - 20
-      - 476864011
+      - 16
+      - 18
+      - 45
+      - 324386637
       additionalInfo: null
     startPlace:
     - errorType: "VALIDATION_ERROR"
@@ -11756,10 +11848,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 48
-      - 0
-      - 616930244
+      - 16
+      - 19
+      - 23
+      - 169093710
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Not enough variable values available to expand '\"key\"'"
@@ -11866,10 +11958,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 49
-      - 59
-      - 643167263
+      - 16
+      - 18
+      - 40
+      - 128196654
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -12200,10 +12292,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 16
-      - 49
-      - 687152249
+      - 14
+      - 39
+      - 10
+      - 420518878
       additionalInfo: null
   /api/v1/consignservice/consigns/account/TS-CONSIGN-ACCOUNT-XYZ:
     accountId:
@@ -12880,10 +12972,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 17
-      - 9
-      - 676528241
+      - 16
+      - 30
+      - 3
+      - 145803151
       additionalInfo: null
   /api/v1/consignservice/consigns/order/FAKE-ID-999999999:
     orderId:
@@ -12895,10 +12987,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 46
-      - 55
-      - 420491554
+      - 15
+      - 8
+      - 44
+      - 847347214
       additionalInfo: null
   /api/v1/consignservice/consigns/account/qrstuvwxyz:
     accountId:
@@ -13361,11 +13453,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
+      - 18
       - 15
-      - 57
-      - 469482290
+      - 55
+      - 30
+      - 7569155
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_1:
     accountId:
@@ -13421,10 +13513,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 22
-      - 16
-      - 784271384
+      - 15
+      - 48
+      - 42
+      - 841260859
       additionalInfo: null
   /api/v1/consignservice/consigns/account/%27%20UNION%20SELECT%20*%20FROM%20passwords%20--:
     id:
@@ -13541,11 +13633,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 16
-      - 16
-      - 411003654
+      - 18
+      - 15
+      - 55
+      - 1
+      - 895922400
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -13629,11 +13721,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 10
-      - 40
-      - 466831117
+      - 18
+      - 15
+      - 49
+      - 48
+      - 195480990
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -13736,11 +13828,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 7
-      - 51
-      - 209764250
+      - 18
+      - 15
+      - 47
+      - 18
+      - 691231719
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -13782,10 +13874,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 48
-      - 30
-      - 582707378
+      - 15
+      - 10
+      - 28
+      - 711483926
       additionalInfo: null
   /api/v1/consignservice/consigns/account/..%255C..%255C..%255Cwindows%255Csystem32%255Cconfig%255Csam:
     id:
@@ -16372,10 +16464,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 33
-      - 16
-      - 726201687
+      - 15
+      - 59
+      - 58
+      - 697152826
       additionalInfo: null
   /api/v1/executeservice/execute/collected/%00%01%02:
     orderId:
@@ -16919,11 +17011,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 8
-      - 39
-      - 42
-      - 216628717
+      - 18
+      - 14
+      - 25
+      - 48
+      - 687792423
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -17130,11 +17222,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
       - 18
-      - 54
-      - 46
-      - 98414603
+      - 14
+      - 27
+      - 40
+      - 552550921
       additionalInfo: null
   /api/v1/routeservice/routes/kunming/shanghai:
     endPlace:
@@ -17308,11 +17400,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 8
-      - 43
-      - 21
-      - 604950247
+      - 18
+      - 14
+      - 37
+      - 12
+      - 378109355
       additionalInfo: null
   /api/v1/routeservice/routes/guangzhou/kunming:
     startPlace:
@@ -17340,10 +17432,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 47
-      - 14
-      - 614340179
+      - 15
+      - 9
+      - 22
+      - 647059511
       additionalInfo: null
   /api/v1/routeservice/routes/suzhou/\x00\x01\x02:
     endPlace:
@@ -17863,6 +17955,21 @@ parameterErrors:
       - 52
       - 874829100
       additionalInfo: null
+  /api/v1/routeservice/routes/xi'an/$(cat/etc/passwd):
+    endPlace:
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "Unknown (HTTP 404)"
+      apiEndpoint: "/api/v1/routeservice/routes/xi'an/$(cat/etc/passwd)"
+      parameterName: "endPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 14
+      - 22
+      - 107288321
+      additionalInfo: null
   /api/v1/executeservice/execute/collected/%27%20UNION%20SELECT%20*%20FROM%20passwords%20--:
     orderId:
     - errorType: "FORMAT_ERROR"
@@ -17948,10 +18055,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 47
-      - 5
-      - 12846607
+      - 15
+      - 9
+      - 13
+      - 166940817
       additionalInfo: null
   /api/v1/routeservice/routes/javascript:alert('xss')/shenzhen:
     startPlace:
@@ -18088,17 +18195,18 @@ parameterErrors:
   /api/v1/consignpriceservice/consignprice/77.9/false:
     handleDate:
     - errorType: "FORMAT_ERROR"
-      errorReason: "Data truncation: Data too long for column 'order_id' at row 1"
+      errorReason: "Data truncation: Data too long for column 'target_date' at row\
+        \ 1"
       apiEndpoint: "/api/v1/consignpriceservice/consignprice/77.9/false"
       parameterName: "handleDate"
       timestamp:
       - 2026
       - 5
       - 18
-      - 6
-      - 51
-      - 30
-      - 392295769
+      - 16
+      - 54
+      - 13
+      - 192734969
       additionalInfo: null
   /api/v1/routeservice/routes/invalid_value_missing_startplace/berlinhauptbahnhof:
     startPlace:
@@ -18194,11 +18302,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 14
-      - 20
-      - 28
-      - 13
-      - 356860023
+      - 18
+      - 15
+      - 45
+      - 26
+      - 213214167
       additionalInfo: null
   /api/v1/executeservice/execute/collected/1%253B%2520DELETE%2520FROM%2520users%2520WHERE%25201%253D1:
     orderId:
@@ -18393,11 +18501,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 33
-      - 22
-      - 521586721
+      - 18
+      - 15
+      - 4
+      - 40
+      - 625976226
       additionalInfo: null
   /api/v1/adminorderservice/adminorder:
     date:
@@ -18571,10 +18679,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 57
-      - 8
-      - 804432823
+      - 18
+      - 55
+      - 10
+      - 371270028
       additionalInfo: null
     - errorType: "SECURITY_VIOLATION"
       errorReason: "Unknown (HTTP 400)"
@@ -18781,10 +18889,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 10
-      - 53
-      - 531827765
+      - 17
+      - 26
+      - 31
+      - 211051542
       additionalInfo: null
     - errorType: "XSS_INJECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -19594,7 +19702,7 @@ parameterErrors:
       additionalInfo: null
     price:
     - errorType: "VALIDATION_ERROR"
-      errorReason: "Data truncation: Data too long for column 'train_number' at row\
+      errorReason: "Data truncation: Data too long for column 'contacts_name' at row\
         \ 1"
       apiEndpoint: "/api/v1/adminorderservice/adminorder"
       parameterName: "price"
@@ -19602,10 +19710,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 45
-      - 13
-      - 12275197
+      - 18
+      - 36
+      - 51
+      - 863580435
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'price' at row 1"
@@ -20067,10 +20175,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 16
-      - 7
-      - 425325596
+      - 17
+      - 55
+      - 15
+      - 313281367
       additionalInfo: null
     zestyNumber:
     - errorType: "FORMAT_ERROR"
@@ -26071,10 +26179,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 58
-      - 13
-      - 344816425
+      - 18
+      - 54
+      - 42
+      - 80357170
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -27142,10 +27250,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 51
-      - 50
-      - 255316494
+      - 18
+      - 48
+      - 55
+      - 387936113
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize instance of `java"
@@ -27155,10 +27263,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 52
-      - 39
-      - 959083821
+      - 18
+      - 48
+      - 31
+      - 557335757
       additionalInfo: null
     - errorType: "XSS_ATTEMPT"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -27422,10 +27530,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 39
-      - 59
-      - 917499764
+      - 18
+      - 30
+      - 3
+      - 37267712
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -27437,10 +27545,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 58
       - 18
-      - 547632157
+      - 54
+      - 27
+      - 593241700
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -27451,10 +27559,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 33
-      - 7
-      - 699212292
+      - 18
+      - 22
+      - 28
+      - 466176341
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -27465,10 +27573,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 53
-      - 10
-      - 912077864
+      - 18
+      - 57
+      - 30
+      - 985084860
       additionalInfo: null
     customer_id:
     - errorType: "FORMAT_ERROR"
@@ -27596,10 +27704,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 31
-      - 8
-      - 469900291
+      - 15
+      - 58
+      - 0
+      - 619416536
       additionalInfo: null
   /api/v1/consignservice/consigns/order/test%2540%2540test:
     id:
@@ -27627,10 +27735,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 19
-      - 27
-      - 199857115
+      - 15
+      - 46
+      - 13
+      - 100934140
       additionalInfo: null
   /api/v1/consignservice/consigns/order/67890:
     orderId:
@@ -27732,10 +27840,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 20
-      - 42
-      - 594795494
+      - 15
+      - 47
+      - 28
+      - 61396571
       additionalInfo: null
   /api/v1/trainservice/trains/byName/CJBnwXcTbdzy:
     <unknown>:
@@ -27806,11 +27914,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 19
-      - 44
-      - 193121784
+      - 18
+      - 15
+      - 59
+      - 6
+      - 381723057
       additionalInfo: null
   /api/v1/consignservice/consigns/account/..%252F..%252F..%252Fetc%252Fpasswd:
     id:
@@ -27823,10 +27931,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 31
-      - 17
-      - 884895653
+      - 15
+      - 57
+      - 41
+      - 747703584
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -27898,10 +28006,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 40
-      - 13
-      - 811467583
+      - 15
+      - 2
+      - 42
+      - 669193851
       additionalInfo: null
   /api/v1/consignservice/consigns/order/abcde:
     orderId:
@@ -28618,6 +28726,21 @@ parameterErrors:
       - 11
       - 576385799
       additionalInfo: null
+  /api/v1/consignservice/consigns/order/FALLBACK_id_16:
+    orderId:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Invalid UUID string: FALLBACK_id_16"
+      apiEndpoint: "/api/v1/consignservice/consigns/order/FALLBACK_id_16"
+      parameterName: "orderId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 16
+      - 4
+      - 92859760
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/0:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -28627,11 +28750,27 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 17
-      - 50
-      - 722474605
+      - 18
+      - 15
+      - 57
+      - 22
+      - 815761220
+      additionalInfo: null
+  /api/v1/consignservice/consigns/account/..%2F..%2F..%2Fetc%2Fpasswd:
+    id:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/consignservice/consigns/account/..%252F..%252F..%252Fetc%252Fpasswd"
+      parameterName: "id"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 58
+      - 19
+      - 477588789
       additionalInfo: null
   /api/v1/consignservice/consigns/order/FALLBACK_id_11:
     orderId:
@@ -28643,10 +28782,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 51
-      - 0
-      - 882763465
+      - 15
+      - 12
+      - 39
+      - 379503815
       additionalInfo: null
   /api/v1/consignservice/consigns/account/-:
     accountId:
@@ -28658,10 +28797,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 20
-      - 14
-      - 243886831
+      - 15
+      - 56
+      - 54
+      - 611063460
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -28702,10 +28841,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 49
-      - 45
-      - 758478267
+      - 15
+      - 11
+      - 43
+      - 464387957
       additionalInfo: null
   /api/v1/routeservice/routes/chongqing/tianjin:
     endPlace:
@@ -28731,11 +28870,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 25
-      - 40
-      - 37251373
+      - 18
+      - 16
+      - 5
+      - 18
+      - 10211463
       additionalInfo: null
     endPlace:
     - errorType: "TYPE_MISMATCH"
@@ -28985,12 +29124,12 @@ parameterErrors:
       parameterName: "id"
       timestamp:
       - 2026
-      - 4
-      - 28
-      - 17
-      - 19
-      - 31
-      - 545768119
+      - 5
+      - 18
+      - 15
+      - 10
+      - 56
+      - 956272355
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -29152,11 +29291,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 3
-      - 14
-      - 9
-      - 6
-      - 67980368
+      - 18
+      - 15
+      - 45
+      - 44
+      - 929391709
       additionalInfo: null
   /api/v1/routeservice/routes/ab/shanghai:
     endPlace:
@@ -29211,11 +29350,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 10
-      - 59
-      - 197671299
+      - 18
+      - 15
+      - 50
+      - 16
+      - 158205509
       additionalInfo: null
   /api/v1/consignservice/consigns/account/CONS-2026-00001:
     accountId:
@@ -29257,10 +29396,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 25
+      - 15
       - 52
-      - 840577257
+      - 36
+      - 335638830
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_10:
     accountId:
@@ -29272,10 +29411,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 24
-      - 47
-      - 142501334
+      - 15
+      - 51
+      - 30
+      - 896227057
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -29450,10 +29589,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 23
-      - 41
-      - 606208884
+      - 15
+      - 50
+      - 44
+      - 228304140
       additionalInfo: null
   /api/v1/consignservice/consigns/account/CONS-2026-00006:
     accountId:
@@ -29465,10 +29604,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 24
-      - 37
-      - 782928265
+      - 15
+      - 51
+      - 12
+      - 171230936
       additionalInfo: null
   /api/v1/consignservice/consigns/account/CONS-2026-00003:
     accountId:
@@ -29480,10 +29619,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 25
-      - 34
-      - 20685588
+      - 15
+      - 51
+      - 49
+      - 695825418
       additionalInfo: null
   /api/v1/consignservice/consigns/order/None:
     orderId:
@@ -29871,10 +30010,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 22
-      - 7
-      - 385464273
+      - 15
+      - 49
+      - 20
+      - 190100427
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -29975,10 +30114,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 26
-      - 11
-      - 587867467
+      - 15
+      - 53
+      - 23
+      - 151189308
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_33:
     accountId:
@@ -29990,10 +30129,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 22
-      - 35
-      - 871987898
+      - 15
+      - 49
+      - 10
+      - 810248210
       additionalInfo: null
   /api/v1/routeservice/routes/newyork/undefined:
     endPlace:
@@ -30242,10 +30381,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 28
-      - 3
-      - 910872344
+      - 15
+      - 54
+      - 47
+      - 220173202
       additionalInfo: null
   /api/v1/consignservice/consigns/account/ghij2:
     accountId:
@@ -30362,11 +30501,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 37
-      - 37
-      - 35425062
+      - 18
+      - 15
+      - 9
+      - 32
+      - 160816371
       additionalInfo: null
   /api/v1/executeservice/execute/execute/%27%20OR%20%271%27%3D%271:
     orderId:
@@ -30512,10 +30651,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 28
-      - 9
-      - 134304283
+      - 15
+      - 54
+      - 52
+      - 407677310
       additionalInfo: null
   /api/v1/routeservice/routes/newyork/123:
     departureTime:
@@ -30555,11 +30694,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 21
-      - 31
-      - 7
-      - 717247575
+      - 18
+      - 15
+      - 53
+      - 32
+      - 496369350
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -30585,10 +30724,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 27
-      - 45
-      - 151300984
+      - 15
+      - 54
+      - 37
+      - 867637340
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_24:
     accountId:
@@ -30686,11 +30825,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 14
-      - 8
-      - 949353327
+      - 18
+      - 15
+      - 53
+      - 4
+      - 243019524
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -30717,10 +30856,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 31
-      - 36
-      - 851347579
+      - 15
+      - 58
+      - 10
+      - 109360128
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_25:
     accountId:
@@ -30837,10 +30976,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 23
-      - 22
-      - 860132701
+      - 15
+      - 50
+      - 34
+      - 861756291
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -30866,10 +31005,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 23
-      - 3
-      - 972942613
+      - 15
+      - 49
+      - 38
+      - 824465283
       additionalInfo: null
   /api/v1/routeservice/routes/fallback_startplace_2/beijing:
     startPlace:
@@ -31000,11 +31139,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 13
-      - 31
-      - 25606873
+      - 18
+      - 15
+      - 52
+      - 26
+      - 958129425
       additionalInfo: null
   /api/v1/routeservice/routes/nanjing/fakecity123:
     endPlace:
@@ -31066,6 +31205,22 @@ parameterErrors:
       - 3
       - 22
       - 844117167
+      additionalInfo: null
+  /api/v1/consignservice/consigns/account/%3B%20ls%20-la:
+    id:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/consignservice/consigns/account/%253B%2520ls%2520-la"
+      parameterName: "id"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 0
+      - 35
+      - 801211831
       additionalInfo: null
   /api/v1/travelservice/admin_trip:
     query:
@@ -31406,10 +31561,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 32
-      - 14
-      - 449544985
+      - 15
+      - 59
+      - 15
+      - 722990514
       additionalInfo: null
   /api/v1/routeservice/routes/fallback_startplace_1/shanghai:
     startPlace:
@@ -31566,11 +31721,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 21
-      - 38
-      - 0
-      - 20311909
+      - 18
+      - 15
+      - 59
+      - 25
+      - 70938649
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -31743,10 +31898,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 36
-      - 0
-      - 997331932
+      - 16
+      - 15
+      - 38
+      - 791368656
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "java. lang"
@@ -31781,11 +31936,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
+      - 18
+      - 16
       - 20
-      - 36
-      - 42
-      - 409183594
+      - 6
+      - 279607705
       additionalInfo: null
     startPlace:
     - errorType: "NULL_ERROR"
@@ -31796,10 +31951,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 50
-      - 19
-      - 689564208
+      - 16
+      - 21
+      - 45
+      - 917149468
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 500)"
@@ -31889,10 +32044,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 49
-      - 39
-      - 650704514
+      - 16
+      - 18
+      - 54
+      - 766468696
       additionalInfo: null
     routeId:
     - errorType: "VALIDATION_ERROR"
@@ -31904,10 +32059,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 40
-      - 10
-      - 360177486
+      - 16
+      - 7
+      - 50
+      - 994207683
       additionalInfo: null
     body:
     - errorType: "NULL_ERROR"
@@ -31945,10 +32100,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 41
-      - 4
-      - 779487580
+      - 16
+      - 7
+      - 32
+      - 27652031
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -32103,10 +32258,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 57
-      - 18
-      - 323280339
+      - 15
+      - 43
+      - 9
+      - 20224470
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
@@ -32128,11 +32283,51 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 4
-      - 58
-      - 646607002
+      - 18
+      - 15
+      - 42
+      - 32
+      - 761545076
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'FALLBACK_trainType_0-route-012' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 30
+      - 14
+      - 604593559
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry 'NonExistentType-FALLBACK_routeId_3' for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 35
+      - 24
+      - 214490077
+      additionalInfo: null
+    - errorType: "CONSTRAINT_ERROR"
+      errorReason: "Duplicate entry '<img src=x onerror=alert('XSS')>-FALLBACK_routeId_1'\
+        \ for key 'route_type_idx'"
+      apiEndpoint: "/api/v1/priceservice/prices"
+      parameterName: "routeId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 42
+      - 37
+      - 985671950
       additionalInfo: null
     trainType:
     - errorType: "CONSTRAINT_ERROR"
@@ -32144,10 +32339,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 58
-      - 17
-      - 316630838
+      - 15
+      - 43
+      - 59
+      - 232819081
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Duplicate entry 'trainType_2000_characters = \"B\" * 2000-RT-1001'\
@@ -32168,13 +32363,13 @@ parameterErrors:
       apiEndpoint: "/api/v1/priceservice/prices"
       parameterName: "trainType"
       timestamp:
-      - 2025
-      - 12
-      - 12
-      - 11
-      - 24
-      - 39
-      - 713864100
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 38
+      - 40
+      - 216162246
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
@@ -32184,10 +32379,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 57
-      - 43
-      - 613582566
+      - 15
+      - 44
+      - 39
+      - 81781490
       additionalInfo: null
     firstClassPriceRate:
     - errorType: "TYPE_MISMATCH"
@@ -33334,10 +33529,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 16
-      - 59
-      - 97927933
+      - 14
+      - 39
+      - 1
+      - 43224028
       additionalInfo: null
   /api/v1/consignservice/consigns/account/account_999:
     account_999:
@@ -34401,9 +34596,9 @@ parameterErrors:
       - 5
       - 18
       - 14
-      - 1
-      - 36
-      - 645498899
+      - 6
+      - 39
+      - 269497497
       additionalInfo: null
     comfortClass:
     - errorType: "FORMAT_ERROR"
@@ -35808,10 +36003,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 43
-      - 18
-      - 618298056
+      - 15
+      - 5
+      - 55
+      - 520349643
       additionalInfo: null
   /api/v1/consignservice/consigns/account/4004:
     accountId:
@@ -35932,6 +36127,21 @@ parameterErrors:
       - 49
       - 37
       - 600584466
+      additionalInfo: null
+  /api/v1/routeservice/routes/fallback_startplace_2/tianjin:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/fallback_startplace_2/tianjin"
+      parameterName: "startPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 19
+      - 47
+      - 321136253
       additionalInfo: null
   /api/v1/consignpriceservice/consignprice/3.99/true:
     consignee:
@@ -36063,12 +36273,12 @@ parameterErrors:
       parameterName: "id"
       timestamp:
       - 2026
-      - 4
-      - 23
-      - 3
-      - 8
-      - 31
-      - 212363927
+      - 5
+      - 18
+      - 15
+      - 10
+      - 0
+      - 420278086
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -36109,12 +36319,26 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 54
-      - 36
-      - 226128934
+      - 15
+      - 16
+      - 41
+      - 226437886
       additionalInfo: null
   /api/v1/routeservice/routes/shanghai/suzhou:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/shanghai/suzhou"
+      parameterName: "startPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 12
+      - 27
+      - 881179223
+      additionalInfo: null
     endPlace:
     - errorType: "TYPE_MISMATCH"
       errorReason: "java. lang"
@@ -36168,10 +36392,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 21
-      - 39
-      - 169835601
+      - 15
+      - 46
+      - 50
+      - 533669055
       additionalInfo: null
     account_id:
     - errorType: "NULL_ERROR"
@@ -36377,12 +36601,12 @@ parameterErrors:
       parameterName: "id"
       timestamp:
       - 2026
-      - 4
-      - 13
-      - 13
-      - 23
-      - 14
-      - 608228908
+      - 5
+      - 18
+      - 15
+      - 56
+      - 35
+      - 848722929
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -36559,11 +36783,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 7
+      - 18
+      - 14
       - 39
-      - 368633173
+      - 20
+      - 69198074
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -36590,10 +36814,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
+      - 15
       - 4
-      - 42
-      - 12
-      - 457834178
+      - 21
+      - 759591369
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -36634,10 +36858,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 43
-      - 8
-      - 284233347
+      - 16
+      - 9
+      - 21
+      - 777207183
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_51:
     accountId:
@@ -36648,11 +36872,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 11
-      - 27
-      - 224641775
+      - 18
+      - 15
+      - 51
+      - 21
+      - 513389706
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_53:
     accountId:
@@ -36842,12 +37066,12 @@ parameterErrors:
       parameterName: "accountId"
       timestamp:
       - 2026
-      - 4
-      - 28
-      - 0
+      - 5
+      - 18
+      - 15
+      - 55
       - 20
-      - 43
-      - 578289698
+      - 551072197
       additionalInfo: null
   /api/v1/consignservice/consigns/order/VAL_id:
     orderId:
@@ -36953,6 +37177,21 @@ parameterErrors:
       - 29
       - 425367139
       additionalInfo: null
+  /api/v1/consignservice/consigns/order/CONS-2026-00002:
+    orderId:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "Invalid UUID string: CONS-2026-00002"
+      apiEndpoint: "/api/v1/consignservice/consigns/order/CONS-2026-00002"
+      parameterName: "orderId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 12
+      - 2
+      - 93645589
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/abc-def-ghi:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -37008,10 +37247,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 53
-      - 58
-      - 745566988
+      - 15
+      - 15
+      - 54
+      - 735376229
       additionalInfo: null
   /api/v1/routeservice/routes/fallback_startplace_1/wuhan:
     startPlace:
@@ -37052,11 +37291,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 1
-      - 46
-      - 57
-      - 357631765
+      - 18
+      - 15
+      - 51
+      - 40
+      - 285110223
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_42:
     accountId:
@@ -37125,11 +37364,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 1
       - 18
-      - 1
-      - 5
-      - 861345617
+      - 15
+      - 48
+      - 24
+      - 201100076
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -37263,6 +37502,22 @@ parameterErrors:
       - 54
       - 305542434
       additionalInfo: null
+  /api/v1/consignservice/consigns/order/%3Csvg%20onload%3Dalert%28%27XSS%27%29%3E:
+    id:
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/consignservice/consigns/order/%253Csvg%2520onload%253Dalert%2528%2527XSS%2527%2529%253E"
+      parameterName: "id"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 8
+      - 16
+      - 454970850
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_39:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -37316,12 +37571,12 @@ parameterErrors:
       parameterName: "accountId"
       timestamp:
       - 2026
-      - 4
+      - 5
+      - 18
+      - 15
+      - 54
       - 28
-      - 0
-      - 30
-      - 42
-      - 938611782
+      - 507892857
       additionalInfo: null
   /api/v1/consignservice/consigns/order/-1:
     orderId:
@@ -37362,11 +37617,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 16
-      - 54
-      - 245086620
+      - 18
+      - 15
+      - 55
+      - 39
+      - 378701875
       additionalInfo: null
   /api/v1/admintravelservice/admintravel/%2527%253B%2520DROP%2520TABLE--:
     tripId:
@@ -37469,11 +37724,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 40
-      - 26
-      - 834728380
+      - 18
+      - 15
+      - 12
+      - 20
+      - 747758172
       additionalInfo: null
   /api/v1/routeservice/routes/shenzhen/chongqing:
     startPlace:
@@ -37500,10 +37755,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 53
-      - 2
-      - 581723796
+      - 15
+      - 14
+      - 58
+      - 987180726
       additionalInfo: null
   /api/v1/consignservice/consigns/order/CONS-2026-00018:
     orderId:
@@ -37515,10 +37770,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 40
+      - 15
+      - 2
       - 23
-      - 179035163
+      - 945410516
       additionalInfo: null
   /api/v1/consignservice/consigns/order/-5:
     orderId:
@@ -37635,11 +37890,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 10
-      - 31
-      - 50742126
+      - 18
+      - 15
+      - 49
+      - 57
+      - 535381583
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_72:
     accountId:
@@ -37666,10 +37921,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 23
-      - 13
-      - 451428881
+      - 15
+      - 50
+      - 25
+      - 501721485
       additionalInfo: null
   /api/v1/routeservice/routes/newyork/;ls-la:
     endPlace:
@@ -37831,11 +38086,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 13
-      - 20
-      - 20
-      - 33
-      - 105347202
+      - 18
+      - 14
+      - 37
+      - 55
+      - 16025063
       additionalInfo: null
   /api/v1/routeservice/routes/fakecity/chengdu:
     startPlace:
@@ -37938,10 +38193,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 51
-      - 47
-      - 838369935
+      - 15
+      - 13
+      - 35
+      - 252227667
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FALLBACK_id_60:
     accountId:
@@ -37982,10 +38237,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 25
       - 15
-      - 279558921
+      - 52
+      - 17
+      - 606644896
       additionalInfo: null
   /api/v1/routeservice/routes/chicago/shenzhen:
     departureTime:
@@ -38176,10 +38431,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 29
       - 15
-      - 111874203
+      - 56
+      - 16
+      - 977444507
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -38687,11 +38942,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 1
-      - 0
-      - 8
-      - 29
-      - 291382848
+      - 18
+      - 15
+      - 11
+      - 6
+      - 335862186
       additionalInfo: null
     - errorType: "VALIDATION_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -38760,10 +39015,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 46
-      - 27
-      - 99614645
+      - 15
+      - 8
+      - 54
+      - 205905936
       additionalInfo: null
   /api/v1/consignservice/consigns/account/FGHIJ:
     accountId:
@@ -39031,11 +39286,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
       - 18
-      - 56
-      - 12
-      - 627352818
+      - 14
+      - 29
+      - 3
+      - 870803673
       additionalInfo: null
   /api/v1/admintravelservice/admintravel/%253Cscript%253Ealert%25281%2529%253C%252Fscript%253E:
     tripId:
@@ -39247,10 +39502,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 43
-      - 55
-      - 116038002
+      - 16
+      - 38
+      - 13
+      - 259935860
       additionalInfo: null
   /api/v1/trainservice/trains/byName/DongCheOne:
     <unknown>:
@@ -39453,6 +39708,20 @@ parameterErrors:
       - 44
       - 992277339
       additionalInfo: null
+    - errorType: "FORMAT_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/consignservice/consigns/order/%25255B1%25252C%2525202%25252C%2525203%25255D"
+      parameterName: "id"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 15
+      - 7
+      - 38
+      - 802147689
+      additionalInfo: null
   /api/v1/consignservice/consigns/account/9999999999999999999999999999999:
     accountId:
     - errorType: "FORMAT_ERROR"
@@ -39641,11 +39910,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 14
-      - 12
-      - 37
-      - 46
-      - 385616300
+      - 18
+      - 15
+      - 4
+      - 3
+      - 151528718
       additionalInfo: null
   /api/v1/routeservice/routes/suzhou/chongqing:
     startPlace:
@@ -39751,6 +40020,20 @@ parameterErrors:
       - 33
       - 39
       - 570977526
+      additionalInfo: null
+    - errorType: "VALIDATION_ERROR"
+      errorReason: "The request was rejected because the URL contained a potentially\
+        \ malicious String \"%25\""
+      apiEndpoint: "/api/v1/contactservice/contacts/account/1%25253B%252520DELETE%252520FROM%252520users%252520WHERE%2525201%25253D1"
+      parameterName: "accountId"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 14
+      - 29
+      - 59
+      - 411321354
       additionalInfo: null
   /api/v1/routeservice/routes/newyork/impossibleendpoint:
     endPlace:
@@ -39881,11 +40164,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 4
-      - 21
-      - 16
-      - 35
-      - 260576151
+      - 18
+      - 15
+      - 59
+      - 43
+      - 976399228
       additionalInfo: null
     account_id:
     - errorType: "FORMAT_ERROR"
@@ -39960,6 +40243,21 @@ parameterErrors:
       - 30
       - 745277135
       additionalInfo: null
+  /api/v1/routeservice/routes/xi'an/hangzhou:
+    startPlace:
+    - errorType: "NULL_ERROR"
+      errorReason: "java. lang"
+      apiEndpoint: "/api/v1/routeservice/routes/xi'an/hangzhou"
+      parameterName: "startPlace"
+      timestamp:
+      - 2026
+      - 5
+      - 18
+      - 16
+      - 21
+      - 36
+      - 558095387
+      additionalInfo: null
   /api/v1/routeservice/routes/wuhan/$(cat/etc/passwd):
     departureTime:
     - errorType: "FORMAT_ERROR"
@@ -40001,10 +40299,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 31
-      - 46
-      - 382934024
+      - 15
+      - 58
+      - 28
+      - 976908389
       additionalInfo: null
   /api/v1/consignservice/consigns/order/2025-13-01:
     orderId:
@@ -40167,10 +40465,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 2
-      - 38
-      - 746659612
+      - 14
+      - 24
+      - 43
+      - 656395695
       additionalInfo: null
   /api/v1/routeservice/routes/beijing/beijing:
     departureTime:
@@ -40805,10 +41103,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
       - 14
-      - 13
-      - 18607593
+      - 36
+      - 16
+      - 53599598
       additionalInfo: null
   /api/v1/travel2service/trips/left:
     departureTime:
@@ -42326,10 +42624,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 20
-      - 52
-      - 296929800
+      - 15
+      - 47
+      - 37
+      - 617081948
       additionalInfo: null
   /api/v1/consignservice/consigns/account/%21%40%23%24%25%5E%26*%28%29%7B%7D%5B%5D%7C%5C%3A%3B%22%27%3C%3E%3F%2C.%2F:
     id:
@@ -42341,11 +42639,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 14
-      - 7
-      - 2
+      - 18
+      - 15
       - 48
-      - 630681353
+      - 5
+      - 563227595
       additionalInfo: null
   /api/v1/routeservice/routes/wuhan/false:
     startPlace:
@@ -42389,10 +42687,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 48
-      - 49
-      - 527101931
+      - 15
+      - 10
+      - 47
+      - 605669286
       additionalInfo: null
   /api/v1/consignservice/consigns/account/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB:
     accountId:
@@ -42464,11 +42762,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 14
-      - 46
-      - 252850815
+      - 18
+      - 15
+      - 53
+      - 51
+      - 224694422
       additionalInfo: null
   /api/v1/consignpriceservice/consignprice/90.1/false:
     handleDate:
@@ -42563,10 +42861,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 50
-      - 10
-      - 278001777
+      - 17
+      - 13
+      - 22
+      - 422271618
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -42708,10 +43006,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 51
-      - 2
-      - 49354348
+      - 17
+      - 21
+      - 16
+      - 438828925
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize instance of `double` out\
@@ -42722,10 +43020,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 35
-      - 55
-      - 831949874
+      - 16
+      - 57
+      - 34
+      - 978013599
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
@@ -42736,10 +43034,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 0
       - 16
-      - 905525851
+      - 30
+      - 12
+      - 677908119
       additionalInfo: null
     target_date:
     - errorType: "FORMAT_ERROR"
@@ -43477,10 +43775,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 3
-      - 53
-      - 916844849
+      - 17
+      - 0
+      - 47
+      - 768512879
       additionalInfo: null
     query:
     - errorType: "TYPE_MISMATCH"
@@ -43574,10 +43872,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 50
-      - 10
-      - 278025598
+      - 17
+      - 21
+      - 16
+      - 438771125
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -44349,10 +44647,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 6
-      - 46
-      - 58
-      - 154505507
+      - 17
+      - 21
+      - 31
+      - 41592014
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "Unknown (HTTP 400)"
@@ -45312,11 +45610,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 36
-      - 31
-      - 118261042
+      - 18
+      - 15
+      - 7
+      - 57
+      - 532465918
       additionalInfo: null
   /api/v1/routeservice/routes/<svgonload=alert('xss')>/beijing:
     startPlace:
@@ -46477,10 +46775,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 2
-      - 48
-      - 154425849
+      - 14
+      - 24
+      - 52
+      - 981439001
       additionalInfo: null
   /api/v1/consignservice/consigns/account/777888999:
     accountId:
@@ -46596,12 +46894,12 @@ parameterErrors:
       parameterName: "orderId"
       timestamp:
       - 2026
-      - 4
-      - 21
-      - 11
-      - 32
-      - 22
-      - 555736361
+      - 5
+      - 18
+      - 15
+      - 6
+      - 14
+      - 223360981
       additionalInfo: null
   /api/v1/contactservice/contacts/account/%253Csvg%2520onload%253Dalert%2528%2527XSS%2527%2529%253E:
     accountId:
@@ -46614,10 +46912,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
       - 14
-      - 31
-      - 916107936
+      - 36
+      - 53
+      - 584851616
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -46642,11 +46940,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 38
-      - 52
-      - 738428842
+      - 18
+      - 15
+      - 6
+      - 33
+      - 229435578
       additionalInfo: null
   /api/v1/consignservice/consigns/order/b:
     orderId:
@@ -47042,11 +47340,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
       - 18
-      - 38
-      - 190861223
+      - 15
+      - 57
+      - 32
+      - 339841420
       additionalInfo: null
     loginId:
     - errorType: "FORMAT_ERROR"
@@ -47101,11 +47399,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 13
-      - 20
-      - 10
-      - 46
-      - 647512890
+      - 18
+      - 14
+      - 38
+      - 51
+      - 659780137
       additionalInfo: null
   /api/v1/consignservice/consigns/account/A1B2C3D4-E5F6-78G9-H0IJ-KLMNOPQRST:
     accountId:
@@ -47505,11 +47803,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 20
-      - 25
-      - 34
-      - 804098135
+      - 18
+      - 16
+      - 5
+      - 12
+      - 781152436
       additionalInfo: null
   /api/v1/consignservice/consigns/account/987654321:
     accountId:
@@ -47567,10 +47865,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 7
-      - 27
-      - 450680759
+      - 14
+      - 29
+      - 40
+      - 835487232
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "The request was rejected because the URL contained a potentially\
@@ -47733,10 +48031,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 29
-      - 33
-      - 884186311
+      - 15
+      - 56
+      - 26
+      - 498797145
       additionalInfo: null
   /api/v1/trainservice/trains/byName/mFR7N4O8qRxfQa:
     <unknown>:
@@ -48001,11 +48299,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
       - 18
-      - 54
-      - 6
-      - 256900760
+      - 14
+      - 27
+      - 3
+      - 445760333
       additionalInfo: null
   /api/v1/contactservice/contacts/account/%253F:
     accountId:
@@ -49756,13 +50054,13 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 19
       - 17
-      - 477822106
+      - 59
+      - 45
+      - 54528268
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
-      errorReason: "Data truncation: Data too long for column 'account_id' at row\
+      errorReason: "Data truncation: Data too long for column 'from_station' at row\
         \ 1"
       apiEndpoint: "/api/v1/orderservice/order/admin"
       parameterName: "contactsDocumentNumber"
@@ -49770,10 +50068,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 7
-      - 22
-      - 20
-      - 934150712
+      - 18
+      - 29
+      - 34
+      - 773289392
       additionalInfo: null
     contactsName:
     - errorType: "DATA_TRUNCATION_ERROR"
@@ -49956,10 +50254,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
       - 15
-      - 42
-      - 595375828
+      - 35
+      - 43
+      - 280298408
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
@@ -49995,10 +50293,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 5
-      - 41
-      - 336569195
+      - 15
+      - 30
+      - 57
+      - 687781473
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Duplicate entry 'NonExistentType-FALLBACK_routeId_3' for key 'route_type_idx'"
@@ -50037,10 +50335,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 17
-      - 7
-      - 355721756
+      - 15
+      - 21
+      - 22
+      - 38937400
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize instance of `java"
@@ -50050,10 +50348,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 13
-      - 41
-      - 671996847
+      - 15
+      - 40
+      - 48
+      - 25855443
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
@@ -50064,10 +50362,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
       - 15
-      - 37
-      - 361238866
+      - 44
+      - 33
+      - 873858958
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize instance of `double` out\
@@ -50078,10 +50376,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 17
-      - 37
-      - 753757973
+      - 15
+      - 35
+      - 48
+      - 479093088
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `double` from\
@@ -50092,10 +50390,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 14
-      - 31
-      - 577523942
+      - 15
+      - 41
+      - 42
+      - 895813472
       additionalInfo: null
     - errorType: "CONSTRAINT_ERROR"
       errorReason: "Data truncation: Data too long for column 'route_id' at row 1"
@@ -50254,10 +50552,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 5
-      - 17
-      - 12
-      - 593604158
+      - 15
+      - 41
+      - 42
+      - 895830282
       additionalInfo: null
   /api/v1/consignservice/consigns/order/KLMNO:
     orderId:
@@ -52368,10 +52666,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 34
-      - 12
-      - 350601731
+      - 19
+      - 33
+      - 24
+      - 347762088
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "Unknown (HTTP 400)"
@@ -52582,10 +52880,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 20
-      - 15
-      - 314991925
+      - 19
+      - 19
+      - 18
+      - 156183742
       additionalInfo: null
     - errorType: "FORMAT_ERROR"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -52733,10 +53031,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 35
-      - 45
-      - 701214306
+      - 19
+      - 34
+      - 48
+      - 595860641
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Numeric value (-9223372036854775808) out of\
@@ -52747,10 +53045,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 33
-      - 44
-      - 466339079
+      - 19
+      - 32
+      - 47
+      - 251259696
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize instance of `int` out of\
@@ -52761,10 +53059,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 24
-      - 26
-      - 398310548
+      - 19
+      - 23
+      - 29
+      - 335901503
       additionalInfo: null
     - errorType: "TYPE_MISMATCH"
       errorReason: "JSON parse error: Cannot deserialize value of type `int` from\
@@ -52775,10 +53073,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 29
+      - 19
       - 28
-      - 595614533
+      - 40
+      - 820786545
       additionalInfo: null
     body.boughtDateStart:
     - errorType: "FORMAT_ERROR"
@@ -53330,10 +53628,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 8
-      - 33
-      - 44
-      - 466284012
+      - 19
+      - 34
+      - 6
+      - 460549924
       additionalInfo: null
     - errorType: "XSS_DETECTION"
       errorReason: "Unknown (HTTP 400)"
@@ -56087,10 +56385,10 @@ parameterErrors:
       - 2026
       - 5
       - 18
-      - 4
-      - 39
-      - 45
-      - 451200164
+      - 15
+      - 1
+      - 46
+      - 551056080
       additionalInfo: null
   /api/v1/consignservice/consigns/order/NULL:
     orderId:
@@ -56159,11 +56457,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 1
-      - 0
-      - 3
-      - 25
-      - 889929635
+      - 18
+      - 15
+      - 4
+      - 31
+      - 259602217
       additionalInfo: null
     order_id:
     - errorType: "FORMAT_ERROR"
@@ -56188,11 +56486,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
-      - 19
-      - 36
-      - 12
-      - 132823965
+      - 18
+      - 15
+      - 8
+      - 6
+      - 906036782
       additionalInfo: null
   ? /api/v1/contactservice/contacts/account/Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520Lorem%2520ipsum%2520dolor%2520sit%2520amet%2520
   : accountId:
@@ -56218,11 +56516,11 @@ parameterErrors:
       timestamp:
       - 2026
       - 5
-      - 17
       - 18
-      - 54
-      - 26
-      - 333572718
+      - 14
+      - 27
+      - 22
+      - 21279417
       additionalInfo: null
   /api/v1/routeservice/routes/shenzhen/shenzhen:
     startPlace:
