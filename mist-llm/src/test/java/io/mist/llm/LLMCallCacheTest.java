@@ -1,4 +1,4 @@
-package es.us.isa.restest.llm;
+package io.mist.llm;
 
 import org.junit.Rule;
 import org.junit.Test;

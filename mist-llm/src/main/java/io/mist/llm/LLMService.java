@@ -1,15 +1,15 @@
-package es.us.isa.restest.llm;
+package io.mist.llm;
 
-import es.us.isa.restest.util.LLMCommunicationLogger;
-import es.us.isa.restest.util.SeededRandom;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * endpoint (DeepSeek, OpenAI, OpenRouter, Together, ..., or a self-hosted
  * OpenAI shim like gpt4all), Google Gemini, or Ollama, based on configuration.
  */
-public class LLMService {
+public class LLMService implements LLMClient {
     
     private static final Logger logger = LogManager.getLogger(LLMService.class);
     
@@ -26,7 +26,7 @@ public class LLMService {
     private final OllamaApiClient ollamaClient;
     private final OkHttpClient httpClient;
     private final OkHttpClient hostedHttpClient;
-    private final LLMCommunicationLogger communicationLogger;
+    private final LLMCommunicationSink communicationSink;
 
     // Watchdog scheduler for hosted-endpoint deadlines — defense in depth on
     // top of OkHttp's own timeouts (see hostedHttpClient construction note).
@@ -59,7 +59,8 @@ public class LLMService {
         if (!loggerProps.containsKey("llm.communication.logging.enabled")) {
             loggerProps.setProperty("llm.communication.logging.enabled", "true");
         }
-        this.communicationLogger = LLMCommunicationLogger.getInstance(loggerProps);
+        this.communicationSink = loadCommunicationSink();
+        this.communicationSink.init(loggerProps);
         
         // Initialize Gemini client if needed
         if (config.getModelType() == LLMConfig.ModelType.GEMINI && config.isGeminiEnabled()) {
@@ -194,7 +195,7 @@ public class LLMService {
                 systemPrompt, userPrompt, effectiveTemperature, maxTokens);
         LLMCallCache cache = LLMCallCache.getInstance();
 
-        LLMCommunicationLogger.LLMRequestContext context = communicationLogger.logRequest(
+        LLMCommunicationSink.RequestHandle context = communicationSink.logRequest(
             modelType, modelName, systemPrompt, userPrompt, endpoint, metadata);
 
         if (System.getProperty("random.seed") != null) {
@@ -202,7 +203,7 @@ public class LLMService {
             if (hit != null) {
                 logger.info("LLMCallCache: read hit for key {} (backend {})",
                         abbreviateKey(cacheKey), backendName);
-                communicationLogger.logResponse(context, hit, true, null);
+                communicationSink.logResponse(context, hit, true, null);
                 return hit;
             }
         }
@@ -273,7 +274,7 @@ public class LLMService {
             }
         } finally {
             // Log the response
-            communicationLogger.logResponse(context, result, success, errorMessage);
+            communicationSink.logResponse(context, result, success, errorMessage);
         }
 
         // Unseeded runs feed the cache so a future seeded run can replay them.
@@ -340,7 +341,7 @@ public class LLMService {
             // Providers that honour `seed` (OpenAI gpt-4o, DeepSeek, OpenRouter,
             // Together, Groq, vLLM) combine it with temperature=0 for byte-stable
             // output; others silently drop the field.
-            Long seed = SeededRandom.getBaseSeed();
+            Long seed = configuredBaseSeed();
             if (seed != null) {
                 requestBody.put("seed", seed);
             }
@@ -522,9 +523,64 @@ public class LLMService {
      * Close communication logger
      */
     public void close() {
-        if (communicationLogger != null) {
-            communicationLogger.close();
+        if (communicationSink != null) {
+            communicationSink.close();
         }
+    }
+
+    /**
+     * {@link LLMClient} entry point. Wraps the existing
+     * {@link #generateText(String, String)} convenience method so callers
+     * coding against the SPI see the same prompt-cache + per-call cascade
+     * behaviour as the legacy direct callers.
+     */
+    @Override
+    public String prompt(String systemPrompt, String userPrompt) {
+        return generateText(systemPrompt, userPrompt);
+    }
+
+    /**
+     * Resolve the configured base random seed, or {@code null} when
+     * {@code -Drandom.seed} is unset or unparseable. Equivalent to the
+     * adapter's {@code SeededRandom.getBaseSeed()} but uses only system
+     * properties so the LLM module stays free of {@code restest-core}
+     * dependencies.
+     */
+    private static Long configuredBaseSeed() {
+        String prop = System.getProperty("random.seed");
+        if (prop == null || prop.isEmpty()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(prop);
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
+    }
+
+    /**
+     * Discover the {@link LLMCommunicationSink} binding via
+     * {@link ServiceLoader}. When no binding is registered (e.g. running the
+     * mist-llm jar standalone in a test) we fall back to
+     * {@link NoOpLLMCommunicationSink} so callers never have to null-check.
+     * The adapter ships its own binding in
+     * {@code mist-restest-adapter/src/main/resources/META-INF/services/}.
+     */
+    private static LLMCommunicationSink loadCommunicationSink() {
+        try {
+            ServiceLoader<LLMCommunicationSink> loader = ServiceLoader.load(LLMCommunicationSink.class);
+            Iterator<LLMCommunicationSink> it = loader.iterator();
+            if (it.hasNext()) {
+                LLMCommunicationSink sink = it.next();
+                logger.debug("LLMService: bound communication sink {}", sink.getClass().getName());
+                return sink;
+            }
+        } catch (Throwable t) {
+            // Swallow and fall through to the no-op so a broken sink binding
+            // never takes the LLM pipeline down with it.
+            logger.warn("LLMService: failed to load LLMCommunicationSink via ServiceLoader ({}); using no-op", t.getMessage());
+        }
+        return new NoOpLLMCommunicationSink();
     }
 
     private static final java.util.concurrent.atomic.AtomicBoolean MISSING_KEY_WARNED =

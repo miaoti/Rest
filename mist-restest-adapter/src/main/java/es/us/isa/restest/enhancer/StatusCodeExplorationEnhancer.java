@@ -5,7 +5,7 @@ import es.us.isa.restest.coverage.LLMStatusCodeDiscovery;
 import es.us.isa.restest.coverage.StatusCodeCoverageTracker;
 import es.us.isa.restest.coverage.StatusCodeTarget;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
-import es.us.isa.restest.llm.LLMService;
+import io.mist.llm.LLMService;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.util.ConsoleProgressBar;
 

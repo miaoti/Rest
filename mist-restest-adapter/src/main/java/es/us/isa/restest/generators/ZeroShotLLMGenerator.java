@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 
 import es.us.isa.restest.configuration.MstConfig;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
-import es.us.isa.restest.llm.LLMService;
-import es.us.isa.restest.llm.LLMConfig;
+import io.mist.llm.LLMService;
+import io.mist.llm.LLMConfig;
 import es.us.isa.restest.util.PropertyManager;
 import es.us.isa.restest.util.SeededRandom;
 import org.json.JSONObject;

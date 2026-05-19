@@ -1,7 +1,5 @@
-package es.us.isa.restest.llm;
+package io.mist.llm;
 
-import es.us.isa.restest.util.LLMCommunicationLogger;
-import es.us.isa.restest.util.SeededRandom;
 import okhttp3.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -98,7 +96,7 @@ public class OllamaApiClient {
                 JSONObject options = new JSONObject();
                 options.put("temperature", temperature);
                 // NOT adding num_predict - it breaks content generation
-                Long seed = SeededRandom.getBaseSeed();
+                Long seed = configuredBaseSeed();
                 if (seed != null) {
                     options.put("seed", seed);
                 }
@@ -231,6 +229,24 @@ public class OllamaApiClient {
             case 3:
             default:
                 return 15; // Wait 15 seconds for subsequent retries
+        }
+    }
+
+    /**
+     * Resolve the configured base random seed, or {@code null} when
+     * {@code -Drandom.seed} is unset or unparseable. Reads the system
+     * property directly so the mist-llm module carries no compile-time edge
+     * to the adapter's {@code SeededRandom}.
+     */
+    private static Long configuredBaseSeed() {
+        String prop = System.getProperty("random.seed");
+        if (prop == null || prop.isEmpty()) {
+            return null;
+        }
+        try {
+            return Long.parseLong(prop);
+        } catch (NumberFormatException ignored) {
+            return null;
         }
     }
 }

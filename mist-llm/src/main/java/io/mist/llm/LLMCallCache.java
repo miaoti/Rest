@@ -1,6 +1,5 @@
-package es.us.isa.restest.llm;
+package io.mist.llm;
 
-import es.us.isa.restest.configuration.MstConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
@@ -67,9 +66,11 @@ public class LLMCallCache {
     }
 
     /**
-     * Lazy singleton. The cache file path is sourced from
-     * {@link MstConfig#instance()} so it shares validation and typo-warning
-     * with the rest of the MST configuration surface.
+     * Lazy singleton. The cache file path is sourced from the
+     * {@code mist.llm.cache.path} system property (default
+     * {@value #DEFAULT_PATH}) — the same key the adapter's MstConfig used to
+     * read for us, kept here as a direct {@code System.getProperty} read so
+     * the mist-llm module carries no compile-time edge to mist-restest-adapter.
      */
     public static LLMCallCache getInstance() {
         LLMCallCache local = instance;
@@ -77,7 +78,7 @@ public class LLMCallCache {
             synchronized (INSTANCE_LOCK) {
                 local = instance;
                 if (local == null) {
-                    String path = MstConfig.instance().llm().cachePath();
+                    String path = System.getProperty("mist.llm.cache.path", DEFAULT_PATH);
                     local = new LLMCallCache(Paths.get(path));
                     // Register the shutdown hook once, only for the production
                     // singleton. forTesting() instances skip it so a test run

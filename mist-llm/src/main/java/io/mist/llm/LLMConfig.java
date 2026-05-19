@@ -1,4 +1,4 @@
-package es.us.isa.restest.llm;
+package io.mist.llm;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -543,7 +543,10 @@ public class LLMConfig {
      * cached responses replay byte-deterministically. The gate intentionally
      * fires on "set" rather than "parseable" — a non-numeric seed is still a
      * deliberate determinism request. Numeric forwarding to backends is
-     * handled separately via {@link es.us.isa.restest.util.SeededRandom}.
+     * handled separately by {@code es.us.isa.restest.util.SeededRandom} (in
+     * mist-restest-adapter) for adapter callers, and by
+     * {@link LLMService}'s internal {@code configuredBaseSeed()} helper for
+     * mist-llm-direct callers.
      */
     public static double applySeedGate(double configuredTemperature) {
         return System.getProperty("random.seed") != null ? 0.0 : configuredTemperature;
