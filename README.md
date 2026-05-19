@@ -24,6 +24,8 @@ Two more sit in the MIST-mode properties file (`trainticket-mst.properties`):
 
 The bundled demo ships every input above pre-staged for TrainTicket. Pick a Quick Start path below depending on whether you have an LLM API key handy.
 
+> **Note on the two launchers.** As of the Path-B rebuild the project is a Maven reactor with `mist-cli`, `mist-core`, `mist-llm`, and `mist-restest-adapter`. The **primary** entry point is `mist-cli/target/mist.jar` (`Main-Class: io.mist.cli.MistMain`); the legacy `mist-restest-adapter/target/restest.jar` (`Main-Class: es.us.isa.restest.main.TestGenerationAndExecution`) still works as a thin delegation and is preserved for the ICSME 2026 demo workflow. Under `-Drandom.seed=42` the two jars produce byte-identical scenario files (see `docs/mst-plans/STAGE_1D_VERIFICATION.md`).
+
 ---
 
 ## Quick Start A — bundled demo, fully local LLM (no API key)
@@ -31,7 +33,7 @@ The bundled demo ships every input above pre-staged for TrainTicket. Pick a Quic
 Best for first-time validation that the tool works on your machine. Uses Ollama, so nothing leaves your laptop.
 
 ```bash
-# 1. Build the fat JAR
+# 1. Build the whole reactor (fat JARs for both launch paths)
 mvn clean install -DskipTests
 
 # 2. Start Ollama and pull a model (one-time; see https://ollama.com/download)
@@ -45,7 +47,8 @@ ollama pull qwen2.5-coder:14b
 #       llm.openai_compatible.enabled=false
 
 # 4. Generate + execute against the bundled TrainTicket demo
-java -jar target/restest.jar src/main/resources/My-Example/trainticket-demo.properties
+java -jar mist-cli/target/mist.jar src/main/resources/My-Example/trainticket-demo.properties
+#    (Legacy equivalent: java -jar mist-restest-adapter/target/restest.jar <same .properties>)
 
 # 5. Render the Allure report
 allure/bin/allure generate target/allure-results -o target/allure-report --clean && \
@@ -65,7 +68,7 @@ export DEEPSEEK_API_KEY=sk-...
 
 # 3. The bundled demo is already wired for DeepSeek (llm.model.type=openai_compatible,
 #    llm.openai_compatible.url=https://api.deepseek.com/v1/chat/completions). Just run:
-java -jar target/restest.jar src/main/resources/My-Example/trainticket-demo.properties
+java -jar mist-cli/target/mist.jar src/main/resources/My-Example/trainticket-demo.properties
 
 # 4-5. Same Allure rendering as above
 allure/bin/allure generate target/allure-results -o target/allure-report --clean && \
@@ -87,7 +90,7 @@ mvn clean install -DskipTests
 # 3. Generate the MST test configuration from your spec (one-time per spec change).
 #    Edit the input/output paths at the top of MicroserviceConfBuilderMain
 #    or wrap it in your own main, then:
-java -cp target/restest.jar es.us.isa.restest.main.MicroserviceConfBuilderMain
+java -cp mist-restest-adapter/target/restest.jar es.us.isa.restest.main.MicroserviceConfBuilderMain
 
 # 4. Copy the bundled property files as a template and update FOUR keys:
 #       oas.path           → your openapi.yaml
@@ -97,7 +100,7 @@ java -cp target/restest.jar es.us.isa.restest.main.MicroserviceConfBuilderMain
 #    plus mst.config.path so the core file points at your MST file.
 
 # 5. Same launch command, pointed at YOUR core properties file:
-java -jar target/restest.jar src/main/resources/<your-system>/system-demo.properties
+java -jar mist-cli/target/mist.jar src/main/resources/<your-system>/system-demo.properties
 ```
 
 After any run, the fault-detection report lands under `logs/fault-detection-reports/`, CSV stats under `target/test-data/`.

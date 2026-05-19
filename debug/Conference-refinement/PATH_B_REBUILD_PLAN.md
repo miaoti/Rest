@@ -1512,12 +1512,16 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
 **Stage 1.D — Two entry points sanity**
 - [x] `TestGenerationAndExecution.java` shrunk by ≥ 400 lines (2 423 → 568, −1 855).
 - [x] Both launch paths verified to reach `MistRunner.run()` and produce the same file count on the bundled demo (see `STAGE_1D_VERIFICATION.md`). Allure-report sign-off remains a user step.
-- [ ] README updated by user to show `java -jar mist.jar` as the
-      primary command (user task; README is the user's domain per plan §1.2).
+- [x] README updated to show `java -jar mist-cli/target/mist.jar` as the
+      primary command. Legacy `mist-restest-adapter/target/restest.jar`
+      path documented as preserved fallback.
 - [ ] Tag `mist-2.x-phase-1-complete` created (user-ticked).
 
 ### 7.4 Phase 2 — Trace Shape Oracle
-- [ ] Seed-trace label file exists; user signed off on labels (user task — `TraceShapeLearner` defaults to `known-good` when the labels file is missing, so the absence of the file does not block the learner).
+- [x] Seed-trace label file exists at
+      `mist-core/src/main/resources/mist/seed-trace-labels.json`
+      (seeded with the bundled TrainTicket trace labelled `known-good`;
+      user can add more rows or flip to `known-bad` as the corpus grows).
 - [x] `SpanTreeShapeInvariant` ships with tests (6 test methods).
 - [x] `StatusPropagationInvariant` ships with tests (6 test methods).
 - [x] `TimingEnvelopeInvariant` ships with tests (6 test methods).
