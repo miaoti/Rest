@@ -6,8 +6,11 @@ import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
+import es.us.isa.restest.inputs.smart.InputFetchRegistry;
+import es.us.isa.restest.inputs.smart.ParameterError;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
 import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
+import io.mist.core.bandit.ThompsonScheduler;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
@@ -203,6 +206,72 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("Fault injection queue built: {} targets across {} roots",
                 queue.size(), roots.size());
         return queue;
+    }
+
+    /**
+     * Re-order the exhaustive fault queue using Thompson sampling over a
+     * Beta(α, β) posterior per (rootApiKey, paramName, faultType) — Fix 3
+     * Layer 2.
+     *
+     * <p>α is seeded from the {@link InputFetchRegistry}'s recorded
+     * parameter errors: each prior fault on a given (endpoint, parameter)
+     * counts as one success, so previously-buggy targets float to the
+     * front. β remains at the uniform prior; tightening it requires
+     * persistent probe-count tracking (a Layer 2.1 follow-up), but even
+     * the open-loop ordering already (i) prioritises known-buggy targets
+     * under the {@code K_ZERO_STEP} / {@code K_DEDUP_EXHAUSTED} early
+     * exits and (ii) preserves exhaustive coverage when the budget is
+     * sufficient — the queue length is unchanged.
+     *
+     * <p>The set of (endpoint, parameter, faultType) keys is closed
+     * (one bandit arm per queue entry) so no probe is wasted on an arm
+     * that cannot be pulled.
+     */
+    private List<FaultTarget> rankWithBandit(List<FaultTarget> queue) {
+        if (queue.size() <= 1) return queue;
+
+        ThompsonScheduler bandit = new ThompsonScheduler();
+        InputFetchRegistry registry = loadRegistryQuietly();
+        seedBanditFromRegistry(bandit, queue, registry);
+        List<FaultTarget> ranked = bandit.rank(queue, MultiServiceTestCaseGenerator::banditKey);
+        log.debug("Fault queue re-ranked by ThompsonScheduler: {} targets, registry={}",
+                ranked.size(), registry != null ? "loaded" : "absent");
+        return ranked;
+    }
+
+    /**
+     * Seed {@code bandit}'s α counter for each {@link FaultTarget} key with the
+     * count of parameter errors recorded in {@code registry}. β stays at the
+     * uniform prior. Package-private so the seeding contract can be unit-tested
+     * without going through the on-disk registry path.
+     */
+    static void seedBanditFromRegistry(ThompsonScheduler bandit,
+                                       List<FaultTarget> queue,
+                                       InputFetchRegistry registry) {
+        if (registry == null) return;
+        for (FaultTarget t : queue) {
+            List<ParameterError> errors = registry.getParameterErrors(t.rootApiKey, t.paramName);
+            if (!errors.isEmpty()) {
+                bandit.seed(banditKey(t), 1.0 + errors.size(), 1.0);
+            }
+        }
+    }
+
+    static String banditKey(FaultTarget t) {
+        return t.rootApiKey + "|" + t.paramName + "|" + t.type;
+    }
+
+    private static InputFetchRegistry loadRegistryQuietly() {
+        try {
+            String path = System.getProperty("smart.input.fetch.registry.path",
+                    "input-fetch-registry.yaml");
+            java.io.File f = new java.io.File(path);
+            if (!f.exists()) return null;
+            return InputFetchRegistry.loadFromFile(f);
+        } catch (Exception e) {
+            log.debug("Bandit seeding skipped: registry load failed ({})", e.getMessage());
+            return null;
+        }
     }
 
     // Pattern to match HTTP operations in operation names
@@ -438,7 +507,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         log.info("Configured variant count: {}, faultyRatio: {}", configuredVariantCount, faultyRatio);
 
         // ── 1. Build the exhaustive fault-injection queue ──────────────
-        List<FaultTarget> faultQueue = buildFaultInjectionQueue(sc);
+        // Fix 3 Layer 2: re-rank using Thompson sampling. Length is preserved,
+        // so the exhaustive guarantee in §III holds; only the order changes,
+        // biasing known-buggy targets toward earlier variant indices so the
+        // K_ZERO_STEP / K_DEDUP_EXHAUSTED early exits favour high-value tests.
+        List<FaultTarget> faultQueue = rankWithBandit(buildFaultInjectionQueue(sc));
         int totalNegativeSlots = faultQueue.size();
 
         // ── 2. Dynamic Variant Sizing ─────────────────────────────────
