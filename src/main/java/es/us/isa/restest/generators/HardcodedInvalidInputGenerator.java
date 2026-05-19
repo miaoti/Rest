@@ -224,16 +224,34 @@ public class HardcodedInvalidInputGenerator {
         
         log.debug("  📝 Generating EMPTY_INPUT for required parameter: {}", param.getName());
         String paramType = safeStr(param.getType()).toLowerCase();
-        
-        // Empty string variations
-        pool.addValue(InvalidInputType.EMPTY_INPUT, "");
+
+        // Empty string variations. Skip the pure-empty "" for path-located parameters:
+        // empty path segments collapse to a trailing slash and Spring (or any URL
+        // router) returns 405/404 before the @PathVariable handler ever runs, so the
+        // controller's trim().isEmpty() check is never exercised. Whitespace variants
+        // (URL-encoded as %20 etc. by the writer) DO reach the handler.
+        if (!isPathLocation(param)) {
+            pool.addValue(InvalidInputType.EMPTY_INPUT, "");
+        }
         pool.addValue(InvalidInputType.EMPTY_INPUT, " ");
         pool.addValue(InvalidInputType.EMPTY_INPUT, "   ");
         pool.addValue(InvalidInputType.EMPTY_INPUT, "\t");
         pool.addValue(InvalidInputType.EMPTY_INPUT, "\n");
         pool.addValue(InvalidInputType.EMPTY_INPUT, "\r\n");
         pool.addValue(InvalidInputType.EMPTY_INPUT, " \t \n ");
-        
+
+        // For comma-separated string parameters, replacing the WHOLE value tests
+        // only the structural validators (empty / single-element). The per-element
+        // validators (each element must be non-empty / non-whitespace) are reachable
+        // only via element-level mutation. Detection is OpenAPI-spec based and
+        // SUT-agnostic; see looksLikeCsv().
+        if (looksLikeCsv(param)) {
+            String baseline = getCsvBaseline(param);
+            pool.addValue(InvalidInputType.EMPTY_INPUT, mutateCsvElement(baseline, ""));
+            pool.addValue(InvalidInputType.EMPTY_INPUT, mutateCsvElement(baseline, " "));
+            pool.addValue(InvalidInputType.EMPTY_INPUT, mutateCsvElement(baseline, "   "));
+        }
+
         // Type-specific empty values
         if ("array".equals(paramType)) {
             pool.addValue(InvalidInputType.EMPTY_INPUT, Collections.emptyList());
@@ -304,6 +322,14 @@ public class HardcodedInvalidInputGenerator {
         pool.addValue(InvalidInputType.SPECIAL_CHARACTERS, "!@#$%^&*(){}[]|\\:;\"'<>?,./");
         pool.addValue(InvalidInputType.SPECIAL_CHARACTERS, "\\x00\\x01\\x02");
         pool.addValue(InvalidInputType.SPECIAL_CHARACTERS, "\u0000\u0001\u0002");
+
+        // CSV element-level special chars: the field as a whole parses fine but a single
+        // element carries a hostile payload. Catches per-element sanitisers.
+        if (looksLikeCsv(param)) {
+            String baseline = getCsvBaseline(param);
+            pool.addValue(InvalidInputType.SPECIAL_CHARACTERS, mutateCsvElement(baseline, "<script>"));
+            pool.addValue(InvalidInputType.SPECIAL_CHARACTERS, mutateCsvElement(baseline, "'; DROP TABLE x; --"));
+        }
     }
     
     /**
@@ -321,6 +347,16 @@ public class HardcodedInvalidInputGenerator {
         String paramType = safeStr(param.getType()).toLowerCase();
 
         log.debug("  📝 Generating BOUNDARY_VIOLATION for type: {}", paramType);
+
+        // CSV element-length boundaries (independent of field-level minLength/maxLength).
+        // Some APIs validate each comma-separated element separately (e.g. "each station
+        // name must be between 2 and 50 characters"). Whole-value boundary mutators never
+        // exercise per-element validators because they replace the whole field.
+        if (looksLikeCsv(param)) {
+            String baseline = getCsvBaseline(param);
+            pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, mutateCsvElement(baseline, "X"));
+            pool.addValue(InvalidInputType.BOUNDARY_VIOLATION, mutateCsvElement(baseline, "A".repeat(101)));
+        }
 
         // Schema-derived numeric boundaries (off-by-one)
         Number min = param.getMinimum();
@@ -576,6 +612,84 @@ public class HardcodedInvalidInputGenerator {
     /**
      * Safe string conversion - returns empty string if null.
      */
+    /**
+     * Returns true when the parameter is located in the URL path. Path-located string
+     * params have routing-level constraints distinct from header/body — notably, an
+     * empty path segment never reaches the handler.
+     */
+    private static boolean isPathLocation(ParameterInfo p) {
+        if (p == null) return false;
+        String loc = p.getInLocation();
+        return loc != null && "path".equalsIgnoreCase(loc.trim());
+    }
+
+    /**
+     * Heuristic: does the parameter look like a comma-separated string list?
+     * SUT-agnostic — only inspects OpenAPI-spec primitives carried by {@link ParameterInfo}:
+     * <ul>
+     *   <li>{@code type:array} — explicit list, trivially CSV-shaped on the wire</li>
+     *   <li>{@code description} contains "comma-separated", "comma separated", "csv", or "list of"</li>
+     *   <li>{@code example} contains 3+ commas (a single comma might be prose; 3+ implies a list)</li>
+     * </ul>
+     * False positives are cheap (a few wasted variants); false negatives are the main risk
+     * and are mitigated by the LLM's own CSV-aware prompt in ZeroShotLLMGenerator.
+     */
+    private static boolean looksLikeCsv(ParameterInfo p) {
+        if (p == null) return false;
+        String type = safeStrStatic(p.getType()).toLowerCase(Locale.ROOT);
+        if ("array".equals(type)) return true;
+        String desc = safeStrStatic(p.getDescription()).toLowerCase(Locale.ROOT);
+        if (desc.contains("comma-separated") || desc.contains("comma separated")
+                || desc.contains("csv") || desc.contains("list of")) {
+            return true;
+        }
+        String ex = safeStrStatic(p.getSchemaExample());
+        // Count commas. 3+ separators ⇒ 4+ elements ⇒ very likely a list (a sentence
+        // describing 4 things rarely uses bare commas with no spaces around them).
+        int commas = 0;
+        for (int i = 0; i < ex.length(); i++) if (ex.charAt(i) == ',') commas++;
+        return commas >= 3;
+    }
+
+    /**
+     * Produce a baseline CSV string for {@code mutateCsvElement} to operate on.
+     * Prefers the parameter's {@code example} (which the OpenAPI author intended as a
+     * valid sample). Falls back to a synthetic 3-element CSV when no example is provided.
+     */
+    private static String getCsvBaseline(ParameterInfo p) {
+        String ex = safeStrStatic(p == null ? null : p.getSchemaExample());
+        if (ex.contains(",")) return ex;
+        // Synthetic baseline. Generic placeholder words — not SUT-specific.
+        return "alpha,bravo,charlie";
+    }
+
+    /**
+     * Replace one interior element of a CSV string with {@code replacement} and return
+     * the rejoined value. Interior (not first/last) so the structural validators
+     * (insufficient-count, missing-start, missing-end) don't fire first and mask the
+     * per-element validator we're actually targeting.
+     */
+    private static String mutateCsvElement(String baseline, String replacement) {
+        if (baseline == null || baseline.isEmpty()) return replacement;
+        String[] parts = baseline.split(",", -1);
+        if (parts.length < 3) {
+            // Too few parts to mutate interior; pad with placeholders then mutate the middle.
+            String[] padded = new String[Math.max(3, parts.length)];
+            for (int i = 0; i < padded.length; i++) {
+                padded[i] = i < parts.length ? parts[i] : ("filler" + i);
+            }
+            parts = padded;
+        }
+        int mid = parts.length / 2;
+        parts[mid] = replacement;
+        return String.join(",", parts);
+    }
+
+    /** Null-safe trim helper. {@link #safeStr} is instance-bound; this is a static twin. */
+    private static String safeStrStatic(String s) {
+        return s == null ? "" : s;
+    }
+
     private String safeStr(String s) {
         return s != null ? s : "";
     }
