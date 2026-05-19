@@ -3,7 +3,6 @@ package es.us.isa.restest.generators;
 import es.us.isa.restest.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.WorkflowStep;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -17,24 +16,28 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Locks in the contract that {@code runSingleRootDedupPass} short-circuits on
- * already-tagged scenarios so newly-constructed shattered children (which Phase 3
- * cannot represent via identity) survive Phase 3.5's repeated dedup pass.
+ * Locks in the contract that the single-root dedup pass short-circuits on
+ * already-tagged scenarios so newly-constructed shattered children (which
+ * Phase 3 cannot represent via identity) survive Phase 3.5's repeated
+ * dedup pass.
  *
- * <p>{@code runSingleRootDedupPass} is {@code private}; the test reaches it via
- * reflection so the production signature stays clean.
+ * <p>The dedup logic lives in the package-private
+ * {@code es.us.isa.restest.workflow.pipeline.stages.DedupSupport#runPass}
+ * static helper after the phase-body lift. This test reaches it via
+ * reflection so the production signature stays clean and the test does not
+ * need to live in the {@code stages} package alongside the helper.
  */
 public class PhaseTwoFiveDedupTest {
 
     /**
-     * Build a 1-root WorkflowScenario whose sole root has the given operation name
-     * (e.g. {@code "GET /stations"}). The canonical key extracted by
-     * {@code extractRootApiFromStep} is {@code "GET__stations"}.
+     * Build a 1-root WorkflowScenario whose sole root has the given operation
+     * name (e.g. {@code "GET /stations"}). The canonical key extracted by the
+     * stage helper is {@code "GET__stations"}.
      */
     private static WorkflowScenario singleRoot(String operationName, String serviceName) {
         WorkflowStep root = new WorkflowStep(
-                "trace-" + System.nanoTime(),  // unique traceId
-                "span-" + System.nanoTime(),    // unique spanId
+                "trace-" + System.nanoTime(),
+                "span-" + System.nanoTime(),
                 serviceName,
                 operationName,
                 0L, 0L,
@@ -56,21 +59,20 @@ public class PhaseTwoFiveDedupTest {
     }
 
     /**
-     * Invoke the private {@code runSingleRootDedupPass(String, List, Set)} on a Mockito
-     * mock instance configured with {@code CALLS_REAL_METHODS}. The method does not read
-     * any instance state of {@code MultiServiceTestCaseGenerator} other than {@code log}
-     * (static final, initialised at class load) and the call out to {@code extractRootApiFromStep},
-     * which itself only reads step getters and static patterns — both safe in a no-state mock.
+     * Invoke the package-private static {@code DedupSupport.runPass(String, List, Set)}
+     * helper via reflection. The class is package-private so we have to load it
+     * by name, but the contract being tested (the dedup pass itself) is the
+     * same logic that used to live as an instance method on the generator.
      */
     private static void invokeDedup(String label,
                                     List<WorkflowScenario> scenarios,
                                     Set<String> approvedKeys) throws Exception {
-        MultiServiceTestCaseGenerator gen = Mockito.mock(
-                MultiServiceTestCaseGenerator.class, Mockito.CALLS_REAL_METHODS);
-        Method m = MultiServiceTestCaseGenerator.class.getDeclaredMethod(
-                "runSingleRootDedupPass", String.class, List.class, Set.class);
+        Class<?> dedupSupport = Class.forName(
+                "es.us.isa.restest.workflow.pipeline.stages.DedupSupport");
+        Method m = dedupSupport.getDeclaredMethod(
+                "runPass", String.class, List.class, Set.class);
         m.setAccessible(true);
-        m.invoke(gen, label, scenarios, approvedKeys);
+        m.invoke(null, label, scenarios, approvedKeys);
     }
 
     @Test
@@ -136,11 +138,8 @@ public class PhaseTwoFiveDedupTest {
         // Phase 3.5 invocation, sharing the SAME approvedApiKeys set as Phase 2.5.
         invokeDedup("TEST: PHASE 3.5", scenarios, approvedKeys);
 
-        // Both shattered children carry the propagated approval tag, so the pass-through
-        // guard keeps them BOTH. Identity comparison (the old buggy guard) would have
-        // failed because the optimizer returned NEW instances, and the API-key re-check
-        // would have dropped B' silently. With propagation, the tag short-circuits the
-        // key comparison entirely, preserving the "Phase 3 preserves coverage" invariant.
+        // Both shattered children carry the propagated approval tag, so the
+        // pass-through guard keeps them BOTH.
         assertEquals("Phase 3.5 must keep A, B' (tag-approved), and B'' (tag-approved)",
                 3, scenarios.size());
         assertTrue("A still survives", scenarios.contains(a));
@@ -151,10 +150,10 @@ public class PhaseTwoFiveDedupTest {
     }
 
     /**
-     * Defence in depth: when shattering produces a NEW 1-root component that did NOT
-     * inherit the approval tag (regression in propagation, future optimizer path), the
-     * dedup pass still drops the duplicate by canonical key against the shared
-     * {@code approvedApiKeys} set.
+     * Defence in depth: when shattering produces a NEW 1-root component that
+     * did NOT inherit the approval tag (regression in propagation, future
+     * optimizer path), the dedup pass still drops the duplicate by canonical
+     * key against the shared {@code approvedApiKeys} set.
      */
     @Test
     public void phase35DropsUntaggedDuplicateByCanonicalKey() throws Exception {
@@ -165,8 +164,8 @@ public class PhaseTwoFiveDedupTest {
         invokeDedup("TEST: PHASE 2.5", phase25, approvedKeys);
         assertEquals(1, phase25.size());
 
-        // Phase 3 emits a NEW 1-root scenario for GET /stations WITHOUT the tag —
-        // simulates a code path that fails to propagate (defence in depth).
+        // Phase 3 emits a NEW 1-root scenario for GET /stations WITHOUT the
+        // tag — simulates a code path that fails to propagate.
         WorkflowScenario shatteredDup = singleRoot("GET /stations", "station-service");
         assertFalse("Untagged shatter child starts with default tag=false",
                 shatteredDup.isApprovedInDedupPass());

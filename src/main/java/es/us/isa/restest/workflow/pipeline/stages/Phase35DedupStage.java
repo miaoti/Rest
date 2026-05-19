@@ -1,6 +1,5 @@
 package es.us.isa.restest.workflow.pipeline.stages;
 
-import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.workflow.pipeline.PipelineContext;
 import es.us.isa.restest.workflow.pipeline.PipelineStage;
 
@@ -11,24 +10,21 @@ import org.apache.logging.log4j.Logger;
  * Phase 3.5: Post-shatter single-root deduplication.
  *
  * <p>Shattering can emit NEW 1-root partitions (isolated connected components)
- * that never went through the Phase 2.5 dedup filter.  Re-applies the 1-root
- * dedup against the same {@code approvedApiKeys} set to prevent byte-identical
- * duplicate test classes for the same parameterless endpoint.  Phase 3
- * propagates the {@code approvedInDedupPass} tag to each shattered child so the
- * pass-through guard in {@code runSingleRootDedupPass} keeps Phase-2.5-approved
- * scenarios intact even after they are reconstructed as new instances.
+ * that never went through the Phase 2.5 dedup filter. This stage re-applies the
+ * 1-root dedup against the same {@code approvedApiKeys} set to prevent
+ * byte-identical duplicate test classes for the same parameterless endpoint.
+ * Phase 3 propagates the {@code approvedInDedupPass} tag to each shattered
+ * child so the pass-through guard inside {@link DedupSupport#runPass} keeps
+ * Phase-2.5-approved scenarios intact even after they are reconstructed as
+ * new instances.
  *
  * <p>This stage is gated by the same {@code mst.scenarioShattering.enabled}
- * flag as {@link Phase3ShatteringStage}.  Running it without shattering would
+ * flag as {@link Phase3ShatteringStage}. Running it without shattering would
  * be wasted work (the input is unchanged from Phase 2.5).
  */
 public final class Phase35DedupStage implements PipelineStage {
     private static final Logger log = LogManager.getLogger(Phase35DedupStage.class);
-    private final MultiServiceTestCaseGenerator generator;
-
-    public Phase35DedupStage(MultiServiceTestCaseGenerator generator) {
-        this.generator = generator;
-    }
+    private static final String LABEL = "PHASE 3.5: POST-SHATTER SINGLE-ROOT DEDUPLICATION";
 
     @Override
     public String name() { return "Phase 3.5: Post-Shatter Single-Root Dedup"; }
@@ -39,9 +35,20 @@ public final class Phase35DedupStage implements PipelineStage {
             log.info("[Phase35DedupStage] shattering disabled — skipping post-shatter dedup");
             return;
         }
-        generator.runSingleRootDedupPass(
-                "PHASE 3.5: POST-SHATTER SINGLE-ROOT DEDUPLICATION",
-                ctx.scenarios,
-                ctx.approvedApiKeys);
+        int before = ctx.scenarios.size();
+        if (before == 0) {
+            log.info("[Phase35DedupStage] no scenarios after shattering — short-circuiting");
+            return;
+        }
+        int approvedBefore = ctx.approvedApiKeys.size();
+        log.debug("[Phase35DedupStage] entering with scenarios={} approvedKeys={}",
+                before, approvedBefore);
+
+        DedupSupport.runPass(LABEL, ctx.scenarios, ctx.approvedApiKeys);
+
+        int after = ctx.scenarios.size();
+        int approvedAfter = ctx.approvedApiKeys.size();
+        log.debug("[Phase35DedupStage] post-dedup scenarios={} (Δ={}) approvedKeys={} (Δ+{})",
+                after, after - before, approvedAfter, approvedAfter - approvedBefore);
     }
 }

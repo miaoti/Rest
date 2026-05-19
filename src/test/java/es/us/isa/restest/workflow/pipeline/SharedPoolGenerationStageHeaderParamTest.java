@@ -5,19 +5,16 @@ import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfiguration;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
-import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
+import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.workflow.WorkflowStep;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -67,36 +64,30 @@ public class SharedPoolGenerationStageHeaderParamTest {
         return cfg;
     }
 
-    private static void inject(Object target, String fieldName, Object value) throws Exception {
-        Field f = MultiServiceTestCaseGenerator.class.getDeclaredField(fieldName);
-        f.setAccessible(true);
-        f.set(target, value);
-    }
-
     @Test
     public void headerAndCookieParametersAreEnrolledInFaultPool() throws Exception {
-        MultiServiceTestCaseGenerator gen = Mockito.mock(
-                MultiServiceTestCaseGenerator.class, Mockito.CALLS_REAL_METHODS);
-
         String service = "secure-service";
         Map<String, TestConfigurationObject> serviceConfigs = new HashMap<>();
         serviceConfigs.put(service, configWith(headerAndCookieParamOperation()));
-        inject(gen, "serviceConfigs", serviceConfigs);
-        inject(gen, "useLLM", true);
-        inject(gen, "llmGen", new es.us.isa.restest.generators.AiDrivenLLMGenerator());
 
         WorkflowStep root = new WorkflowStep(
                 "trace-2", "span-2", service,
                 "GET /secure/data",
                 0L, 0L, Collections.emptyMap(), Collections.emptyMap());
 
-        Method m = MultiServiceTestCaseGenerator.class.getDeclaredMethod(
-                "generateFaultyPoolForSingleRoot", WorkflowStep.class, String.class);
+        Class<?> sharedPool = Class.forName(
+                "es.us.isa.restest.workflow.pipeline.stages.SharedPoolSupport");
+        Method m = sharedPool.getDeclaredMethod(
+                "generateFaultyPoolForSingleRoot",
+                WorkflowStep.class, String.class, Map.class, boolean.class,
+                AiDrivenLLMGenerator.class);
         m.setAccessible(true);
 
         @SuppressWarnings("unchecked")
         Map<String, InvalidInputPool> faultyPool =
-                (Map<String, InvalidInputPool>) m.invoke(gen, root, "GET__secure_data");
+                (Map<String, InvalidInputPool>) m.invoke(null,
+                        root, "GET__secure_data",
+                        serviceConfigs, true, new AiDrivenLLMGenerator());
 
         assertNotNull(faultyPool);
         assertTrue("Header parameter 'X-API-Key' must be enrolled in the fault pool",
@@ -117,8 +108,9 @@ public class SharedPoolGenerationStageHeaderParamTest {
 
     @Test
     public void normaliseParamLocationAcceptsHeaderCookieAndFolds() throws Exception {
-        Method m = MultiServiceTestCaseGenerator.class.getDeclaredMethod(
-                "normaliseParamLocation", String.class);
+        Class<?> stageSupport = Class.forName(
+                "es.us.isa.restest.workflow.pipeline.stages.StageSupport");
+        Method m = stageSupport.getDeclaredMethod("normaliseParamLocation", String.class);
         m.setAccessible(true);
         assertEquals("header",   m.invoke(null, "header"));
         assertEquals("header",   m.invoke(null, "HEADER"));
