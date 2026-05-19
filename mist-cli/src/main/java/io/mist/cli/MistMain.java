@@ -20,9 +20,16 @@ import java.util.Properties;
  *
  * <p>Behaviour mirror.  Both launch paths
  * ({@code java -jar restest.jar} and {@code java -jar mist.jar})
- * end at {@link MistRunner#run()} with the same {@link MstConfig}, so
- * under {@code -Drandom.seed=42} the two jars produce byte-identical
- * scenario output (gate § Stage 1.B of the plan).
+ * end at {@link MistRunner#run()} with the same {@link MstConfig}.
+ * To keep the resulting System-properties state byte-identical to
+ * {@code TestGenerationAndExecution.main}, this entry point pushes
+ * only the MST-file keys into System (via the legacy
+ * {@code es.us.isa.restest.configuration.multiservice.MstConfig}
+ * loader's {@code applyToSystemProperties()}); core-file keys stay in
+ * the local {@code Properties} bag and feed the {@link MistRunner.Inputs}
+ * builder directly. Under {@code -Drandom.seed=42} this gives byte-
+ * identical scenario output between the two launch paths (Stage 1.D
+ * gate of the plan).
  */
 public final class MistMain {
 
@@ -33,10 +40,6 @@ public final class MistMain {
                 ? args[0]
                 : "src/main/resources/My-Example/trainticket-demo.properties");
 
-        // Load the .properties file and push every key into System
-        // properties so MstConfig.fromSystemProperties() and the legacy
-        // readers in generators / writers / generated test code see the
-        // values, matching TestGenerationAndExecution's behaviour.
         Properties coreProps = new Properties();
         try (InputStream in = Files.newInputStream(propsFile)) {
             coreProps.load(in);
@@ -45,46 +48,43 @@ public final class MistMain {
             System.exit(2);
             return;
         }
-        coreProps.forEach((k, v) -> System.setProperty(String.valueOf(k), String.valueOf(v)));
 
-        // MST mode loads its dedicated properties file via mst.config.path.
-        String mstConfigPath = System.getProperty("mst.config.path");
+        // MST mode loads its dedicated properties file via mst.config.path and
+        // pushes those keys (only) to System properties — same code path the
+        // legacy TestGenerationAndExecution.loadMstConfig() takes. Keeping the
+        // System state identical between the two launch paths is what makes
+        // their generation byte-identical under -Drandom.seed.
+        String mstConfigPath = coreProps.getProperty("mst.config.path");
         if (mstConfigPath != null && !mstConfigPath.trim().isEmpty()) {
-            Properties mstProps = new Properties();
-            try (InputStream in = Files.newInputStream(Paths.get(mstConfigPath))) {
-                mstProps.load(in);
-            }
-            mstProps.forEach((k, v) -> {
-                if (System.getProperty(String.valueOf(k)) == null) {
-                    System.setProperty(String.valueOf(k), String.valueOf(v));
-                }
-            });
+            es.us.isa.restest.configuration.multiservice.MstConfig
+                    .load(mstConfigPath)
+                    .applyToSystemProperties();
         }
 
         MstConfig config = MstConfig.fromSystemProperties();
         Path workdir = Paths.get(System.getProperty("user.dir"));
 
         MistRunner.Inputs inputs = MistRunner.Inputs.builder()
-                .testClassName(System.getProperty("testclass.name"))
-                .targetDirJava(System.getProperty("test.target.dir"))
-                .packageName(System.getProperty("experiment.name"))
-                .experimentName(System.getProperty("experiment.name"))
-                .oasPath(System.getProperty("oas.path"))
-                .confPath(System.getProperty("conf.path"))
+                .testClassName(coreProps.getProperty("testclass.name"))
+                .targetDirJava(coreProps.getProperty("test.target.dir"))
+                .packageName(coreProps.getProperty("experiment.name"))
+                .experimentName(coreProps.getProperty("experiment.name"))
+                .oasPath(coreProps.getProperty("oas.path"))
+                .confPath(coreProps.getProperty("conf.path"))
                 .propertiesFilePath(propsFile.toString())
                 .mstPropertiesFilePath(mstConfigPath)
                 .traceFilePath("src/main/resources/My-Example/trainticket/test-trace")
-                .numTestCases(parseIntOrNull(System.getProperty("testsperoperation")))
-                .faultyRatio(parseFloatOrNull(System.getProperty("faulty.ratio")))
-                .executeTestCases(parseBoolOrNull(System.getProperty("experiment.execute")))
-                .allureReports(parseBoolOrNull(System.getProperty("allure.report")))
-                .enableCSVStats(parseBoolOrNull(System.getProperty("stats.csv")))
-                .enableInputCoverage(parseBoolOrNull(System.getProperty("coverage.input")))
-                .enableOutputCoverage(parseBoolOrNull(System.getProperty("coverage.output")))
-                .deletePreviousResults(parseBoolOrNull(System.getProperty("deletepreviousresults")))
-                .logToFile(parseBoolOrNull(System.getProperty("logToFile")))
-                .checkTestCases(Boolean.parseBoolean(System.getProperty("testcases.check", "false")))
-                .proxy(normaliseProxy(System.getProperty("proxy")))
+                .numTestCases(parseIntOrNull(coreProps.getProperty("testsperoperation")))
+                .faultyRatio(parseFloatOrNull(coreProps.getProperty("faulty.ratio")))
+                .executeTestCases(parseBoolOrNull(coreProps.getProperty("experiment.execute")))
+                .allureReports(parseBoolOrNull(coreProps.getProperty("allure.report")))
+                .enableCSVStats(parseBoolOrNull(coreProps.getProperty("stats.csv")))
+                .enableInputCoverage(parseBoolOrNull(coreProps.getProperty("coverage.input")))
+                .enableOutputCoverage(parseBoolOrNull(coreProps.getProperty("coverage.output")))
+                .deletePreviousResults(parseBoolOrNull(coreProps.getProperty("deletepreviousresults")))
+                .logToFile(parseBoolOrNull(coreProps.getProperty("logToFile")))
+                .checkTestCases(Boolean.parseBoolean(coreProps.getProperty("testcases.check", "false")))
+                .proxy(normaliseProxy(coreProps.getProperty("proxy")))
                 .build();
 
         MistRunResult result = new MistRunner(config, workdir, inputs).run();

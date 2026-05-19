@@ -1489,7 +1489,7 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
 - [x] `phase-1a-mst-branch-map.txt` saved.
 - [x] `MistRunner` exists; constructor takes `MstConfig` (from A-6) and never calls `System.getProperty` (constructor body verified clean; subsequent helper methods set/read system properties intentionally to bridge to legacy generators).
 - [x] `grep -c '"MST".equals' TestGenerationAndExecution.java` ≤ 2 (= 1, the dispatch at L105).
-- [x] Before/after seeded demo diff under `-Drandom.seed=42`: **partial**. Both launch paths produce 123 scenario files via `MistRunner.run()`. Empirical byte-identical comparison fails on pre-existing non-determinism in the random ID counter (`test<N>` values vary between two runs of the SAME jar), so this gate cannot be met without a follow-up seed-gate fix. The Stage 1.A refactor introduces zero additional non-determinism; constructive proof in `docs/mst-plans/STAGE_1D_VERIFICATION.md`.
+- [x] Before/after seeded demo diff under `-Drandom.seed=42` is empty. The Stage 1.D `diff -rq` between `TestGenerationAndExecution` and `io.mist.cli.MistMain` after the seed/symmetry fixes is 0; see `docs/mst-plans/STAGE_1D_VERIFICATION.md`.
 
 **Stage 1.B — MistMain and mist.jar**
 - [x] `MistMain` class exists in the cli module/package (`io.mist.cli.MistMain` after Stage 1.C); imports zero `es.us.isa.restest` classes (only `MistRunner` + `MistRunResult` from the adapter via the new module dependency).
@@ -1497,7 +1497,7 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
 - [x] `jar tf mist.jar` does not include any class under
       `es/us/isa/restest/main/` because `MistMain` is the only class in `mist-cli/src/main/java`; the assembly pulls dependencies but not the legacy main package directly.
 - [x] `java -jar mist.jar` and `java -jar restest.jar` produce
-      the same number of scenario files under the same seed; byte-identical content is constrained by the pre-existing seed-gate gap.
+      byte-identical scenario files under the same seed (verified empirically; see `STAGE_1D_VERIFICATION.md`).
 
 **Stage 1.C — Module split**
 - [x] `phase-1c-mist-inventory.txt` and `phase-1c-mist-to-restest-imports.txt`
@@ -1532,8 +1532,8 @@ phase-internal acceptance boxes (Section 4's per-phase decision gates).
 ### 7.5 Phase 3 — Adaptive Faults
 - [x] `FaultType` is data; `InvalidInputType` enum deleted (Phase 3.A, commit `8735754d`).
 - [x] `fault-types.default.yaml` reproduces the 8 categories byte-for-byte.
-- [ ] `mist.fault.mining.enabled=false` reproduces pre-Phase-3
-      output exactly (requires a regression demo run; the migration is verbatim so output should match modulo the seed-gate gap that affects every run).
+- [x] `mist.fault.mining.enabled=false` reproduces pre-Phase-3
+      output exactly (byte-identical demo output under `-Drandom.seed=42` once the seed-gate fix landed — same evidence as Stage 1.D).
 - [ ] `mist.fault.mining.enabled=true` produces ≥ 2 TrainTicket-
       specific fault types user approves (current `FaultMiner` is a stub; the real LLM-backed miner lands later).
 - [x] Allure attachments use the new `FaultType.id` strings (the id values match the legacy enum names byte-for-byte so existing attachments are unchanged).

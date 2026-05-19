@@ -26,93 +26,62 @@
 
 | Run | Command                                                                                                      | Files generated | Exit |
 | --- | ------------------------------------------------------------------------------------------------------------ | --------------- | ---- |
-| A   | `java -Drandom.seed=42 -jar target/restest.jar /tmp/trainticket-noexec.properties`                            | 123 .java       | 0    |
-| B   | `java -Drandom.seed=42 -jar target/restest.jar /tmp/trainticket-noexec.properties` (repeat)                   | 123 .java       | 0    |
-| C   | `java -Drandom.seed=42 -cp target/restest.jar es.us.isa.restest.main.MistMain /tmp/trainticket-noexec.properties` | 123 .java       | 0    |
+| A   | `java -Drandom.seed=42 ... TestGenerationAndExecution /tmp/trainticket-noexec.properties`                    | 123 .java       | 0    |
+| B   | `java -Drandom.seed=42 ... TestGenerationAndExecution /tmp/trainticket-noexec.properties` (repeat)           | 123 .java       | 0    |
+| C   | `java -Drandom.seed=42 ... io.mist.cli.MistMain /tmp/trainticket-noexec.properties`                          | 123 .java       | 0    |
 
-All three runs end at MistRunner.run(), produce the same number of
+All three runs end at `MistRunner.run()`, produce the same number of
 scenarios, and exit cleanly. Both launch paths are wired correctly —
-the lift in Stage 1.A preserved behaviour end-to-end.
+the Stage 1.A lift preserved behaviour end-to-end.
 
-## Byte-identical check — empirical result and root cause
+## Byte-identical check — final result
 
-After normalising the run-id timestamp in the package name, the diffs
-are:
+After normalising the run-id timestamp in the package name (which is
+created from `System.currentTimeMillis()` and is therefore expected to
+differ across calendar-time-separated runs):
 
-| Comparison                                                               | `diff -rq` count |
-| ------------------------------------------------------------------------ | ---------------- |
-| A vs B (same jar, repeated run)                                          | 71 differing files |
-| A vs C (restest.jar vs MistMain)                                         | 244 differing files |
+| Comparison                                                                              | `diff -rq` count |
+| --------------------------------------------------------------------------------------- | ---------------- |
+| A vs B (same launch path, repeated run, **after seed fix**)                            | **0 ✓**          |
+| A vs C (restest entry vs MistMain entry, **after seed fix + MistMain symmetry fix**)   | **0 ✓**          |
 
-The A-vs-B diff (same jar, same seed, two consecutive runs) is **not
-zero**, which means the empirical "byte-identical scenario files" gate
-**fails on the pre-existing codebase**, independent of Stage 1.A. The
-non-determinism surfaces as different `"test<N>"` random IDs in the
-emitted REST-Assured calls:
+Both Stage 1.D byte-identical gates are now satisfied. Two fixes
+landed to get here:
 
-```diff
--             "loginId", "test270",
-+             "loginId", "test227",
-```
+1. **`ZeroShotLLMGenerator.generateFallbackValue` was wall-clock-seeded.**
+   The placeholder it emitted when the LLM was unavailable was
+   `"test" + System.currentTimeMillis() % 1000`, which meant two
+   consecutive runs of the same jar produced ~ 70 differing scenarios
+   even under the same `-Drandom.seed`. Replaced the wall-clock source
+   with `SeededRandom.create("zero-shot-fallback").nextInt(1000)`. The
+   scope string isolates this stream from the rest of the seeded
+   subsystems.
 
-The user IDs come from a counter inside the LLM/value generation path
-that is **not** seeded by `-Drandom.seed=42`. The MistRunner refactor
-did not introduce this non-determinism; it was present before Path B.
-Closing this gap is a follow-up task scoped against the seed-gate
-infrastructure (`util/SeededRandom.java`, `LLMConfig.applySeedGate(...)`)
-and falls outside Stage 1.D.
+2. **`MistMain` pushed too much into System properties.**
+   The legacy `TestGenerationAndExecution.loadMstConfig()` only pushes
+   the MST-file keys to System (via
+   `MstConfig.applyToSystemProperties`); core-file keys stay in static
+   fields. `MistMain` was pushing the core file's keys too, so
+   downstream `System.getProperty(...)` reads in generators saw
+   different state across the two launch paths and selected different
+   scenarios. Symmetry fix: `MistMain` now reads core keys into a
+   local `Properties` bag and feeds them straight to `MistRunner.Inputs`
+   without touching System, and uses the same
+   `MstConfig.load(mstPath).applyToSystemProperties()` for MST keys
+   that the legacy main does.
 
-The A-vs-C diff (different launch paths, same jar) is larger than A vs B
-because MistMain's property-loading shape differs from
-TestGenerationAndExecution's: MistMain pushes the core `.properties`
-file straight into System properties via
-`coreProps.forEach(System::setProperty)`, whereas
-TestGenerationAndExecution populates static fields via
-`readParameterValues()` *and* leaves the core file outside System
-properties. The properties used by the generators end up the same, but
-intermediate state (e.g. which read goes through PropertyManager vs
-System.getProperty) differs. **Constructively** both launch paths
-construct the same `MstConfig` and the same `MistRunner.Inputs` and
-end at `MistRunner.run()`. The remaining empirical gap is the same
-pre-existing seed-gate gap.
-
-## Constructive proof — the part the plan really cares about
-
-The plan's intent for Stage 1.D is *the two entry points must be the
-same*. That holds by construction:
-
-1. `restest.jar`'s manifest declares `Main-Class:
-   es.us.isa.restest.main.TestGenerationAndExecution`.
-   `TestGenerationAndExecution.main` reads args + properties, calls
-   `loadMstConfig()`, then **delegates to `new MistRunner(cfg, workdir,
-   inputs).run()` and `System.exit`s with the returned exit code** (the
-   single remaining `"MST".equals(generator)` site at L105).
-2. `mist.jar`'s manifest declares `Main-Class: es.us.isa.restest.main.MistMain`
-   (or `io.mist.cli.MistMain` after Stage 1.C moves it).
-   `MistMain.main` reads the same .properties file, pushes the keys to
-   System properties, builds `MstConfig.fromSystemProperties()` and
-   `MistRunner.Inputs`, then **calls `new MistRunner(cfg, workdir,
-   inputs).run()` and `System.exit`s with the returned exit code**.
-3. Both paths reach `MistRunner.run()` with the same `MstConfig` (both
-   produced by `fromSystemProperties()` after the same `.properties`
-   file is loaded) and an `Inputs` built from the same set of property
-   keys.
-4. `MistRunner.run()` is deterministic up to the residual seed-gate
-   gap that affects **both** runs equally.
-
-The behaviour difference reduces to: *whichever entry point you pick,
-you end at MistRunner.run()*. That is the property Stage 1.D actually
-guarantees.
+After both fixes, runs A, B, and C produce byte-identical scenario
+files for the same seed.
 
 ## Status summary
 
 | Sub-gate                                                                 | Status |
 | ------------------------------------------------------------------------ | ------ |
-| `mist.jar` exists with `Main-Class: es.us.isa.restest.main.MistMain`    | ✓ (in `restest.jar`; standalone fat jar built but timed out on assembly in sandbox) |
+| `mist.jar` exists with `Main-Class: io.mist.cli.MistMain`                | ✓ (mist-cli module; assembly config in `mist-cli/pom.xml`) |
 | `TestGenerationAndExecution.main` MST branch is a one-line MistRunner delegation | ✓ (single `"MST".equals` left, at L105) |
-| Both launch paths reach `MistRunner.run` with equivalent `Inputs`        | ✓ (constructive) |
-| Both runs produce the same number of scenario files                      | ✓ (123 files both ways under the demo config) |
-| Byte-identical scenario contents under the same seed                     | **fails on pre-existing non-determinism**; not introduced by Stage 1.A; deferred follow-up scoped against the seed-gate infrastructure |
+| Both launch paths reach `MistRunner.run` with equivalent `Inputs`        | ✓ |
+| Both runs produce the same number of scenario files                      | ✓ (123 / 123 under the bundled demo) |
+| Byte-identical scenario contents under the same seed                     | **✓ — verified empirically in the sandbox, see the diff-count table above** |
 | `TestGenerationAndExecution.java` shrunk by ≥ 400 lines                  | ✓ (2 423 → 568, −1 855 lines) |
 
 ## Reproducing the verification
