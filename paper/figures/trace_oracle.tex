@@ -118,11 +118,11 @@
 % Trace-Aware Oracle verdict (bottom-left)
 % =============================================================
 \node[vbox, anchor=north west] (vrd) at (-0.05, -2.85) {%
-\textbf{Trace-Aware Oracle verdict.}\\[2pt]
+\textbf{Trace Shape Oracle verdict.}\\[2pt]
 \begin{tabular}{@{}l@{\hspace{0.7em}}p{6.0cm}@{}}
-\textbf{HTTP status class} & passes (every span returns 200). \\
-\textbf{Span error frame}  & no span carries \texttt{otel.status\_code=ERROR}. \\
-\textbf{Per-API body rule} & \emph{fails} on \texttt{\{status:0,\,data:null\}}; rule learned from the first 2xx response, then cached. \\
+\textbf{SpanTreeShape}     & passes (tree matches learned shape). \\
+\textbf{StatusPropagation} & passes (every span returns 200; no \texttt{otel.status\_code=ERROR}). \\
+\textbf{ResponseEnvelope}  & \emph{fails} on \texttt{\{status:0,\,data:null\}}; invariant learned from the first 2xx response, then cached. \\
 \textbf{Attribution}       & rejection pinned to \texttt{ts-admin-route-service} (highlighted span). \\
 \end{tabular}};
 

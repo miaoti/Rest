@@ -1,11 +1,19 @@
-# Building the ISSTA 2026 variant of the MIST tool-demo paper
+# Building the MIST tool-demo paper
+
+> **Active target as of 2026-05-19: ICSE 2027 Tool Demonstration and Data
+> Showcase Track** (deadline Oct 23, 2026; 4 pages incl. references;
+> `IEEEtran[10pt,conference]`; single-anonymous). The active paper file
+> is `main.tex`.
+>
+> The earlier ISSTA 2026 / ICSME 2026 windows have all closed; see
+> the deprecation banner at the top of `main_issta.tex` for details.
 
 This directory carries two paper variants:
 
 | File | Venue | LaTeX class | Status |
 |---|---|---|---|
-| `main.tex` | ICSME 2026 Tool Demo | `IEEEtran.cls` (conference) | original; preserve unchanged |
-| `main_issta.tex` | ISSTA 2026 Tool Demonstrations (joint with SPLASH 2026) | `acmart.cls` (sigconf,screen,review) | converted from `main.tex` |
+| `main.tex` | **ICSE 2027 Tool Demonstration and Data Showcase (active)** | `IEEEtran` (10pt, conference) | retargeted from ICSME 2026 on 2026-05-19 |
+| `main_issta.tex` | ISSTA 2026 Tool Demonstrations (window closed) | `acmart` (sigconf,screen,review) | deprecated; fallback if ISSTA 2027 reopens an acmart window |
 
 ## Prerequisites
 
@@ -31,19 +39,17 @@ and full TeX Live all ship `IEEEtran.cls`; leave them to supply it.
 
 ## Build
 
-ICSME variant (5 pages, IEEEtran):
+ICSE 2027 variant (4 pages incl. refs, IEEEtran 10pt conference):
 
 ```
 pdflatex main.tex && bibtex main && pdflatex main.tex && pdflatex main.tex
 ```
 
-ISSTA variant (4 pages + 1 page refs, acmart sigconf):
+ISSTA variant (deprecated; only resurrect if a future ISSTA reopens):
 
 ```
 pdflatex main_issta.tex && bibtex main_issta && pdflatex main_issta.tex && pdflatex main_issta.tex
 ```
-
-`latexmk -pdf main_issta.tex` works too once the acmart class is installed.
 
 ## ISSTA-specific notes
 

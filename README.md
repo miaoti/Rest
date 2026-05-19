@@ -2,12 +2,14 @@
 
 > **MIST** turns OpenTelemetry / Jaeger traces and OpenAPI specs into
 > runnable, cross-service workflow tests for microservice REST APIs.
-> Its design contributions are a *Trace Shape Oracle* (per-API
-> invariants checked against live traces), an *Adaptive Fault Taxonomy*
-> (a registry of fault categories that can be mined per system), and
-> a *Sniper Strategy* generation engine that produces one fault per
-> negative variant with full per-fault attribution. Submitted to
-> **ICSME 2026 — Tool Demonstration and Data Showcase Track**.
+> Its three named contributions are *Root API Mode* (execute the
+> trace's entry points, observe internals via traces), the *Sniper
+> Strategy* generation engine (one fault per negative variant with full
+> per-fault attribution, over an Adaptive Fault Taxonomy that mines
+> SUT-specific categories on top of 8 built-in ones), and the *Trace
+> Shape Oracle* (a learner + oracle that promotes a Jaeger trace into a
+> checkable assertion across four invariant families). Submitted to
+> **ISSTA 2026 Tool Demonstrations**.
 
 ---
 
@@ -20,7 +22,9 @@ MIST ships as a four-module Maven reactor (Stage 1.C of
 mist-parent (root pom.xml, packaging=pom)
 ├── mist-core              the contribution — no RESTest dependency
 │                          (Trace Shape Oracle + Adaptive Fault Taxonomy)
-├── mist-llm               placeholder for the future LLM dispatch module
+├── mist-llm               LLM client SPI + Ollama / Gemini /
+│                          OpenAI-compatible backends, call cache, env
+│                          placeholder resolver
 ├── mist-restest-adapter   RESTest internals MIST treats as a library:
 │                          spec parser, MST conf model, writers, generators,
 │                          smart-fetch, enhancer, …
@@ -70,7 +74,7 @@ API key handy.
 > produce byte-identical scenario files; see
 > [`docs/mst-plans/STAGE_1D_VERIFICATION.md`](docs/mst-plans/STAGE_1D_VERIFICATION.md)
 > for the verification record. Use `mist.jar` for new work;
-> `restest.jar` is preserved for the ICSME 2026 demo workflow.
+> `restest.jar` is preserved as a backwards-compatible alternative.
 
 ---
 
@@ -184,12 +188,31 @@ and the generated JUnit sources under the directory you pointed
 For each microservice scenario reconstructed from a Jaeger trace, MIST emits one JUnit class that:
 
 1. **logs in once per JVM** (configurable; see *Auth strategy*),
-2. **replays each root API in order**, wiring data between steps via cross-trace data-dependency inference and a JIT producer-binding registry built from the OpenAPI spec,
-3. **injects 8 categories of invalid inputs** (TYPE_MISMATCH, REGEX_MISMATCH, SEMANTIC_MISMATCH, OVERFLOW, EMPTY/NULL, SPECIAL_CHARACTERS, BOUNDARY_VIOLATION) for the configured `faulty.ratio`,
-4. **runs LLM soft-error validation** on 2xx responses and **caches the rule** so each API only consults the LLM ~2 times instead of once per test,
+2. **replays each root API in order** (*Root API Mode* — exercise the
+   trace's entry points; observe internal services via the Jaeger trace
+   rather than calling them directly), wiring data between steps via
+   cross-trace data-dependency inference and a JIT producer-binding
+   registry built from the OpenAPI spec,
+3. **runs the *Sniper Strategy***: each negative variant carries
+   exactly one fault, drawn from the *Adaptive Fault Taxonomy* — 8
+   built-in categories (TYPE_MISMATCH, REGEX_MISMATCH, SEMANTIC_MISMATCH,
+   OVERFLOW, EMPTY/NULL, SPECIAL_CHARACTERS, BOUNDARY_VIOLATION) plus
+   any per-SUT categories the `FaultMiner` proposes from observed
+   4xx/5xx responses + OpenAPI description fields. An
+   `ApplicabilityMatrix` filters which faults reach which parameters,
+   and the invalid-input pool is keyed per `(parameter, location)` so
+   one bad value never bleeds across slots,
+4. **checks each response against the *Trace Shape Oracle***: a learner
+   builds per-root-API invariants across four families (span tree
+   shape, status propagation, timing envelope, response envelope) from
+   a known-good trace corpus; the oracle verifies live responses
+   against the persisted invariants and returns a verdict with
+   evidence. (The Phase 2 response envelope invariant subsumes the
+   legacy `SoftErrorRuleCache` and is persisted at
+   `.mist/trace-shape-invariants.json`.)
 5. **explores untriggered status codes** (401/403/404/409/…) via auth-manipulation and LLM-suggested input mutations.
 
-Full pipeline (Phase 1 cross-trace merging → Phase 2 session merging → Phase 2.5 dedup → Phase 3 component shattering → Phase 4 baseline decomposition → variant generation) is documented in [`src/main/resources/My-Example/trainticket/flow.md`](src/main/resources/My-Example/trainticket/flow.md).
+Full pipeline (Phase 1 cross-trace merging → Phase 2 session merging → Phase 2.5 dedup → Phase 3 component shattering → Phase 4 baseline decomposition → variant generation) is documented in [`mist-restest-adapter/src/main/resources/My-Example/trainticket/flow.md`](mist-restest-adapter/src/main/resources/My-Example/trainticket/flow.md).
 
 ---
 
@@ -307,7 +330,7 @@ llm.gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models
 3. `.api_keys/VAR` (or `~/.restest/api_keys/VAR`) — a file containing only the secret. The `.api_keys/` directory is gitignored.
 4. The literal `default` after `:` in `${VAR:default}`.
 
-A missing key resolves to the empty string, in which case the request is sent unauthenticated rather than literally containing the placeholder text. The full resolution logic lives in [`LLMConfig.resolveEnvPlaceholder`](mist-restest-adapter/src/main/java/es/us/isa/restest/llm/LLMConfig.java).
+A missing key resolves to the empty string, in which case the request is sent unauthenticated rather than literally containing the placeholder text. The full resolution logic lives in [`LLMConfig.resolveEnvPlaceholder`](mist-llm/src/main/java/io/mist/llm/LLMConfig.java).
 
 ---
 
@@ -335,12 +358,22 @@ Endpoints matching `auth.skip.path.patterns` (CSV of regex, e.g. `^/actuator,^/a
 | `target/allure-results/`                       | Raw Allure JSON (per test) |
 | `target/allure-report/`                        | Rendered HTML report (after `allure generate`) |
 | `logs/fault-detection-reports/`                | Injected-fault detection summary, matched against `injectedFaults/injected-faults.json` |
-| `.mist/llm-call-cache.json`                    | SHA-256-keyed cache of LLM responses — replays make `-Drandom.seed` runs reproducible |
+| `logs/llm-communications/`                     | Per-call LLM request/response transcripts (`LLMCommunicationLogger`; gitignored) |
+| `.mist/llm-call-cache.json`                    | SHA-256-keyed cache of LLM responses. With `-Drandom.seed=<n>` set, lookups short-circuit backend HTTP and the cached transcript replays byte-for-byte; unseeded runs still write through, so a later seeded run can replay them. Commit the file alongside the SUT for an artifact-bundle that reproduces from scratch. |
 | `.mist/parameter-error-analysis-cache.json`    | Parameter-error analyser cache |
 | `.mist/intelligent-analysis-cache.json`        | Trace error analyser intelligent cache |
 | `.mist/trace-shape-invariants.json`            | Phase 2 Trace Shape Oracle persisted invariants |
+| `.mist/mist-mined-fault-types.yaml`            | Phase 3 mined SUT-specific fault categories (when `mist.fault.mining.enabled=true`) |
 | `target/test-data/`                            | CSV stats (test cases, results, time) |
-| `target/mist-mined-fault-types.yaml`           | Phase 3 mined SUT-specific fault categories (when `mist.fault.mining.enabled=true`) |
+
+> **`.mist/` vs `target/`.** Everything under `target/` is recreated by
+> Maven and is wiped by `mvn clean`. The `.mist/` directory holds the
+> *persistent cross-run state* that MIST needs to stay reproducible —
+> the LLM call cache, the mined fault-type catalogue, and the
+> Trace-Shape-Oracle invariant store all live here and **survive
+> `mvn clean`**. `.mist/` is gitignored by default; commit a blessed
+> snapshot alongside the SUT when you want a byte-reproducible
+> artifact.
 
 > The legacy `target/soft-error-rule-cache.json` is gone — its contract
 > moved into the Phase 2 `ResponseEnvelopeInvariant` and the persisted
@@ -377,7 +410,13 @@ mist-parent (root pom.xml, packaging=pom)
 │       └── fault/                     Adaptive Fault Taxonomy (Phase 3):
 │                                      FaultType + FaultTypeRegistry +
 │                                      ApplicabilityMatrix + FaultMiner
-├── mist-llm/                          (placeholder for future LLM module)
+├── mist-llm/
+│   └── src/main/java/io/mist/llm/    LLM client SPI + concrete backends:
+│                                      LLMClient, LLMService, LLMCallCache,
+│                                      LLMConfig (env placeholder resolver,
+│                                      seed gate), OllamaApiClient,
+│                                      GeminiApiClient (OpenAI-compatible
+│                                      HTTP routed through LLMService)
 ├── mist-restest-adapter/
 │   └── src/main/java/es/us/isa/restest/
 │       ├── auth/                      MstAuthHandler, MstAuthRefreshFilter
@@ -409,14 +448,12 @@ recommended entry for MIST work but stay alive as a library surface.
 ## Citation
 
 ```bibtex
-@inproceedings{MIST2026,
-  title     = {{MIST: Trace-Driven, LLM-Assisted Multi-Service Test Generation}},
-  author    = {<authors>},
-  booktitle = {Proceedings of the 42nd IEEE International Conference on Software Maintenance and Evolution},
-  series    = {ICSME '26},
-  publisher = {IEEE},
-  year      = {2026},
-  note      = {Tool Demonstration and Data Showcase Track}
+@misc{MIST,
+  title  = {{MIST: Trace-Driven, LLM-Assisted Multi-Service Test Generation}},
+  author = {<authors>},
+  note   = {Submitted to ISSTA 2026 Tool Demonstrations.
+            Citation to be filled in on acceptance.},
+  year   = {2026}
 }
 ```
 

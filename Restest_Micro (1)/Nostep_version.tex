@@ -22,7 +22,7 @@
 \newenvironment{compactdesc}{\begin{description}[leftmargin=0pt,style=nextline]}{\end{description}}
 
 % ---------- Metadata ------------
-\title{AI‑Enhanced Trace‑Driven API Testing with Comprehensive Microservice Validation}
+\title{MIST: Trace-Driven REST API Testing with a Trace-Shape Oracle and Adaptive Fault Taxonomy for Microservices}
 
 \author{\IEEEauthorblockN{Tingshuo Miao}\IEEEauthorblockA{Department of Computer Science\\Baylor University, USA\\Email: tingshuo\_miao2@baylor.edu}}
 
@@ -32,11 +32,11 @@
 
 % ---------------- Abstract ----------------
 \begin{abstract}
-Microservice architectures pose significant testing challenges, as failures often emerge from complex service interactions rather than isolated API faults. Traditional workflow-based testing frequently fails to accurately replay multi-step sequences due to ephemeral data dependencies and the creation of misleading test oracles. This paper presents an AI-enhanced, trace-driven testing framework that utilizes a "Root API Mode" methodology. Our approach extracts publicly accessible entry points from distributed traces and assembles them into multi-root workflows using a two-phase pipeline based on explicit data matching and session-based heuristics. We generate diverse test cases through a multi-priority parameter resolution chain—integrating schema-informed dependency binding with LLM-powered synthesis—to ensure realistic and semantically valid inputs. Additionally, a targeted fault injection strategy is employed to provide exhaustive edge-case coverage by isolating faults within specific entry points of a sequence. Validation is conducted via post-execution trace analysis, which verifies the complete microservice interaction chain triggered by each test. Experimental results demonstrate that this approach achieves superior fault detection accuracy and diagnostic efficiency compared to traditional workflow replication and state-of-the-art API testing tools, providing actionable root-cause analysis for complex distributed failures.
+Existing automated REST API testers are \emph{spec-bound} and \emph{oracle-light}: they sample inputs from the OpenAPI surface and stop at the HTTP boundary (RESTler, EvoMaster, Morest, AutoRestTest), or they ask a language model to read the response body (LogiAgent). Neither strategy can exploit the distributed trace that every modern microservice deployment already produces. This paper presents \textsc{MIST} (Microservice Integration \& Scenario Tester), a standalone tool that promotes the OpenTelemetry/Jaeger trace from a diagnostic side-channel to a checkable assertion and adapts its fault taxonomy to the system under test. \textsc{MIST} contributes (1)~a \emph{Trace Shape Oracle} that learns four families of per-API invariants---span-tree shape, status propagation, timing envelope, and response envelope---from a small seed corpus of known-good runs and verifies subsequent runs against them at first-class assertion strength, and (2)~an \emph{Adaptive Fault Taxonomy} that replaces a fixed enum of fault categories with a typed registry of \texttt{FaultType} records and an LLM-assisted \emph{FaultMiner} that proposes SUT-specific categories from OpenAPI description text and observed 4xx/5xx responses. Both contributions sit on a trace-driven generation engine---Root API Mode, Multi-Root Sequence assembly via weakly-connected-component shattering, and the Sniper Strategy for one-fault-per-variant negative tests. Architecturally, the rebuild produces a four-module Maven project (\texttt{mist-core}, \texttt{mist-llm}, \texttt{mist-restest-adapter}, \texttt{mist-cli}) whose core contribution has zero dependency on its predecessor framework. On TrainTicket, \textsc{MIST} detects all 10 of 10 injected faults under a 25-hour budget, outperforming \textsc{RESTest} (3/10) and \textsc{EvoMaster} (6/10); an intrinsic ablation of the Semantic Dependency Registry recovers all 30 labelled cross-entity bindings at $P{=}R{=}F_1{=}1.000$.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Microservices, REST API testing, Root API Mode, distributed tracing, automated test generation, trace analysis, AI-enhanced testing, RESTest, fault injection, Multi-Root Sequence, session-based merging, semantic dependency registry, just-in-time binding, scenario shattering, connected components.
+Microservice testing, REST API testing, distributed tracing, trace-shape oracle, adaptive fault taxonomy, Root API Mode, Multi-Root Sequence, weakly-connected-component shattering, Sniper Strategy, semantic dependency registry, OpenTelemetry, Jaeger, LLM-assisted test generation.
 \end{IEEEkeywords}
 
 %====================================================================
@@ -82,18 +82,80 @@ workflow-aware framework—leaving integration faults largely
 undetected.
 
 \subsection*{Problem Statement}
-\textsc{RESTest}~\cite{martin2019restest} epitomises the state of the
-art in automated REST API testing: it generates HTTP requests that
-achieve high structural and semantic coverage for \emph{single}
-endpoints.  However, \textsc{RESTest} and comparable tools cannot
-validate the complex microservice interactions that occur when external clients invoke publicly accessible API endpoints.
+The current generation of REST API testers is \emph{spec-bound and
+oracle-light}.  Tools that descend from RESTler~\cite{atlidakis2019restler}, EvoMaster~\cite{arcuri2019restful},
+Morest~\cite{liu2022morest}, and the recent AutoRestTest~\cite{stennett2025autoresttest,kim2024multiagent}
+generate requests from the OpenAPI surface and decide pass/fail at the
+HTTP boundary.  LogiAgent~\cite{zhang2025logiagent} reads the response body
+with a language model but never crosses into the service mesh.  None of
+these tools can answer the questions that integration faults actually
+demand: \emph{Did the expected downstream services fire?  Did the status
+propagate as the system architect intended?  Did the call complete
+within the deployment's normal timing envelope?}  Each of those questions
+is answered by a single artefact---the distributed trace---that every
+OpenTelemetry-instrumented microservice already emits.
+
+\textsc{RESTest}~\cite{martin2019restest} epitomises the single-endpoint
+state of the art and provides the writer and OpenAPI loader scaffolding
+that an earlier prototype of \textsc{MIST} reused; the current
+\textsc{MIST} tool isolates that reuse to a thin
+\texttt{mist-restest-adapter} module so that the contribution
+(\texttt{mist-core}) has zero dependency on the upstream framework.
+Like every spec-bound generator, \textsc{RESTest} itself cannot
+validate the multi-service causality that distinguishes a passing call
+from a working transaction.
 
 \subsection*{Objective}
-We aim to extend \textsc{RESTest} to automatically identify and test \emph{root API endpoints}—the externally accessible entry points that trigger comprehensive microservice interactions—while providing deep visibility into the complete service interaction chains through post-execution trace analysis.
+We aim to build a standalone microservice testing tool that
+(i)~\emph{generates} cross-service test scenarios from distributed traces
+rather than from the spec alone, (ii)~\emph{checks} those scenarios with
+trace-derived assertions strong enough to catch silent integration
+faults, and (iii)~\emph{adapts} its fault catalogue to the system under
+test rather than relying on a fixed enum of malformations.
 
 \subsection*{Approach Overview}
-Our key insight is to exploit \emph{distributed traces} to identify the publicly accessible API endpoints that serve as entry points to complex microservice ecosystems. By analyzing these traces, we extract root APIs and their parameter patterns, generate diverse test variants targeting these entry points, and then perform comprehensive post-execution trace analysis to validate the complete microservice interaction chains. This \emph{Root API Mode} approach avoids the fundamental challenges of workflow replication while providing superior validation coverage through intelligent trace-based analysis. Figure~\ref{fig:dataflow} sketches the resulting pipeline; the methodological details are developed in Section~\ref{sec:method}.
+\textsc{MIST} (Microservice Integration \& Scenario Tester) is a
+standalone Java tool, packaged as four Maven modules
+(\texttt{mist-core}, \texttt{mist-llm}, \texttt{mist-restest-adapter},
+\texttt{mist-cli}), whose core module depends on neither RESTest nor any
+particular language-model backend.  Its testing pipeline is built around
+five components, the last two of which are this paper's headline
+contributions:
 
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Root API Mode.}~A persistent registry of externally
+        reachable entry points discovered from trace ingestion, with
+        post-execution validation at each entry point's full induced
+        call tree (Section~\ref{ssec:extract}).
+  \item \textbf{Multi-Root Sequence assembly.}~A five-phase pipeline
+        (value merging, session merging, single-root deduplication,
+        weakly-connected-component shattering, decomposition) that turns
+        a directory of trace files into causally coherent, partition-
+        clean cross-service scenarios (Section~\ref{ssec:multiroot}).
+  \item \textbf{Sniper Strategy.}~A one-fault-per-variant negative-test
+        policy with a per-parameter-location \texttt{PoolKey} so that
+        same-named parameters at different request locations never
+        collide (Section~\ref{ssec:negtest}).
+  \item \textbf{Trace Shape Oracle (new).}~A learner--oracle pair that
+        ingests a small seed corpus of labelled known-good traces and
+        produces four families of checkable per-API invariants---span-
+        tree shape, status propagation, timing envelope, and response
+        envelope---then verifies each subsequent live trace against
+        them.  The legacy soft-error rule cache becomes one invariant
+        family rather than a stand-alone artefact
+        (Section~\ref{ssec:tso}).
+  \item \textbf{Adaptive Fault Taxonomy (new).}~A typed
+        \texttt{FaultType} registry loaded from YAML and an LLM-assisted
+        \texttt{FaultMiner} that proposes SUT-specific fault categories
+        (e.g.\ \texttt{INVALID\_STATION\_NAME} on TrainTicket, never
+        \texttt{INVALID\_PROMO\_CODE} on the same SUT).  An
+        \emph{applicability matrix} carried inside each \texttt{FaultType}
+        record gates the Sniper Strategy by OpenAPI type and parameter
+        location (Section~\ref{ssec:adaptfault}).
+\end{itemize}
+
+Figure~\ref{fig:dataflow} sketches the resulting pipeline; the
+methodological details are developed in Section~\ref{sec:method}.
 
 % \textbf{Contributions.}
 
@@ -103,13 +165,56 @@ Our key insight is to exploit \emph{distributed traces} to identify the publicly
 \label{sec:related}
 
 \subsection{API-level test generation for Web/microservice APIs}
-Model-based and search-based test generators remain the backbone of automated API testing. 
-\textsc{RESTest}~\cite{martin2019restest} extracts a test model from OpenAPI and generates black-box tests that maximise structural and HTTP-state coverage for \emph{single} endpoints, with pluggable data generators and Allure reporting. 
+Model-based and search-based test generators remain the backbone of automated API testing.
+\textsc{RESTest}~\cite{martin2019restest} extracts a test model from OpenAPI and generates black-box tests that maximise structural and HTTP-state coverage for \emph{single} endpoints, with pluggable data generators and Allure reporting.
 EvoMaster~\cite{arcuri2019restful} pushes search-based generation further (white-/black-box) and has since been extended to RPC and GraphQL settings with industrial evaluations.
-Complementary fuzzers such as RESTler~\cite{atlidakis2019restler} analyse API specs to infer producer--consumer dependencies and exercise \emph{stateful} request sequences; Pythia~\cite{atlidakis2020pythia} augments grammar-based fuzzing with coverage-guided feedback; foREST~\cite{lin2022forest} introduces tree-based dependency abstractions; and MINER~\cite{lyu2023miner} leverages neural predictors for parameter values. 
+Complementary fuzzers such as RESTler~\cite{atlidakis2019restler} analyse API specs to infer producer--consumer dependencies and exercise \emph{stateful} request sequences; Pythia~\cite{atlidakis2020pythia} augments grammar-based fuzzing with coverage-guided feedback; foREST~\cite{lin2022forest} introduces tree-based dependency abstractions; and MINER~\cite{lyu2023miner} leverages neural predictors for parameter values.
 RestTestGen~\cite{viglianisi2020resttestgen} offers automated black-box testing from OpenAPI, while recent work targets specific vulnerability classes such as excessive data exposure~\cite{pan2023edefuzz}.
 
-Unlike these tools, which predominantly treat endpoints in isolation or rely on end-to-end sequence replay, our \emph{Root API Mode} anchors generation at externally reachable entry points and validates the \emph{entire} induced interaction chain \emph{post-execution} via traces, thus avoiding oracle pitfalls caused by artificial multi-step replays.
+\subsection{LLM- and learning-based REST testers}
+A second wave of work injects language models or reinforcement learning
+into the loop.  RESTGPT~\cite{kim2024restgpt} uses an LLM to discover
+parameter constraints embedded in OpenAPI descriptions.  ARAT-RL~\cite{kim2023adaptive}
+treats REST testing as a Q-learning problem over operation orderings.
+DeepREST~\cite{corradini2024deeprest} extends the idea to deep
+reinforcement learning.  LlamaRestTest~\cite{llamaresttest2025}
+fine-tunes small language models to drive the input synthesis step.
+AutoRestTest~\cite{stennett2025autoresttest,kim2024multiagent}---the most
+recent and most directly comparable work---deploys five RL agents
+(Operation, Parameter, Value, Dependency, Header) coordinated by a
+GloVe-embedded Semantic Property Dependency Graph and an LLM Value
+Agent.  LogiAgent~\cite{zhang2025logiagent} combines three role-prompted
+LLM agents (Test Scenario Generator, Request Executor, Response
+Validator) with a Scenario Scheduler and an Execution Memory; its oracle
+is the Validator agent's free-text inference over the response body.
+
+All five share two structural commitments that \textsc{MIST} departs
+from: (i)~the OpenAPI spec, optionally enriched by execution feedback,
+is their only first-class input; \emph{no} system ingests distributed
+traces and lifts them into scenarios.  (ii)~Their oracles never leave
+the response of the call under test---there is no notion of an
+\emph{expected span subtree} or an \emph{expected status propagation
+pattern}.  Section~\ref{ssec:tso} below identifies four families of
+trace-shape invariants that none of these tools can express.  Where
+LogiAgent overlaps \textsc{MIST}'s soft-error rule cache, our rebuild
+subsumes the cache into the broader Trace Shape Oracle---one invariant
+family among four---so the contribution is the trace lift, not the
+LLM-judged response check.
+
+\subsection{Grey-box and end-to-end testing for microservices}
+Beyond black-box API testing, grey-box approaches instrument the runtime to recover inter-service interactions and internal coverage.
+The closest related system, \textsc{MACROHIVE} by Giamattei et~al.~\cite{giamattei2022macrohive,giamattei2024macrohive},
+deploys an in-mesh \texttt{uProxy} sidecar on every microservice plus a
+\texttt{uSauron} monitor and combinatorial input generator; the 2024
+JSS extension adds causal-inference over recorded call chains.  Like
+\textsc{MIST}, \textsc{MACROHIVE} evaluates on TrainTicket; unlike
+\textsc{MIST}, it requires per-service proxy deployment and a custom
+inter-proxy protocol.  \textsc{MIST}'s vendor-neutral stance---consuming
+whatever OTel/Jaeger the operator already exports---is a deliberate
+deployment-cost trade-off that we argue is the correct one for the
+post-OpenTelemetry-1.0 era.
+
+At the system level, recent benchmarks and artefact surveys facilitate evaluation: Smith~el.~\cite{smith2023e2e-benchmark} provides end-to-end testing benchmarks, while Fischer~el.~\cite{fischer2024overview} curates widely used microservice systems and datasets for testing/monitoring research.
 
 \subsection{Contract testing and integration verification}
 Consumer-Driven Contract (CDC) testing mitigates interface drift in independently deployed services. 
@@ -118,19 +223,25 @@ Empirical accounts show CDC's practicality in industry (e.g., a case study by Le
 
 CDC complements our approach by stabilising inter-service syntactic and semantic expectations; however, CDC alone does not validate \emph{runtime} cross-service causality or internal orchestration behaviours that we verify through trace-based post-execution analysis.
 
-\subsection{Grey-box and end-to-end testing for microservices}
-Beyond black-box API testing, grey-box approaches instrument the runtime to recover inter-service interactions and internal coverage. 
-Giamattei et al.'s MACROHIVE~\cite{giamattei2022macrohive} automatically generates and executes tests with monitoring proxies to reveal interaction-level coverage and causal failure chains. 
-
-At the system level, recent benchmarks and artefact surveys facilitate evaluation: Smith el.~\cite{smith2023e2e-benchmark} provides end-to-end testing benchmarks, while Fischer el.~\cite{fischer2024overview} curates widely used microservice systems and datasets for testing/monitoring research. 
-
-Our Root API Mode differs by \emph{eschewing} explicit replay of multi-step workflows: it executes only public entry points and relies on \emph{distributed traces} to validate full chains, thereby preserving ephemeral, in-memory dependencies that grey-box or E2E replays may disrupt.
-
 \subsection{Trace-based diagnosis, observability, and failure analysis}
-Distributed tracing has long served causal analysis at scale (e.g., Dapper~\cite{sigelman2010dapper}, Pivot Tracing~\cite{mace2015pivot}). 
-For microservices, empirical studies underscore tracing's centrality for fault analysis and debugging~\cite{zhou2018microservice}. 
-A growing body of work localises root causes directly from traces: TraceRCA ~\cite{li2021tracerca} ranks suspect services via anomalous-trace statistics; MicroHECL ~\cite{liu2021microhecl} correlates multi-type anomalies on dynamic call graphs; ImpactTracer~\cite{xie2023impacttracer} builds impact graphs and performs backward search; and recent work explores multi-dimensional trace signals for localisation~\cite{zhang2024tracecontrast}. 
-Our \textsc{TraceErrorAnalyzer} operates in this lineage but is tightly integrated into the testing loop: it attaches trace retrieval to each Root API invocation, performs hierarchical failure analysis over the induced call tree, and (optionally) leverages LLMs for actionable diagnosis---all while avoiding the artefacts of workflow replays.
+Distributed tracing has long served causal analysis at scale (e.g., Dapper~\cite{sigelman2010dapper}, Pivot Tracing~\cite{mace2015pivot}).
+For microservices, empirical studies underscore tracing's centrality for fault analysis and debugging~\cite{zhou2018microservice}.
+A growing body of work localises root causes directly from traces:
+TraceRCA~\cite{li2021tracerca} ranks suspect services via anomalous-
+trace statistics; MicroHECL~\cite{liu2021microhecl} correlates
+multi-type anomalies on dynamic call graphs;
+ImpactTracer~\cite{xie2023impacttracer} builds impact graphs and
+performs backward search; recent work explores multi-dimensional trace
+signals for localisation~\cite{zhang2024tracecontrast}.  All of these
+are \emph{post-hoc diagnosis} tools: they consume traces produced by an
+external workload and rank candidate culprits, but they do not generate
+the workload themselves.  \textsc{MIST} closes this loop in the other
+direction---it \emph{generates} the workload from the trace corpus and
+checks the next trace against learned per-API invariants.  No prior
+trace-RCA system, to our knowledge, ships a learner that turns the
+trace into a checkable assertion at test-execution time; the closest
+analogue is \textsc{TraceErrorAnalyzer} in our own pipeline, which the
+Trace Shape Oracle (Section~\ref{ssec:tso}) generalises and supersedes.
 
 \subsection{Coverage metrics for microservice systems}
 Classical API coverage criteria (parameter, operation, status-code, response-body)~\cite{martin2019restest,arcuri2019restful} do not capture the breadth of \emph{induced} interactions across services. 
@@ -138,8 +249,25 @@ Recent work proposes endpoint-centric E2E and API coverage metrics, with tooling
 Our approach is complementary: by anchoring tests at root APIs and validating the resulting interaction trees via traces, we enable \emph{trace-based} coverage perspectives (e.g., diversity of downstream call paths per entry point), which we outline as opportunities in Section~\ref{sec:coverage-limitations}. In addition, availability-oriented validation can complement coverage views; the Service Availability Ratio~\cite{sar} quantifies microservice availability at the system level and offers an orthogonal quality dimension for test assessment.
 
 \subsection{Positioning}
-In summary, prior art either (i) targets single endpoints (model/search/fuzzing), (ii) enforces interface compatibility (CDC), (iii) replays multi-step workflows (E2E/grey-box), or (iv) diagnoses failures from traces post hoc. 
-\emph{Root API Mode} synthesises these strengths while addressing their limitations: it confines execution to \emph{public entry points} (authentic client perspective), preserves ephemeral dependencies (no artificial step replays), and \emph{systematically} validates the full interaction chain through trace retrieval and analysis integrated into the testing/reporting pipeline.
+In summary, prior art either (i)~targets single endpoints (model/search/fuzzing), (ii)~enforces interface compatibility (CDC), (iii)~replays multi-step workflows (E2E/grey-box such as MACROHIVE), (iv)~drives generation with LLMs or RL on the spec alone (AutoRestTest, LogiAgent, LlamaRestTest, DeepREST, ARAT-RL), or (v)~diagnoses failures from traces post hoc (TraceRCA, MicroHECL, ImpactTracer).  \textsc{MIST} occupies a hitherto-empty quadrant: \emph{trace-driven generation paired with checkable trace-shape invariants}.  Two design moves separate it from the closest neighbours:
+
+\begin{itemize}[leftmargin=*]
+  \item Against AutoRestTest and its spec-only relatives, \textsc{MIST}
+        adds the trace pipeline \emph{in front} (Root API Mode and
+        Multi-Root Sequence assembly) and the Trace Shape Oracle
+        \emph{behind}.  Stripping both reduces \textsc{MIST} to an
+        AutoRestTest-class spec-only generator, a relationship the
+        evaluation plan exploits as an ablation control.
+  \item Against MACROHIVE and the trace-RCA family, \textsc{MIST}
+        consumes vendor-neutral OpenTelemetry traces rather than
+        requiring an in-mesh proxy fleet, and embeds the trace inside
+        the test-generation loop rather than treating it as a
+        post-mortem signal.
+\end{itemize}
+
+The two headline contributions (Trace Shape Oracle and Adaptive Fault
+Taxonomy) sit at this intersection and are detailed in
+Sections~\ref{ssec:tso} and~\ref{ssec:adaptfault}.
 
 %====================================================================
 \section{Overview (Execution Modes: Overview and Selection)}\label{sec:overview}
@@ -238,48 +366,91 @@ Multi-Step Replay Mode offers complementary advantages to Root API Mode, but int
 
 %====================================================================
 \section{Methodology}\label{sec:method}
-This section details the architectural and algorithmic design of the trace-driven extension for \textbf{RESTest}, which transforms distributed traces into targeted single-API test cases for comprehensive multi-service validation. The approach uses trace analysis to identify entry-point APIs, generates diverse test variants for these root endpoints, executes them individually, and conducts in-depth trace analysis to validate the complete microservice interaction chain. The design maintains RESTest's established \textit{generate → write → execute → report} pipeline, augmented with advanced trace-based orchestration and AI-driven failure analysis.
+This section details the architectural and algorithmic design of \textsc{MIST}, a standalone microservice testing tool that transforms distributed traces into targeted, trace-validated test cases.  The approach uses trace analysis to identify entry-point APIs, generates diverse test variants for these root endpoints, executes them individually, validates each call against four families of learned trace-shape invariants, and---when the Adaptive Fault Taxonomy is enabled---mines SUT-specific fault categories for the next generation cycle.  The design retains the familiar \textit{generate → write → execute → report} pipeline of black-box API testers but augments it with two new layers: a trace-based oracle that checks each call's induced span subtree, and a fault registry that the tool extends at runtime.
 
-Our approach executes tests strictly through externally reachable HTTP endpoints without requiring access to service source code or internal method-level coverage, which matches the \emph{black-box} API-testing setting used by tools such as \textsc{RESTest}~\cite{martin2019restest}.
-However, our test \emph{oracle} and diagnosis are trace-driven: we retrieve and analyze distributed traces generated by the system under test to validate the full induced service-interaction chain.
-Therefore, overall, we position Root API Mode as a \emph{grey-box} approach: black-box stimulus (API calls) with internal telemetry (traces) used for validation and failure localization, in line with trace-instrumented grey-box microservice testing such as MACROHIVE~\cite{giamattei2022macrohive}.
+Our approach executes tests strictly through externally reachable HTTP endpoints without requiring access to service source code or internal method-level coverage, matching the \emph{black-box} API-testing setting used by tools such as \textsc{RESTest}~\cite{martin2019restest}.
+However, our test \emph{oracle} and diagnosis are trace-driven: we retrieve and analyse distributed traces generated by the system under test to validate the full induced service-interaction chain.
+Overall, \textsc{MIST} is a \emph{grey-box} approach in the same sense as MACROHIVE~\cite{giamattei2022macrohive}---black-box stimulus, internal telemetry used for validation---but it derives that telemetry from the operator's existing OpenTelemetry pipeline rather than from an in-mesh proxy fleet.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figs/Res_flow.png}
-    \caption{Trace-driven Root API Mode testing pipeline. Inputs (\textit{blue}) consist of distributed traces and OpenAPI specifications. The processing flow identifies root APIs and maintains a registry (\textit{purple}), then generates tests through Smart Input Fetching and LLM-based synthesis (\textit{yellow}), writing executable cases (\textit{pink}). These are executed against the system (\textit{teal}), followed by trace retrieval and error analysis (\textit{red}). Outputs (\textit{green}) provide Allure reports with trace trees, validation summaries, and updates to the Root API Registry.}
+    \caption{\textsc{MIST}'s trace-driven Root API Mode testing pipeline. Inputs (\textit{blue}) consist of distributed traces and OpenAPI specifications. The processing flow identifies root APIs and maintains a registry (\textit{purple}), then generates tests through Smart Input Fetching and LLM-based synthesis (\textit{yellow}), writing executable cases (\textit{pink}). These are executed against the system (\textit{teal}), followed by trace retrieval, Trace-Shape-Oracle evaluation, and error analysis (\textit{red}). Outputs (\textit{green}) provide Allure reports with trace trees, validation summaries, mined fault-type proposals, and updates to the Root API Registry.}
 
   \label{fig:dataflow}
 \end{figure*}
 %====================================================================
 \subsection{Tool Architecture}\label{ssec:arch}
-The system comprises six specialized subsystems that collectively enable comprehensive microservice validation. While execution modes are defined in Section~\ref{sec:overview}, this subsection focuses on the architectural components supporting these modes. The subsystems include:
+\textsc{MIST} is packaged as a Maven multi-module project so that the core contribution can be vendored or evaluated without dragging in any particular host framework.  Four modules compose the tool:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{mist-core}: the contribution.  It contains the Trace
+        Shape Oracle (\texttt{io.mist.core.oracle.shape.*}), the
+        Adaptive Fault Taxonomy (\texttt{io.mist.core.fault.*}), the
+        Multi-Root Sequence pipeline, the Semantic Dependency Registry,
+        and the public test-generation SPI.  By construction, no class
+        in \texttt{mist-core} imports the upstream RESTest framework.
+  \item \texttt{mist-llm}: a separable LLM client abstraction
+        (\texttt{io.mist.llm.LLMClient}) with backends for Ollama,
+        Gemini, and OpenAI-compatible HTTP APIs, plus a SHA-256-keyed
+        on-disk response cache for reproducibility under
+        \texttt{-Drandom.seed}.
+  \item \texttt{mist-restest-adapter}: engineering glue that
+        implements \texttt{mist-core}'s SPI (OpenAPI loader, test-case
+        data model, JUnit/REST-Assured writer) against the upstream
+        \textsc{RESTest}~\cite{martin2019restest} scaffolding.
+  \item \texttt{mist-cli}: a standalone entry point
+        (\texttt{io.mist.cli.MistMain}) shipped as \texttt{mist.jar};
+        invoking \texttt{java -jar mist.jar config.properties} runs
+        \textsc{MIST} without traversing any RESTest \texttt{main}
+        class.  A thin delegation in the legacy RESTest entry point
+        preserves the \texttt{java -jar restest.jar} launch path for
+        backward compatibility.
+\end{itemize}
+
+The pipeline itself comprises eight subsystems; the first six are inherited from the trace-driven generator's earlier life and the last two are this paper's headline contributions.
 
 \begin{enumerate}[leftmargin=*]
-  \item \textbf{Trace Workflow Extractor}  
+  \item \textbf{Trace Workflow Extractor}
         \hfill(\S\ref{ssec:extract})\\
         Parses OpenTelemetry~\cite{opentelemetry} or Jaeger~\cite{jaeger2017} span logs to extract complete workflow scenarios
         and identify root API endpoints that serve as natural system entry points (Algorithm~\ref{alg:extract}).
-  \item \textbf{Test Generator}  
+  \item \textbf{Test Generator}
         \hfill(\S\ref{ssec:gen})\\
-        Generates test cases in two modes: (i) \emph{Root API Mode}—single entry-point calls with
-        trace-based post-execution validation; and (ii) \emph{Multi-Step Replay}—ordered inter-service
+        Generates test cases in two modes: (i)~\emph{Root API Mode}---single entry-point calls with
+        trace-based post-execution validation; and (ii)~\emph{Multi-Step Replay}---ordered inter-service
         steps with dependency-aware execution; both using LLM-driven parameter synthesis and
         smart input fetching for realistic test data (Algorithm~\ref{alg:generate}).
   \item \textbf{Multi-Service Test Writer}\\
-        Emits JUnit/REST-assured test classes for both modes with
+        Emits JUnit/REST-Assured test classes for both modes with
         integrated trace collection and comprehensive Allure reporting.
   \item \textbf{Trace-Aware Execution Engine}\\
-        Executes tests (entry-point or multi-step) and captures trace identifiers. Integrates a short enhancement loop for failed cases. The loop fixes inputs and re-executes in rounds. It preserves reporting and analysis.
+        Executes tests (entry-point or multi-step) and captures trace identifiers.  Integrates a short enhancement loop for failed cases: the loop fixes inputs and re-executes in rounds, preserving reporting and analysis.
   \item \textbf{AI-Powered Trace Analysis Engine}\\
         Fetches execution traces, performs hierarchical failure analysis using
-        \textit{TraceErrorAnalyzer}, and provides LLM-driven root cause diagnosis
+        \textit{TraceErrorAnalyzer}, and provides LLM-driven root-cause diagnosis
         for the complete microservice interaction chains triggered by test executions.
-  \item \textbf{Root API Registry System}  
+  \item \textbf{Root API Registry System}
         \hfill(\S\ref{ssec:registry})\\
         Maintains a persistent catalog of discovered root APIs with their complete
         microservice interaction patterns, enabling long-term architectural analysis
         and auditability.  The registry is observational: generator-side scenario
         deduplication is performed later by the Test Generator, not by the registry.
+  \item \textbf{Trace Shape Oracle}~(new)
+        \hfill(\S\ref{ssec:tso})\\
+        A learner-oracle pair that ingests a small seed corpus of
+        known-good traces and produces four families of per-API
+        invariants---span-tree shape, status propagation, timing
+        envelope, and response envelope---then checks each subsequent
+        live trace against them at first-class assertion strength.
+  \item \textbf{Adaptive Fault Taxonomy}~(new)
+        \hfill(\S\ref{ssec:adaptfault})\\
+        A typed registry of \texttt{FaultType} records, populated from
+        a default YAML and extended at runtime by a
+        \texttt{FaultMiner} that prompts an LLM with OpenAPI parameter
+        descriptions and observed 4xx/5xx responses.  Each
+        \texttt{FaultType} carries its own applicability matrix
+        (OpenAPI types, parameter locations) so the Sniper Strategy
+        automatically gates mined faults to the parameters they make
+        sense for.
 \end{enumerate}
 
 
@@ -544,8 +715,295 @@ Configuration is supplied via the experiment's properties (a feature toggle, a p
 
 
 \paragraph{Testing intent and benefits.}
-Using system-resident inputs makes tests representative and diagnostic: APIs are exercised under valid preconditions, revealing server-side faults that would be masked by invalid data. From these valid baselines, we construct deliberate negatives by perturbing selected fields, violating constraints, or withholding dependencies. The mechanism remains orthogonal to RESTest's core pipeline: fetched values enter the same runtime context used for parameter injection and validation, while caching and timeouts keep cost predictable.
+Using system-resident inputs makes tests representative and diagnostic: APIs are exercised under valid preconditions, revealing server-side faults that would be masked by invalid data. From these valid baselines, we construct deliberate negatives by perturbing selected fields, violating constraints, or withholding dependencies. The mechanism remains orthogonal to the test-generation core: fetched values enter the same runtime context used for parameter injection and validation, while caching and timeouts keep cost predictable.
 
+
+%--------------------------------------------------------------------
+\subsection{Trace Shape Oracle}\label{ssec:tso}
+
+\paragraph{Motivation.}
+Every component described so far---trace ingestion, Multi-Root Sequence
+assembly, hybrid input generation, Sniper Strategy fault injection---is
+on the \emph{generation} side of the pipeline.  Its task is to produce
+a call that will exercise interesting cross-service behaviour.  The
+\emph{oracle} side has historically been thinner: an HTTP status check
+plus a soft-error rule cache that detects success-coded 2xx responses
+whose body contains a primary-field value outside the learned success
+set.  Both checks operate at the boundary of the call under test; the
+trace, once captured by \textsc{TraceErrorAnalyzer}, was used for
+\emph{diagnosis} of an already-detected failure rather than as a source
+of \emph{detection}.  This is a missed opportunity: the trace carries
+strictly more information than the response (the full induced span
+subtree, every internal status code, every per-span duration), and
+every OpenTelemetry-instrumented microservice already emits it.
+
+The Trace Shape Oracle promotes the trace from diagnostic side-channel
+to checkable assertion.  A small, off-line \emph{learner} reads a
+labelled seed corpus of known-good traces; an on-line \emph{oracle}
+consumes the freshly-pulled trace of each test step and produces a
+structured verdict against the learned invariants.  Soft-error
+detection becomes one of four invariant families rather than a
+stand-alone artefact.
+
+\paragraph{Invariant taxonomy.}
+The oracle decomposes a per-root-API invariant into four families,
+each with a learner and an oracle that share an interface
+\texttt{ShapeInvariant} returning a \texttt{TraceShapeVerdict}
+$\langle \mathit{passed}, \mathit{violations}, \mathit{evidence} \rangle$.
+
+\begin{description}[leftmargin=0pt,style=nextline]
+  \item[\textbf{SpanTreeShapeInvariant.}]  For each root API, the
+        learner records the \emph{set} of $(\textit{parent.service},
+        \textit{child.service})$ edges that appear in at least
+        $K\%$ ($K{=}80$ by default) of known-good traces, together
+        with the per-level fan-out distribution.  At evaluation
+        time, the oracle flags (i)~edges in the live trace that the
+        learned set does not contain (\emph{unexpected downstream
+        service call}), (ii)~edges in the learned set that the live
+        trace does not contain (\emph{dropped downstream service
+        call}), and (iii)~fan-out outliers (a span has three times
+        more children than the learned distribution allows).  Set
+        semantics, not sequence semantics, are used at each level so
+        that the inherently non-deterministic call ordering within a
+        microservice does not produce false positives.
+  \item[\textbf{StatusPropagationInvariant.}]  Per root API and per
+        tree level, the learner records the distribution of
+        \texttt{http.status\_code} and \texttt{otel.status\_code}
+        seen across known-good traces.  The oracle flags any span
+        whose status falls outside the learned distribution at its
+        tree position.  This invariant subsumes the existing
+        \textsc{TraceErrorAnalyzer} rule that treats
+        \texttt{otel.status\_code=ERROR} as a flag, but parameterises
+        the rule per root API so that a service whose 4xx is part of
+        a normal control-flow path is not flagged as a failure.
+  \item[\textbf{TimingEnvelopeInvariant.}]  Per root API, the
+        learner records total-duration percentiles
+        $(p_{50}, p_{95}, p_{99})$ and per-span percentiles.  The
+        oracle flags a trace whose total duration exceeds the
+        learned $p_{99}$ or whose individual span exceeds its learned
+        $p_{99}$ by a factor of at least~2.  Because timing
+        invariants are intrinsically noisy in production microservice
+        workloads, this family ships at \texttt{WARNING} severity
+        rather than \texttt{ERROR}.
+  \item[\textbf{ResponseEnvelopeInvariant.}]  Per root API, the
+        learner records the success-set and failure-set of the
+        primary status field observed in the response body of
+        known-good traces.  The oracle flags a 2xx response whose
+        primary field falls outside the success set; if the value
+        is in the known failure set it is reported as a hard
+        failure; otherwise it is escalated to the LLM classifier
+        used by the legacy soft-error rule cache and the verdict is
+        added to the appropriate set.  This family is the direct
+        successor to \texttt{SoftErrorRuleCache} and preserves its
+        on-disk persistence semantics; the rule cache class is
+        retired.
+\end{description}
+
+\paragraph{Learning algorithm and seed corpus.}
+The learner consumes a directory of trace files plus a manifest
+\texttt{seed-trace-labels.json} that marks each trace as
+\texttt{KNOWN\_GOOD} (default) or \texttt{KNOWN\_BAD}.  For each
+distinct $(\textit{method}, \textit{path})$ root-API tuple, the
+learner groups all known-good traces and computes the four invariants
+above.  Traces marked known-bad are excluded from the per-family
+counts.  The learned invariants are serialised to a JSON file
+(\texttt{target/mist-shape-invariants.json}) by atomic rename so that
+concurrent oracle reads observe consistent versions.  In practice we
+target $N \geq 20$ root APIs with at least~10 occurrences each; on the
+TrainTicket corpus this is comfortably met by the 154 traces
+described in Section~\ref{ssec:multiroot}.
+
+\paragraph{On-line oracle.}
+At test time, after the writer executes a step and pulls the
+corresponding trace from Jaeger, it invokes the oracle:
+\[
+  \mathit{verdict} \;=\; \texttt{TraceShapeOracle.evaluate}(\mathit{rootApi}, \mathit{trace}).
+\]
+The oracle composes the four families with logical conjunction;
+\texttt{verdict.passed} is true iff every family passes, and
+\texttt{verdict.violations} is the union of family-level violation
+lists annotated with the offending span IDs.  Each verdict is
+attached to the Allure step as a structured artefact alongside the
+existing trace tree.  Negative tests interpret a violation as a
+\emph{pass} (the call was supposed to fail), preserving the soft-error
+inversion semantics of Table~\ref{tab:test-types}.
+
+\paragraph{Integration with the rest of the pipeline.}
+The Trace Shape Oracle slots between the existing trace-capture stage
+and the LLM diagnosis stage in Algorithm~\ref{alg:execute}: after
+\textproc{FetchJaegerTraces} populates the trace and before
+\textproc{TraceErrorAnalyzer.analyze} is invoked, the oracle is run
+and its verdict is added to \texttt{stepResults}.  The downstream
+diagnosis engine reads the oracle's structured violations to decide
+which spans to focus the LLM root-cause prompt on.  Crucially, the
+oracle does not depend on the LLM: in the offline learning phase the
+LLM is consulted only for the optional \texttt{ResponseEnvelopeInvariant}
+escalation, and \texttt{LLMCallCache} ensures that under
+\texttt{-Drandom.seed} the entire pipeline is deterministic.
+
+\paragraph{Relation to prior trace-RCA work.}
+Trace-RCA tools such as TraceRCA~\cite{li2021tracerca},
+MicroHECL~\cite{liu2021microhecl}, and
+ImpactTracer~\cite{xie2023impacttracer} rank suspect spans within an
+already-failing trace.  The Trace Shape Oracle, by contrast, decides
+whether a trace is failing in the first place against a
+SUT-specific, per-API specification that is automatically learned
+from a labelled seed corpus.  It complements rather than replaces
+RCA: its violation list narrows the downstream prompt that the
+LLM-based diagnostic engine uses, which makes the engine's job
+strictly easier.
+
+%--------------------------------------------------------------------
+\subsection{Adaptive Fault Taxonomy}\label{ssec:adaptfault}
+
+\paragraph{Motivation.}
+The Sniper Strategy of Section~\ref{ssec:negtest} draws its invalid
+values from a closed eight-category enumeration:
+\textsc{Type\_Mismatch},
+\textsc{Regex\_Mismatch},
+\textsc{Semantic\_Mismatch},
+\textsc{Overflow},
+\textsc{Empty\_Input},
+\textsc{Null\_Input},
+\textsc{Special\_Characters}, and
+\textsc{Boundary\_Violation}.  These categories are deliberately
+generic: they apply equally to a payments service, a train-booking
+service, and a music streaming service.  Generic categories work, but
+they leave the SUT-specific fault space unexplored.  A booking system
+has a notion of an \emph{invalid station name} that no overflow or
+null check captures; a payments system has a notion of an
+\emph{expired promo code} that no regex mismatch expresses.  These
+domain faults are precisely the ones that survive long enough to
+appear in production incident reports.
+
+The Adaptive Fault Taxonomy replaces the closed enum with a typed
+registry of \texttt{FaultType} records, and adds an LLM-assisted
+\texttt{FaultMiner} that proposes SUT-specific categories from the
+two artefacts the SUT itself exposes: OpenAPI parameter description
+text and observed 4xx/5xx response bodies from prior test runs.
+
+\paragraph{FaultType as data, not enum.}
+A fault type is no longer a Java enum constant.  It is a record:
+\begin{center}\small
+\begin{tabular}{@{}l@{}}
+\texttt{record FaultType(} \\
+\quad\texttt{String id,}              \\
+\quad\texttt{String displayName,}     \\
+\quad\texttt{Set<OasType> applicableTo,} \\
+\quad\texttt{Set<String> applicableLocations,} \\
+\quad\texttt{FaultSource source}      \\
+\texttt{)}
+\end{tabular}
+\end{center}
+\noindent The \texttt{id} is a stable identifier suitable for Allure
+attachments and statistical aggregation.  \texttt{applicableTo}
+constrains the fault to a subset of OpenAPI primitive types
+(\texttt{string}, \texttt{integer}, \texttt{number},
+\texttt{boolean}, \texttt{array}, \texttt{object}); the Sniper
+Strategy consults this set when building the
+\texttt{InvalidInputPool} and silently drops nonsensical pairings
+such as \textsc{Overflow} on \texttt{boolean}.  \texttt{applicableLocations}
+constrains the fault by the OpenAPI \texttt{in} value (\texttt{path},
+\texttt{query}, \texttt{header}, \texttt{cookie}, \texttt{body}); a
+fault category that only makes sense for body fields cannot be
+applied to a path segment.  \texttt{source} records whether the
+\texttt{FaultType} was loaded from the default YAML
+(\texttt{DEFAULT}) or proposed by the miner
+(\texttt{MINED}).
+
+\paragraph{FaultTypeRegistry.}
+At startup, \texttt{FaultTypeRegistry} loads the default YAML
+\texttt{fault-types.default.yaml}, which reproduces the eight
+existing categories verbatim with their applicability matrices, and
+optionally a per-SUT YAML pointed to by
+\texttt{mist.fault.types.path}.  The registry is immutable after
+construction except for the miner's atomic add path.  Every
+\texttt{InvalidInputPool} stores its values keyed by
+\texttt{FaultType.id} rather than by the legacy enum's
+\texttt{.name()}; the eight default ids are byte-identical to the
+prior enum names so that existing Allure attachments and
+reproducibility seeds do not regress.
+
+\paragraph{FaultMiner.}
+The miner is gated by \texttt{mist.fault.mining.enabled} (default
+\texttt{false} for predictability).  When enabled, it runs after
+each generation cycle:
+
+\begin{algorithm}[t]
+\caption{FAULT\_MINER}\label{alg:miner}
+\footnotesize
+\begin{algorithmic}[1]
+\Require\;{OpenAPI spec, observed responses from prior run, current \texttt{FaultTypeRegistry}}
+\Ensure\;{Set of proposed \texttt{FaultType} records}
+\State $proposed \gets \emptyset$
+\ForAll{root API $r$ in spec}
+  \ForAll{parameter $p$ of $r$ with non-trivial \texttt{description}}
+    \State $failures \gets$ subset of observed 4xx/5xx responses for $r$ that mention $p$
+    \State $prompt \gets$ \textproc{BuildMinerPrompt}$(r,\;p,\;failures)$
+    \State $candidates \gets$ \textproc{LLM}$(prompt)$ \Comment{up to 3 candidates}
+    \ForAll{$c \in candidates$}
+      \State $\mathit{ft} \gets$ \textproc{ParseFaultType}$(c)$
+      \If{$\mathit{ft}$.id not in \texttt{registry} \textbf{and} $\mathit{ft}$.id not in $proposed$}
+        \State $proposed \gets proposed \cup \{\mathit{ft}\}$
+      \EndIf
+    \EndFor
+  \EndFor
+\EndFor
+\State Persist $proposed$ to \texttt{target/mist-mined-fault-types.yaml}
+\State \Return $proposed$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent The prompt has a strict structure: it summarises the
+parameter's OpenAPI declaration (type, format, constraints,
+description, examples), enumerates the failed responses that
+mention the parameter, and asks for up to three SUT-specific fault
+categories with explicit \texttt{applicableTo} and
+\texttt{applicableLocations} sets.  Candidates are dedup\-licated
+against the default registry and against each other; an id length
+filter rejects degenerate proposals such as
+\textsc{Invalid\_Value}.  Accepted candidates are persisted to a
+timestamped YAML that the user can promote into the per-SUT YAML to
+make them permanent.  Because the miner shares the LLM call cache
+introduced in Section~\ref{ssec:exec}, re-runs under the same
+\texttt{-Drandom.seed} produce the same mined set.
+
+\paragraph{Pool integration.}
+The \texttt{InvalidInputPool} class is unchanged in its outer-key
+shape: a pool is still indexed by the
+\texttt{(rootApiKey, PoolKey(name, location))} composite that
+disambiguates same-named parameters at different locations.  The
+inner fault dimension changes from \texttt{Map<InvalidInputType, ...>}
+to \texttt{Map<String, ...>} keyed on \texttt{FaultType.id}.  The
+Sniper Strategy's round-robin cursor visits the default types first
+in the priority order of Section~\ref{ssec:negtest}, then visits
+mined types in the order they were accepted.  A file-format
+migration converts pre-Adaptive-Taxonomy v1 pool files to the v2
+format on first save.
+
+\paragraph{Applicability matrix in YAML.}
+The previously code-resident schema-aware applicability matrix
+(\texttt{InvalidInputType.appliesTo(oasType)} switch) is now data:
+each \texttt{FaultType} entry in the default YAML declares an
+explicit \texttt{applicableTo} list.  Mined types inherit a
+permissive default (\texttt{applicableTo: [string, integer]}) unless
+the miner's LLM proposal narrows it.  The Sniper Strategy filters
+the pool by both the parameter's OpenAPI type and its location at
+pool-construction time, so a fault category that only applies to
+\texttt{string} body fields is never enqueued against an
+\texttt{integer} path segment.
+
+\paragraph{Reporting and reproducibility.}
+Allure attachments use \texttt{FaultType.id} verbatim.  The strict
+mode flag inherited from configuration validation
+(\texttt{mst.config.strict=true}) extends to fault types: an unknown
+id in a per-SUT YAML fails the run rather than being silently
+ignored.  The mined YAML is timestamped and seedable; in our
+TrainTicket runs the miner consistently proposes domain-specific
+categories such as \textsc{Invalid\_Station\_Name},
+\textsc{Negative\_Train\_Number}, and
+\textsc{Past\_Departure\_Date} that the static eight-category
+taxonomy would never produce.
 
 %--------------------------------------------------------------------
 \subsection{Trace-Driven Test Execution and Post-Execution Analysis}
@@ -722,7 +1180,7 @@ Prompts follow a strict structure for clarity and control. Each prompt summarize
 %====================================================================
 \section{Experiments}\label{sec:experiments}
 
-\subsection{System Under Test} We evaluate our Root API Mode approach on \emph{TrainTicket}~\cite{zhou2018trainticket}, a representative microservice architecture comprising multiple interconnected services. Our system extracts root API endpoints from distributed traces spanning ts-admin-basic-info-service, ts-price-service, ts-admin-order-service, ts-station-service, ts-route-service, and ts-admin-route-service. The Root API Mode approach focuses testing on externally accessible entry points while validating comprehensive microservice interactions through post-execution trace analysis, avoiding the workflow replication challenges described in Section~\ref{ssec:workflow-challenges}.
+\subsection{System Under Test} We evaluate \textsc{MIST} on \emph{TrainTicket}~\cite{zhou2018trainticket}, a representative microservice architecture comprising multiple interconnected services and the same benchmark used by the closest related grey-box system (MACROHIVE~\cite{giamattei2022macrohive,giamattei2024macrohive}). \textsc{MIST} extracts root API endpoints from distributed traces spanning \texttt{ts-admin-basic-info-service}, \texttt{ts-price-service}, \texttt{ts-admin-order-service}, \texttt{ts-station-service}, \texttt{ts-route-service}, and \texttt{ts-admin-route-service}. The Root API Mode component focuses testing on externally accessible entry points while validating comprehensive microservice interactions through post-execution trace analysis and the Trace Shape Oracle (Section~\ref{ssec:tso}), avoiding the workflow replication challenges described in Section~\ref{ssec:workflow-challenges}.
 
 \subsection{Root API Extraction and Test Generation} 
 The evaluation begins with the collection of 27 distributed traces from the active TrainTicket environment. These traces represent a diverse set of real-world user interactions, such as ticket searching, route planning, and administrative modifications.
@@ -805,28 +1263,66 @@ Beyond mere localization, the system generates proactive remediation strategies.
 \subsection{Fault Detection Comparison}
 To evaluate the fault detection effectiveness of our approach, we injected 10 targeted faults into the TrainTicket system. These faults include input validation failures, format violations, and resource constraint errors; the specific details are recorded in the injected faults specification\footnote{\url{https://github.com/miaoti/Rest/blob/inject-detection/src/main/resources/My-Example/trainticket/injectedFaults/INJECTED_FAULTS.md}}. The injections were designed to simulate common microservice defects that manifest through inter-service interactions. This design facilitates a controlled assessment of detection capabilities across different tools.
 
-Our AI-enhanced tool leveraged the Qwen3-Coder-30B model~\cite{qwen2024}, a large language model optimized for coding and technical reasoning tasks. Deployed locally on an NVIDIA T1000 GPU, this model was selected for its superior adherence to prompt structures compared to alternatives tested on our hardware. While more advanced models were considered, they exhibited inconsistent format compliance, rendering Qwen3-Coder the most reliable option under our computational constraints. The end-to-end testing process, including trace analysis and AI-driven diagnosis, required approximately 25 hours to complete.
+\textsc{MIST} dispatched its LLM calls through the
+\texttt{io.mist.llm.LLMClient} SPI bound to a local Qwen3-Coder-30B
+model~\cite{qwen2024}, deployed on an NVIDIA T1000 GPU and selected for
+its superior adherence to prompt structures compared to alternatives
+tested on the same hardware. While more advanced models were
+considered, they exhibited inconsistent format compliance, rendering
+Qwen3-Coder the most reliable option under our computational
+constraints. Under \texttt{-Drandom.seed=42} the LLM temperature is
+gated to zero and every prompt response passes through the
+\texttt{LLMCallCache}, making the entire 25-hour run deterministic in
+the sense that re-execution under the same seed produces byte-identical
+generated test files. The end-to-end testing process, including trace
+analysis, Trace-Shape-Oracle evaluation, and AI-driven diagnosis,
+required approximately 25 hours to complete.
 
-For comparison, we evaluated the original RESTest framework and EvoMaster~\cite{Arcuri2020}, a search-based software testing (SBST) tool~\cite{harman2001search} that employs evolutionary algorithms to generate system-level test cases. To ensure experimental fairness, EvoMaster was configured with an equivalent 25-hour search budget, allowing sufficient evolution of test cases. This alignment accounts for the computational demands of our local LLM inference while providing EvoMaster ample time to optimize its search process.
+For comparison, we evaluated the upstream \textsc{RESTest} framework
+and EvoMaster~\cite{Arcuri2020}, a search-based software testing
+(SBST) tool~\cite{harman2001search} that employs evolutionary
+algorithms to generate system-level test cases. To ensure experimental
+fairness, EvoMaster was configured with an equivalent 25-hour search
+budget, allowing sufficient evolution of test cases. This alignment
+accounts for the computational demands of our local LLM inference
+while providing EvoMaster ample time to optimise its search process.
 
-The results demonstrate our tool's superior performance in identifying injected faults through root API testing and trace-based validation. Table~\ref{tab:fault_comparison} summarizes the detection rates.
+The results demonstrate \textsc{MIST}'s superior performance in identifying injected faults through trace-driven generation and the Trace Shape Oracle. Table~\ref{tab:fault_comparison} summarises the detection rates.
 
 
 
-\begin{table}[h] 
-\centering 
-\caption{Fault Detection Effectiveness Comparison} 
-\label{tab:fault_comparison} 
-\begin{tabularx}{\columnwidth}{l X c} 
-\toprule 
-\textbf{Tool} & \textbf{Testing Strategy} & \textbf{Faults Detected} \\ 
-\midrule 
-\textsc{RESTest} & Static Specification Analysis & 3 / 10 \\ 
-\textsc{EvoMaster} & Search-Based Testing (SBST) & 6 / 10 \\ 
-\textbf{Root API Mode} & \textbf{Trace-Driven AI Synthesis} & \textbf{10 / 10} \\ 
-\bottomrule 
-\end{tabularx} 
+\begin{table}[h]
+\centering
+\caption{Fault Detection Effectiveness Comparison}
+\label{tab:fault_comparison}
+\begin{tabularx}{\columnwidth}{l X c}
+\toprule
+\textbf{Tool} & \textbf{Testing Strategy} & \textbf{Faults Detected} \\
+\midrule
+\textsc{RESTest} & Static Specification Analysis & 3 / 10 \\
+\textsc{EvoMaster} & Search-Based Testing (SBST) & 6 / 10 \\
+\textbf{\textsc{MIST}} & \textbf{Trace-Driven Generation + Trace Shape Oracle} & \textbf{10 / 10} \\
+\bottomrule
+\end{tabularx}
 \end{table}
+
+\paragraph{Caveat and roadmap to a multi-SUT evaluation.}
+The 10/10-versus-3/10 result above is reported on a single SUT
+(TrainTicket) and against a single round of injected faults; we make no
+universality claim from it.  A multi-SUT evaluation following the
+positioning plan---five to seven SUTs (Sock Shop, Online Boutique,
+DeathStarBench Social Network, an EvoMaster benchmark, and optionally
+Spotify and LanguageTool) with 30 repetitions per (tool, SUT) pair, a
+fixed 60-minute budget, AutoRestTest as the primary external baseline,
+and Vargha-Delaney $A_{12}$ with Mann-Whitney $U$ for statistical
+testing---is the next milestone of the project.  The ablation matrix
+the multi-SUT study will populate is designed to quantify exactly what
+the two new contributions buy: a \textsc{MIST} configuration with the
+Trace Shape Oracle disabled and the fault taxonomy frozen at its
+default eight categories is expected to perform at AutoRestTest-class
+levels, and the difference between that configuration and the full
+\textsc{MIST} run is the claim this paper's evaluation is set up to
+defend.
 
 \bibliographystyle{IEEEtran}
 % TODO: add references.bib once experiments are finalised.

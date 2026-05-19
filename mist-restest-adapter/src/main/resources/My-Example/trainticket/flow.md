@@ -1,11 +1,26 @@
-### MST Mode End-to-End Flow (TestGenerationAndExecution.java)
+### MST Mode End-to-End Flow (MistMain → MistRunner; legacy: TestGenerationAndExecution)
+
+> **Path B entry points.** After Phase 1, the primary launch path is
+> `java -jar mist-cli/target/mist.jar trainticket-demo.properties`, whose
+> `Main-Class` is `io.mist.cli.MistMain`. `MistMain` loads the properties
+> file, builds a `MstConfig` via `MstConfig.fromSystemProperties()`, and
+> delegates to `MistRunner.run()` (lives at
+> `mist-restest-adapter/src/main/java/es/us/isa/restest/main/MistRunner.java`).
+> The legacy `java -jar mist-restest-adapter/target/restest.jar` path
+> continues to work for the ICSME 2026 demo: the MST branch in
+> `TestGenerationAndExecution.main` is now a one-line delegation that
+> reaches the same `MistRunner`, so both entry points produce
+> byte-identical output under `-Drandom.seed=42`. The flowchart below
+> still refers to the steps as if they were inside the legacy main class;
+> in the post-Path-B layout every box from D onward lives inside
+> `MistRunner` instead.
 
 ```mermaid
 flowchart TD
-    A[Start RESTest MST] --> B[Read properties]
+    A[Start MIST: java -jar mist.jar or legacy java -jar restest.jar] --> B[Read properties]
     B --> C{generator equals MST}
-    C -->|No| Z[Classic modes RT CBT FT ART LLM]
-    C -->|Yes| D[Init fault detection and load injected faults]
+    C -->|No legacy path only| Z[Classic modes RT CBT FT ART LLM]
+    C -->|Yes always for MistMain| D[Init fault detection and load injected faults]
     D --> E[Load OpenAPI spec]
     E --> F[Load multi service YAML to serviceConfigs]
     F --> G[Build serviceSpecs map]
@@ -20,7 +35,7 @@ flowchart TD
     I2 --> I3[Phase 3: Scenario Shattering - partition by connected components]
     I3 --> I4[Phase 4: Trace Decomposition - add missing 1-root baselines]
     I4 --> M[After deduplication and decomposition: scenarios for test generation]
-    M[Propagate MST properties]
+    M[Read MstConfig sub-records - Fix A-6 single source of truth]
     M --> M1[testsperoperation or test variants per scenario]
     M --> M2[mst generate only first step]
     M --> M3[smart input fetch and llm and auth]
@@ -380,7 +395,7 @@ flowchart TD
     D --> D1[Phase 3: Scenario Shattering]
     D1 --> D2[Phase 4: Decompose multi-root scenarios into missing 1-root baselines]
     D2 --> E[For each scenario generateScenarioVariants]
-    E --> F[get variantCount from System properties]
+    E --> F[get variantCount from MstConfig.instance.core post Fix A-6]
     F --> G[For each v build MultiServiceTestCase]
     G --> H[Traverse trace tree DFS]
     H --> I{Is span HTTP op}
@@ -529,9 +544,17 @@ flowchart TD
     N7 --> N8[NULL_INPUT: Add null, 'null', 'NULL']
     N8 --> N9[SPECIAL_CHARACTERS: SQL injection, XSS]
     N9 --> N10[BOUNDARY_VIOLATION: Off-by-one errors]
-    N10 --> N11[Store InvalidInputPool by root API key]
+    N10 --> N11[Store InvalidInputPool by rootApiKey, PoolKey paramName, paramLocation - per Fix A-5b]
     N11 --> N12[Pool tracks usage for round-robin]
 ```
+
+**Post-Path-B note**: the fault-type axis inside each `InvalidInputPool` is
+keyed on `FaultType.id` strings drawn from `FaultTypeRegistry` (default YAML
+ids match the deleted `InvalidInputType` enum names byte-for-byte), and the
+pool's outer shape is `Map<String, Map<PoolKey, InvalidInputPool>>` —
+outer key is `rootApiKey`, inner key is `PoolKey(paramName, paramLocation)`
+from Fix A-5b so same-name parameters at different locations
+(path / query / header / cookie / body) never collide.
 
 ### Shared Parameter Pool Usage (during variant generation)
 
@@ -719,11 +742,17 @@ flowchart LR
     H --> I[If 2XX received test FAILS]
 ```
 
-### 8 Invalid Input Types (Comprehensive Coverage)
+### 8 Default Fault Types (Comprehensive Coverage)
+
+These are the eight `FaultType.id` strings shipped in
+`mist-core/src/main/resources/mist/fault-types.default.yaml`. They reproduce
+the deleted `InvalidInputType` enum byte-for-byte in semantics; the
+`FaultTypeRegistry` may add SUT-specific entries on top of them (source =
+`MINED`) without changing this default rotation.
 
 ```mermaid
 flowchart TD
-    A[Invalid Input Types] --> B1[TYPE_MISMATCH]
+    A[8 Default FaultType ids] --> B1[TYPE_MISMATCH]
     A --> B2[REGEX_MISMATCH]
     A --> B3[SEMANTIC_MISMATCH]
     A --> B4[OVERFLOW]
@@ -758,9 +787,9 @@ flowchart TD
 
 A negative variant labelled with a fault type the parameter's schema cannot meaningfully express is **not generated**. This stops the round-robin from emitting nonsense like a 5000-character string labelled `OVERFLOW` for a `boolean` parameter, where the value is really a `TYPE_MISMATCH` wearing the wrong label.
 
-`InvalidInputType.appliesTo(oasType)` is the single source of truth, consulted at pool-build time by both `HardcodedInvalidInputGenerator.generateInvalidInputPool` and `ZeroShotLLMGenerator` (smart and all-LLM modes). The matrix:
+`ApplicabilityMatrix.applies(faultType, oasType, location)` is the single source of truth (Path B Phase 3), consulted at pool-build time by both `HardcodedInvalidInputGenerator.generateInvalidInputPool` and `ZeroShotLLMGenerator` (smart and all-LLM modes). The predicate reads the `applicableTo` / `applicableLocations` axes off each `FaultType` in the registry, which is loaded from `mist-core/src/main/resources/mist/fault-types.default.yaml`. The default-only matrix (eight bundled `FaultType` ids, reproducing the deleted `InvalidInputType` enum byte-for-byte in semantics):
 
-| Fault | string | integer / number | boolean | array | object |
+| Fault (FaultType.id) | string | integer / number | boolean | array | object |
 |---|---|---|---|---|---|
 | TYPE_MISMATCH | ✅ | ✅ | ✅ | ✅ | ✅ |
 | NULL_INPUT | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -771,10 +800,12 @@ A negative variant labelled with a fault type the parameter's schema cannot mean
 | REGEX_MISMATCH | ✅ | ❌ | ❌ | ❌ | ❌ |
 | SEMANTIC_MISMATCH | ✅ | ✅ | ❌ | ✅ | ✅ |
 
+Mined `FaultType` entries (source = `MINED`, loaded from a per-SUT overlay or from `.mist/mined-fault-types.yaml`) carry their own applicability rows alongside these defaults, so a domain-specific category like `INVALID_STATION_NAME` participates in the same matrix without code changes.
+
 Effects:
 - A `boolean` parameter now produces only `TYPE_MISMATCH` and `NULL_INPUT` (when required) variants. Previously it received six additional fault types whose payloads (long strings, big integers, OWASP injection strings) were really TYPE_MISMATCHes.
 - A numeric parameter no longer receives `SPECIAL_CHARACTERS` or `REGEX_MISMATCH` payloads.
-- Locked in by `src/test/java/es/us/isa/restest/inputs/InvalidInputTypeApplicabilityTest.java`.
+- Locked in by the applicability tests under `mist-core/src/test/java/io/mist/core/fault/` (the legacy `InvalidInputTypeApplicabilityTest` was retired along with the enum it covered).
 
 **BOUNDARY_VIOLATION skipped when schema is unbounded**
 
@@ -850,7 +881,7 @@ flowchart LR
 - **GEMINI** — Google Gemini REST API.
 - **OPENAI_COMPATIBLE** — any provider speaking OpenAI's `/v1/chat/completions` shape. Covers hosted APIs (DeepSeek — the default test target — plus OpenAI, OpenRouter, Together, Groq, Mistral, ...) and self-hosted OpenAI shims (`gpt4all`, `llama.cpp --api`). When `llm.openai_compatible.api.key` is non-empty, `LLMService.generateWithOpenAICompatible` adds an `Authorization: Bearer <key>` header; when empty it sends an unauthenticated request. The deprecated `llm.local.*` property keys are still accepted as aliases — the new name reflects that this backend is not "local" in the typical case.
 
-**`llm.openai_compatible.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `src/test/java/es/us/isa/restest/llm/LLMConfigEnvResolverTest.java`.
+**`llm.openai_compatible.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `mist-restest-adapter/src/test/java/es/us/isa/restest/llm/LLMConfigEnvResolverTest.java`.
 
 **DeepSeek example** (no edits to the existing `trainticket-demo.properties` needed; copy `deepseek-config.properties` or set these four lines):
 
@@ -1019,12 +1050,30 @@ flowchart TD
 
 ### Conditions, Flags, and Inputs (key branches)
 
+> **Path B / Fix A-6 routing.** All `mst.*` and `smart.input.fetch.*`
+> properties below are read **once** at startup into
+> `MstConfig.fromSystemProperties()` and exposed through immutable
+> sub-records (`MstConfig.instance().core()`,
+> `MstConfig.instance().smartFetch()`, `MstConfig.instance().llm()`,
+> `MstConfig.instance().faulty()`, etc.). Code outside `MstConfig` must
+> not call `System.getProperty("mst.*")` directly. With
+> `mst.config.strict=true` the validator fails the run on unknown keys
+> or conflicting values.
+
 **Core MST Configuration:**
-- generator == MST: switches to multi-service flow
+- generator == MST: switches to multi-service flow (legacy `restest.jar` entry only; `mist.jar` is always MST)
 - testsperoperation / test.variants.per.scenario: number of variants per scenario
 - mst.generate.only.first.step: **default `true` (Root API Mode — primary)**. When `true`, keeps all top-level root APIs in a scenario but prunes internal step-API / service-to-service spans. When `false` (Multi-Step Replay), every internal HTTP span in the trace also becomes its own step in the generated test. Despite its legacy name, this flag does NOT restrict a scenario to a single step — a scenario with 3 root APIs still produces a 3-step test in Root API Mode.
 - faulty.ratio: percentage of test variants that should be intentionally faulty (e.g., 0.1 = 10%)
 - faulty.round-robin: true (default) = one param per test cycling, false = 1-3 random params per test
+
+**Trace Shape Oracle (Path B Phase 2):**
+- `mist.tso.enabled`: master switch (default `true`); when off, the oracle does not evaluate or attach verdicts
+- `mist.tso.store.path`: persistent invariant store path (default `.mist/trace-shape-invariants.json`)
+
+**Adaptive Fault Taxonomy (Path B Phase 3):**
+- `mist.fault.types.path`: optional per-SUT YAML overlay on top of the default eight categories (unset by default)
+- `mist.fault.mining.enabled`: opt-in switch for `FaultMiner` (default `false`); on `true`, the miner persists proposals to `.mist/mined-fault-types.yaml`
 
 **Smart Input Fetching:**
 - smart.input.fetch.enabled: enables Smart Fetch system
@@ -1456,43 +1505,233 @@ Used when the target code is auth-related (e.g. 401, 403):
 
 ---
 
-## 8. Soft Error Rule Cache (Observation-Based)
+## Trace Shape Oracle (Path B Phase 2 — Headline Contribution)
+
+### Overview
+
+Before Path B the Jaeger trace was a *diagnostic side-channel*: traces fed the
+intelligent-analysis LLM call and the soft-error cache, but no part of the
+generated test code asserted that the trace *itself* matched an expected shape.
+The Trace Shape Oracle promotes the trace to a **first-class oracle**: per
+root API it learns invariants from a labelled seed corpus, persists them, and
+at test time evaluates every freshly-pulled trace against the learned
+invariants. Violations become named oracle failures attached to the Allure
+step.
+
+The oracle lives entirely in `mist-core`:
+
+```
+mist-core/src/main/java/io/mist/core/oracle/shape/
+  TraceShapeLearner.java
+  TraceShapeOracle.java
+  TraceShapeVerdict.java
+  ShapeInvariantStore.java
+  TraceModel.java
+  ShapeInvariant.java
+  invariant/
+    SpanTreeShapeInvariant.java
+    StatusPropagationInvariant.java
+    TimingEnvelopeInvariant.java
+    ResponseEnvelopeInvariant.java
+```
+
+It depends on no class under `es.us.isa.restest.*`; the writer is the only
+bridge from RESTest test code into the oracle.
+
+### Data Flow
+
+```mermaid
+flowchart LR
+    SEED[Seed traces<br/>labelled known-good]
+    LABELS[seed-trace-labels.json<br/>in mist-core resources]
+    LEARN[TraceShapeLearner]
+    STORE[ShapeInvariantStore<br/>.mist/trace-shape-invariants.json]
+    NEW[Live Jaeger trace<br/>per generated test step]
+    ORACLE[TraceShapeOracle]
+    VERDICT[TraceShapeVerdict<br/>passed + per-invariant outcomes]
+    REPORT[Allure step attachment<br/>Trace Shape Oracle Verdict]
+
+    SEED --> LEARN
+    LABELS --> LEARN
+    LEARN -- persist --> STORE
+    STORE -- load --> ORACLE
+    NEW --> ORACLE
+    ORACLE --> VERDICT
+    VERDICT --> REPORT
+```
+
+### Learner Inputs
+
+| File | Purpose |
+|------|---------|
+| `mist-restest-adapter/src/main/resources/My-Example/trainticket/test-trace/*.json` | TrainTicket seed-trace corpus (the same JSON/JSONL files the workflow extractor consumes) |
+| `mist-core/src/main/resources/mist/seed-trace-labels.json` | Maps each trace file basename to either `"known-good"` (default) or `"known-bad"`; unknown files default to `known-good`. Edit this file to exclude a trace cluster from invariant learning. |
+| `MstConfig.instance().traceShapeOracle().*()` *(planned)* | Wires `mist.tso.enabled` and `mist.tso.store.path` into the runner |
+
+The learner reads labels, walks the seed corpus, groups traces by their root
+API key (HTTP method + path of the outermost span), and for each `known-good`
+trace cluster runs all four invariant kinds' `learn(traces)` step. The result
+is persisted via `ShapeInvariantStore.persist(...)` into a single JSON file.
+
+### Invariant Taxonomy
+
+```mermaid
+flowchart TB
+    INV[ShapeInvariant - interface]
+    INV --> ST[SpanTreeShapeInvariant<br/>per root API:<br/>expected child services,<br/>expected fan-out distribution]
+    INV --> SP[StatusPropagationInvariant<br/>per root API:<br/>http.status_code at each level,<br/>otel.status_code distribution]
+    INV --> TE[TimingEnvelopeInvariant<br/>per root API:<br/>p50/p95/p99 total duration,<br/>per-span p50/p95]
+    INV --> RE[ResponseEnvelopeInvariant<br/>per root API:<br/>confirmed-success + confirmed-failure<br/>primary-field values<br/>SUBSUMES the deleted SoftErrorRuleCache]
+```
+
+| Kind | What it learns | What it flags | Default severity |
+|------|----------------|---------------|------------------|
+| `SpanTreeShapeInvariant` | Set of `(parent.service, child.service)` edges that appear in ≥ K% of known-good traces, plus per-level fan-out distribution | Unexpected service edges; missing edges that the learned set required; fan-out outliers | `ERROR` |
+| `StatusPropagationInvariant` | Per-level distribution of `http.status_code` and `otel.status_code` across known-good traces | Spans whose status code falls outside the learned distribution at their position in the tree | `ERROR` |
+| `TimingEnvelopeInvariant` | Per-root-API total-duration percentiles (p50, p95, p99) and per-span percentiles | Traces whose total duration exceeds the learned p99, or any individual span exceeding its p99 by ≥ 2× | `WARNING` (noisy by nature) |
+| `ResponseEnvelopeInvariant` | Per-root-API confirmed-success and confirmed-failure value sets for the primary response-envelope field (e.g. `status`) | 2xx responses whose primary-field value is in the failure set (soft errors); unknown values trigger an LLM classification call that grows the set | `ERROR` |
+
+The Trace Shape Oracle's overall verdict is `passed = AND of all invariant
+outcomes`; individual outcomes carry their own `severity` so the runner can
+treat `WARNING`-only violations as non-blocking.
+
+### Verdict Shape
+
+```mermaid
+flowchart LR
+    A[TraceShapeOracle.evaluate(model, rootApiKey)] --> B[For each invariant kind]
+    B --> C[Load invariant data from ShapeInvariantStore]
+    C --> D[Run invariant.evaluate(trace)]
+    D --> E[Collect InvariantOutcome<br/>kind + passed + severity + detail]
+    E --> F[Compose TraceShapeVerdict<br/>passed = AND of outcomes]
+```
+
+The verdict POJO `TraceShapeVerdict` carries:
+- `rootApiKey: String` — the `METHOD path` key the oracle was asked about.
+- `passed: boolean` — overall AND across all `ERROR`-severity outcomes.
+- `outcomes: List<InvariantOutcome>` — one entry per invariant kind, each with
+  `kind` (`SPAN_TREE_SHAPE`, `STATUS_PROPAGATION`, `TIMING_ENVELOPE`,
+  `RESPONSE_ENVELOPE`), `passed`, `severity` (`ERROR`/`WARNING`), and `detail`
+  (human-readable explanation of the violation).
+
+### Persistent State
+
+| File | Layer | Purpose |
+|------|-------|---------|
+| `.mist/trace-shape-invariants.json` | `ShapeInvariantStore` | Single JSON document holding all learned invariant data keyed by `(invariantKind, rootApiKey)`; written atomically via a `.tmp` sidecar rename so concurrent readers cannot observe a partial state |
+
+The file lives under `.mist/` per Fix A-7 so it survives `mvn clean`; the store
+also handles a one-shot migration from the deleted soft-error cache's legacy
+`target/` location when present.
+
+### Writer Integration
+
+The Trace Shape Oracle is invoked from the generated test code (emitted by
+`MultiServiceRESTAssuredWriter`) immediately after each step's Jaeger trace
+fetch. The writer emits roughly:
+
+```java
+TraceShapeVerdict verdict = oracle.evaluate(model, rootApiKey);
+LAST_VERDICT.set(verdict);
+// Build verdict JSON
+Allure.addAttachment("Trace Shape Oracle Verdict", "application/json", verdictJson);
+if (!verdict.isPassed()) {
+    for (InvariantOutcome o : verdict.getOutcomes()) {
+        if (!o.passed && o.severity == Severity.ERROR) {
+            Allure.step("❌ shape violation: " + o.kind + " " + o.detail);
+        }
+    }
+}
+```
+
+The actual emission lives in
+`mist-restest-adapter/src/main/java/es/us/isa/restest/writers/restassured/MultiServiceRESTAssuredWriter.java`
+at the `Allure.addAttachment("Trace Shape Oracle Verdict", ...)` call site
+(currently around line 633). Verdicts are independently consumable from the
+existing soft-error pass/fail flow described in the validation matrix
+elsewhere in this document.
+
+### Relationship to the Legacy Soft-Error Cache
+
+The deleted `SoftErrorRuleCache` is *exactly* the `ResponseEnvelopeInvariant`
+specialised to a single field. The learn-only-from-observation discipline that
+made the cache safe is preserved — see Section 8 below for the full write-up
+of that invariant, including its concrete learning example and prompt.
+
+The legacy `TraceErrorAnalyzer` flag for `otel.status_code=ERROR` is now a
+trivial special case of `StatusPropagationInvariant`: it amounts to declaring
+that `otel.status_code=ERROR` is never in the known-good distribution.
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|----------------|
+| `io.mist.core.oracle.shape.TraceShapeLearner` | Static `learn(seedCorpusDir, labelsFile, store)`: walks the corpus, groups traces by root API, runs each invariant's `learn(...)` and persists the result. |
+| `io.mist.core.oracle.shape.TraceShapeOracle` | Stateful evaluator: `evaluate(traceModel, rootApiKey) → TraceShapeVerdict`. Composes outcomes from all four invariant kinds. |
+| `io.mist.core.oracle.shape.ShapeInvariantStore` | File-backed JSON store at `.mist/trace-shape-invariants.json`; atomic-rename writes. |
+| `io.mist.core.oracle.shape.TraceShapeVerdict` | Verdict POJO with `outcomes`, `passed`, `rootApiKey`. |
+| `io.mist.core.oracle.shape.TraceModel` | Normalised in-memory representation of a Jaeger/OTel trace consumed by the four invariants — keeps the invariants decoupled from the wire format. |
+| `io.mist.core.oracle.shape.invariant.SpanTreeShapeInvariant` | Service-edge set + per-level fan-out distribution. |
+| `io.mist.core.oracle.shape.invariant.StatusPropagationInvariant` | Per-level HTTP / OTel status distribution. |
+| `io.mist.core.oracle.shape.invariant.TimingEnvelopeInvariant` | Per-span and total-duration percentile envelope. |
+| `io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant` | 2xx soft-error detection (subsumes the deleted cache). |
+| `MultiServiceRESTAssuredWriter` | Emits the per-step `oracle.evaluate(...)` call and the `Trace Shape Oracle Verdict` Allure attachment. |
+
+---
+
+## 8. Response Envelope Invariant (Subsumes the Old Soft-Error Rule Cache)
+
+> **Path B note.** This section used to describe a standalone `SoftErrorRuleCache`
+> bolted onto the writer. Path B Phase 2 **deleted** that class and folded its
+> contract into one of the four invariants of the Trace Shape Oracle — the
+> `ResponseEnvelopeInvariant` — which now lives in
+> `mist-core/src/main/java/io/mist/core/oracle/shape/invariant/ResponseEnvelopeInvariant.java`.
+> The "learn only from observation" pattern is preserved verbatim; only the
+> housing changed. The other three invariants (span tree shape, status
+> propagation, timing envelope) are described in the **Trace Shape Oracle**
+> section above. This section keeps a focused write-up of the response-envelope
+> behaviour because it is the only invariant family that was visible to users
+> before Path B.
 
 ### Problem
 
-Every test that receives a 2XX response calls the LLM to check whether the response body
-actually indicates a business-logic failure (a "soft error"). For a typical run with
-~2400 tests across ~20 APIs, this produces ~2400 LLM calls just for validation. Most APIs
-use the same response envelope (e.g. `{"status":1,"msg":"Find all content","data":[...]}`),
+Every test that receives a 2XX response can still hide a business-logic failure
+in the body (a "soft error" — HTTP 200 plus `{"status":0,"msg":"...","data":null}`).
+Asking an LLM about every 2XX response — ~2400 tests across ~20 APIs in a typical
+TrainTicket run — is wasteful: most APIs use the same response envelope shape,
 so the LLM answers the same question repeatedly.
 
 ### Design Principle: Learn Only From Observation
 
-The cache **never speculates**. It only records value→meaning mappings that the LLM has
-actually confirmed by examining a real response. For example:
+The invariant **never speculates**. It only records value→meaning mappings that
+the LLM has actually confirmed by examining a real response. For example:
 
-- If the LLM sees `status=1` and says "success", the cache records: `1 → success`.
+- If the LLM sees `status=1` and says "success", the invariant records:
+  `1 → success`.
 - It does **not** guess that `0` means failure — it has never seen `0`.
-- When `status=0` is encountered later, the cache finds the value in **neither** the
-  confirmed-success nor confirmed-failure list → **cache miss** → LLM is called.
-- The LLM confirms `0` is failure → the cache adds `0 → failure` to the rule.
-- All future `status=0` responses are resolved instantly from the cache.
+- When `status=0` is encountered later, the invariant finds the value in
+  **neither** the confirmed-success nor confirmed-failure list → **invariant
+  miss** → LLM is called.
+- The LLM confirms `0` is failure → the invariant adds `0 → failure` to its
+  rule.
+- All future `status=0` responses are resolved instantly from the invariant.
 
-This ensures the cache is always correct — it never makes an assumption about a value
-it hasn't observed.
+This ensures the invariant is always correct — it never makes an assumption
+about a value it hasn't observed. The same pattern carries over from the
+deleted `SoftErrorRuleCache`.
 
 ### Flow
 
 ```mermaid
 flowchart TD
-    A[Test receives 2XX response] --> B{Cache has rule<br/>for this API?}
+    A[Test receives 2XX response] --> B{Invariant has rule<br/>for this root API?}
     B -- No --> C["Call LLM:<br/>evaluate + identify<br/>primary field +<br/>observed value meaning"]
     C --> D["LLM returns:<br/>FAILED/RCA +<br/>RULE_FIELD +<br/>OBSERVED_VALUE → meaning"]
     D --> E["Create rule with<br/>ONE confirmed value"]
-    E --> F[Return result]
+    E --> F[Return verdict to oracle]
 
     B -- Yes --> G{Primary field value<br/>in confirmed lists?}
-    G -- "Known success<br/>or known failure" --> H["Return cached<br/>result instantly<br/>(no LLM call)"]
+    G -- "Known success<br/>or known failure" --> H["Return cached<br/>verdict instantly<br/>(no LLM call)"]
     G -- "Unknown value<br/>(neither list)" --> I["Call LLM to<br/>classify new value"]
     I --> J["Add value to<br/>success or failure list"]
     J --> F
@@ -1517,7 +1756,7 @@ RULE_OBSERVED_MEANING: success
 RULE_MESSAGE_FIELDS: msg
 ```
 
-Cache state after Test 1:
+Invariant state after Test 1:
 ```
 Rule for "GET /api/v1/adminbasicservice/adminbasic/stations":
   field: status
@@ -1526,15 +1765,16 @@ Rule for "GET /api/v1/adminbasicservice/adminbasic/stations":
   known patterns: ["status=1" → success]
 ```
 
-**Tests 2–12** — Same `status=1` → cache hit → instant success. **No LLM calls.**
+**Tests 2–12** — Same `status=1` → invariant hit → instant success.
+**No LLM calls.**
 
 **Test 13** — New value `status=0` appears:
 ```json
 {"status":0, "msg":"start station not in list", "data":null}
 ```
 
-Cache checks: is `0` in confirmed success? No. In confirmed failure? No.
-→ **Unknown value** → cache miss → LLM is called.
+Invariant checks: is `0` in confirmed success? No. In confirmed failure? No.
+→ **Unknown value** → invariant miss → LLM is called.
 
 LLM output:
 ```
@@ -1546,7 +1786,7 @@ RULE_OBSERVED_MEANING: failure
 RULE_MESSAGE_FIELDS: msg
 ```
 
-Cache state after Test 13:
+Invariant state after Test 13:
 ```
 Rule for "GET /api/v1/adminbasicservice/adminbasic/stations":
   field: status
@@ -1555,36 +1795,23 @@ Rule for "GET /api/v1/adminbasicservice/adminbasic/stations":
   known patterns: ["status=1" → success, "status=0" → failure]
 ```
 
-**Tests 14+** — `status=0` → cache hit → instant failure. `status=1` → cache hit → instant
-success. **No more LLM calls** for this API.
+**Tests 14+** — `status=0` → invariant hit → instant failure. `status=1` →
+invariant hit → instant success. **No more LLM calls** for this API.
 
 ### Hypothetical: Unexpected Value
 
 If Test 20 returns `status=-1` (never seen before):
-- Not in success list `[1]`, not in failure list `[0]` → cache miss → LLM call
+- Not in success list `[1]`, not in failure list `[0]` → invariant miss → LLM call
 - LLM says: failure → rule updated: `confirmed failure values: [0, -1]`
-- All future `status=-1` → cache hit
+- All future `status=-1` → invariant hit
 
 If Test 25 returns `status=2`:
-- Not in either list → cache miss → LLM call
-- LLM says: success (e.g. "2 means partial success") → rule updated: `confirmed success values: [1, 2]`
+- Not in either list → invariant miss → LLM call
+- LLM says: success (e.g. "2 means partial success") → rule updated:
+  `confirmed success values: [1, 2]`
 
-The cache **grows incrementally** as new values are encountered. It never guesses.
-
-### Another Example: `POST /api/v1/travelservice/trips/left`
-
-**Test 1** — `{"status":1,"msg":"Success","data":[{trip results}]}`
-→ LLM: success, `RULE_FIELD=status`, `OBSERVED_VALUE=1`, `MEANING=success`
-→ Cache: `success=[1], failure=[]`
-
-**Test 2** — `{"status":1,"msg":"Success","data":[]}`  (no trips found, but valid)
-→ Cache: `status=1` is in success list → cache hit → success. **No LLM.**
-
-**Test 3** — `{"status":0,"msg":"No routes from InvalidCity","data":null}`
-→ Cache: `status=0` not in either list → cache miss → LLM call
-→ LLM: failure → Cache: `success=[1], failure=[0]`
-
-**Tests 4–120** — All responses have `status=1` or `status=0` → cache hit. **No LLM.**
+The invariant **grows incrementally** as new values are encountered. It never
+guesses.
 
 ### Enhanced LLM Prompt
 
@@ -1605,70 +1832,77 @@ The prompt explicitly instructs the LLM:
 
 ### Rule Structure
 
-Each cached rule for an API contains:
+Each `ResponseEnvelopeInvariant.Data` entry for a root API contains:
 
 | Field | Description |
 |-------|-------------|
 | `fieldChecks` | The primary indicator field with two growing lists: **confirmed success values** and **confirmed failure values** — only values the LLM has actually classified |
 | `failureMessageFields` | Field names that carry descriptive messages (for RCA enrichment only — never used for pass/fail decisions) |
-| `knownPatterns` | Exact response signatures already seen, mapped to their cached outcome and RCA for instant replay |
+| `knownPatterns` | Exact response signatures already seen, mapped to their cached verdict and RCA for instant replay |
+
+### Persistent State
+
+Per Fix A-7 the invariant store lives under `.mist/`, which survives
+`mvn clean` (unlike the old `target/` location). The full Trace Shape Oracle
+state — including this invariant family alongside span-tree, status-propagation,
+and timing data — persists to:
+
+```
+.mist/trace-shape-invariants.json
+```
+
+A one-shot migration in `ShapeInvariantStore` will move a legacy
+`target/soft-error-rule-cache.json` into the new file on first start when the
+legacy path still exists; after the migration runs the legacy file is removed.
 
 ### Configuration
 
+The invariant inherits the oracle's switches; legacy
+`soft.error.cache.enabled` / `soft.error.cache.path` are accepted as deprecated
+aliases and routed through `MstConfig.instance().softErrorCache()` for one
+release.
+
 | Property | Default | Purpose |
 |----------|---------|---------|
-| `soft.error.cache.enabled` | `true` | Master switch for rule caching |
-| `soft.error.cache.path` | `target/soft-error-rule-cache.json` | File path for persisted cache |
+| `mist.tso.enabled` | `true` | Master switch for the Trace Shape Oracle; gates all four invariants including this one |
+| `mist.tso.store.path` | `.mist/trace-shape-invariants.json` | File path for persisted invariant state |
+| `soft.error.cache.enabled` *(deprecated)* | `true` | Legacy alias; still honoured for one release |
 
-### Cache JSON Example
+### Verdict Wiring
 
-After a run, `target/soft-error-rule-cache.json` looks like:
+The writer attaches the oracle's verdict to every Allure step after fetching
+the live Jaeger trace, via:
 
-```json
-{
-  "GET /api/v1/adminbasicservice/adminbasic/stations": {
-    "fieldChecks": [{
-      "field": "status",
-      "successValues": ["1"],
-      "failureValues": ["0"]
-    }],
-    "failureMessageFields": ["msg"],
-    "knownPatterns": [
-      {"signature": "status=1", "failed": false, "rcaTemplate": "status=1 indicates success..."},
-      {"signature": "status=0", "failed": true,  "rcaTemplate": "status=0, error in msg field..."}
-    ]
-  },
-  "POST /api/v1/travelservice/trips/left": {
-    "fieldChecks": [{
-      "field": "status",
-      "successValues": ["1"],
-      "failureValues": ["0"]
-    }],
-    "failureMessageFields": ["msg"],
-    "knownPatterns": [
-      {"signature": "status=1", "failed": false, "rcaTemplate": "..."},
-      {"signature": "status=0", "failed": true,  "rcaTemplate": "..."}
-    ]
-  }
-}
 ```
+Allure.addAttachment("Trace Shape Oracle Verdict", "application/json", verdictJson);
+```
+
+(See line ~633 of `mist-restest-adapter/src/main/java/es/us/isa/restest/writers/restassured/MultiServiceRESTAssuredWriter.java`.)
+The `ResponseEnvelopeInvariant` outcome shows up as one entry inside that
+verdict's `outcomes[]` array, alongside the other three invariant kinds.
 
 ### Classes Involved
 
 | Class | Responsibility |
 |-------|----------------|
-| `SoftErrorRuleCache` | Singleton per-file cache: stores rules, evaluates responses against confirmed values only, persists to JSON |
-| `SoftErrorRuleCache.FieldCheck` | Holds the primary field name and two lists: confirmed success values, confirmed failure values |
-| `SoftErrorRuleCache.CachedValidationResult` | Result of a cache evaluation (hit with result, or miss requiring LLM) |
-| `ZeroShotLLMGenerator` | `validateResponseWithCache()` / `validateNegativeResponseWithCache()` — cache-aware validation; `validateResponseAndGenerateRule()` — enhanced prompt that reports only observed values |
-| `MultiServiceRESTAssuredWriter` | Generates test code that uses cached validation when `soft.error.cache.enabled=true` |
+| `io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant` | The invariant itself: stores per-root-API confirmed-success / confirmed-failure value lists; `learn(traces)` seeds from the labelled corpus and `evaluate(trace)` returns the per-step verdict outcome |
+| `io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant.Data` | The persisted record (replaces the deleted `SoftErrorRuleCache.FieldCheck`) — primary field name, confirmed-success values, confirmed-failure values, known patterns |
+| `io.mist.core.oracle.shape.ShapeInvariantStore` | File-backed JSON store under `.mist/trace-shape-invariants.json`; atomic rename via a `.tmp` sidecar so concurrent readers never see a partially-written state |
+| `io.mist.core.oracle.shape.TraceShapeOracle` | Orchestrator: composes this invariant with the other three kinds and produces a single `TraceShapeVerdict` per evaluated trace |
+| `ZeroShotLLMGenerator` | `validateResponseAndGenerateRule()` — enhanced prompt that reports only observed values; consumed by the invariant on miss |
+| `MultiServiceRESTAssuredWriter` | Generates test code that invokes `TraceShapeOracle.evaluate(...)` after the per-step trace fetch and attaches the verdict to Allure |
 
 ### Expected Impact
 
-- LLM calls reduced from ~N per API to ~D per API, where D = number of **distinct** primary-field values (typically 2–3: e.g. `1` and `0`)
-- For a run with ~2400 tests across ~20 APIs → typically ~20–40 LLM calls instead of ~2400
-- Cache grows incrementally and is always correct — no speculation, no false positives
-- Shared across all test classes in the same JVM via singleton pattern
+- LLM calls reduced from ~N per API to ~D per API, where D = number of
+  **distinct** primary-field values (typically 2–3: e.g. `1` and `0`).
+- For a run with ~2400 tests across ~20 APIs → typically ~20–40 LLM calls
+  instead of ~2400.
+- Invariant grows incrementally and is always correct — no speculation,
+  no false positives.
+- Shared across all test classes in the same JVM through the singleton
+  `ShapeInvariantStore`; persisted under `.mist/trace-shape-invariants.json`
+  so re-runs on the same SUT inherit the previously confirmed mappings.
 
 ---
 
@@ -1799,13 +2033,17 @@ at [Source: (PushbackInputStream); line: 1, column: 110]
 
 | Property | Default | Purpose |
 |----------|---------|---------|
-| `parameter.error.analysis.cache.path` | `target/parameter-error-analysis-cache.json` | File path for the persisted PEA cache |
+| `parameter.error.analysis.cache.path` | `.mist/parameter-error-analysis-cache.json` (Fix A-7) | File path for the persisted PEA cache |
 
 The cache file is auto-created on the first `put()`. Delete it to reset.
+Per Fix A-7 the cache lives under `.mist/`, which survives `mvn clean`; a
+one-shot migration in `ParameterErrorAnalysisCache.load(...)` moves the
+legacy `target/parameter-error-analysis-cache.json` into the new location
+on first start.
 
 ### Cache JSON Example
 
-After a run, `target/parameter-error-analysis-cache.json` looks like:
+After a run, `.mist/parameter-error-analysis-cache.json` looks like:
 
 ```json
 {
@@ -1828,7 +2066,7 @@ After a run, `target/parameter-error-analysis-cache.json` looks like:
 |-------|----------------|
 | `ParameterErrorAnalyzer` | Top-level analyzer. New decision order: cache → trace pre-extractor → LLM. Existing prompt construction, LLM call, and `performFallbackAnalysis` are unchanged. |
 | `ParameterErrorAnalyzer.extractParameterErrorFromTrace` | Deterministic regex extractor for Jackson reference chains. Returns `null` on no-match so the LLM path runs unchanged. |
-| `ParameterErrorAnalysisCache` | Singleton per-file cache. Stores `CachedVerdict` entries; persists to JSON. Mirrors `SoftErrorRuleCache`. |
+| `ParameterErrorAnalysisCache` | Singleton per-file cache. Stores `CachedVerdict` entries; persists to JSON under `.mist/`. Predates the Trace Shape Oracle and still survives as a writer-side bolt-on; the soft-error sibling it used to mirror (`SoftErrorRuleCache`) is now folded into `ResponseEnvelopeInvariant`. |
 | `ParameterErrorAnalysisCache.CachedVerdict` | Three-field value: `{ isParameterError, parameterName?, errorType? }` |
 
 ### Expected Impact
@@ -1903,13 +2141,17 @@ flowchart TD
 
 | Property | Default | Purpose |
 |----------|---------|---------|
-| `intelligent.analysis.cache.path` | `target/intelligent-analysis-cache.json` | File path for the persisted cache |
+| `intelligent.analysis.cache.path` | `.mist/intelligent-analysis-cache.json` (Fix A-7) | File path for the persisted cache |
 
 The cache file is auto-created on the first `put()`. Delete it to reset.
+Per Fix A-7 the cache lives under `.mist/`, which survives `mvn clean`; a
+one-shot migration in `IntelligentAnalysisCache.load(...)` moves the legacy
+`target/intelligent-analysis-cache.json` into the new location on first
+start.
 
 ### Cache JSON Example
 
-After a run, `target/intelligent-analysis-cache.json` looks like:
+After a run, `.mist/intelligent-analysis-cache.json` looks like:
 
 ```json
 {
@@ -1924,7 +2166,7 @@ After a run, `target/intelligent-analysis-cache.json` looks like:
 |-------|----------------|
 | `TraceErrorAnalyzer.generateIntelligentAnalysis` | Now consults the cache before building the LLM prompt; writes the formatted result back on miss. Existing prompt construction, fallback, and CLI consumer unchanged. |
 | `TraceErrorAnalyzer.buildIntelligentAnalysisCacheKey` | Builds the deterministic key from `ErrorAnalysisResult.getRootCauseFailures()`. |
-| `IntelligentAnalysisCache` | Singleton per-file cache. Stores `String` entries; persists to JSON. Mirrors `ParameterErrorAnalysisCache` and `SoftErrorRuleCache`. |
+| `IntelligentAnalysisCache` | Singleton per-file cache. Stores `String` entries; persists to JSON under `.mist/`. Mirrors `ParameterErrorAnalysisCache`. (The soft-error sibling the cache used to mirror is now `ResponseEnvelopeInvariant` inside the Trace Shape Oracle.) |
 
 ### Expected Impact
 
@@ -1939,4 +2181,242 @@ After a run, `target/intelligent-analysis-cache.json` looks like:
   volume falls by ~70%.
 - Allure attachments and standalone CLI output unchanged; no paper-reported metric
   (status-code matrices, fault detection rate, trace evidence) is affected.
+
+---
+
+## 11. Adaptive Fault Taxonomy (Path B Phase 3 — Headline Contribution)
+
+### Overview
+
+Before Path B the negative-test catalogue was fixed: an `InvalidInputType`
+enum with eight categories (TYPE_MISMATCH, REGEX_MISMATCH,
+SEMANTIC_MISMATCH, OVERFLOW, EMPTY_INPUT, NULL_INPUT, SPECIAL_CHARACTERS,
+BOUNDARY_VIOLATION) plus a hard-coded applicability matrix that gated which
+type applies to which OpenAPI parameter shape. The same enum drove every
+SUT, regardless of whether its parameters were station names, payment
+identifiers, or thermostat set-points.
+
+Path B Phase 3 deletes the enum and replaces it with a *registry*:
+
+- **`FaultType`** is a final Java 11 data carrier — id, display name,
+  applicability set, applicable HTTP locations, and a source tag
+  (`DEFAULT` for the eight bundled categories or `MINED` for SUT-specific
+  ones).
+- **`FaultTypeRegistry`** loads the default YAML at startup and optionally
+  overlays a per-SUT YAML. Order is preserved, so the Sniper round-robin
+  cursor still fires defaults first.
+- **`FaultMiner`** asks an LLM for SUT-specific categories given the
+  OpenAPI parameter descriptions and observed 4xx/5xx responses; accepted
+  proposals are written to `.mist/mined-fault-types.yaml` for the user
+  to promote into a per-SUT overlay.
+- **`ApplicabilityMatrix`** is the read side: a single
+  `applies(faultType, oasType, location)` predicate, backed by the
+  registry's YAML-declared applicability — no more hard-coded matrix.
+- **`MistInvalidInputPool`** is the v2 pool keyed on `FaultType.id`
+  strings instead of the deleted enum.
+
+The eight default categories in `fault-types.default.yaml` reproduce the
+legacy enum byte-for-byte in semantics; their ids match the legacy enum
+names verbatim so existing Allure attachments and reports do not change
+through the migration. The change is purely *additive* — new SUT-specific
+faults can join the registry, while the eight defaults continue to fire.
+
+The taxonomy lives entirely in `mist-core`:
+
+```
+mist-core/src/main/java/io/mist/core/fault/
+  FaultType.java
+  FaultTypeRegistry.java
+  FaultMiner.java
+  ApplicabilityMatrix.java
+  MistInvalidInputPool.java
+  ObservedResponse.java
+  SpecRef.java
+
+mist-core/src/main/resources/mist/
+  fault-types.default.yaml
+```
+
+### Registry Loading and Overlay
+
+```mermaid
+flowchart TB
+    REG[FaultTypeRegistry]
+    DEFAULT["fault-types.default.yaml<br/>(classpath:/mist/...)<br/>8 generic categories<br/>source=DEFAULT"]
+    OVERLAY["Per-SUT YAML<br/>(mist.fault.types.path)<br/>refinements + mined types<br/>source=MINED"]
+    MINED[".mist/mined-fault-types.yaml<br/>(written by FaultMiner)"]
+    LLM[LLM<br/>via FaultMiner]
+    OAS[OpenAPI parameter<br/>descriptions]
+    TRACES[Observed 4xx/5xx<br/>responses<br/>ObservedResponse]
+
+    DEFAULT --> REG
+    OVERLAY --> REG
+    MINED -. user promotes .-> OVERLAY
+    LLM -- proposes --> MINED
+    OAS --> LLM
+    TRACES --> LLM
+```
+
+`FaultTypeRegistry.loadDefault()` reads the bundled YAML; the result is
+immutable. `registry.loadOverlay(perSutYaml)` returns a new registry with the
+overlay merged (entries that share an id replace the prior entry; new ids
+extend the registry while preserving declared order).
+
+### Default YAML Shape
+
+```yaml
+faults:
+  - id: TYPE_MISMATCH
+    displayName: Type Mismatch
+    applicableTo: [string, integer, number, boolean, array, object]
+    applicableLocations: [path, query, header, cookie, body]
+    source: DEFAULT
+  - id: REGEX_MISMATCH
+    displayName: Regex Mismatch
+    applicableTo: [string]
+    applicableLocations: [path, query, header, cookie, body]
+    source: DEFAULT
+  # ... six further entries: SEMANTIC_MISMATCH, OVERFLOW, EMPTY_INPUT,
+  #     NULL_INPUT, SPECIAL_CHARACTERS, BOUNDARY_VIOLATION
+```
+
+The eight default entries reproduce the legacy enum's applicability matrix
+verbatim (string-only for REGEX_MISMATCH, no booleans for OVERFLOW or
+BOUNDARY_VIOLATION, etc.) — the same matrix that used to be hard-coded in
+`InvalidInputType.appliesTo(...)`. See the "8 Invalid Input Types"
+section above for the readable matrix table.
+
+### Mining Flow (FaultMiner)
+
+```mermaid
+flowchart TD
+    A[FaultMiner.mine spec, observedResponses] --> B{mist.fault.mining.enabled?}
+    B -->|false default| Z[Return empty list - registry stays at 8 defaults]
+    B -->|true| C[Build system + user prompt from<br/>OpenAPI parameter descriptions + observed 4xx/5xx responses]
+    C --> D[LLMClient.call routed through LLMCallCache]
+    D --> E[Parse JSON-per-line response into candidate FaultType records]
+    E --> F[Validate shape, drop entries that duplicate one of the 8 defaults]
+    F --> G[Append survivors to .mist/mined-fault-types.yaml]
+    G --> H[Return accepted FaultType list to caller]
+    Z --> I[Sniper baseline byte-for-byte identical with legacy behaviour]
+```
+
+Key properties:
+
+- **Gated by default.** `mist.fault.mining.enabled=false` is the shipped
+  default. With mining off, the registry contains the eight defaults only
+  and seeded reruns are byte-for-byte identical with pre-Path-B output.
+- **Cached LLM dispatch.** The miner calls
+  `io.mist.llm.LLMClient`, which routes through `LLMCallCache` — so
+  seeded reruns short-circuit the LLM backend. Reproducibility under
+  `-Drandom.seed=42` is preserved.
+- **Real, not a stub.** The Phase-3 follow-up replaced the early stub
+  with a working LLM-backed implementation; the miner builds prompts
+  from the spec descriptions plus observed 4xx/5xx responses, validates
+  the response shape, and appends survivors to
+  `.mist/mined-fault-types.yaml`.
+- **Manual promotion.** Mined types land in `.mist/mined-fault-types.yaml`;
+  promoting them into the registry permanently is a deliberate user step
+  (move the entry into a per-SUT overlay YAML pointed to by
+  `mist.fault.types.path`). The miner never silently extends the live
+  rotation order.
+
+### Applicability Matrix (Data-Driven)
+
+The legacy `InvalidInputType.appliesTo(oasType)` is replaced by:
+
+```java
+boolean ok = new ApplicabilityMatrix(registry).applies(faultType, oasType, location);
+```
+
+`ApplicabilityMatrix` is a thin read-side wrapper over the registry's YAML
+data. Behaviour:
+
+- Looks up the canonical `FaultType` in the registry by id so a mined
+  overlay always wins over a stale copy a caller might be holding.
+- Either `oasType` or `location` may be `null`; an absent axis is unfiltered
+  (mirrors the legacy enum's conservative "when in doubt, applicable"
+  behaviour, so a parameter with an undeclared schema type still gets
+  applicable faults).
+
+### Pool Shape (`MistInvalidInputPool`)
+
+The outer pool shape from Fix A-5b is unchanged:
+
+```java
+Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, MistInvalidInputPool>>
+//   rootApiKey              ^^^^^^^ (paramName, paramLocation)
+```
+
+Phase 3 only touches the **inner** fault dimension: each
+`MistInvalidInputPool` now keys its `valuesByType`, `usedIndicesByType`, and
+`typeRotation` on `FaultType.id` strings rather than the deleted enum.
+Defaults rotate first (in YAML-declared order), then mined types — so the
+Sniper baseline keeps the same order it always had.
+
+`MultiServiceTestCase.faultTypeCategory` (the string that ends up in the
+Allure label) is unchanged; its value now comes from `FaultType.id` instead
+of `InvalidInputType.name()`. Because the default ids match the legacy enum
+names byte-for-byte, existing Allure attachments do not regress.
+
+### Persistent State
+
+| File | Purpose | Path |
+|------|---------|------|
+| Bundled default taxonomy | The eight DEFAULT fault categories | classpath:/mist/fault-types.default.yaml (in `mist-core/src/main/resources/mist/`) |
+| Per-SUT overlay | User-curated refinements / promoted mined types | `mist.fault.types.path` (no default; opt-in) |
+| Mined types staging area | Where `FaultMiner` writes accepted LLM proposals | `.mist/mined-fault-types.yaml` |
+
+All persistent state lives under `.mist/`, surviving `mvn clean` per Fix A-7.
+
+### Configuration
+
+| Property | Default | Purpose |
+|----------|---------|---------|
+| `mist.fault.types.path` | *(unset)* | Optional per-SUT overlay YAML, layered on top of the defaults |
+| `mist.fault.mining.enabled` | `false` | Opt-in switch for `FaultMiner`; off by default for reproducibility |
+| `mst.config.strict` (from Fix A-6) | `false` | When `true`, an unknown id in a per-SUT YAML fails the run rather than silently inheriting defaults |
+
+The properties flow through `MstConfig.instance().faulty()` — direct
+`System.getProperty("mist.fault.*")` reads outside `MstConfig` are forbidden
+per Fix A-6.
+
+### Migration from the Legacy Enum
+
+| Legacy site | Path B replacement |
+|---|---|
+| `InvalidInputType.X` enum constant | `FaultTypeRegistry.byId("X")` lookup |
+| `InvalidInputType.appliesTo(oasType)` | `new ApplicabilityMatrix(registry).applies(faultType, oasType, location)` |
+| `InvalidInputPool` (legacy generator-side pool, keyed on enum) | `MistInvalidInputPool` (mist-core, keyed on `FaultType.id` strings) |
+| `MultiServiceTestCase.faultTypeCategory = InvalidInputType.TYPE_MISMATCH.name()` | `MultiServiceTestCase.faultTypeCategory = "TYPE_MISMATCH"` (same string, sourced from `FaultType.id`) |
+
+The legacy enum is **deleted**, not deprecated; any code still referencing
+`InvalidInputType` is a Phase-3 regression.
+
+### Classes Involved
+
+| Class | Responsibility |
+|-------|----------------|
+| `io.mist.core.fault.FaultType` | Final data carrier: `id`, `displayName`, `applicableTo`, `applicableLocations`, `source` (DEFAULT / MINED). `equals`/`hashCode` are id-based. |
+| `io.mist.core.fault.FaultTypeRegistry` | Loads `fault-types.default.yaml`; `loadOverlay(path)` returns a merged registry; `byId(...)` lookup; `values()` preserves declared rotation order. |
+| `io.mist.core.fault.FaultMiner` | LLM-driven miner. `mine(SpecRef, List<ObservedResponse>)` returns accepted FaultType candidates and appends them to `.mist/mined-fault-types.yaml`. Gated by `mist.fault.mining.enabled`. |
+| `io.mist.core.fault.ApplicabilityMatrix` | YAML-driven read side. `applies(ft, oasType, location)`; consults the live registry so mined overlays win over stale copies. |
+| `io.mist.core.fault.MistInvalidInputPool` | v2 invalid-input pool keyed on `FaultType.id` strings. The outer `Map<String, Map<PoolKey, MistInvalidInputPool>>` shape from Fix A-5b is unchanged. |
+| `io.mist.core.fault.SpecRef` / `io.mist.core.fault.ObservedResponse` | Plain-data carriers for the miner's inputs (parameter descriptions and observed 4xx/5xx responses); keep `mist-core` decoupled from RESTest's `TestParameter` and HTTP-response types. |
+| `MultiServiceTestCaseGenerator` (adapter side) | Reads from the registry, consults the applicability matrix, fills the pool, and rotates through `FaultType.id` strings in the Sniper loop. |
+
+### Expected Impact
+
+- Same eight categories, same fault values, same Allure label strings on a
+  default-only run — the registry-driven baseline is byte-for-byte
+  identical with the pre-Path-B output under `-Drandom.seed=42`.
+- With `mist.fault.mining.enabled=true`, the registry can grow to cover
+  SUT-specific failure modes (e.g. `INVALID_STATION_NAME` on TrainTicket,
+  `EXPIRED_PROMO_CODE` on a payments SUT) without code changes.
+- Per-SUT overlays live in user-curated YAML files, so new SUTs onboard
+  without recompilation.
+- `ApplicabilityMatrix` is a single read-side predicate, replacing the
+  hand-coded matrix that used to drift between
+  `HardcodedInvalidInputGenerator`, `ZeroShotLLMGenerator`, and the
+  applicability test.
 

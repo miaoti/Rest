@@ -21,13 +21,13 @@
   backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
 ]
 
-\node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits config}}};
-\node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep. Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
-\node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{5-phase trace mining, Root API Mode}}};
-\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace-Aware Oracle}\\{\scriptsize \textcolor{gray!50!black}{status + body + span + attribution}}};
+\node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits MST conf}}};
+\node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep.\ Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
+\node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{Root API Mode, 5-phase pipeline}}};
+\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace Shape Oracle}\\{\scriptsize \textcolor{gray!50!black}{4 invariant families + soft-error}}};
 
 \node[inputbox] (inputs) at (1.9,-2.5) {\textbf{Inputs}\\\scriptsize\\\enspace$\bullet$ OpenAPI specification (one file or aggregated /v3/api-docs)\\\enspace$\bullet$ Jaeger / OpenTelemetry traces (one file or a directory)\\\enspace$\bullet$ run configuration (\texttt{.properties} file)};
-\node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Mutator}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant, round-robin}}};
+\node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Strategy}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant; FaultMiner}}};
 \node[outputbox] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
 
 \node[sut]    (gw)   at (15.0,-0.30)  {Gateway};
@@ -55,5 +55,14 @@
 \draw[backflow] (jgr.west) -- ([xshift=-4mm]jgr.west) |- ([yshift=-3mm]oracle.east);
 
 \draw[flow] (oracle.south) -- (out.north);
+
+% --- Module band: 4 Maven modules (mist-core, mist-llm, mist-restest-adapter, mist-cli).
+%     Annotates which classes ship where; (iv) Sniper Strategy fault enumeration
+%     and (v) Trace Shape Oracle live in mist-core; (i)-(iii) and the
+%     RESTest-derived writer pipeline live in mist-restest-adapter.
+\node[font=\scriptsize, text=gray!55!black, anchor=west]
+     at (-0.55, -4.65) {Maven modules:};
+\node[font=\scriptsize\ttfamily, text=blue!50!gray, anchor=west]
+     at (1.05, -4.65) {mist-cli (entry: mist.jar) $\to$ mist-restest-adapter (i, ii, iii, writer, executor) $\to$ mist-core (iv fault registry, v invariants) $\to$ mist-llm};
 
 \end{tikzpicture}
