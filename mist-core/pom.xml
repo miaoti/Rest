@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>es.us.isa</groupId>
+		<artifactId>mist-parent</artifactId>
+		<version>1.6.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>mist-core</artifactId>
+	<packaging>jar</packaging>
+
+	<name>MIST core</name>
+	<description>The MIST contribution: trace shape oracle (TSO) and adaptive
+	fault taxonomy. Deliberately ships zero RESTest / Swagger / REST-Assured
+	dependencies — this module is the standalone Java library that
+	Stage 1.C of PATH_B_REBUILD_PLAN.md promises.</description>
+
+	<dependencies>
+
+		<!-- MIST internal modules: the LLM SPI lives in mist-llm so mist-core
+		     can call the LLM without dragging in mist-restest-adapter. -->
+		<dependency>
+			<groupId>es.us.isa</groupId>
+			<artifactId>mist-llm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!-- JSON (Gson for ShapeInvariantStore / invariants; org.json for TraceModel) -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+
+		<!-- YAML for FaultTypeRegistry default catalogue -->
+		<dependency>
+			<groupId>org.yaml</groupId>
+			<artifactId>snakeyaml</artifactId>
+			<version>${snakeyaml.version}</version>
+		</dependency>
+
+		<!-- Logging (API on the compile classpath, core at runtime only) -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>${log4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- Tests -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>

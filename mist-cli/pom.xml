@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>es.us.isa</groupId>
+		<artifactId>mist-parent</artifactId>
+		<version>1.6.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>mist-cli</artifactId>
+	<packaging>jar</packaging>
+
+	<name>MIST CLI</name>
+	<description>Stand-alone MIST entry point (java -jar mist.jar). Houses
+	the io.mist.cli.MistMain class created in Phase 1.B and moved here in
+	Stage 1.C of PATH_B_REBUILD_PLAN.md. Depends on mist-restest-adapter
+	for MistRunner + MstConfig + the legacy RESTest classes that MIST still
+	uses, and on mist-core for the trace shape oracle / fault taxonomy.</description>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>es.us.isa</groupId>
+			<artifactId>mist-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>es.us.isa</groupId>
+			<artifactId>mist-restest-adapter</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<!-- Phase 1.B of PATH_B_REBUILD_PLAN.md: standalone mist.jar entry point.
+						     Stage 1.C moved MistMain into this module (io.mist.cli.MistMain). -->
+						<id>make-assembly-mist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>io.mist.cli.MistMain</mainClass>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+								</manifest>
+							</archive>
+							<finalName>mist</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
