@@ -970,9 +970,26 @@ public final class MistRunner {
             // InputFetchRegistry load/mutate/save block; #26 added W3C traceparent
             // injection so Jaeger trace correlation stays deterministic 1:1 across
             // concurrent test threads.
-            int __parallelism = Integer.getInteger("mst.test.parallelism", 1);
-            logger.info("Test execution parallelism: mst.test.parallelism={} ({})",
-                    __parallelism, __parallelism <= 1 ? "sequential" : "parallel");
+            //
+            // Resolution priority: -D system property > .properties value > "auto".
+            // "auto" caps at 8 (or 4 when LLM response validation is enabled — LLM
+            // rate-limit safety) bounded by the available CPU count. This is the
+            // default in config.properties so a fresh checkout runs parallel out
+            // of the box on multi-core machines without any user configuration.
+            boolean __llmValidationOn = parseBooleanProperty(
+                    System.getProperty("llm.response.validation.enabled"),
+                    readParameterValue("llm.response.validation.enabled"),
+                    false);
+            int __parallelism = resolveTestParallelism(
+                    Runtime.getRuntime().availableProcessors(),
+                    System.getProperty("mst.test.parallelism"),
+                    readParameterValue("mst.test.parallelism"),
+                    __llmValidationOn);
+            logger.info("Test execution parallelism: {} ({}; CPUs={}, LLM validation={})",
+                    __parallelism,
+                    __parallelism <= 1 ? "sequential" : "parallel",
+                    Runtime.getRuntime().availableProcessors(),
+                    __llmValidationOn ? "on" : "off");
 
             int __aggRun = 0, __aggFailure = 0, __aggIgnore = 0;
             long __aggRunTime = 0L;
@@ -2347,6 +2364,59 @@ public final class MistRunner {
         }
 
         return value;
+    }
+
+    /**
+     * Resolve the test-execution parallelism from (in priority order) the
+     * {@code -D} system property, the .properties file, and an "auto"
+     * environment-aware fallback. Extracted as a pure static so the resolution
+     * rules — auto-detect cap, LLM-aware ceiling, explicit-N pass-through —
+     * are unit-testable without standing up a full {@link MistRunner}.
+     *
+     * @param availableProcessors  result of {@code Runtime.availableProcessors()};
+     *                             passed in for testability.
+     * @param systemPropValue      value of {@code -Dmst.test.parallelism=…} or null.
+     * @param configValue          value read from the user / mst .properties file
+     *                             or {@code config.properties}, or null when absent.
+     * @param llmValidationEnabled whether {@code llm.response.validation.enabled}
+     *                             is on; when true the auto-cap is lowered to
+     *                             4 to keep LLM rate-limits under control.
+     * @return resolved thread count, always &ge; 1.
+     */
+    static int resolveTestParallelism(int availableProcessors,
+                                      String systemPropValue,
+                                      String configValue,
+                                      boolean llmValidationEnabled) {
+        String raw = pickFirstNonBlank(systemPropValue, configValue, "auto");
+        if ("auto".equalsIgnoreCase(raw.trim())) {
+            int cap = llmValidationEnabled ? 4 : 8;
+            return Math.max(1, Math.min(availableProcessors, cap));
+        }
+        try {
+            return Math.max(1, Integer.parseInt(raw.trim()));
+        } catch (NumberFormatException nfe) {
+            int cap = llmValidationEnabled ? 4 : 8;
+            return Math.max(1, Math.min(availableProcessors, cap));
+        }
+    }
+
+    /**
+     * Three-way boolean parse for {@code llm.response.validation.enabled}
+     * style flags: {@code -D} wins over {@code .properties}; explicit "false"
+     * stays "false" even when defaultValue is true.
+     */
+    static boolean parseBooleanProperty(String systemPropValue,
+                                        String configValue,
+                                        boolean defaultValue) {
+        String raw = pickFirstNonBlank(systemPropValue, configValue, null);
+        if (raw == null) return defaultValue;
+        return Boolean.parseBoolean(raw.trim());
+    }
+
+    private static String pickFirstNonBlank(String a, String b, String fallback) {
+        if (a != null && !a.trim().isEmpty()) return a;
+        if (b != null && !b.trim().isEmpty()) return b;
+        return fallback;
     }
 
     /**
