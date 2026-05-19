@@ -228,10 +228,11 @@ public final class MistRunner {
 
         // 🔍 FAULT DETECTION: Initialize tracker with injected faults
         logger.info("🔍 Initializing Fault Detection Tracker...");
-        String faultsJsonPath = readParameterValue("fault.detection.injected.faults.path");
+        String faultsJsonPath = resolveInputPath(readParameterValue("fault.detection.injected.faults.path"));
         if (faultsJsonPath == null || faultsJsonPath.isEmpty()) {
             // Default path if not configured
-            faultsJsonPath = "src/main/resources/My-Example/trainticket/injectedFaults/injected-faults.json";
+            faultsJsonPath = resolveInputPath(
+                    "src/main/resources/My-Example/trainticket/injectedFaults/injected-faults.json");
         }
         FaultDetectionTracker.getInstance().reset();
         FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
@@ -383,14 +384,15 @@ public final class MistRunner {
             serviceSpecs.put(svc, spec);
         }
 
-        // 5. Get the recorded workflows from the trace file. Path is
-        // taken from `trace.file.path` (in the MST or core config) so
-        // users running on a different microservice system don't have
-        // to edit Java; falls back to the hardcoded TraceFile so the
-        // bundled trainticket demo keeps working out of the box.
-        String tracePath = readParameterValue("trace.file.path");
+        // 5. Get the recorded workflows from the trace file. The entry-point
+        // (TestGenerationAndExecution / MistMain) already resolved
+        // inputs.traceFilePath against the .properties file's directory, so
+        // this value is absolute regardless of how MIST was launched. We only
+        // fall through to readParameterValue when the entry point did not set
+        // inputs.traceFilePath at all (legacy paths).
+        String tracePath = inputs.traceFilePath;
         if (tracePath == null || tracePath.trim().isEmpty()) {
-            tracePath = inputs.traceFilePath;
+            tracePath = resolveInputPath(readParameterValue("trace.file.path"));
         }
         logger.info("MST trace input: {}", tracePath);
         List<WorkflowScenario> scenarios =
@@ -398,7 +400,7 @@ public final class MistRunner {
 
         // 5.5. Register root APIs with their tree structures in the registry
         // ⚠️ IMPORTANT: Register BEFORE deduplication to capture ALL trace patterns
-        String registryPath = readParameterValue("root.api.registry.path");
+        String registryPath = resolveInputPath(readParameterValue("root.api.registry.path"));
         if (registryPath != null && !registryPath.isEmpty()) {
             logger.info("Initializing Root API Registry at: {}", registryPath);
             RootApiRegistry registry = new RootApiRegistry(registryPath);
@@ -2131,5 +2133,23 @@ public final class MistRunner {
         }
 
         return value;
+    }
+
+    /**
+     * Resolve a relative path value against {@code inputs.propertiesFilePath}'s
+     * directory. Null, empty, or already-absolute values pass through unchanged.
+     * Used for INPUT-path readParameterValue calls inside MistRunner so they
+     * succeed regardless of the launcher's working directory.
+     */
+    private String resolveInputPath(String value) {
+        if (value == null) return null;
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) return value;
+        java.nio.file.Path p = java.nio.file.Paths.get(trimmed);
+        if (p.isAbsolute() || inputs.propertiesFilePath == null) return value;
+        java.nio.file.Path base = java.nio.file.Paths.get(inputs.propertiesFilePath)
+                .toAbsolutePath().normalize().getParent();
+        if (base == null) return value;
+        return base.resolve(trimmed).normalize().toString();
     }
 }

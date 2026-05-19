@@ -91,6 +91,13 @@ public class TestGenerationAndExecution {
 		if (args.length > 0)
 			propertiesFilePath = args[0];
 
+		// Anchor propertiesFilePath as an absolute path so its directory is
+		// well-defined regardless of where the user launches MIST from
+		// (repo root, a module dir, or IntelliJ play-button). This is the
+		// base directory for INPUT-path resolution below.
+		propertiesFilePath = new java.io.File(propertiesFilePath)
+				.getAbsoluteFile().toPath().normalize().toString();
+
 		// Populate configuration parameters, either from arguments or from .properties file
 		argsList = Arrays.asList(args);
 		readParameterValues();
@@ -103,7 +110,56 @@ public class TestGenerationAndExecution {
 		// reach this branch and never see MST configuration. The MST run path
 		// is delegated to MistRunner (Stage 1.A of PATH_B_REBUILD_PLAN.md).
 		if ("MST".equals(generator)) {
-			loadMstConfig();
+			java.nio.file.Path propsBase =
+					java.nio.file.Paths.get(propertiesFilePath).getParent();
+
+			// Resolve INPUT paths from the core .properties file against the
+			// .properties file's own directory before opening anything.
+			OAISpecPath = MistPathResolver.resolveAgainst(propsBase, OAISpecPath);
+			confPath    = MistPathResolver.resolveAgainst(propsBase, confPath);
+
+			// Resolve and load the MST .properties file. Replaces the legacy
+			// loadMstConfig() call so we control the MST file's path.
+			String resolvedMstCfg = MistPathResolver.resolveAgainst(
+					propsBase, readParameterValue("mst.config.path"));
+			if (resolvedMstCfg != null && !resolvedMstCfg.trim().isEmpty()) {
+				try {
+					mstConfig = MstConfig.load(resolvedMstCfg);
+					mstPropertiesFilePath = mstConfig.getFilePath();
+					mstConfig.applyToSystemProperties();
+				} catch (IOException e) {
+					logger.error("Failed to load MST configuration from '{}': {}",
+							resolvedMstCfg, e.getMessage());
+					throw new RuntimeException(
+							"Cannot load MST configuration file: " + resolvedMstCfg, e);
+				}
+
+				// Now resolve MST-file INPUT paths against the MST file's own
+				// directory (which may differ from the core file's directory).
+				java.nio.file.Path mstBase =
+						java.nio.file.Paths.get(resolvedMstCfg).toAbsolutePath()
+								.normalize().getParent();
+				if (mstBase != null) {
+					for (String key : MistPathResolver.MST_INPUT_PATH_KEYS) {
+						String v = System.getProperty(key);
+						String resolved = MistPathResolver.resolveAgainst(mstBase, v);
+						if (resolved != null && !resolved.equals(v)) {
+							System.setProperty(key, resolved);
+						}
+					}
+				}
+			}
+
+			// Resolve trace.file.path against the core .properties file's dir
+			// (it's a core-file key, not an MST-file key, per the demo layout).
+			String tracePath = readParameterValue("trace.file.path");
+			String resolvedTracePath = MistPathResolver.resolveAgainst(propsBase, tracePath);
+			if (resolvedTracePath == null || resolvedTracePath.isEmpty()) {
+				// Default fallback path used by the bundled TrainTicket demo
+				// (only kicks in when trace.file.path is unset entirely).
+				resolvedTracePath = MistPathResolver.resolveAgainst(propsBase,
+						"src/main/resources/My-Example/trainticket/test-trace");
+			}
 
 			es.us.isa.restest.configuration.MstConfig cfg =
 					es.us.isa.restest.configuration.MstConfig.fromSystemProperties();
@@ -116,7 +172,7 @@ public class TestGenerationAndExecution {
 					.confPath(confPath)
 					.propertiesFilePath(propertiesFilePath)
 					.mstPropertiesFilePath(mstPropertiesFilePath)
-					.traceFilePath("src/main/resources/My-Example/trainticket/test-trace")
+					.traceFilePath(resolvedTracePath)
 					.numTestCases(numTestCases)
 					.faultyRatio(faultyRatio)
 					.executeTestCases(executeTestCases)

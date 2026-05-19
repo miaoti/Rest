@@ -1,6 +1,7 @@
 package io.mist.cli;
 
 import es.us.isa.restest.configuration.MstConfig;
+import es.us.isa.restest.main.MistPathResolver;
 import es.us.isa.restest.main.MistRunResult;
 import es.us.isa.restest.main.MistRunner;
 
@@ -38,16 +39,23 @@ public final class MistMain {
     public static void main(String[] args) throws Exception {
         Path propsFile = Paths.get(args.length > 0
                 ? args[0]
-                : "src/main/resources/My-Example/trainticket-demo.properties");
+                : "mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties")
+                .toAbsolutePath().normalize();
 
         Properties coreProps = new Properties();
         try (InputStream in = Files.newInputStream(propsFile)) {
             coreProps.load(in);
         } catch (NoSuchFileException nsfe) {
-            System.err.println("MIST: properties file not found: " + propsFile.toAbsolutePath());
+            System.err.println("MIST: properties file not found: " + propsFile);
             System.exit(2);
             return;
         }
+
+        // Resolve relative INPUT paths against the .properties file's own
+        // directory so the demo works the same from repo root, from any
+        // module directory, or via IntelliJ play-button (the JVM CWD no
+        // longer matters for input lookup).
+        MistPathResolver.resolveInputPaths(coreProps, propsFile.toFile());
 
         // MST mode loads its dedicated properties file via mst.config.path and
         // pushes those keys (only) to System properties — same code path the
@@ -59,6 +67,26 @@ public final class MistMain {
             es.us.isa.restest.configuration.multiservice.MstConfig
                     .load(mstConfigPath)
                     .applyToSystemProperties();
+            // The MST file's own input paths are now in System; resolve them
+            // against the MST file's own directory (which can differ from the
+            // core file's directory when the user splits the two).
+            Properties mstView = new Properties();
+            for (String key : new String[]{
+                    "input.fetch.registry.path",
+                    "smart.input.fetch.registry.path",
+                    "root.api.registry.path",
+                    "noun.map.path",
+                    "fault.types.path",
+                    "mist.fault.types.path",
+                    "seed.trace.labels.path",
+                    "mist.tso.store.path",
+                    "fault.detection.injected.faults.path"}) {
+                String v = System.getProperty(key);
+                if (v != null) mstView.setProperty(key, v);
+            }
+            MistPathResolver.resolveInputPaths(
+                    mstView, java.nio.file.Paths.get(mstConfigPath).toFile());
+            mstView.forEach((k, v) -> System.setProperty(String.valueOf(k), String.valueOf(v)));
         }
 
         MstConfig config = MstConfig.fromSystemProperties();
@@ -73,7 +101,9 @@ public final class MistMain {
                 .confPath(coreProps.getProperty("conf.path"))
                 .propertiesFilePath(propsFile.toString())
                 .mstPropertiesFilePath(mstConfigPath)
-                .traceFilePath("src/main/resources/My-Example/trainticket/test-trace")
+                .traceFilePath(coreProps.getProperty(
+                        "trace.file.path",
+                        "src/main/resources/My-Example/trainticket/test-trace"))
                 .numTestCases(parseIntOrNull(coreProps.getProperty("testsperoperation")))
                 .faultyRatio(parseFloatOrNull(coreProps.getProperty("faulty.ratio")))
                 .executeTestCases(parseBoolOrNull(coreProps.getProperty("experiment.execute")))
