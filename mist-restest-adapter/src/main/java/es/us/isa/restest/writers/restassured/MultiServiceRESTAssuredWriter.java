@@ -1239,7 +1239,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                     ? firstStep.getMethod().getMethod().toUpperCase() : "POST";
                         firstService = firstStep.getServiceName() != null ? firstStep.getServiceName() : "";
                     }
-                    boolean isNegativeTest = scenario.getFaulty();
+                    // Fix 3 Layer 1: resolution-aware classifier — a positive scenario whose
+                    // generator could not resolve every parameter falls back to synthetic
+                    // placeholders (FALLBACK_/LLM_EMPTY/STEP1_/VAL_); the SUT will reject those,
+                    // so the oracle expects an error response just as for Sniper-designed faults.
+                    boolean isNegativeTest = scenario.getFaulty() || mstc.hasSyntheticPlaceholder();
                     pw.println();
                     
                     /* ------------ Allure Taxonomy: parentSuite / suite / subSuite + @DisplayName ---------- */
@@ -1429,7 +1433,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         String expectedStatusDisplay;
                         if (mstc.isStatusCodeExplorationTest() && mstc.getTargetStatusCode() > 0) {
                             expectedStatusDisplay = String.valueOf(mstc.getTargetStatusCode()) + " (exploration)";
-                        } else if (scenario.getFaulty()) {
+                        } else if (isNegativeTest) {
                             expectedStatusDisplay = "not " + step.getExpectedStatus();
                         } else {
                             expectedStatusDisplay = String.valueOf(step.getExpectedStatus());
@@ -1814,8 +1818,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             // 🤖 LLM RESPONSE VALIDATION: uses class-level singleton llmValidator
                             pw.println("                        // 🤖 LLM RESPONSE VALIDATION: uses class-level singletons");
                             pw.println("                        ");
-                            
-                            if (scenario.getFaulty()) {
+
+                            if (isNegativeTest) {
                                 // NEGATIVE TEST: Check LLM validation FIRST, then status code
                                 pw.println("                        // 🔴 NEGATIVE TEST VALIDATION");
                                 pw.println("                        // For negative tests with invalid inputs, pass iff:");
@@ -2045,7 +2049,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             // violation must be marked FAIL — the success path has already attached
                             // the verdict and Allure step in attachJaegerTrace. We throw here so the
                             // surrounding catch block records the failure with a clear message.
-                            if (!scenario.getFaulty()) {
+                            if (!isNegativeTest) {
                                 pw.println("                        // Phase 2.F: Trace Shape Oracle — positive variant FAILS when verdict");
                                 pw.println("                        // reports any ERROR-severity violation (verdict was attached above).");
                                 pw.println("                        {");
@@ -2212,7 +2216,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         // SoftErrorRuleCache used to encode (a soft error in a 2xx response on a
                         // negative variant flips FAIL -> PASS). The verdict was populated by the
                         // attachJaegerTrace() call above (it stashes the result on LAST_VERDICT).
-                        if (scenario.getFaulty()) {
+                        if (isNegativeTest) {
                             pw.println("                        // Phase 2.F: Trace Shape Oracle — flip negative test FAIL -> PASS when");
                             pw.println("                        // ResponseEnvelopeInvariant reports a violation (the modern replacement for");
                             pw.println("                        // the deleted SoftErrorRuleCache soft-error contract).");

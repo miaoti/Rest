@@ -7,6 +7,7 @@ import java.util.Map;
 
 import es.us.isa.restest.auth.AuthManipulationStrategy;
 import es.us.isa.restest.configuration.pojos.Operation;
+import io.mist.core.value.ValueProvenance;
 import io.swagger.v3.oas.models.PathItem.HttpMethod;
 
 
@@ -131,6 +132,42 @@ public class MultiServiceTestCase extends TestCase {
     public void setTargetFaultValue(Object value) {
         this.targetFaultValue = value;
         this.hasTargetFaultValue = true;
+    }
+
+    /* -------- value provenance (Fix 3 Layer 1) -------- */
+
+    /**
+     * How each parameter value across the test case was obtained. Keys are
+     * {@code <stepIndex>:<paramName>} to avoid collisions when the same name
+     * appears in multiple steps. Values are populated by the generator and
+     * consumed by the writer's resolution-aware test classifier
+     * (see §III.L of the companion paper).
+     */
+    private final Map<String, ValueProvenance> parameterProvenance = new LinkedHashMap<>();
+
+    /** Record how a value at the given step / parameter was obtained. */
+    public void recordParameterProvenance(int stepIndex, String paramName, ValueProvenance provenance) {
+        if (paramName == null || provenance == null) return;
+        parameterProvenance.put(stepIndex + ":" + paramName, provenance);
+    }
+
+    /** Immutable view of the parameter provenance map. */
+    public Map<String, ValueProvenance> getParameterProvenance() {
+        return java.util.Collections.unmodifiableMap(parameterProvenance);
+    }
+
+    /**
+     * True when at least one parameter value in this test case is a
+     * {@link ValueProvenance#SYNTHETIC_PLACEHOLDER} — i.e. a type-aware
+     * fallback for which no live or LLM-grounded value could be resolved.
+     * The writer's classifier uses this to reclassify the test as negative:
+     * a SUT 4xx on such a request is expected, not a fault.
+     */
+    public boolean hasSyntheticPlaceholder() {
+        for (ValueProvenance p : parameterProvenance.values()) {
+            if (p == ValueProvenance.SYNTHETIC_PLACEHOLDER) return true;
+        }
+        return false;
     }
 
     /* -------- status code exploration methods -------- */

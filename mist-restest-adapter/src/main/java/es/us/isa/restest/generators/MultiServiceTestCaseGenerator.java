@@ -1222,6 +1222,15 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                 p.getName(), bodyValue, bodyValue != null ? bodyValue.getClass().getSimpleName() : "null");
                         break;
                 }
+
+                // Fix 3 Layer 1: tag synthetic-placeholder values so the writer's
+                // resolution-aware classifier can reclassify the test as negative.
+                // The eventual step index is tc.getSteps().size() — the StepCall
+                // for this iteration is appended downstream at tc.addStepCall(call).
+                io.mist.core.value.ValueProvenance inferred = ValueProvenanceInference.infer(val);
+                if (inferred != null) {
+                    tc.recordParameterProvenance(tc.getSteps().size(), p.getName(), inferred);
+                }
             }
         }
 
