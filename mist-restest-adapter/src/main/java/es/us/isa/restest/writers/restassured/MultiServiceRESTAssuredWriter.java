@@ -1541,12 +1541,26 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("        // 🔥 ALWAYS create Allure step - execution decision happens INSIDE");
                             pw.println("        { // per-step scope block — prevents variable redeclaration across steps");
                             pw.println("        ");
-                            pw.println("        // 🎯 CRITICAL: Add delay between test executions to ensure unique traces");
-                            pw.println("        // This prevents tests from executing so rapidly that they find the same traces");
+                            // Inter-scenario delay. The historical default was 2000ms with the
+                            // rationale 'prevents tests from executing so rapidly that they find
+                            // the same traces'.  Traces are now correlated by traceId rather than
+                            // by timing, so the delay is only there to give Jaeger ingestion a
+                            // moment to settle.  Property mst.test.inter.scenario.delay.ms lets
+                            // the operator tune the wait; default lowered to 500ms.  On a 5,000-
+                            // scenario run this saves ~2 hours of idle time.
+                            pw.println("        long __interScenarioDelayMs;");
                             pw.println("        try {");
-                            pw.println("            Thread.sleep(2000); // 2 second delay between tests for trace separation");
-                            pw.println("        } catch (InterruptedException ie) {");
-                            pw.println("            Thread.currentThread().interrupt();");
+                            pw.println("            __interScenarioDelayMs = Long.parseLong(");
+                            pw.println("                System.getProperty(\"mst.test.inter.scenario.delay.ms\", \"500\"));");
+                            pw.println("        } catch (NumberFormatException nfe) {");
+                            pw.println("            __interScenarioDelayMs = 500L;");
+                            pw.println("        }");
+                            pw.println("        if (__interScenarioDelayMs > 0) {");
+                            pw.println("            try {");
+                            pw.println("                Thread.sleep(__interScenarioDelayMs);");
+                            pw.println("            } catch (InterruptedException ie) {");
+                            pw.println("                Thread.currentThread().interrupt();");
+                            pw.println("            }");
                             pw.println("        }");
                             pw.println("        ");
                             pw.println("        final long requestStartMicros = System.currentTimeMillis() * 1000L;");
