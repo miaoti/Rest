@@ -380,191 +380,91 @@ Overall, \textsc{MIST} is a \emph{grey-box} approach in the same sense as MACROH
 \end{figure*}
 %====================================================================
 \subsection{Tool Architecture}\label{ssec:arch}
-\textsc{MIST} is packaged as a Maven multi-module project so that the core contribution can be vendored or evaluated without dragging in any particular host framework.  Four modules compose the tool:
-\begin{itemize}[leftmargin=*]
-  \item \texttt{mist-core}: the contribution.  It contains the Trace
-        Shape Oracle (\texttt{io.mist.core.oracle.shape.*}), the
-        Adaptive Fault Taxonomy (\texttt{io.mist.core.fault.*}), the
-        Multi-Root Sequence pipeline, the Semantic Dependency Registry,
-        and the public test-generation SPI.  By construction, no class
-        in \texttt{mist-core} imports the upstream RESTest framework.
-  \item \texttt{mist-llm}: a separable LLM client abstraction
-        (\texttt{io.mist.llm.LLMClient}) with backends for Ollama,
-        Gemini, and OpenAI-compatible HTTP APIs, plus a SHA-256-keyed
-        on-disk response cache for reproducibility under
-        \texttt{-Drandom.seed}.
-  \item \texttt{mist-restest-adapter}: engineering glue that
-        implements \texttt{mist-core}'s SPI (OpenAPI loader, test-case
-        data model, JUnit/REST-Assured writer) against the upstream
-        \textsc{RESTest}~\cite{martin2019restest} scaffolding.
-  \item \texttt{mist-cli}: a standalone entry point
-        (\texttt{io.mist.cli.MistMain}) shipped as \texttt{mist.jar};
-        invoking \texttt{java -jar mist.jar config.properties} runs
-        \textsc{MIST} without traversing any RESTest \texttt{main}
-        class.  A thin delegation in the legacy RESTest entry point
-        preserves the \texttt{java -jar restest.jar} launch path for
-        backward compatibility.
-\end{itemize}
+\textsc{MIST} is structured so that its contribution can be evaluated, vendored, or replaced without coupling to any particular host framework. Conceptually, the tool decomposes into three layers. A \emph{core library} carries every generation, oracle, and registry artefact that is novel to this work---including the two contributions described in this paper. A \emph{language-model substrate} exposes a single abstraction for prompting and caching, so that backend choice (local or hosted) and reproducibility under a fixed seed are policy decisions rather than code changes. An \emph{adapter layer} bridges the core to an existing OpenAPI-driven generator framework, reusing its specification parser, test-case data model, and JUnit/REST-Assured writer. The core library has no compile-time dependency on the adapter or on the host framework; the language-model substrate depends on neither. A single entry point invokes the tool from the command line.\footnote{The implementation ships as four Maven modules---\texttt{mist-core} (core library), \texttt{mist-llm} (language-model substrate), \texttt{mist-restest-adapter} (adapter to RESTest~\cite{martin2019restest}), and \texttt{mist-cli} (entry point)---in the repository at \url{https://github.com/miaoti/Rest}. A SHA-256-keyed on-disk cache makes language-model calls replayable under a fixed seed.}
 
-The pipeline itself comprises eight subsystems; the first six are inherited from the trace-driven generator's earlier life and the last two are this paper's headline contributions.
+The pipeline comprises seven concept-level subsystems. The first five are inherited from the trace-driven generator on which we build; the last two are the contributions of this paper.
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Trace Workflow Extractor}
         \hfill(\S\ref{ssec:extract})\\
-        Parses OpenTelemetry~\cite{opentelemetry} or Jaeger~\cite{jaeger2017} span logs to extract complete workflow scenarios
-        and identify root API endpoints that serve as natural system entry points (Algorithm~\ref{alg:extract}).
+        Parses OpenTelemetry~\cite{opentelemetry} or Jaeger~\cite{jaeger2017} span logs into workflow scenarios and identifies the root API endpoints that serve as natural system entry points (Algorithm~\ref{alg:extract}).
   \item \textbf{Test Generator}
         \hfill(\S\ref{ssec:gen})\\
-        Generates test cases in two modes: (i)~\emph{Root API Mode}---single entry-point calls with
-        trace-based post-execution validation; and (ii)~\emph{Multi-Step Replay}---ordered inter-service
-        steps with dependency-aware execution; both using LLM-driven parameter synthesis and
-        smart input fetching for realistic test data (Algorithm~\ref{alg:generate}).
-  \item \textbf{Multi-Service Test Writer}\\
-        Emits JUnit/REST-Assured test classes for both modes with
-        integrated trace collection and comprehensive Allure reporting.
+        Generates test cases in two modes: a \emph{Root API Mode} that executes a single entry-point call and validates the induced behaviour through post-execution trace analysis, and a \emph{Multi-Step Replay} that executes the observed inter-service sequence in dependency order. Both modes use language-model-driven parameter synthesis and smart input fetching for realistic test data (Algorithm~\ref{alg:generate}).
+  \item \textbf{Test Writer}\\
+        Emits JUnit/REST-Assured test classes for either mode, with integrated trace collection and Allure reporting.
   \item \textbf{Trace-Aware Execution Engine}\\
-        Executes tests (entry-point or multi-step) and captures trace identifiers.  Integrates a short enhancement loop for failed cases: the loop fixes inputs and re-executes in rounds, preserving reporting and analysis.
-  \item \textbf{AI-Powered Trace Analysis Engine}\\
-        Fetches execution traces, performs hierarchical failure analysis using
-        \textit{TraceErrorAnalyzer}, and provides LLM-driven root-cause diagnosis
-        for the complete microservice interaction chains triggered by test executions.
-  \item \textbf{Root API Registry System}
+        Executes tests and captures trace identifiers; integrates a short enhancement loop that, on failure, refines inputs from the response evidence and re-executes for a bounded number of rounds.
+  \item \textbf{Root API Registry}
         \hfill(\S\ref{ssec:registry})\\
-        Maintains a persistent catalog of discovered root APIs with their complete
-        microservice interaction patterns, enabling long-term architectural analysis
-        and auditability.  The registry is observational: generator-side scenario
-        deduplication is performed later by the Test Generator, not by the registry.
+        Maintains a persistent catalog of discovered root APIs and their observed interaction patterns. The registry is observational: scenario deduplication is performed by the test generator, not by the registry.
   \item \textbf{Trace Shape Oracle}~(new)
         \hfill(\S\ref{ssec:tso})\\
-        A learner-oracle pair that ingests a small seed corpus of
-        known-good traces and produces four families of per-API
-        invariants---span-tree shape, status propagation, timing
-        envelope, and response envelope---then checks each subsequent
-        live trace against them at first-class assertion strength.
+        A learner-oracle pair that ingests a small seed corpus of known-good traces, produces four families of per-API invariants---on the span-tree shape, the status-code propagation pattern, the timing envelope, and the response envelope---and checks each subsequent live trace against them at first-class assertion strength.
   \item \textbf{Adaptive Fault Taxonomy}~(new)
         \hfill(\S\ref{ssec:adaptfault})\\
-        A typed registry of \texttt{FaultType} records, populated from
-        a default YAML and extended at runtime by a
-        \texttt{FaultMiner} that prompts an LLM with OpenAPI parameter
-        descriptions and observed 4xx/5xx responses.  Each
-        \texttt{FaultType} carries its own applicability matrix
-        (OpenAPI types, parameter locations) so the Sniper Strategy
-        automatically gates mined faults to the parameters they make
-        sense for.
+        A typed registry of fault categories, populated from a default catalogue and extended at runtime by a language-model-driven miner that proposes system-specific categories from OpenAPI parameter descriptions and observed 4xx/5xx responses. Each category carries its own applicability matrix over OpenAPI parameter types and locations, so the Sniper Strategy automatically gates mined categories to the parameters where they are meaningful.
 \end{enumerate}
 
-
-
-
 \noindent%
-Figure~\ref{fig:dataflow} depicts the complete trace-driven testing pipeline, from initial trace extraction to AI-powered failure analysis. The diagram demonstrates the transformation of multi-service traces into focused single-API tests, ensuring comprehensive validation through post-execution trace analysis. Details regarding mode-specific generation and execution are provided in Section~\ref{ssec:gen-modes}.
+Figure~\ref{fig:dataflow} depicts the complete pipeline. The remaining methodology subsections (\S\ref{ssec:extract}--\S\ref{ssec:adaptfault}) describe each subsystem in turn; the last two are the contributions of this paper.
 
 %--------------------------------------------------------------------
 \subsection{Trace-Driven Root API Extraction}
 \label{ssec:extract}
 \begin{algorithm}[tb]
-\caption{TRACE\_WORKFLOW\_EXTRACTOR}\label{alg:extract}
+\caption{Trace workflow extraction}\label{alg:extract}
 \footnotesize
 \begin{algorithmic}[1]
 \Require\;{Path to trace file or directory}
-\Ensure\;{List of \textsc{WorkflowScenario}s}
-\State Parse JSON/JSONL files into span objects
-\State $spansByTrace \gets$ Group spans by \texttt{traceId}
-\ForAll{$(traceId, spans) \in spansByTrace$}
-    \State $scenario \gets$ new \textsc{WorkflowScenario}
-    \State $stepIndex \gets \{\}$ \Comment{spanId → WorkflowStep mapping}
-    \ForAll{$span \in spans$}
-        \State $step \gets$ \textproc{CreateWorkflowStep}$(span)$
-        \State Extract HTTP method, path, headers, body from span tags
-        \State Extract timing and status information
-        \State \textproc{ExtractFieldsFromUrl}$(step,\;\texttt{http.target}\;\text{or}\;\texttt{http.url})$ \Comment{Regex-map UUID/long-int/noun-prefixed segments to typed keys; populate \texttt{inputFields} only — URL path values are client-supplied inputs, not produced outputs}
-        \State $stepIndex[span.spanId] \gets step$
-    \EndFor
-    \State Link parent-child relationships using span references
-    \State Identify root steps (spans with no parents)
-    \State Add root steps to $scenario$
-    \State Add $scenario$ to results
+\Ensure\;{Set of workflow scenarios}
+\State Parse the trace file(s) into per-trace span sets, grouped by trace identifier.
+\ForAll{$(t, S_t) \in spansByTrace$}
+    \State Build a workflow step $s$ for each span in $S_t$, recording HTTP method, path, headers, body, timing, and status.
+    \State Recover business-level identifiers from the URL path of $s$ (\textproc{ExtractFromUrl}) and record them as inputs of $s$.
+    \State Link parent--child relations among steps using the OpenTelemetry span references.
+    \State Identify the root step(s) of trace $t$ (steps with no HTTP parent) and assemble the scenario $\sigma_t$.
 \EndFor
-\State \textproc{MergeScenariosByDataDependency}$(scenarios)$
-\Comment{Phase~1: temporal guard; ignore HTTP-meta keys; record \texttt{dataProvenance};
-         promote merged consumer to top-level root (\S\ref{ssec:multiroot})}
-\State \textproc{MergeScenariosBySessionTimeWindow}$(scenarios,\;\Delta_{\max},\;R_{\max})$
-\Comment{Phase~2: group by \texttt{sessionIdentifier} (client IP); sort by \texttt{startTimeMicros};
-         sliding-window merge when gap $<\!\Delta_{\max}$ and root count $<\!R_{\max}$ (\S\ref{ssec:multiroot})}
-\State \Return scenarios
+\State $\Sigma \gets$ \textproc{MergeByDataDependency}$(\{\sigma_t\})$ \Comment{Step 1: value-based merging, \S\ref{ssec:multiroot}}
+\State $\Sigma \gets$ \textproc{MergeBySessionWindow}$(\Sigma,\;\Delta_{\max},\;R_{\max})$ \Comment{Step 2: session-window merging, \S\ref{ssec:multiroot}}
+\State \Return $\Sigma$
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph{URL Path Parameter Extraction.}
-Production OpenTelemetry traces often lack \texttt{http.request.body} and \texttt{http.response.body} tags because many instrumentation frameworks omit payload capture for performance reasons. To recover business-critical identifiers in this setting, we implement \textproc{ExtractFieldsFromUrl}, which analyses the \texttt{http.target} (or \texttt{http.url}) tag of every span using two regular expressions: (i) a UUID pattern \verb|[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}| and (ii) a long-integer pattern \verb|\d{5,}|. When a match is found, the immediately preceding path segment is used as a semantic key prefix; for example, the path \texttt{/api/v1/accounts/AAA-BBB} yields \texttt{accountId = AAA-BBB}, and \texttt{/api/v1/order/12345/pay} yields \texttt{orderId = 12345}. A curated noun-to-key table covers the most common REST resource nouns observed in the TrainTicket system (\texttt{order}, \texttt{trip}, \texttt{account}, \texttt{route}, \texttt{train}, \textit{etc.}); any unrecognised noun falls back to a stable hash-based key \texttt{pathId\_\{hash\}} to ensure consistent matching across traces. Extracted values are stored exclusively in \texttt{inputFields} of the \textsc{WorkflowStep}: URL path parameters are client-supplied identifiers that \emph{select} a resource; they are not values \emph{produced} by the API call itself. Storing them in \texttt{outputFields} would cause the cross-trace dependency merger to treat any two API calls that reference the same path segment as causally linked, creating false-positive merges among unrelated traces.
+\paragraph{Recovering identifiers from URLs.}
+A production OpenTelemetry deployment frequently strips request and response bodies from span tags for performance reasons, leaving only HTTP method, path, headers, timing, and status. The business identifiers needed to link traces---order IDs, account IDs, trip IDs---survive only in the URL path. We recover them by inspecting the HTTP target of each span with two regular expressions: a UUID pattern and a long-integer pattern. When a match is found, the immediately preceding path segment is used as a semantic key prefix; for example, $\texttt{/api/v1/accounts/AAA-BBB}$ yields the binding $\textit{accountId}{=}\textit{AAA-BBB}$, and $\texttt{/api/v1/order/12345/pay}$ yields $\textit{orderId}{=}\textit{12345}$. A small curated noun-to-key table handles the common REST resource nouns; unrecognised nouns map to a stable hash-based key so that the same path segment yields the same binding across traces. Recovered bindings are recorded only as \emph{inputs} of the step: a URL path identifier selects a resource, it is not a value produced by the call, and treating it as an output would cause the cross-trace merger below to link unrelated calls that happen to mention the same identifier.
 
-\paragraph{Cross-Trace Data Dependency Merging and Provenance.}
-After all per-trace scenarios are built, \textproc{MergeScenariosByDataDependency} runs a fixed-point loop to link independent traces into composite workflows. For each pair of scenarios $A$ and $B$ the algorithm iterates over the Cartesian product of their extracted field maps seeking matching key–value pairs. Three correctness guards filter spurious matches: (i) a \emph{temporal guard} requiring \(\textit{producerEnd} < \textit{consumerStart}\) so that only causally plausible orderings are merged; (ii) an \emph{ignore set} that suppresses generic HTTP metadata keys (\texttt{http.method}, \texttt{http.url}, \texttt{http.target}, \texttt{http.path}, \texttt{http.request.body}, \texttt{http.response.body}) that would cause false positive links; and (iii) \emph{provenance recording}—on a successful merge, the consumer step's \texttt{dataProvenance} map is annotated with the exact key–value pair that justified the merge (e.g., \texttt{accountId $\to$ AAA-BBB}). This annotation propagates the causal evidence downstream to the test generator, enabling it to guarantee that the merged step receives the precise ID from its proven producer rather than an overwritten or colliding value from the shared runtime context.
+\paragraph{Cross-trace merging and provenance.}
+Once per-trace scenarios exist, the extractor links them into composite workflows by searching for shared identifier bindings. For each pair of scenarios $A$ and $B$, the algorithm enumerates pairs of bindings $(k{=}v) \in O_A \times I_B$ where $O_A$ is the multiset of identifiers \emph{produced} by $A$ (its body and response identifiers, when available) and $I_B$ is the multiset of identifiers \emph{consumed} by $B$ (its URL path bindings and request bindings). Three guards filter spurious matches. First, a \emph{temporal guard} requires that $A$ finishes strictly before $B$ begins, so that only causally plausible orderings are merged. Second, an \emph{ignore set} excludes generic HTTP metadata tags (method, URL, target, path, request body, response body), which would otherwise produce many false matches. Third, on each successful merge the consumer step records the binding $(k{=}v)$ that justified the merge as a \emph{provenance annotation}, propagating the causal evidence to the test generator so that the consumer is later instantiated with the exact value its proven producer emitted, rather than a colliding value drawn from the shared runtime context.
 
 %--------------------------------------------------------------------
 \subsection{Multi-Root Sequence Model}
 \label{ssec:multiroot}
 
-A critical design decision governs how a merged consumer scenario is incorporated into the producer scenario. A naive approach would attach the consumer's root step as a \emph{child} of the matching producer step, yielding a deeper tree. This is incorrect: the consumer root API is an independent, externally invoked entry point (e.g., \texttt{POST /api/v1/orders}) and must be executed as a separate top-level call in the test suite—not as an internal sub-span.
+The cross-trace merger of \S\ref{ssec:extract} produces composite workflows, but it leaves open how a merged consumer is positioned inside the producer's scenario. A na\"ive choice---attaching the consumer's root step as a \emph{child} of the matching producer step---is wrong: the consumer's root API is itself a publicly accessible entry point that an external client would invoke in a separate HTTP call, not an internal sub-span. We therefore promote merged consumer roots to top-level position. A workflow scenario $\sigma$ is then a sequence of \emph{roots} $\langle r_1, r_2, \ldots, r_k\rangle$ in causal order, each carrying its own induced span subtree; each non-initial root $r_i$ ($i > 1$) carries a back-pointer to the earliest preceding root inside its connected component that actually emits data consumed by $r_i$. The back-pointer is recovered from the reverse adjacency built during the connected-component analysis below; this matters under fan-out topologies in which one producer feeds several independent consumers, where a na\"ive ``previous list position'' would mis-identify the producer.
 
-Our system implements the \emph{Multi-Root Sequence model}: on a successful merge, the \textproc{MergeWith} method \emph{promotes} the consumer root step to a new top-level root within the producer's \textsc{WorkflowScenario}. Two metadata fields are set on the promoted step: \texttt{mergedRoot = true} and \texttt{producerRootIndex}, which records the 1-based local position of the earliest preceding root inside the same component that actually produces data consumed by this root (looked up via the reverse-adjacency set built during Weakly Connected Component analysis). This correctly handles fan-out topologies in which a single producer root serves multiple downstream consumers---a naive ``previous list position'' heuristic would wrongly record the most recent sibling as the producer. The result is a single \textsc{WorkflowScenario} whose \texttt{rootSteps} list contains multiple independent Root APIs in causal order, e.g., \textit{Root~1: POST /api/v1/trips}, followed by \textit{Root~2: POST /api/v1/orders} (which depends on the \texttt{tripId} produced by Root~1).
+\paragraph{Pipeline stages.}
+Scenario assembly proceeds through five steps. Steps~1 and~2 sit in the extractor (Algorithm~\ref{alg:extract}); steps~3--5 sit in the generator and run before variant generation. We summarise each at the level of intent and the empirical signature observed on the bundled TrainTicket workloads.
 
-\paragraph{Five-phase end-to-end scenario pipeline.}
-The full scenario-processing pipeline now spans both extraction and generation. The extractor performs Phase~1 and Phase~2; the generator then performs Phase~2.5, Phase~3, and Phase~4 before variant generation begins.
+\emph{Step 1 --- value-based merging.}
+A fixed-point pass over candidate scenario pairs links any producer-consumer pair that shares a concrete identifier binding (\S\ref{ssec:extract}, \emph{Cross-trace merging}). The step is precise---only concrete shared bindings cause a merge---but its yield depends on whether the underlying instrumentation captured response bodies. Where it did, this step alone recovers the order $\to$ payment, account $\to$ order, and route $\to$ price chains directly.
 
-\emph{Phase~1---Value-based merging.} \textproc{MergeScenariosByDataDependency} executes a fixed-point loop (as described above) to link traces that share matching business-data values. This phase is highly precise—it only merges when a concrete key–value pair is shared between a producer and a consumer—but it requires that those values appear in the raw span attributes. In practice, many production OpenTelemetry deployments omit \texttt{http.response.body} and \texttt{http.request.body} for performance reasons, leaving Phase~1 unable to recover dynamically-generated identifiers (e.g., a freshly-created order ID).
+\emph{Step 2 --- session-window merging.}
+Where bodies are absent, the extractor falls back on a temporal heuristic. Each scenario is annotated with a session identifier (derived from the client-IP tag, with an explicit fallback bucket for traces in which the tag is missing) and with start- and end-time bounds. Scenarios sharing a session identifier are sorted chronologically and merged by a sliding window: an absorbing scenario consumes the next scenario in its bucket when (i) the next scenario begins strictly after the absorber ends, (ii) the gap is below a threshold $\Delta_{\max}$ (60~s by default), and (iii) the absorber has fewer than $R_{\max}$ roots (10 by default). Traces in the unknown-session bucket use tighter thresholds (15~s, 3 roots) to limit speculative merges across unrelated requests that share only the absence of a session tag. On a representative TrainTicket workload that produced 154 isolated single-root scenarios after step~1 (because the deployment dropped response bodies), step~2 collapses the count to 15--20 multi-root scenarios, each representing a coherent user session such as \emph{Login $\to$ Search $\to$ Select Trip $\to$ Create Order $\to$ Pay}.
 
-\emph{Phase~2---Session-based heuristic merging.} \textproc{MergeScenariosBySessionTimeWindow} handles the common case where response bodies are absent. Each \textsc{WorkflowScenario} is extended with three metadata fields: \texttt{sessionIdentifier} (extracted from the \texttt{http.client\_ip} span tag, falling back to \texttt{UNKNOWN\_SESSION}), \texttt{startTimeMicros} (the minimum span start time in the trace), and \texttt{endTimeMicros} (the maximum of $\text{startTime} + \text{duration}$ across all spans—computed because Jaeger traces record \texttt{duration} but not \texttt{endTime} directly). The algorithm groups scenarios by \texttt{sessionIdentifier}, sorts them chronologically within each group, and applies a sliding-window merge: if the next scenario starts after the current accumulator ends, and the gap is less than a configurable threshold $\Delta_{\max}$ (default 60 s), and the accumulator has fewer than $R_{\max}$ roots (default 10), the next scenario is appended via \texttt{appendSequentialScenario}. This method transfers all \texttt{rootSteps} from the absorbed scenario, marks each transferred root with \texttt{mergedRoot=true} and a sequential \texttt{producerRootIndex}, and extends \texttt{endTimeMicros}. Absorbed scenarios are removed from the master list.
+\emph{Step 3 --- single-root deduplication.}
+Even after steps~1 and~2, the corpus can contain many identical standalone single-root scenarios, because users routinely refresh pages or repeat operations. The generator therefore reduces single-root scenarios to a canonical representative per normalized API signature before variant generation, preserving multi-root scenarios in full. A shared set of accepted API signatures is propagated to step~5 to keep deduplication consistent with later baseline decomposition.
 
-When \texttt{sessionIdentifier == UNKNOWN\_SESSION} (traces whose \texttt{http.client\_ip} tag was not captured by the instrumentation framework), the algorithm applies a \emph{conservative fallback} rather than skipping the bucket entirely: a reduced gap threshold (default 15~s) and a reduced root cap (default 3 roots), both capped below the configured $\Delta_{\max}$ and $R_{\max}$ respectively. This preserves multi-root assembly for legitimately related traces whose client-IP metadata was dropped by the observability pipeline while preventing wild merges across unrelated requests that only share the absence of session metadata.
+\emph{Step 4 --- scenario shattering.}
+The temporal heuristic of step~2 can over-merge: it groups two API calls that happen to share a session window but have no semantic dependency on one another---a background health check that interleaves with a user action, or an unrelated request from a parallel browser tab. Such fat scenarios are an anti-pattern for testing, because a failure in an isolated step masks the dependent steps that follow it. We therefore partition each multi-root scenario by its dependency graph. The graph has a node for each root and a directed edge from $r_i$ to $r_j$ ($j > i$) iff some parameter of $r_j$ can be satisfied by an output of $r_i$, as determined by the Semantic Dependency Registry of \S\ref{ssec:gen}. Weakly connected components of this graph are extracted via union-find with path compression, and each component becomes its own scenario, preserving the relative order of its roots. Roots with no incoming or outgoing dependency edges become independent single-root scenarios. The shattering step never merges; it only splits.
 
-On the \emph{traces-1772605095842.json} workload (154 isolated single-root scenarios), Phase~2 reduced the scenario count to 15--20 Multi-Root Sequential Scenarios, each representing a coherent user session such as \emph{Login $\to$ Search $\to$ Select Trip $\to$ Create Order $\to$ Pay}.
+\emph{Step 5 --- baseline decomposition.}
+For each remaining multi-root scenario, the generator emits a single-root baseline test for any root API not already covered by step~3's representative set. This guarantees per-API coverage without producing duplicates, by consulting the same accepted-signature set step~3 built.
 
-\emph{Phase~2.5---Global single-root deduplication.}
-After trace extraction but before shared-pool generation, the Test Generator performs a global filter over the incoming scenario list.  It keeps only the \emph{first} standalone 1-root scenario per normalized API key (e.g., \texttt{GET\_\_api\_v1\_adminbasicservice\_adminbasic\_stations}) and discards later duplicates.  Multi-root scenarios are preserved unchanged because they may differ in downstream structure even when they share a root API.  This phase addresses \emph{trace amplification}: repeated page loads or repeated button clicks may produce many identical 1-root traces that would otherwise each become their own \texttt{Flow\_Scenario\_N.java} file.  The implementation maintains a shared \texttt{seenSingleRootApis} set that is also reused by Phase~4 below.
+The Multi-Root Sequence model and the five-step pipeline together make the scenario corpus stable, deduplicated, and partitioned into semantically cohesive testing units. The same scenarios are the input to both the Sniper Strategy of \S\ref{ssec:negtest} and the Trace Shape Oracle of \S\ref{ssec:tso}: a fault target identifies one root inside one scenario, and the oracle evaluates the trace of each root's call against the per-API invariants learned from earlier scenarios that exercised the same root.
 
-\emph{Phase~3---Scenario Shattering (connected-component partitioning).}
-Phase~2's temporal heuristic can over-merge: it may group API calls that share a session window but have no semantic data dependency (e.g., interleaved requests from multiple browser tabs, or an unrelated health-check adjacent to a user action). Testing an isolated API inside a fat sequential test case is an anti-pattern---a failure in an independent step masks execution of subsequent dependent steps, producing flaky tests and obscuring real faults.
-
-The \textsc{ScenarioOptimizer} post-processes every multi-root scenario ($|\texttt{rootSteps}| > 1$) before variant generation. For each scenario it: (i)~builds a \emph{directed dependency graph} where nodes are the root steps and an edge from node~$i$ to node~$j$ ($j>i$) exists iff \textproc{HasDirectedDependency}$(root_j,\;root_i)$ returns true (consulting the Semantic Dependency Registry to check whether any parameter of the consumer can be satisfied by the producer); (ii)~computes \emph{Weakly Connected Components} via Union-Find with path compression; and (iii)~\emph{shatters} the original scenario into one new \textsc{WorkflowScenario} per component, preserving the chronological order of steps within each partition and reassigning \texttt{mergedRoot}/\texttt{producerRootIndex} metadata. Isolated root steps (those with no incoming or outgoing dependency edges) are decoupled into independent 1-root scenarios that are tested individually, eliminating cross-contamination from unrelated failures.
-
-\emph{Phase~4---Trace decomposition with shared dedup state.}
-After shattering, the generator optionally decomposes each remaining multi-root scenario into standalone 1-root baseline scenarios (\texttt{Flow\_Scenario\_N\_RT1}, \textit{etc.}) to guarantee direct per-API coverage.  However, decomposition now consults the same \texttt{seenSingleRootApis} state used in Phase~2.5.  Consequently, if a standalone 1-root scenario for API~$A$ already survived the global deduplication pass, the decomposer will \emph{not} emit an additional \texttt{\_RT} baseline for $A$.  This unifies standalone-scenario deduplication and decomposition-time deduplication in a single consistency mechanism.
-
-\paragraph{Hierarchical naming.}
-The test generator traverses the \texttt{rootSteps} list and assigns each root a hierarchical identifier: Root~1 receives prefix \texttt{R1}, Root~2 receives \texttt{R2}, and their respective internal child spans receive prefixes \texttt{R1.1}, \texttt{R1.2}, \texttt{R2.1}, and so forth. In Root API Mode, only the top-level root steps (those marked \texttt{topLevelRoot = true}) are retained in the generated test case; internal spans are pruned because they will be validated through post-execution trace analysis. This distinction preserves merged root APIs while eliminating ordinary internal sub-spans.
-
-\paragraph{Flow-centric test naming.}
-Because a single \textsc{MultiServiceTestCase} may now span multiple root APIs from different services, the legacy naming convention—which derived class and method names from the first API's HTTP method and path—is replaced with a flow-centric convention that is invariant to which particular APIs appear in the sequence:
-
-\begin{itemize}[leftmargin=*]
-  \item \textbf{Test class:} \texttt{Flow\_Scenario\_}$N$ (e.g., \texttt{Flow\_Scenario\_12}), where $N$ is the scenario counter.
-  \item \textbf{Positive variant:} \texttt{test\_positive\_flow\_S}$N$\texttt{\_v}$V$, where $V$ is the variant index.
-  \item \textbf{Negative variant:} \texttt{test\_negative\_flow\_S}$N$\texttt{\_v}$V$\texttt{\_fault\_Root}$R$\texttt{\_}$\mathit{TYPE}$, where $R$ is the 1-based index of the targeted root API and $\mathit{TYPE}$ is the \texttt{InvalidInputType} name (e.g., \texttt{OVERFLOW}, \texttt{BOUNDARY\_VIOLATION}).
-\end{itemize}
-
-When a negative variant is demoted to positive due to pool exhaustion, both the \texttt{targetFaultRootId} and \texttt{faultTypeCategory} fields are cleared and the method name is rewritten to the positive convention.
-
-\paragraph{Dependency preservation.}
-The test writer checks whether a step carries \texttt{mergedRoot = true}. If so, it emits a \texttt{DATA\_DEPENDENCY} edge in the Allure step metadata linking Root~$R$ to its producer Root~$R-1$, and attaches a \textit{Cross-Trace Provenance} attachment listing the inherited key–value bindings. The \texttt{setStepDependencies} method short-circuits the generic \texttt{analyzeDependencies} routine for merged roots to prevent the explicitly set \texttt{DATA\_DEPENDENCY} classification from being overwritten to \texttt{INDEPENDENT}.
-
-\paragraph{Root API Identification and Accessibility Rationale.}
-The \textproc{FindFirstBusinessAPI} function identifies the entry-point API call by filtering out authentication spans and selecting the first HTTP operation that represents actual business logic. This trace-driven approach addresses a fundamental challenge in microservice testing: \emph{API discoverability and accessibility}.
-
-In microservice architectures, not all endpoints defined in OpenAPI specifications are directly accessible for testing. Many services implement \emph{internal} or \emph{private} APIs that are only accessible within the service mesh or cluster network, while others require complex authentication workflows or service-to-service communication protocols~\cite{waseem2020testing, zhou2018microservice}. A systematic review of microservice testing challenges identifies API visibility and service discoverability as primary obstacles to effective testing~\cite{microservice-testing-review-2023}.
-
-By extracting root APIs from actual execution traces, we automatically identify the \emph{publicly accessible entry points} that real clients use to interact with the system. This approach ensures that our tests target APIs that are:
-\begin{itemize}[leftmargin=*]
-\item Actually accessible from external clients
-\item Properly authenticated and authorized
-\item Integrated with the system's API gateway or service mesh
-\item Representative of real-world usage patterns
-\end{itemize}
-
-This methodology aligns with established best practices in microservice testing that emphasize focusing on externally accessible interfaces rather than attempting to test all internal service endpoints directly.
-
-\paragraph{Trace Context Preservation.}
-Although only the root API is used for test generation, the complete trace context is preserved to enable post-execution validation. This includes the full service interaction hierarchy, expected response patterns, and inter-service dependencies observed in the original execution.
+\paragraph{Root identification.}
+The entry point of a scenario is the first HTTP operation in the trace that represents business logic, after authentication exchanges are filtered out. This trace-driven choice sidesteps a recurring problem in microservice testing: not every endpoint declared in an OpenAPI specification is externally reachable, and many require authentication contexts or service-to-service protocols that a black-box tester cannot easily reproduce~\cite{waseem2020testing,zhou2018microservice,microservice-testing-review-2023}. By taking root APIs from observed traffic, the tool focuses on the endpoints that real clients actually reach, with the authentication and routing context already established. The remainder of the trace---the induced span subtree below each root---is not driven directly but is preserved for the Trace Shape Oracle to evaluate.
 
 %--------------------------------------------------------------------
 \subsection{Test Generation}
