@@ -675,9 +675,8 @@ public final class MistRunner {
             setupAllureForIntelliJ();
 
             // Find the test class directory
-            String baseDir = System.getProperty("user.dir");
             String packagePath = fullPackageName.replace('.', '/');
-            File testClassDir = new File(baseDir + "/src/test/java/" + packagePath);
+            File testClassDir = resolveTestTargetRoot().resolve(packagePath).toFile();
 
             List<String> testClassNames = new ArrayList<>();
 
@@ -1194,9 +1193,8 @@ public final class MistRunner {
             cleanOldCompiledTestClasses(fullPackageName);
 
             // Find test class directory
-            String baseDir = System.getProperty("user.dir");
             String packagePath = fullPackageName.replace('.', '/');
-            File testClassDir = new File(baseDir + "/src/test/java/" + packagePath);
+            File testClassDir = resolveTestTargetRoot().resolve(packagePath).toFile();
 
             List<String> testClassNames = findTestClassNames(testClassDir, fullPackageName);
 
@@ -1228,7 +1226,7 @@ public final class MistRunner {
             // 🔧 CRITICAL FIX: Create a fresh ClassLoader for each round
             // The JVM caches loaded classes, so we need a new ClassLoader to pick up
             // changes from recompiled test files during enhancement rounds
-            File testClassesDir = new File(baseDir, "target/test-classes");
+            File testClassesDir = new File(System.getProperty("user.dir"), "target/test-classes");
             URL[] urls = new URL[] { testClassesDir.toURI().toURL() };
 
             // Create isolated ClassLoader that loads from test-classes first
@@ -1374,8 +1372,9 @@ public final class MistRunner {
 
         // The test class might be directly in the package or in a subdirectory
         // Try direct path first
-        String directPath = baseDir + "/src/test/java/" + packagePath + "/" +
-                testClassName.substring(testClassName.lastIndexOf('.') + 1) + ".java";
+        java.nio.file.Path testTargetRoot = resolveTestTargetRoot();
+        String directPath = testTargetRoot.resolve(packagePath).resolve(
+                testClassName.substring(testClassName.lastIndexOf('.') + 1) + ".java").toString();
         File directFile = new File(directPath);
         if (directFile.exists()) {
             return directPath;
@@ -1383,7 +1382,7 @@ public final class MistRunner {
 
         // Try with full class path
         String fullClassPath = testClassName.replace('.', '/');
-        String fullPath = baseDir + "/src/test/java/" + fullClassPath + ".java";
+        String fullPath = testTargetRoot.resolve(fullClassPath + ".java").toString();
         File fullFile = new File(fullPath);
         if (fullFile.exists()) {
             return fullPath;
@@ -1466,7 +1465,7 @@ public final class MistRunner {
     private boolean compileTestClasses() {
         try {
             String baseDir = System.getProperty("user.dir");
-            File testSourceDir = new File(baseDir, "src/test/java");
+            File testSourceDir = resolveTestTargetRoot().toFile();
             File testClassesDir = new File(baseDir, "target/test-classes");
             File mainClassesDir = new File(baseDir, "target/classes");
 
@@ -2133,6 +2132,25 @@ public final class MistRunner {
         }
 
         return value;
+    }
+
+    /**
+     * Returns the absolute directory holding generated test sources for this
+     * MIST run. Resolves {@code inputs.targetDirJava} against the JVM's CWD
+     * when it is relative, mirroring the writer's emission and so the JUnit
+     * compile/execute machinery finds the same files. Falls back to
+     * {@code <CWD>/src/test/java} when no value was supplied.
+     */
+    private java.nio.file.Path resolveTestTargetRoot() {
+        String raw = inputs.targetDirJava;
+        if (raw == null || raw.trim().isEmpty()) {
+            raw = "src/test/java";
+        }
+        java.nio.file.Path p = java.nio.file.Paths.get(raw);
+        if (!p.isAbsolute()) {
+            p = java.nio.file.Paths.get(System.getProperty("user.dir")).resolve(raw);
+        }
+        return p.normalize();
     }
 
     /**
