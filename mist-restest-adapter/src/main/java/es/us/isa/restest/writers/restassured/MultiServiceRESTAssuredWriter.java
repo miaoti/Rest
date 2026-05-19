@@ -2190,8 +2190,22 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                        }");
                         pw.println("                        ");
                         // Remove detailed failure analysis - replaced by intelligent analysis
-                        pw.println("                        // ⏱️ Wait longer for trace propagation to Jaeger (increased delay)");
-                        pw.println("                        try { Thread.sleep(3000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
+                        // Wait for Jaeger to ingest the failed call's spans before searching for
+                        // the trace.  The historical default was 3000ms; property
+                        // mst.test.jaeger.propagation.delay.ms exposes this so operators can
+                        // shorten the wait on fast Jaeger deployments or skip it (0) when running
+                        // against a mock collector.  Default lowered to 1000ms based on observed
+                        // ingestion latency on the bundled TrainTicket cluster; on a 2,876-failure
+                        // run this saves ~1.6h.
+                        pw.println("                        long __jaegerPropagationDelayMs;");
+                        pw.println("                        try {");
+                        pw.println("                            __jaegerPropagationDelayMs = Long.parseLong(");
+                        pw.println("                                System.getProperty(\"mst.test.jaeger.propagation.delay.ms\", \"1000\"));");
+                        pw.println("                        } catch (NumberFormatException nfe) { __jaegerPropagationDelayMs = 1000L; }");
+                        pw.println("                        if (__jaegerPropagationDelayMs > 0) {");
+                        pw.println("                            try { Thread.sleep(__jaegerPropagationDelayMs); }");
+                        pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
+                        pw.println("                        }");
                         pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true);");
                         pw.println("                        ");
                         // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted

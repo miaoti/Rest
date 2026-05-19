@@ -109,6 +109,47 @@ public class ParameterErrorAnalysisCache {
         return Optional.ofNullable(v);
     }
 
+    /**
+     * Endpoint-level peek that ignores the exception-type dimension. Returns
+     * a representative cached verdict for the {@code (service, operation,
+     * status)} triple if and only if every cached verdict under that prefix
+     * agrees on {@code isParameterError}, {@code parameterName}, and
+     * {@code errorType}.
+     * <p>
+     * The caller uses this to skip a full Jaeger-trace fetch (typically
+     * ~7s per call): the exception-type dimension is the only field of the
+     * exact cache key that requires the trace, and in practice the same
+     * endpoint failing with the same status almost always carries the same
+     * underlying parameter error. When the cached verdicts under the prefix
+     * disagree (a real ambiguity the exception type was disambiguating),
+     * this method returns empty and the caller falls back to the full
+     * trace-aware lookup.
+     */
+    public Optional<CachedVerdict> peekByEndpoint(String service, String operation, int status) {
+        String prefix = safe(service) + "|" + safe(operation) + "|" + status + "|";
+        CachedVerdict representative = null;
+        for (Map.Entry<String, CachedVerdict> e : verdicts.entrySet()) {
+            if (!e.getKey().startsWith(prefix)) continue;
+            CachedVerdict v = e.getValue();
+            if (representative == null) {
+                representative = v;
+                continue;
+            }
+            // Disagreement -> ambiguous; force the caller to fetch the trace.
+            if (v.isParameterError() != representative.isParameterError()) return Optional.empty();
+            if (!java.util.Objects.equals(v.getParameterName(), representative.getParameterName())) return Optional.empty();
+            if (!java.util.Objects.equals(v.getErrorType(), representative.getErrorType())) return Optional.empty();
+        }
+        if (representative != null) {
+            logger.debug("PEA cache endpoint-PEEK HIT for {}|{}|{}: isParamError={}, param={}, type={} (skipping Jaeger fetch)",
+                    service, operation, status,
+                    representative.isParameterError(),
+                    representative.getParameterName(),
+                    representative.getErrorType());
+        }
+        return Optional.ofNullable(representative);
+    }
+
     public void put(String key, CachedVerdict verdict) {
         verdicts.put(key, verdict);
         save();
