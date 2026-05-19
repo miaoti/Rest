@@ -11,8 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import es.us.isa.restest.inputs.InvalidInputType;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -20,9 +18,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * Locks in the default-YAML registry semantics and verifies parity with
- * {@link InvalidInputType#appliesTo(String)} on every (oasType x category)
- * pair. The eight default ids must match the legacy enum byte-for-byte.
+ * Locks in the default-YAML registry semantics. The eight default ids match
+ * the legacy {@code InvalidInputType} enum byte-for-byte; this fixture
+ * encodes the legacy applicability matrix as an explicit table so the
+ * registry's YAML-loaded values remain pinned to the same semantics.
  */
 public class FaultTypeRegistryTest {
 
@@ -53,14 +52,27 @@ public class FaultTypeRegistryTest {
     @Test
     public void applicableForMatchesLegacyEnumOnEveryOasType() {
         FaultTypeRegistry registry = FaultTypeRegistry.loadDefault();
-        for (InvalidInputType legacy : InvalidInputType.values()) {
-            FaultType ft = registry.byId(legacy.name());
-            assertNotNull("registry must expose default id " + legacy.name(), ft);
+        // Explicit legacy applicability table — copy of the matrix that the
+        // retired InvalidInputType.appliesTo(String) enum encoded.
+        java.util.Map<String, java.util.Set<String>> legacyMatrix = new java.util.LinkedHashMap<>();
+        legacyMatrix.put("TYPE_MISMATCH", new HashSet<>(Arrays.asList("string", "integer", "number", "boolean", "array", "object")));
+        legacyMatrix.put("REGEX_MISMATCH", new HashSet<>(Arrays.asList("string")));
+        legacyMatrix.put("SEMANTIC_MISMATCH", new HashSet<>(Arrays.asList("string", "integer", "number", "array", "object")));
+        legacyMatrix.put("OVERFLOW", new HashSet<>(Arrays.asList("string", "integer", "number", "array")));
+        legacyMatrix.put("EMPTY_INPUT", new HashSet<>(Arrays.asList("string", "array", "object")));
+        legacyMatrix.put("NULL_INPUT", new HashSet<>(Arrays.asList("string", "integer", "number", "boolean", "array", "object")));
+        legacyMatrix.put("SPECIAL_CHARACTERS", new HashSet<>(Arrays.asList("string", "array")));
+        legacyMatrix.put("BOUNDARY_VIOLATION", new HashSet<>(Arrays.asList("string", "integer", "number", "array")));
+
+        for (java.util.Map.Entry<String, java.util.Set<String>> e : legacyMatrix.entrySet()) {
+            String id = e.getKey();
+            FaultType ft = registry.byId(id);
+            assertNotNull("registry must expose default id " + id, ft);
             for (String oas : OAS_TYPES) {
-                boolean legacyApplies = legacy.appliesTo(oas);
+                boolean legacyApplies = e.getValue().contains(oas);
                 boolean registryApplies = ft.applicableTo().contains(oas);
                 assertEquals(
-                        legacy.name() + " applicability mismatch for OAS type '" + oas + "'",
+                        id + " applicability mismatch for OAS type '" + oas + "'",
                         legacyApplies, registryApplies);
             }
         }

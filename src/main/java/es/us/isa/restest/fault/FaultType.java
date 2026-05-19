@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Data carrier for a fault category. Replaces the fixed
- * {@link es.us.isa.restest.inputs.InvalidInputType} enum with an
+ * Data carrier for a fault category. Replaces the fixed (now retired)
+ * {@code es.us.isa.restest.inputs.InvalidInputType} enum with an
  * identity-driven value object that the registry can mine and overlay.
  *
  * <p>Identity is the {@link #id()} string. The id of a {@link FaultSource#DEFAULT}

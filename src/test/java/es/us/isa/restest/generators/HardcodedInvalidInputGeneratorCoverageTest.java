@@ -1,7 +1,6 @@
 package es.us.isa.restest.generators;
 
 import es.us.isa.restest.inputs.InvalidInputPool;
-import es.us.isa.restest.inputs.InvalidInputType;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
         ParameterInfo p = stringParam("tripId", "path", true, null, null);
         InvalidInputPool pool = gen.generateInvalidInputPool(p);
 
-        List<Object> empties = valuesFor(pool, InvalidInputType.EMPTY_INPUT);
+        List<Object> empties = valuesFor(pool, "EMPTY_INPUT");
         assertFalse("path-located param must not include pure-empty \"\" — Spring routes /foo/ to a different handler",
                 empties.contains(""));
         // Whitespace variants are still present.
@@ -47,7 +46,7 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
         ParameterInfo p = stringParam("name", "body", true, null, null);
         InvalidInputPool pool = gen.generateInvalidInputPool(p);
 
-        List<Object> empties = valuesFor(pool, InvalidInputType.EMPTY_INPUT);
+        List<Object> empties = valuesFor(pool, "EMPTY_INPUT");
         assertTrue("body-located param keeps pure-empty \"\" — the controller's null/empty check is the target",
                 empties.contains(""));
         assertTrue(empties.contains(" "));
@@ -62,7 +61,7 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
                 "Grand Central,Penn,Union,Times Sq,Broadway");
         InvalidInputPool pool = gen.generateInvalidInputPool(p);
 
-        List<Object> boundary = valuesFor(pool, InvalidInputType.BOUNDARY_VIOLATION);
+        List<Object> boundary = valuesFor(pool, "BOUNDARY_VIOLATION");
         assertTrue("expected at least one CSV variant with a 1-char interior element",
                 boundary.stream().anyMatch(v -> v instanceof String && isCsvWithShortElement((String) v)));
         assertTrue("expected at least one CSV variant with a long (>50 char) interior element",
@@ -77,7 +76,7 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
                 "comma-separated tag names", "alpha,bravo,charlie");
         InvalidInputPool pool = gen.generateInvalidInputPool(p);
 
-        List<Object> empties = valuesFor(pool, InvalidInputType.EMPTY_INPUT);
+        List<Object> empties = valuesFor(pool, "EMPTY_INPUT");
         assertTrue("expected CSV variant with empty interior element (a,,c)",
                 empties.stream().anyMatch(v -> v instanceof String && containsEmptyInteriorElement((String) v)));
         assertTrue("expected CSV variant with whitespace-only interior element",
@@ -93,7 +92,7 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
                 "id-1,id-2,id-3,id-4");
         InvalidInputPool pool = gen.generateInvalidInputPool(p);
 
-        List<Object> boundary = valuesFor(pool, InvalidInputType.BOUNDARY_VIOLATION);
+        List<Object> boundary = valuesFor(pool, "BOUNDARY_VIOLATION");
         assertTrue("3+ commas in example should activate CSV-element mutation",
                 boundary.stream().anyMatch(v -> v instanceof String && isCsvWithShortElement((String) v)));
     }
@@ -106,7 +105,7 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
                 "User account name", "alice");
         InvalidInputPool pool = gen.generateInvalidInputPool(p);
 
-        List<Object> boundary = valuesFor(pool, InvalidInputType.BOUNDARY_VIOLATION);
+        List<Object> boundary = valuesFor(pool, "BOUNDARY_VIOLATION");
         for (Object v : boundary) {
             if (v instanceof String && ((String) v).contains(",")) {
                 assertFalse("plain string should not get CSV element mutations: " + v,
@@ -130,11 +129,11 @@ public class HardcodedInvalidInputGeneratorCoverageTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static List<Object> valuesFor(InvalidInputPool pool, InvalidInputType type) {
+    private static List<Object> valuesFor(InvalidInputPool pool, String type) {
         try {
             Field f = InvalidInputPool.class.getDeclaredField("valuesByType");
             f.setAccessible(true);
-            Map<InvalidInputType, List<Object>> m = (Map<InvalidInputType, List<Object>>) f.get(pool);
+            Map<String, List<Object>> m = (Map<String, List<Object>>) f.get(pool);
             return m.get(type);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("test reflection failed", e);

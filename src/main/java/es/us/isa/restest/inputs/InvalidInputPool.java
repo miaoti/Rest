@@ -5,109 +5,107 @@ import java.util.*;
 /**
  * Manages invalid input values for a parameter, tracking which values have been used
  * in round-robin mode to ensure variety in negative testing.
+ *
+ * <p>Keyed on the String fault-type id (from {@link es.us.isa.restest.fault.FaultType#id()}
+ * loaded via {@link es.us.isa.restest.fault.FaultTypeRegistry}). The eight default ids
+ * — {@code TYPE_MISMATCH}, {@code REGEX_MISMATCH}, {@code SEMANTIC_MISMATCH},
+ * {@code OVERFLOW}, {@code EMPTY_INPUT}, {@code NULL_INPUT}, {@code SPECIAL_CHARACTERS},
+ * {@code BOUNDARY_VIOLATION} — are guaranteed to be valid keys.
  */
 public class InvalidInputPool {
-    
+
     private final String parameterName;
     private final String parameterType;
-    
-    // Map of InvalidInputType -> List of values for that type
-    private final Map<InvalidInputType, List<Object>> valuesByType;
-    
-    // Track which values have been used (for round-robin mode)
-    private final Map<InvalidInputType, Set<Integer>> usedIndicesByType;
-    
-    // Current index for round-robin selection across all types
+
+    private final Map<String, List<Object>> valuesByType;
+
+    private final Map<String, Set<Integer>> usedIndicesByType;
+
     private int currentTypeIndex = 0;
-    private final List<InvalidInputType> typeRotation;
-    
+    private final List<String> typeRotation;
+
     /**
      * Edge-case priority: high-risk types that catch real bugs are tested first.
      * This ordering ensures that boundary violations, overflows, and null/empty
      * inputs (the most likely to reveal server-side validation gaps) are fired
      * before lower-risk semantic mismatches.
      */
-    private static final List<InvalidInputType> PRIORITIZED_TYPE_ORDER = Arrays.asList(
-            InvalidInputType.BOUNDARY_VIOLATION,
-            InvalidInputType.OVERFLOW,
-            InvalidInputType.NULL_INPUT,
-            InvalidInputType.EMPTY_INPUT,
-            InvalidInputType.SPECIAL_CHARACTERS,
-            InvalidInputType.TYPE_MISMATCH,
-            InvalidInputType.REGEX_MISMATCH,
-            InvalidInputType.SEMANTIC_MISMATCH
+    private static final List<String> PRIORITIZED_TYPE_ORDER = Arrays.asList(
+            "BOUNDARY_VIOLATION",
+            "OVERFLOW",
+            "NULL_INPUT",
+            "EMPTY_INPUT",
+            "SPECIAL_CHARACTERS",
+            "TYPE_MISMATCH",
+            "REGEX_MISMATCH",
+            "SEMANTIC_MISMATCH"
     );
 
     public InvalidInputPool(String parameterName, String parameterType) {
         this.parameterName = parameterName;
         this.parameterType = parameterType;
-        this.valuesByType = new EnumMap<>(InvalidInputType.class);
-        this.usedIndicesByType = new EnumMap<>(InvalidInputType.class);
-        
-        // Use prioritized rotation order so high-risk edge cases fire first
+        this.valuesByType = new LinkedHashMap<>();
+        this.usedIndicesByType = new LinkedHashMap<>();
+
         this.typeRotation = new ArrayList<>(PRIORITIZED_TYPE_ORDER);
-        
-        // Initialize maps for each type
-        for (InvalidInputType type : InvalidInputType.values()) {
+
+        for (String type : PRIORITIZED_TYPE_ORDER) {
             valuesByType.put(type, new ArrayList<>());
             usedIndicesByType.put(type, new HashSet<>());
         }
     }
-    
+
     /**
-     * Add invalid value for a specific type
+     * Add invalid value for a specific fault type id.
      */
-    public void addValue(InvalidInputType type, Object value) {
-        valuesByType.get(type).add(value);
+    public void addValue(String type, Object value) {
+        valuesByType.computeIfAbsent(type, k -> new ArrayList<>()).add(value);
+        usedIndicesByType.computeIfAbsent(type, k -> new HashSet<>());
+        if (!typeRotation.contains(type)) {
+            typeRotation.add(type);
+        }
     }
-    
-    // Track which type the last value came from (for logging)
-    private InvalidInputType lastSelectedType = null;
-    
+
+    private String lastSelectedType = null;
+
     /**
-     * Get the next unused invalid input in round-robin fashion
-     * Rotates through types, then through values within each type
-     * Returns null when all values have been used
+     * Get the next unused invalid input in round-robin fashion.
+     * Rotates through types, then through values within each type.
+     * Returns null when all values have been used.
      */
     public Object getNextRoundRobin() {
         int typesChecked = 0;
-        
-        // Try each type in rotation
+
         while (typesChecked < typeRotation.size()) {
-            InvalidInputType currentType = typeRotation.get(currentTypeIndex);
+            String currentType = typeRotation.get(currentTypeIndex);
             List<Object> values = valuesByType.get(currentType);
             Set<Integer> usedIndices = usedIndicesByType.get(currentType);
-            
-            // Find an unused value in this type
+
             for (int i = 0; i < values.size(); i++) {
                 if (!usedIndices.contains(i)) {
                     usedIndices.add(i);
                     Object value = values.get(i);
-                    
-                    // Track which type this value came from
+
                     lastSelectedType = currentType;
-                    
-                    // Move to next type for next call
+
                     currentTypeIndex = (currentTypeIndex + 1) % typeRotation.size();
-                    
+
                     return value;
                 }
             }
-            
-            // All values in this type used, try next type
+
             currentTypeIndex = (currentTypeIndex + 1) % typeRotation.size();
             typesChecked++;
         }
-        
-        // All values exhausted
+
         lastSelectedType = null;
         return null;
     }
-    
+
     /**
-     * Get the invalid type of the last selected value (for logging)
+     * Get the fault-type id of the last selected value (for logging).
      */
-    public InvalidInputType getLastSelectedType() {
+    public String getLastSelectedType() {
         return lastSelectedType;
     }
 
@@ -128,33 +126,30 @@ public class InvalidInputPool {
         }
         return totalUsed < getTotalCount();
     }
-    
+
     /**
-     * Get a random invalid input (can repeat)
+     * Get a random invalid input (can repeat).
      */
     public Object getRandomValue(Random random) {
-        // Select random type that has values
-        List<InvalidInputType> availableTypes = new ArrayList<>();
-        for (InvalidInputType type : InvalidInputType.values()) {
-            if (!valuesByType.get(type).isEmpty()) {
-                availableTypes.add(type);
+        List<String> availableTypes = new ArrayList<>();
+        for (Map.Entry<String, List<Object>> e : valuesByType.entrySet()) {
+            if (!e.getValue().isEmpty()) {
+                availableTypes.add(e.getKey());
             }
         }
-        
+
         if (availableTypes.isEmpty()) {
             return null;
         }
-        
-        // Pick random type
-        InvalidInputType randomType = availableTypes.get(random.nextInt(availableTypes.size()));
+
+        String randomType = availableTypes.get(random.nextInt(availableTypes.size()));
         List<Object> values = valuesByType.get(randomType);
-        
-        // Pick random value from that type
+
         return values.get(random.nextInt(values.size()));
     }
-    
+
     /**
-     * Reset usage tracking (for new test run)
+     * Reset usage tracking (for new test run).
      */
     public void resetUsage() {
         for (Set<Integer> indices : usedIndicesByType.values()) {
@@ -162,9 +157,9 @@ public class InvalidInputPool {
         }
         currentTypeIndex = 0;
     }
-    
+
     /**
-     * Get total number of invalid values across all types
+     * Get total number of invalid values across all types.
      */
     public int getTotalCount() {
         int count = 0;
@@ -173,53 +168,53 @@ public class InvalidInputPool {
         }
         return count;
     }
-    
+
     /**
-     * Get count of values for a specific type
+     * Get count of values for a specific fault-type id.
      */
-    public int getCountForType(InvalidInputType type) {
-        return valuesByType.get(type).size();
+    public int getCountForType(String type) {
+        List<Object> values = valuesByType.get(type);
+        return values == null ? 0 : values.size();
     }
-    
+
     /**
-     * Check if all values have been used (round-robin mode)
+     * Check if all values have been used (round-robin mode).
      */
     public boolean allValuesUsed() {
-        for (InvalidInputType type : InvalidInputType.values()) {
+        for (String type : typeRotation) {
             List<Object> values = valuesByType.get(type);
             Set<Integer> usedIndices = usedIndicesByType.get(type);
-            
-            if (values.size() > usedIndices.size()) {
-                return false; // This type still has unused values
+            if (values == null) continue;
+            if (values.size() > (usedIndices == null ? 0 : usedIndices.size())) {
+                return false;
             }
         }
-        return true; // All values used
+        return true;
     }
-    
+
     /**
-     * Get details about the pool for logging
+     * Get details about the pool for logging.
      */
     public String getPoolSummary() {
         StringBuilder sb = new StringBuilder();
         sb.append("Invalid Input Pool for '").append(parameterName).append("' (").append(parameterType).append("):\n");
-        
-        for (InvalidInputType type : InvalidInputType.values()) {
-            int count = valuesByType.get(type).size();
+
+        for (Map.Entry<String, List<Object>> e : valuesByType.entrySet()) {
+            int count = e.getValue().size();
             if (count > 0) {
-                sb.append("  - ").append(type.getDisplayName()).append(": ").append(count).append(" values\n");
+                sb.append("  - ").append(e.getKey()).append(": ").append(count).append(" values\n");
             }
         }
-        
+
         sb.append("Total: ").append(getTotalCount()).append(" invalid values");
         return sb.toString();
     }
-    
+
     public String getParameterName() {
         return parameterName;
     }
-    
+
     public String getParameterType() {
         return parameterType;
     }
 }
-
