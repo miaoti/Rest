@@ -36,8 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Thread-safe via {@link ConcurrentHashMap}; persisted to a JSON file so
  * the cache survives across enhancement rounds within a JVM run.
- * Mirrors the design of
- * {@link es.us.isa.restest.validation.SoftErrorRuleCache}.
  */
 public class ParameterErrorAnalysisCache {
 

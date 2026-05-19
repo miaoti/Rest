@@ -202,10 +202,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("    private static final boolean LLM_VALIDATION_ENABLED = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
                 pw.println("    private static final boolean LLM_ONLY_2XX = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
                 pw.println("    private static final boolean LLM_INCLUDE_RCA = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
-                pw.println("    private static final boolean SOFT_ERROR_CACHE_ENABLED = Boolean.parseBoolean(System.getProperty(\"soft.error.cache.enabled\", \"true\"));");
-                pw.println("    private static final String SOFT_ERROR_CACHE_PATH = System.getProperty(\"soft.error.cache.path\", \".mist/soft-error-rule-cache.json\");");
                 pw.println("    private static es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator;");
-                pw.println("    private static es.us.isa.restest.validation.SoftErrorRuleCache ruleCache;");
                 pw.println();
 
                 if (allureReport) {
@@ -1077,9 +1074,6 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("        // Initialize LLM validation singletons (ONCE per class, not per test)");
                 pw.println("        if (LLM_VALIDATION_ENABLED) {");
                 pw.println("            llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
-                pw.println("            if (SOFT_ERROR_CACHE_ENABLED) {");
-                pw.println("                ruleCache = es.us.isa.restest.validation.SoftErrorRuleCache.getInstance(SOFT_ERROR_CACHE_PATH);");
-                pw.println("            }");
                 pw.println("        }");
                 pw.println("    }");
                 pw.println();
@@ -1704,7 +1698,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        int expectedStatusCode" + stepIdx + " = " + step.getExpectedStatus() + ";");
                             pw.println("                        ");
                             
-                            // 🤖 LLM RESPONSE VALIDATION: uses class-level singletons (llmValidator, ruleCache)
+                            // 🤖 LLM RESPONSE VALIDATION: uses class-level singleton llmValidator
                             pw.println("                        // 🤖 LLM RESPONSE VALIDATION: uses class-level singletons");
                             pw.println("                        ");
                             
@@ -1752,19 +1746,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
                                 pw.println("                                // Use class-level singleton (created once in @BeforeClass)");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult;");
-                                pw.println("                                if (SOFT_ERROR_CACHE_ENABLED && ruleCache != null) {");
-                                pw.println("                                    validationResult = llmValidator.validateNegativeResponseWithCache(");
-                                pw.println("                                        actualStatusCode" + stepIdx + ",");
-                                pw.println("                                        validationBody,");
-                                pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
-                                pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
-                                pw.println("                                        \"" + escape(step.getPath()) + "\",");
-                                pw.println("                                        invalidParams,");
-                                pw.println("                                        ruleCache");
-                                pw.println("                                    );");
-                                pw.println("                                } else {");
-                                pw.println("                                    validationResult = llmValidator.validateNegativeTestResponse(");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult =");
+                                pw.println("                                    llmValidator.validateNegativeTestResponse(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
                                 pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
@@ -1772,7 +1755,6 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                        \"" + escape(step.getPath()) + "\",");
                                 pw.println("                                        invalidParams");
                                 pw.println("                                    );");
-                                pw.println("                                }");
                                 pw.println("                                ");
                                 pw.println("                                // isFailed() returns true only if error was detected AND related to our invalid input");
                                 pw.println("                                llmDetectedRelatedError = validationResult.isFailed();");
@@ -1838,25 +1820,14 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
                                 pw.println("                                // Use class-level singleton (created once in @BeforeClass)");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult;");
-                                pw.println("                                if (SOFT_ERROR_CACHE_ENABLED && ruleCache != null) {");
-                                pw.println("                                    validationResult = llmValidator.validateResponseWithCache(");
-                                pw.println("                                        actualStatusCode" + stepIdx + ",");
-                                pw.println("                                        validationBody,");
-                                pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
-                                pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
-                                pw.println("                                        \"" + escape(step.getPath()) + "\",");
-                                pw.println("                                        ruleCache");
-                                pw.println("                                    );");
-                                pw.println("                                } else {");
-                                pw.println("                                    validationResult = llmValidator.validateResponse(");
+                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult =");
+                                pw.println("                                    llmValidator.validateResponse(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
                                 pw.println("                                        \"" + escape(step.getServiceName()) + "\",");
                                 pw.println("                                        \"" + escape(verb.toUpperCase()) + "\",");
                                 pw.println("                                        \"" + escape(step.getPath()) + "\"");
                                 pw.println("                                    );");
-                                pw.println("                                }");
                                 pw.println("                                ");
                                 pw.println("                                System.out.println(\"🤖 LLM Validation (Positive Test): Failed=\" + validationResult.isFailed() + \", RCA: \" + validationResult.getRca());");
                                 pw.println("                                ");

@@ -18,10 +18,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Response-envelope invariant (Phase 2.E). Subsumes the semantics of the
- * legacy {@code SoftErrorRuleCache}: per root API the learner records the set
- * of {@code primaryField} values observed alongside a 2xx HTTP status in the
- * seed corpus (the {@code successSet}). At runtime, a 2xx span whose root
+ * Response-envelope invariant (Phase 2.E). Per root API the learner records the
+ * set of {@code primaryField} values observed alongside a 2xx HTTP status in
+ * the seed corpus (the {@code successSet}). At runtime, a 2xx span whose root
  * response body carries a {@code primaryField} value outside the success set
  * is flagged when the value is present in the {@code failureSet}; otherwise
  * the result is deferred to LLM classification.
@@ -75,11 +74,11 @@ public final class ResponseEnvelopeInvariant implements ShapeInvariant<ResponseE
                 details.add(primaryField + "=" + observed + " is in learned failureSet");
                 anyFailureSet = true;
             } else {
-                // TODO(Phase 4.x) LLM classify: invoke
-                // validation.SoftErrorRuleCache.classifyWithLLM(...) here and add
-                // the result to the appropriate set on the fly. Until that wiring
-                // lands we leave the verdict permissive but record the unknown
-                // value as INFO-level evidence so the next learner pass picks it up.
+                // TODO(Phase 4.x) LLM classify: invoke LLMService.classify(...)
+                // here and add the result to the appropriate set on the fly.
+                // Until that wiring lands we leave the verdict permissive but
+                // record the unknown value as INFO-level evidence so the next
+                // learner pass picks it up.
                 evidence.add(root.spanId);
                 details.add(primaryField + "=" + observed + " is unknown (needs LLM classification)");
             }
