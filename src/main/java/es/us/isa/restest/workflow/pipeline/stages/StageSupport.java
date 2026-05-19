@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * <p>All methods are pure functions of their parameters — no field state is
  * threaded through this class.
  */
-final class StageSupport {
+public final class StageSupport {
     private static final Logger log = LogManager.getLogger(StageSupport.class);
 
     /** Matches operation names of the form {@code "VERB /path"}. */
@@ -286,7 +286,7 @@ final class StageSupport {
     }
 
     /** Normalise an OpenAPI parameter location to one of path|query|header|cookie|body|other. */
-    static String normaliseParamLocation(String in) {
+    public static String normaliseParamLocation(String in) {
         if (in == null || in.trim().isEmpty()) return "body";
         String lower = in.trim().toLowerCase(Locale.ROOT);
         switch (lower) {

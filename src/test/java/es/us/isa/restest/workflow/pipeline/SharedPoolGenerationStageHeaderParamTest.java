@@ -64,6 +64,12 @@ public class SharedPoolGenerationStageHeaderParamTest {
         return cfg;
     }
 
+    /** Build a {@code PoolKey} for assertion (PoolKey is now public after the merge). */
+    private static MultiServiceTestCaseGenerator.PoolKey poolKey(String paramName, String paramLocation) {
+        return new MultiServiceTestCaseGenerator.PoolKey(paramName, paramLocation);
+    }
+
+
     @Test
     public void headerAndCookieParametersAreEnrolledInFaultPool() throws Exception {
         String service = "secure-service";
@@ -83,24 +89,28 @@ public class SharedPoolGenerationStageHeaderParamTest {
                 AiDrivenLLMGenerator.class);
         m.setAccessible(true);
 
+        // Pool entries are keyed by PoolKey(paramName, normalisedLocation) so
+        // same-name parameters at different locations do not collide.
         @SuppressWarnings("unchecked")
-        Map<String, InvalidInputPool> faultyPool =
-                (Map<String, InvalidInputPool>) m.invoke(null,
+        Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> faultyPool =
+                (Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>) m.invoke(null,
                         root, "GET__secure_data",
                         serviceConfigs, true, new AiDrivenLLMGenerator());
 
         assertNotNull(faultyPool);
-        assertTrue("Header parameter 'X-API-Key' must be enrolled in the fault pool",
-                faultyPool.containsKey("X-API-Key"));
-        assertTrue("Cookie parameter 'sessionId' must be enrolled in the fault pool",
-                faultyPool.containsKey("sessionId"));
+        MultiServiceTestCaseGenerator.PoolKey headerKey = poolKey("X-API-Key", "header");
+        MultiServiceTestCaseGenerator.PoolKey cookieKey = poolKey("sessionId", "cookie");
+        assertTrue("Header parameter 'X-API-Key' must be enrolled in the fault pool under (X-API-Key,header)",
+                faultyPool.containsKey(headerKey));
+        assertTrue("Cookie parameter 'sessionId' must be enrolled in the fault pool under (sessionId,cookie)",
+                faultyPool.containsKey(cookieKey));
 
-        InvalidInputPool headerPool = faultyPool.get("X-API-Key");
+        InvalidInputPool headerPool = faultyPool.get(headerKey);
         assertNotNull(headerPool);
         assertTrue("Header param fault pool must be populated (loop body must fire for it)",
                 headerPool.getTotalCount() > 0);
 
-        InvalidInputPool cookiePool = faultyPool.get("sessionId");
+        InvalidInputPool cookiePool = faultyPool.get(cookieKey);
         assertNotNull(cookiePool);
         assertTrue("Cookie param fault pool must be populated (loop body must fire for it)",
                 cookiePool.getTotalCount() > 0);

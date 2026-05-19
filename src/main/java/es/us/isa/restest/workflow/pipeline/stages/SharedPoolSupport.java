@@ -4,6 +4,7 @@ import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
+import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
@@ -75,7 +76,7 @@ final class SharedPoolSupport {
             SmartInputFetcher smartFetcher,
             SmartInputFetchConfig smartFetchConfig,
             Map<String, Map<String, List<String>>> sharedParameterPools,
-            Map<String, Map<String, InvalidInputPool>> faultyParameterPools) {
+            Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyParameterPools) {
         log.info("=== GENERATING SHARED PARAMETER POOLS ===");
 
         ConsoleProgressBar.begin("Pool Gen", groupedScenarios.size());
@@ -284,7 +285,7 @@ final class SharedPoolSupport {
             Map<String, TestConfigurationObject> serviceConfigs,
             boolean useLLM,
             AiDrivenLLMGenerator llmGen,
-            Map<String, Map<String, InvalidInputPool>> faultyParameterPools) {
+            Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyParameterPools) {
         log.info("=== GENERATING FAULTY PARAMETER POOLS (ALL ROOTS) ===");
         log.info("Number of scenario groups: {}", groupedScenarios.size());
 
@@ -320,7 +321,7 @@ final class SharedPoolSupport {
                 log.info("Processing root {}/{} with key '{}' in group '{}'",
                         rootIdx + 1, roots.size(), rootApiKey, groupKey);
 
-                Map<String, InvalidInputPool> faultyPool =
+                Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> faultyPool =
                         generateFaultyPoolForSingleRoot(rootStep, rootApiKey,
                                 serviceConfigs, useLLM, llmGen);
 
@@ -342,13 +343,13 @@ final class SharedPoolSupport {
      * Reuses the same LLM-driven invalid-input generation as before but scoped to
      * exactly one root's Operation config.
      */
-    static Map<String, InvalidInputPool> generateFaultyPoolForSingleRoot(
+    static Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> generateFaultyPoolForSingleRoot(
             WorkflowStep rootStep, String rootApiKey,
             Map<String, TestConfigurationObject> serviceConfigs,
             boolean useLLM,
             AiDrivenLLMGenerator llmGen) {
 
-        Map<String, InvalidInputPool> faultyPool = new HashMap<>();
+        Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> faultyPool = new HashMap<>();
 
         WorkflowStep businessStep = StageSupport.findFirstBusinessStepRecursive(rootStep);
         if (businessStep == null) {
@@ -415,7 +416,7 @@ final class SharedPoolSupport {
 
                 ParameterInfo info = StageSupport.createParameterInfoWithContext(p, apiName, service, allParamNames);
                 InvalidInputPool pool = llmGen.generateInvalidInputPool(info);
-                faultyPool.put(p.getName(), pool);
+                faultyPool.put(new MultiServiceTestCaseGenerator.PoolKey(p.getName(), normalisedIn), pool);
                 ConsoleProgressBar.update(p.getName());
                 log.debug("  Invalid pool for '{}' (in={}): {}",
                         p.getName(), normalisedIn, pool.getTotalCount());

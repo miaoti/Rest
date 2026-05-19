@@ -3,6 +3,7 @@ package es.us.isa.restest.workflow.pipeline;
 import es.us.isa.restest.configuration.MstConfig;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
+import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
@@ -57,7 +58,7 @@ public final class PipelineContext {
     /** Output map: rootApiKey → (paramName → list of pre-generated values). */
     public final Map<String, Map<String, List<String>>> sharedParameterPools;
     /** Output map: rootApiKey → (paramName → InvalidInputPool of fault values). */
-    public final Map<String, Map<String, InvalidInputPool>> faultyParameterPools;
+    public final Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyParameterPools;
 
     public PipelineContext(List<WorkflowScenario> scenarios,
                            Map<String, OpenAPISpecification> serviceSpecs,
@@ -83,7 +84,7 @@ public final class PipelineContext {
                            SmartInputFetchConfig smartFetchConfig,
                            boolean useLLM,
                            Map<String, Map<String, List<String>>> sharedParameterPools,
-                           Map<String, Map<String, InvalidInputPool>> faultyParameterPools) {
+                           Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyParameterPools) {
         this.scenarios = scenarios;
         this.serviceSpecs = serviceSpecs;
         this.serviceConfigs = serviceConfigs;

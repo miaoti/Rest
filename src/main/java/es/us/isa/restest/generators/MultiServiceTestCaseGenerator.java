@@ -60,7 +60,14 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     // Negative Test Generation System (tests with intentionally invalid inputs)
     private float faultyRatio;
     private boolean faultyRoundRobin = true;  // true = round-robin, false = random
-    private Map<String, Map<String, InvalidInputPool>> faultyParameterPools = new HashMap<>();
+    /**
+     * Faulty parameter pools per root API key, keyed by {@link PoolKey} so two
+     * parameters in the same operation that share a name but differ in location
+     * (e.g. a path {@code {id}} and a header {@code Id}) get distinct pool entries.
+     * The previous {@code Map<String, InvalidInputPool>} keyed by paramName alone
+     * collided silently in that case; the second enrolment overwrote the first.
+     */
+    private Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools = new HashMap<>();
     private Random random = es.us.isa.restest.util.SeededRandom.create("MultiServiceTestCaseGenerator");
     
     // Track which parameter should have invalid value in current test case (round-robin mode)
@@ -76,6 +83,50 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private final Set<String> approvedApiKeys = new LinkedHashSet<>();
 
     /**
+     * Composite key for the per-root faulty-parameter pool map. Promotes the
+     * earlier {@code paramName}-only key to the pair {@code (paramName, paramLocation)}
+     * so two parameters in the same operation with the same name but different
+     * OpenAPI locations (e.g. a path {@code {id}} and a header {@code Id}) no
+     * longer collide and overwrite each other.
+     *
+     * <p>{@code paramLocation} must be a value returned by
+     * {@link #normaliseParamLocation(String)} so equality is reliable across
+     * spec-authoring quirks (case differences, OpenAPI-2 {@code formData},
+     * null/empty defaults).
+     */
+    public static final class PoolKey {
+        final String paramName;
+        final String paramLocation;
+
+        public PoolKey(String paramName, String paramLocation) {
+            this.paramName = paramName;
+            this.paramLocation = paramLocation;
+        }
+
+        public String getParamName()     { return paramName; }
+        public String getParamLocation() { return paramLocation; }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof PoolKey)) return false;
+            PoolKey k = (PoolKey) o;
+            return Objects.equals(paramName, k.paramName)
+                    && Objects.equals(paramLocation, k.paramLocation);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(paramName, paramLocation);
+        }
+
+        @Override
+        public String toString() {
+            return paramName + "@" + paramLocation;
+        }
+    }
+
+    /**
      * Represents a single fault-injection target: one invalid value fired at
      * one parameter of one specific root API in a multi-root sequence.
      */
@@ -83,21 +134,25 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         final int rootIndex;          // 1-based index into sc.getRootSteps()
         final String rootApiKey;      // verb_path key for pool lookup
         final String paramName;       // target parameter
+        final String paramLocation;   // normalised OpenAPI location (path|query|header|cookie|body|other)
         final InvalidInputType type;  // which edge-case category
         final Object value;           // pre-captured invalid value (replayed at fire time)
 
         FaultTarget(int rootIndex, String rootApiKey, String paramName,
+                    String paramLocation,
                     InvalidInputType type, Object value) {
-            this.rootIndex  = rootIndex;
-            this.rootApiKey = rootApiKey;
-            this.paramName  = paramName;
-            this.type       = type;
-            this.value      = value;
+            this.rootIndex     = rootIndex;
+            this.rootApiKey    = rootApiKey;
+            this.paramName     = paramName;
+            this.paramLocation = paramLocation;
+            this.type          = type;
+            this.value         = value;
         }
 
         @Override
         public String toString() {
-            return "FaultTarget{R" + rootIndex + " " + rootApiKey + "." + paramName + " [" + type + "]}";
+            return "FaultTarget{R" + rootIndex + " " + rootApiKey + "." + paramName
+                    + "@" + paramLocation + " [" + type + "]}";
         }
     }
 
@@ -120,11 +175,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
             String rootApiKey = extractRootApiFromStep(rootStep);
             if (rootApiKey == null) continue;
 
-            Map<String, InvalidInputPool> pools = faultyParameterPools.get(rootApiKey);
+            Map<PoolKey, InvalidInputPool> pools = faultyParameterPools.get(rootApiKey);
             if (pools == null || pools.isEmpty()) continue;
 
-            for (Map.Entry<String, InvalidInputPool> pe : pools.entrySet()) {
-                String paramName = pe.getKey();
+            for (Map.Entry<PoolKey, InvalidInputPool> pe : pools.entrySet()) {
+                PoolKey key = pe.getKey();
                 InvalidInputPool pool = pe.getValue();
                 pool.resetUsage();
 
@@ -137,7 +192,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 while (pool.hasNextRoundRobin()) {
                     Object val = pool.getNextRoundRobin();
                     InvalidInputType lastType = pool.getLastSelectedType();
-                    queue.add(new FaultTarget(rootIdx + 1, rootApiKey, paramName,
+                    queue.add(new FaultTarget(rootIdx + 1, rootApiKey,
+                            key.getParamName(), key.getParamLocation(),
                             lastType != null ? lastType : InvalidInputType.SEMANTIC_MISMATCH,
                             val));
                 }
@@ -400,7 +456,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         }
 
         // Reset all pools so round-robin starts fresh for actual generation
-        for (Map<String, InvalidInputPool> pools : faultyParameterPools.values()) {
+        for (Map<PoolKey, InvalidInputPool> pools : faultyParameterPools.values()) {
             for (InvalidInputPool pool : pools.values()) {
                 pool.resetUsage();
             }
@@ -475,6 +531,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 tc.setTargetFaultRootId("Root " + targetFaultRootIndex);
                 tc.setFaultTypeCategory(currentTarget.type.name());
                 tc.setTargetFaultRootApiPath(currentTarget.rootApiKey);
+                // Carry the normalised parameter location so the writer can route the
+                // invalid value into the correct request slot (header / cookie / path /
+                // query / body). Without this, two same-name parameters at different
+                // locations would be indistinguishable at fire time.
+                tc.setTargetFaultParamLocation(currentTarget.paramLocation);
                 // Replay the exact value captured at queue build time so fire-time
                 // emission cannot drift from the recorded type label.
                 tc.setTargetFaultValue(currentTarget.value);
@@ -538,6 +599,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     tc.getFaultyParameters().clear();
                     tc.setTargetFaultRootId(null);
                     tc.setFaultTypeCategory(null);
+                    tc.setTargetFaultParamLocation(null);
                     // Rewrite method name from negative to positive
                     String demoted = "test_positive_flow_S" + baseCounter + "_v" + (v + 1);
                     tc.setOperationId(demoted);
@@ -736,6 +798,10 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         Map<String,String> pathParams   = new LinkedHashMap<>();
         Map<String,String> queryParams  = new LinkedHashMap<>();
         Map<String,String> headerParams = new LinkedHashMap<>();
+        // Cookie params are routed separately so the writer can emit
+        // .cookie(name, value) for each entry (and substitute the invalid value when the
+        // sniper target is at location 'cookie').
+        Map<String,String> cookieParams = new LinkedHashMap<>();
         Map<String,Object> bodyFields   = new LinkedHashMap<>();
 
         String resolvedPath = route;
@@ -792,10 +858,24 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                     : verb.toUpperCase() + "_" + route.replaceAll("[^a-zA-Z0-9_]", "_");
                             log.debug("Looking up faulty pool with key: '{}' (sniper={}, verb={}, route={})",
                                     resolvedFaultKey, faultRootApiKey != null, verb, route);
-                            Map<String, InvalidInputPool> faultyPool = faultyParameterPools.get(resolvedFaultKey);
-                            
-                            if (faultyPool != null && faultyPool.containsKey(p.getName())) {
-                                InvalidInputPool pool = faultyPool.get(p.getName());
+                            Map<PoolKey, InvalidInputPool> faultyPool = faultyParameterPools.get(resolvedFaultKey);
+
+                            // Build the same (name, normalisedLocation) key the pool was enrolled under.
+                            // Falling back to the test case's recorded location lets the writer-side
+                            // route still find the right pool entry when the sniper picked a fault
+                            // target that differs in location from this parameter's primary location.
+                            String currentParamLocation = es.us.isa.restest.workflow.pipeline.stages.StageSupport.normaliseParamLocation(p.getIn());
+                            PoolKey lookupKey = new PoolKey(p.getName(), currentParamLocation);
+                            if (faultyPool != null && !faultyPool.containsKey(lookupKey)
+                                    && tc.getTargetFaultParamLocation() != null) {
+                                PoolKey altKey = new PoolKey(p.getName(), tc.getTargetFaultParamLocation());
+                                if (faultyPool.containsKey(altKey)) {
+                                    lookupKey = altKey;
+                                }
+                            }
+
+                            if (faultyPool != null && faultyPool.containsKey(lookupKey)) {
+                                InvalidInputPool pool = faultyPool.get(lookupKey);
                                 
                                 // Get next invalid value based on mode
                                 Object invalidValue;
@@ -856,7 +936,8 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                     }
                                 }
                             } else {
-                                log.warn("⚠️ No invalid value pool found for rootApiKey='{}' or parameter='{}'", resolvedFaultKey, p.getName());
+                                log.warn("⚠️ No invalid value pool found for rootApiKey='{}' or pool key='{}'",
+                                        resolvedFaultKey, lookupKey);
                             }
                         }
 
@@ -1096,7 +1177,7 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                     continue;
                 }
                 
-                // Use typedVal for body params (already converted), val for path/query/header (strings)
+                // Use typedVal for body params (already converted), val for path/query/header/cookie (strings)
                 switch (p.getIn().toLowerCase(Locale.ROOT)) {
                     case "path":
                         pathParams.put(p.getName(), val); // Path params must be strings for URL construction
@@ -1122,6 +1203,13 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                         break;
                     case "header":
                         headerParams.put(p.getName(), val); // Header params must be strings
+                        break;
+                    case "cookie":
+                        // Cookie params were previously silently dropped (no switch case): the
+                        // pool enrolled invalid values for them, but the writer had nothing to
+                        // route. Storing them on cookieParams here completes the path so the
+                        // writer's .cookie(name, value) emission has a source map.
+                        cookieParams.put(p.getName(), val);
                         break;
                     case "body":
                     case "formdata":
@@ -1198,6 +1286,11 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                 expectedStatus,
                 convertObjectMapToStringMap(bodyFields)
         );
+        // Cookies are not in the StepCall constructor (kept stable for the existing 9-arg
+        // form); populate them post-construction via the cookies map exposed by getCookies().
+        if (cookieParams != null && !cookieParams.isEmpty()) {
+            call.getCookies().putAll(cookieParams);
+        }
 
         // Populate hierarchical naming metadata
         call.setHierarchicalId(stepNumber);
@@ -2326,29 +2419,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         return sb.toString();
     }
 
-    /**
-     * Normalise an OpenAPI parameter location to one of
-     * {@code path|query|header|cookie|body|other}, lowercased. {@code formData}
-     * (OpenAPI 2) folds into {@code body}; null/empty defaults to {@code body}
-     * to match the writer's body-path conventions. Package-private so the
-     * pipeline-stage tests can verify the contract via reflection.
-     */
-    static String normaliseParamLocation(String in) {
-        if (in == null || in.trim().isEmpty()) return "body";
-        String lower = in.trim().toLowerCase(Locale.ROOT);
-        switch (lower) {
-            case "path":
-            case "query":
-            case "header":
-            case "cookie":
-            case "body":
-                return lower;
-            case "formdata":
-                return "body";
-            default:
-                return "other";
-        }
-    }
 
     /**
      * Convert Object (Integer, Boolean, null, etc.) to String for API parameter value

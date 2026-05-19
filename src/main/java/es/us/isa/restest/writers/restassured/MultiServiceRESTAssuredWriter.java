@@ -1180,8 +1180,10 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
 
                             String targetRoot     = mstc.getTargetFaultRootId();
                             String faultType      = mstc.getFaultTypeCategory();
+                            String faultLocation  = mstc.getTargetFaultParamLocation();
                             String targetRootSafe = (targetRoot != null && !targetRoot.isEmpty()) ? targetRoot : "Unknown Root";
                             String faultTypeSafe  = (faultType  != null && !faultType.isEmpty())  ? faultType  : "UNKNOWN";
+                            String faultLocSafe   = (faultLocation != null && !faultLocation.isEmpty()) ? faultLocation : "unknown";
 
                             String faultyParamsEscaped        = escapeJavaString(String.join(", ", mstc.getFaultyParameters()));
                             String faultyParamsNewlineEscaped = escapeJavaString(String.join("\\n", mstc.getFaultyParameters()));
@@ -1190,6 +1192,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("        Allure.parameter(\"🚨 Test Type\", \"NEGATIVE (Targeted Fault Injection)\");");
                             pw.println("        Allure.parameter(\"🎯 Target API\", \"" + escapeJavaString(targetRootSafe) + "\");");
                             pw.println("        Allure.parameter(\"💥 Fault Type\", \"" + escapeJavaString(faultTypeSafe) + "\");");
+                            // Parameter location names the request slot the invalid value lands in
+                            // (path / query / header / cookie / body). Disambiguates same-name
+                            // parameters across locations so the Allure entry reads like
+                            // "header X-API-Key" rather than just "X-API-Key".
+                            pw.println("        Allure.parameter(\"📍 Fault Location\", \"" + escapeJavaString(faultLocSafe) + "\");");
                             pw.println("        Allure.parameter(\"🔴 Injected Payload\", \"" + faultyParamsEscaped + "\");");
                             pw.println("        Allure.description(\"**⚠️ Targeted Fault Injection Test**\\n\\n\" +");
                             pw.println("                         \"This test validates the error-handling of **" + escapeJavaString(targetRootSafe) + "** \" +");
@@ -1562,7 +1569,77 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                        if (__mstOverrideToken == null && !__mstDisableAuth) {");
                             pw.println("                            req = req.filter(es.us.isa.restest.auth.MstAuthRefreshFilter.INSTANCE);");
                             pw.println("                        }");
-                            
+
+                            // ── Header / cookie emission (A-5b) ─────────────────────────────────
+                            // For negative variants targeted at a header- or cookie-located parameter
+                            // we substitute the matching entry with the invalid value captured on
+                            // the test case. Previously these locations were enrolled in the fault
+                            // pool but discarded at emission time, so "negative" tests effectively
+                            // sent only valid values for the parameter under test.
+                            //
+                            // Sniper invariant: at most ONE entry is replaced — the one matching
+                            // the (location, paramName) tuple stored on the test case. All other
+                            // entries pass through unchanged.
+                            boolean isFaultStep = scenario.getFaulty()
+                                    && step.isTopLevelRoot()
+                                    && mstc.getTargetFaultParamLocation() != null;
+                            String faultLoc = isFaultStep
+                                    ? mstc.getTargetFaultParamLocation().toLowerCase(java.util.Locale.ROOT) : null;
+                            String faultName = null;
+                            String faultValueLiteral = null;
+                            if (isFaultStep) {
+                                for (String fp : mstc.getFaultyParameters()) {
+                                    int eq = fp.indexOf('=');
+                                    if (eq > 0) {
+                                        faultName = fp.substring(0, eq);
+                                        faultValueLiteral = fp.substring(eq + 1);
+                                        break; // exactly one targeted param per sniper variant
+                                    }
+                                }
+                            }
+
+                            if (step.getHeaders() != null && !step.getHeaders().isEmpty()) {
+                                for (Map.Entry<String, String> h : step.getHeaders().entrySet()) {
+                                    String hName  = h.getKey();
+                                    String hValue = h.getValue();
+                                    boolean replaceWithInvalid = isFaultStep
+                                            && "header".equals(faultLoc)
+                                            && hName.equals(faultName);
+                                    String emitted = replaceWithInvalid ? faultValueLiteral : hValue;
+                                    pw.println("                        req = req.header(\""
+                                            + escape(hName) + "\", \""
+                                            + escape(emitted == null ? "" : emitted) + "\");");
+                                }
+                            }
+                            // Even when no positive header was carried on this step, a header-located
+                            // fault target must still be emitted so the invalid value reaches the API.
+                            if (isFaultStep && "header".equals(faultLoc) && faultName != null
+                                    && (step.getHeaders() == null || !step.getHeaders().containsKey(faultName))) {
+                                pw.println("                        req = req.header(\""
+                                        + escape(faultName) + "\", \""
+                                        + escape(faultValueLiteral == null ? "" : faultValueLiteral) + "\");");
+                            }
+
+                            if (step.getCookies() != null && !step.getCookies().isEmpty()) {
+                                for (Map.Entry<String, String> c : step.getCookies().entrySet()) {
+                                    String cName  = c.getKey();
+                                    String cValue = c.getValue();
+                                    boolean replaceWithInvalid = isFaultStep
+                                            && "cookie".equals(faultLoc)
+                                            && cName.equals(faultName);
+                                    String emitted = replaceWithInvalid ? faultValueLiteral : cValue;
+                                    pw.println("                        req = req.cookie(\""
+                                            + escape(cName) + "\", \""
+                                            + escape(emitted == null ? "" : emitted) + "\");");
+                                }
+                            }
+                            if (isFaultStep && "cookie".equals(faultLoc) && faultName != null
+                                    && (step.getCookies() == null || !step.getCookies().containsKey(faultName))) {
+                                pw.println("                        req = req.cookie(\""
+                                        + escape(faultName) + "\", \""
+                                        + escape(faultValueLiteral == null ? "" : faultValueLiteral) + "\");");
+                            }
+
                             // Add dependency resolution for parameters (with resilient bypass)
                             // Uses jsonPath extraction from the producer's captured response body
                             for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {

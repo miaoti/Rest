@@ -61,6 +61,12 @@ public class SharedPoolGenerationStagePathParamTest {
         return cfg;
     }
 
+    /** Build a {@code PoolKey} for assertion (PoolKey is now public after the merge). */
+    private static MultiServiceTestCaseGenerator.PoolKey poolKey(String paramName, String paramLocation) {
+        return new MultiServiceTestCaseGenerator.PoolKey(paramName, paramLocation);
+    }
+
+
     @Test
     public void pathParameterIsEnrolledInFaultPool() throws Exception {
         String service = "order-service";
@@ -86,18 +92,21 @@ public class SharedPoolGenerationStagePathParamTest {
                 AiDrivenLLMGenerator.class);
         m.setAccessible(true);
 
+        // Pool entries are keyed by PoolKey(paramName, normalisedLocation) so
+        // same-name parameters at different locations do not collide.
         @SuppressWarnings("unchecked")
-        Map<String, InvalidInputPool> faultyPool =
-                (Map<String, InvalidInputPool>) m.invoke(null,
+        Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> faultyPool =
+                (Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>) m.invoke(null,
                         root, "GET__orders__orderId_",
                         serviceConfigs, true, new AiDrivenLLMGenerator());
 
         assertNotNull("Pool map must be returned even when only path params are present",
                 faultyPool);
-        assertTrue("Path parameter 'orderId' must be enrolled in the fault pool",
-                faultyPool.containsKey("orderId"));
+        MultiServiceTestCaseGenerator.PoolKey orderIdKey = poolKey("orderId", "path");
+        assertTrue("Path parameter 'orderId' must be enrolled in the fault pool under (orderId,path)",
+                faultyPool.containsKey(orderIdKey));
 
-        InvalidInputPool pool = faultyPool.get("orderId");
+        InvalidInputPool pool = faultyPool.get(orderIdKey);
         assertNotNull("Enrolled path param must have a non-null InvalidInputPool", pool);
         assertTrue("Path param fault pool must have at least one populated fault category — "
                         + "0 values means the loop body never fired",
