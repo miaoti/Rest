@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -363,6 +364,25 @@ public class SoftErrorRuleCache {
 
     private void load() {
         Path path = Paths.get(filePath);
+        // One-shot migration: if the configured path lives under a .mist/
+        // directory and a sibling target/<filename> cache exists, move that
+        // legacy file under the new .mist/ location so accumulated learning
+        // survives the cache-location switch. Gated on the parent directory
+        // being named ".mist" so user-overridden cache paths (e.g.
+        // /custom/some.json) do not accidentally swallow a same-named file
+        // under target/. Once the legacy file is gone, this branch is a
+        // cheap Files.exists() no-op on every subsequent run.
+        Path legacy = legacyTargetSiblingPath(path);
+        if (legacy != null && !Files.exists(path) && Files.exists(legacy)) {
+            try {
+                Path parent = path.getParent();
+                if (parent != null) Files.createDirectories(parent);
+                Files.move(legacy, path, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Migrated cache: {} -> {}", legacy, path);
+            } catch (IOException e) {
+                logger.warn("Failed to migrate legacy cache {} -> {}: {}", legacy, path, e.getMessage());
+            }
+        }
         if (!Files.exists(path)) {
             logger.info("No existing soft-error rule cache at {}; starting fresh", filePath);
             return;
@@ -396,5 +416,30 @@ public class SoftErrorRuleCache {
      */
     public int size() {
         return rules.size();
+    }
+
+    /**
+     * Compute the legacy {@code target/<filename>} location that a cache file
+     * configured at {@code path} would have lived in before the migration to
+     * {@code .mist/}. Returns
+     * {@code null} if {@code path} does not have the canonical
+     * {@code <prefix>/.mist/<filename>} shape — i.e., the user has overridden
+     * the cache location to something custom and we should not auto-move
+     * anything for them.
+     */
+    static Path legacyTargetSiblingPath(Path path) {
+        Path parent = path.getParent();
+        if (parent == null) return null;
+        Path parentName = parent.getFileName();
+        if (parentName == null || !".mist".equals(parentName.toString())) {
+            return null;
+        }
+        Path grandparent = parent.getParent();
+        if (grandparent == null) {
+            // Relative path like ".mist/foo.json": the legacy sibling is the
+            // relative "target/foo.json" resolved against the working dir.
+            return Paths.get("target", path.getFileName().toString());
+        }
+        return grandparent.resolve("target").resolve(path.getFileName());
     }
 }

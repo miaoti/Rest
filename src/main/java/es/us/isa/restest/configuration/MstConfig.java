@@ -34,6 +34,8 @@ public final class MstConfig {
     private final ScenarioMerge scenarioMerge;
     private final ScenarioShattering scenarioShattering;
     private final SoftErrorCache softErrorCache;
+    private final ParameterErrorCache parameterErrorCache;
+    private final IntelligentAnalysisCache intelligentAnalysisCache;
     private final StatusCodeExploration statusCodeExploration;
     private final Enhancer enhancer;
     private final Jaeger jaeger;
@@ -42,7 +44,9 @@ public final class MstConfig {
 
     private MstConfig(Core core, SmartFetch smartFetch, Llm llm, Faulty faulty,
                       ScenarioMerge scenarioMerge, ScenarioShattering scenarioShattering,
-                      SoftErrorCache softErrorCache, StatusCodeExploration statusCodeExploration,
+                      SoftErrorCache softErrorCache, ParameterErrorCache parameterErrorCache,
+                      IntelligentAnalysisCache intelligentAnalysisCache,
+                      StatusCodeExploration statusCodeExploration,
                       Enhancer enhancer, Jaeger jaeger) {
         this.core = core;
         this.smartFetch = smartFetch;
@@ -51,6 +55,8 @@ public final class MstConfig {
         this.scenarioMerge = scenarioMerge;
         this.scenarioShattering = scenarioShattering;
         this.softErrorCache = softErrorCache;
+        this.parameterErrorCache = parameterErrorCache;
+        this.intelligentAnalysisCache = intelligentAnalysisCache;
         this.statusCodeExploration = statusCodeExploration;
         this.enhancer = enhancer;
         this.jaeger = jaeger;
@@ -63,6 +69,8 @@ public final class MstConfig {
     public ScenarioMerge scenarioMerge() { return scenarioMerge; }
     public ScenarioShattering scenarioShattering() { return scenarioShattering; }
     public SoftErrorCache softErrorCache() { return softErrorCache; }
+    public ParameterErrorCache parameterErrorCache() { return parameterErrorCache; }
+    public IntelligentAnalysisCache intelligentAnalysisCache() { return intelligentAnalysisCache; }
     public StatusCodeExploration statusCodeExploration() { return statusCodeExploration; }
     public Enhancer enhancer() { return enhancer; }
     public Jaeger jaeger() { return jaeger; }
@@ -99,6 +107,8 @@ public final class MstConfig {
                 new ScenarioMerge(),
                 new ScenarioShattering(),
                 new SoftErrorCache(),
+                new ParameterErrorCache(),
+                new IntelligentAnalysisCache(),
                 new StatusCodeExploration(),
                 new Enhancer(),
                 new Jaeger());
@@ -259,10 +269,43 @@ public final class MstConfig {
         public SoftErrorCache() {
             this.enabled = parseBool("soft.error.cache.enabled", "true");
             this.cachePath = System.getProperty("soft.error.cache.path",
-                    "target/soft-error-rule-cache.json");
+                    ".mist/soft-error-rule-cache.json");
         }
 
         public boolean enabled() { return enabled; }
+        public String cachePath() { return cachePath; }
+    }
+
+    /**
+     * Per-signature LLM verdict cache for the parameter-error analyzer. Same
+     * lifetime/footprint as {@link SoftErrorCache} but isolated so the two
+     * caches don't share a path. The default lives under {@code .mist/} so it
+     * survives {@code mvn clean}.
+     */
+    public static final class ParameterErrorCache {
+        private final String cachePath;
+
+        public ParameterErrorCache() {
+            this.cachePath = System.getProperty("parameter.error.analysis.cache.path",
+                    ".mist/parameter-error-analysis-cache.json");
+        }
+
+        public String cachePath() { return cachePath; }
+    }
+
+    /**
+     * Trace-failure-mode LLM diagnosis cache for
+     * {@link es.us.isa.restest.analysis.TraceErrorAnalyzer#generateIntelligentAnalysis}.
+     * Persisted under {@code .mist/} to survive {@code mvn clean}.
+     */
+    public static final class IntelligentAnalysisCache {
+        private final String cachePath;
+
+        public IntelligentAnalysisCache() {
+            this.cachePath = System.getProperty("intelligent.analysis.cache.path",
+                    ".mist/intelligent-analysis-cache.json");
+        }
+
         public String cachePath() { return cachePath; }
     }
 

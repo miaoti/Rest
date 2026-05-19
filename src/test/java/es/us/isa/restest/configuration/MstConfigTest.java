@@ -50,6 +50,8 @@ public class MstConfigTest {
             "scenario.shattering.enabled",
             "soft.error.cache.enabled",
             "soft.error.cache.path",
+            "parameter.error.analysis.cache.path",
+            "intelligent.analysis.cache.path",
             "status.code.exploration.enabled",
             "status.code.exploration.max.per.test",
             "status.code.exploration.max.per.round",
@@ -121,7 +123,15 @@ public class MstConfigTest {
 
         // SoftErrorCache
         assertTrue(cfg.softErrorCache().enabled());
-        assertEquals("target/soft-error-rule-cache.json", cfg.softErrorCache().cachePath());
+        assertEquals(".mist/soft-error-rule-cache.json", cfg.softErrorCache().cachePath());
+
+        // ParameterErrorCache
+        assertEquals(".mist/parameter-error-analysis-cache.json",
+                cfg.parameterErrorCache().cachePath());
+
+        // IntelligentAnalysisCache
+        assertEquals(".mist/intelligent-analysis-cache.json",
+                cfg.intelligentAnalysisCache().cachePath());
 
         // StatusCodeExploration
         assertFalse(cfg.statusCodeExploration().enabled());

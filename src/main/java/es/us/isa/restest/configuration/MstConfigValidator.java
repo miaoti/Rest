@@ -67,6 +67,10 @@ public final class MstConfigValidator {
                 // SoftErrorCache
                 "soft.error.cache.enabled",
                 "soft.error.cache.path",
+                // ParameterErrorCache
+                "parameter.error.analysis.cache.path",
+                // IntelligentAnalysisCache
+                "intelligent.analysis.cache.path",
                 // StatusCodeExploration
                 "status.code.exploration.enabled",
                 "status.code.exploration.max.per.test",
@@ -103,6 +107,8 @@ public final class MstConfigValidator {
             "test.enhancer.",
             "status.code.exploration.",
             "soft.error.cache.",
+            "parameter.error.analysis.",
+            "intelligent.analysis.",
             "jaeger.",
             "negative.input.generation.",
             "llm.response.validation."

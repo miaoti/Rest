@@ -468,7 +468,7 @@ public class TraceErrorAnalyzer {
         // Cache lookup: identical failure-mode signatures across traces reuse the same diagnosis.
         String cacheKey = buildIntelligentAnalysisCacheKey(analysis);
         IntelligentAnalysisCache cache = IntelligentAnalysisCache.getInstance(
-                System.getProperty("intelligent.analysis.cache.path", "target/intelligent-analysis-cache.json"));
+                System.getProperty("intelligent.analysis.cache.path", ".mist/intelligent-analysis-cache.json"));
         Optional<String> cached = cache.get(cacheKey);
         if (cached.isPresent()) {
             return cached.get();

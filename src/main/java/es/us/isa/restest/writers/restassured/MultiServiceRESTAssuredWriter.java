@@ -203,7 +203,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("    private static final boolean LLM_ONLY_2XX = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
                 pw.println("    private static final boolean LLM_INCLUDE_RCA = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
                 pw.println("    private static final boolean SOFT_ERROR_CACHE_ENABLED = Boolean.parseBoolean(System.getProperty(\"soft.error.cache.enabled\", \"true\"));");
-                pw.println("    private static final String SOFT_ERROR_CACHE_PATH = System.getProperty(\"soft.error.cache.path\", \"target/soft-error-rule-cache.json\");");
+                pw.println("    private static final String SOFT_ERROR_CACHE_PATH = System.getProperty(\"soft.error.cache.path\", \".mist/soft-error-rule-cache.json\");");
                 pw.println("    private static es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator;");
                 pw.println("    private static es.us.isa.restest.validation.SoftErrorRuleCache ruleCache;");
                 pw.println();

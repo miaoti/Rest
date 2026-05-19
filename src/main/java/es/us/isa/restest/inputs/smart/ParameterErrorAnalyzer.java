@@ -132,7 +132,7 @@ public class ParameterErrorAnalyzer {
                     failure.getHttpStatusCode(),
                     cachedException);
             ParameterErrorAnalysisCache cache = ParameterErrorAnalysisCache.getInstance(
-                    System.getProperty("parameter.error.analysis.cache.path", "target/parameter-error-analysis-cache.json"));
+                    System.getProperty("parameter.error.analysis.cache.path", ".mist/parameter-error-analysis-cache.json"));
             Optional<ParameterErrorAnalysisCache.CachedVerdict> cached = cache.get(cacheKey);
             if (cached.isPresent()) {
                 ParameterErrorAnalysisCache.CachedVerdict v = cached.get();
