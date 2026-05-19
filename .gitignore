@@ -1,4 +1,8 @@
-/.idea/
+# Ignore everything inside .idea/ except the shared MIST run
+# configurations — those are checked in so a fresh IntelliJ open
+# gets the right Working Directory + program arguments.
+/.idea/*
+!/.idea/runConfigurations/
 /.settings/
 /.vscode/
 /.classpath/

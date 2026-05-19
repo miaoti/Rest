@@ -47,6 +47,14 @@ public final class MistMain {
             coreProps.load(in);
         } catch (NoSuchFileException nsfe) {
             System.err.println("MIST: properties file not found: " + propsFile);
+            System.err.println();
+            System.err.println("Usage: java -jar mist-cli/target/mist.jar <path/to/your.properties>");
+            System.err.println();
+            System.err.println("For the bundled TrainTicket demo from the repo root:");
+            System.err.println("  java -jar mist-cli/target/mist.jar mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties");
+            System.err.println();
+            System.err.println("In IntelliJ, use the pre-shipped run configuration");
+            System.err.println("'MIST: Demo (bundled TrainTicket)' (Run → Edit Configurations).");
             System.exit(2);
             return;
         }
