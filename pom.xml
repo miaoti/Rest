@@ -491,6 +491,29 @@
 							</descriptorRefs>
 						</configuration>
 					</execution>
+					<execution>
+						<!-- Phase 1.B of PATH_B_REBUILD_PLAN.md: standalone mist.jar entry point.
+						     Stage 1.C will move MistMain to io.mist.cli inside the mist-cli module. -->
+						<id>make-assembly-mist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<archive>
+								<manifest>
+									<mainClass>es.us.isa.restest.main.MistMain</mainClass>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+								</manifest>
+							</archive>
+							<finalName>mist</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
