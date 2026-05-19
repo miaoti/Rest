@@ -6,6 +6,7 @@ import es.us.isa.restest.configuration.pojos.TestConfiguration;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
+import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.workflow.WorkflowStep;
 import org.junit.Test;

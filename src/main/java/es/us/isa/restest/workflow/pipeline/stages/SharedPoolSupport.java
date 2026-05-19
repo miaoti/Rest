@@ -36,7 +36,7 @@ import java.util.regex.Matcher;
  * dynamic pool sizing, fault-pool location breakdown, etc.) are preserved
  * byte-for-byte.
  */
-final class SharedPoolSupport {
+public final class SharedPoolSupport {
     private static final Logger log = LogManager.getLogger(SharedPoolSupport.class);
 
     private SharedPoolSupport() {}

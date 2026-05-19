@@ -97,13 +97,23 @@ public class PoolKeyCollisionTest {
                 "GET /items/{id}",
                 0L, 0L, Collections.emptyMap(), Collections.emptyMap());
 
-        Method m = MultiServiceTestCaseGenerator.class.getDeclaredMethod(
-                "generateFaultyPoolForSingleRoot", WorkflowStep.class, String.class);
+        // generateFaultyPoolForSingleRoot was lifted from the generator into
+        // SharedPoolSupport (see S-1b), where it is a package-private static
+        // method taking explicit configuration arguments rather than reading
+        // generator fields. The mock-and-inject setup above is kept so the
+        // contract — a Mockito CALLS_REAL_METHODS instance is constructible —
+        // continues to be exercised, but the call itself goes through the
+        // lifted helper with null receiver.
+        Method m = es.us.isa.restest.workflow.pipeline.stages.SharedPoolSupport.class.getDeclaredMethod(
+                "generateFaultyPoolForSingleRoot",
+                WorkflowStep.class, String.class, Map.class, boolean.class, AiDrivenLLMGenerator.class);
         m.setAccessible(true);
 
         @SuppressWarnings("unchecked")
         Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> faultyPool =
-                (Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>) m.invoke(gen, root, "GET__items__id_");
+                (Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>) m.invoke(null,
+                        root, "GET__items__id_",
+                        serviceConfigs, true, new AiDrivenLLMGenerator());
 
         assertNotNull("Pool map must be returned", faultyPool);
 

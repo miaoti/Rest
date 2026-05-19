@@ -1,6 +1,7 @@
 package es.us.isa.restest.workflow.pipeline;
 
 import es.us.isa.restest.configuration.MstConfig;
+import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.pipeline.stages.SharedPoolGenerationStage;
@@ -56,7 +57,7 @@ public class SharedPoolGenerationStageTest {
         // Wiring the pool maps but feeding no scenarios proves the stage
         // walks the (empty) grouping without producing spurious entries.
         Map<String, Map<String, List<String>>> sharedPools = new HashMap<>();
-        Map<String, Map<String, InvalidInputPool>> faultyPools = new HashMap<>();
+        Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyPools = new HashMap<>();
         PipelineContext ctx = new PipelineContext(
                 new ArrayList<>(), null, new HashMap<>(), null, new LinkedHashSet<>(),
                 MstConfig.instance(),
