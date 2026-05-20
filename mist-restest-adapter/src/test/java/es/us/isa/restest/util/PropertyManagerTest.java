@@ -30,12 +30,15 @@ public class PropertyManagerTest {
     }
 
     @Test
-    public void shouldNotReadPropertyFromMainPropertiesFile() {
-        File f = new File("src/main/resources/config.properties");
-        f.renameTo(new File("src/main/resources/config.properties1"));
-
-        String generator = PropertyManager.readProperty("generator");
-        assertNull(generator);
+    public void shouldReturnNullForUnknownPropertyName() {
+        // Replaces the old "rename config.properties on disk" negative test.
+        // PropertyManager now loads config.properties from the classpath (so it
+        // works from any CWD, including IDE project-root runs), and the file
+        // is always packaged into target/classes; the on-disk file is no longer
+        // the sole source. The meaningful null-return contract is "unknown key
+        // returns null", which this test pins.
+        String value = PropertyManager.readProperty("totally.unknown.property.name");
+        assertNull(value);
     }
 
     @Test
