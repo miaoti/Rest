@@ -168,10 +168,20 @@ public final class ConsoleProgressBar {
     }
 
     private static boolean detectColor() {
+        // Off by default — ANSI support in IDE / packaged-terminal contexts
+        // (IntelliJ Run console without ANSI-mode enabled, Eclipse, jenkins
+        // log captures, etc.) is inconsistent, and a falsy-rendering terminal
+        // prints "[96m" and similar escape literals over the bar, which is
+        // worse than no color. Opt in explicitly when running in a known-
+        // capable terminal (modern Linux / macOS shells, IntelliJ with ANSI
+        // escape support enabled): -Drestest.progress.bar.color=true or set
+        // FORCE_COLOR / CLICOLOR_FORCE env vars.
         if (System.getenv("NO_COLOR") != null) return false;
         String prop = System.getProperty("restest.progress.bar.color");
         if (prop != null) return Boolean.parseBoolean(prop);
-        return true;
+        if (System.getenv("FORCE_COLOR") != null) return true;
+        if (System.getenv("CLICOLOR_FORCE") != null) return true;
+        return false;
     }
 
     private static String color(String code, String s) {
@@ -263,12 +273,33 @@ public final class ConsoleProgressBar {
     //  Rendering
     // -----------------------------------------------------------------------
 
+    /** Fallback overwrite width when ANSI line-clear is unavailable. */
+    private static final int NO_ANSI_PAD_WIDTH = 120;
+
     private static void render() {
         if (STACK.isEmpty()) return;
         spinnerIdx = (spinnerIdx + 1) % SPINNER_FRAMES.length;
         String bar = buildBar();
-        RAW_STDOUT.print(ANSI_CR + ANSI_CLEAR_LINE);
-        RAW_STDOUT.print(bar);
+        if (useColor) {
+            // ANSI-capable terminal: clear the current line atomically,
+            // then draw the bar. Colored bars contain invisible escape
+            // codes that would confuse any fixed-width pad, so line-clear
+            // is the only reliable cleanup.
+            RAW_STDOUT.print(ANSI_CR + ANSI_CLEAR_LINE);
+            RAW_STDOUT.print(bar);
+        } else {
+            // No-ANSI fallback: carriage return rewinds cursor, then the
+            // bar overwrites the prefix, then trailing spaces overwrite
+            // anything left over from a longer previous bar. No escape
+            // codes are emitted — purely Unicode + ASCII so terminals
+            // that print "[2K" as literal text don't show garbage.
+            RAW_STDOUT.print(ANSI_CR);
+            RAW_STDOUT.print(bar);
+            int padding = NO_ANSI_PAD_WIDTH - bar.length();
+            for (int i = 0; i < padding; i++) RAW_STDOUT.print(' ');
+            RAW_STDOUT.print(ANSI_CR);
+            RAW_STDOUT.print(bar);
+        }
         RAW_STDOUT.flush();
     }
 

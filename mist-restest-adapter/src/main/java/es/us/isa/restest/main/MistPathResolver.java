@@ -31,9 +31,14 @@ public final class MistPathResolver {
             "conf.path",
             "trace.file.path",
             "fault.detection.injected.faults.path",
-            // MST .properties
+            // MST .properties — these must include every key listed in
+            // MST_INPUT_PATH_KEYS below, otherwise MistMain's
+            // resolveInputPaths(...) leaves them CWD-relative and the
+            // generator hits "file not found" when the user runs from
+            // the project root rather than the module directory.
             "input.fetch.registry.path",
             "smart.input.fetch.registry.path",
+            "smart.input.fetch.openapi.spec.path",
             "root.api.registry.path",
             "noun.map.path",
             "fault.types.path",
