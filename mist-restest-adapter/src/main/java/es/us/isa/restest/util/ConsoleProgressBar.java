@@ -17,42 +17,44 @@ import java.util.concurrent.TimeUnit;
  * <h2>Design goals</h2>
  * <ol>
  *   <li><b>Global pipeline view.</b> A single bar shows overall pipeline progress
- *       (pool generation → fault pools → variants → writing → test execution →
+ *       (pool generation -> fault pools -> variants -> writing -> test execution ->
  *       enhancement). Each major phase carries a preassigned weight summing to 100.</li>
  *   <li><b>Nested phase stack.</b> Inner phases like "Pool Params" inside "Pool Gen"
- *       no longer clobber the outer phase — they become sub-progress. The outer phase
- *       remains the one contributing weight to the overall bar; the inner phase is
- *       shown as detail in the "current item" field.</li>
+ *       no longer clobber the outer phase. The outer phase remains the one
+ *       contributing weight to the overall bar; the inner phase is shown as
+ *       detail in the "current item" field.</li>
  *   <li><b>Sticky bottom.</b> A {@link PrintStream} wrapper is installed on
  *       {@code System.out} and {@code System.err}. Every log line that ends with
- *       {@code \n} triggers a redraw, so the bar always appears on the line
+ *       {@code \n} triggers a redraw so the bar always appears on the line
  *       immediately below the latest log output rather than scrolling away.</li>
+ *   <li><b>Polished look.</b> Sub-block characters render fractional fill at
+ *       1/8-cell resolution; a Braille spinner rotates per redraw; ANSI colors
+ *       group visual sections (filled vs empty bar, percent, phase, ETA);
+ *       {@code [2K} clears the line before every redraw so no leftover
+ *       characters from a longer previous bar bleed through.</li>
  * </ol>
  *
  * <h2>Public API (unchanged)</h2>
  * <pre>{@code
- *   ConsoleProgressBar.begin("Pool Gen", 10);   // recognized phase → overall tracker
+ *   ConsoleProgressBar.begin("Pool Gen", 10);   // recognized phase -> overall tracker
  *   ConsoleProgressBar.update("GET /stations"); // increments counter, redraws
  *   ConsoleProgressBar.complete();              // marks phase done
  * }</pre>
  *
  * <h2>Auto-disable</h2>
  * <ul>
- *   <li>{@code -Drestest.progress.bar=false} → disabled</li>
- *   <li>{@code CI} env var set → disabled</li>
- *   <li>otherwise → enabled (including IntelliJ / IDE run consoles)</li>
+ *   <li>{@code -Drestest.progress.bar=false} -> bar disabled</li>
+ *   <li>{@code CI} env var set -> bar disabled</li>
+ *   <li>{@code -Drestest.progress.bar.color=false} or {@code NO_COLOR} env -> colors disabled (bar still renders)</li>
+ *   <li>otherwise -> enabled (including IntelliJ / IDE run consoles)</li>
  * </ul>
  */
 public final class ConsoleProgressBar {
 
-    // ────────────────────────────────────────────────────────────────────────
-    //  Phase catalog — weights must sum to 100
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
+    //  Phase catalog (weights sum to 100)
+    // -----------------------------------------------------------------------
 
-    /**
-     * Top-level phases in the MST pipeline.  Each carries a weight (0-100);
-     * the bar displays the weighted sum as the overall percentage.
-     */
     public enum Phase {
         POOL_GEN      ("Pool Gen",       3),
         FAULTY_POOLS  ("Faulty Pools",   7),
@@ -65,7 +67,6 @@ public final class ConsoleProgressBar {
 
         Phase(String label, int weight) { this.label = label; this.weight = weight; }
 
-        /** Map the phase-name string used at call sites → enum.  Null when nested/unknown. */
         static Phase fromLabel(String s) {
             if (s == null) return null;
             for (Phase p : values()) if (p.label.equalsIgnoreCase(s)) return p;
@@ -73,17 +74,61 @@ public final class ConsoleProgressBar {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    //  State
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
+    //  Visual constants
+    // -----------------------------------------------------------------------
 
     private static final Object LOCK = new Object();
-    private static final int BAR_WIDTH = 30;
-    private static final int BAR_LINE_WIDTH = 160; // pad-to width — must exceed any bar variant
-    private static final String FILLED = "\u2588";  // █
-    private static final String EMPTY  = "\u2591";  // ░
+    private static final int BAR_WIDTH = 32;
 
-    private static final boolean enabled = detectEnabled();
+    private static final String FILLED_BLOCK = "█";  // U+2588 full block
+
+    /**
+     * Sub-block characters for fractional fill — bar moves at 1/8-cell
+     * resolution rather than jumping a full cell per percent. Index = number
+     * of eighths gained beyond the last whole block.
+     */
+    private static final String[] SUB_BLOCKS = {
+        "",         // 0/8
+        "▏",   // 1/8 left-one-eighth block
+        "▎",   // 2/8 left-quarter block
+        "▍",   // 3/8 left-three-eighths block
+        "▌",   // 4/8 left-half block
+        "▋",   // 5/8 left-five-eighths block
+        "▊",   // 6/8 left-three-quarters block
+        "▉",   // 7/8 left-seven-eighths block
+    };
+
+    /** Braille spinner — one frame per redraw makes the bar feel alive. */
+    private static final String[] SPINNER_FRAMES = {
+        "⠋", "⠙", "⠹", "⠸",
+        "⠼", "⠴", "⠦", "⠧",
+        "⠇", "⠏"
+    };
+    private static int spinnerIdx = 0;
+
+    // ANSI escape sequences. We use line-clear rather than space-padding
+    // because (a) cleanup is reliable regardless of bar length, and (b)
+    // colored bars contain invisible escape codes that any fixed-width pad
+    // would miscount and leave artifacts behind.
+    private static final String ESC                = "[";
+    private static final String ANSI_CLEAR_LINE    = ESC + "2K";
+    private static final String ANSI_CR            = "\r";
+    private static final String ANSI_RESET         = ESC + "0m";
+    private static final String ANSI_BOLD          = ESC + "1m";
+    private static final String ANSI_DIM           = ESC + "2m";
+    private static final String ANSI_BRIGHT_CYAN   = ESC + "96m";
+    private static final String ANSI_BRIGHT_GREEN  = ESC + "92m";
+    private static final String ANSI_YELLOW        = ESC + "33m";
+    private static final String ANSI_BRIGHT_WHITE  = ESC + "97m";
+    private static final String ANSI_GRAY          = ESC + "90m";
+
+    private static final boolean enabled  = detectEnabled();
+    private static final boolean useColor = detectColor();
+
+    // -----------------------------------------------------------------------
+    //  State
+    // -----------------------------------------------------------------------
 
     /** Raw FileDescriptor stream that BYPASSES our own wrapper, used by the bar to draw itself. */
     private static final PrintStream RAW_STDOUT =
@@ -121,9 +166,9 @@ public final class ConsoleProgressBar {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     //  Detection
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     private static boolean detectEnabled() {
         String prop = System.getProperty("restest.progress.bar");
@@ -132,9 +177,26 @@ public final class ConsoleProgressBar {
         return true;
     }
 
-    // ────────────────────────────────────────────────────────────────────────
+    private static boolean detectColor() {
+        // NO_COLOR is the de-facto cross-tool opt-out
+        // (see https://no-color.org). Honor it before any other check.
+        if (System.getenv("NO_COLOR") != null) return false;
+        String prop = System.getProperty("restest.progress.bar.color");
+        if (prop != null) return Boolean.parseBoolean(prop);
+        // Default ON: IntelliJ Run console, modern terminals, and CI logs all
+        // handle ANSI cleanly enough that the gain in readability outweighs
+        // the risk of escape leakage. Set restest.progress.bar.color=false to
+        // disable for log scrapers that mangle escapes.
+        return true;
+    }
+
+    private static String color(String code, String s) {
+        return useColor ? code + s + ANSI_RESET : s;
+    }
+
+    // -----------------------------------------------------------------------
     //  Public API (unchanged signatures)
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
     public static void begin(String phase, int totalItems) {
         if (!enabled) return;
@@ -198,11 +260,11 @@ public final class ConsoleProgressBar {
         }
     }
 
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
     //  Rendering
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
 
-    /** Returns the fully-formatted bar string (no leading \r). Caller adds framing. */
+    /** Returns the fully-formatted bar string (no leading framing). Caller adds framing. */
     static String currentBarString() {
         synchronized (LOCK) {
             if (STACK.isEmpty()) return "";
@@ -212,12 +274,14 @@ public final class ConsoleProgressBar {
 
     private static void render() {
         if (STACK.isEmpty()) return;
+        spinnerIdx = (spinnerIdx + 1) % SPINNER_FRAMES.length;
         String bar = buildBar();
         SUPPRESS_REDRAW.set(Boolean.TRUE);
         try {
-            // \r returns cursor to col 0; the bar is padded to BAR_LINE_WIDTH chars
-            // so it fully overwrites any previous bar content without needing ANSI.
-            RAW_STDOUT.print('\r');
+            // ANSI clear-line + carriage return guarantees the line is empty
+            // before we draw, regardless of how long the previous bar was or
+            // whether it contained color escapes that confuse byte counters.
+            RAW_STDOUT.print(ANSI_CR + ANSI_CLEAR_LINE);
             RAW_STDOUT.print(bar);
             RAW_STDOUT.flush();
         } finally {
@@ -228,19 +292,28 @@ public final class ConsoleProgressBar {
     private static String buildBar() {
         double overall = computeOverallFraction();
         int overallPct = (int) Math.round(overall * 100.0);
-        int filled = (int) Math.round(overall * BAR_WIDTH);
-        if (filled < 0) filled = 0;
-        if (filled > BAR_WIDTH) filled = BAR_WIDTH;
 
-        StringBuilder bar = new StringBuilder(160);
-        bar.append('[');
-        for (int i = 0; i < filled; i++)       bar.append(FILLED);
-        for (int i = 0; i < BAR_WIDTH - filled; i++) bar.append(EMPTY);
-        bar.append(']');
-        bar.append(' ').append(String.format(Locale.ROOT, "%3d%%", overallPct)).append(" overall");
+        // Fractional fill: compute the exact eighths-of-a-cell and choose
+        // the matching sub-block character for the boundary cell.
+        double exactFilled = overall * BAR_WIDTH;
+        int wholeBlocks = (int) Math.floor(exactFilled);
+        int subBlockIdx = (int) Math.round((exactFilled - wholeBlocks) * 8);
+        if (subBlockIdx >= SUB_BLOCKS.length) {
+            wholeBlocks++;
+            subBlockIdx = 0;
+        }
+        if (wholeBlocks > BAR_WIDTH) wholeBlocks = BAR_WIDTH;
+        int emptyCells = BAR_WIDTH - wholeBlocks - (subBlockIdx > 0 ? 1 : 0);
+        if (emptyCells < 0) emptyCells = 0;
 
-        // Locate outer recognized phase AND innermost frame, same as in
-        // computeOverallFraction() so the bar and the % always tell a consistent story.
+        StringBuilder filledPart = new StringBuilder(BAR_WIDTH);
+        for (int i = 0; i < wholeBlocks; i++) filledPart.append(FILLED_BLOCK);
+        if (subBlockIdx > 0) filledPart.append(SUB_BLOCKS[subBlockIdx]);
+        StringBuilder emptyPart = new StringBuilder(BAR_WIDTH);
+        for (int i = 0; i < emptyCells; i++) emptyPart.append(' ');
+
+        // Locate the outermost recognized Phase AND the innermost frame so the
+        // displayed labels are consistent with the percentage math below.
         Frame outerRecognized = null;
         Frame innermost = null;
         for (Frame f : STACK) {
@@ -250,105 +323,112 @@ public final class ConsoleProgressBar {
             }
         }
 
-        // Phase position in pipeline (e.g. "Phase 2/5 Faulty Pools 1/5")
+        long elapsedNs = System.nanoTime() - pipelineStartNanos;
+        String elapsed = formatDuration(elapsedNs);
+        String eta = computeEta(elapsedNs, overall);
+
+        StringBuilder bar = new StringBuilder(256);
+
+        // Spinner — one frame per render. Cyan so it's distinct from the bar.
+        bar.append(color(ANSI_BRIGHT_CYAN, SPINNER_FRAMES[spinnerIdx])).append(' ');
+
+        // [ fill / empty ] frame — bright green fill, dim empty.
+        bar.append(color(ANSI_GRAY, "["));
+        bar.append(color(ANSI_BRIGHT_GREEN, filledPart.toString()));
+        bar.append(color(ANSI_DIM,         emptyPart.toString()));
+        bar.append(color(ANSI_GRAY, "]"));
+
+        // Percent — bold yellow, fixed-width so it doesn't jitter the layout.
+        bar.append(' ').append(color(ANSI_BOLD + ANSI_YELLOW,
+                String.format(Locale.ROOT, "%3d%%", overallPct)));
+
+        // Separator chars use box-drawing vertical bars in gray.
+        String sep = color(ANSI_GRAY, " │ ");
+
+        // Phase label + current/total.
         if (outerRecognized != null) {
             int phaseNumber = outerRecognized.phase.ordinal() + 1;
             int totalPhases = Phase.values().length;
-            bar.append(" | Phase ").append(phaseNumber).append('/').append(totalPhases)
-               .append(' ').append(outerRecognized.phase.label);
+            bar.append(sep);
+            bar.append(color(ANSI_GRAY, "Phase "));
+            bar.append(color(ANSI_BRIGHT_WHITE, phaseNumber + "/" + totalPhases));
+            bar.append(' ').append(color(ANSI_BRIGHT_CYAN, outerRecognized.phase.label));
             if (outerRecognized.total > 0) {
-                bar.append(' ').append(outerRecognized.current).append('/').append(outerRecognized.total);
+                bar.append(' ').append(color(ANSI_BRIGHT_WHITE,
+                        outerRecognized.current + "/" + outerRecognized.total));
             }
         }
 
-        // Inner detail (only when nested under an outer phase). Tells the user
-        // what fine-grained work is happening right now.
+        // Inner detail (when nested).
         if (innermost != null && innermost != outerRecognized) {
-            bar.append(" | inner: ").append(innermost.label);
+            bar.append(sep);
+            bar.append(color(ANSI_GRAY, "inner "));
+            bar.append(color(ANSI_BRIGHT_CYAN, innermost.label));
             if (innermost.total > 0) {
-                bar.append(' ').append(innermost.current).append('/').append(innermost.total);
+                bar.append(' ').append(color(ANSI_BRIGHT_WHITE,
+                        innermost.current + "/" + innermost.total));
             }
             if (innermost.itemName != null && !innermost.itemName.isEmpty()) {
-                bar.append(" → ").append(truncate(innermost.itemName, 40));
+                bar.append(color(ANSI_DIM, " → " + truncate(innermost.itemName, 40)));
             }
-        } else if (outerRecognized != null && outerRecognized.itemName != null && !outerRecognized.itemName.isEmpty()) {
-            // No inner phase — show the outer phase's current item inline.
-            bar.append(" → ").append(truncate(outerRecognized.itemName, 40));
+        } else if (outerRecognized != null
+                && outerRecognized.itemName != null
+                && !outerRecognized.itemName.isEmpty()) {
+            bar.append(color(ANSI_DIM, " → " + truncate(outerRecognized.itemName, 40)));
         }
 
-        // Elapsed + ETA (only when we have enough signal)
-        long elapsedNs = System.nanoTime() - pipelineStartNanos;
-        bar.append(" | ").append(formatDuration(elapsedNs));
-        String eta = computeEta(elapsedNs, overall);
-        if (eta != null) bar.append(" | ETA ").append(eta);
+        // Elapsed + ETA.
+        bar.append(sep).append(color(ANSI_GRAY, "elapsed "))
+           .append(color(ANSI_BRIGHT_WHITE, elapsed));
+        if (eta != null) {
+            bar.append(sep).append(color(ANSI_GRAY, "ETA "))
+               .append(color(ANSI_BRIGHT_WHITE, eta));
+        }
 
-        // Pad to a fixed width to fully overwrite any previous longer line.
-        while (bar.length() < BAR_LINE_WIDTH) bar.append(' ');
         return bar.toString();
     }
 
     /**
-     * Overall pipeline fraction, normalized against the fixed 100-unit weight budget
-     * of {@link Phase} so the bar honestly reflects end-to-end progress (not just
-     * progress through phases we've encountered so far).
-     *
-     * <p>Formula:
-     * <pre>
-     *   overall = (Σ completedWeight × completionFraction
-     *            + currentPhaseWeight × (outerCurrent/outerTotal
-     *                                    + innerCurrent/(innerTotal × outerTotal))) / 100
-     * </pre>
-     * The inner-phase term credits fine-grained progress during long-running inner
-     * loops (e.g. 8 000 test executions inside a 2-round enhancement phase) so the
-     * bar moves smoothly instead of jumping in huge slot-sized steps.
-     *
-     * <p>A monotonic clamp prevents regressions when one inner phase completes and
-     * the next one (with its own progress counter) begins.
+     * Overall pipeline fraction, normalized against the fixed 100-unit weight
+     * budget of {@link Phase}. The inner-phase term credits fine-grained
+     * progress during long-running inner loops so the bar moves smoothly
+     * instead of jumping in huge slot-sized steps. A monotonic clamp prevents
+     * regressions when one inner phase completes and the next one begins.
      */
     private static double computeOverallFraction() {
         double accumulated = 0;
-
-        // Fully-completed top-level phases (credit full weight)
         for (Map.Entry<Phase, Double> e : completedFraction.entrySet()) {
             accumulated += e.getKey().weight * e.getValue();
         }
 
-        // Walk the stack to find:
-        //   outermost recognized Phase (= the one contributing weight right now)
-        //   AND the innermost frame (= fine-grained progress signal, if nested)
         Frame outerRecognized = null;
         Frame innermost = null;
-        for (Frame f : STACK) {              // iteration: top-down (newest → oldest)
+        for (Frame f : STACK) {
             if (innermost == null) innermost = f;
             if (f.phase != null && !completedFraction.containsKey(f.phase)) {
-                outerRecognized = f;         // keep overwriting → last = outermost
+                outerRecognized = f;
             }
         }
 
         if (outerRecognized != null) {
             int outerTotal = Math.max(outerRecognized.total, 1);
             double outerFrac = ((double) outerRecognized.current) / outerTotal;
-
-            // If a nested inner phase is in progress, credit its fractional work
-            // toward the outer's CURRENT slot (the one not yet ticked).
             if (innermost != null && innermost != outerRecognized && innermost.total > 0) {
                 double innerFrac = ((double) innermost.current) / innermost.total;
                 outerFrac += innerFrac / outerTotal;
             }
             if (outerFrac > 1.0) outerFrac = 1.0;
-
             accumulated += outerRecognized.phase.weight * outerFrac;
         }
 
         double overall = Math.max(0.0, Math.min(1.0, accumulated / 100.0));
-        // Monotonic clamp — never regress visually
         if (overall < lastOverallFraction) overall = lastOverallFraction;
         lastOverallFraction = overall;
         return overall;
     }
 
     private static String computeEta(long elapsedNs, double overall) {
-        if (overall <= 0.02) return null;                 // not enough signal yet
+        if (overall <= 0.02) return null;
         long totalEstimateNs = (long) (elapsedNs / overall);
         long remainingNs = totalEstimateNs - elapsedNs;
         if (remainingNs <= 0) return null;
@@ -370,11 +450,11 @@ public final class ConsoleProgressBar {
         return s.length() <= maxLen ? s : s.substring(0, maxLen - 3) + "...";
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    //  Sticky-bottom: System.out/err wrapper that redraws the bar after each line.
-    // ────────────────────────────────────────────────────────────────────────
+    // -----------------------------------------------------------------------
+    //  Sticky-bottom wrapper
+    // -----------------------------------------------------------------------
 
-    /** Must be called under LOCK.  Idempotent. */
+    /** Must be called under LOCK. Idempotent. */
     private static void installStickyOutput() {
         if (stickyInstalled) return;
         stickyInstalled = true;
@@ -383,9 +463,10 @@ public final class ConsoleProgressBar {
     }
 
     /**
-     * Forwards writes to the real underlying stream, then — whenever a write ends
-     * with '\n' and the progress bar is active — prints a fresh copy of the bar
-     * (without a trailing newline) so it appears as the last line on the terminal.
+     * Forwards writes to the real underlying stream, then — whenever a write
+     * ends with '\n' and the progress bar is active — prints a fresh copy of
+     * the bar (no trailing newline) so it appears as the last line on the
+     * terminal.
      */
     private static final class ProgressAwarePrintStream extends PrintStream {
         private final PrintStream delegate;
@@ -425,15 +506,14 @@ public final class ConsoleProgressBar {
             }
             SUPPRESS_REDRAW.set(Boolean.TRUE);
             try {
-                // CRITICAL: write via RAW_STDOUT (FileDescriptor.out) — NOT via delegate.
-                // The app installs a LoggerStream wrapper on System.out that pipes every
-                // write to log4j, which would embed the bar into the log file with a
-                // timestamp prefix (e.g. "2026-04-16 INFO stdout:36 - [bar...]").
-                // Bypassing via the OS-level stream keeps the bar visual-only.
+                // CRITICAL: write via RAW_STDOUT (FileDescriptor.out) — NOT via
+                // delegate. The app installs a LoggerStream wrapper on
+                // System.out that would otherwise pipe each write to log4j,
+                // embedding the bar in the log file with a timestamp prefix.
                 //
-                // No leading \r: we're immediately after a log line's '\n', so the
-                // cursor is already on a fresh line. The bar is padded so the next
-                // render()'s '\r + bar' will cleanly overwrite it.
+                // Clear-line first so any leftover characters on this line
+                // (e.g. a partial write) are wiped before the bar lands.
+                RAW_STDOUT.print(ANSI_CLEAR_LINE);
                 RAW_STDOUT.print(bar);
                 RAW_STDOUT.flush();
             } finally {
