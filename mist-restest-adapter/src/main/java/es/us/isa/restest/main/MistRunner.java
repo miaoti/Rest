@@ -13,7 +13,6 @@ import es.us.isa.restest.enhancer.StatusCodeExplorationEnhancer;
 import es.us.isa.restest.enhancer.TestCaseEnhancer;
 import es.us.isa.restest.enhancer.TestFileRegenerator;
 import es.us.isa.restest.enhancer.TestResultCapture;
-import es.us.isa.restest.generators.AbstractTestCaseGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import io.mist.llm.LLMService;
 import es.us.isa.restest.registry.RootApiRegistry;
@@ -247,8 +246,8 @@ public final class MistRunner {
         // generated test class, which re-reads the same JSON file.
         traceShapeOracle = bootstrapTraceShapeOracle();
 
-        // RESTest runner
-        AbstractTestCaseGenerator generator = createMstGenerator();
+        // MIST generator (no longer a RESTest subclass — see B1 sever).
+        MultiServiceTestCaseGenerator generator = createMstGenerator();
         IWriter writer = createMstWriter();
         StatsReportManager statsReportManager = createMstStatsReportManager();
         AllureReportManager reportManager = createMstAllureReportManager();
@@ -396,8 +395,8 @@ public final class MistRunner {
      * Lifted MST case from {@code TestGenerationAndExecution.createGenerator()}
      * (L431-L575). Sets {@link #spec}.
      */
-    private AbstractTestCaseGenerator createMstGenerator() throws RESTestException, java.io.IOException {
-        AbstractTestCaseGenerator gen;
+    private MultiServiceTestCaseGenerator createMstGenerator() throws RESTestException, java.io.IOException {
+        MultiServiceTestCaseGenerator gen;
 
         // multi‑service
         // 1. OpenAPI spec (single file or already merged)

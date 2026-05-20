@@ -34,7 +34,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
+public class MultiServiceTestCaseGenerator {
 
     /* ------------------------------------------------------------ */
     private static final Logger log = LogManager.getLogger(MultiServiceTestCaseGenerator.class);
@@ -285,11 +285,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
                                          List<WorkflowScenario> scenarios,
                                          boolean useLLMforParams,
                                          @SuppressWarnings("unused") boolean ignoreFlowsFlag) {
-
-        /* we never call the AbstractTestCaseGenerator's generation loop,
-           but super‑ctor still needs something sane */
-        super(primarySpec, dummyPrimaryConf, scenarios.size());
-
         this.serviceSpecs     = serviceSpecs;
         this.serviceConfigs   = serviceConfigs;
         this.scenarios        = scenarios;
@@ -409,7 +404,6 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
     private Map<String, Map<String, List<String>>> sharedParameterPools = new HashMap<>();
 
     /** Produce test cases using two-stage LLM + semantic expansion approach. */
-    @Override
     public Collection<TestCase> generate() {
         List<TestCase> out = new ArrayList<>();
         int counter = 1;
@@ -759,12 +753,16 @@ public class MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator {
         return variants;
     }
 
-    @Override
-    protected Collection<TestCase> generateOperationTestCases(Operation op) { return Collections.emptyList(); }
-    @Override
-    public    TestCase              generateNextTestCase(Operation op)      { return null; }
-    @Override
-    protected boolean               hasNext()                               { return false; }
+    /**
+     * Validation toggle inherited from the legacy RESTest API. MIST has its own
+     * span-based validation (Trace Shape Oracle) so the OAS-validity check this
+     * flag controlled in classic RESTest is a no-op here; the setter is kept so
+     * the legacy CLI surface (MistRunner / TestGenerationAndExecution) still
+     * compiles unchanged.
+     */
+    public void setCheckTestCases(boolean ignored) {
+        // intentionally empty
+    }
 
     /* ============================================================ */
 
