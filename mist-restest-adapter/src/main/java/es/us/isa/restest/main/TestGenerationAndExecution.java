@@ -608,9 +608,11 @@ public class TestGenerationAndExecution {
 			createDir(logDataDir);
 		}
 
-		// Attach stdout and stderr to logger
-		System.setOut(new PrintStream(new LoggerStream(LogManager.getLogger("stdout"), Level.INFO, System.out)));
-		System.setErr(new PrintStream(new LoggerStream(LogManager.getLogger("stderr"), Level.ERROR, System.err)));
+		// Attach stdout and stderr to logger. mirrorToStream=false so the raw
+		// console echo is suppressed: log4j thresholds (WARN+ on console, INFO+
+		// in file) decide what reaches the terminal.
+		System.setOut(new PrintStream(new LoggerStream(LogManager.getLogger("stdout"), Level.INFO, System.out, false)));
+		System.setErr(new PrintStream(new LoggerStream(LogManager.getLogger("stderr"), Level.ERROR, System.err, false)));
 
 		// Configure regular logger
 		String logPath = readParameterValue("data.log.dir") + "/" + readParameterValue("experiment.name") + "/" + readParameterValue("data.log.file");

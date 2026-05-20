@@ -222,6 +222,16 @@ public final class MistRunner {
      * forwarding the exit code.
      */
     public MistRunResult run() throws Exception {
+        // Quiet the console: route System.out/err through log4j (the legacy
+        // TestGenerationAndExecution entry point did this, but MistMain calls
+        // MistRunner.run() directly and so misses the wiring). mirrorToStream
+        // is false so the raw console echo of every System.out.println
+        // (LLM debug, smart-fetch trace, generated-test status lines) is
+        // suppressed — log4j thresholds (WARN+ on console, INFO+ in file)
+        // decide what reaches the terminal. ConsoleProgressBar bypasses both
+        // wrappers via FileDescriptor.out, so the progress bar stays visible.
+        setupConsoleInterception();
+
         // Create target directory if it does not exist
         createDir(inputs.targetDirJava);
 
@@ -2451,6 +2461,40 @@ public final class MistRunner {
         "http.socket.timeout.ms",
         "smart.input.fetch.registry.path",
     };
+
+    /** Process-wide guard: install LoggerStream interception at most once. */
+    private static volatile boolean consoleInterceptionInstalled = false;
+
+    /**
+     * Replace {@link System#out} and {@link System#err} with
+     * {@link es.us.isa.restest.util.LoggerStream}-wrapped streams so every
+     * raw {@code System.out.println} from the app, the LLM generators,
+     * the smart-fetch pipeline, and the generated test classes is routed
+     * to log4j (file at INFO+, console at WARN+). Without this, those
+     * direct prints bypass the log4j threshold and flood the terminal
+     * regardless of how strict the console appender is configured.
+     *
+     * <p>{@code mirrorToStream=false} ensures the raw byte echo to the
+     * original {@code FileDescriptor.out} is suppressed — only the
+     * log4j-filtered view reaches the terminal. The {@link es.us.isa.restest.util.ConsoleProgressBar}
+     * draws via a raw {@code FileDescriptor} stream and is unaffected.
+     *
+     * <p>Idempotent: subsequent calls (e.g. when run() is invoked twice
+     * in the same JVM) are no-ops so we don't stack wrappers on top of
+     * wrappers, which would cause infinite recursion on every write.
+     */
+    private static synchronized void setupConsoleInterception() {
+        if (consoleInterceptionInstalled) return;
+        consoleInterceptionInstalled = true;
+        System.setOut(new java.io.PrintStream(new es.us.isa.restest.util.LoggerStream(
+                LogManager.getLogger("stdout"),
+                org.apache.logging.log4j.Level.INFO,
+                System.out, false)));
+        System.setErr(new java.io.PrintStream(new es.us.isa.restest.util.LoggerStream(
+                LogManager.getLogger("stderr"),
+                org.apache.logging.log4j.Level.ERROR,
+                System.err, false)));
+    }
 
     /**
      * For every key in {@link #BRIDGED_TEST_RUNTIME_PROPERTIES}, promote the
