@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
 import java.util.List;
 import java.util.Objects;

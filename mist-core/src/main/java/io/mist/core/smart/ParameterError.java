@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

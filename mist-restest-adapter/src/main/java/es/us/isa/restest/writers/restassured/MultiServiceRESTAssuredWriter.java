@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import org.json.JSONObject;
 import org.json.JSONArray;
-import es.us.isa.restest.analysis.TraceErrorAnalyzer;
+import io.mist.core.analysis.TraceErrorAnalyzer;
 
 
 
@@ -166,11 +166,11 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("import java.net.http.HttpResponse;");
                 pw.println("import org.json.JSONObject;");
                 pw.println("import org.json.JSONArray;");
-                pw.println("import es.us.isa.restest.analysis.TraceErrorAnalyzer;");
-                pw.println("import es.us.isa.restest.analysis.TraceShapeAdapter;");
-                pw.println("import es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer;");
-                pw.println("import es.us.isa.restest.inputs.smart.InputFetchRegistry;");
-                pw.println("import es.us.isa.restest.inputs.smart.ParameterError;");
+                pw.println("import io.mist.core.analysis.TraceErrorAnalyzer;");
+                pw.println("import io.mist.core.analysis.TraceShapeAdapter;");
+                pw.println("import io.mist.core.smart.ParameterErrorAnalyzer;");
+                pw.println("import io.mist.core.smart.InputFetchRegistry;");
+                pw.println("import io.mist.core.smart.ParameterError;");
                 pw.println("import io.mist.core.oracle.shape.ShapeInvariantStore;");
                 pw.println("import io.mist.core.oracle.shape.TraceModel;");
                 pw.println("import io.mist.core.oracle.shape.TraceShapeOracle;");
@@ -1135,8 +1135,8 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            llmProperties.put(\"llm.gemini.api.url\", System.getProperty(\"llm.gemini.api.url\", \"https://generativelanguage.googleapis.com/v1beta/models\"));");
                     pw.println("            ");
                     pw.println("            // Analyze parameter errors");
-                    pw.println("            es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer.ParameterErrorAnalysisResult result = ");
-                    pw.println("                es.us.isa.restest.inputs.smart.ParameterErrorAnalyzer.analyzeParameterErrors(trace, stepParameters, llmProperties);");
+                    pw.println("            io.mist.core.smart.ParameterErrorAnalyzer.ParameterErrorAnalysisResult result = ");
+                    pw.println("                io.mist.core.smart.ParameterErrorAnalyzer.analyzeParameterErrors(trace, stepParameters, llmProperties);");
                     pw.println("            ");
                     pw.println("            if (result.hasParameterErrors()) {");
                     pw.println("                System.out.println(\"🔍 Parameter Error Analysis: Found \" + result.getIdentifiedErrors().size() + \" parameter-related errors\");");
@@ -1146,7 +1146,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                if (registryPath != null && !registryPath.isEmpty()) {");
                     pw.println("                    try {");
                     pw.println("                        java.io.File registryFile = new java.io.File(registryPath);");
-                    pw.println("                        es.us.isa.restest.inputs.smart.InputFetchRegistry registry;");
+                    pw.println("                        io.mist.core.smart.InputFetchRegistry registry;");
                     pw.println("                        ");
                     pw.println("                        // JVM-wide lock on the registry class serialises load+mutate+save across");
                     pw.println("                        // parallel test threads. Audit (#21) flagged: only saveToFile() is");
@@ -1156,16 +1156,16 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("                        // produce a lost-update where the second writer overwrites the first's");
                     pw.println("                        // contribution. Performance cost: the registry write path is failure-only");
                     pw.println("                        // and the critical section is small relative to per-scenario cost.");
-                    pw.println("                        synchronized (es.us.isa.restest.inputs.smart.InputFetchRegistry.class) {");
+                    pw.println("                        synchronized (io.mist.core.smart.InputFetchRegistry.class) {");
                     pw.println("                        if (registryFile.exists()) {");
-                    pw.println("                            registry = es.us.isa.restest.inputs.smart.InputFetchRegistry.loadFromFile(registryFile);");
+                    pw.println("                            registry = io.mist.core.smart.InputFetchRegistry.loadFromFile(registryFile);");
                     pw.println("                        } else {");
-                    pw.println("                            registry = new es.us.isa.restest.inputs.smart.InputFetchRegistry();");
+                    pw.println("                            registry = new io.mist.core.smart.InputFetchRegistry();");
                     pw.println("                        }");
                     pw.println("                        ");
                     pw.println("                        // Record each parameter error; skip YAML flush if nothing changed (dedup).");
                     pw.println("                        boolean registryChanged = false;");
-                    pw.println("                        for (es.us.isa.restest.inputs.smart.ParameterError error : result.getIdentifiedErrors()) {");
+                    pw.println("                        for (io.mist.core.smart.ParameterError error : result.getIdentifiedErrors()) {");
                     pw.println("                            if (registry.isAlreadyRegistered(error.getApiEndpoint(), error.getParameterName(), error)) {");
                     pw.println("                                continue;");
                     pw.println("                            }");
@@ -1294,7 +1294,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     
                     /* ------------ Record test case for fault detection tracking ---------- */
                     pw.println("        // Record test execution for fault detection tracking");
-                    pw.println("        es.us.isa.restest.analysis.FaultDetectionTracker.getInstance()");
+                    pw.println("        io.mist.core.analysis.FaultDetectionTracker.getInstance()");
                     pw.println("            .recordTestCase(this.getClass().getName(), \"" + testMethodName + "\");");
                     pw.println();
                     
@@ -2094,7 +2094,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                    if (dataObj.optBoolean(\"injected\", false)) {");
                                 pw.println("                                        String detectedFaultName = dataObj.optString(\"faultName\", \"\");");
                                 pw.println("                                        if (!detectedFaultName.isEmpty()) {");
-                                pw.println("                                            es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
+                                pw.println("                                            io.mist.core.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
                                 pw.println("                                                detectedFaultName,");
                                 pw.println("                                                this.getClass().getName(),");
                                 pw.println("                                                \"" + escape(testMethodName) + "\",");
@@ -2218,7 +2218,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                                        if (dataObj.optBoolean(\"injected\", false)) {");
                             pw.println("                                            String detectedFaultName = dataObj.optString(\"faultName\", \"\");");
                             pw.println("                                            if (!detectedFaultName.isEmpty()) {");
-                            pw.println("                                                es.us.isa.restest.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
+                            pw.println("                                                io.mist.core.analysis.FaultDetectionTracker.getInstance().recordDetectedFault(");
                             pw.println("                                                    detectedFaultName,");
                             pw.println("                                                    this.getClass().getName(),");
                             pw.println("                                                    \"" + escape(testMethodName) + "\",");

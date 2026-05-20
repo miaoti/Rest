@@ -1,4 +1,4 @@
-package es.us.isa.restest.analysis;
+package io.mist.core.analysis;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Thread-safe via {@link ConcurrentHashMap}; persisted to a JSON file so the
  * cache survives across enhancement rounds within a JVM run. Mirrors the
- * design of {@link es.us.isa.restest.inputs.smart.ParameterErrorAnalysisCache}.
+ * design of the smart-fetch parameter error analysis cache.
  */
 public class IntelligentAnalysisCache {
 

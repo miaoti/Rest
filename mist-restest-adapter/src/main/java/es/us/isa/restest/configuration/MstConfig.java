@@ -295,7 +295,7 @@ public final class MstConfig {
 
     /**
      * Trace-failure-mode LLM diagnosis cache for
-     * {@link es.us.isa.restest.analysis.TraceErrorAnalyzer#generateIntelligentAnalysis}.
+     * {@link io.mist.core.analysis.TraceErrorAnalyzer#generateIntelligentAnalysis}.
      * Persisted under {@code .mist/} to survive {@code mvn clean}.
      */
     public static final class IntelligentAnalysisCache {

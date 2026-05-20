@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;

@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

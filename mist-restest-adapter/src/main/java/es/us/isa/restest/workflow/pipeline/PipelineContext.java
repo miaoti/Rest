@@ -5,7 +5,7 @@ import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
-import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
+import io.mist.core.smart.SmartInputFetchConfig;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry;

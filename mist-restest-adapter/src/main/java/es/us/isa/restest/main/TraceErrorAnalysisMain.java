@@ -1,7 +1,7 @@
 package es.us.isa.restest.main;
 
 import org.json.JSONObject;
-import es.us.isa.restest.analysis.TraceErrorAnalyzer;
+import io.mist.core.analysis.TraceErrorAnalyzer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;

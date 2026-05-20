@@ -1,6 +1,6 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
-import es.us.isa.restest.analysis.TraceErrorAnalyzer;
+import io.mist.core.analysis.TraceErrorAnalyzer;
 import io.mist.llm.LLMService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

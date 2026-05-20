@@ -2,6 +2,12 @@ package es.us.isa.restest.inputs.smart;
 
 import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.smart.ApiMapping;
+import io.mist.core.smart.CacheConfig;
+import io.mist.core.smart.InputFetchRegistry;
+import io.mist.core.smart.OpenAPIEndpointDiscovery;
+import io.mist.core.smart.SmartFetchAuthManager;
+import io.mist.core.smart.SmartInputFetchConfig;
 import io.mist.core.value.ResolvedValue;
 import io.mist.llm.LLMService;
 

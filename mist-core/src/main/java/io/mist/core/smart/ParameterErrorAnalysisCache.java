@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

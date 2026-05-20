@@ -1,4 +1,4 @@
-package es.us.isa.restest.analysis;
+package io.mist.core.analysis;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

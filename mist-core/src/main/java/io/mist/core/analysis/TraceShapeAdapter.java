@@ -1,4 +1,4 @@
-package es.us.isa.restest.analysis;
+package io.mist.core.analysis;
 
 import io.mist.core.oracle.shape.TraceModel;
 import org.json.JSONArray;

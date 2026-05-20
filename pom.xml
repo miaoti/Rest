@@ -27,6 +27,7 @@
 		<log4j.version>2.20.0</log4j.version>
 		<junit.version>4.13.2</junit.version>
 		<json.version>20231013</json.version>
+		<jackson.version>2.11.4</jackson.version>
 	</properties>
 
 	<modules>

@@ -1,6 +1,6 @@
 package es.us.isa.restest.main;
 
-import es.us.isa.restest.analysis.FaultDetectionTracker;
+import io.mist.core.analysis.FaultDetectionTracker;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
 import es.us.isa.restest.configuration.pojos.Auth;
 import es.us.isa.restest.configuration.pojos.TestConfiguration;

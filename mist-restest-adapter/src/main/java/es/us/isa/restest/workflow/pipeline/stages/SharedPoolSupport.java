@@ -7,7 +7,7 @@ import es.us.isa.restest.generators.AiDrivenLLMGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import es.us.isa.restest.inputs.InvalidInputPool;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
-import es.us.isa.restest.inputs.smart.SmartInputFetchConfig;
+import io.mist.core.smart.SmartInputFetchConfig;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
 import es.us.isa.restest.util.ConsoleProgressBar;
 import es.us.isa.restest.workflow.WorkflowScenario;
