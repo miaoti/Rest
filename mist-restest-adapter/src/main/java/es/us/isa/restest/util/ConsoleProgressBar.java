@@ -196,9 +196,62 @@ public final class ConsoleProgressBar {
         if (!enabled) return;
         synchronized (LOCK) {
             if (pipelineStartNanos == 0) pipelineStartNanos = System.nanoTime();
-            STACK.push(new Frame(phase, totalItems));
+            Frame f = new Frame(phase, totalItems);
+            STACK.push(f);
+            // Announce the step on its own line when this is a top-level
+            // pipeline phase (so the user sees "what step are we on now?"
+            // without having to decode the progress-bar label). Inner phases
+            // re-use the current bar line — no extra announcement.
+            if (f.phase != null) {
+                int phaseNumber = f.phase.ordinal() + 1;
+                int totalPhases = Phase.values().length;
+                String line = "▶ Step " + phaseNumber + "/" + totalPhases
+                        + ": " + f.phase.label;
+                if (totalItems > 0) line += " (" + totalItems + " items)";
+                RAW_STDOUT.println(line);
+                RAW_STDOUT.flush();
+            }
             render();
         }
+    }
+
+    /**
+     * Print a one-time startup banner to RAW_STDOUT. Bypasses log4j so the
+     * banner appears even with the console appender filtered to WARN+.
+     */
+    public static void banner(String version) {
+        if (!enabled) return;
+        synchronized (LOCK) {
+            // Block-letter MIST logo with a one-line tagline. Drawn with the
+            // same Unicode box-drawing chars the bar already uses, so no new
+            // dependencies on terminal capabilities.
+            String[] lines = new String[] {
+                "",
+                "  ╔════════════════════════════════════════════════════════════╗",
+                "  ║                                                            ║",
+                "  ║     ███╗   ███╗██╗███████╗████████╗                        ║",
+                "  ║     ████╗ ████║██║██╔════╝╚══██╔══╝                        ║",
+                "  ║     ██╔████╔██║██║███████╗   ██║                           ║",
+                "  ║     ██║╚██╔╝██║██║╚════██║   ██║                           ║",
+                "  ║     ██║ ╚═╝ ██║██║███████║   ██║                           ║",
+                "  ║     ╚═╝     ╚═╝╚═╝╚══════╝   ╚═╝                           ║",
+                "  ║                                                            ║",
+                "  ║     Microservice Integration & Scenario Tester             ║",
+                "  ║     " + padTo(version == null ? "" : version, 54) + "║",
+                "  ║                                                            ║",
+                "  ╚════════════════════════════════════════════════════════════╝",
+                "",
+            };
+            for (String l : lines) RAW_STDOUT.println(l);
+            RAW_STDOUT.flush();
+        }
+    }
+
+    private static String padTo(String s, int width) {
+        if (s.length() >= width) return s.substring(0, width);
+        StringBuilder b = new StringBuilder(s);
+        while (b.length() < width) b.append(' ');
+        return b.toString();
     }
 
     public static void update(String itemName) {

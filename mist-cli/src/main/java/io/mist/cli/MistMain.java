@@ -78,17 +78,15 @@ public final class MistMain {
             // The MST file's own input paths are now in System; resolve them
             // against the MST file's own directory (which can differ from the
             // core file's directory when the user splits the two).
+            //
+            // Iterate MistPathResolver.MST_INPUT_PATH_KEYS rather than a
+            // hardcoded list so adding a new MST input-path key only requires
+            // touching one place. A previous duplicate list here silently
+            // skipped smart.input.fetch.openapi.spec.path, which left the
+            // OAS path CWD-relative and triggered the "OpenAPI specification
+            // file not found" error when running from project root.
             Properties mstView = new Properties();
-            for (String key : new String[]{
-                    "input.fetch.registry.path",
-                    "smart.input.fetch.registry.path",
-                    "root.api.registry.path",
-                    "noun.map.path",
-                    "fault.types.path",
-                    "mist.fault.types.path",
-                    "seed.trace.labels.path",
-                    "mist.tso.store.path",
-                    "fault.detection.injected.faults.path"}) {
+            for (String key : MistPathResolver.MST_INPUT_PATH_KEYS) {
                 String v = System.getProperty(key);
                 if (v != null) mstView.setProperty(key, v);
             }

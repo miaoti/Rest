@@ -232,6 +232,12 @@ public final class MistRunner {
         // wrappers via FileDescriptor.out, so the progress bar stays visible.
         setupConsoleInterception();
 
+        // One-time startup banner via the bar's RAW_STDOUT channel, so it
+        // appears even with the console appender filtered to WARN+. Gives
+        // the user a visual anchor that the tool actually started and what
+        // version is running, before any per-phase work begins.
+        es.us.isa.restest.util.ConsoleProgressBar.banner("v1.6.0-SNAPSHOT");
+
         // Create target directory if it does not exist
         createDir(inputs.targetDirJava);
 
