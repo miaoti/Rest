@@ -53,7 +53,16 @@ public final class ConsoleDedupFilter extends AbstractFilter {
 
     @PluginFactory
     public static ConsoleDedupFilter createFilter(
-            @PluginAttribute(value = "ttlMillis", defaultLong = DEFAULT_TTL_MS) long ttlMillis) {
+            @PluginAttribute(value = "ttlMillis", defaultLong = DEFAULT_TTL_MS) long ttlMillis,
+            // Log4j2's PropertiesConfigurationBuilder always sets onMatch/onMismatch
+            // on a Filter element. Without these declared we get a startup ERROR
+            // ("ConsoleDedupFilter contains invalid attributes 'onMatch', 'onMismatch'")
+            // and the filter is silently dropped. Accepted but ignored — the result
+            // codes are fixed (NEUTRAL on miss, DENY on dedupe hit) in the constructor
+            // because that's the only sane behavior for this filter; letting operators
+            // override would defeat the point.
+            @PluginAttribute(value = "onMatch") String onMatchIgnored,
+            @PluginAttribute(value = "onMismatch") String onMismatchIgnored) {
         long sysOverride = Long.getLong("mst.console.dedup.ttl.ms", -1L);
         return new ConsoleDedupFilter(sysOverride > 0 ? sysOverride : ttlMillis);
     }
