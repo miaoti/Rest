@@ -73,19 +73,43 @@ public class AllureReportManager {
 		}
 	}
 	
-	// Copy the files allure-categories.json file from the resource directory to the allure results directory
+	// Copy the allure-categories.json file from the resource directory to the allure
+	// results directory. After the multi-module split (mist-restest-adapter is no
+	// longer at the repo root), the config.properties relative path
+	// "src/main/resources/allure-categories.json" resolves to a non-existent file
+	// when the JVM is launched from the repo root. We try the property-configured
+	// path first (operator override), then fall back to the file as a classpath
+	// resource so the bundled allure-categories.json is always findable.
 	private void copyCategoryFile() {
-		
-		File sourceFile = new File(PropertyManager.readProperty("allure.categories.path"));
 		File targetFile = new File(resultsDirPath + "/categories.json");
-		
-		try {
-			FileUtils.copyFile(sourceFile, targetFile);
+
+		String configuredPath = PropertyManager.readProperty("allure.categories.path");
+		if (configuredPath != null && !configuredPath.isEmpty()) {
+			File sourceFile = new File(configuredPath);
+			if (sourceFile.exists()) {
+				try {
+					FileUtils.copyFile(sourceFile, targetFile);
+					return;
+				} catch (IOException e) {
+					logger.warn("allure.categories.path file existed but copy failed; will try classpath fallback");
+				}
+			}
+		}
+
+		// Classpath fallback — the file is bundled under
+		// mist-restest-adapter/src/main/resources/allure-categories.json so it's at
+		// the classpath root after compilation.
+		try (java.io.InputStream in = getClass().getResourceAsStream("/allure-categories.json")) {
+			if (in == null) {
+				logger.warn("Allure categories file not found at configured path or on classpath; skipping");
+				return;
+			}
+			java.nio.file.Files.copy(in, targetFile.toPath(),
+					java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
-			logger.error("Error copying Allure categories file");
+			logger.error("Error copying Allure categories file from classpath");
 			logger.error("Exception: ", e);
 		}
-		
 	}
 	
 	public void setEnvironmentProperties(String propertiesFilePath) {

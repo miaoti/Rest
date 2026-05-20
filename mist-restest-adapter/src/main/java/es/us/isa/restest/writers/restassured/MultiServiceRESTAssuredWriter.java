@@ -279,7 +279,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
                     pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
                     pw.println();
-                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String traceId) {");
+                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
@@ -341,12 +341,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                     pw.println("            // deterministic 1:1 lookup — no time-window ambiguity under parallel execution.");
                     pw.println("            // Poll 5×200ms for ingest to settle; fallthrough to heuristic if SUT doesn't honor");
                     pw.println("            // W3C traceparent or ingest is unusually delayed.");
-                    pw.println("            if (traceId != null && !traceId.isEmpty()) {");
-                    pw.println("                debugInfo.append(\"🎯 Marker-first query: \").append(JAEGER_BASE_URL).append(\"/traces/\").append(traceId).append(\"\\n\");");
+                    pw.println("            if (markerTraceId != null && !markerTraceId.isEmpty()) {");
+                    pw.println("                debugInfo.append(\"🎯 Marker-first query: \").append(JAEGER_BASE_URL).append(\"/traces/\").append(markerTraceId).append(\"\\n\");");
                     pw.println("                for (int __markAttempt = 0; __markAttempt < 5 && globalBestTrace == null; __markAttempt++) {");
                     pw.println("                    try {");
                     pw.println("                        HttpRequest __mreq = HttpRequest.newBuilder(");
-                    pw.println("                            java.net.URI.create(JAEGER_BASE_URL + \"/traces/\" + traceId)).GET().build();");
+                    pw.println("                            java.net.URI.create(JAEGER_BASE_URL + \"/traces/\" + markerTraceId)).GET().build();");
                     pw.println("                        HttpResponse<String> __mres = HttpClient.newHttpClient().send(__mreq, HttpResponse.BodyHandlers.ofString());");
                     pw.println("                        if (__mres.statusCode() == 200) {");
                     pw.println("                            JSONObject __mjson = new JSONObject(__mres.body());");
@@ -1721,6 +1721,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             
                             // 🔥 FIX: Declare Response variable OUTSIDE try block for catch block accessibility
                             pw.println("                    Response stepResponse" + stepIdx + " = null;");
+                            // Mirror of the same fix for trace-correlation locals: the failure-path
+                            // attachJaegerTrace() call lives in the catch block, so __mstTraceId<N>
+                            // and __mstSpanId<N> must be visible there. Declaring them inside the
+                            // try (where they were before) was a Java scope error.
+                            pw.println("                    String __mstTraceId" + stepIdx + " = java.util.UUID.randomUUID().toString().replace(\"-\", \"\");");
+                            pw.println("                    String __mstSpanId" + stepIdx + " = java.util.UUID.randomUUID().toString().replace(\"-\", \"\").substring(0, 16);");
                             pw.println("                    ");
                             
                             // Execute the step
@@ -1878,12 +1884,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             }
                             
                             // ── W3C traceparent header (parallel-safe trace correlation) ──
-                            // Generates a fresh trace ID per step. SUT honors W3C Trace Context
-                            // (verified by curl: train-ticket OpenTelemetry attaches downstream spans
-                            // under this traceId). attachJaegerTrace later queries /traces/<id>
-                            // for an exact 1:1 match — no race even with N parallel test threads.
-                            pw.println("                        String __mstTraceId" + stepIdx + " = java.util.UUID.randomUUID().toString().replace(\"-\", \"\");");
-                            pw.println("                        String __mstSpanId" + stepIdx + " = java.util.UUID.randomUUID().toString().replace(\"-\", \"\").substring(0, 16);");
+                            // __mstTraceId<N> and __mstSpanId<N> are declared OUTSIDE the surrounding
+                            // try block so both success-path and failure-path call sites can pass
+                            // them to attachJaegerTrace(). SUT honors W3C Trace Context (verified by
+                            // curl: train-ticket OpenTelemetry attaches downstream spans under this
+                            // traceId). attachJaegerTrace later queries /traces/<id> for an exact 1:1
+                            // match — no race even with N parallel test threads.
                             pw.println("                        req = req.header(\"traceparent\", \"00-\" + __mstTraceId" + stepIdx + " + \"-\" + __mstSpanId" + stepIdx + " + \"-01\");");
                             pw.println("                        // 🔥 FIX: Extract response FIRST (before status code assertion) to capture response body in all cases");
                             pw.println("                        stepResponse" + stepIdx + " = req.when()." + verb + "(\"" + escape(step.getPath()) + "\")");

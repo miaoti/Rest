@@ -28,6 +28,11 @@ public class Timer {
     public static void stopCounting(TestStep step) {
         Long stopTime = new Date().getTime();
         List<Long> stepMeasures = counters.get(step.name);
+        // Defensive: a stopCounting() with no matching startCounting() is a stats glitch,
+        // not a correctness problem — silently skip rather than crash the main thread
+        // at the END of the run (which would block fault-detection report generation
+        // and the final summary).
+        if (stepMeasures == null || stepMeasures.isEmpty()) return;
         stepMeasures.set(stepMeasures.size()-1, stopTime+stepMeasures.get(stepMeasures.size()-1));
     }
 
