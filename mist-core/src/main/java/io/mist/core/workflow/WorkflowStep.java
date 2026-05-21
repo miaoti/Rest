@@ -1,4 +1,4 @@
-package es.us.isa.restest.workflow;
+package io.mist.core.workflow;
 import java.util.*;
 
 /**

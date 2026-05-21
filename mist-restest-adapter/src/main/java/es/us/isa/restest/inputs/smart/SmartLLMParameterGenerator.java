@@ -2,7 +2,7 @@ package es.us.isa.restest.inputs.smart;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import es.us.isa.restest.configuration.MstConfig;
+import io.mist.core.config.MstConfig;
 import es.us.isa.restest.inputs.llm.LLMParameterGenerator;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import es.us.isa.restest.specification.OpenAPIParameter;

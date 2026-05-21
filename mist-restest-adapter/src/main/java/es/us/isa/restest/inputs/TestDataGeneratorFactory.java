@@ -1,6 +1,6 @@
 package es.us.isa.restest.inputs;
 
-import es.us.isa.restest.configuration.MstConfig;
+import io.mist.core.config.MstConfig;
 import es.us.isa.restest.configuration.TestConfigurationVisitor;
 import es.us.isa.restest.configuration.pojos.GenParameter;
 import es.us.isa.restest.configuration.pojos.Generator;

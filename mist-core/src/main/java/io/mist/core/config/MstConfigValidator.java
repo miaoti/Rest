@@ -1,4 +1,4 @@
-package es.us.isa.restest.configuration;
+package io.mist.core.config;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

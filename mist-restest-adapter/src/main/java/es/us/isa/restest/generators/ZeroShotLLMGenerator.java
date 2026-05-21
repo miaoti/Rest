@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import es.us.isa.restest.configuration.MstConfig;
+import io.mist.core.config.MstConfig;
 import es.us.isa.restest.inputs.llm.ParameterInfo;
 import io.mist.llm.LLMService;
 import io.mist.llm.LLMConfig;

@@ -1376,7 +1376,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                         \"If it returns 2XX, the test will FAIL.\");");
 
                             for (String faultyParam : mstc.getFaultyParameters()) {
-                                pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addInvalidParameter(\"" + escapeJavaString(faultyParam) + "\");");
+                                pw.println("        io.mist.core.enhancer.TestResultCapture.addInvalidParameter(\"" + escapeJavaString(faultyParam) + "\");");
                             }
                             pw.println();
                         }
@@ -1523,7 +1523,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                     ? step.getMethod().getMethod().toUpperCase() : "GET";
                             String stepService = step.getServiceName() != null ? step.getServiceName() : "";
                             
-                            pw.println("        es.us.isa.restest.enhancer.TestResultCapture.setStepMetadata(");
+                            pw.println("        io.mist.core.enhancer.TestResultCapture.setStepMetadata(");
                             pw.println("            " + stepIdx + ", \"" + escape(stepEndpoint) + "\", \"" + stepVerb + "\", ");
                             pw.println("            \"" + escape(stepService) + "\", " + isNegativeTest + ");");
                             
@@ -1547,7 +1547,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                     first = false;
                                 }
                                 lockedSetLiteral.append(")");
-                                pw.println("        es.us.isa.restest.enhancer.TestResultCapture.setLockedDependencyParams("
+                                pw.println("        io.mist.core.enhancer.TestResultCapture.setLockedDependencyParams("
                                         + stepIdx + ", " + lockedSetLiteral + ");");
                             }
                             
@@ -1580,7 +1580,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                     example = tp.getExample() != null ? String.valueOf(tp.getExample()) : "";
                                     required = tp.getRequired() != null && tp.getRequired();
                                 }
-                                pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                                pw.println("        io.mist.core.enhancer.TestResultCapture.addParameter(");
                                 pw.println("            \"" + escape(paramName) + "\", \"" + escape(paramValue) + "\", ");
                                 pw.println("            \"" + escape(paramType) + "\", \"" + escape(paramLoc) + "\", ");
                                 pw.println("            " + (description.isEmpty() ? "null" : "\"" + escape(description) + "\"") + ", ");
@@ -1592,7 +1592,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             if (step.getPathParams() != null) {
                                 for (Map.Entry<String, String> pp : step.getPathParams().entrySet()) {
                                     boolean isDI = dataInjectedParams.contains(pp.getKey());
-                                    pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                                    pw.println("        io.mist.core.enhancer.TestResultCapture.addParameter(");
                                     pw.println("            \"" + escape(pp.getKey()) + "\", \"" + escape(pp.getValue()) + "\", ");
                                     pw.println("            \"string\", \"path\", null, null, true, " + stepIdx + ", " + isDI + ");");
                                 }
@@ -1602,7 +1602,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             if (step.getQueryParams() != null) {
                                 for (Map.Entry<String, String> qp : step.getQueryParams().entrySet()) {
                                     boolean isDI = dataInjectedParams.contains(qp.getKey());
-                                    pw.println("        es.us.isa.restest.enhancer.TestResultCapture.addParameter(");
+                                    pw.println("        io.mist.core.enhancer.TestResultCapture.addParameter(");
                                     pw.println("            \"" + escape(qp.getKey()) + "\", \"" + escape(qp.getValue()) + "\", ");
                                     pw.println("            \"string\", \"query\", null, null, false, " + stepIdx + ", " + isDI + ");");
                                 }
@@ -1866,7 +1866,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                            System.out.println(\"⚡ BYPASS: Step " + sourceStepIdx + " failed — using fallback for '" + escape(paramName) + "'\");");
                                 pw.println("                            " + varName + "Value = \"" + escapedFallback + "\";");
                                 pw.println("                            Allure.parameter(\"⚡ Bypass Mode\", \"YES — fallback for " + escape(paramName) + "\");");
-                                pw.println("                            es.us.isa.restest.enhancer.TestResultCapture.recordBypassTriggered(" + stepIdx + ");");
+                                pw.println("                            io.mist.core.enhancer.TestResultCapture.recordBypassTriggered(" + stepIdx + ");");
                                 pw.println("                        }");
                                 pw.println("                        if (" + varName + "Value != null) {");
                                 pw.println("                            allStepParameters.put(\"" + escape(paramName) + "\", " + varName + "Value);");
@@ -2134,7 +2134,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println("                            long responseTime = stepResponse" + stepIdx + ".getTime();");
                             pw.println("                            ");
                             pw.println("                            // 🔧 Test Case Enhancer: Capture response for enhancement (step-aware)");
-                            pw.println("                            es.us.isa.restest.enhancer.TestResultCapture.captureStepResponse(" + stepIdx + ", actualStatus, responseBody);");
+                            pw.println("                            io.mist.core.enhancer.TestResultCapture.captureStepResponse(" + stepIdx + ", actualStatus, responseBody);");
                             pw.println("                            ");
                             pw.println("                            // Single success status parameter");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (\" + actualStatus + \" in \" + responseTime + \"ms)\");");
@@ -2197,7 +2197,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                         pw.println("                                failedStatusCode = stepResponse" + stepIdx + ".getStatusCode();");
                         pw.println("                                failedResponseTime = stepResponse" + stepIdx + ".getTime();");
                         pw.println("                                // 🔧 Test Case Enhancer: Capture response for enhancement (step-aware)");
-                        pw.println("                                es.us.isa.restest.enhancer.TestResultCapture.captureStepResponse(" + stepIdx + ", failedStatusCode, failedResponseBody);");
+                        pw.println("                                io.mist.core.enhancer.TestResultCapture.captureStepResponse(" + stepIdx + ", failedStatusCode, failedResponseBody);");
                         pw.println("                            }");
                         pw.println("                        } catch (Exception respEx) {");
                         pw.println("                            failedResponseBody = \"Unable to capture response: \" + respEx.getMessage();");

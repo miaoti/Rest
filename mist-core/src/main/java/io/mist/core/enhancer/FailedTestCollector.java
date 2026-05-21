@@ -1,4 +1,4 @@
-package es.us.isa.restest.enhancer;
+package io.mist.core.enhancer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

@@ -1,6 +1,6 @@
 package es.us.isa.restest.util;
 
-import es.us.isa.restest.workflow.WorkflowStep;
+import io.mist.core.workflow.WorkflowStep;
 
 import java.util.*;
 import java.util.stream.Collectors;

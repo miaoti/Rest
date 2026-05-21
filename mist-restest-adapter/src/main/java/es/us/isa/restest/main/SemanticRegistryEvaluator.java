@@ -10,7 +10,7 @@ import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry.Pass;
 import es.us.isa.restest.workflow.TraceWorkflowExtractor;
-import es.us.isa.restest.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowScenario;
 
 import java.io.File;
 import java.io.FileInputStream;

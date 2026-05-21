@@ -80,12 +80,13 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Tests -->
+		<!-- JUnit 4 runtime — needed in the compile scope because
+		     FailedTestCollector extends junit.RunListener (MIST hosts a
+		     JUnit runner to drive the generated tests). -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>

@@ -4,6 +4,8 @@ import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import es.us.isa.restest.specification.OpenAPISpecification;
+import io.mist.core.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowStep;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;

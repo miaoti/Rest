@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import io.mist.core.enhancer.FailedTestResult;
+import io.mist.core.enhancer.ParameterSnapshot;
 import io.mist.llm.LLMService;
 import es.us.isa.restest.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;

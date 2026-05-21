@@ -1,4 +1,4 @@
-package es.us.isa.restest.workflow;
+package io.mist.core.workflow;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +21,7 @@ import org.yaml.snakeyaml.Yaml;
  * <p>The default map is bundled on the classpath at
  * {@code mist/noun-map.default.yaml} and is tailored for the TrainTicket demo.
  * Per-SUT overrides can be supplied via {@code mist.noun.map.path} (read by
- * {@link es.us.isa.restest.configuration.MstConfig.Core#nounMapPath()}); a
+ * {@link io.mist.core.config.MstConfig.Core#nounMapPath()}); a
  * loaded override is overlaid on top of the default, so unspecified nouns
  * still resolve through the default.
  *

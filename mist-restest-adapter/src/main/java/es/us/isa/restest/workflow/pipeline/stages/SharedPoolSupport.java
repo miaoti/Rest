@@ -10,8 +10,8 @@ import es.us.isa.restest.inputs.llm.ParameterInfo;
 import io.mist.core.smart.SmartInputFetchConfig;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
 import es.us.isa.restest.util.ConsoleProgressBar;
-import es.us.isa.restest.workflow.WorkflowScenario;
-import es.us.isa.restest.workflow.WorkflowStep;
+import io.mist.core.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowStep;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package es.us.isa.restest.enhancer;
+package io.mist.core.enhancer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

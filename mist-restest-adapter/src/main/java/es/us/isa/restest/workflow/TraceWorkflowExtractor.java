@@ -22,7 +22,10 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import es.us.isa.restest.configuration.MstConfig;
+import io.mist.core.config.MstConfig;
+import io.mist.core.workflow.NounKeyMap;
+import io.mist.core.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowStep;
 
 /**
  * Utility class to extract workflow scenarios from OpenTelemetry trace data.

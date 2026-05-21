@@ -1,6 +1,6 @@
 package io.mist.cli;
 
-import es.us.isa.restest.configuration.MstConfig;
+import io.mist.core.config.MstConfig;
 import es.us.isa.restest.main.MistPathResolver;
 import es.us.isa.restest.main.MistRunResult;
 import es.us.isa.restest.main.MistRunner;

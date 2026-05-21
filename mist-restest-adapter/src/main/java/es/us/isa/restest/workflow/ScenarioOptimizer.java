@@ -1,5 +1,8 @@
 package es.us.isa.restest.workflow;
 
+import io.mist.core.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowStep;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

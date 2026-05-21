@@ -1,6 +1,6 @@
 package es.us.isa.restest.generators;
 
-import es.us.isa.restest.configuration.MstConfig;
+import io.mist.core.config.MstConfig;
 import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
@@ -15,8 +15,8 @@ import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry;
-import es.us.isa.restest.workflow.WorkflowScenario;
-import es.us.isa.restest.workflow.WorkflowStep;
+import io.mist.core.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowStep;
 import es.us.isa.restest.workflow.pipeline.PipelineContext;
 import es.us.isa.restest.workflow.pipeline.WorkflowPipeline;
 import es.us.isa.restest.workflow.pipeline.stages.Phase25DedupStage;

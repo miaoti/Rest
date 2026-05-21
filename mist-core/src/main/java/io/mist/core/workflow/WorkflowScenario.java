@@ -1,4 +1,4 @@
-package es.us.isa.restest.workflow;
+package io.mist.core.workflow;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,7 +134,7 @@ public class WorkflowScenario {
      *
      * @param traceId the trace ID to add
      */
-    void addTraceId(String traceId) {
+    public void addTraceId(String traceId) {
         if (traceId != null && !traceId.isEmpty()) {
             traceIds.add(traceId);
         }
@@ -181,7 +181,7 @@ public class WorkflowScenario {
      *                     (used only for provenance tracking, NOT for parent-child linking)
      * @param attachChild the root step from the other scenario that will be promoted
      */
-    void mergeWith(WorkflowScenario other, WorkflowStep attachParent, WorkflowStep attachChild) {
+    public void mergeWith(WorkflowScenario other, WorkflowStep attachParent, WorkflowStep attachChild) {
         if (other == null || attachParent == null || attachChild == null) {
             return;
         }

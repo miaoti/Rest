@@ -1,8 +1,8 @@
-package es.us.isa.restest.registry;
+package io.mist.core.registry;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import es.us.isa.restest.workflow.WorkflowStep;
+import io.mist.core.workflow.WorkflowStep;
 
 /**
  * Represents a specific tree structure (execution pattern) for a root API.

@@ -161,8 +161,8 @@ public class TestGenerationAndExecution {
 						"src/main/resources/My-Example/trainticket/test-trace");
 			}
 
-			es.us.isa.restest.configuration.MstConfig cfg =
-					es.us.isa.restest.configuration.MstConfig.fromSystemProperties();
+			io.mist.core.config.MstConfig cfg =
+					io.mist.core.config.MstConfig.fromSystemProperties();
 			MistRunner.Inputs inputs = MistRunner.Inputs.builder()
 					.testClassName(testClassName)
 					.targetDirJava(targetDirJava)

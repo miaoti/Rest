@@ -1,10 +1,10 @@
-package es.us.isa.restest.registry;
+package io.mist.core.registry;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import es.us.isa.restest.workflow.WorkflowStep;
+import io.mist.core.workflow.WorkflowStep;
 
 /**
  * Represents a single Root API endpoint entry in the registry.

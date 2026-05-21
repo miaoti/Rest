@@ -1,6 +1,6 @@
 package es.us.isa.restest.workflow.pipeline.stages;
 
-import es.us.isa.restest.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowScenario;
 import es.us.isa.restest.workflow.pipeline.PipelineContext;
 import es.us.isa.restest.workflow.pipeline.PipelineStage;
 

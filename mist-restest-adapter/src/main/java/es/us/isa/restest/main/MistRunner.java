@@ -7,15 +7,15 @@ import es.us.isa.restest.configuration.pojos.TestConfiguration;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.coverage.CoverageGatherer;
 import es.us.isa.restest.coverage.CoverageMeter;
-import es.us.isa.restest.enhancer.FailedTestCollector;
-import es.us.isa.restest.enhancer.FailedTestResult;
+import io.mist.core.enhancer.FailedTestCollector;
+import io.mist.core.enhancer.FailedTestResult;
 import es.us.isa.restest.enhancer.StatusCodeExplorationEnhancer;
 import es.us.isa.restest.enhancer.TestCaseEnhancer;
-import es.us.isa.restest.enhancer.TestFileRegenerator;
-import es.us.isa.restest.enhancer.TestResultCapture;
+import io.mist.core.enhancer.TestFileRegenerator;
+import io.mist.core.enhancer.TestResultCapture;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import io.mist.llm.LLMService;
-import es.us.isa.restest.registry.RootApiRegistry;
+import io.mist.core.registry.RootApiRegistry;
 import es.us.isa.restest.reporting.AllureReportManager;
 import es.us.isa.restest.reporting.StatsReportManager;
 import es.us.isa.restest.specification.OpenAPISpecification;
@@ -27,8 +27,8 @@ import es.us.isa.restest.util.PropertyManager;
 import es.us.isa.restest.util.RESTestException;
 import es.us.isa.restest.util.Timer;
 import es.us.isa.restest.workflow.TraceWorkflowExtractor;
-import es.us.isa.restest.workflow.WorkflowScenario;
-import es.us.isa.restest.workflow.WorkflowScenarioUtils;
+import io.mist.core.workflow.WorkflowScenario;
+import io.mist.core.workflow.WorkflowScenarioUtils;
 import es.us.isa.restest.writers.IWriter;
 import es.us.isa.restest.writers.restassured.MultiServiceRESTAssuredWriter;
 import io.mist.core.oracle.shape.ShapeInvariantStore;
@@ -87,7 +87,7 @@ public final class MistRunner {
 
     private static final Logger logger = LogManager.getLogger(MistRunner.class.getName());
 
-    private final es.us.isa.restest.configuration.MstConfig config;
+    private final io.mist.core.config.MstConfig config;
     private final Path workdir;
     private final Inputs inputs;
 
@@ -106,7 +106,7 @@ public final class MistRunner {
     private TraceShapeOracle traceShapeOracle = null;
     private Path traceShapeStorePath = null;
 
-    public MistRunner(es.us.isa.restest.configuration.MstConfig config, Path workdir, Inputs inputs) {
+    public MistRunner(io.mist.core.config.MstConfig config, Path workdir, Inputs inputs) {
         this.config = Objects.requireNonNull(config, "config");
         this.workdir = Objects.requireNonNull(workdir, "workdir");
         this.inputs = Objects.requireNonNull(inputs, "inputs");
@@ -326,9 +326,9 @@ public final class MistRunner {
             // because this file already imports the legacy
             // es.us.isa.restest.configuration.multiservice.MstConfig
             // (Properties-file loader), and the new typed POJO lives at
-            // es.us.isa.restest.configuration.MstConfig.
-            es.us.isa.restest.configuration.MstConfig.Enhancer enhancerCfg =
-                    es.us.isa.restest.configuration.MstConfig.instance().enhancer();
+            // io.mist.core.config.MstConfig.
+            io.mist.core.config.MstConfig.Enhancer enhancerCfg =
+                    io.mist.core.config.MstConfig.instance().enhancer();
             boolean enhancerEnabled = enhancerCfg.enabled();
             int enhancerRounds = enhancerCfg.rounds();
             boolean skip5xx = enhancerCfg.skip5xx();
@@ -675,8 +675,8 @@ public final class MistRunner {
             }
         }
 
-        es.us.isa.restest.configuration.MstConfig mstCfg = es.us.isa.restest.configuration.MstConfig.instance();
-        es.us.isa.restest.configuration.MstConfig.SmartFetch sfCfg = mstCfg.smartFetch();
+        io.mist.core.config.MstConfig mstCfg = io.mist.core.config.MstConfig.instance();
+        io.mist.core.config.MstConfig.SmartFetch sfCfg = mstCfg.smartFetch();
         boolean enabled = sfCfg.enabled();
         double percentage = sfCfg.percentage();
         String registryPath = sfCfg.registryPath();
@@ -699,7 +699,7 @@ public final class MistRunner {
         logger.info("   - Ollama Enabled: {}", ollamaEnabled);
         logger.info("   - Ollama Model: {}", ollamaModel);
 
-        es.us.isa.restest.configuration.MstConfig.Llm llmCfg = mstCfg.llm();
+        io.mist.core.config.MstConfig.Llm llmCfg = mstCfg.llm();
         boolean llmValidationEnabled = llmCfg.responseValidationEnabled();
         boolean llmValidationOnly2xx = llmCfg.responseValidationOnly2xx();
         boolean llmValidationRca = llmCfg.responseValidationIncludeRca();
@@ -1122,8 +1122,8 @@ public final class MistRunner {
         String enhancerOutputDir = "target/enhancer/" + testId;
 
         // Check if status code exploration is enabled
-        es.us.isa.restest.configuration.MstConfig.StatusCodeExploration sceCfg =
-                es.us.isa.restest.configuration.MstConfig.instance().statusCodeExploration();
+        io.mist.core.config.MstConfig.StatusCodeExploration sceCfg =
+                io.mist.core.config.MstConfig.instance().statusCodeExploration();
         boolean statusCodeExplorationEnabled = sceCfg.enabled();
         int maxExplorationPerTest = sceCfg.maxPerTest();
         int maxExplorationPerRound = sceCfg.maxPerRound();

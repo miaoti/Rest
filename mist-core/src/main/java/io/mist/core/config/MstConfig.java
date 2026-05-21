@@ -1,4 +1,4 @@
-package es.us.isa.restest.configuration;
+package io.mist.core.config;
 
 /**
  * Immutable POJO that materializes the ~30 MIST/MST system-property keys

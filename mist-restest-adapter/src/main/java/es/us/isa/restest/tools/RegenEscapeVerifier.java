@@ -1,7 +1,7 @@
 package es.us.isa.restest.tools;
 
-import es.us.isa.restest.enhancer.FailedTestResult;
-import es.us.isa.restest.enhancer.TestFileRegenerator;
+import io.mist.core.enhancer.FailedTestResult;
+import io.mist.core.enhancer.TestFileRegenerator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
