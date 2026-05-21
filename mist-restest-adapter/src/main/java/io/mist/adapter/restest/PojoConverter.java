@@ -178,4 +178,89 @@ public final class PojoConverter {
         }
         return dst;
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  Reverse direction: mist-core io.mist.core.spec.* → RESTest pojos.
+    //  Used by adapter-side bridges that hand vendored pojos back to
+    //  RESTest code that still expects the original types
+    //  (e.g. TestCaseConverter wiring MistGenerator's output to the
+    //   RESTAssured writer's StepCall constructor).
+    // ─────────────────────────────────────────────────────────────────
+
+    public static es.us.isa.restest.configuration.pojos.Operation toRestest(
+            io.mist.core.spec.Operation src) {
+        if (src == null) return null;
+        es.us.isa.restest.configuration.pojos.Operation dst =
+                new es.us.isa.restest.configuration.pojos.Operation();
+        dst.setTestPath(src.getTestPath());
+        dst.setOperationId(src.getOperationId());
+        dst.setMethod(src.getMethod());
+        dst.setExpectedResponse(src.getExpectedResponse());
+        dst.setOpenApiOperation(src.getOpenApiOperation());
+        if (src.getTestParameters() != null) {
+            List<es.us.isa.restest.configuration.pojos.TestParameter> params =
+                    src.getTestParameters().stream()
+                            .map(PojoConverter::toRestest)
+                            .collect(Collectors.toList());
+            dst.setTestParameters(params);
+        }
+        return dst;
+    }
+
+    public static es.us.isa.restest.configuration.pojos.TestParameter toRestest(
+            io.mist.core.spec.TestParameter src) {
+        if (src == null) return null;
+        es.us.isa.restest.configuration.pojos.TestParameter dst =
+                new es.us.isa.restest.configuration.pojos.TestParameter();
+        dst.setName(src.getName());
+        dst.setIn(src.getIn());
+        dst.setWeight(src.getWeight());
+        dst.setDescription(src.getDescription());
+        dst.setType(src.getType());
+        dst.setFormat(src.getFormat());
+        dst.setPattern(src.getPattern());
+        dst.setEnumValues(src.getEnumValues());
+        dst.setMinimum(src.getMinimum());
+        dst.setMaximum(src.getMaximum());
+        dst.setMinLength(src.getMinLength());
+        dst.setMaxLength(src.getMaxLength());
+        dst.setExample(src.getExample());
+        dst.setRequired(src.getRequired());
+        if (src.getGenerators() != null) {
+            List<es.us.isa.restest.configuration.pojos.Generator> gens =
+                    src.getGenerators().stream()
+                            .map(PojoConverter::toRestest)
+                            .collect(Collectors.toList());
+            dst.setGenerators(gens);
+        }
+        return dst;
+    }
+
+    public static es.us.isa.restest.configuration.pojos.Generator toRestest(
+            io.mist.core.spec.Generator src) {
+        if (src == null) return null;
+        es.us.isa.restest.configuration.pojos.Generator dst =
+                new es.us.isa.restest.configuration.pojos.Generator();
+        dst.setType(src.getType());
+        dst.setValid(src.isValid());
+        if (src.getGenParameters() != null) {
+            List<es.us.isa.restest.configuration.pojos.GenParameter> ps =
+                    src.getGenParameters().stream()
+                            .map(PojoConverter::toRestest)
+                            .collect(Collectors.toList());
+            dst.setGenParameters(ps);
+        }
+        return dst;
+    }
+
+    public static es.us.isa.restest.configuration.pojos.GenParameter toRestest(
+            io.mist.core.spec.GenParameter src) {
+        if (src == null) return null;
+        es.us.isa.restest.configuration.pojos.GenParameter dst =
+                new es.us.isa.restest.configuration.pojos.GenParameter();
+        dst.setName(src.getName());
+        dst.setValues(src.getValues());
+        dst.setObjectValues(src.getObjectValues());
+        return dst;
+    }
 }

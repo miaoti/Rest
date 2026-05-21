@@ -13,7 +13,7 @@ import es.us.isa.restest.enhancer.StatusCodeExplorationEnhancer;
 import io.mist.core.enhancer.TestCaseEnhancer;
 import io.mist.core.enhancer.TestFileRegenerator;
 import io.mist.core.enhancer.TestResultCapture;
-import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
+import io.mist.core.generation.MistGenerator;
 import io.mist.llm.LLMService;
 import io.mist.core.registry.RootApiRegistry;
 import es.us.isa.restest.reporting.AllureReportManager;
@@ -247,7 +247,7 @@ public final class MistRunner {
         traceShapeOracle = bootstrapTraceShapeOracle();
 
         // MIST generator (no longer a RESTest subclass — see B1 sever).
-        MultiServiceTestCaseGenerator generator = createMstGenerator();
+        MistGenerator generator = createMstGenerator();
         IWriter writer = createMstWriter();
         StatsReportManager statsReportManager = createMstStatsReportManager();
         AllureReportManager reportManager = createMstAllureReportManager();
@@ -292,7 +292,12 @@ public final class MistRunner {
         // Generate test cases
         logger.info("Generating tests");
         Timer.startCounting(Timer.TestStep.TEST_SUITE_GENERATION);
-        Collection<TestCase> testCases = generator.generate();
+        // MistGenerator (mist-core) produces io.mist.core.testcase.TestCase
+        // instances; the RESTAssured writer downstream still expects
+        // es.us.isa.restest.testcases.TestCase. TestCaseConverter walks
+        // the carrier graph once at this boundary.
+        Collection<TestCase> testCases =
+                io.mist.adapter.restest.TestCaseConverter.fromCoreCollection(generator.generate());
         Timer.stopCounting(Timer.TestStep.TEST_SUITE_GENERATION);
 
         // Store MST test cases for status code exploration (used during enhancement)
@@ -394,8 +399,8 @@ public final class MistRunner {
      * Lifted MST case from {@code TestGenerationAndExecution.createGenerator()}
      * (L431-L575). Sets {@link #spec}.
      */
-    private MultiServiceTestCaseGenerator createMstGenerator() throws RESTestException, java.io.IOException {
-        MultiServiceTestCaseGenerator gen;
+    private MistGenerator createMstGenerator() throws RESTestException, java.io.IOException {
+        MistGenerator gen;
 
         // multi‑service
         // 1. OpenAPI spec (single file or already merged)
@@ -531,12 +536,16 @@ public final class MistRunner {
             logger.info("MST negative input generation mode: smart (default — static payloads + LLM only for REGEX/SEMANTIC)");
         }
 
-        // 7. Instantiate the generator
-        gen = new MultiServiceTestCaseGenerator(
-                spec,                   // primarySpec
-                dummyPrimaryConf,
-                serviceSpecs,
-                serviceConfigs,
+        // 7. Instantiate the generator. The generator lives in mist-core
+        // and accepts the swagger-core OpenAPI model + vendored
+        // io.mist.core.spec.* pojos; convert the adapter's RESTest-typed
+        // OpenAPISpecification and TestConfigurationObject at the
+        // boundary via PojoConverter.
+        gen = new MistGenerator(
+                spec == null ? null : spec.getSpecification(),  // primarySpec → OpenAPI
+                io.mist.adapter.restest.PojoConverter.toCore(dummyPrimaryConf),
+                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
+                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
                 scenarios,
                 /* use LLM for params  */ true,
                 /* use LLM for flows   */ true

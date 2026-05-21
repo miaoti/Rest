@@ -1,9 +1,9 @@
-package es.us.isa.restest.generators;
+package io.mist.core.generation;
 
 import io.mist.core.config.MstConfig;
-import es.us.isa.restest.configuration.pojos.Operation;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
-import es.us.isa.restest.configuration.pojos.TestParameter;
+import io.mist.core.spec.Operation;
+import io.mist.core.spec.TestConfigurationObject;
+import io.mist.core.spec.TestParameter;
 import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.fault.PoolKey;
 import io.mist.core.generation.AiDrivenLLMGenerator;
@@ -13,9 +13,8 @@ import io.mist.core.smart.ParameterError;
 import io.mist.core.smart.SmartInputFetcher;
 import io.mist.core.smart.SmartInputFetchConfig;
 import io.mist.core.bandit.ThompsonScheduler;
-import es.us.isa.restest.specification.OpenAPISpecification;
-import es.us.isa.restest.testcases.MultiServiceTestCase;
-import es.us.isa.restest.testcases.TestCase;
+import io.mist.core.testcase.MultiServiceTestCase;
+import io.mist.core.testcase.TestCase;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
@@ -28,6 +27,7 @@ import io.mist.core.workflow.pipeline.stages.Phase4DecompositionStage;
 import io.mist.core.workflow.pipeline.stages.SharedPoolGenerationStage;
 
 import io.mist.core.util.ConsoleProgressBar;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,12 +36,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class MultiServiceTestCaseGenerator {
+public class MistGenerator {
 
     /* ------------------------------------------------------------ */
-    private static final Logger log = LogManager.getLogger(MultiServiceTestCaseGenerator.class);
+    private static final Logger log = LogManager.getLogger(MistGenerator.class);
 
-    private final Map<String, OpenAPISpecification>          serviceSpecs;
+    private final Map<String, OpenAPI>          serviceSpecs;
     private final Map<String, TestConfigurationObject>       serviceConfigs;
     private final List<WorkflowScenario>                     scenarios;
     private final boolean                                    useLLM;
@@ -72,7 +72,7 @@ public class MultiServiceTestCaseGenerator {
      * collided silently in that case; the second enrolment overwrote the first.
      */
     private Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools = new HashMap<>();
-    private Random random = io.mist.core.util.SeededRandom.create("MultiServiceTestCaseGenerator");
+    private Random random = io.mist.core.util.SeededRandom.create("MistGenerator");
     
     // Track which parameter should have invalid value in current test case (round-robin mode)
     private List<String> parameterRotation = new ArrayList<>();
@@ -88,7 +88,7 @@ public class MultiServiceTestCaseGenerator {
 
     // PoolKey lives in io.mist.core.fault.PoolKey (extracted from this class
     // as part of the B1 sever so the workflow pipeline can reference it
-    // without dragging in the rest of MultiServiceTestCaseGenerator).
+    // without dragging in the rest of MistGenerator).
 
     /**
      * Represents a single fault-injection target: one invalid value fired at
@@ -195,7 +195,7 @@ public class MultiServiceTestCaseGenerator {
         ThompsonScheduler bandit = new ThompsonScheduler();
         InputFetchRegistry registry = loadRegistryQuietly();
         seedBanditFromRegistry(bandit, queue, registry);
-        List<FaultTarget> ranked = bandit.rank(queue, MultiServiceTestCaseGenerator::banditKey);
+        List<FaultTarget> ranked = bandit.rank(queue, MistGenerator::banditKey);
         log.debug("Fault queue re-ranked by ThompsonScheduler: {} targets, registry={}",
                 ranked.size(), registry != null ? "loaded" : "absent");
         return ranked;
@@ -240,9 +240,9 @@ public class MultiServiceTestCaseGenerator {
     private static final Pattern HTTP_OPERATION_PATTERN = 
         Pattern.compile("^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+(.+)$", Pattern.CASE_INSENSITIVE);
 
-    public MultiServiceTestCaseGenerator(OpenAPISpecification primarySpec,
+    public MistGenerator(OpenAPI primarySpec,
                                          TestConfigurationObject dummyPrimaryConf,
-                                         Map<String, OpenAPISpecification> serviceSpecs,
+                                         Map<String, OpenAPI> serviceSpecs,
                                          Map<String, TestConfigurationObject> serviceConfigs,
                                          List<WorkflowScenario> scenarios,
                                          boolean useLLMforParams,
@@ -264,9 +264,7 @@ public class MultiServiceTestCaseGenerator {
         this.faultyRatio = (float) mstCfg.faulty().ratio();
         this.faultyRoundRobin = mstCfg.faulty().roundRobin();
         this.dependencyRegistry = SemanticDependencyRegistry.build(
-                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
-                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
-                scenarios);
+                serviceConfigs, serviceSpecs, scenarios);
 
         log.info("=== NEGATIVE TEST CONFIGURATION ===");
         log.info("faulty.ratio from MstConfig: {}", mstCfg.faulty().ratio());
@@ -283,7 +281,7 @@ public class MultiServiceTestCaseGenerator {
      */
     private void initializeSmartInputFetching() {
         try {
-            log.info("🔧 Initializing Smart Input Fetching System for MultiServiceTestCaseGenerator...");
+            log.info("🔧 Initializing Smart Input Fetching System for MistGenerator...");
 
             // Load configuration from system properties.
             //
@@ -382,9 +380,7 @@ public class MultiServiceTestCaseGenerator {
         // faulty pool maps are the SAME instances this generator reads from
         // in the variant loop below — the stage writes through them in place.
         PipelineContext ctx = new PipelineContext(
-                scenarios,
-                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
-                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
+                scenarios, serviceSpecs, serviceConfigs,
                 dependencyRegistry, approvedApiKeys, MstConfig.instance(),
                 llmGen, smartFetcher, smartFetchConfig, useLLM,
                 sharedParameterPools, faultyParameterPools);
