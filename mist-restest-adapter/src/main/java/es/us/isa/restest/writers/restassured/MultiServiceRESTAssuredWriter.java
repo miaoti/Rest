@@ -1731,7 +1731,9 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             
                             // Execute the step
                             pw.println("                    try {");
-                            pw.println("                        RequestSpecification req = RestAssured.given();");
+                            // Disable REST Assured's URL encoding: paths are already URL-encoded in MultiServiceTestCaseGenerator
+                            // for path-param values (e.g. " " -> "%20"). Without this, % gets re-encoded to %25 (double-encoded), so /admintravel/%20 -> /admintravel/%2520.
+                            pw.println("                        RequestSpecification req = RestAssured.given().urlEncodingEnabled(false);");
                             
                             // 🔥 FIX: Always set Content-Type to application/json for requests with bodies
                             String requestBody = step.getBody() != null ? step.getBody() : "";
