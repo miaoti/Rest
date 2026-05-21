@@ -1,4 +1,4 @@
-package es.us.isa.restest.workflow.pipeline;
+package io.mist.core.workflow.pipeline;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

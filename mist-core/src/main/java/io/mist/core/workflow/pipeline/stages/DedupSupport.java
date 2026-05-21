@@ -1,4 +1,4 @@
-package es.us.isa.restest.workflow.pipeline.stages;
+package io.mist.core.workflow.pipeline.stages;
 
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;

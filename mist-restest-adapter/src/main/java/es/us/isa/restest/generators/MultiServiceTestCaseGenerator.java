@@ -19,13 +19,13 @@ import es.us.isa.restest.testcases.TestCase;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
-import es.us.isa.restest.workflow.pipeline.PipelineContext;
-import es.us.isa.restest.workflow.pipeline.WorkflowPipeline;
-import es.us.isa.restest.workflow.pipeline.stages.Phase25DedupStage;
-import es.us.isa.restest.workflow.pipeline.stages.Phase35DedupStage;
-import es.us.isa.restest.workflow.pipeline.stages.Phase3ShatteringStage;
-import es.us.isa.restest.workflow.pipeline.stages.Phase4DecompositionStage;
-import es.us.isa.restest.workflow.pipeline.stages.SharedPoolGenerationStage;
+import io.mist.core.workflow.pipeline.PipelineContext;
+import io.mist.core.workflow.pipeline.WorkflowPipeline;
+import io.mist.core.workflow.pipeline.stages.Phase25DedupStage;
+import io.mist.core.workflow.pipeline.stages.Phase35DedupStage;
+import io.mist.core.workflow.pipeline.stages.Phase3ShatteringStage;
+import io.mist.core.workflow.pipeline.stages.Phase4DecompositionStage;
+import io.mist.core.workflow.pipeline.stages.SharedPoolGenerationStage;
 
 import io.mist.core.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;
@@ -382,7 +382,9 @@ public class MultiServiceTestCaseGenerator {
         // faulty pool maps are the SAME instances this generator reads from
         // in the variant loop below — the stage writes through them in place.
         PipelineContext ctx = new PipelineContext(
-                scenarios, serviceSpecs, serviceConfigs,
+                scenarios,
+                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
+                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
                 dependencyRegistry, approvedApiKeys, MstConfig.instance(),
                 llmGen, smartFetcher, smartFetchConfig, useLLM,
                 sharedParameterPools, faultyParameterPools);
@@ -899,7 +901,7 @@ public class MultiServiceTestCaseGenerator {
                             // Falling back to the test case's recorded location lets the writer-side
                             // route still find the right pool entry when the sniper picked a fault
                             // target that differs in location from this parameter's primary location.
-                            String currentParamLocation = es.us.isa.restest.workflow.pipeline.stages.StageSupport.normaliseParamLocation(p.getIn());
+                            String currentParamLocation = io.mist.core.workflow.pipeline.stages.StageSupport.normaliseParamLocation(p.getIn());
                             PoolKey lookupKey = new PoolKey(p.getName(), currentParamLocation);
                             if (faultyPool != null && !faultyPool.containsKey(lookupKey)
                                     && tc.getTargetFaultParamLocation() != null) {

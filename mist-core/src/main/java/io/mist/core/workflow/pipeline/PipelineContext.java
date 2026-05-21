@@ -1,13 +1,13 @@
-package es.us.isa.restest.workflow.pipeline;
+package io.mist.core.workflow.pipeline;
 
 import io.mist.core.config.MstConfig;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
+import io.mist.core.spec.TestConfigurationObject;
 import io.mist.core.generation.AiDrivenLLMGenerator;
 import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.fault.PoolKey;
 import io.mist.core.smart.SmartInputFetchConfig;
 import io.mist.core.smart.SmartInputFetcher;
-import es.us.isa.restest.specification.OpenAPISpecification;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;
 
@@ -18,11 +18,11 @@ import java.util.Set;
 /**
  * Mutable state container threaded through the {@link WorkflowPipeline} stages.
  *
- * <p>Field types mirror those used by {@code MultiServiceTestCaseGenerator}:
- * {@code serviceConfigs} is a {@code Map<String, TestConfigurationObject>} (not the
- * speculative {@code MultiServiceConfig} name used in the design brief), and
- * {@code scenarios} is the same {@link List} instance the generator mutates in place
- * (Phase 2.5/3.5 remove duplicates from it; Phase 4 appends decomposed baselines).
+ * <p>{@code serviceSpecs} exposes the raw swagger-core OpenAPI v3 model
+ * directly (the adapter-side {@code OpenAPISpecification} parser is
+ * unwrapped by the caller via {@code PojoConverter.toOpenApiMap}).
+ * {@code serviceConfigs} uses the vendored {@code io.mist.core.spec.TestConfigurationObject};
+ * the caller converts from the RESTest pojo via {@code PojoConverter.toCoreMap}.
  *
  * <p>The shared-pool maps ({@code sharedParameterPools}, {@code faultyParameterPools})
  * are the SAME {@link Map} instances the generator's variant loop reads after the
@@ -30,14 +30,14 @@ import java.util.Set;
  * downstream loop sees populated pools without a separate hand-off step.
  *
  * <p>This class is intentionally a struct-style holder with package-public fields:
- * the pipeline stages are themselves owned by this package and need read/write
- * access without ceremony. Down-stream extraction (e.g. an additional stage that
- * threads new state) only requires adding a field here.
+ * the pipeline stages need read/write access without ceremony. Down-stream
+ * extraction (e.g. an additional stage that threads new state) only requires
+ * adding a field here.
  */
 public final class PipelineContext {
     /** Mutated in place: dedup stages remove elements; decomposition appends. */
     public final List<WorkflowScenario> scenarios;
-    public final Map<String, OpenAPISpecification> serviceSpecs;
+    public final Map<String, OpenAPI> serviceSpecs;
     public final Map<String, TestConfigurationObject> serviceConfigs;
     public final SemanticDependencyRegistry dependencyRegistry;
     /** Shared dedup set carried across Phase 2.5, 3.5, and 4. */
@@ -61,7 +61,7 @@ public final class PipelineContext {
     public final Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools;
 
     public PipelineContext(List<WorkflowScenario> scenarios,
-                           Map<String, OpenAPISpecification> serviceSpecs,
+                           Map<String, OpenAPI> serviceSpecs,
                            Map<String, TestConfigurationObject> serviceConfigs,
                            SemanticDependencyRegistry dependencyRegistry,
                            Set<String> approvedApiKeys,
@@ -74,7 +74,7 @@ public final class PipelineContext {
     }
 
     public PipelineContext(List<WorkflowScenario> scenarios,
-                           Map<String, OpenAPISpecification> serviceSpecs,
+                           Map<String, OpenAPI> serviceSpecs,
                            Map<String, TestConfigurationObject> serviceConfigs,
                            SemanticDependencyRegistry dependencyRegistry,
                            Set<String> approvedApiKeys,

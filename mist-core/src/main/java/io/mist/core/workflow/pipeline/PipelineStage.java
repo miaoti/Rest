@@ -1,4 +1,4 @@
-package es.us.isa.restest.workflow.pipeline;
+package io.mist.core.workflow.pipeline;
 
 /**
  * One step in the {@link WorkflowPipeline}. Implementations should be small

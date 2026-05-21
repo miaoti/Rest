@@ -1,10 +1,9 @@
-package es.us.isa.restest.workflow.pipeline.stages;
+package io.mist.core.workflow.pipeline.stages;
 
-import es.us.isa.restest.configuration.pojos.Operation;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
-import es.us.isa.restest.configuration.pojos.TestParameter;
+import io.mist.core.spec.Operation;
+import io.mist.core.spec.TestConfigurationObject;
+import io.mist.core.spec.TestParameter;
 import io.mist.core.generation.AiDrivenLLMGenerator;
-import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.fault.PoolKey;
 import io.mist.core.llm.ParameterInfo;

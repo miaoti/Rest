@@ -1,7 +1,7 @@
-package es.us.isa.restest.workflow.pipeline.stages;
+package io.mist.core.workflow.pipeline.stages;
 
-import es.us.isa.restest.workflow.pipeline.PipelineContext;
-import es.us.isa.restest.workflow.pipeline.PipelineStage;
+import io.mist.core.workflow.pipeline.PipelineContext;
+import io.mist.core.workflow.pipeline.PipelineStage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
