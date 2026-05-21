@@ -1,16 +1,22 @@
 # B1 Inventory — `MultiServiceTestCaseGenerator` ↔ RESTest dependency surface
 
 > Phase B1.A deliverable for `PROMPT_B1_SEVER_RESTEST_INHERITANCE.md`.
-> Status: **B1.A inventory complete; B1.D sever done; B1.C migration
-> running ahead (45 MIST-owned classes promoted into `mist-core`,
-> including the 1510-LOC `SemanticDependencyRegistry` and the 4450-LOC
-> `SmartInputFetcher`); B1.B-vendor of the seven leaf configuration
-> POJOs done; B1.E SPI surface defined (`io.mist.core.spi`) and B1.F
-> adapter-side spec loader registered via `META-INF/services/`;
-> adapter-side `PojoConverter` boundary translator landed to bridge
-> the three SDR.build() call sites. Cardinal § 7.5 criterion
+> Status: **B1.A inventory complete; B1.B-vendor of nine data carriers
+> done (seven configuration POJOs + TestCase + MultiServiceTestCase);
+> B1.C migration COMPLETE — every MIST-owned class has been promoted
+> into `mist-core`, including the 2952-LOC `MultiServiceTestCase-
+> Generator` now in `io.mist.core.generation.MistGenerator`, the
+> twelve-file workflow pipeline cluster, the 1510-LOC `Semantic-
+> DependencyRegistry`, the 4450-LOC `SmartInputFetcher`, and ~30
+> smaller MIST-only classes; B1.D sever done; B1.E + B1.F SPI surface
+> and three adapter-side SPI implementations registered via
+> `META-INF/services/`; B1.G in progress (post-rebuild demo runs
+> against the live TrainTicket cluster). Cardinal § 7.5 criterion
 > ("`mist-core/src/main/java` has zero `es.us.isa` references") is
-> firmly held.**
+> firmly held. Adapter MIST surface is now: spec loader bridge +
+> RESTAssured writer + legacy `TestGenerationAndExecution` main +
+> `MistRunner` + the three SPI provider classes + two converters
+> (PojoConverter, TestCaseConverter).**
 
 ## 1. What this branch has done
 

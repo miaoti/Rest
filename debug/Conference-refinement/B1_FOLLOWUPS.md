@@ -83,6 +83,33 @@ reference swaps, or (b) the type is wrapped as a `MistXxx` SPI.
 | `inputs/llm/LLMParameterGenerator` | `io.mist.core.generation.LLMParameterGenerator` |
 | `enhancer/StatusCodeExplorationEnhancer` | `io.mist.core.enhancer.StatusCodeExplorationEnhancer` |
 
+### MSTG cascade — completed in B1.C wholesale move
+
+The 14-file `MultiServiceTestCaseGenerator` cluster has been
+promoted into `mist-core` in a six-phase cascade:
+
+  1. PipelineContext field types converted to mist-core
+     (`Map<String, OpenAPI>`, vendored `TestConfigurationObject`).
+  2. SharedPoolSupport / StageSupport signatures swapped to
+     vendored pojos (`io.mist.core.spec.*`).
+  3. PipelineContext + PipelineStage + WorkflowPipeline + 9
+     stage / support classes moved as a batch.
+  4. MSTG class itself renamed and moved to
+     `io.mist.core.generation.MistGenerator`.
+  5. Two boundary converters added on the adapter side:
+     - `PojoConverter` now also has reverse direction methods
+       (`toRestest(Operation)`, `toRestest(TestParameter)`, …)
+       so adapter-side glue can hand mist-core pojos back to
+       RESTest call sites.
+     - `TestCaseConverter` (~210 LOC) bridges
+       `io.mist.core.testcase.{TestCase, MultiServiceTestCase}`
+       (what MistGenerator produces) → the RESTest carriers
+       (what the RESTAssured writer's `Collection<TestCase>`
+       expects). Prompt § 10 forbids touching the writer's
+       internals; this converter sits between MistRunner and
+       the writer so the writer stays unchanged.
+  6. Demo verification on the live TrainTicket cluster.
+
 ### SPI scaffolding (B1.E + B1.F, partial)
 
 The prompt's § Phase B1.E enumerates a "minimum viable SPI surface"
