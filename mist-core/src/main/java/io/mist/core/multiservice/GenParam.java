@@ -1,4 +1,4 @@
-package es.us.isa.restest.configuration.multiservice;
+package io.mist.core.multiservice;
 
 import java.util.List; /** Represents a single parameter for a ValueGenerator (name and one or more values). */
 public class GenParam {

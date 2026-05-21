@@ -1,8 +1,8 @@
-package es.us.isa.restest.configuration.multiservice;
+package io.mist.core.multiservice;
 
-import es.us.isa.restest.configuration.pojos.Auth;
-import es.us.isa.restest.configuration.pojos.TestConfiguration;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
+import io.mist.core.spec.Auth;
+import io.mist.core.spec.TestConfiguration;
+import io.mist.core.spec.TestConfigurationObject;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -65,12 +65,12 @@ public class MicroserviceTestConfigurationIO {
 
             // Convert each operation‐entry (a Map) into your POJO.Operation
             TestConfiguration tc = new TestConfiguration();
-            List<es.us.isa.restest.configuration.pojos.Operation> pojoOps = new ArrayList<>();
+            List<io.mist.core.spec.Operation> pojoOps = new ArrayList<>();
 
             for (Object opObj : opsList) {
                 String singleYaml = yaml.dump(opObj);
-                es.us.isa.restest.configuration.pojos.Operation pojoOp =
-                        yaml.loadAs(singleYaml, es.us.isa.restest.configuration.pojos.Operation.class);
+                io.mist.core.spec.Operation pojoOp =
+                        yaml.loadAs(singleYaml, io.mist.core.spec.Operation.class);
                 pojoOps.add(pojoOp);
             }
             tc.setOperations(pojoOps);

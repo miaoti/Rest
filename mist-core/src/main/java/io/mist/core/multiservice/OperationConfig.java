@@ -1,4 +1,4 @@
-package es.us.isa.restest.configuration.multiservice;
+package io.mist.core.multiservice;
 
 import java.util.List;
 import java.util.Map;

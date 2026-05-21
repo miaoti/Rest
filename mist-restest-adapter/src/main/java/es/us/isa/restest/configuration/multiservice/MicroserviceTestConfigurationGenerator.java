@@ -2,6 +2,11 @@ package es.us.isa.restest.configuration.multiservice;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.mist.core.multiservice.GenParam;
+import io.mist.core.multiservice.MultiServiceTestConfiguration;
+import io.mist.core.multiservice.OperationConfig;
+import io.mist.core.multiservice.TestParameter;
+import io.mist.core.multiservice.ValueGenerator;
 import io.mist.core.spec.OpenAPIOperation;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.specification.OpenAPISpecificationVisitor;

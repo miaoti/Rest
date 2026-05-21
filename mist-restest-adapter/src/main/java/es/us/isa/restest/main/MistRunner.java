@@ -1,10 +1,10 @@
 package es.us.isa.restest.main;
 
 import io.mist.core.analysis.FaultDetectionTracker;
-import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
-import es.us.isa.restest.configuration.pojos.Auth;
-import es.us.isa.restest.configuration.pojos.TestConfiguration;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
+import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
+import io.mist.core.spec.Auth;
+import io.mist.core.spec.TestConfiguration;
+import io.mist.core.spec.TestConfigurationObject;
 import es.us.isa.restest.coverage.CoverageGatherer;
 import es.us.isa.restest.coverage.CoverageMeter;
 import io.mist.core.enhancer.FailedTestCollector;
@@ -538,14 +538,16 @@ public final class MistRunner {
 
         // 7. Instantiate the generator. The generator lives in mist-core
         // and accepts the swagger-core OpenAPI model + vendored
-        // io.mist.core.spec.* pojos; convert the adapter's RESTest-typed
-        // OpenAPISpecification and TestConfigurationObject at the
-        // boundary via PojoConverter.
+        // io.mist.core.spec.* pojos. After the multiservice loader
+        // started returning vendored TCOs directly, only the OpenAPI
+        // spec map still needs the adapter-side conversion (the
+        // RESTest OpenAPISpecification parser is unwrapped via
+        // PojoConverter.toOpenApiMap).
         gen = new MistGenerator(
                 spec == null ? null : spec.getSpecification(),  // primarySpec → OpenAPI
-                io.mist.adapter.restest.PojoConverter.toCore(dummyPrimaryConf),
+                dummyPrimaryConf,
                 io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
-                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
+                serviceConfigs,
                 scenarios,
                 /* use LLM for params  */ true,
                 /* use LLM for flows   */ true

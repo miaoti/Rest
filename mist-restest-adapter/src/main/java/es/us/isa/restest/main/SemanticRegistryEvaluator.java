@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
+import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
+import io.mist.core.spec.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.registry.SemanticDependencyRegistry.Pass;
@@ -266,7 +266,7 @@ public class SemanticRegistryEvaluator {
 
         SemanticDependencyRegistry reg =
                 SemanticDependencyRegistry.build(
-                        io.mist.adapter.restest.PojoConverter.toCoreMap(configs),
+                        configs,
                         io.mist.adapter.restest.PojoConverter.toOpenApiMap(specs),
                         scenarios, passes);
 

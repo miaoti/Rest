@@ -1,7 +1,7 @@
 package es.us.isa.restest.main;
 
-import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
+import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
+import io.mist.core.spec.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.TraceWorkflowExtractor;
@@ -62,7 +62,7 @@ public class SemanticRegistryDumper {
         }
 
         SemanticDependencyRegistry reg = SemanticDependencyRegistry.build(
-                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
+                serviceConfigs,
                 io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
                 scenarios);
         reg.dumpRegistryToFile(OUTPUT_PATH);

@@ -1,9 +1,9 @@
 package io.mist.cli;
 
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationGenerator;
-import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
-import es.us.isa.restest.configuration.multiservice.MultiServiceTestConfiguration;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
+import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
+import io.mist.core.multiservice.MultiServiceTestConfiguration;
+import io.mist.core.spec.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
 
 import java.io.FileInputStream;
