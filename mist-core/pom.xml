@@ -84,7 +84,9 @@
 			<version>${swagger.version}</version>
 		</dependency>
 
-		<!-- Logging (API on the compile classpath, core at runtime only) -->
+		<!-- Logging: API on the compile classpath; core is now also on
+		     compile because ConsoleDedupFilter extends AbstractFilter and
+		     references log4j-core Filter / LogEvent / Plugin types. -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
@@ -94,7 +96,6 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
-			<scope>runtime</scope>
 		</dependency>
 
 		<!-- JUnit 4 runtime — needed in the compile scope because

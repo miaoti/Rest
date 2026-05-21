@@ -1,6 +1,8 @@
-package es.us.isa.restest.runners;
+package io.mist.core.workflow;
 
-import es.us.isa.restest.util.*;
+import io.mist.core.util.ApiClient;
+import io.mist.core.util.ApiResponse;
+import io.mist.core.util.TraceValidator;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
 

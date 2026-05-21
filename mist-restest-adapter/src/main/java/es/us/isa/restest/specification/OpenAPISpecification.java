@@ -1,5 +1,6 @@
 package es.us.isa.restest.specification;
 
+import io.mist.core.spec.OpenAPIOperation;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.servers.Server;

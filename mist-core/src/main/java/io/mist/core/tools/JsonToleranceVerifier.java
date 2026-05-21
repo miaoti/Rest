@@ -1,4 +1,4 @@
-package es.us.isa.restest.tools;
+package io.mist.core.tools;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * in {@code TestCaseEnhancer} accepts the kinds of malformed JSON the LLM emits in
  * production: line comments, trailing commas, single quotes, and unquoted keys.
  *
- * <p>Run via {@code mvn -q exec:java -Dexec.mainClass=es.us.isa.restest.tools.JsonToleranceVerifier}.
+ * <p>Run via {@code mvn -q exec:java -Dexec.mainClass=io.mist.core.tools.JsonToleranceVerifier}.
  */
 public final class JsonToleranceVerifier {
 

@@ -2,7 +2,7 @@ package es.us.isa.restest.configuration.multiservice;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import es.us.isa.restest.specification.OpenAPIOperation;
+import io.mist.core.spec.OpenAPIOperation;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.specification.OpenAPISpecificationVisitor;
 import es.us.isa.restest.specification.OpenAPIParameter;
@@ -56,9 +56,14 @@ public class MicroserviceTestConfigurationGenerator {
 
             List<TestParameter> paramConfigs = new ArrayList<>();
 
-            // 1) existing path/query/header parameters
-            for (OpenAPIParameter apiParam : apiOp.getParameters()) {
-                paramConfigs.add(toTestParam(apiParam));
+            // 1) existing path/query/header parameters.
+            //    apiOp.getParameters() now returns swagger's raw Parameter
+            //    list (mist-core OpenAPIOperation does not depend on
+            //    RESTest's OpenAPIParameter wrapper); wrap each at this
+            //    consumer boundary so the existing toTestParam() helper
+            //    signature stays unchanged.
+            for (io.swagger.v3.oas.models.parameters.Parameter swParam : apiOp.getParameters()) {
+                paramConfigs.add(toTestParam(new OpenAPIParameter(swParam)));
             }
 
             // 2) ▼ Enhanced: inspect requestBody → application/json schema with $ref resolution

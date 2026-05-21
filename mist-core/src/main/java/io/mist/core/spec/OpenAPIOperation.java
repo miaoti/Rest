@@ -1,5 +1,5 @@
 // src/main/java/es/us/isa/restest/specification/OpenAPIOperation.java
-package es.us.isa.restest.specification;
+package io.mist.core.spec;
 
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -29,14 +29,16 @@ public class OpenAPIOperation {
     }
     public List<String> getTags() { return operation.getTags(); }
     public List<Server> getServers() { return operation.getServers(); }
-    public List<OpenAPIParameter> getParameters() {
-        List<OpenAPIParameter> list = new ArrayList<>();
-        if (operation.getParameters() != null) {
-            for (Parameter p : operation.getParameters()) {
-                list.add(new OpenAPIParameter(p));
-            }
-        }
-        return list;
+    /**
+     * Returns the underlying swagger-core {@link Parameter} list. Callers
+     * that want the RESTest-side {@code OpenAPIParameter} wrapper can wrap
+     * each entry themselves; keeping this method swagger-typed lets
+     * mist-core stay free of RESTest's spec-wrapper hierarchy.
+     */
+    public List<Parameter> getParameters() {
+        return operation.getParameters() != null
+                ? operation.getParameters()
+                : Collections.emptyList();
     }
     public List<String> getResponseCodes() {
         return operation.getResponses() != null

@@ -1,4 +1,4 @@
-package es.us.isa.restest.util;
+package io.mist.core.util;
 
 import okhttp3.*;
 import okhttp3.internal.Util;

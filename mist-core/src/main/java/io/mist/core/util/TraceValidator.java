@@ -1,4 +1,4 @@
-package es.us.isa.restest.util;
+package io.mist.core.util;
 
 import io.mist.core.workflow.WorkflowStep;
 

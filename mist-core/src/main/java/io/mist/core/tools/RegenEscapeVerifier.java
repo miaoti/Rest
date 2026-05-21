@@ -1,4 +1,4 @@
-package es.us.isa.restest.tools;
+package io.mist.core.tools;
 
 import io.mist.core.enhancer.FailedTestResult;
 import io.mist.core.enhancer.TestFileRegenerator;
@@ -29,7 +29,7 @@ import javax.tools.ToolProvider;
  *
  * <p>Usage:
  * <pre>
- *   mvn -q exec:java -Dexec.mainClass=es.us.isa.restest.tools.RegenEscapeVerifier
+ *   mvn -q exec:java -Dexec.mainClass=io.mist.core.tools.RegenEscapeVerifier
  * </pre>
  *
  * <p>Exits 0 on success, non-zero with a printed diagnostic on failure.

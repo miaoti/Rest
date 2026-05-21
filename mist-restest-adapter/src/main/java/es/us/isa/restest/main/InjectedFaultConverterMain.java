@@ -1,6 +1,6 @@
 package es.us.isa.restest.main;
 
-import es.us.isa.restest.util.InjectedFaultConverter;
+import io.mist.core.util.InjectedFaultConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
