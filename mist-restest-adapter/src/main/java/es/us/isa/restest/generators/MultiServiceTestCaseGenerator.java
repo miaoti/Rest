@@ -5,6 +5,7 @@ import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
 import io.mist.core.fault.InvalidInputPool;
+import io.mist.core.fault.PoolKey;
 import io.mist.core.generation.AiDrivenLLMGenerator;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.core.smart.InputFetchRegistry;
@@ -85,49 +86,9 @@ public class MultiServiceTestCaseGenerator {
     // tracking ONLY approved keys plus the approvedInDedupPass tag fixes that.
     private final Set<String> approvedApiKeys = new LinkedHashSet<>();
 
-    /**
-     * Composite key for the per-root faulty-parameter pool map. Promotes the
-     * earlier {@code paramName}-only key to the pair {@code (paramName, paramLocation)}
-     * so two parameters in the same operation with the same name but different
-     * OpenAPI locations (e.g. a path {@code {id}} and a header {@code Id}) no
-     * longer collide and overwrite each other.
-     *
-     * <p>{@code paramLocation} must be a value returned by
-     * {@link #normaliseParamLocation(String)} so equality is reliable across
-     * spec-authoring quirks (case differences, OpenAPI-2 {@code formData},
-     * null/empty defaults).
-     */
-    public static final class PoolKey {
-        final String paramName;
-        final String paramLocation;
-
-        public PoolKey(String paramName, String paramLocation) {
-            this.paramName = paramName;
-            this.paramLocation = paramLocation;
-        }
-
-        public String getParamName()     { return paramName; }
-        public String getParamLocation() { return paramLocation; }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof PoolKey)) return false;
-            PoolKey k = (PoolKey) o;
-            return Objects.equals(paramName, k.paramName)
-                    && Objects.equals(paramLocation, k.paramLocation);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(paramName, paramLocation);
-        }
-
-        @Override
-        public String toString() {
-            return paramName + "@" + paramLocation;
-        }
-    }
+    // PoolKey lives in io.mist.core.fault.PoolKey (extracted from this class
+    // as part of the B1 sever so the workflow pipeline can reference it
+    // without dragging in the rest of MultiServiceTestCaseGenerator).
 
     /**
      * Represents a single fault-injection target: one invalid value fired at

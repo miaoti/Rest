@@ -5,6 +5,7 @@ import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import io.mist.core.generation.AiDrivenLLMGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import io.mist.core.fault.InvalidInputPool;
+import io.mist.core.fault.PoolKey;
 import io.mist.core.smart.SmartInputFetchConfig;
 import io.mist.core.smart.SmartInputFetcher;
 import es.us.isa.restest.specification.OpenAPISpecification;
@@ -58,7 +59,7 @@ public final class PipelineContext {
     /** Output map: rootApiKey → (paramName → list of pre-generated values). */
     public final Map<String, Map<String, List<String>>> sharedParameterPools;
     /** Output map: rootApiKey → (paramName → InvalidInputPool of fault values). */
-    public final Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyParameterPools;
+    public final Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools;
 
     public PipelineContext(List<WorkflowScenario> scenarios,
                            Map<String, OpenAPISpecification> serviceSpecs,
@@ -84,7 +85,7 @@ public final class PipelineContext {
                            SmartInputFetchConfig smartFetchConfig,
                            boolean useLLM,
                            Map<String, Map<String, List<String>>> sharedParameterPools,
-                           Map<String, Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool>> faultyParameterPools) {
+                           Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools) {
         this.scenarios = scenarios;
         this.serviceSpecs = serviceSpecs;
         this.serviceConfigs = serviceConfigs;
