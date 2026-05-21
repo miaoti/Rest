@@ -325,7 +325,7 @@ public final class SharedPoolSupport {
             }
             log.info("Processing root with key '{}'", rootApiKey);
 
-            Map<MultiServiceTestCaseGenerator.PoolKey, InvalidInputPool> faultyPool =
+            Map<PoolKey, InvalidInputPool> faultyPool =
                     generateFaultyPoolForSingleRoot(rootStep, rootApiKey,
                             serviceConfigs, useLLM, llmGen);
 
