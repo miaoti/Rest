@@ -8,7 +8,7 @@
          with the CLI Quick Start in README.md. -->
     <option name="MAIN_CLASS_NAME" value="io.mist.cli.MistMain" />
     <module name="mist-cli" />
-    <option name="PROGRAM_PARAMETERS" value="mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties" />
+    <option name="PROGRAM_PARAMETERS" value="mist-cli/src/main/resources/My-Example/trainticket-demo.properties" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="VM_PARAMETERS" value="-Drandom.seed=42" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
