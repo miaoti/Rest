@@ -1,7 +1,7 @@
 package es.us.isa.restest.coverage;
 
 import static es.us.isa.restest.coverage.CriterionType.*;
-import static es.us.isa.restest.util.IDGenerator.generateId;
+import static io.mist.core.util.IDGenerator.generateId;
 import static org.junit.Assert.*;
 
 import java.io.IOException;

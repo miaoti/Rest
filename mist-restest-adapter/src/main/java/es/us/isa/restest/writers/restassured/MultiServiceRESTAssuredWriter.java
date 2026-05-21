@@ -1,7 +1,7 @@
 package es.us.isa.restest.writers.restassured;
 
 import es.us.isa.restest.configuration.pojos.Operation;
-import es.us.isa.restest.util.ConsoleProgressBar;
+import io.mist.core.util.ConsoleProgressBar;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
 import es.us.isa.restest.util.RESTestException;

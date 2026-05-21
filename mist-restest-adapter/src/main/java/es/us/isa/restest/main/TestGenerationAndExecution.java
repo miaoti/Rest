@@ -17,6 +17,7 @@ import es.us.isa.restest.util.Timer;
 import es.us.isa.restest.writers.IWriter;
 import es.us.isa.restest.writers.restassured.RESTAssuredWriter;
 import es.us.isa.restest.util.*;
+import io.mist.core.util.IDGenerator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

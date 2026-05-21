@@ -3,7 +3,7 @@ package es.us.isa.restest.runners;
 import es.us.isa.restest.generators.AbstractTestCaseGenerator;
 import es.us.isa.restest.reporting.AllureReportManager;
 import es.us.isa.restest.reporting.StatsReportManager;
-import es.us.isa.restest.util.IDGenerator;
+import io.mist.core.util.IDGenerator;
 import es.us.isa.restest.util.PropertyManager;
 import es.us.isa.restest.util.RESTestException;
 import es.us.isa.restest.util.Timer;

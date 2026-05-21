@@ -9,6 +9,7 @@ import es.us.isa.restest.inputs.stateful.ParameterGenerator;
 import es.us.isa.restest.mutation.TestCaseMutation;
 import es.us.isa.restest.specification.OpenAPISpecificationVisitor;
 import es.us.isa.restest.util.*;
+import io.mist.core.util.IDGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;

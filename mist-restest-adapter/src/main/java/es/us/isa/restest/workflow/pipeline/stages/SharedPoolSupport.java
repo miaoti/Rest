@@ -9,7 +9,7 @@ import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.core.smart.SmartInputFetchConfig;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
-import es.us.isa.restest.util.ConsoleProgressBar;
+import io.mist.core.util.ConsoleProgressBar;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
 

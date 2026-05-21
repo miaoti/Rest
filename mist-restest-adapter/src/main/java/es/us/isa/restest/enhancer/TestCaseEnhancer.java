@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import io.mist.core.enhancer.FailedTestResult;
 import io.mist.core.enhancer.ParameterSnapshot;
 import io.mist.llm.LLMService;
-import es.us.isa.restest.util.ConsoleProgressBar;
+import io.mist.core.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

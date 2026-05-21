@@ -26,7 +26,7 @@ import es.us.isa.restest.workflow.pipeline.stages.Phase3ShatteringStage;
 import es.us.isa.restest.workflow.pipeline.stages.Phase4DecompositionStage;
 import es.us.isa.restest.workflow.pipeline.stages.SharedPoolGenerationStage;
 
-import es.us.isa.restest.util.ConsoleProgressBar;
+import io.mist.core.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

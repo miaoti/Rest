@@ -7,7 +7,7 @@ import es.us.isa.restest.coverage.StatusCodeTarget;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.llm.LLMService;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
-import es.us.isa.restest.util.ConsoleProgressBar;
+import io.mist.core.util.ConsoleProgressBar;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,7 +1,7 @@
-package es.us.isa.restest.util;
+package io.mist.core.util;
 
 /**
- * 
+ *
  * @author Sergio Segura
  */
 import java.nio.ByteBuffer;
@@ -11,10 +11,10 @@ import java.util.UUID;
 
 public class IDGenerator {
 
-	
+
 	static long seed = -1;
 	static Random rand = new Random();
-	
+
 	/**
 	 * @return a short ID (13 characters)
 	 */
@@ -29,7 +29,7 @@ public class IDGenerator {
 	public static String generateTimeId() {
 		return String.valueOf(new Date().getTime());
 	}
-	
+
 	public static void setSeed(long s) {
 		seed=s;
 		rand.setSeed(seed);

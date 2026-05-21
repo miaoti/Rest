@@ -21,8 +21,8 @@ import es.us.isa.restest.reporting.StatsReportManager;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
-import es.us.isa.restest.util.ConsoleProgressBar;
-import es.us.isa.restest.util.IDGenerator;
+import io.mist.core.util.ConsoleProgressBar;
+import io.mist.core.util.IDGenerator;
 import es.us.isa.restest.util.PropertyManager;
 import es.us.isa.restest.util.RESTestException;
 import es.us.isa.restest.util.Timer;
@@ -235,7 +235,7 @@ public final class MistRunner {
         // appears even with the console appender filtered to WARN+. Gives
         // the user a visual anchor that the tool actually started and what
         // version is running, before any per-phase work begins.
-        es.us.isa.restest.util.ConsoleProgressBar.banner("v1.6.0-SNAPSHOT");
+        io.mist.core.util.ConsoleProgressBar.banner("v1.6.0-SNAPSHOT");
 
         // Create target directory if it does not exist
         createDir(inputs.targetDirJava);
@@ -2481,7 +2481,7 @@ public final class MistRunner {
      *
      * <p>{@code mirrorToStream=false} ensures the raw byte echo to the
      * original {@code FileDescriptor.out} is suppressed — only the
-     * log4j-filtered view reaches the terminal. The {@link es.us.isa.restest.util.ConsoleProgressBar}
+     * log4j-filtered view reaches the terminal. The {@link io.mist.core.util.ConsoleProgressBar}
      * draws via a raw {@code FileDescriptor} stream and is unaffected.
      *
      * <p>Idempotent: subsequent calls (e.g. when run() is invoked twice

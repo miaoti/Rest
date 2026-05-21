@@ -1,4 +1,4 @@
-package es.us.isa.restest.util;
+package io.mist.core.util;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
