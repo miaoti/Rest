@@ -132,6 +132,21 @@
 			<version>${junit.version}</version>
 		</dependency>
 
+		<!-- SLF4J→Log4j2 bridge. Transitive deps (swagger-parser,
+		     swagger-request-validator, etc.) call slf4j-api, which
+		     defaults to a no-op binding ("NOP logger") and floods stderr
+		     with three SLF4J ERROR lines at every JVM start when no
+		     binding is on the classpath. Pre-sever this binding came
+		     in transitively via mist-restest-adapter; after the adapter
+		     was deleted the binding has to be declared here. Pin to a
+		     1.x impl because slf4j-api 1.7.30 is what the transitive
+		     graph still pulls in. -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

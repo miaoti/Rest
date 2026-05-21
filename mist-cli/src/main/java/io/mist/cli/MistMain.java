@@ -39,7 +39,7 @@ public final class MistMain {
     public static void main(String[] args) throws Exception {
         Path propsFile = Paths.get(args.length > 0
                 ? args[0]
-                : "mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties")
+                : "mist-cli/src/main/resources/My-Example/trainticket-demo.properties")
                 .toAbsolutePath().normalize();
 
         Properties coreProps = new Properties();
@@ -51,7 +51,7 @@ public final class MistMain {
             System.err.println("Usage: java -jar mist-cli/target/mist.jar <path/to/your.properties>");
             System.err.println();
             System.err.println("For the bundled TrainTicket demo from the repo root:");
-            System.err.println("  java -jar mist-cli/target/mist.jar mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties");
+            System.err.println("  java -jar mist-cli/target/mist.jar mist-cli/src/main/resources/My-Example/trainticket-demo.properties");
             System.err.println();
             System.err.println("In IntelliJ, use the pre-shipped run configuration");
             System.err.println("'MIST: Demo (bundled TrainTicket)' (Run → Edit Configurations).");
