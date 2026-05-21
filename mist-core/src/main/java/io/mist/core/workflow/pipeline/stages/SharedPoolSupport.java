@@ -297,40 +297,42 @@ public final class SharedPoolSupport {
         int rootProgress = 0;
         ConsoleProgressBar.begin("Faulty Pools", totalRoots);
 
-        for (Map.Entry<String, List<WorkflowScenario>> entry : groupedScenarios.entrySet()) {
-            String groupKey = entry.getKey();
-            WorkflowScenario representativeScenario = entry.getValue().get(0);
-
-            List<WorkflowStep> roots = representativeScenario.getRootSteps();
-            for (int rootIdx = 0; rootIdx < roots.size(); rootIdx++) {
-                WorkflowStep rootStep = roots.get(rootIdx);
-                String rootApiKey = StageSupport.extractRootApiFromStep(rootStep);
-                if (rootApiKey == null) {
-                    rootProgress++;
-                    ConsoleProgressBar.update("skip " + groupKey);
-                    log.debug("Skipping root {} in group '{}' — no HTTP info", rootIdx, groupKey);
-                    continue;
+        // Iterate ALL distinct rootApiKeys across ALL scenarios (deduped).
+        // Previously only representative.getRootSteps() was scanned, which
+        // dropped roots that appeared only in non-representative scenarios —
+        // most notably DELETE /admintravel/{tripId}, whose pool was never
+        // generated, so no negative variants (and no INVALID_TRIP_ID_FORMAT
+        // detection) ever fired.
+        java.util.LinkedHashMap<String, WorkflowStep> uniqueRoots = new java.util.LinkedHashMap<>();
+        for (java.util.Map.Entry<String, java.util.List<WorkflowScenario>> entry : groupedScenarios.entrySet()) {
+            for (WorkflowScenario scenario : entry.getValue()) {
+                for (WorkflowStep rootStep : scenario.getRootSteps()) {
+                    String rootApiKey = StageSupport.extractRootApiFromStep(rootStep);
+                    if (rootApiKey != null) uniqueRoots.putIfAbsent(rootApiKey, rootStep);
                 }
-                if (faultyParameterPools.containsKey(rootApiKey)) {
-                    rootProgress++;
-                    ConsoleProgressBar.update("reuse " + rootApiKey);
-                    log.debug("Faulty pool for '{}' already generated, reusing", rootApiKey);
-                    continue;
-                }
-
-                log.info("Processing root {}/{} with key '{}' in group '{}'",
-                        rootIdx + 1, roots.size(), rootApiKey, groupKey);
-
-                Map<PoolKey, InvalidInputPool> faultyPool =
-                        generateFaultyPoolForSingleRoot(rootStep, rootApiKey,
-                                serviceConfigs, useLLM, llmGen);
-
-                faultyParameterPools.put(rootApiKey, faultyPool);
-                rootProgress++;
-                ConsoleProgressBar.update(rootApiKey);
-                log.info("Generated faulty pool for '{}' with {} parameters: {}",
-                        rootApiKey, faultyPool.size(), faultyPool.keySet());
             }
+        }
+        log.info("Unique root API keys across all scenarios: {}", uniqueRoots.size());
+
+        for (java.util.Map.Entry<String, WorkflowStep> rootEntry : uniqueRoots.entrySet()) {
+            String rootApiKey = rootEntry.getKey();
+            WorkflowStep rootStep = rootEntry.getValue();
+            if (faultyParameterPools.containsKey(rootApiKey)) {
+                rootProgress++;
+                ConsoleProgressBar.update("reuse " + rootApiKey);
+                continue;
+            }
+            log.info("Processing root with key '{}'", rootApiKey);
+
+            Map<PoolKey, InvalidInputPool> faultyPool =
+                    generateFaultyPoolForSingleRoot(rootStep, rootApiKey,
+                            serviceConfigs, useLLM, llmGen);
+
+            faultyParameterPools.put(rootApiKey, faultyPool);
+            rootProgress++;
+            ConsoleProgressBar.update(rootApiKey);
+            log.info("Generated faulty pool for '{}' with {} parameters: {}",
+                    rootApiKey, faultyPool.size(), faultyPool.keySet());
         }
         ConsoleProgressBar.complete();
 

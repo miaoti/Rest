@@ -140,7 +140,16 @@ public class MistGenerator {
             if (rootApiKey == null) continue;
 
             Map<PoolKey, InvalidInputPool> pools = faultyParameterPools.get(rootApiKey);
-            if (pools == null || pools.isEmpty()) continue;
+            if (pools == null || pools.isEmpty()) {
+                // Fallback: rootApiKey may have a literal path-param value (e.g. /admintravel/nullescss)
+                // while the pool was generated under the templated form (/admintravel/{tripId}).
+                String matchedKey = findPoolKeyByTemplateMatch(rootApiKey);
+                if (matchedKey != null) {
+                    pools = faultyParameterPools.get(matchedKey);
+                    log.info("Fault pool lookup fallback: '{}' → '{}'", rootApiKey, matchedKey);
+                }
+                if (pools == null || pools.isEmpty()) continue;
+            }
 
             for (Map.Entry<PoolKey, InvalidInputPool> pe : pools.entrySet()) {
                 PoolKey key = pe.getKey();
@@ -2663,6 +2672,23 @@ public class MistGenerator {
      * obvious gateway-only / unconfigured-service scenarios early so we don't
      * burn 100+ variants on them.</p>
      */
+
+    /**
+     * Find a key in faultyParameterPools whose templated path matches the literal-path
+     * rootApiKey. The pool gen normalises path params to {param} while scenario rootApiKeys
+     * may carry literal trace values. Without this fallback, no negative variants fire for
+     * path-parameterised endpoints like DELETE /admintravel/{tripId}.
+     */
+    private String findPoolKeyByTemplateMatch(String literalKey) {
+        if (literalKey == null) return null;
+        for (String poolKey : faultyParameterPools.keySet()) {
+            if (poolKey.equals(literalKey)) return poolKey;
+            String poolKeyAsLiteralRegex = poolKey.replaceAll("__[a-zA-Z]+_$", "_[^_]+");
+            if (literalKey.matches(poolKeyAsLiteralRegex)) return poolKey;
+        }
+        return null;
+    }
+
     private boolean scenarioHasBuildableRoot(WorkflowScenario scenario) {
         for (WorkflowStep root : scenario.getRootSteps()) {
             if (subtreeHasConfiguredService(root)) {

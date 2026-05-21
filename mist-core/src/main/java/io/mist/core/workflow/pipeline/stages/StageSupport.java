@@ -175,16 +175,33 @@ public final class StageSupport {
     }
 
     /** Locate the corresponding Operation object by method + path. */
-    static Operation findOperation(TestConfigurationObject cfg, String verb, String path) {
+    public static Operation findOperation(TestConfigurationObject cfg, String verb, String path) {
         if (cfg.getTestConfiguration() == null ||
                 cfg.getTestConfiguration().getOperations() == null) {
             return null;
         }
 
-        return cfg.getTestConfiguration().getOperations().stream()
+        Operation exact = cfg.getTestConfiguration().getOperations().stream()
                 .filter(o -> verb.equalsIgnoreCase(o.getMethod()) &&
                         path.equals(o.getTestPath()))
                 .findFirst().orElse(null);
+        if (exact != null) return exact;
+
+        // Path-template tolerant fallback: a trace step may carry a literal
+        // path like /admintravel/G1235 while the OpenAPI testPath is the
+        // templated /admintravel/{tripId}. Match each {param} segment against
+        // [^/]+ so pool generation succeeds for path-parameterised endpoints.
+        return cfg.getTestConfiguration().getOperations().stream()
+                .filter(o -> verb.equalsIgnoreCase(o.getMethod()) &&
+                        pathMatchesTemplate(path, o.getTestPath()))
+                .findFirst().orElse(null);
+    }
+
+    private static boolean pathMatchesTemplate(String literal, String template) {
+        if (template == null || literal == null) return false;
+        if (!template.contains("{")) return false;
+        String regex = template.replaceAll("\\{[^/]+\\}", "[^/]+");
+        return literal.matches(regex);
     }
 
     /** Build a {@link ParameterInfo} with extended context for richer LLM prompts. */

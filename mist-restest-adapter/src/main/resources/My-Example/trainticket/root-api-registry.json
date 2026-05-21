@@ -1,24 +1,5 @@
 {
   "root_apis": {
-    "PUT /api/v1/adminbasicservice/adminbasic/trains": {
-      "path": "/api/v1/adminbasicservice/adminbasic/trains",
-      "method": "PUT",
-      "trees": [{
-        "children": [{
-          "path": "/api/v1/adminbasicservice/adminbasic/trains",
-          "method": "PUT",
-          "children": [{
-            "path": "/api/v1/trainservice/trains",
-            "method": "PUT",
-            "children": [{
-              "path": "/api/v1/trainservice/trains",
-              "method": "PUT"
-            }]
-          }]
-        }],
-        "source_trace": "traces-1772605095842"
-      }]
-    },
     "GET /api/v1/consignservice/consigns/order/df2b3a56-3043-481d-87b1-6c347ccc5816": {
       "path": "/api/v1/consignservice/consigns/order/df2b3a56-3043-481d-87b1-6c347ccc5816",
       "method": "GET",
@@ -41,6 +22,25 @@
             }]
           }
         ],
+        "source_trace": "traces-1772605095842"
+      }]
+    },
+    "PUT /api/v1/adminbasicservice/adminbasic/trains": {
+      "path": "/api/v1/adminbasicservice/adminbasic/trains",
+      "method": "PUT",
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/adminbasicservice/adminbasic/trains",
+          "method": "PUT",
+          "children": [{
+            "path": "/api/v1/trainservice/trains",
+            "method": "PUT",
+            "children": [{
+              "path": "/api/v1/trainservice/trains",
+              "method": "PUT"
+            }]
+          }]
+        }],
         "source_trace": "traces-1772605095842"
       }]
     },
@@ -711,12 +711,12 @@
     "GET /api/v1/admintravelservice/admintravel": {
       "path": "/api/v1/admintravelservice/admintravel",
       "method": "GET",
-      "trees": [
-        {
-          "children": [{
-            "path": "/api/v1/admintravelservice/admintravel",
-            "method": "GET",
-            "children": [{
+      "trees": [{
+        "children": [{
+          "path": "/api/v1/admintravelservice/admintravel",
+          "method": "GET",
+          "children": [
+            {
               "path": "/api/v1/travelservice/admin_trip",
               "method": "GET",
               "children": [{
@@ -724,18 +724,10 @@
                 "method": "GET",
                 "children": [
                   {
-                    "path": "/api/v1/routeservice/routes/null",
+                    "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
                     "method": "GET",
                     "children": [{
-                      "path": "/api/v1/routeservice/routes/null",
-                      "method": "GET"
-                    }]
-                  },
-                  {
-                    "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
-                    "method": "GET",
-                    "children": [{
-                      "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                      "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
                       "method": "GET"
                     }]
                   },
@@ -748,16 +740,70 @@
                     }]
                   },
                   {
+                    "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                    "method": "GET",
+                    "children": [{
+                      "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
+                      "method": "GET"
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                    "method": "GET",
+                    "children": [{
+                      "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
+                      "method": "GET"
+                    }]
+                  },
+                  {
                     "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
                     "method": "GET",
                     "children": [{
                       "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
                       "method": "GET"
                     }]
+                  }
+                ]
+              }]
+            },
+            {
+              "path": "/api/v1/travel2service/admin_trip",
+              "method": "GET",
+              "children": [{
+                "path": "/api/v1/travel2service/admin_trip",
+                "method": "GET",
+                "children": [
+                  {
+                    "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                    "method": "GET",
+                    "children": [{
+                      "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
+                      "method": "GET"
+                    }]
                   },
                   {
-                    "path": "/api/v1/routeservice/routes/[1,2,3]",
-                    "method": "GET"
+                    "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                    "method": "GET",
+                    "children": [{
+                      "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
+                      "method": "GET"
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                    "method": "GET",
+                    "children": [{
+                      "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
+                      "method": "GET"
+                    }]
+                  },
+                  {
+                    "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                    "method": "GET",
+                    "children": [{
+                      "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
+                      "method": "GET"
+                    }]
                   },
                   {
                     "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
@@ -768,137 +814,20 @@
                     }]
                   },
                   {
-                    "path": "/api/v1/routeservice/routes/",
+                    "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
                     "method": "GET",
                     "children": [{
-                      "path": "/api/v1/routeservice/routes/",
+                      "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
                       "method": "GET"
                     }]
                   }
                 ]
               }]
-            }]
-          }],
-          "source_trace": "traces-1772605145922"
-        },
-        {
-          "children": [{
-            "path": "/api/v1/admintravelservice/admintravel",
-            "method": "GET",
-            "children": [
-              {
-                "path": "/api/v1/travelservice/admin_trip",
-                "method": "GET",
-                "children": [{
-                  "path": "/api/v1/travelservice/admin_trip",
-                  "method": "GET",
-                  "children": [
-                    {
-                      "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/92708982-77af-4318-be25-57ccb0ff69ad",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/aefcef3f-3f42-46e8-afd7-6cb2a928bd3d",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/a3f256c1-0e43-4f7d-9c21-121bf258101f",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/084837bb-53c8-4438-87c8-0321a4d09917",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/f3d4d4ef-693b-4456-8eed-59c0d717dd08",
-                        "method": "GET"
-                      }]
-                    }
-                  ]
-                }]
-              },
-              {
-                "path": "/api/v1/travel2service/admin_trip",
-                "method": "GET",
-                "children": [{
-                  "path": "/api/v1/travel2service/admin_trip",
-                  "method": "GET",
-                  "children": [
-                    {
-                      "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/0b23bd3e-876a-4af3-b920-c50a90c90b04",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/9fc9c261-3263-4bfa-82f8-bb44e06b2f52",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/d693a2c5-ef87-4a3c-bef8-600b43f62c68",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/20eb7122-3a11-423f-b10a-be0dc5bce7db",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/1367db1f-461e-4ab7-87ad-2bcc05fd9cb7",
-                        "method": "GET"
-                      }]
-                    },
-                    {
-                      "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
-                      "method": "GET",
-                      "children": [{
-                        "path": "/api/v1/routeservice/routes/e6045d03-b75e-4bda-9e85-82b7149516a5",
-                        "method": "GET"
-                      }]
-                    }
-                  ]
-                }]
-              }
-            ]
-          }],
-          "source_trace": "traces-1759192489270"
-        }
-      ]
+            }
+          ]
+        }],
+        "source_trace": "traces-1759192489270"
+      }]
     },
     "POST /api/v1/adminrouteservice/adminroute": {
       "path": "/api/v1/adminrouteservice/adminroute",
@@ -1734,8 +1663,8 @@
   },
   "registry_metadata": {
     "total_root_apis": 38,
-    "last_updated": "Sun May 17 15:27:57 CDT 2026",
-    "total_trees": 39,
+    "last_updated": "Wed May 20 23:07:31 CDT 2026",
+    "total_trees": 38,
     "version": "1.0"
   }
 }

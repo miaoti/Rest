@@ -180,7 +180,15 @@ public final class TestCaseConverter {
         dst.setHeaderParameters(copyMap(src.getHeaderParameters()));
         dst.setPathParameters(copyMap(src.getPathParameters()));
         dst.setQueryParameters(copyMap(src.getQueryParameters()));
-        dst.setFormParameters(copyMap(src.getFormParameters()));
+        // setFormParameters() invokes setFormDataContentType(), which dereferences
+        // the dst's inputFormat — which is null for MultiServiceTestCase's default
+        // ctor. Skip the call when the source has no form params so we don't trip
+        // the NPE; the writer never reads formParameters off a MultiServiceTestCase
+        // anyway (workflows live on the steps, not the base carrier).
+        Map<String, String> srcForm = src.getFormParameters();
+        if (srcForm != null && !srcForm.isEmpty()) {
+            dst.setFormParameters(copyMap(srcForm));
+        }
         dst.setBodyParameter(src.getBodyParameter());
         dst.setExpectedResponse(src.getExpectedResponse());
     }

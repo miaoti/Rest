@@ -3,11 +3,11 @@ version: "1.0"
 lastUpdated:
 - 2026
 - 5
-- 18
+- 20
+- 23
+- 30
 - 19
-- 34
-- 48
-- 681528740
+- 450025060
 parameterMappings:
   boughtDateStart:
   - endpoint: "/api/v1/orderservice/order"
@@ -50,12 +50,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 58
-    - 403197198
-    successRate: 0.6513215599000001
+    - 20
+    - 23
+    - 7
+    - 55
+    - 277483841
+    successRate: 0.68618940391
     description: null
     consumerApiKey: null
   loginId:
@@ -67,12 +67,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 40
-    - 502150326
-    successRate: 1.5093213519421756E-16
+    - 20
+    - 23
+    - 27
+    - 41
+    - 521411384
+    successRate: 5.108220404453232E-67
     description: null
     consumerApiKey: null
   orderId:
@@ -84,12 +84,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 36
-    - 4
-    - 447303029
-    successRate: 1.878525554731372E-61
+    - 20
+    - 23
+    - 30
+    - 2
+    - 316071815
+    successRate: 5.305511016904948E-62
     description: null
     consumerApiKey: null
   trainType:
@@ -134,12 +134,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 35
-    - 49
-    - 914759510
-    successRate: 0.7429891218022899
+    - 20
+    - 23
+    - 30
+    - 4
+    - 699916716
+    successRate: 0.7918211886598548
     description: null
     consumerApiKey: null
   contactsDocumentNumber:
@@ -151,12 +151,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 1
-    - 769817406
-    successRate: 0.30760808154893815
+    - 20
+    - 23
+    - 11
+    - 55
+    - 853914099
+    successRate: 0.37684727339404434
     description: null
     consumerApiKey: null
   coachNumber:
@@ -168,12 +168,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 29
-    - 54
-    - 303724054
-    successRate: 0.6513215599000001
+    - 20
+    - 23
+    - 11
+    - 50
+    - 855360944
+    successRate: 0.68618940391
     description: null
     consumerApiKey: null
   enableBoughtDateQuery:
@@ -201,12 +201,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 4
-    - 308377156
-    successRate: 0.5695327900000001
+    - 20
+    - 23
+    - 8
+    - 14
+    - 42267227
+    successRate: 0.6125795110000001
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/waitorderservice/orders"
@@ -250,12 +250,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 36
-    - 26
-    - 246611367
-    successRate: 0.7458134171671
+    - 20
+    - 23
+    - 30
+    - 18
+    - 423494525
+    successRate: 0.8499053647030009
     description: null
     consumerApiKey: null
   price:
@@ -283,12 +283,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 25
-    - 652419814
-    successRate: 0.43199951950900006
+    - 20
+    - 23
+    - 12
+    - 37
+    - 566592075
+    successRate: 0.48879956755810006
     description: null
     consumerApiKey: null
   economyClass:
@@ -332,12 +332,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 35
-    - 52
-    - 741345269
-    successRate: 0.68618940391
+    - 20
+    - 23
+    - 30
+    - 4
+    - 937864175
+    successRate: 0.7458134171671
     description: null
     consumerApiKey: null
   terminalStationName:
@@ -398,12 +398,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 13
-    - 602618603
-    successRate: 0.37197378999999997
+    - 20
+    - 23
+    - 29
+    - 54
+    - 730794353
+    successRate: 0.4912987699
     description: null
     consumerApiKey: null
   from:
@@ -415,12 +415,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 21
-    - 517199881
-    successRate: 0.7941088679053511
+    - 20
+    - 23
+    - 29
+    - 52
+    - 508812747
+    successRate: 0.8499053647030009
     description: null
     consumerApiKey: null
   startStation:
@@ -432,12 +432,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 25
-    - 228783989
-    successRate: 0.5702426829100001
+    - 20
+    - 23
+    - 26
+    - 57
+    - 424225755
+    successRate: 0.794448407483536
     description: null
     consumerApiKey: null
   state:
@@ -449,12 +449,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 3
+    - 20
     - 23
-    - 43
-    - 838413133
-    successRate: 0.1
+    - 8
+    - 46
+    - 549437319
+    successRate: 0.07290000000000002
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/travel2service/trips"
@@ -465,11 +465,11 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 5
-    - 3
+    - 20
     - 23
-    - 35
-    - 913862982
+    - 8
+    - 45
+    - 951589339
     successRate: 0.0
     description: null
     consumerApiKey: null
@@ -481,12 +481,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 22
-    - 109547126
-    successRate: 0.6034918699
+    - 20
+    - 23
+    - 8
+    - 45
+    - 52555695
+    successRate: 0.43994557315710003
     description: null
     consumerApiKey: null
   id:
@@ -498,12 +498,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 36
-    - 22
-    - 59374044
-    successRate: 0.9912720364319122
+    - 20
+    - 23
+    - 30
+    - 18
+    - 153641206
+    successRate: 0.9989388833880036
     description: null
     consumerApiKey: null
   startPlace:
@@ -531,12 +531,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 28
-    - 21
-    - 607496436
-    successRate: 0.717570463519
+    - 20
+    - 23
+    - 29
+    - 46
+    - 190683219
+    successRate: 0.7941088679053511
     description: null
     consumerApiKey: null
   endStation:
@@ -580,12 +580,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 18
-    - 639542943
-    successRate: 0.46855900000000006
+    - 20
+    - 23
+    - 26
+    - 57
+    - 410042952
+    successRate: 0.7458134171671
     description: null
     consumerApiKey: "POST /api/v1/adminrouteservice/adminroute"
   travelTime:
@@ -597,12 +597,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 5
-    - 674934367
-    successRate: 0.678828414619
+    - 20
+    - 23
+    - 13
+    - 30
+    - 384881359
+    successRate: 0.7109455731571
     description: null
     consumerApiKey: null
   consignee:
@@ -630,12 +630,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 6
-    - 761531718
-    successRate: 0.46855900000000006
+    - 20
+    - 23
+    - 29
+    - 53
+    - 596253872
+    successRate: 0.5695327900000001
     description: null
     consumerApiKey: null
   targetDate:
@@ -663,12 +663,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 36
-    - 242578277
-    successRate: 0.5695327900000001
+    - 20
+    - 23
+    - 29
+    - 52
+    - 106521596
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   distanceList:
@@ -680,12 +680,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 11
-    - 707891913
-    successRate: 1.7560366812558812E-13
+    - 20
+    - 23
+    - 27
+    - 41
+    - 493402766
+    successRate: 2.411006920837281E-61
     description: null
     consumerApiKey: null
   weight:
@@ -713,12 +713,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 44
-    - 292897076
-    successRate: 0.5217031000000001
+    - 20
+    - 23
+    - 29
+    - 52
+    - 362013443
+    successRate: 0.6125795110000001
     description: null
     consumerApiKey: null
   stations:
@@ -747,12 +747,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
+    - 20
+    - 23
+    - 12
     - 17
-    - 15
-    - 30
-    - 11
-    - 675503003
-    successRate: 0.0014780882941434613
+    - 706895038
+    successRate: 9.69773729787525E-4
     description: null
     consumerApiKey: null
   accountId:
@@ -764,12 +764,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 55
-    - 460902623
-    successRate: 0.2780014998684877
+    - 20
+    - 23
+    - 29
+    - 52
+    - 89885029
+    successRate: 0.5736671056573434
     description: null
     consumerApiKey: null
   boughtDateEnd:
@@ -813,12 +813,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 51
-    - 111874318
-    successRate: 0.68618940391
+    - 20
+    - 23
+    - 7
+    - 43
+    - 54098034
+    successRate: 0.717570463519
     description: null
     consumerApiKey: null
   enableStateQuery:
@@ -846,12 +846,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 10
-    - 14573570
-    successRate: 0.717570463519
+    - 20
+    - 23
+    - 8
+    - 20
+    - 625584998
+    successRate: 0.7458134171671
     description: null
     consumerApiKey: null
   phone:
@@ -863,12 +863,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 28
-    - 389341756
-    successRate: 0.271
+    - 20
+    - 23
+    - 29
+    - 53
+    - 556287316
+    successRate: 0.40951000000000004
     description: null
     consumerApiKey: null
   name:
@@ -880,11 +880,11 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 36
-    - 31
-    - 490394561
+    - 20
+    - 23
+    - 30
+    - 19
+    - 447942380
     successRate: 0.0
     description: null
     consumerApiKey: null
@@ -913,12 +913,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 33
-    - 510917410
-    successRate: 0.717570463519
+    - 20
+    - 23
+    - 9
+    - 18
+    - 183784333
+    successRate: 0.7458134171671
     description: null
     consumerApiKey: null
   trainNumber:
@@ -930,12 +930,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 54
-    - 123342105
-    successRate: 0.64314268291
+    - 20
+    - 23
+    - 13
+    - 8
+    - 531696119
+    successRate: 0.678828414619
     description: null
     consumerApiKey: null
   trainTypeName:
@@ -964,12 +964,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 41
-    - 984275892
-    successRate: 0.6125795110000001
+    - 20
+    - 23
+    - 12
+    - 57
+    - 894460885
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   departureTime:
@@ -981,12 +981,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 28
-    - 10
-    - 193547389
-    successRate: 0.717570463519
+    - 20
+    - 23
+    - 29
+    - 45
+    - 962595674
+    successRate: 0.7941088679053511
     description: null
     consumerApiKey: null
   documentType:
@@ -998,12 +998,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 16
-    - 532542205
-    successRate: 0.5217031000000001
+    - 20
+    - 23
+    - 12
+    - 26
+    - 607146399
+    successRate: 0.5695327900000001
     description: null
     consumerApiKey: "POST /api/v1/adminorderservice/adminorder"
   - endpoint: "/api/v1/adminorderservice/adminorder"
@@ -1225,12 +1225,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 8
-    - 78130091
-    successRate: 0.64314268291
+    - 20
+    - 23
+    - 12
+    - 10
+    - 615762353
+    successRate: 0.678828414619
     description: null
     consumerApiKey: null
   seatNumber:
@@ -1242,12 +1242,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 37
-    - 53642358
-    successRate: 0.68618940391
+    - 20
+    - 23
+    - 12
+    - 51
+    - 688441246
+    successRate: 0.717570463519
     description: null
     consumerApiKey: null
   routeId:
@@ -1276,12 +1276,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 30
-    - 742378403
-    successRate: 0.5647498210000002
+    - 20
+    - 23
+    - 12
+    - 45
+    - 939267955
+    successRate: 0.6082748389000001
     description: null
     consumerApiKey: null
   startTime:
@@ -1407,12 +1407,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 15
-    - 186436380
-    successRate: 0.5695327900000001
+    - 20
+    - 23
+    - 8
+    - 25
+    - 731878056
+    successRate: 0.6125795110000001
     description: null
     consumerApiKey: null
   within:
@@ -1440,12 +1440,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 33
-    - 50
-    - 17507725
-    successRate: 0.46855900000000006
+    - 20
+    - 23
+    - 29
+    - 53
+    - 451201281
+    successRate: 0.5695327900000001
     description: null
     consumerApiKey: null
   firstClassPriceRate:
@@ -1522,12 +1522,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 32
-    - 26
-    - 723432622
-    successRate: 0.6125795110000001
+    - 20
+    - 23
+    - 8
+    - 57
+    - 740688856
+    successRate: 0.6513215599000001
     description: null
     consumerApiKey: null
   averageSpeed:
@@ -1555,12 +1555,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 35
-    - 42
-    - 646651367
-    successRate: 0.7712320754503901
+    - 20
+    - 23
+    - 30
+    - 4
+    - 979362960
+    successRate: 0.814697981114816
     description: null
     consumerApiKey: null
   endPlace:
@@ -1572,12 +1572,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 28
-    - 15
-    - 153421002
-    successRate: 0.7712320754503901
+    - 20
+    - 23
+    - 29
+    - 46
+    - 464754196
+    successRate: 0.8332281830033343
     description: null
     consumerApiKey: null
   basicPriceRate:
@@ -1606,12 +1606,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
+    - 20
+    - 23
+    - 13
     - 17
-    - 15
-    - 30
-    - 59
-    - 156164001
-    successRate: 0.011048450030577618
+    - 740933636
+    successRate: 0.008949244524767872
     description: null
     consumerApiKey: null
   boughtDate:
@@ -1623,12 +1623,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 29
-    - 48
-    - 569846901
-    successRate: 0.002503155504993245
+    - 20
+    - 23
+    - 11
+    - 34
+    - 122702908
+    successRate: 0.0016423203268260682
     description: null
     consumerApiKey: null
   stationList:
@@ -1640,12 +1640,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 31
-    - 31
-    - 352900665
-    successRate: 0.5217031000000001
+    - 20
+    - 23
+    - 26
+    - 57
+    - 434912546
+    successRate: 0.7712320754503901
     description: null
     consumerApiKey: null
   endTime:
@@ -1706,12 +1706,12 @@ parameterMappings:
     lastUsed:
     - 2026
     - 5
-    - 17
-    - 15
-    - 30
-    - 48
-    - 72596554
-    successRate: 0.6415323575581
+    - 20
+    - 23
+    - 29
+    - 53
+    - 218094651
+    successRate: 0.7386770886598549
     description: null
     consumerApiKey: null
 servicePatterns:
