@@ -25,7 +25,7 @@ import java.util.Properties;
  * To keep the resulting System-properties state byte-identical to
  * {@code TestGenerationAndExecution.main}, this entry point pushes
  * only the MST-file keys into System (via the legacy
- * {@code es.us.isa.restest.configuration.multiservice.MstConfig}
+ * {@code io.mist.core.config.legacy.MstConfig}
  * loader's {@code applyToSystemProperties()}); core-file keys stay in
  * the local {@code Properties} bag and feed the {@link MistRunner.Inputs}
  * builder directly. Under {@code -Drandom.seed=42} this gives byte-
@@ -72,7 +72,7 @@ public final class MistMain {
         // their generation byte-identical under -Drandom.seed.
         String mstConfigPath = coreProps.getProperty("mst.config.path");
         if (mstConfigPath != null && !mstConfigPath.trim().isEmpty()) {
-            es.us.isa.restest.configuration.multiservice.MstConfig
+            io.mist.core.config.legacy.MstConfig
                     .load(mstConfigPath)
                     .applyToSystemProperties();
             // The MST file's own input paths are now in System; resolve them
