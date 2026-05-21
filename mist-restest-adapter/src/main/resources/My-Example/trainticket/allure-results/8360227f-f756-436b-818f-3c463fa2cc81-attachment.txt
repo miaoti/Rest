@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Grand Central Terminal","id":"AR-2026-001","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":"Shanghai,Beijing,Nanjing,Guangzhou,Shenzhen,Chengdu,Chongqing,xi'an,chengdu"}

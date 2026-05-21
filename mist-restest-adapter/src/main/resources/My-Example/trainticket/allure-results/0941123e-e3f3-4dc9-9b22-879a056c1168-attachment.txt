@@ -1,1 +1,0 @@
-{"basicPriceRate":150.75,"firstClassPriceRate":75.0,"id":"AR-2026-002","routeId":"[1,2,3]","trainType":"Local"}

@@ -1,1 +1,0 @@
-{"averageSpeed":"-1","confortClass":9,"economyClass":2,"id":"train-012","name":"E5 Series Hayabusa"}

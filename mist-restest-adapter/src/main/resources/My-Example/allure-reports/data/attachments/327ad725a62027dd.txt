@@ -1,3 +1,0 @@
-Original Status: 403
-Original Response: {"timestamp":"2026-05-09T03:10:49.783+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/trains"}
-Enhanced Parameters: {name=Siemens Velaro, id=train-001}

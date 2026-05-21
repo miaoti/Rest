@@ -1,1 +1,0 @@
-{"boughtDateEnd":"2026-05-27","boughtDateStart":"2026-05-18","enableBoughtDateQuery":true,"enableStateQuery":true,"enableTravelDateQuery":false,"loginId":"tsadmin3","state":8,"travelDateEnd":"2013-05-04 17:51:52","travelDateStart":"?"}

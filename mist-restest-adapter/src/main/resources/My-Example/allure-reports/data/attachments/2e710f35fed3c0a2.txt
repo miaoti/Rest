@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: ts-travel-service → TravelController.queryInfo → java.lang.NullPointerException at 63.025ms. The exception originates from this single service and is propagated to 9 subsequent spans across ts-travel-plan-service, ts-gateway-service, and ts-route-plan-service, causing 10 total failed spans.
-
-FIX: Add null-check for the object being dereferenced in TravelController.queryInfo. Identify the exact line from stack trace (not provided), likely a null return from a DAO or external call. Wrap with Optional or explicit null validation before method invocation.

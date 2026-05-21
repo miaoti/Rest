@@ -1,9 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**  
-`ts-travel2-service` failed at `Travel2Controller.queryInfo` due to JSON deserialization error. The `TripInfo` object's `departureTime` field (type `String`) received a JSON object (`START_OBJECT`) instead of a string value. This caused `HttpMessageNotReadableException`, leading to HTTP 400 in `ts-gateway-service`.
-
-**FIX:**  
-1. Validate the JSON payload sent to `POST /api/v2/travel2service/trips/` — the `departureTime` field must be a plain string (e.g., `"2025-04-01 10:00"`), not a JSON object.  
-2. Update the client (likely `ts-gateway-service`) to serialize `departureTime` correctly as a string.  
-3. If `departureTime` is intended to be a complex type, change

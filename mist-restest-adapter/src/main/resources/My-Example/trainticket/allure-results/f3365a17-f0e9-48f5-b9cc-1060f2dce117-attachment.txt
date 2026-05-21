@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"AR-2026-002","trainType":"Local","routeId":"[1,2,3]","basicPriceRate":150.75,"firstClassPriceRate":75.0}}

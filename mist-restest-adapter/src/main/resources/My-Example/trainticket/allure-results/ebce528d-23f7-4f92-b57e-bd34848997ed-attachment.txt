@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"<script>alert('XSS')</script>","id":"AR-2026-001","loginId":"operator_login","startStation":"Chicago Union Station","stationList":"Waterfront Station,Harbor View Station,Marina Bay Station,Coastal Plaza Station,Seaside Terminal"}

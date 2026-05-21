@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: ts-route-plan-service POST operation failed with HTTP 400 (Bad Request) in 1.654ms. This is a client-side error indicating the request payload or parameters sent to this service are malformed or invalid. The error is not due to downstream service failure or timeout, as evidenced by the sub-millisecond execution time.
-
-FIX: Validate the request body and parameters sent to ts-route-plan-service POST endpoint. Check for missing required fields, incorrect data types, or schema violations. Inspect the request payload from the calling service (likely ts-travel-plan-service) and ensure it matches the expected API contract for the route plan creation endpoint.

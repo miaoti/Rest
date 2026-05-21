@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","trainType":"Express","routeId":"fake","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

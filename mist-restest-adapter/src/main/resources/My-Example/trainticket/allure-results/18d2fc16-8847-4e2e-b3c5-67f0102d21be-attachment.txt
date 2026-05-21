@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-route-plan-service` at `RoutePlanController.getMinStopStations` which triggers `RoutePlanServiceImpl.searchMinStopStations` (line 178) where a `NullPointerException` is thrown due to an unhandled null reference.
-
-**FIX:**
-Add null validation for required objects/fields in `RoutePlanServiceImpl.searchMinStopStations` method at line 178, specifically checking the object reference that is causing the NPE before accessing its methods or properties.

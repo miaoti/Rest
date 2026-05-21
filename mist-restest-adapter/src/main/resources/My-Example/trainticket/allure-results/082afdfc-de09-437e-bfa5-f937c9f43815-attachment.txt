@@ -1,1 +1,0 @@
-{"departureTime":"2024-09-22","endPlace":"New York City","startPlace":"nil"}

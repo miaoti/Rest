@@ -1,1 +1,0 @@
-{"averageSpeed":false,"confortClass":12,"economyClass":70,"id":"train-001","name":"Avelia Liberty 2100"}

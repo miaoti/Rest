@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: ts-gateway-service PUT operation returned HTTP 403. The 1.058ms execution time indicates immediate rejection at gateway level without reaching ts-admin-basic-info-service. This is an authorization failure, likely due to missing or invalid authentication/authorization credentials in the PUT request.
-
-FIX: Verify authentication token or API key in PUT request headers. Ensure the request includes valid JWT token, OAuth2 bearer token, or required API key that ts-gateway-service expects for authorization validation. Check gateway security configuration for the specific PUT endpoint's required permissions.

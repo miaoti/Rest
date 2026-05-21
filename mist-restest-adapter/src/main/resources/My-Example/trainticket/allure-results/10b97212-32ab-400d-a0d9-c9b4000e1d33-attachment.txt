@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"f7cb6488-2461-45aa-bbe5-7bdccd4eea28","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"350","accountId":"acc-789012","contactsN...
-Enhanced Parameters: {documentType=5, price=1299.99, seatClass=1, to=Shanghai}

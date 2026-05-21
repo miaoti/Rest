@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `Travel2Controller.queryInfo` in `ts-travel2-service` throws `java.lang.NullPointerException` after 38.422ms. HTTP status 0 indicates the response was never sent (exception before response commit). The failure propagates to `ts-gateway-service` and 3 additional spans.
-
-FIX: Add null checks in `Travel2Controller.queryInfo` for the request body or any dereferenced object (likely a POST payload field). Wrap the method body in a try-catch for `NullPointerException` and return a proper HTTP 400 error response. Implement input validation at the controller boundary.

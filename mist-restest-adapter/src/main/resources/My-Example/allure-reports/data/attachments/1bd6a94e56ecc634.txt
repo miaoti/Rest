@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-travel2-service` → `Travel2Controller.queryInfo` → NullPointerException at 39.686ms on POST request.
-
-FIX: Add null check before accessing object in `Travel2Controller.queryInfo` method.

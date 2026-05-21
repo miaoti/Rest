@@ -1,1 +1,0 @@
-{"accountId":"acc-234567","boughtDate":"2026-01-15","coachNumber":12,"contactsDocumentNumber":"ABC123456","contactsName":"John Smith","differenceMoney":"150.00","documentType":4,"from":"Hangzhou","id":"AR-2026-001","price":"1299.99","seatClass":5,"seatNumber":"12A","status":5,"to":"Shanghai","trainNumber":"fake","travelDate":"2026-01-15","travelTime":"xuzhou"}

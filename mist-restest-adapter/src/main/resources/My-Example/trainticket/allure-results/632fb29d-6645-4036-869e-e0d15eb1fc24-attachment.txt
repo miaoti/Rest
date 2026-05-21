@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` failing DELETE operation with HTTP 400 status during `DELETE` request processing, executing in 5.085ms.
-
-**FIX:** Validate DELETE request payload format and required parameters in `ts-gateway-service` to resolve 400 Bad Request error.

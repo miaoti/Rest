@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** 
-The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is `HttpMessageNotReadableException` caused by Jackson failing to parse the string `"' OR 1=1--"` as a `double` type for the field `firstClassPriceRate`. This indicates a SQL injection attempt being sent as a numeric field value.
-
-**FIX:**
-Implement input validation and sanitization in `ts-admin-basic-info-service` to reject non-numeric values for `firstClassPriceRate` field. Add proper DTO validation with `@Min`/`@Max` constraints or custom validation annotations to ensure only valid numeric values are accepted. Additionally, implement proper HTTP 400 error handling with descriptive error messages for malformed requests.

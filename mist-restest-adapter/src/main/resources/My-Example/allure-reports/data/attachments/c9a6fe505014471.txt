@@ -1,8 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: GET /api/v1/executeservice/execute/execute/{orderId} failed in ts-execute-service with HTTP 403 due to RequestRejectedException. The URL contained "%25" which is a URL-encoded "%" character, triggering Spring Security's HTTP firewall that blocks potentially malicious double-encoding patterns.
-
-FIX: 
-- Remove or properly encode the "%25" from the URL before sending to ts-execute-service. The client or ts-gateway-service should not double-encode URL parameters.
-- If the "%25" is intentional (e.g., part of an orderId), configure Spring Security's StrictHttpFirewall to allow it by overriding `getAllowedHttpMethods` and `getAllowedHeaderValues`, or use `DefaultHttpFirewall` instead of `StrictHttpFirewall` in ts-execute-service's security configuration.
-- Validate URL encoding at the gateway level (ts-gateway-service) to prevent malformed requests

@@ -1,1 +1,0 @@
-{"distanceList":"27.3","endStation":"South Station","id":"AR-2026-001","loginId":"[1,2,3]","startStation":"North Station","stationList":"North Station,South Station,East Station,West Station,Central Station"}

@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"AR-2026-001","trainType":"Shinkansen","routeId":"RT-22222","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

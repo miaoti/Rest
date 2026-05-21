@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-travel2-service` → `Travel2Controller.queryInfo` → `java.lang.NullPointerException` at 40.199ms execution. Operation received null payload or null required field from upstream `ts-gateway-service` POST request. HTTP status 0 indicates connection or deserialization failure before HTTP response.
-
-FIX: In `Travel2Controller.queryInfo`, add null check for request body and all dereferenced fields. Validate that POST payload from gateway contains non-null `tripId` or `date` before processing. If null, return 400 Bad Request with error message. On gateway side, ensure request body is serialized correctly before POST to travel2-service. Add circuit breaker to return fallback response if travel2-service returns null or error.

@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"a8689bb3-cf3c-4d04-a165-ae1461424f01","trainType":"InvalidTrainType","routeId":"RT-INVALID-ROUTE","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

@@ -1,1 +1,0 @@
-{"departureTime":"test601","endPlace":"Los Angeles","startPlace":"Seattle"}

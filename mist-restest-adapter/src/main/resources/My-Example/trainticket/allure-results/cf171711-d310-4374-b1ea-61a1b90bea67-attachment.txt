@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is a `JsonMappingException` where the string `"' OR 1=1--"` (SQL injection attempt) is being passed as a `double` type for the field `basicPriceRate`. The Jackson deserializer cannot convert this invalid string to a Double value.
-
-**FIX:**
-Implement input validation and sanitization in `ts-admin-basic-info-service` before deserializing the `PriceInfo` object. Add proper validation annotations (`@Min`, `@Max`) on `basicPriceRate` field and include input sanitization to reject or escape malicious SQL injection attempts. Additionally, add global exception handling to return appropriate HTTP 400 responses for malformed requests.

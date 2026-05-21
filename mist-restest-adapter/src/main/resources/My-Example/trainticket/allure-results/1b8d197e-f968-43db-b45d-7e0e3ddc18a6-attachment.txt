@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Marina Bay Station","id":"ROUTE-2026-003","loginId":"   ","startStation":"Waterfront Station","stationList":"Waterfront Station,Harbor View Station,Marina Bay Station,Coastal Plaza Station,Seaside Terminal"}

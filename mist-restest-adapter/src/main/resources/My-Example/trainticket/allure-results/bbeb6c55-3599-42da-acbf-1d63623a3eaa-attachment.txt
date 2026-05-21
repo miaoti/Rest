@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-route-plan-service` at `RoutePlanServiceImpl.searchMinStopStations()` method, line 178, due to a `NullPointerException` when processing the `getMinStopStations` endpoint.
-
-**FIX:**
-Add null validation for the input parameter or object reference at line 178 in `RoutePlanServiceImpl.java` before invoking operations on the potentially null object. The specific null-check should be implemented before the failing operation that triggers the NPE.

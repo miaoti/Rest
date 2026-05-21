@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Grand Central Terminal","id":"nanjing","loginId":"user_admin_2025","startStation":"Los Angeles Union Station","stationList":"Shanghai,Beijing,Nanjing,Guangzhou,Shenzhen,Chengdu,Chongqing,xi'an"}

@@ -1,1 +1,0 @@
-{"averageSpeed":"99999999999999999999","confortClass":10,"economyClass":160,"id":"train-006","name":"Bombardier Zefiro"}

@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize a JSON payload. The specific error is a `JsonMappingException` where the string value "x" cannot be converted to a `double` type for the field `firstClassPriceRate`.
-
-**FIX:** Validate and sanitize input data in `ts-gateway-service` before forwarding to `ts-admin-basic-info-service`. The gateway should ensure numeric values are properly formatted as doubles before serialization, or implement input validation at the gateway level to prevent malformed data from reaching downstream services.

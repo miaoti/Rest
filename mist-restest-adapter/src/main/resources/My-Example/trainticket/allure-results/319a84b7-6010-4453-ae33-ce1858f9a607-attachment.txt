@@ -1,1 +1,0 @@
-{"accountId":123,"boughtDate":"2025-01-20","coachNumber":12,"contactsDocumentNumber":"ABC123456","contactsName":"Emily Davis","differenceMoney":"150.00","documentType":1,"from":"Shanghai","id":"AR-2026-001","price":"899.99","seatClass":1,"seatNumber":"5B","status":1,"to":"Guangzhou","trainNumber":"D1234","travelDate":"2025-01-15","travelTime":"beijing"}

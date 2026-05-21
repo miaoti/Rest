@@ -1,3 +1,0 @@
-Original Status: 403
-Original Response: {"timestamp":"2026-05-09T01:34:47.741+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/stations"}
-Enhanced Parameters: {stayTime=0, name=Test Station Name}

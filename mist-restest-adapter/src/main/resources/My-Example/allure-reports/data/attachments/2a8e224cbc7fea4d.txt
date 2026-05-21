@@ -1,9 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**  
-`ts-travel-service.TravelController.queryInfo` throws `java.lang.NullPointerException` at 118.304ms. HTTP status 0 indicates the request failed before a response was generated. The exact failure location is missing from trace, but the NPE likely occurs when accessing an uninitialized object (e.g., null service dependency, null database result, or null request parameter). This single root cause propagates failures to 9 downstream spans across `ts-route-plan-service`, `ts-travel-plan-service`, and `ts-gateway-service`.
-
-**FIX:**  
-1. Add null checks and defensive programming in `TravelController.queryInfo` at the exact line where NPE occurs (requires source code review).  
-2. Verify all injected dependencies (e.g., `TravelService`) are properly initialized and not null at runtime.  
-3. Ensure request parameters (e.g., trip ID, date) are validated before use.

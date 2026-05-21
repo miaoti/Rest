@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Success","data":{"id":"584de11f-d98e-4358-8fcb-ad839e57ee4e","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-789012","contactsName":"Joh...
-Enhanced Parameters: {travelTime=08:30:00, documentType=1, contactsDocumentNumber=JKL567890, contactsName=John Smith, differenceMoney=300.00, seatNumber=12A, accountId=acc-789012, coachNumber=12, travelDate=2026-01-15, boughtDate=2026-01-15, price=1299.99, seatClass=1, id=584de11f-d98e-4358-8fcb-ad839e57ee4e, to=Beijing, trainNumber=T3456, status=1}

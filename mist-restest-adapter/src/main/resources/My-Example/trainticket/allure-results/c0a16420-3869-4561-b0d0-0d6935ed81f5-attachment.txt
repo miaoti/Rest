@@ -1,1 +1,0 @@
-{"departureTime":"2024-08-05","endPlace":"FakeDestination456","startPlace":"New York"}

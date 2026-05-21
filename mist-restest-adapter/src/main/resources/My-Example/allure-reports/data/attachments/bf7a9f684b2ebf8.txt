@@ -1,1 +1,0 @@
-{"averageSpeed":320,"confortClass":10,"economyClass":"12.34abc","id":"train-004","name":"Talgo 350 SRO"}

@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Chicago Union Station","id":"AR-2026-001","loginId":"operator_login","startStation":"Chicago Union Station","stationList":"test360"}

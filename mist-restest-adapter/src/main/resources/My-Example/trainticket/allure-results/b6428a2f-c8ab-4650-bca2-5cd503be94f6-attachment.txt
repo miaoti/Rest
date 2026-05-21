@@ -1,1 +1,0 @@
-{"basicPriceRate":99.5,"firstClassPriceRate":"-9999999999","id":"beijing","routeId":"RT-12345","trainType":"Express"}

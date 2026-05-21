@@ -1,1 +1,0 @@
-{"timestamp":"2026-05-09T05:15:54.443+00:00","status":500,"error":"Internal Server Error","message":"","path":"/api/v1/travelplanservice/travelPlan/cheapest"}

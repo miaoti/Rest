@@ -1,3 +1,0 @@
-Original Status: 403
-Original Response: {"timestamp":"2026-05-09T02:38:43.815+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/stations"}
-Enhanced Parameters: {stayTime=1, name=Beijing-Shanghai Express, id=1367db1f-461e-4ab7-87ad-2bcc05fd9cb7}

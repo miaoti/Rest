@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-order-other-service` `OrderOtherController.queryOrdersForRefresh` fails due to JSON deserialization error. The `boughtDateEnd` field in `other.entity.QueryInfo` is declared as `String` but receives a JSON object (START_OBJECT token) instead of a string value.
-
-FIX: Correct the JSON payload sent to `POST /api/v1/orderotherservice/orderOther/queryOrdersForRefresh` so that `boughtDateEnd` is a plain string (e.g., `"2024-01-01"`) rather than a JSON object. Alternatively, change the `boughtDateEnd` field type in `QueryInfo` entity to match the expected JSON structure (e.g., `Date` or custom deserializer).
