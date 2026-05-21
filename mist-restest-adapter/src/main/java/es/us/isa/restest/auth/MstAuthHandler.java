@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * </ul>
  *
  * Configuration is read from {@code System.getProperty(...)} (loaded by
- * {@link es.us.isa.restest.configuration.multiservice.MstConfig}, which pushes
+ * {@link io.mist.core.config.legacy.MstConfig}, which pushes
  * every key from {@code trainticket-mst.properties} to System properties before
  * the writer or generated tests run).
  *

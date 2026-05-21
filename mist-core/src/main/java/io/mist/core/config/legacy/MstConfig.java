@@ -1,4 +1,4 @@
-package es.us.isa.restest.configuration.multiservice;
+package io.mist.core.config.legacy;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

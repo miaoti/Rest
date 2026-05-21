@@ -324,9 +324,8 @@ public final class MistRunner {
 
             // Check if Test Case Enhancer is enabled. We use the FQN here
             // because this file already imports the legacy
-            // es.us.isa.restest.configuration.multiservice.MstConfig
-            // (Properties-file loader), and the new typed POJO lives at
-            // io.mist.core.config.MstConfig.
+            // io.mist.core.config.legacy.MstConfig (Properties-file loader)
+            // and the new typed POJO lives at io.mist.core.config.MstConfig.
             io.mist.core.config.MstConfig.Enhancer enhancerCfg =
                     io.mist.core.config.MstConfig.instance().enhancer();
             boolean enhancerEnabled = enhancerCfg.enabled();

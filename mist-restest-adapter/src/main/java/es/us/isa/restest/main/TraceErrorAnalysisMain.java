@@ -143,7 +143,7 @@ public class TraceErrorAnalysisMain {
             System.out.println("🔧 Loading LLM configuration from trainticket-mst.properties...");
 
             // LLM keys live in the MST-only file now (separated from RESTest core).
-            // See es.us.isa.restest.configuration.multiservice.MstConfig and the
+            // See io.mist.core.config.legacy.MstConfig and the
             // mst.config.path key in trainticket-demo.properties.
             String propertiesPath = "src/main/resources/My-Example/trainticket-mst.properties";
 

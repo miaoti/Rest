@@ -1,6 +1,6 @@
 package es.us.isa.restest.main;
 
-import es.us.isa.restest.configuration.multiservice.MstConfig;
+import io.mist.core.config.legacy.MstConfig;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.coverage.CoverageGatherer;
 import es.us.isa.restest.coverage.CoverageMeter;
