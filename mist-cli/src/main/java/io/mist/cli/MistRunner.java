@@ -1421,7 +1421,7 @@ public final class MistRunner {
             // 🔧 CRITICAL FIX: Create a fresh ClassLoader for each round
             // The JVM caches loaded classes, so we need a new ClassLoader to pick up
             // changes from recompiled test files during enhancement rounds
-            File testClassesDir = new File(System.getProperty("user.dir"), "target/test-classes");
+            File testClassesDir = new File(System.getProperty("user.dir"), "mist-cli/target/test-classes");
             URL[] urls = new URL[] { testClassesDir.toURI().toURL() };
 
             // Create isolated ClassLoader that loads from test-classes first
@@ -1594,7 +1594,7 @@ public final class MistRunner {
     private void cleanOldCompiledTestClasses(String fullPackageName) {
         try {
             String baseDir = System.getProperty("user.dir");
-            File testClassesDir = new File(baseDir, "target/test-classes");
+            File testClassesDir = new File(baseDir, "mist-cli/target/test-classes");
 
             if (!testClassesDir.exists()) {
                 return; // Nothing to clean
@@ -1661,8 +1661,14 @@ public final class MistRunner {
         try {
             String baseDir = System.getProperty("user.dir");
             File testSourceDir = resolveTestTargetRoot().toFile();
-            File testClassesDir = new File(baseDir, "target/test-classes");
-            File mainClassesDir = new File(baseDir, "target/classes");
+            // Post-sever the launcher and the generated-tests' Maven home is
+            // mist-cli. The Maven fallback's `mvn compile test-compile` writes
+            // mist-cli's outputs to mist-cli/target/{classes,test-classes};
+            // the previous baseDir/target/* paths predated the multi-module
+            // split and reliably came up empty after the sever.
+            File mistCliTarget = new File(baseDir, "mist-cli/target");
+            File testClassesDir = new File(mistCliTarget, "test-classes");
+            File mainClassesDir = new File(mistCliTarget, "classes");
 
             // Ensure target directories exist
             if (!testClassesDir.exists()) {
@@ -1676,8 +1682,10 @@ public final class MistRunner {
                 return fallbackMavenCompilation();
             }
 
-            // Verify essential main classes exist (spot check)
-            File testCaseClass = new File(mainClassesDir, "es/us/isa/restest/testcases/MultiServiceTestCase.class");
+            // Verify essential main classes exist (spot check). The class was at
+            // es/us/isa/restest/testcases/MultiServiceTestCase pre-sever; the
+            // mist-core vendored version is now the only copy.
+            File testCaseClass = new File(mainClassesDir, "io/mist/core/testcase/MultiServiceTestCase.class");
             if (!testCaseClass.exists()) {
                 logger.info("Essential main classes not compiled. Using Maven to compile both main and test classes...");
                 return fallbackMavenCompilation();
@@ -2024,7 +2032,7 @@ public final class MistRunner {
     private boolean addTestClassesToClasspath() {
         try {
             String baseDir = System.getProperty("user.dir");
-            File testClassesDir = new File(baseDir, "target/test-classes");
+            File testClassesDir = new File(baseDir, "mist-cli/target/test-classes");
 
             if (!testClassesDir.exists()) {
                 logger.warn("Test classes directory does not exist: {}", testClassesDir.getAbsolutePath());

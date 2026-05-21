@@ -138,28 +138,56 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.3.0</version>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.4.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>io.github.edwgiz</groupId>
+						<artifactId>log4j-maven-shade-plugin-extensions</artifactId>
+						<version>2.20.0</version>
+					</dependency>
+				</dependencies>
 				<executions>
 					<execution>
-						<id>make-assembly-mist</id>
 						<phase>package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<archive>
-								<manifest>
-									<mainClass>io.mist.cli.MistMain</mainClass>
-									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-									<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-								</manifest>
-							</archive>
 							<finalName>mist</finalName>
-							<appendAssemblyId>false</appendAssemblyId>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
+							<shadedArtifactAttached>false</shadedArtifactAttached>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>io.mist.cli.MistMain</mainClass>
+								</transformer>
+								<!-- Critical: merges Log4j2Plugins.dat across the
+								     log4j2-core jar and any module that ships
+								     @Plugin classes (mist-core's
+								     ConsoleDedupFilter). The earlier assembly
+								     plugin overwrote the file from log4j2-core
+								     with the empty-ish one from mist-core,
+								     leaving log4j2 with zero converters at
+								     runtime (no %d, %thread, %level), which
+								     broke the console before MistMain.main
+								     could even log a line. -->
+								<transformer
+									implementation="io.github.edwgiz.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer" />
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+										<exclude>module-info.class</exclude>
+									</excludes>
+								</filter>
+							</filters>
 						</configuration>
 					</execution>
 				</executions>

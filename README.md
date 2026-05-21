@@ -15,28 +15,32 @@
 
 ## Architecture at a glance
 
-MIST ships as a four-module Maven reactor (Stage 1.C of
-[`PATH_B_REBUILD_PLAN.md`](debug/Conference-refinement/PATH_B_REBUILD_PLAN.md)):
+MIST ships as a **three-module** Maven reactor. The repository contains
+no third-party source code: REST-Assured, swagger-parser, Allure, and
+JUnit are declared as ordinary Maven library dependencies.
 
 ```
 mist-parent (root pom.xml, packaging=pom)
-├── mist-core              the contribution — no RESTest dependency
-│                          (Trace Shape Oracle + Adaptive Fault Taxonomy)
-├── mist-llm               LLM client SPI + Ollama / Gemini /
-│                          OpenAI-compatible backends, call cache, env
-│                          placeholder resolver
-├── mist-restest-adapter   RESTest internals MIST treats as a library:
-│                          spec parser, MST conf model, writers, generators,
-│                          smart-fetch, enhancer, …
-└── mist-cli               user-facing entry points
-                           ├── io.mist.cli.MistMain          ← run the tool
-                           └── io.mist.cli.MistConfGenMain   ← gen MST conf
+├── mist-core   The contribution. All five architectural stages —
+│               spec ingest, semantic dependency registry, sequence
+│               generator, sniper strategy, trace shape oracle —
+│               plus the adaptive fault taxonomy live here.
+│               Zero RESTest source.
+├── mist-llm    LLM dispatch SPI + Ollama / Gemini / OpenAI-compatible
+│               backends, call cache, env-placeholder resolver.
+└── mist-cli    User entry. Houses the launcher (io.mist.cli.MistMain →
+                mist.jar), the runner (io.mist.cli.MistRunner), the
+                JUnit / REST-Assured writer
+                (io.mist.cli.writer.MultiServiceRESTAssuredWriter), the
+                test executor, the auth helpers, and the SPI provider
+                classes that keep mist-core framework-agnostic.
 ```
 
-`mist-core` has no edges to the legacy `es.us.isa.restest.*` classes;
-`mist-restest-adapter` keeps the RESTest-derived code that still drives
-the test-generation pipeline. `MistMain` / `MistRunner` in `mist-cli`
-wire the two together.
+There is one entry point: `java -jar mist-cli/target/mist.jar
+<your.properties>`. The previous `mist-restest-adapter` module (which
+vendored a forked copy of RESTest 1.6.0-SNAPSHOT) was severed in MIST
+1.6 — the runtime now uses RESTAssured + swagger-parser as published
+library artifacts, the same way every other black-box REST tester does.
 
 ---
 
@@ -50,7 +54,7 @@ from an IntelliJ play-button all produce the same result.
 | Input | Key | Bundled demo value (relative to the .properties file) |
 |---|---|---|
 | **OpenAPI spec** of the system under test | `oas.path` | `trainticket/merged_openapi_spec 1.yaml` |
-| **MST test configuration** (generated once from the spec by `MistConfGenMain`) | `conf.path` | `trainticket/real-system-conf.yaml` |
+| **MST test configuration** (one YAML file per SUT, copy + edit the bundled one) | `conf.path` | `trainticket/real-system-conf.yaml` |
 | **Jaeger / OpenTelemetry traces** (single file *or* directory of `.json` / `.jsonl`) | `trace.file.path` | `trainticket/test-trace` |
 | **Target system base URL** | `base.url` | `http://129.62.148.112:32677` |
 | **MST-mode overlay** (extra MIST-only keys) | `mst.config.path` | `trainticket-mst.properties` |
@@ -66,15 +70,10 @@ The bundled demo ships every input above pre-staged for TrainTicket.
 Pick a Quick Start path below depending on whether you have an LLM
 API key handy.
 
-> **Two launchers, one runner.** Both
-> `mist-cli/target/mist.jar` (`Main-Class: io.mist.cli.MistMain`) and
-> `mist-restest-adapter/target/restest.jar`
-> (`Main-Class: es.us.isa.restest.main.TestGenerationAndExecution`)
-> end at the same `MistRunner.run()`. Under `-Drandom.seed=42` they
-> produce byte-identical scenario files; see
-> [`docs/mst-plans/STAGE_1D_VERIFICATION.md`](docs/mst-plans/STAGE_1D_VERIFICATION.md)
-> for the verification record. Use `mist.jar` for new work;
-> `restest.jar` is preserved as a backwards-compatible alternative.
+> **One launcher.** `mist-cli/target/mist.jar`
+> (`Main-Class: io.mist.cli.MistMain`) is the single supported entry
+> point. The legacy `restest.jar` and the `TestGenerationAndExecution`
+> main class were retired during the 1.6 RESTest sever.
 
 ---
 
@@ -91,7 +90,7 @@ ollama serve &
 ollama pull qwen2.5-coder:14b
 
 # 3. Switch the bundled demo to Ollama (one-time edit; see snippet below)
-#    open mist-restest-adapter/src/main/resources/My-Example/trainticket-mst.properties
+#    open mist-cli/src/main/resources/My-Example/trainticket-mst.properties
 #    and set:
 #       llm.model.type=ollama
 #       llm.ollama.enabled=true
@@ -99,9 +98,7 @@ ollama pull qwen2.5-coder:14b
 
 # 4. Generate + execute against the bundled TrainTicket demo (run from repo root)
 java -jar mist-cli/target/mist.jar \
-     mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties
-#    (Legacy entry, byte-identical output under the same seed:
-#       java -jar mist-restest-adapter/target/restest.jar <same .properties>)
+     mist-cli/src/main/resources/My-Example/trainticket-demo.properties
 
 # 5. Render the Allure report
 allure/bin/allure generate target/allure-results -o target/allure-report --clean && \
@@ -131,7 +128,7 @@ export DEEPSEEK_API_KEY=sk-...
 #     llm.openai_compatible.url=https://api.deepseek.com/v1/chat/completions).
 #    Just run:
 java -jar mist-cli/target/mist.jar \
-     mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties
+     mist-cli/src/main/resources/My-Example/trainticket-demo.properties
 
 # 4-5. Same Allure rendering as Quick Start A.
 ```
@@ -148,16 +145,16 @@ mvn clean install -DskipTests
 #       <yourdir>/openapi.yaml
 #       <yourdir>/test-trace/*.json   (one or more Jaeger / OTel traces)
 
-# 3. Generate the MST test configuration from your spec (one-time per spec change).
-#    No source edits required — pass paths positionally:
-java -cp mist-cli/target/mist.jar io.mist.cli.MistConfGenMain \
-     <yourdir>/openapi.yaml \
-     <yourdir>/your-mst-conf.yaml
+# 3. Author the MST test configuration YAML for your spec (one-time per spec
+#    change). The bundled real-system-conf.yaml is the schema; copy it and
+#    edit the operations list to match your spec. (The standalone CLI
+#    config generator was retired during the 1.6 RESTest sever; reach out
+#    via GitHub issues if you'd like the regeneration helper reinstated.)
 
 # 4. Copy the bundled .properties files as a starting point:
-#       cp mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties \
+#       cp mist-cli/src/main/resources/My-Example/trainticket-demo.properties \
 #          <yourdir>/system-demo.properties
-#       cp mist-restest-adapter/src/main/resources/My-Example/trainticket-mst.properties \
+#       cp mist-cli/src/main/resources/My-Example/trainticket-mst.properties \
 #          <yourdir>/system-mst.properties
 #    Then in <yourdir>/system-demo.properties update FIVE keys (paths are
 #    resolved relative to the .properties file, so write them relative to
@@ -172,9 +169,8 @@ java -cp mist-cli/target/mist.jar io.mist.cli.MistConfGenMain \
 java -jar mist-cli/target/mist.jar <yourdir>/system-demo.properties
 ```
 
-In IntelliJ, the **"MIST: Generate MST Conf From OAS"** and
-**"MIST: Demo (bundled TrainTicket)"** run configurations are
-templates you can copy + edit for your own SUT.
+In IntelliJ, the **"MIST: Demo (bundled TrainTicket)"** run
+configuration is a template you can copy + edit for your own SUT.
 
 After any run, the fault-detection report lands under
 `logs/fault-detection-reports/`, CSV stats under `target/test-data/`,
@@ -212,7 +208,7 @@ For each microservice scenario reconstructed from a Jaeger trace, MIST emits one
    `.mist/trace-shape-invariants.json`.)
 5. **explores untriggered status codes** (401/403/404/409/…) via auth-manipulation and LLM-suggested input mutations.
 
-Full pipeline (Phase 1 cross-trace merging → Phase 2 session merging → Phase 2.5 dedup → Phase 3 component shattering → Phase 4 baseline decomposition → variant generation) is documented in [`mist-restest-adapter/src/main/resources/My-Example/trainticket/flow.md`](mist-restest-adapter/src/main/resources/My-Example/trainticket/flow.md).
+Full pipeline (Phase 1 cross-trace merging → Phase 2 session merging → Phase 2.5 dedup → Phase 3 component shattering → Phase 4 baseline decomposition → variant generation) is documented in the in-code Javadoc on `io.mist.core.generation.MistGenerator`.
 
 ---
 
@@ -235,34 +231,26 @@ The TrainTicket demo points at a public deployment (`http://129.62.148.112:32677
 Configuration is **split into two files** — the core `.properties` you
 pass on the command line plus an MST overlay it references via
 `mst.config.path`. The split keeps the ~70 MIST-specific keys out of
-sight of the classic generators living in `mist-restest-adapter`
-(RT / CBT / ART / FT / LLM, the RESTest modes the adapter still
-carries as a library).
+the core file so the core file only carries the OpenAPI / trace /
+target-URL inputs that any tester would need.
 
 ```
-mist-restest-adapter/src/main/resources/My-Example/
-├── trainticket-demo.properties        # core (~30 keys) + mst.config.path pointer
-├── trainticket-demo-noexec.properties # core, but experiment.execute=false and
-│                                      # network-dependent toggles off — smoke
-│                                      # profile for sandboxes
-├── trainticket-mst.properties         # MST overlay (~70 keys: LLM, smart fetch,
-│                                      # jaeger, fault detection, enhancer,
-│                                      # status-code exploration, root-API
-│                                      # registry, trace merging, auth, …)
-└── trainticket-mst-noexec.properties  # MST overlay for the no-exec profile
-                                       # (jaeger / smart-fetch / llm / enhancer /
-                                       # status-code-exploration all disabled)
+mist-cli/src/main/resources/My-Example/
+├── trainticket-demo.properties   # core (~30 keys) + mst.config.path pointer
+└── trainticket-mst.properties    # MST overlay (~70 keys: LLM, smart fetch,
+                                  # jaeger, fault detection, enhancer,
+                                  # status-code exploration, root-API
+                                  # registry, trace merging, auth, …)
 ```
 
 `mst.config.path` itself and every INPUT-path key inside both files
 (`oas.path`, `conf.path`, `trace.file.path`,
 `fault.detection.injected.faults.path`, the various registry paths) are
 resolved **relative to the .properties file's own directory** by
-[`MistPathResolver`](mist-restest-adapter/src/main/java/es/us/isa/restest/main/MistPathResolver.java)
-at startup. This is why the bundled values look like
-`trainticket/merged_openapi_spec 1.yaml` rather than the old
-`src/main/resources/My-Example/trainticket/…` form — the path no
-longer depends on where the user launches MIST from.
+`io.mist.cli.MistPathResolver` at startup. This is why the bundled
+values look like `trainticket/merged_openapi_spec 1.yaml` rather than
+absolute paths — the path no longer depends on where the user launches
+MIST from.
 
 OUTPUT paths (`test.target.dir`, `allure.results.dir`,
 `data.tests.dir`, the various `.mist/*-cache.json` keys) keep the
@@ -336,7 +324,7 @@ A missing key resolves to the empty string, in which case the request is sent un
 
 ## Auth strategy for the *target* system
 
-The generated tests use [`MstAuthHandler`](mist-restest-adapter/src/main/java/es/us/isa/restest/auth/MstAuthHandler.java) to obtain and stamp tokens. Configured by `auth.*` keys in the MST file:
+The generated tests use `io.mist.cli.auth.MstAuthHandler` to obtain and stamp tokens. Configured by `auth.*` keys in the MST file:
 
 | `auth.mode` | Effect |
 |---|---|
@@ -345,7 +333,7 @@ The generated tests use [`MstAuthHandler`](mist-restest-adapter/src/main/java/es
 | `per_jvm` (default) | Lazy login on first request, cached for the whole JVM. ~2400 logins → ~1. |
 | `per_test` | Legacy: fresh login per test method. |
 
-Endpoints matching `auth.skip.path.patterns` (CSV of regex, e.g. `^/actuator,^/api/v1/users/login`) are sent without an `Authorization` header regardless of mode. On HTTP 401, [`MstAuthRefreshFilter`](mist-restest-adapter/src/main/java/es/us/isa/restest/auth/MstAuthRefreshFilter.java) invalidates the cached token and retries once — disabled automatically for tests that intentionally manipulate auth (e.g. `INVALID_TOKEN` exploration tests).
+Endpoints matching `auth.skip.path.patterns` (CSV of regex, e.g. `^/actuator,^/api/v1/users/login`) are sent without an `Authorization` header regardless of mode. On HTTP 401, `io.mist.cli.auth.MstAuthRefreshFilter` invalidates the cached token and retries once — disabled automatically for tests that intentionally manipulate auth (e.g. `INVALID_TOKEN` exploration tests).
 
 ---
 
@@ -353,8 +341,8 @@ Endpoints matching `auth.skip.path.patterns` (CSV of regex, e.g. `^/actuator,^/a
 
 | Path (relative to JVM CWD) | Content |
 |---|---|
-| `<test.target.dir>/<package>/<TestClassName>_<timestamp>/` | Generated JUnit test sources (default `src/test/java`) |
-| `target/test-classes/<package>/...`            | Compiled `.class` files |
+| `<test.target.dir>/<package>/<TestClassName>_<timestamp>/` | Generated JUnit test sources (default `mist-cli/src/test/java`) |
+| `mist-cli/target/test-classes/<package>/...`   | Compiled `.class` files |
 | `target/allure-results/`                       | Raw Allure JSON (per test) |
 | `target/allure-report/`                        | Rendered HTML report (after `allure generate`) |
 | `logs/fault-detection-reports/`                | Injected-fault detection summary, matched against `injectedFaults/injected-faults.json` |
@@ -385,31 +373,46 @@ Endpoints matching `auth.skip.path.patterns` (CSV of regex, e.g. `^/actuator,^/a
 ## Repository data showcase
 
 The TrainTicket dataset bundled with the tool, all under
-`mist-restest-adapter/src/main/resources/My-Example/trainticket/`:
+`mist-cli/src/main/resources/My-Example/trainticket/`:
 
 | Asset | Description |
 |---|---|
 | `merged_openapi_spec 1.yaml` | 265-operation merged OpenAPI spec; MIST's black-box scope covers the 37 REST-exposed services |
-| `real-system-conf.yaml` | Auto-generated MIST test configuration. Do not edit by hand — re-run `io.mist.cli.MistConfGenMain <spec> <out>` |
+| `real-system-conf.yaml` | MIST test configuration. Copy + edit for your own SUT (the standalone CLI generator was retired during the 1.6 RESTest sever). |
 | `test-trace/*.json` | OpenTelemetry traces used to mine workflow scenarios |
 | `injectedFaults/injected-faults.json` | Ground-truth fault registry for detection-rate evaluation |
-| `flow.md` | Full algorithm documentation (extraction → merging → shattering → generation) |
+| `noun-map.default.yaml` (in `mist-core/src/main/resources/mist/`) | Default noun-key map used by the trace workflow extractor |
 
 ---
 
-## Repository layout (post-Path-B)
+## Repository layout
 
 ```
 mist-parent (root pom.xml, packaging=pom)
 ├── mist-core/
 │   └── src/main/java/io/mist/core/
-│       ├── oracle/shape/              Trace Shape Oracle (Phase 2):
+│       ├── spec/                      OpenAPI parser wrapper + Operation /
+│       │                              Parameter pojos; SemanticDependencyRegistry
+│       ├── multiservice/              MST test-configuration pojos + IO
+│       ├── generation/                MistGenerator (the 5-phase sequence pipeline:
+│       │                              cross-trace merge → session merge → dedup →
+│       │                              component shatter → baseline decompose → variants)
+│       ├── workflow/                  TraceWorkflowExtractor + WorkflowPipeline +
+│       │                              Phase 2.5–4 stage implementations
+│       ├── oracle/shape/              Trace Shape Oracle:
 │       │                              SpanTreeShape / StatusPropagation /
 │       │                              TimingEnvelope / ResponseEnvelope
 │       │                              invariants + Learner + Oracle + Verdict
-│       └── fault/                     Adaptive Fault Taxonomy (Phase 3):
-│                                      FaultType + FaultTypeRegistry +
-│                                      ApplicabilityMatrix + FaultMiner
+│       ├── fault/                     Adaptive Fault Taxonomy:
+│       │                              FaultType + FaultTypeRegistry +
+│       │                              ApplicabilityMatrix + FaultMiner
+│       ├── enhancer/                  Test-case enhancer + status-code
+│       │                              exploration (LLM-driven retries)
+│       ├── analysis/                  FaultDetectionTracker, TraceErrorAnalyzer,
+│       │                              TraceShapeAdapter
+│       ├── auth/                      AuthManipulationStrategy
+│       └── util/                      ConsoleProgressBar, ConsoleDedupFilter,
+│                                      FileManager, Timer, PropertyManager, …
 ├── mist-llm/
 │   └── src/main/java/io/mist/llm/    LLM client SPI + concrete backends:
 │                                      LLMClient, LLMService, LLMCallCache,
@@ -417,31 +420,29 @@ mist-parent (root pom.xml, packaging=pom)
 │                                      seed gate), OllamaApiClient,
 │                                      GeminiApiClient (OpenAI-compatible
 │                                      HTTP routed through LLMService)
-├── mist-restest-adapter/
-│   └── src/main/java/es/us/isa/restest/
-│       ├── auth/                      MstAuthHandler, MstAuthRefreshFilter
-│       ├── configuration/multiservice/ MicroserviceTestConfigurationGenerator, …
-│       ├── generators/                MultiServiceTestCaseGenerator (MST),
-│       │                              classic RT / CBT / ART / FT / LLM generators
-│       ├── workflow/                  TraceWorkflowExtractor, scenario merging,
-│       │                              WorkflowPipeline + Phase 2.5–4 stages
-│       ├── writers/restassured/       MultiServiceRESTAssuredWriter,
-│       │                              RESTAssuredWriter
-│       ├── enhancer/                  Test-case enhancer + status-code exploration
-│       ├── analysis/                  FaultDetectionTracker, TraceErrorAnalyzer
-│       └── main/                      TestGenerationAndExecution (legacy entry),
-│                                      MistRunner, MistRunResult, MistPathResolver
 └── mist-cli/
     └── src/main/java/io/mist/cli/
-        ├── MistMain                    → java -jar mist-cli/target/mist.jar
-        └── MistConfGenMain             → MST conf generator (replaces the old
-                                          MicroserviceConfBuilderMain)
+        ├── MistMain                    Launcher (→ java -jar mist-cli/target/mist.jar)
+        ├── MistRunner                  Top-level orchestrator
+        ├── MistRunResult               Exit-code carrier
+        ├── MistPathResolver            Properties-relative path resolution
+        ├── SemanticRegistryDumper      Diagnostic tool
+        ├── SemanticRegistryEvaluator   Diagnostic tool
+        ├── TraceErrorAnalysisMain      Diagnostic tool
+        ├── TraceMain                   Diagnostic tool
+        ├── auth/                       MstAuthHandler, MstAuthRefreshFilter
+        ├── writer/                     MultiServiceRESTAssuredWriter
+        └── spi/                        RestestMistSpec, RestestMistSpecLoader,
+                                        RestAssuredMistTestWriter,
+                                        MavenSurefireMistTestExecutor,
+                                        PojoConverter
 ```
 
-The classic RESTest modes (`RT / CBT / ART / FT / LLM`) still live in
-`mist-restest-adapter` and run via the legacy
-`es.us.isa.restest.main.TestGenerationAndExecution`. They are not the
-recommended entry for MIST work but stay alive as a library surface.
+There is no longer a `mist-restest-adapter` module — it was deleted in
+the 1.6 RESTest sever, along with the classic `RT / CBT / ART / FT /
+LLM` generators that lived only in the legacy `TestGenerationAndExecution`
+entry. Use `mist.jar` for all MIST work; reach out on GitHub if you
+need a specific classic-generator behaviour reinstated as an SPI.
 
 ---
 
@@ -457,8 +458,10 @@ recommended entry for MIST work but stay alive as a library surface.
 }
 ```
 
-MIST is built on top of RESTest internals (loaded as a library
-dependency from `mist-restest-adapter`); please also cite:
+MIST acknowledges intellectual debt to RESTest, which informed the
+JUnit + REST-Assured test-generation pattern MIST adopts in
+`mist-cli/writer/MultiServiceRESTAssuredWriter`; if you cite MIST in
+a context where the predecessor is relevant, please also cite:
 
 ```bibtex
 @inproceedings{MartinLopez2021Restest,
