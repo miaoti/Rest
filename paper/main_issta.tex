@@ -112,7 +112,7 @@
 }
 
 \begin{abstract}
-Black-box REST API testers sample inputs from the OpenAPI spec and stop at the HTTP status class, missing two failure modes of microservice systems: \emph{soft errors} returned as 2xx bodies, and \emph{state-fabrication failures} caused by driving internal endpoints directly. We present \textbf{MIST} (Microservice Integration \& Scenario Tester), an open-source tool that turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable cross-service workflow tests. MIST ships three named contributions on top of a 3-module Maven reactor: a \emph{Root API Mode} that drives only externally-reachable entry points and reads internal behaviour off the trace; a \emph{Sniper Strategy} that injects exactly one fault per negative variant, keyed on \texttt{(rootApi, paramName, paramLocation)} so each parameter location enrols independently; and a \emph{Trace Shape Oracle} that promotes the trace from a diagnostic side-channel to four checkable invariant families (\textsc{SpanTreeShape}, \textsc{StatusPropagation}, \textsc{TimingEnvelope}, \textsc{ResponseEnvelope}). A bundled TrainTicket~\cite{Zhou2021TrainTicket} demo --- 27 captured traces, 10 injected faults, one properties file --- runs end-to-end via \texttt{java -jar mist.jar}; MIST detects 10/10 versus RESTest~\cite{MartinLopez2021RESTest} 3/10 and EvoMaster~\cite{Arcuri2019EvoMasterTOSEM} 6/10 within a matched 25\,h budget. Source: \url{https://github.com/miaoti/Rest/}. Screencast: \todo{SCREENCAST-URL}.
+Black-box REST API testers sample inputs from the OpenAPI spec and stop at the HTTP status class, missing two failure modes of microservice systems: \emph{soft errors} returned as 2xx bodies, and \emph{state-fabrication failures} caused by driving internal endpoints directly. We present \textbf{MIST} (Microservice Integration \& Scenario Tester), an open-source tool that turns OpenTelemetry/Jaeger traces and OpenAPI specs into runnable cross-service workflow tests. MIST ships three named contributions on top of a 3-module Maven reactor: a \emph{Root API Mode} that drives only externally-reachable entry points and reads internal behaviour off the trace; a \emph{Sniper Strategy} that injects exactly one fault per negative variant, keyed on \texttt{(rootApi, paramName, paramLocation)} so each parameter location enrols independently; and a \emph{Trace Shape Oracle} that promotes the trace from a diagnostic side-channel to three checkable invariant families (\textsc{SpanTreeShape}, \textsc{StatusPropagation}, \textsc{ResponseEnvelope}) that operate on the trace metadata surviving production PII-stripping. A bundled TrainTicket~\cite{Zhou2021TrainTicket} demo --- 27 captured traces, 10 injected faults, one properties file --- runs end-to-end via \texttt{java -jar mist.jar}; MIST detects 10/10 versus RESTest~\cite{MartinLopez2021RESTest} 3/10 and EvoMaster~\cite{Arcuri2019EvoMasterTOSEM} 6/10 within a matched 25\,h budget. Source: \url{https://github.com/miaoti/Rest/}. Screencast: \todo{SCREENCAST-URL}.
 \end{abstract}
 
 \maketitle
@@ -127,7 +127,7 @@ MIST closes both gaps. Its differentiator versus AutoRestTest~\cite{Stennett2025
 \begin{itemize}\setlength{\itemsep}{1pt}
   \item \textbf{Root API Mode} (\S\ref{sec:rootmode}): drive only externally-reachable entry points; observe internal behaviour through traces. Closes G2 without instrumenting the SUT.
   \item \textbf{Sniper Strategy} (\S\ref{sec:sniper}): one fault per negative variant, drawn from 8 default categories plus a YAML applicability matrix. Each \texttt{(name, location)} slot --- path, query, header, cookie, body --- enrols separately. A \texttt{FaultMiner} extends the registry with SUT-specific categories via LLM prompting over OpenAPI descriptions and observed 4xx/5xx responses.
-  \item \textbf{Trace Shape Oracle} (\S\ref{sec:traceoracle}): four learned invariant families per root API attack G1 and beyond. \textsc{ResponseEnvelope} subsumes the legacy soft-error rule cache as one invariant kind under a single oracle umbrella.
+  \item \textbf{Trace Shape Oracle} (\S\ref{sec:traceoracle}): three learned invariant families per root API attack G1 and beyond, chosen to operate on the trace metadata that survives production PII-stripping. \textsc{ResponseEnvelope} subsumes the legacy soft-error rule cache as one invariant kind under a single oracle umbrella.
 \end{itemize}
 
 \noindent A bundled TrainTicket~\cite{Zhou2021TrainTicket} demo with 27 traces and 10 injected faults runs end-to-end from one properties file (\S\ref{sec:case}).
@@ -157,7 +157,7 @@ MIST is a Maven reactor of three modules (Figure~\ref{fig:arch}). \texttt{mist-c
 
 \textbf{(iv) Sniper Strategy} (\S\ref{sec:sniper}) builds an \texttt{Invalid\-Input\-Pool} per parameter, keyed by \texttt{PoolKey(name, location)} so same-named params at path/query/header/cookie/body are disjoint. The 8 default categories (TYPE\_MISMATCH, REGEX\_\allowbreak MISMATCH, SEMANTIC\_MISMATCH, OVERFLOW, EMPTY, NULL, SPECIAL\_CHARACTERS, BOUNDARY\_VIOLATION) are filtered through a YAML applicability matrix and extended at run-time by \texttt{FaultMiner}.
 
-\textbf{(v) Trace Shape Oracle} (\S\ref{sec:traceoracle}) fetches the Jaeger trace after each emitted JUnit step and evaluates four invariant families learned from a seed corpus of known-good runs. \textsc{ResponseEnvelope} subsumes the legacy \texttt{SoftErrorRuleCache}.
+\textbf{(v) Trace Shape Oracle} (\S\ref{sec:traceoracle}) fetches the Jaeger trace after each emitted JUnit step and evaluates three invariant families learned from a seed corpus of known-good runs. \textsc{ResponseEnvelope} subsumes the legacy \texttt{SoftErrorRuleCache}.
 
 % =============================================================================
 \section{Core Innovations}\label{sec:innov}
@@ -192,14 +192,13 @@ A negative test that mutates several parameters at once leaves the oracle unable
   \label{fig:trace}
 \end{figure*}
 
-The Trace Shape Oracle reaches the right verdict on Figure~\ref{fig:trace} by combining four learned-then-checked invariant families:
+The Trace Shape Oracle reaches the right verdict on Figure~\ref{fig:trace} by combining three learned-then-checked invariant families:
 \begin{itemize}\setlength{\itemsep}{1pt}
   \item \textsc{SpanTreeShape}: the trace tree matches the structural pattern recorded for the same root API; a missing internal hop surfaces even when every observed call returns 200.
   \item \textsc{StatusPropagation}: no descendant span carries \texttt{otel.\allowbreak status\_code=ERROR} or \texttt{http.status\_code}~$\geq 400$.
-  \item \textsc{TimingEnvelope}: per-span and root-to-leaf latency are within the seed-corpus distribution (a $\geq\!3\sigma$ outlier flags a regression).
   \item \textsc{ResponseEnvelope}: body-pattern rules (success/failure sets, field-level checks) learned per API via a one-shot LLM call on the first 2xx response and cached at \texttt{.mist/trace-shape-invariants.json}. This is the invariant on which the \texttt{status:0, data:null} envelope of the motivating example fails; it subsumes the legacy \texttt{SoftErrorRuleCache}.
 \end{itemize}
-Caching makes the LLM cost bounded: roughly two calls per distinct API regardless of how many tests touch it. The oracle also matches the response \texttt{faultName} against the injected-fault registry to attribute confirmed failures to their $(r, k, c, v)$ mutation.
+We deliberately exclude timing-based invariants: in microservice deployments, end-to-end latency is dominated by cold-cache, GC, and cluster-load variance that falls within the scope of dedicated trace anomaly detection rather than functional testing. The three retained invariants operate on trace metadata that survives the PII-stripping common to GDPR/HIPAA-compliant OTel exporters --- span tree, HTTP status codes, and one-shot LLM body classification --- so MIST remains effective on production-realistic trace corpora where request/response bodies have been redacted upstream. Caching makes the LLM cost bounded: roughly two calls per distinct API regardless of how many tests touch it. The oracle also matches the response \texttt{faultName} against the injected-fault registry to attribute confirmed failures to their $(r, k, c, v)$ mutation.
 
 % =============================================================================
 \section{Usage and Case Study}\label{sec:case}
