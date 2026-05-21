@@ -533,7 +533,13 @@ public class MistGenerator {
 
         ConsoleProgressBar.begin("Variants", variantCount);
         for (int v = 0; v < variantCount; v++) {
-            boolean isFaultyVariant = (v >= positiveBase) && (faultQueueCursor < faultQueue.size());
+            // Generate NEGATIVE variants FIRST (covering each FaultTarget once),
+            // then positives. Earlier ordering put positives first, so when the
+            // K_DEDUP_EXHAUSTED early-abort triggered during the positive phase
+            // (which can happen on scenarios with small fingerprint spaces, e.g.
+            // single-step DELETE /admintravel/{tripId}), all negative variants
+            // were skipped — losing fault-injection coverage.
+            boolean isFaultyVariant = (v < faultQueue.size());
 
             // ── Resolve current FaultTarget (Sniper Strategy) ─────────
             FaultTarget currentTarget = null;
@@ -541,7 +547,7 @@ public class MistGenerator {
             List<String> targetFaultyParams = new ArrayList<>();
 
             if (isFaultyVariant) {
-                currentTarget = faultQueue.get(faultQueueCursor);
+                currentTarget = faultQueue.get(v);  // v is now the fault-target index when v < queue.size
                 targetFaultRootIndex = currentTarget.rootIndex;
                 targetFaultyParams.add(currentTarget.paramName);
                 faultQueueCursor++;
