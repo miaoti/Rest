@@ -1,14 +1,16 @@
 # B1 Inventory — `MultiServiceTestCaseGenerator` ↔ RESTest dependency surface
 
 > Phase B1.A deliverable for `PROMPT_B1_SEVER_RESTEST_INHERITANCE.md`.
-> Status: **B1.A inventory complete; B1.D sever done; B1.C migration partly
-> done (33 MIST-owned classes + 2 util helpers + SmartInputFetcher +
-> TestCaseEnhancer = 37 classes total promoted into `mist-core`);
-> B1.B-vendor of the seven leaf configuration POJOs done; B1.E SPI
-> surface defined (`io.mist.core.spi`) and B1.F adapter-side spec
-> loader registered via `META-INF/services/`. Cardinal § 7.5 criterion
-> ("`mist-core/src/main/java` has zero `es.us.isa` references") is now
-> met.**
+> Status: **B1.A inventory complete; B1.D sever done; B1.C migration
+> running ahead (45 MIST-owned classes promoted into `mist-core`,
+> including the 1510-LOC `SemanticDependencyRegistry` and the 4450-LOC
+> `SmartInputFetcher`); B1.B-vendor of the seven leaf configuration
+> POJOs done; B1.E SPI surface defined (`io.mist.core.spi`) and B1.F
+> adapter-side spec loader registered via `META-INF/services/`;
+> adapter-side `PojoConverter` boundary translator landed to bridge
+> the three SDR.build() call sites. Cardinal § 7.5 criterion
+> ("`mist-core/src/main/java` has zero `es.us.isa` references") is
+> firmly held.**
 
 ## 1. What this branch has done
 
@@ -58,10 +60,10 @@ mist-core/src/main/java/io/mist/core/
                                  WorkflowScenarioUtils, TraceWorkflowExtractor)
 ```
 
-`mist-core` total Java files: **71** (up from 55 at the previous snapshot,
+`mist-core` total Java files: **80** (up from 55 at the previous snapshot,
 17 at the start of B1). `mist-restest-adapter` MIST-relevant files left in
-its tree: **51**, plus the new `io.mist.adapter.restest.*` package with
-two SPI implementations and a `META-INF/services/` registration.
+its tree: **44**, plus the new `io.mist.adapter.restest.*` package with
+three SPI/converter implementations and a `META-INF/services/` registration.
 
 ## 3. Category A — `AbstractTestCaseGenerator` surface MIST actually used (closed)
 
@@ -133,6 +135,14 @@ unchanged.
 | `workflow/TraceWorkflowExtractor` | `io.mist.core.workflow.TraceWorkflowExtractor` | reconstructs scenarios from Jaeger traces |
 | `inputs/smart/SmartInputFetcher` | `io.mist.core.smart.SmartInputFetcher` | 4450 LOC; moved verbatim once `ConsoleProgressBar` was promoted; doc-link to `SemanticDependencyRegistry` softened to `{@code}` |
 | `enhancer/TestCaseEnhancer` | `io.mist.core.enhancer.TestCaseEnhancer` | 409 LOC; only its package declaration tied it to RESTest |
+| `generators/ValueProvenanceInference` | `io.mist.core.value.ValueProvenanceInference` | 50 LOC; bundled with the ValueProvenance carrier |
+| `coverage/LLMStatusCodeDiscovery` | `io.mist.core.coverage.LLMStatusCodeDiscovery` | LLM-driven; consumer is `StatusCodeExplorationEnhancer` (still in adapter) |
+| `coverage/StatusCodeCoverageTracker` | `io.mist.core.coverage.StatusCodeCoverageTracker` | |
+| `coverage/StatusCodeTarget` | `io.mist.core.coverage.StatusCodeTarget` | |
+| `configuration/multiservice/MstConfig` | `io.mist.core.config.legacy.MstConfig` | Properties-file loader; the `.legacy` sub-package disambiguates from the typed `io.mist.core.config.MstConfig` POJO |
+| `workflow/SemanticDependencyRegistry` | `io.mist.core.registry.SemanticDependencyRegistry` | 1510 LOC; `build(...)` signature switched from `Map<String, OpenAPISpecification>` to `Map<String, OpenAPI>` and pojo refs switched to `io.mist.core.spec.*`. Boundary converter `io.mist.adapter.restest.PojoConverter` bridges the three RESTest-side call sites |
+| `workflow/ScenarioOptimizer` | `io.mist.core.workflow.ScenarioOptimizer` | unblocked once `SemanticDependencyRegistry` moved; lone consumer is `Phase3ShatteringStage` |
+| `MultiServiceTestCaseGenerator#PoolKey` (inner class) | `io.mist.core.fault.PoolKey` | top-level class; extraction unblocked `PipelineContext`'s last dependency on the generator class |
 
 ## 4a. Category B — RESTest data classes vendored as verbatim copies (B1.B)
 
