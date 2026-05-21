@@ -1,6 +1,6 @@
 package es.us.isa.restest.auth;
 
-import es.us.isa.restest.coverage.StatusCodeTarget;
+import io.mist.core.coverage.StatusCodeTarget;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,4 +1,4 @@
-package es.us.isa.restest.coverage;
+package io.mist.core.coverage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

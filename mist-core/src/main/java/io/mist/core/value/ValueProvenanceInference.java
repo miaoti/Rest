@@ -1,14 +1,14 @@
-package es.us.isa.restest.generators;
+package io.mist.core.value;
 
 import io.mist.core.value.ValueProvenance;
 
 /**
  * Heuristic provenance detection for parameter values produced by the
- * fallback paths of {@link MultiServiceTestCaseGenerator}.
+ * fallback paths of the adapter-side {@code MultiServiceTestCaseGenerator}.
  *
  * <p>The generator's type-aware fallbacks emit values with one of a fixed
- * set of literal prefixes — e.g. {@code "FALLBACK_id_3"} from
- * {@link MultiServiceTestCaseGenerator#typeAwareFallbackValue(es.us.isa.restest.configuration.pojos.TestParameter,int)}
+ * set of literal prefixes — e.g. {@code "FALLBACK_id_3"} from the
+ * generator's {@code typeAwareFallbackValue(TestParameter, int)} path
  * or {@code "LLM_EMPTY_userId"} when the LLM produces no candidates.
  * Observing one of these prefixes at read time is sufficient to conclude
  * that the value was never grounded in a live system response or LLM

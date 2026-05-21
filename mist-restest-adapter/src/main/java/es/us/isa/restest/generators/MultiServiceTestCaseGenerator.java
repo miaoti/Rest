@@ -1299,7 +1299,7 @@ public class MultiServiceTestCaseGenerator {
                 // resolution-aware classifier can reclassify the test as negative.
                 // The eventual step index is tc.getSteps().size() — the StepCall
                 // for this iteration is appended downstream at tc.addStepCall(call).
-                io.mist.core.value.ValueProvenance inferred = ValueProvenanceInference.infer(val);
+                io.mist.core.value.ValueProvenance inferred = io.mist.core.value.ValueProvenanceInference.infer(val);
                 if (inferred != null) {
                     tc.recordParameterProvenance(tc.getSteps().size(), p.getName(), inferred);
                 }

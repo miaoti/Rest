@@ -1,9 +1,9 @@
 package es.us.isa.restest.enhancer;
 
 import es.us.isa.restest.auth.AuthManipulationStrategy;
-import es.us.isa.restest.coverage.LLMStatusCodeDiscovery;
-import es.us.isa.restest.coverage.StatusCodeCoverageTracker;
-import es.us.isa.restest.coverage.StatusCodeTarget;
+import io.mist.core.coverage.LLMStatusCodeDiscovery;
+import io.mist.core.coverage.StatusCodeCoverageTracker;
+import io.mist.core.coverage.StatusCodeTarget;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.llm.LLMService;
 import es.us.isa.restest.testcases.MultiServiceTestCase;

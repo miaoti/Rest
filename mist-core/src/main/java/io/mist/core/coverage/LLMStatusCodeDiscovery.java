@@ -1,4 +1,4 @@
-package es.us.isa.restest.coverage;
+package io.mist.core.coverage;
 
 import io.mist.llm.LLMConfig;
 import io.mist.llm.LLMService;

@@ -1,4 +1,4 @@
-package es.us.isa.restest.coverage;
+package io.mist.core.coverage;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
