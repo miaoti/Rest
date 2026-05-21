@@ -1401,7 +1401,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                             pw.println();
                             
                             // Handle auth manipulation for 401/403 exploration
-                            es.us.isa.restest.auth.AuthManipulationStrategy.AuthConfig authConfig = mstc.getAuthManipulation();
+                            io.mist.core.auth.AuthManipulationStrategy.AuthConfig authConfig = mstc.getAuthManipulation();
                             if (authConfig != null && !authConfig.isAuthEnabled()) {
                                 pw.println("        // 🔐 Auth manipulation: REMOVE_AUTH for status code exploration");
                                 pw.println("        Allure.parameter(\"🔐 Auth Manipulation\", \"" + authConfig.getManipulationType().getDescription() + "\");");
@@ -1426,7 +1426,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                      */
                     String __overrideTokenLit = "null";
                     boolean __disableAuthLit = false;
-                    es.us.isa.restest.auth.AuthManipulationStrategy.AuthConfig __mstAcWrite =
+                    io.mist.core.auth.AuthManipulationStrategy.AuthConfig __mstAcWrite =
                             mstc.getAuthManipulation();
                     if (__mstAcWrite != null) {
                         if (!__mstAcWrite.isAuthEnabled()) {

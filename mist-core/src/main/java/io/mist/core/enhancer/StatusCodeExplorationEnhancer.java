@@ -1,12 +1,12 @@
-package es.us.isa.restest.enhancer;
+package io.mist.core.enhancer;
 
-import es.us.isa.restest.auth.AuthManipulationStrategy;
+import io.mist.core.auth.AuthManipulationStrategy;
 import io.mist.core.coverage.LLMStatusCodeDiscovery;
 import io.mist.core.coverage.StatusCodeCoverageTracker;
 import io.mist.core.coverage.StatusCodeTarget;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.llm.LLMService;
-import es.us.isa.restest.testcases.MultiServiceTestCase;
+import io.mist.core.testcase.MultiServiceTestCase;
 import io.mist.core.util.ConsoleProgressBar;
 
 import com.fasterxml.jackson.databind.JsonNode;

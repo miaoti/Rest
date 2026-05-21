@@ -1,4 +1,4 @@
-package es.us.isa.restest.auth;
+package io.mist.core.auth;
 
 import io.mist.core.coverage.StatusCodeTarget;
 

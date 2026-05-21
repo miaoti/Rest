@@ -177,6 +177,23 @@ public class MultiServiceTestCase extends TestCase {
     }
 
     /**
+     * Per-test auth-manipulation override consumed by the writer's
+     * status-code-exploration path. {@code null} ⇒ use the default
+     * auth configuration. The {@link io.mist.core.auth.AuthManipulationStrategy.AuthConfig}
+     * type is the carrier; the writer + StatusCodeExplorationEnhancer
+     * agree on the same enum.
+     */
+    private io.mist.core.auth.AuthManipulationStrategy.AuthConfig authManipulation = null;
+
+    public void setAuthManipulation(io.mist.core.auth.AuthManipulationStrategy.AuthConfig authConfig) {
+        this.authManipulation = authConfig;
+    }
+
+    public io.mist.core.auth.AuthManipulationStrategy.AuthConfig getAuthManipulation() {
+        return authManipulation;
+    }
+
+    /**
      * Get a description of the target status code for Allure reporting.
      */
     public String getTargetStatusCodeDescription() {

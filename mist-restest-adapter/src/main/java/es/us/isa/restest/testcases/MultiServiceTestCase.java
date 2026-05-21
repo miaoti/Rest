@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import es.us.isa.restest.auth.AuthManipulationStrategy;
+import io.mist.core.auth.AuthManipulationStrategy;
 import es.us.isa.restest.configuration.pojos.Operation;
 import io.mist.core.value.ValueProvenance;
 import io.swagger.v3.oas.models.PathItem.HttpMethod;

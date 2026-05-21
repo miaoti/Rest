@@ -9,7 +9,7 @@ import es.us.isa.restest.coverage.CoverageGatherer;
 import es.us.isa.restest.coverage.CoverageMeter;
 import io.mist.core.enhancer.FailedTestCollector;
 import io.mist.core.enhancer.FailedTestResult;
-import es.us.isa.restest.enhancer.StatusCodeExplorationEnhancer;
+import io.mist.core.enhancer.StatusCodeExplorationEnhancer;
 import io.mist.core.enhancer.TestCaseEnhancer;
 import io.mist.core.enhancer.TestFileRegenerator;
 import io.mist.core.enhancer.TestResultCapture;
@@ -19,8 +19,8 @@ import io.mist.core.registry.RootApiRegistry;
 import es.us.isa.restest.reporting.AllureReportManager;
 import es.us.isa.restest.reporting.StatsReportManager;
 import es.us.isa.restest.specification.OpenAPISpecification;
-import es.us.isa.restest.testcases.MultiServiceTestCase;
-import es.us.isa.restest.testcases.TestCase;
+import io.mist.core.testcase.MultiServiceTestCase;
+import io.mist.core.testcase.TestCase;
 import io.mist.core.util.ConsoleProgressBar;
 import io.mist.core.util.IDGenerator;
 import es.us.isa.restest.util.PropertyManager;
@@ -292,12 +292,13 @@ public final class MistRunner {
         // Generate test cases
         logger.info("Generating tests");
         Timer.startCounting(Timer.TestStep.TEST_SUITE_GENERATION);
-        // MistGenerator (mist-core) produces io.mist.core.testcase.TestCase
-        // instances; the RESTAssured writer downstream still expects
-        // es.us.isa.restest.testcases.TestCase. TestCaseConverter walks
-        // the carrier graph once at this boundary.
-        Collection<TestCase> testCases =
-                io.mist.adapter.restest.TestCaseConverter.fromCoreCollection(generator.generate());
+        // MistGenerator (mist-core) returns io.mist.core.testcase.TestCase
+        // instances. MistRunner now operates on mist-core test cases
+        // end-to-end (status-code enhancer, stats report, etc. all
+        // consume the mist-core carriers); only the RESTAssured writer
+        // call below needs the adapter-flavoured TestCase carriers, so
+        // TestCaseConverter runs at that single boundary.
+        Collection<TestCase> testCases = generator.generate();
         Timer.stopCounting(Timer.TestStep.TEST_SUITE_GENERATION);
 
         // Store MST test cases for status code exploration (used during enhancement)
@@ -309,15 +310,19 @@ public final class MistRunner {
         }
         logger.info("📋 Stored {} MST test cases for status code exploration", generatedMSTTestCases.size());
 
-        // Pass test cases to the statistic report manager (CSV writing, coverage)
+        // Pass test cases to the statistic report manager (CSV writing, coverage).
+        // StatsReportManager is RESTest's, expects RESTest TestCase; bridge here.
         if (statsReportManager != null) {
-            statsReportManager.setTestCases(testCases);
+            statsReportManager.setTestCases(
+                    io.mist.adapter.restest.TestCaseConverter.fromCoreCollection(testCases));
         }
 
-        // Write test cases using MultiServiceRESTAssuredWriter (creates multiple files)
+        // Write test cases using MultiServiceRESTAssuredWriter (creates multiple files).
+        // The writer's input surface is still Collection<RESTest-side TestCase>;
+        // bridge across the boundary here via TestCaseConverter.
         logger.info("Writing {} test cases to multiple files in folder structure", testCases.size());
         logger.info("TARGET: All test files will be in timestamped package: {}.{}", inputs.packageName, className);
-        writer.write(testCases);
+        writer.write(io.mist.adapter.restest.TestCaseConverter.fromCoreCollection(testCases));
 
         // Execute tests if enabled
         if (Boolean.TRUE.equals(inputs.executeTestCases)) {
@@ -1246,9 +1251,11 @@ public final class MistRunner {
                                     int originalCount = generatedMSTTestCases.size();
                                     generatedMSTTestCases.addAll(explorationTests);
 
-                                    // Write ALL test cases (original + exploration)
+                                    // Write ALL test cases (original + exploration).
+                                    // mstWriter is RESTAssured-side; convert to RESTest carriers.
                                     List<TestCase> allTestCases = new ArrayList<>(generatedMSTTestCases);
-                                    mstWriter.write(allTestCases);
+                                    mstWriter.write(
+                                            io.mist.adapter.restest.TestCaseConverter.fromCoreCollection(allTestCases));
                                     logger.info("📝 Wrote {} total tests ({} original + {} exploration)",
                                         allTestCases.size(), originalCount, explorationTests.size());
 
