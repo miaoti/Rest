@@ -19,9 +19,8 @@ package io.mist.core.config;
  *
  * <p>Property keys remain backwards-compatible — every key here was previously
  * read via raw {@code System.getProperty}. The POJO does not own any
- * persistence; the existing
- * {@link es.us.isa.restest.configuration.multiservice.MstConfig} Properties
- * loader continues to push MST file contents into {@code System.getProperty}.
+ * persistence; an adapter-side properties loader continues to push MST file
+ * contents into {@code System.getProperty}.
  *
  * <p>Tests can invalidate the singleton via {@link #resetForTesting()}.
  */
