@@ -74,6 +74,16 @@
 			<version>4.10.0</version>
 		</dependency>
 
+		<!-- swagger-core — vendored Operation pojo holds an
+		     io.swagger.v3.oas.models.Operation reference. The full
+		     OpenAPI parser still lives in mist-restest-adapter; mist-core
+		     only needs the model classes for typed handles. -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+
 		<!-- Logging (API on the compile classpath, core at runtime only) -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

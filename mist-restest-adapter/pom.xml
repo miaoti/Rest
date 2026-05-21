@@ -127,7 +127,9 @@
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
 		<aspectj.version>1.9.7</aspectj.version>
-		<swagger.version>2.1.10</swagger.version>
+		<!-- swagger.version is defined in the parent pom (hoisted because
+		     mist-core's vendored Operation pojo also references the OASv3
+		     model). -->
 		<openapivalidator.version>2.18.1</openapivalidator.version>
 		<restassured.version>4.2.0</restassured.version>
 		<jackson.version>2.11.4</jackson.version>

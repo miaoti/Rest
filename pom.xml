@@ -28,6 +28,10 @@
 		<junit.version>4.13.2</junit.version>
 		<json.version>20231013</json.version>
 		<jackson.version>2.11.4</jackson.version>
+		<!-- swagger-core v3: the OpenAPI model classes used by both
+		     mist-restest-adapter (full Swagger parser) and mist-core
+		     (vendored Operation pojo referencing OASv3 Operation). -->
+		<swagger.version>2.1.10</swagger.version>
 	</properties>
 
 	<modules>
