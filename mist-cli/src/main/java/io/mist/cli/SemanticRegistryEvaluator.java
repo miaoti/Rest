@@ -1,4 +1,4 @@
-package es.us.isa.restest.main;
+package io.mist.cli;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

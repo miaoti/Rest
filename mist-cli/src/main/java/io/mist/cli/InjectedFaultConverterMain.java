@@ -1,4 +1,4 @@
-package es.us.isa.restest.main;
+package io.mist.cli;
 
 import io.mist.core.util.InjectedFaultConverter;
 import org.apache.logging.log4j.LogManager;

@@ -1,4 +1,4 @@
-package es.us.isa.restest.main;
+package io.mist.cli;
 
 import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
 import io.mist.core.spec.TestConfigurationObject;

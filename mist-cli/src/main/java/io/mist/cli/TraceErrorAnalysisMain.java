@@ -1,4 +1,4 @@
-package es.us.isa.restest.main;
+package io.mist.cli;
 
 import org.json.JSONObject;
 import io.mist.core.analysis.TraceErrorAnalyzer;
