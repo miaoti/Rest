@@ -1,157 +1,151 @@
 # B1 Inventory — `MultiServiceTestCaseGenerator` ↔ RESTest dependency surface
 
 > Phase B1.A deliverable for `PROMPT_B1_SEVER_RESTEST_INHERITANCE.md`.
-> Status: **closed for Phase B1.D (in-place sever)** — see § 7.
-> Snapshot taken against `inject-detection` HEAD `43aff11e`.
+> Status: **B1.A inventory complete; B1.D sever done; B1.C migration partly
+> done (33 MIST-owned classes promoted into `mist-core`).**
 
-## 1. Pre-flight state (before sever)
+## 1. What this branch did
 
-| Check | Command | Result |
-|---|---|---|
-| mist-core has zero RESTest edges | `grep -rE 'es\.us\.isa' mist-core/src/main/java` | **0 matches** |
-| Inheritance edge present | `grep -n 'extends AbstractTestCaseGenerator' mist-restest-adapter/.../MultiServiceTestCaseGenerator.java` | `:37` |
-| Reactor compiles | `mvn -q -DskipTests compile` | **OK** |
-| Java toolchain | `mvn --version` | Maven 3.9.11 / OpenJDK 21.0.10 |
+1. Severed `MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator`
+   in place. The audit below shows the inherited surface MIST actually
+   consumed was empty except for one setter from outside callers, which is
+   now a documented no-op on `MultiServiceTestCaseGenerator` itself.
+2. Promoted 33 RESTest-dependency-free MIST classes out of the
+   `es.us.isa.restest.*` package tree and into `io.mist.core.*`. None of
+   these classes ever depended on RESTest; they were sitting in RESTest
+   packages by historical convention.
+3. Adjusted `mist-core/pom.xml` for the new compile-classpath needs
+   (jackson, junit lifted out of test scope, okhttp). Hoisted the
+   `jackson.version` property to the parent pom.
 
-## 2. Module layout (today)
+## 2. Module layout snapshot (this branch HEAD)
 
 ```
-Rest/
-├── mist-core/                       (clean — no es.us.isa edges)
-├── mist-llm/                        (clean)
-├── mist-restest-adapter/            (carries the generation pipeline)
-│   └── es.us.isa.restest.{generators,workflow,inputs,validation,registry,configuration,llm,main,writers,...}
-└── mist-cli/                        (clean — only imports MistRunner + MstConfig)
+mist-core/src/main/java/io/mist/core/
+├── analysis/        (4 files — fault-detection + trace error analysis)
+├── bandit/          (1 file  — ThompsonScheduler, unchanged)
+├── config/          (2 files — MstConfig + MstConfigValidator)
+├── enhancer/        (5 files — failed-test capture + regenerator)
+├── fault/           (8 files — InvalidInputPool + FaultTypeRegistry family)
+├── generation/      (3 files — AiDrivenLLMGenerator, ZeroShotLLMGenerator,
+│                                HardcodedInvalidInputGenerator)
+├── llm/             (1 file  — ParameterInfo)
+├── oracle/shape/    (6 files — Trace Shape Oracle, unchanged)
+├── registry/        (3 files — RootApiRegistry + ApiTree + RootApiEntry)
+├── smart/           (10 files — smart-fetch data classes + caches)
+├── util/            (1 file  — SeededRandom)
+├── value/           (2 files — ValueProvenance + ResolvedValue, unchanged)
+└── workflow/        (5 files — WorkflowScenario, WorkflowStep, NounKeyMap,
+                                 WorkflowScenarioUtils, TraceWorkflowExtractor)
 ```
 
-## 3. Category A — `AbstractTestCaseGenerator` surface MIST actually uses
+`mist-core` total Java files: **55** (up from 17 at the start of B1).
+`mist-restest-adapter` MIST-relevant files left in its tree: **57**.
 
-`MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator` was inherited
-from upstream RESTest by convention, but a complete audit shows MIST consumes
-**none of the inherited state** and **only one inherited setter from the
-outside**:
+## 3. Category A — `AbstractTestCaseGenerator` surface MIST actually used (closed)
 
-| Element | Inherited from base | Actually used by MIST? | `file:line` |
+`MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator` was
+inherited from upstream RESTest by convention, but a complete audit
+showed MIST consumes **none of the inherited state** and **only one
+inherited setter from the outside**:
+
+| Element | Inherited from base | MIST actually used it? | `file:line` (pre-sever) |
 |---|---|---|---|
-| `super(spec, conf, nTests)` ctor | Yes (only mechanism to populate `spec`, `conf`, `numberOfTests` on the base) | **No** — MIST never reads `super.spec`, `super.conf`, or `super.numberOfTests`. The values are also stored on MIST's own fields (`serviceSpecs`, `serviceConfigs`, `scenarios`). | `MultiServiceTestCaseGenerator.java:291` (call) |
-| `super.spec` field | Yes | No reference | — |
-| `super.conf` field | Yes | No reference | — |
-| `super.numberOfTests` | Yes | No reference | — |
-| `super.rand` / `super.seed` | Yes | No reference — MIST owns `private Random random = SeededRandom.create(...)` instead | `MultiServiceTestCaseGenerator.java:73` |
-| `super.nominalGenerators` / `super.faultyGenerators` | Yes | No reference — MIST owns `Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools` | `MultiServiceTestCaseGenerator.java:72` |
-| `super.authManager` | Yes | No reference | — |
-| `super.faultyRatio` | Yes (protected) | **Shadowed** by MIST's own `private float faultyRatio` | `MultiServiceTestCaseGenerator.java:63` (declaration); `:307` (assignment from `MstConfig.faulty().ratio()`) |
-| `super.n*` counters | Yes | No reference — MIST manages its own variant counters | — |
-| `generateOperationTestCases(Operation)` | abstract | Override is **a no-op stub** returning `Collections.emptyList()` | `MultiServiceTestCaseGenerator.java:757` (before sever) |
-| `generateNextTestCase(Operation)` | abstract | Override is **a no-op stub** returning `null` | `MultiServiceTestCaseGenerator.java:759` (before sever) |
-| `hasNext()` | abstract | Override is **a no-op stub** returning `false` | `MultiServiceTestCaseGenerator.java:761` (before sever) |
-| `generate()` (concrete) | concrete | **Completely replaced** — MIST's `generate()` never calls `super.generate()` | `MultiServiceTestCaseGenerator.java:407` |
-| `setCheckTestCases(boolean)` (concrete) | concrete | Called externally by `MistRunner.createMstGenerator()` line 546 and `TestGenerationAndExecution.createGenerator()` line 336 but the field is never read by MIST | `MistRunner.java:546` |
+| `super(spec, conf, nTests)` ctor | yes (only mechanism to populate base's `spec`, `conf`, `numberOfTests`) | **no** — MIST never reads `super.spec`/`super.conf`/`super.numberOfTests`; the same values are also stored on MIST's own fields | `MultiServiceTestCaseGenerator.java:291` |
+| `super.spec` / `super.conf` / `super.numberOfTests` | yes | no reference | — |
+| `super.rand` / `super.seed` | yes | no reference — MIST owns `private Random random = SeededRandom.create(...)` instead | `:73` |
+| `super.nominalGenerators` / `super.faultyGenerators` | yes | no reference — MIST owns `Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools` | `:72` |
+| `super.authManager` | yes | no reference | — |
+| `super.faultyRatio` | yes (protected) | **shadowed** by MIST's own private field | `:63` (decl); `:307` (assigned from `MstConfig.faulty().ratio()`) |
+| `super.n*` counters | yes | no reference | — |
+| `generateOperationTestCases(Operation)` | abstract | overridden as a no-op stub | `:757` (pre-sever) |
+| `generateNextTestCase(Operation)` | abstract | overridden as a no-op stub | `:759` |
+| `hasNext()` | abstract | overridden as a no-op stub | `:761` |
+| `generate()` (concrete) | concrete | **completely replaced** — never calls `super.generate()` | `:407` |
+| `setCheckTestCases(boolean)` (concrete) | concrete | called by `MistRunner.createMstGenerator()` (`MistRunner.java:546`) and `TestGenerationAndExecution.createGenerator()` (`:336`); the field is never read by MIST | external |
 
-**Disposition for category A: drop or inline.** The four `@Override` stubs are
-dropped outright (no caller; not abstract once `extends` is gone). The
-`setCheckTestCases` setter is reimplemented as a documented no-op on
-`MultiServiceTestCaseGenerator` so the external CLI surface stays unchanged.
+**Result of B1.D:** dropped the `extends` clause, removed `super(...)`,
+removed the three no-op overrides, added a documented no-op
+`setCheckTestCases(boolean)` so the external CLI surface compiles
+unchanged.
 
-## 4. Category B — RESTest data classes consumed by MIST code
+## 4. Category E — MIST-owned classes that have moved out of `es.us.isa.restest.*`
 
-These are the `es.us.isa.restest.*` types that appear in fields, parameters,
-or return types of MIST-specific code. The disposition column says what
-Phase B1.B-F would do with them under the full prompt; rows marked **Defer**
-are intentionally **not** moved by the in-place sever in this branch and are
-tracked in `B1_FOLLOWUPS.md`.
-
-| Type | Used in | Disposition |
+| Old location | New location | Notes |
 |---|---|---|
-| `es.us.isa.restest.specification.OpenAPISpecification` | `MultiServiceTestCaseGenerator` field + many MIST classes | Wrap (would become `io.mist.core.spi.MistSpec` in B1.E) — **Defer** |
-| `es.us.isa.restest.configuration.pojos.TestConfigurationObject` | `MultiServiceTestCaseGenerator` field + writer + many | Wrap — **Defer** |
-| `es.us.isa.restest.configuration.pojos.Operation` | hot path of `MultiServiceTestCaseGenerator.findOperation` etc. | Wrap — **Defer** |
-| `es.us.isa.restest.configuration.pojos.TestParameter` | hot path | Wrap — **Defer** |
-| `es.us.isa.restest.testcases.TestCase` | return type of `generate()` | Vendor (small, leaf data class) — **Defer** |
-| `es.us.isa.restest.testcases.MultiServiceTestCase` | MIST-owned subclass already; only its parent `TestCase` is RESTest | Already-MIST in spirit (in `mist-restest-adapter` for now) — **Defer move** |
-| `es.us.isa.restest.util.SeededRandom` | MIST-owned class living in RESTest packages | Pure-MIST class; should move to `mist-core` later — **Defer** |
-| `es.us.isa.restest.util.ConsoleProgressBar` | MIST-owned UX helper | Pure-MIST — **Defer** |
-| `es.us.isa.restest.util.RESTestException` | thrown by MIST code | Wrap or rename to `MistException` — **Defer** |
-| `es.us.isa.restest.writers.IWriter` | MistRunner / TestGenerationAndExecution | Wrap (B1.E `MistTestWriter` SPI) — **Defer** |
+| `analysis/FaultDetectionTracker` | `io.mist.core.analysis.FaultDetectionTracker` | |
+| `analysis/IntelligentAnalysisCache` | `io.mist.core.analysis.IntelligentAnalysisCache` | |
+| `analysis/TraceErrorAnalyzer` | `io.mist.core.analysis.TraceErrorAnalyzer` | LLM-driven trace failure-mode diagnosis |
+| `analysis/TraceShapeAdapter` | `io.mist.core.analysis.TraceShapeAdapter` | bridges adapter-side Jaeger JSON to the oracle |
+| `configuration/MstConfig` | `io.mist.core.config.MstConfig` | typed config singleton (Fix A-6) |
+| `configuration/MstConfigValidator` | `io.mist.core.config.MstConfigValidator` | startup validator |
+| `enhancer/FailedTestCollector` | `io.mist.core.enhancer.FailedTestCollector` | JUnit RunListener; junit lifted to compile scope on mist-core |
+| `enhancer/FailedTestResult` | `io.mist.core.enhancer.FailedTestResult` | |
+| `enhancer/ParameterSnapshot` | `io.mist.core.enhancer.ParameterSnapshot` | |
+| `enhancer/TestFileRegenerator` | `io.mist.core.enhancer.TestFileRegenerator` | |
+| `enhancer/TestResultCapture` | `io.mist.core.enhancer.TestResultCapture` | |
+| `generators/AiDrivenLLMGenerator` | `io.mist.core.generation.AiDrivenLLMGenerator` | |
+| `generators/ZeroShotLLMGenerator` | `io.mist.core.generation.ZeroShotLLMGenerator` | okhttp lifted to mist-core compile scope |
+| `generators/HardcodedInvalidInputGenerator` | `io.mist.core.generation.HardcodedInvalidInputGenerator` | |
+| `inputs/InvalidInputPool` | `io.mist.core.fault.InvalidInputPool` | |
+| `inputs/llm/ParameterInfo` | `io.mist.core.llm.ParameterInfo` | |
+| `inputs/smart/ApiMapping` | `io.mist.core.smart.ApiMapping` | |
+| `inputs/smart/CacheConfig` | `io.mist.core.smart.CacheConfig` | |
+| `inputs/smart/InputFetchRegistry` | `io.mist.core.smart.InputFetchRegistry` | |
+| `inputs/smart/OpenAPIEndpointDiscovery` | `io.mist.core.smart.OpenAPIEndpointDiscovery` | jackson lifted to mist-core compile scope |
+| `inputs/smart/ParameterError` | `io.mist.core.smart.ParameterError` | |
+| `inputs/smart/ParameterErrorAnalysisCache` | `io.mist.core.smart.ParameterErrorAnalysisCache` | |
+| `inputs/smart/ParameterErrorAnalyzer` | `io.mist.core.smart.ParameterErrorAnalyzer` | |
+| `inputs/smart/ServicePattern` | `io.mist.core.smart.ServicePattern` | |
+| `inputs/smart/SmartFetchAuthManager` | `io.mist.core.smart.SmartFetchAuthManager` | |
+| `inputs/smart/SmartInputFetchConfig` | `io.mist.core.smart.SmartInputFetchConfig` | |
+| `registry/ApiTree` | `io.mist.core.registry.ApiTree` | |
+| `registry/RootApiEntry` | `io.mist.core.registry.RootApiEntry` | |
+| `registry/RootApiRegistry` | `io.mist.core.registry.RootApiRegistry` | |
+| `util/SeededRandom` | `io.mist.core.util.SeededRandom` | |
+| `workflow/NounKeyMap` | `io.mist.core.workflow.NounKeyMap` | YAML-driven noun map (S-2) |
+| `workflow/WorkflowScenario` | `io.mist.core.workflow.WorkflowScenario` | `addTraceId` / `mergeWith` widened to public for the (still-in-adapter) extractor/optimizer |
+| `workflow/WorkflowScenarioUtils` | `io.mist.core.workflow.WorkflowScenarioUtils` | |
+| `workflow/WorkflowStep` | `io.mist.core.workflow.WorkflowStep` | |
+| `workflow/TraceWorkflowExtractor` | `io.mist.core.workflow.TraceWorkflowExtractor` | reconstructs scenarios from Jaeger traces |
 
-## 5. Category C — RESTest static utilities called by MIST
+## 5. What still depends on RESTest types (deferred)
 
-Searched via `grep '^import es\.us\.isa\.restest' …util*` against MIST
-packages.
+These classes stay in `mist-restest-adapter` because they reference RESTest
+types directly (configuration pojos, OpenAPI specification visitors,
+test-case base classes, util helpers) or depend on others in this group.
 
-| Utility | Callers | Disposition |
-|---|---|---|
-| `IDGenerator` | `MistRunner` (test-class IDs), `MultiServiceRESTAssuredWriter` | Pure-data — **Defer move into `mist-core`** |
-| `PropertyManager` | `MistRunner`, `TestGenerationAndExecution` | Lives at the CLI boundary — **Defer** |
-| `Timer` | `MistRunner` | Pure-MIST timing helper — **Defer** |
+| File | RESTest types it consumes |
+|---|---|
+| `generators/MultiServiceTestCaseGenerator` | `OpenAPISpecification`, `TestConfigurationObject`, `TestParameter`, `Operation`, `TestCase`, `MultiServiceTestCase`, `ConsoleProgressBar` |
+| `workflow/ScenarioOptimizer` | via `SemanticDependencyRegistry` |
+| `workflow/SemanticDependencyRegistry` | `OpenAPISpecification`, `TestConfigurationObject`, `Operation`, `TestParameter` |
+| `workflow/pipeline/PipelineContext` | `TestConfigurationObject`, `OpenAPISpecification`, `MultiServiceTestCaseGenerator`, `SmartInputFetcher` |
+| `workflow/pipeline/PipelineStage` (interface) | through `PipelineContext` |
+| `workflow/pipeline/WorkflowPipeline` | through `PipelineContext` |
+| `workflow/pipeline/stages/*` (9 files) | `PipelineContext` + RESTest pojos |
+| `inputs/smart/SmartInputFetcher` | `ConsoleProgressBar` |
+| `inputs/smart/SmartLLMParameterGenerator` | `OpenAPIParameter`, `OpenAPISpecificationVisitor`, `LLMParameterGenerator`, `PropertyManager` |
+| `inputs/llm/LLMParameterGenerator` | `ParameterGenerator` (RESTest stateful), `OpenAPIParameter`, `OpenAPISpecificationVisitor` |
+| `enhancer/StatusCodeExplorationEnhancer` | `AuthManipulationStrategy`, `LLMStatusCodeDiscovery`, `MultiServiceTestCase`, `ConsoleProgressBar` |
+| `enhancer/TestCaseEnhancer` | `ConsoleProgressBar` |
+| `testcases/MultiServiceTestCase` | `TestCase` (RESTest base) |
+| `auth/MstAuthHandler` | RESTest auth glue |
+| `writers/restassured/MultiServiceRESTAssuredWriter` | RESTest writer base — intentionally stays per prompt § 10 |
 
-## 6. Category D — RESTest interfaces implemented by MIST
+These map onto Phase B1.B (vendor a small slice of RESTest types into
+`mist-core`) and Phase B1.E (SPI definition) in the original prompt. The
+remaining migration is one focused round per RESTest type group:
+configuration pojos, OpenAPI specification view, test-case base, util.
 
-The MIST generator does **not** implement any RESTest interface other than
-the (now-severed) `AbstractTestCaseGenerator` superclass contract.
-
-## 7. Category E — Pure-MIST classes living in RESTest packages
-
-These are MIST's own code, only located under `es.us.isa.restest.*` for
-historical reasons. They have no RESTest behavioural dependency. Moving them
-is mechanical and is the work of Phases B1.B-C in the full prompt.
-
-| Class (current package) | Lines | Target package (post-rebuild) |
-|---|---|---|
-| `es.us.isa.restest.configuration.MstConfig` | ~600 | `io.mist.core.config.MistConfig` |
-| `es.us.isa.restest.configuration.MstConfigValidator` | ~200 | `io.mist.core.config.MistConfigValidator` |
-| `es.us.isa.restest.workflow.TraceWorkflowExtractor` | ~1000+ | `io.mist.core.workflow.TraceWorkflowExtractor` |
-| `es.us.isa.restest.workflow.ScenarioOptimizer` | medium | `io.mist.core.workflow.ScenarioOptimizer` |
-| `es.us.isa.restest.workflow.SemanticDependencyRegistry` | medium | `io.mist.core.registry.SemanticDependencyRegistry` |
-| `es.us.isa.restest.workflow.NounKeyMap` | small | `io.mist.core.workflow.NounKeyMap` |
-| `es.us.isa.restest.workflow.WorkflowScenario` / `WorkflowStep` | small | `io.mist.core.workflow.*` |
-| `es.us.isa.restest.workflow.pipeline.*` (Pipeline + 5 stages + supports) | sizable | `io.mist.core.workflow.pipeline.*` |
-| `es.us.isa.restest.registry.RootApiRegistry` | medium | `io.mist.core.registry.RootApiRegistry` |
-| `es.us.isa.restest.inputs.InvalidInputPool` | medium | `io.mist.core.generation.InvalidInputPool` |
-| `es.us.isa.restest.inputs.smart.*` | sizable | `io.mist.core.generation.smart.*` |
-| `es.us.isa.restest.generators.MultiServiceTestCaseGenerator` | 2987 | `io.mist.core.generation.MistGenerator` |
-| `es.us.isa.restest.generators.AiDrivenLLMGenerator` (75-ish) | small | `io.mist.core.generation.AiDrivenValueGenerator` |
-| `es.us.isa.restest.generators.ZeroShotLLMGenerator` | small | `io.mist.core.generation.ZeroShotValueGenerator` |
-| `es.us.isa.restest.testcases.MultiServiceTestCase` | small | `io.mist.core.testcase.MultiServiceTestCase` |
-| `es.us.isa.restest.analysis.TraceErrorAnalyzer` | medium | already mostly subsumed by `io.mist.core.oracle.shape.*` — confirm |
-
-## 8. What the in-place sever actually does (Phase B1.D, executed)
-
-1. Drops `extends AbstractTestCaseGenerator` from
-   `MultiServiceTestCaseGenerator` (file `:37`).
-2. Removes the `super(primarySpec, dummyPrimaryConf, scenarios.size())`
-   call from the constructor (file `:291`).
-3. Removes the three no-op `@Override` stubs at the bottom of the file
-   (`generateOperationTestCases`, `generateNextTestCase`, `hasNext`).
-4. Removes the `@Override` annotation on `generate()` (now declares a
-   new public method rather than overriding an inherited one).
-5. Adds a documented no-op `setCheckTestCases(boolean)` so external
-   CLI code (`MistRunner` line 546, `TestGenerationAndExecution`
-   line 336) compiles unchanged.
-6. Removes `import es.us.isa.restest.generators.AbstractTestCaseGenerator`
-   from `MistRunner.java` and changes the local + return type at
-   lines 251 / 399 / 400 from `AbstractTestCaseGenerator` to
-   `MultiServiceTestCaseGenerator`.
-
-## 9. Out of scope for this branch (tracked in `B1_FOLLOWUPS.md`)
-
-- Phase B1.B vendoring data classes into `mist-core`.
-- Phase B1.C moving the generation pipeline into `mist-core` as
-  `MistGenerator` (the package + rename).
-- Phase B1.E SPI definition (`MistSpecLoader`, `MistTestWriter`,
-  `MistTestExecutor`) and the cleanup of remaining `es.us.isa.*`
-  imports inside what will become `mist-core` material.
-- Phase B1.F `META-INF/services/` adapter registration.
-- Phase B1.G positioning-doc citation refresh, README diagram, flow.md
-  brand updates, byte-identical demo proof (cluster needed).
-
-## 10. Verification gates met by this branch
+## 6. Gates met by this branch
 
 | Gate (from prompt § 7) | Status |
 |---|---|
-| 7.1 Gate B1.A — inventory present | **Yes** (this file). |
-| 7.4 Gate B1.D — `mist-core/src` has zero `extends AbstractTestCaseGenerator` | **Yes** (trivially — no MIST class lives in `mist-core` yet that would extend it). |
-| 7.4 Gate B1.D — MIST generator no longer extends the RESTest base class | **Yes** — see § 8. |
-| 7.4 Gate B1.D — `mvn -q -DskipTests compile` passes for the reactor | **Yes**. |
-| 7.4 Gate B1.D — Demo byte-identical to baseline | **Not run** — bundled demo needs the remote TrainTicket cluster at `http://129.62.148.112:32677`. Tracked as a follow-up so the user can wire up the cluster (or a recorded fixture) and re-verify offline. |
-| 7.5 / 7.6 / 7.7 — remaining gates | **Deferred** to follow-up branches per `B1_FOLLOWUPS.md`. |
+| 7.1 Gate B1.A — inventory present | ✅ this file |
+| 7.4 Gate B1.D — `mist-core/src` has zero `extends AbstractTestCaseGenerator` | ✅ trivially — no MIST class lives in `mist-core` that would extend it |
+| 7.4 Gate B1.D — MIST generator no longer extends the RESTest base | ✅ severed |
+| 7.4 Gate B1.D — `mvn -q -DskipTests compile` passes for the reactor | ✅ |
+| 7.4 Gate B1.D — Seeded demo byte-identical to baseline | ⏳ not run — bundled demo needs the remote TrainTicket cluster at `http://129.62.148.112:32677` |
+| 7.5 / 7.6 — SPI gates | ⏳ deferred (B1_FOLLOWUPS.md) |
+| 7.7 — final cleanup | ⏳ deferred |
