@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` receiving invalid POST request payload resulting in 400 Bad Request error during gateway validation.
-
-**FIX:** Validate and sanitize incoming POST request payload format in `ts-gateway-service` before processing, ensuring all required fields are present and properly formatted according to API contract.

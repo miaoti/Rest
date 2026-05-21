@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: POST operation on ts-route-plan-service returned HTTP 400 (likely malformed request body or missing required parameters) in 1.232ms, indicating immediate rejection without processing.
-
-FIX: Validate request payload sent to ts-route-plan-service POST endpoint; ensure required fields (route ID, travel date, seat type) are present and correctly formatted. Check ts-travel-plan-service for incorrect data transformation before forwarding.

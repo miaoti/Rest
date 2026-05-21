@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Create success","data":{"id":"shijiazhuang","trainType":"Express","routeId":"RT-22222","basicPriceRate":89.99,"firstClassPriceRate":123.0}}
-Enhanced Parameters: {routeId=RT-22222, trainType=Express, id=shijiazhuang}

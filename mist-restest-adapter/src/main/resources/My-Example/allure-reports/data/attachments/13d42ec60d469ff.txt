@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Success","data":[{"id":"0cd6fc63-030b-44d1-ab75-dcda14fcac70","boughtDate":"2026-05-17","travelDate":"2026-06-01","travelTime":"21:35:00","accountId":"<svg onload=alert('XSS')>","co...
-Enhanced Parameters: {enableBoughtDateQuery=false, enableStateQuery=true, enableTravelDateQuery=false}

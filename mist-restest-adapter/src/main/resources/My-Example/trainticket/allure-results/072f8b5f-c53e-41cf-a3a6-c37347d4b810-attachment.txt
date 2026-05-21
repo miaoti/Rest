@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize the `coachNumber` field from JSON input. The input value `"' OR 1=1--"` cannot be converted to an integer type, causing a `JsonMappingException` due to SQL injection attempt.
-
-**FIX:** Implement input validation and sanitization in `ts-admin-order-service` to reject malformed numeric inputs and prevent SQL injection attacks. Add proper exception handling to return meaningful HTTP 400 responses for invalid data.

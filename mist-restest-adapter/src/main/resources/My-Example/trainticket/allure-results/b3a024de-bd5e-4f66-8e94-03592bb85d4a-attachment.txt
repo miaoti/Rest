@@ -1,1 +1,0 @@
-{"basicPriceRate":99.5,"firstClassPriceRate":89.99,"id":"f8a1b2c3-d4e5-4f6a-7b8c-9d0e1f2a3b4c","routeId":"RT-12345","trainType":"Express"}

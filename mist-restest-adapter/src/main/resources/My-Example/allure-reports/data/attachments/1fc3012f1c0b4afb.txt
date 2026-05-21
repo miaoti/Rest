@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: POST operation in ts-route-plan-service failed with HTTP 400 status (2.15ms execution time). The rapid failure indicates client-side input validation rejection, not downstream timeout or resource exhaustion.
-
-FIX: Inspect request payload sent to ts-route-plan-service POST endpoint. Validate that required fields (route ID, station sequence, travel date) are present and correctly formatted. Add request schema validation in ts-travel-plan-service before calling ts-route-plan-service.

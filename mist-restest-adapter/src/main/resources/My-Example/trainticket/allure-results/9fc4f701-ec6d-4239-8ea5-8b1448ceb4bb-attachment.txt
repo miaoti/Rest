@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"valid_id_123","trainType":"Bullet","routeId":"<script>alert('XSS')</script>","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

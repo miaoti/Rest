@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** 
-The failure occurs in `ts-admin-basic-info-service` at `AdminBasicInfoController.addPrice` when attempting to deserialize JSON payload. The specific error is `HttpMessageNotReadableException` due to invalid double value "abc" in field `firstClassPriceRate`. The JSON parser cannot convert the string "abc" to a double type.
-
-**FIX:** 
-Validate input data type in `ts-gateway-service` before forwarding POST request to `ts-admin-basic-info-service`. Ensure `firstClassPriceRate` field contains valid numeric values (double) rather than arbitrary strings like "abc" in the request payload.

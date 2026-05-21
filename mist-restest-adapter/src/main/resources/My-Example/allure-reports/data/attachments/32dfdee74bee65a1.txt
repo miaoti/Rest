@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-travel-service.TravelController.queryInfo` fails with `java.lang.NullPointerException` at 40.665ms execution time. This is the sole root cause, causing 9 propagated failures across 10 total failed spans in a chain involving `ts-travel-plan-service`, `ts-gateway-service`, and `ts-route-plan-service`.
-
-**FIX:** Inspect `TravelController.queryInfo` method for uninitialized object references or null return values from dependencies (likely data access or internal service calls). Add null checks and defensive programming at the exact failure location. Verify that required data (e.g., travel info, route details) is properly initialized before use.

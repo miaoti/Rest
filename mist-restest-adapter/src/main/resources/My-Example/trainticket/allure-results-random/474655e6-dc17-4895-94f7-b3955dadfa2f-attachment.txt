@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request resulting in a `400 Bad Request` due to an invalid `seatClass` value (String "1000000000000000") being sent to `ts-admin-order-service`.
-
-**FIX:**  The `ts-gateway-service` must be corrected to sanitize or validate the `seatClass` value *before* sending the `POST` request to `ts-admin-order-service`. Specifically, the value should be constrained to be a valid integer within the range of `Integer`. Implement input validation to prevent the "Overflow" error.

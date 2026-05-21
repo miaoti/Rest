@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` fails during DELETE operation with HTTP 400 status, indicating client-side request validation error.
-
-**FIX:** Review DELETE request payload and headers sent to `ts-gateway-service` endpoint. Validate that required parameters, authentication tokens, and content-type headers match service expectations. Check for missing or malformed request data that triggers the 400 error.

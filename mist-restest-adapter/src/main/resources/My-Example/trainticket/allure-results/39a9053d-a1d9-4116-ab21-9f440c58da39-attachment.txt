@@ -1,1 +1,0 @@
-{"distanceList":"35.6","endStation":"Grand Central Terminal","id":"taiyuan","loginId":"admin_user_001","startStation":" ","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

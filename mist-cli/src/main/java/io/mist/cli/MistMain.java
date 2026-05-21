@@ -1,9 +1,9 @@
 package io.mist.cli;
 
-import es.us.isa.restest.configuration.MstConfig;
-import es.us.isa.restest.main.MistPathResolver;
-import es.us.isa.restest.main.MistRunResult;
-import es.us.isa.restest.main.MistRunner;
+import io.mist.cli.MistPathResolver;
+import io.mist.cli.MistRunResult;
+import io.mist.cli.MistRunner;
+import io.mist.core.config.MstConfig;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -25,7 +25,7 @@ import java.util.Properties;
  * To keep the resulting System-properties state byte-identical to
  * {@code TestGenerationAndExecution.main}, this entry point pushes
  * only the MST-file keys into System (via the legacy
- * {@code es.us.isa.restest.configuration.multiservice.MstConfig}
+ * {@code io.mist.core.config.legacy.MstConfig}
  * loader's {@code applyToSystemProperties()}); core-file keys stay in
  * the local {@code Properties} bag and feed the {@link MistRunner.Inputs}
  * builder directly. Under {@code -Drandom.seed=42} this gives byte-
@@ -39,7 +39,7 @@ public final class MistMain {
     public static void main(String[] args) throws Exception {
         Path propsFile = Paths.get(args.length > 0
                 ? args[0]
-                : "mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties")
+                : "mist-cli/src/main/resources/My-Example/trainticket-demo.properties")
                 .toAbsolutePath().normalize();
 
         Properties coreProps = new Properties();
@@ -51,7 +51,7 @@ public final class MistMain {
             System.err.println("Usage: java -jar mist-cli/target/mist.jar <path/to/your.properties>");
             System.err.println();
             System.err.println("For the bundled TrainTicket demo from the repo root:");
-            System.err.println("  java -jar mist-cli/target/mist.jar mist-restest-adapter/src/main/resources/My-Example/trainticket-demo.properties");
+            System.err.println("  java -jar mist-cli/target/mist.jar mist-cli/src/main/resources/My-Example/trainticket-demo.properties");
             System.err.println();
             System.err.println("In IntelliJ, use the pre-shipped run configuration");
             System.err.println("'MIST: Demo (bundled TrainTicket)' (Run → Edit Configurations).");
@@ -72,7 +72,7 @@ public final class MistMain {
         // their generation byte-identical under -Drandom.seed.
         String mstConfigPath = coreProps.getProperty("mst.config.path");
         if (mstConfigPath != null && !mstConfigPath.trim().isEmpty()) {
-            es.us.isa.restest.configuration.multiservice.MstConfig
+            io.mist.core.config.legacy.MstConfig
                     .load(mstConfigPath)
                     .applyToSystemProperties();
             // The MST file's own input paths are now in System; resolve them

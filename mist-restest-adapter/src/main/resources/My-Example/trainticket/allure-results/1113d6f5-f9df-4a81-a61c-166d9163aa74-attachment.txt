@@ -1,1 +1,0 @@
-{"status":0,"msg":"some station not exists","data":["North Station","East Station","Central Station","South Station","West Station"]}

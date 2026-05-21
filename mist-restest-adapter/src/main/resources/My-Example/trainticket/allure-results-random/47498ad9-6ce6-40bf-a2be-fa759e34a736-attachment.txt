@@ -1,1 +1,0 @@
-{"accountId":"abcde","boughtDate":"2023-10-26","coachNumber":"12345","contactsDocumentNumber":"1234567890","contactsName":"John Doe","differenceMoney":"100","documentType":"1","from":"78901","id":"12345","price":"19.99","seatClass":"1","seatNumber":null,"status":"10","to":"true","trainNumber":"XYZ789","travelDate":"2013-05-06 11:18:45","travelTime":"30"}

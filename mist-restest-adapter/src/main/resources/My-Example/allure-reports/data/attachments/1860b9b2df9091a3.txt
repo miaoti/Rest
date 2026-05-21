@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-route-plan-service` POST operation failing with HTTP 400 status in 2.845ms. This is a client error (bad request), not a server issue. The rapid failure indicates immediate validation rejection or malformed request data.
-
-FIX: Check the request payload sent to `ts-route-plan-service` POST endpoint. Verify required fields (likely route plan parameters) are present and correctly formatted. Inspect `ts-travel-plan-service` or `ts-gateway-service` for improper data transformation before forwarding to `ts-route-plan-service`. Add input validation logging at the gateway level to capture the exact rejected payload.

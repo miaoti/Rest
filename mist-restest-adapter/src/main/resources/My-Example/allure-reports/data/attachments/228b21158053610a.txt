@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE:  
-ts-order-other-service fails deserializing JSON in `OrderOtherController.queryOrdersForRefresh`. The field `enableTravelDateQuery` in `other.entity.QueryInfo` receives string `"TRUE"` but expects lowercase `boolean` value `true` or `false`. Jackson's default deserialization is case-sensitive and does not accept `"TRUE"`.
-
-FIX:  
-In the client sending the request (likely `ts-gateway-service`), change the value of `enableTravelDateQuery` from `"TRUE"` to `true` (JSON boolean, not string). Alternatively, add `@JsonFormat(with = JsonFormat.Feature.ACCEPT_CASE_INSENSITIVE_PROPERTIES)` on the `enableTravelDateQuery` field in `other.entity.QueryInfo` to accept case-insensitive string representations of boolean.

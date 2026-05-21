@@ -1,8 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-travel2-service` → `Travel2Controller.queryInfo` → `java.lang.NullPointerException` at 53.484ms execution time. The NPE occurs in the queryInfo method, likely when accessing a null object reference (e.g., an uninitialized service dependency, null request body, or null field on a returned entity). The failure propagates to 3 additional spans.
-
-FIX: Inspect `Travel2Controller.queryInfo` method in `ts-travel2-service`. Add null checks for:
-1. The request body/input parameter
-2. Any service calls or repository results before accessing their fields/methods
-3. Log the exact line number from the stack trace to identify the null reference. If it's a missing dependency injection, verify the bean is properly autowired and not null at runtime.

@@ -56,13 +56,15 @@
 
 \draw[flow] (oracle.south) -- (out.north);
 
-% --- Module band: 4 Maven modules (mist-core, mist-llm, mist-restest-adapter, mist-cli).
-%     Annotates which classes ship where; (iv) Sniper Strategy fault enumeration
-%     and (v) Trace Shape Oracle live in mist-core; (i)-(iii) and the
-%     RESTest-derived writer pipeline live in mist-restest-adapter.
+% --- Module band: 3 Maven modules (mist-core, mist-llm, mist-cli) after the
+%     adapter sever; mist-core now owns all five architectural stages (i-v)
+%     and depends on no third-party source; mist-cli houses the JUnit / REST-
+%     Assured writer and the test executor; mist-llm carries the LLM dispatch
+%     and call cache. The previous four-module reactor vendored a forked copy
+%     of RESTest in mist-restest-adapter; that module has been deleted.
 \node[font=\scriptsize, text=gray!55!black, anchor=west]
      at (-0.55, -4.65) {Maven modules:};
 \node[font=\scriptsize\ttfamily, text=blue!50!gray, anchor=west]
-     at (1.05, -4.65) {mist-cli (entry: mist.jar) $\to$ mist-restest-adapter (i, ii, iii, writer, executor) $\to$ mist-core (iv fault registry, v invariants) $\to$ mist-llm};
+     at (1.05, -4.65) {mist-cli (entry mist.jar; writer, executor) $\to$ mist-core (i, ii, iii, iv, v) $\to$ mist-llm};
 
 \end{tikzpicture}

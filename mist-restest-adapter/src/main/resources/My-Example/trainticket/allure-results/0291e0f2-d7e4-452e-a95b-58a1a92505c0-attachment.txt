@@ -1,1 +1,0 @@
-{"status":0,"msg":"Price creation rejected: routeId cannot be null or empty","data":{"faultName":"INVALID_ROUTE_ID_FAULT","message":"Price creation rejected: routeId cannot be null or empty","details":null,"injected":true}}

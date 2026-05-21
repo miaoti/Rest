@@ -1,8 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-execute-service` endpoint `GET /api/v1/executeservice/execute/execute/{orderId}` rejected by Spring Security firewall because the URL contained `%25` (URL-encoded `%`). This is a `RequestRejectedException` from `org.springframework.security.web.firewall`, not a business logic failure.
-
-FIX: 
-1. Remove or URL-decode the `%25` from the request URL before sending to `ts-execute-service`.
-2. If `%25` is intended as a literal `%`, configure Spring Security's `StrictHttpFirewall` to allow `%` in URLs via `setAllowUrlEncodedPercent(true)`.
-3. Add URL validation in `ts-gateway-service` to reject or sanitize requests containing double-encoded characters (`%25`) upstream.

@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-gateway-service` DELETE operation failed with HTTP 403 (Forbidden) in 4.005ms. The 403 status indicates authentication or authorization failure—the gateway rejected the DELETE request, likely due to missing or invalid credentials/token in the request headers. The failure is not propagated to downstream `ts-admin-travel-service`.
-
-FIX: Verify that the DELETE request includes valid authentication credentials (e.g., JWT token, API key) in the Authorization header. Check gateway security configuration for DELETE endpoint access control rules. Ensure token is not expired and has required permissions for the target resource.

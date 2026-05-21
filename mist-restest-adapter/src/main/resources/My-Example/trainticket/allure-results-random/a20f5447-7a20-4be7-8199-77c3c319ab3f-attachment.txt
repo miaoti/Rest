@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request resulting in a `400` status code due to a malformed JSON payload in the `coachNumber` field of the `Order` entity.  Specifically, the value "abc" was incorrectly interpreted as an integer.
-
-**FIX:**  Investigate the request originating from `ts-gateway-service`.  The JSON payload being sent to `ts-admin-order-service` is invalid.  Correct the JSON payload to contain a valid integer value for the `coachNumber` field.  Validate the JSON schema being used by `ts-gateway-service` to ensure correct data formatting is being produced.

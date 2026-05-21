@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: ts-gateway-service POST operation failed with HTTP 403 Forbidden in 1.109ms. The 403 status indicates the request was rejected by the API gateway due to authentication/authorization failure—likely missing, invalid, or expired JWT token, incorrect API key, or insufficient permissions for the requested endpoint.
-
-FIX: Verify and correct authentication credentials in the request to ts-gateway-service. Ensure valid JWT token or API key is included in the request headers. Check token expiration and user/role permissions for the specific POST endpoint.

@@ -1,9 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-order-other-service` fails to deserialize HTTP request body. The JSON field `"state"` receives value `"x"` (string) but `other.entity.QueryInfo` expects `int` type. This causes `HttpMessageNotReadableException` at Jackson deserialization. The client sent request to `ts-gateway-service` which passed it through, resulting in 400 status at gateway.
-
-FIX: 
-1. Ensure client sends integer value for `"state"` field (e.g., `0` or `1`).
-2. If string input is valid, change `QueryInfo.state` type to `String` and add server-side validation.
-3. Add `@JsonFormat` or custom deserializer to handle string-to-int conversion gracefully.
-4. Implement input validation at `ts-gateway-service` to reject malformed requests early with clear error message.

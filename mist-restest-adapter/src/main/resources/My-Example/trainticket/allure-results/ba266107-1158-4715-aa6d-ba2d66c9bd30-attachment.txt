@@ -1,1 +1,0 @@
-{"distanceList":"27.3","endStation":123,"id":"shijiazhuang","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-price-service` during `INSERT ts.price_config` operation with SQLIntegrityConstraintViolationException due to duplicate entry 'Express-RT-12345' for unique key 'route_type_idx'.
-
-**FIX:**
-Implement idempotent insert logic in `ts-price-service` to check for existing record before insertion, or use INSERT IGNORE/ON DUPLICATE KEY UPDATE MySQL syntax to handle duplicate entries gracefully.

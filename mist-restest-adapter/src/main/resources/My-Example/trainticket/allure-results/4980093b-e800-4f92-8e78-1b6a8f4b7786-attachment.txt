@@ -1,1 +1,0 @@
-{"status":0,"msg":"Route creation rejected: route must have at least 2 stations","data":{"faultName":"INSUFFICIENT_STATIONS_FAULT","message":"Route creation rejected: route must have at least 2 stations","details":"Number of stations: 1","injected":true}}

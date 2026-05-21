@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Success","data":{"id":"98ed0fb6-166b-422e-b1c7-42db7ccb831a","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-567890","contactsName":"' O...
-Enhanced Parameters: {price=599.99, from=Beijing, to=Shanghai, trainNumber=G1234, seatNumber=05B}

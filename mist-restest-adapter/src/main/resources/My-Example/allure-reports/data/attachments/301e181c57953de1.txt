@@ -1,1 +1,0 @@
-{"averageSpeed":420,"confortClass":0,"economyClass":180,"id":"9fc9c261-3263-4bfa-82f8-bb44e06b2f52","name":"!"}

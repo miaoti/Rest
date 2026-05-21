@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Success","data":{"id":"a70c6485-1990-44af-839a-a20f3178670f","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-789012","contactsName":"Joh...
-Enhanced Parameters: {contactsDocumentNumber=ABC123456789, from=Beijing, to=Shanghai, trainNumber=G1234}

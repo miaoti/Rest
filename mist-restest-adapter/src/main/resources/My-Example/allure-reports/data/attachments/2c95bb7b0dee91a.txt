@@ -1,1 +1,0 @@
-{"averageSpeed":220,"confortClass":6,"economyClass":0,"id":"train-006","name":"\\x00\\x01\\x02"}

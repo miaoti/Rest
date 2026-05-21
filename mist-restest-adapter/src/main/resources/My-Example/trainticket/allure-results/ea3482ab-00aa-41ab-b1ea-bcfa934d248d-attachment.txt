@@ -1,1 +1,0 @@
-{"departureTime":"<script>alert('XSS')</script>","endPlace":"New York City","startPlace":"New York"}

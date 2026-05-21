@@ -1,1 +1,0 @@
-{"averageSpeed":275,"confortClass":1,"economyClass":50,"id":"a3f256c1-0e43-4f7d-9c21-121bf258101f","name":"Beijing-Shanghai Express"}

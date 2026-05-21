@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-consign-service` GET `/api/v1/consignservice/consigns/order/{id}` failed with HTTP 403 due to `RequestRejectedException` triggered by URL containing `%25` (URL-encoded percent sign). Spring Security's `StrictHttpFirewall` rejected the request as malicious.
-
-FIX: Remove or properly encode `%25` from the URL before sending the request. Alternatively, configure `StrictHttpFirewall` in `ts-consign-service` to allow percent-encoded characters by setting `setAllowUrlEncodedPercent(true)` in the `FilterSecurityBean` configuration.

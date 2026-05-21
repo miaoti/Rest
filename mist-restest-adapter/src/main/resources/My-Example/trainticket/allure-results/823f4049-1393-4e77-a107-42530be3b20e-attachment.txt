@@ -1,1 +1,0 @@
-{"departureTime":"nil","endPlace":"New York City","startPlace":"New York"}

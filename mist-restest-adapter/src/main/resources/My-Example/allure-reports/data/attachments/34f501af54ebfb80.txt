@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-gateway-service` (HTTP 400) fails first due to `ts-order-other-service` returning `HttpMessageNotReadableException` when deserializing field `enableBoughtDateQuery` in `other.entity.QueryInfo`. The client sent string value `"yes"` for a boolean field; Jackson expects `"true"` or `"false"`.
-
-FIX: 
-1. In `ts-gateway-service` or calling client: change request body to use `"true"` or `"false"` for `enableBoughtDateQuery` field.
-2. Alternatively, in `ts-order-other-service` `QueryInfo` entity: add `@JsonDeserialize(using = ...)` custom deserializer to accept `"yes"`/`"no"` strings, or annotate field with `@JsonProperty` and use `@JsonFormat` with `Lenient` Boolean handling.

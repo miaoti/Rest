@@ -1,1 +1,0 @@
-{"departureTime":"<img src=x onerror=alert('XSS')>","endPlace":"Beijing","startPlace":"Shanghai"}

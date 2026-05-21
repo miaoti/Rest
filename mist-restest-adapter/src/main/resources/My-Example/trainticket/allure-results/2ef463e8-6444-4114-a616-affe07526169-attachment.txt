@@ -1,1 +1,0 @@
-{"basicPriceRate":89.99,"firstClassPriceRate":150.75,"id":"AR-2026-001","routeId":"RT-12345-INVALID","trainType":"trainType1234567890"}

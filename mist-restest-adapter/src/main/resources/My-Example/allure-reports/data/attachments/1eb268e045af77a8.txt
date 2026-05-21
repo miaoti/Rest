@@ -1,1 +1,0 @@
-{"departureTime":"2025-11-04","endPlace":"x","startPlace":""}

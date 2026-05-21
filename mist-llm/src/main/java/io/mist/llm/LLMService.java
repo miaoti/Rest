@@ -198,7 +198,14 @@ public class LLMService implements LLMClient {
         LLMCommunicationSink.RequestHandle context = communicationSink.logRequest(
             modelType, modelName, systemPrompt, userPrompt, endpoint, metadata);
 
-        if (System.getProperty("random.seed") != null) {
+        // Cache READ gate. Three configurable layers, in priority order:
+        //   1. mist.llm.cache.read=true | false    explicit override
+        //   2. -Drandom.seed=<n>                   seeded run ⇒ read
+        //   3. (otherwise)                         never read (fresh LLM calls)
+        // The MST .properties file's MstConfig.applyToSystemProperties copies
+        // any mist.llm.cache.* key into System properties so this knob is
+        // settable from the properties file as well as from -D.
+        if (cacheReadEnabled()) {
             String hit = cache.get(cacheKey);
             if (hit != null) {
                 logger.info("LLMCallCache: read hit for key {} (backend {})",
@@ -277,16 +284,52 @@ public class LLMService implements LLMClient {
             communicationSink.logResponse(context, result, success, errorMessage);
         }
 
-        // Unseeded runs feed the cache so a future seeded run can replay them.
-        // Empty strings (content-filter refusals, etc.) are skipped — caching
-        // those would prevent retries from ever recovering.
-        if (result != null && !result.isEmpty()) {
+        // Cache WRITE gate. Default ON so unseeded runs feed the cache and a
+        // future seeded run can replay them. Set mist.llm.cache.write=false
+        // (in the MST .properties file or via -D) to suppress writes — useful
+        // when you want a one-off "no-cache" benchmark without polluting the
+        // shared cache file. Empty strings (content-filter refusals, etc.)
+        // are skipped — caching those would prevent retries from ever
+        // recovering.
+        if (result != null && !result.isEmpty() && cacheWriteEnabled()) {
             cache.put(cacheKey, result);
             logger.debug("LLMCallCache: write hit for key {} (backend {})",
                     abbreviateKey(cacheKey), backendName);
         }
 
         return result;
+    }
+
+    /**
+     * Whether to read from {@link LLMCallCache} on this call. Reads
+     * {@code mist.llm.cache.read} first (true|false|auto), then falls back
+     * to the legacy "seeded run ⇒ read" gate keyed off
+     * {@code -Drandom.seed}. The property can come from the MST
+     * .properties file (every key is mirrored into System properties by
+     * MstConfig.applyToSystemProperties) or from a {@code -D} flag.
+     */
+    static boolean cacheReadEnabled() {
+        String explicit = System.getProperty("mist.llm.cache.read");
+        if (explicit != null) {
+            String v = explicit.trim().toLowerCase();
+            if ("true".equals(v) || "on".equals(v) || "yes".equals(v)) return true;
+            if ("false".equals(v) || "off".equals(v) || "no".equals(v)) return false;
+            // "auto" or anything else falls through to the legacy behaviour
+        }
+        return System.getProperty("random.seed") != null;
+    }
+
+    /**
+     * Whether to write the LLM response back to {@link LLMCallCache}.
+     * Default ON. Set {@code mist.llm.cache.write=false} (in the MST
+     * .properties file or via -D) to skip cache writes — useful for a
+     * one-off no-cache benchmark that mustn't pollute the shared cache.
+     */
+    static boolean cacheWriteEnabled() {
+        String prop = System.getProperty("mist.llm.cache.write");
+        if (prop == null) return true;
+        String v = prop.trim().toLowerCase();
+        return !("false".equals(v) || "off".equals(v) || "no".equals(v));
     }
 
     private static final int LOG_KEY_PREFIX_LEN = 16;

@@ -1,1 +1,0 @@
-{"averageSpeed":450,"confortClass":5,"economyClass":70,"id":"train-005","name":"$(cat /etc/passwd)"}
