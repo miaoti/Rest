@@ -26,6 +26,22 @@
   promotion in B1, unlocked once `ConsoleProgressBar` left the
   adapter) and `enhancer/TestCaseEnhancer` (409 LOC; only its
   package decl was RESTest-tied). Adapter callers' imports updated.
+- B1.E + B1.F (SPI scaffolding) — four interfaces in
+  `io.mist.core.spi` (`MistSpec`, `MistSpecLoader`,
+  `MistTestWriter<T>`, `MistTestExecutor`) plus a
+  `MistServices` service locator that fails fast with a
+  descriptive error when an SPI has no implementation. The
+  adapter ships `RestestMistSpec` + `RestestMistSpecLoader`,
+  registered via `META-INF/services/`. Writer / executor adapter
+  implementations stay deferred until a `mist-core`-resident
+  consumer needs them (prompt § 6 #5).
+- B1.C (continued, 5 more) — four more class moves landed:
+  `generators/ValueProvenanceInference` (→ `io.mist.core.value`),
+  the trio `coverage/{LLMStatusCodeDiscovery, StatusCodeCoverage-
+  Tracker, StatusCodeTarget}` (→ `io.mist.core.coverage`), and
+  `configuration/multiservice/MstConfig` (the Properties-file
+  loader, → `io.mist.core.config.legacy.MstConfig`, distinct
+  package from the existing typed `io.mist.core.config.MstConfig`).
 - B1.B (leaves) — seven leaf configuration POJOs vendored into
   `io.mist.core.spec` as verbatim copies: `Auth`, `Generator`,
   `GenParameter`, `Operation`, `TestParameter`, `TestConfiguration`,
@@ -66,8 +82,6 @@ reference swaps, or (b) the type is wrapped as a `MistXxx` SPI.
 | `inputs/smart/SmartLLMParameterGenerator` | `io.mist.core.generation.SmartLLMParameterGenerator` |
 | `inputs/llm/LLMParameterGenerator` | `io.mist.core.generation.LLMParameterGenerator` |
 | `enhancer/StatusCodeExplorationEnhancer` | `io.mist.core.enhancer.StatusCodeExplorationEnhancer` |
-| `enhancer/TestCaseEnhancer` | `io.mist.core.enhancer.TestCaseEnhancer` |
-| `configuration/multiservice/MstConfig` (legacy loader) | `io.mist.core.config.legacy.MstConfig` |
 
 ### SPI scaffolding (B1.E + B1.F, partial)
 
@@ -103,6 +117,36 @@ hypothetical needs"):
   which the prompt's § Phase B1.E example pre-empts via richer
   view methods. The richer surface will follow once a consumer in
   mist-core actually needs it.
+
+### Why `SemanticDependencyRegistry` and the workflow pipeline still
+### sit in the adapter
+
+Multiple investigations during this branch tried to move
+`SemanticDependencyRegistry` (1510 LOC) and the
+`workflow/pipeline/*` stages into `mist-core`. Each attempt hits
+the same shape mismatch:
+
+- The vendored copies under `io.mist.core.spec.*` (`Auth`,
+  `TestConfigurationObject`, `Operation`, `TestParameter`, …) are
+  byte-equivalent to but *type-distinct* from the originals in
+  `es.us.isa.restest.configuration.pojos.*`.
+- Adapter call sites get `Map<String, es.us.isa.restest.…
+  .TestConfigurationObject>` from the RESTest configuration loader
+  (`MicroserviceTestConfigurationIO`) and pass it to
+  `SemanticDependencyRegistry.build(…)`. If the registry lives in
+  `mist-core` with the vendored signature, those call sites need
+  either (a) a converter at the boundary, or (b) the loader
+  re-pointed at the vendored pojos.
+- Option (b) cascades into RESTest's own configuration code
+  (which uses the same pojos for the Random / AR / Constraint-Based
+  generators); option (a) needs ~200 LOC of mechanical copy code.
+- Neither is a "while I'm here" change; the prompt's § 0.3 scope
+  discipline pushes back on it.
+
+The right next move is to write the boundary converter (or, better,
+make the IO loader package-aware and emit vendored types via a
+small adapter wrapper). Until then the SDR family stays in the
+adapter and the rest of the workflow pipeline stays with it.
 
 ## Other deferred items
 
