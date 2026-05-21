@@ -54,13 +54,13 @@
 
 ## What is still ahead — the remaining B1.B/C/E/F/G work
 
-### Remaining vendoring (B1.B, deferred)
+### Remaining vendoring (B1.B, mostly done)
 
-| Class | Size | Blockers | Disposition |
-|---|---|---|---|
-| `testcases/TestResult` | 110 LOC | `CSVManager`, `FileManager`, `org.apache.commons.text` | Vendor if `exportToCSV` is dropped or its util chain is vendored |
-| `testcases/TestCase` | 650 LOC | `OpenAPIParameter`, `idlreasonerchoco.Analyzer`, `IDLException` | Wrap (`MistParameter`, `MistDependencyChecker`) — too large + transitive third-party deps |
-| `testcases/MultiServiceTestCase` | 474 LOC | `TestCase` (above), `AuthManipulationStrategy` | Vendor after `TestCase` is wrapped |
+| Class | Size | Status |
+|---|---|---|
+| `testcases/TestResult` | 110 LOC | deferred — needs CSVManager/FileManager chain or `exportToCSV` drop. Adapter consumers still use the original. |
+| `testcases/TestCase` | 650 LOC | **DONE** — vendored to `io.mist.core.testcase.TestCase`; four method families dropped (OpenAPIParameter overloads, exportToCSV, isValid, checkFulfillsDependencies) per the prompt's vendor rules. |
+| `testcases/MultiServiceTestCase` | 474 LOC | **DONE** — vendored to `io.mist.core.testcase.MultiServiceTestCase`; AuthManipulationStrategy.AuthConfig field dropped. |
 
 ### Remaining MIST-only class moves (B1.C, deferred)
 
@@ -102,16 +102,19 @@ The prompt's § Phase B1.E enumerates a "minimum viable SPI surface"
   locator class loads cleanly and `isPresent()` returns `false`
   when nothing is registered (mist-core's own test scope).
 
+Subsequently delivered:
+
+- **RestAssuredMistTestWriter** in `io.mist.adapter.restest`
+  wraps `MultiServiceRESTAssuredWriter` and exposes
+  `MistTestWriter<Object>`; registered via
+  `META-INF/services/io.mist.core.spi.MistTestWriter`.
+- **MavenSurefireMistTestExecutor** in `io.mist.adapter.restest`
+  shells out to `mvn -q test` against the generated tests dir;
+  registered via `META-INF/services/io.mist.core.spi.MistTestExecutor`.
+
 Still deferred (per prompt § 6 #5 — "don't invent SPIs for
 hypothetical needs"):
 
-- The writer adapter (`RestAssuredJUnitWriter` implementing
-  `MistTestWriter<MultiServiceTestCase>`). Waits until either
-  `MultiServiceTestCase` is vendored or wrapped, AND a mist-core-side
-  consumer exists.
-- The executor adapter (`RestAssuredJUnitExecutor` implementing
-  `MistTestExecutor`). Waits until the executor flow leaves
-  `MistRunner`.
 - `MistOperation` and `MistParameter` interfaces. Currently
   `MistSpec` exposes the raw `io.swagger.v3.oas.models.OpenAPI` model,
   which the prompt's § Phase B1.E example pre-empts via richer
