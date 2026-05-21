@@ -4,7 +4,7 @@
 > HEAD. See `PROMPT_B1_SEVER_RESTEST_INHERITANCE.md` for the full plan
 > and `B1_INVENTORY.md` for the per-class disposition.
 
-## What has landed already (B1.A + B1.D + most of B1.C-clean)
+## What has landed already (B1.A + B1.D + B1.C-clean + B1.B-leaves)
 
 - B1.A — full dependency inventory in `B1_INVENTORY.md`.
 - B1.D — `MultiServiceTestCaseGenerator` no longer
@@ -17,33 +17,41 @@
   `llm/ParameterInfo`, `registry/*`, `smart/*` (10 leaves),
   `util/SeededRandom`, `workflow/{WorkflowScenario, WorkflowStep,
   WorkflowScenarioUtils, NounKeyMap, TraceWorkflowExtractor}`.
+- B1.C (continued) — two MIST-only util helpers moved out of
+  `es.us.isa.restest.util` into `io.mist.core.util`:
+  `ConsoleProgressBar`, `IDGenerator`. Adapter call sites now import
+  the new locations.
+- B1.C (further) — two more MIST-only classes moved:
+  `inputs/smart/SmartInputFetcher` (4450 LOC; the largest single
+  promotion in B1, unlocked once `ConsoleProgressBar` left the
+  adapter) and `enhancer/TestCaseEnhancer` (409 LOC; only its
+  package decl was RESTest-tied). Adapter callers' imports updated.
+- B1.B (leaves) — seven leaf configuration POJOs vendored into
+  `io.mist.core.spec` as verbatim copies: `Auth`, `Generator`,
+  `GenParameter`, `Operation`, `TestParameter`, `TestConfiguration`,
+  `TestConfigurationObject`. Adapter call sites still use the
+  originals; the vendored copies are unreferenced until consumers
+  swap one-by-one in a follow-up pass.
+- **Cardinal § 7.5 gate met**: `grep -rE 'es\.us\.isa' mist-core/src/main/java`
+  returns zero matches. `mvn -pl mist-core dependency:tree` shows zero
+  RESTest deps.
 
 ## What is still ahead — the remaining B1.B/C/E/F/G work
 
-The remaining classes in `mist-restest-adapter/src/main/java/es/us/isa/restest/`
-all share the same blocker: they reference one of these RESTest types
-directly. To move them, the RESTest types need to be either vendored
-into `mist-core` (Phase B1.B) or wrapped as an SPI implemented by the
-adapter (Phase B1.E).
+### Remaining vendoring (B1.B, deferred)
 
-| Blocking RESTest type | Where it lives upstream | Disposition under the prompt |
-|---|---|---|
-| `configuration.pojos.Operation` | `es.us.isa.restest.configuration.pojos` | Vendor (small POJO) |
-| `configuration.pojos.TestParameter` | same | Vendor |
-| `configuration.pojos.TestConfigurationObject` | same | Vendor |
-| `configuration.pojos.Auth` / `TestConfiguration` | same | Vendor |
-| `specification.OpenAPISpecification` | `es.us.isa.restest.specification` | Wrap as `io.mist.core.spi.MistSpec` |
-| `specification.OpenAPIParameter` | same | Wrap as `io.mist.core.spi.MistParameter` |
-| `specification.OpenAPISpecificationVisitor` | same | Wrap (static utility — fold into `MistSpec`) |
-| `testcases.TestCase` | `es.us.isa.restest.testcases` | Vendor (small data carrier) |
-| `testcases.MultiServiceTestCase` | same | Vendor (MIST-owned subclass of `TestCase`) |
-| `util.ConsoleProgressBar` | `es.us.isa.restest.util` | Move (MIST-only UX helper) |
-| `util.PropertyManager` | same | Wrap or vendor (RESTest-style properties reader) |
-| `util.IDGenerator` | same | Move (MIST-only) |
-| `util.Timer` | same | Move (MIST-only) |
-| `inputs.stateful.ParameterGenerator` / `BodyGenerator` | RESTest stateful | Wrap if MIST keeps using; else drop |
+| Class | Size | Blockers | Disposition |
+|---|---|---|---|
+| `testcases/TestResult` | 110 LOC | `CSVManager`, `FileManager`, `org.apache.commons.text` | Vendor if `exportToCSV` is dropped or its util chain is vendored |
+| `testcases/TestCase` | 650 LOC | `OpenAPIParameter`, `idlreasonerchoco.Analyzer`, `IDLException` | Wrap (`MistParameter`, `MistDependencyChecker`) — too large + transitive third-party deps |
+| `testcases/MultiServiceTestCase` | 474 LOC | `TestCase` (above), `AuthManipulationStrategy` | Vendor after `TestCase` is wrapped |
 
-Once these are dealt with the following classes can move:
+### Remaining MIST-only class moves (B1.C, deferred)
+
+These all share the same blocker: they reference one of the
+not-yet-vendored / not-yet-wrapped RESTest types above. They cannot
+move into `mist-core` until either (a) the type is vendored and the
+reference swaps, or (b) the type is wrapped as a `MistXxx` SPI.
 
 | File (currently in adapter) | Target under `mist-core` once unblocked |
 |---|---|
@@ -54,13 +62,31 @@ Once these are dealt with the following classes can move:
 | `workflow/pipeline/PipelineStage` | `io.mist.core.workflow.pipeline.PipelineStage` |
 | `workflow/pipeline/WorkflowPipeline` | `io.mist.core.workflow.pipeline.WorkflowPipeline` |
 | `workflow/pipeline/stages/*` (9 files) | `io.mist.core.workflow.pipeline.stages.*` |
-| `inputs/smart/SmartInputFetcher` | `io.mist.core.smart.SmartInputFetcher` |
+| `inputs/smart/SmartInputFetcher` | `io.mist.core.smart.SmartInputFetcher` (re-check — `ConsoleProgressBar` block is now gone) |
 | `inputs/smart/SmartLLMParameterGenerator` | `io.mist.core.generation.SmartLLMParameterGenerator` |
 | `inputs/llm/LLMParameterGenerator` | `io.mist.core.generation.LLMParameterGenerator` |
 | `enhancer/StatusCodeExplorationEnhancer` | `io.mist.core.enhancer.StatusCodeExplorationEnhancer` |
 | `enhancer/TestCaseEnhancer` | `io.mist.core.enhancer.TestCaseEnhancer` |
-| `testcases/MultiServiceTestCase` | `io.mist.core.testcase.MultiServiceTestCase` (after vendoring `TestCase`) |
 | `configuration/multiservice/MstConfig` (legacy loader) | `io.mist.core.config.legacy.MstConfig` |
+
+### SPI scaffolding (B1.E + B1.F, deferred)
+
+The prompt's § Phase B1.E enumerates a "minimum viable SPI surface"
+(`MistSpecLoader`, `MistSpec`, `MistOperation`, `MistParameter`,
+`MistTestWriter`, `MistTestExecutor`). These interfaces are NOT yet
+defined in this branch because:
+
+- Prompt § 6 #5 forbids inventing SPIs for hypothetical needs.
+- `mist-core` currently has zero consumers that would call these
+  interfaces — the generation pipeline that would consume them still
+  lives in the adapter.
+- The SPI shape will become obvious once the pipeline starts moving
+  (Phase B1.C continuation): each `OpenAPISpecification x = …` call
+  site that has to cross the package boundary into `mist-core` will
+  reveal exactly which method signature `MistSpec` must expose.
+
+When the SPI surface is defined, the matching `META-INF/services/`
+registration goes in `mist-restest-adapter/src/main/resources/`.
 
 ## Other deferred items
 
@@ -69,7 +95,8 @@ Once these are dealt with the following classes can move:
   moves packages. Deferring keeps in-flight diffs reviewable.
 - **Byte-identical demo proof** (`-Drandom.seed=42` against
   `trainticket-demo.properties`). Needs the remote TrainTicket cluster
-  reachable from the build host, or a recorded fixture.
+  reachable from the build host, or a recorded fixture. Cannot be
+  verified in CI alone.
 - **Positioning doc citations** (`docs/mst-plans/PATH_B_POSITIONING.md`):
   every `file:line` citation that pointed to a now-moved class will
   resolve incorrectly. Refresh as a single editorial pass after all
@@ -99,6 +126,12 @@ Once these are dealt with the following classes can move:
 - `mist-core`'s `junit` dependency is now compile-scope (it used to be
   test-scope). `FailedTestCollector` extends `org.junit.runner.notification.RunListener`,
   so the dependency is genuine.
+- `mist-core` now has a compile-scope dependency on
+  `io.swagger.core.v3:swagger-core` (the OpenAPI model classes —
+  *not* the parser, which stays in the adapter). The vendored
+  `Operation` POJO has a `@JsonIgnore`-tagged `io.swagger.v3.oas.models.Operation`
+  field that the verbatim copy preserves. `swagger.version` is hoisted
+  to the parent pom for a single source of truth.
 
 ## Auto-regenerated test outputs
 

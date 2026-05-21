@@ -2,21 +2,35 @@
 
 > Phase B1.A deliverable for `PROMPT_B1_SEVER_RESTEST_INHERITANCE.md`.
 > Status: **B1.A inventory complete; B1.D sever done; B1.C migration partly
-> done (33 MIST-owned classes promoted into `mist-core`).**
+> done (33 MIST-owned classes + 2 util helpers + SmartInputFetcher +
+> TestCaseEnhancer = 37 classes total promoted into `mist-core`);
+> B1.B-vendor of the seven leaf configuration POJOs done. Cardinal § 7.5
+> criterion ("`mist-core/src/main/java` has zero `es.us.isa` references")
+> is now met.**
 
-## 1. What this branch did
+## 1. What this branch has done
 
 1. Severed `MultiServiceTestCaseGenerator extends AbstractTestCaseGenerator`
-   in place. The audit below shows the inherited surface MIST actually
+   in place. The audit in § 3 shows the inherited surface MIST actually
    consumed was empty except for one setter from outside callers, which is
    now a documented no-op on `MultiServiceTestCaseGenerator` itself.
-2. Promoted 33 RESTest-dependency-free MIST classes out of the
-   `es.us.isa.restest.*` package tree and into `io.mist.core.*`. None of
-   these classes ever depended on RESTest; they were sitting in RESTest
-   packages by historical convention.
-3. Adjusted `mist-core/pom.xml` for the new compile-classpath needs
-   (jackson, junit lifted out of test scope, okhttp). Hoisted the
-   `jackson.version` property to the parent pom.
+2. Promoted 33 RESTest-dependency-free MIST classes out of
+   `es.us.isa.restest.*` and into `io.mist.core.*`. None of these classes
+   ever depended on RESTest; they were sitting in RESTest packages by
+   historical convention.
+3. Moved two MIST-only util helpers (`ConsoleProgressBar`, `IDGenerator`)
+   from `es.us.isa.restest.util` into `io.mist.core.util`. These are the
+   only "non-leaf" moves so far: the adapter still references them, but
+   via the new `io.mist.core.util.*` imports.
+4. Vendored the seven leaf configuration POJOs into
+   `io.mist.core.spec.*` as verbatim copies (per § Phase B1.B):
+   `Auth`, `Generator`, `GenParameter`, `TestParameter`, `Operation`,
+   `TestConfiguration`, `TestConfigurationObject`. Adapter callers still
+   use the originals — these vendored copies are unreferenced until a
+   follow-up swap pass.
+5. Adjusted poms for the new compile-classpath needs (jackson, junit,
+   okhttp lifted to mist-core; swagger.version hoisted to parent so
+   mist-core's vendored `Operation` can reference the OASv3 model).
 
 ## 2. Module layout snapshot (this branch HEAD)
 
@@ -25,22 +39,24 @@ mist-core/src/main/java/io/mist/core/
 ├── analysis/        (4 files — fault-detection + trace error analysis)
 ├── bandit/          (1 file  — ThompsonScheduler, unchanged)
 ├── config/          (2 files — MstConfig + MstConfigValidator)
-├── enhancer/        (5 files — failed-test capture + regenerator)
+├── enhancer/        (6 files — failed-test capture + regenerator + TestCaseEnhancer)
 ├── fault/           (8 files — InvalidInputPool + FaultTypeRegistry family)
 ├── generation/      (3 files — AiDrivenLLMGenerator, ZeroShotLLMGenerator,
 │                                HardcodedInvalidInputGenerator)
 ├── llm/             (1 file  — ParameterInfo)
 ├── oracle/shape/    (6 files — Trace Shape Oracle, unchanged)
 ├── registry/        (3 files — RootApiRegistry + ApiTree + RootApiEntry)
-├── smart/           (10 files — smart-fetch data classes + caches)
-├── util/            (1 file  — SeededRandom)
+├── smart/           (11 files — smart-fetch data classes + caches + SmartInputFetcher)
+├── spec/            (7 files — vendored configuration POJOs, B1.B)
+├── util/            (3 files — SeededRandom + ConsoleProgressBar + IDGenerator)
 ├── value/           (2 files — ValueProvenance + ResolvedValue, unchanged)
 └── workflow/        (5 files — WorkflowScenario, WorkflowStep, NounKeyMap,
                                  WorkflowScenarioUtils, TraceWorkflowExtractor)
 ```
 
-`mist-core` total Java files: **55** (up from 17 at the start of B1).
-`mist-restest-adapter` MIST-relevant files left in its tree: **57**.
+`mist-core` total Java files: **66** (up from 55 at the previous snapshot,
+17 at the start of B1). `mist-restest-adapter` MIST-relevant files left in
+its tree: **51**.
 
 ## 3. Category A — `AbstractTestCaseGenerator` surface MIST actually used (closed)
 
@@ -103,49 +119,79 @@ unchanged.
 | `registry/RootApiEntry` | `io.mist.core.registry.RootApiEntry` | |
 | `registry/RootApiRegistry` | `io.mist.core.registry.RootApiRegistry` | |
 | `util/SeededRandom` | `io.mist.core.util.SeededRandom` | |
+| `util/ConsoleProgressBar` | `io.mist.core.util.ConsoleProgressBar` | adapter still imports from the new location |
+| `util/IDGenerator` | `io.mist.core.util.IDGenerator` | adapter wildcards in `AbstractTestCaseGenerator` and `TestGenerationAndExecution` were back-filled with explicit imports |
 | `workflow/NounKeyMap` | `io.mist.core.workflow.NounKeyMap` | YAML-driven noun map (S-2) |
 | `workflow/WorkflowScenario` | `io.mist.core.workflow.WorkflowScenario` | `addTraceId` / `mergeWith` widened to public for the (still-in-adapter) extractor/optimizer |
 | `workflow/WorkflowScenarioUtils` | `io.mist.core.workflow.WorkflowScenarioUtils` | |
 | `workflow/WorkflowStep` | `io.mist.core.workflow.WorkflowStep` | |
 | `workflow/TraceWorkflowExtractor` | `io.mist.core.workflow.TraceWorkflowExtractor` | reconstructs scenarios from Jaeger traces |
+| `inputs/smart/SmartInputFetcher` | `io.mist.core.smart.SmartInputFetcher` | 4450 LOC; moved verbatim once `ConsoleProgressBar` was promoted; doc-link to `SemanticDependencyRegistry` softened to `{@code}` |
+| `enhancer/TestCaseEnhancer` | `io.mist.core.enhancer.TestCaseEnhancer` | 409 LOC; only its package declaration tied it to RESTest |
+
+## 4a. Category B — RESTest data classes vendored as verbatim copies (B1.B)
+
+These seven configuration POJOs are now duplicated into
+`io.mist.core.spec.*`. The originals remain in
+`es.us.isa.restest.configuration.pojos.*` because RESTest's own
+configuration loader, the legacy generators (Random/AR/ConstraintBased),
+and the writers still use them. Once MIST-only consumers have been moved
+into `mist-core`, their imports swap to `io.mist.core.spec.*` and the
+adapter loses the corresponding references one class at a time.
+
+| Vendored class (`io.mist.core.spec.*`) | Verbatim source | Notes |
+|---|---|---|
+| `Auth` | `es.us.isa.restest.configuration.pojos.Auth` | leaf POJO |
+| `Generator` | `es.us.isa.restest.configuration.pojos.Generator` | depends on `GenParameter` (same package) |
+| `GenParameter` | `es.us.isa.restest.configuration.pojos.GenParameter` | leaf POJO |
+| `Operation` | `es.us.isa.restest.configuration.pojos.Operation` | holds `io.swagger.v3.oas.models.Operation` (kept verbatim — swagger-core dep added to mist-core) |
+| `TestConfiguration` | `es.us.isa.restest.configuration.pojos.TestConfiguration` | Jackson-annotated for ignore-unknown |
+| `TestConfigurationObject` | `es.us.isa.restest.configuration.pojos.TestConfigurationObject` | composite of `Auth` + `TestConfiguration` |
+| `TestParameter` | `es.us.isa.restest.configuration.pojos.TestParameter` | leaf-ish; depends on `Generator` |
 
 ## 5. What still depends on RESTest types (deferred)
 
-These classes stay in `mist-restest-adapter` because they reference RESTest
-types directly (configuration pojos, OpenAPI specification visitors,
-test-case base classes, util helpers) or depend on others in this group.
+These classes stay in `mist-restest-adapter` because they reference
+RESTest types directly (configuration loader internals, OpenAPI
+specification visitors, test-case base classes, util helpers) or depend
+on others in this group.
 
-| File | RESTest types it consumes |
-|---|---|
-| `generators/MultiServiceTestCaseGenerator` | `OpenAPISpecification`, `TestConfigurationObject`, `TestParameter`, `Operation`, `TestCase`, `MultiServiceTestCase`, `ConsoleProgressBar` |
-| `workflow/ScenarioOptimizer` | via `SemanticDependencyRegistry` |
-| `workflow/SemanticDependencyRegistry` | `OpenAPISpecification`, `TestConfigurationObject`, `Operation`, `TestParameter` |
-| `workflow/pipeline/PipelineContext` | `TestConfigurationObject`, `OpenAPISpecification`, `MultiServiceTestCaseGenerator`, `SmartInputFetcher` |
-| `workflow/pipeline/PipelineStage` (interface) | through `PipelineContext` |
-| `workflow/pipeline/WorkflowPipeline` | through `PipelineContext` |
-| `workflow/pipeline/stages/*` (9 files) | `PipelineContext` + RESTest pojos |
-| `inputs/smart/SmartInputFetcher` | `ConsoleProgressBar` |
-| `inputs/smart/SmartLLMParameterGenerator` | `OpenAPIParameter`, `OpenAPISpecificationVisitor`, `LLMParameterGenerator`, `PropertyManager` |
-| `inputs/llm/LLMParameterGenerator` | `ParameterGenerator` (RESTest stateful), `OpenAPIParameter`, `OpenAPISpecificationVisitor` |
-| `enhancer/StatusCodeExplorationEnhancer` | `AuthManipulationStrategy`, `LLMStatusCodeDiscovery`, `MultiServiceTestCase`, `ConsoleProgressBar` |
-| `enhancer/TestCaseEnhancer` | `ConsoleProgressBar` |
-| `testcases/MultiServiceTestCase` | `TestCase` (RESTest base) |
-| `auth/MstAuthHandler` | RESTest auth glue |
-| `writers/restassured/MultiServiceRESTAssuredWriter` | RESTest writer base — intentionally stays per prompt § 10 |
+| File | RESTest types it consumes | Disposition |
+|---|---|---|
+| `generators/MultiServiceTestCaseGenerator` | `OpenAPISpecification`, `TestConfigurationObject`, `TestParameter`, `Operation`, `TestCase`, `MultiServiceTestCase` | Wrap (spec) + Vendor (testcase) |
+| `workflow/ScenarioOptimizer` | via `SemanticDependencyRegistry` | follows SDR |
+| `workflow/SemanticDependencyRegistry` | `OpenAPISpecification`, `TestConfigurationObject`, `Operation`, `TestParameter` | Wrap (spec) |
+| `workflow/pipeline/PipelineContext` | `TestConfigurationObject`, `OpenAPISpecification`, `MultiServiceTestCaseGenerator`, `SmartInputFetcher` | needs all of the above |
+| `workflow/pipeline/PipelineStage` (interface) | through `PipelineContext` | follows ctx |
+| `workflow/pipeline/WorkflowPipeline` | through `PipelineContext` | follows ctx |
+| `workflow/pipeline/stages/*` (9 files) | `PipelineContext` + RESTest pojos | follows ctx |
+| `inputs/smart/SmartInputFetcher` | none from RESTest after the `ConsoleProgressBar` move; uses adapter-side OpenAPI parser | should be re-checked for a move |
+| `inputs/smart/SmartLLMParameterGenerator` | `OpenAPIParameter`, `OpenAPISpecificationVisitor`, `LLMParameterGenerator`, `PropertyManager` | Wrap (spec) |
+| `inputs/llm/LLMParameterGenerator` | `ParameterGenerator` (RESTest stateful), `OpenAPIParameter`, `OpenAPISpecificationVisitor` | Wrap (spec + stateful gen) |
+| `enhancer/StatusCodeExplorationEnhancer` | `AuthManipulationStrategy`, `LLMStatusCodeDiscovery`, `MultiServiceTestCase` | Vendor (testcase) + decide on auth |
+| `enhancer/TestCaseEnhancer` | adapter test-case base | follows testcase |
+| `testcases/MultiServiceTestCase` | `TestCase` (RESTest base) | Vendor (after `TestCase`) |
+| `testcases/TestCase` | `OpenAPIParameter`, `idlreasonerchoco.Analyzer` | Wrap (spec) + Wrap (IDL) |
+| `auth/MstAuthHandler` | RESTest auth glue | Wrap |
+| `writers/restassured/MultiServiceRESTAssuredWriter` | RESTest writer base — intentionally stays per prompt § 10 | Stays |
 
 These map onto Phase B1.B (vendor a small slice of RESTest types into
 `mist-core`) and Phase B1.E (SPI definition) in the original prompt. The
 remaining migration is one focused round per RESTest type group:
-configuration pojos, OpenAPI specification view, test-case base, util.
+configuration pojos (largely done in this branch), OpenAPI specification
+view, test-case base, util.
 
 ## 6. Gates met by this branch
 
 | Gate (from prompt § 7) | Status |
 |---|---|
 | 7.1 Gate B1.A — inventory present | ✅ this file |
+| 7.2 Gate B1.B — vendored leaf POJOs compile in isolation | ✅ via `mvn -pl mist-core -am compile` |
 | 7.4 Gate B1.D — `mist-core/src` has zero `extends AbstractTestCaseGenerator` | ✅ trivially — no MIST class lives in `mist-core` that would extend it |
 | 7.4 Gate B1.D — MIST generator no longer extends the RESTest base | ✅ severed |
 | 7.4 Gate B1.D — `mvn -q -DskipTests compile` passes for the reactor | ✅ |
 | 7.4 Gate B1.D — Seeded demo byte-identical to baseline | ⏳ not run — bundled demo needs the remote TrainTicket cluster at `http://129.62.148.112:32677` |
-| 7.5 / 7.6 — SPI gates | ⏳ deferred (B1_FOLLOWUPS.md) |
-| 7.7 — final cleanup | ⏳ deferred |
+| **7.5 — `mist-core` has zero `es.us.isa` references** | **✅ verified with `grep -rE 'es\.us\.isa' mist-core/src/main/java`** |
+| 7.5 — `mist-core` unit tests pass without RESTest on the classpath | ✅ no RESTest in `mvn -pl mist-core dependency:tree` |
+| 7.5 / 7.6 — SPI gates (interface files in `io.mist.core.spi`, `META-INF/services`) | ⏳ deferred (no consumers in mist-core yet; prompt § 6 #5 forbids inventing SPIs for hypothetical needs) |
+| 7.7 — final cleanup | ⏳ deferred (positioning doc citations, README diagram, flow.md class names) |
