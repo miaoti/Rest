@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"b603da0d-8ae5-4997-8865-7df49a674e66","boughtDate":"2026-01-15","travelDate":"2026-02-20","travelTime":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
-Enhanced Parameters: {accountId=acc-123456, documentType=1, contactsDocumentNumber=ABC123456, price=1299.99, seatClass=1, status=1}

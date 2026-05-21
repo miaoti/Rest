@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"a11eaabd-ada8-43ea-89a8-5a4e6dfde7e4","boughtDate":"2026-02-20","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"fake123","contact...
-Enhanced Parameters: {documentType=3, contactsDocumentNumber=JKL567890, contactsName=John Smith, seatNumber=12A, coachNumber=12, travelDate=2026-01-15, boughtDate=2026-02-20, price=1299.99, seatClass=1, from=Beijing, to=Shanghai, trainNumber=G1234, status=1}

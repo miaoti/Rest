@@ -74,14 +74,38 @@
 			<version>4.10.0</version>
 		</dependency>
 
-		<!-- swagger-core — vendored Operation pojo holds an
-		     io.swagger.v3.oas.models.Operation reference. The full
-		     OpenAPI parser still lives in mist-restest-adapter; mist-core
-		     only needs the model classes for typed handles. -->
+		<!-- swagger-core: the OpenAPI v3 model classes. -->
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-core</artifactId>
 			<version>${swagger.version}</version>
+		</dependency>
+
+		<!-- swagger-parser: io.mist.core.spec.OpenAPISpecification calls
+		     OpenAPIV3Parser to read YAML/JSON specs. Promoted from the
+		     deleted mist-restest-adapter. -->
+		<dependency>
+			<groupId>io.swagger.parser.v3</groupId>
+			<artifactId>swagger-parser</artifactId>
+			<version>2.0.20</version>
+		</dependency>
+
+		<!-- Apache Commons text/lang/io/csv: tiny util-class needs
+		     (CSV export, FilenameUtils, escaping). -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.8</version>
 		</dependency>
 
 		<!-- Logging: API on the compile classpath; core is now also on

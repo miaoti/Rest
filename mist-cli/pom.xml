@@ -16,10 +16,17 @@
 
 	<name>MIST CLI</name>
 	<description>Stand-alone MIST entry point (java -jar mist.jar). Houses
-	the io.mist.cli.MistMain class created in Phase 1.B and moved here in
-	Stage 1.C of PATH_B_REBUILD_PLAN.md. Depends on mist-restest-adapter
-	for MistRunner + MstConfig + the legacy RESTest classes that MIST still
-	uses, and on mist-core for the trace shape oracle / fault taxonomy.</description>
+	io.mist.cli.MistMain plus MistRunner, the multi-service RESTAssured
+	writer, the auth helpers, and the three MIST SPI provider classes.
+	Depends on mist-core for the contribution; mist-restest-adapter is no
+	longer a module — all MIST source lives in mist-core / mist-llm /
+	mist-cli.</description>
+
+	<properties>
+		<restassured.version>4.2.0</restassured.version>
+		<openapivalidator.version>2.18.1</openapivalidator.version>
+		<allure.version>2.13.3</allure.version>
+	</properties>
 
 	<dependencies>
 
@@ -29,20 +36,100 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- swagger-parser: the runtime OpenAPI v3 reader the
+		     io.mist.core.spec.OpenAPISpecification wrapper calls into. -->
 		<dependency>
-			<groupId>es.us.isa</groupId>
-			<artifactId>mist-restest-adapter</artifactId>
-			<version>${project.version}</version>
+			<groupId>io.swagger.parser.v3</groupId>
+			<artifactId>swagger-parser</artifactId>
+			<version>2.0.20</version>
 		</dependency>
 
-		<!-- JUnit (test scope) — drives the SPI-discovery integration test
-		     that proves mist-restest-adapter's META-INF/services/ entries
-		     are visible on the cli classpath. -->
+		<!-- REST Assured: the runtime HTTP client used by the generated
+		     test sources. Carried here so mist.jar can both write and
+		     run the produced tests. -->
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>${restassured.version}</version>
+		</dependency>
+
+		<!-- Groovy 3.0.x: overrides the 2.5.x pulled by REST Assured
+		     4.2.0, which fails on Java 17 (NoClassDefFoundError in
+		     vmplugin.v7.Java7). Groovy 3.0 is binary-compatible with
+		     2.5-compiled code. -->
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>3.0.19</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-json</artifactId>
+			<version>3.0.19</version>
+		</dependency>
+
+		<!-- OpenAPI request validator: used by the writer's filter chain
+		     when output-coverage / spec-conformance checks are enabled. -->
+		<dependency>
+			<groupId>com.atlassian.oai</groupId>
+			<artifactId>swagger-request-validator-core</artifactId>
+			<version>${openapivalidator.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.oai</groupId>
+			<artifactId>swagger-request-validator-restassured</artifactId>
+			<version>${openapivalidator.version}</version>
+		</dependency>
+
+		<!-- Allure: optional reporting; the generated tests reference
+		     io.qameta.allure.* annotations. -->
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-junit4</artifactId>
+			<version>${allure.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.qameta.allure</groupId>
+			<artifactId>allure-rest-assured</artifactId>
+			<version>${allure.version}</version>
+		</dependency>
+
+		<!-- JSON-Schema validator: used by OpenAPISpecification helpers. -->
+		<dependency>
+			<groupId>com.github.java-json-tools</groupId>
+			<artifactId>json-schema-validator</artifactId>
+			<version>2.2.14</version>
+		</dependency>
+
+		<!-- Apache Commons text/lang/io: small util-class dependencies
+		     pulled out of the removed adapter. -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>1.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.12.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+			<version>1.8</version>
+		</dependency>
+
+		<!-- JUnit (compile scope) — MistRunner installs a RunListener;
+		     generated test classes use @Test / @BeforeClass. -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -55,8 +142,6 @@
 				<version>3.3.0</version>
 				<executions>
 					<execution>
-						<!-- Phase 1.B of PATH_B_REBUILD_PLAN.md: standalone mist.jar entry point.
-						     Stage 1.C moved MistMain into this module (io.mist.cli.MistMain). -->
 						<id>make-assembly-mist</id>
 						<phase>package</phase>
 						<goals>

@@ -1,1 +1,0 @@
-{"basicPriceRate":125.5,"firstClassPriceRate":200.0,"id":"AR-2026-001","routeId":"{\"key\":\"value\"}","trainType":"Express"}

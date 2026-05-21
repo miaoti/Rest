@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-admin-order-service` at `AdminOrderController.addOrder` when attempting to deserialize JSON payload. The `documentType` field contains malicious SQL injection string `"1' OR '1'='1--"` which cannot be converted to integer type, causing `HttpMessageNotReadableException`.
-
-**FIX:**
-Implement input validation and sanitization in `ts-admin-order-service` to reject malformed JSON payloads before deserialization. Add proper validation annotations or custom validators for the `documentType` field to ensure only valid integer values are accepted.

@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"eadec68f-f240-4c54-b455-8e19ce71591b","boughtDate":"test362","travelDate":"2026-02-05","travelTime":"jinan","accountId":"acc-789012","contactsNa...
-Enhanced Parameters: {accountId=acc-123456, contactsDocumentNumber=ABC123456, id=AR-2026-002, trainNumber=G5678, seatNumber=15B}

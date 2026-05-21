@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"55ced541-67b4-42ee-8c2a-8ad79bd5601b","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-789012","cont...
-Enhanced Parameters: {coachNumber=123456789, from=Beijing, to=Shanghai, trainNumber=G1234, seatNumber=3F}

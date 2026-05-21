@@ -1,1 +1,0 @@
-{"averageSpeed":280,"confortClass":"not_a_number","economyClass":2,"id":"train-003","name":"Stadler FLIRT 160"}

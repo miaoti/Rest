@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-route-plan-service` at `RoutePlanController.getMinStopStations` operation. The NullPointerException in `RoutePlanServiceImpl.searchMinStopStations` at line 178 indicates a null reference when accessing route planning data, likely due to missing or invalid input parameters from the gateway service.
-
-**FIX:**
-Add null validation for input parameters in `RoutePlanServiceImpl.searchMinStopStations` method before accessing route data. Validate that `stationId` and `routeId` parameters are not null before proceeding with route search logic. Additionally, implement proper error handling in `ts-gateway-service` to validate and sanitize input before forwarding to `ts-route-plan-service`.

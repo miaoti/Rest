@@ -37,7 +37,6 @@
 	<modules>
 		<module>mist-core</module>
 		<module>mist-llm</module>
-		<module>mist-restest-adapter</module>
 		<module>mist-cli</module>
 	</modules>
 

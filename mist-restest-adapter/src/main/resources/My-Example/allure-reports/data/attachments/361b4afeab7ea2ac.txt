@@ -1,8 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-order-other-service` fails at `OrderOtherController.queryOrdersForRefresh` due to JSON deserialization error. The `boughtDateStart` field in `other.entity.QueryInfo` is defined as `String` in Java, but the request body sends a JSON object (START_OBJECT token) instead of a string value at column 49. This causes `HttpMessageNotReadableException`. The 400 status from `ts-gateway-service` is a direct propagation of this deserialization failure.
-
-FIX: 
-1. Change `boughtDateStart` field type in `other.entity.QueryInfo` from `String` to appropriate date/object type, OR update the API contract to accept a string representation (e.g., "2024-01-01") instead of a JSON object.
-2. Update the client sending the request to pass a string value for `boughtDateStart` instead of a JSON object.
-3

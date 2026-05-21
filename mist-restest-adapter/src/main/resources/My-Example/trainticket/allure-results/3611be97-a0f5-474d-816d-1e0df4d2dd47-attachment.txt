@@ -1,1 +1,0 @@
-{"basicPriceRate":125.5,"firstClassPriceRate":"abc","id":"0b23bd3e-876a-4af3-b920-c50a90c90b04","routeId":"RT-11111","trainType":"Express"}

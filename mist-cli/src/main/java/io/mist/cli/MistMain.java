@@ -1,8 +1,8 @@
 package io.mist.cli;
 
-import es.us.isa.restest.main.MistPathResolver;
-import es.us.isa.restest.main.MistRunResult;
-import es.us.isa.restest.main.MistRunner;
+import io.mist.cli.MistPathResolver;
+import io.mist.cli.MistRunResult;
+import io.mist.cli.MistRunner;
 import io.mist.core.config.MstConfig;
 
 import java.io.InputStream;

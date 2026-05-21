@@ -1,1 +1,0 @@
-{"averageSpeed":1,"confortClass":11,"economyClass":140,"id":"' UNION SELECT * FROM passwords --","name":"HST-2000 Shinkansen"}

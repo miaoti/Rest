@@ -29,7 +29,7 @@ public class SpiDiscoveryIntegrationTest {
         MistSpecLoader loader = MistServices.requireSpecLoader();
         assertNotNull(loader);
         assertEquals(
-                "io.mist.adapter.restest.RestestMistSpecLoader",
+                "io.mist.cli.spi.RestestMistSpecLoader",
                 loader.getClass().getName());
     }
 
@@ -38,7 +38,7 @@ public class SpiDiscoveryIntegrationTest {
         MistTestWriter<Object> writer = MistServices.requireTestWriter();
         assertNotNull(writer);
         assertEquals(
-                "io.mist.adapter.restest.RestAssuredMistTestWriter",
+                "io.mist.cli.spi.RestAssuredMistTestWriter",
                 writer.getClass().getName());
     }
 
@@ -47,7 +47,7 @@ public class SpiDiscoveryIntegrationTest {
         MistTestExecutor executor = MistServices.requireTestExecutor();
         assertNotNull(executor);
         assertEquals(
-                "io.mist.adapter.restest.MavenSurefireMistTestExecutor",
+                "io.mist.cli.spi.MavenSurefireMistTestExecutor",
                 executor.getClass().getName());
     }
 

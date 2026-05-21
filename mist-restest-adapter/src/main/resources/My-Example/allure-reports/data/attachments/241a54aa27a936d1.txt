@@ -1,1 +1,0 @@
-{"averageSpeed":250,"confortClass":12,"economyClass":140,"id":"train-007","name":"?"}

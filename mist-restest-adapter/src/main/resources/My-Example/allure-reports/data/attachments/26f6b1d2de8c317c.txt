@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `Travel2Controller.queryInfo` in `ts-travel2-service` throws `java.lang.NullPointerException`. The null reference likely originates from an uninitialized or missing object within the query logic (e.g., request body, database result, or dependency injection). HTTP status 0 indicates the exception occurred before response construction.
-
-FIX: Identify and guard the null reference in `Travel2Controller.queryInfo`. Add null checks for all object dereferences, particularly for incoming POST request payload fields or service layer return values. Ensure proper initialization of injected dependencies. Implement try-catch with meaningful error response (e.g., 400 Bad Request) to prevent propagation.

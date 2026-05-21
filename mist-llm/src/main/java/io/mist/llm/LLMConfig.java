@@ -543,7 +543,7 @@ public class LLMConfig {
      * cached responses replay byte-deterministically. The gate intentionally
      * fires on "set" rather than "parseable" — a non-numeric seed is still a
      * deliberate determinism request. Numeric forwarding to backends is
-     * handled separately by {@code es.us.isa.restest.util.SeededRandom} (in
+     * handled separately by {@code io.mist.core.util.SeededRandom} (in
      * mist-restest-adapter) for adapter callers, and by
      * {@link LLMService}'s internal {@code configuredBaseSeed()} helper for
      * mist-llm-direct callers.

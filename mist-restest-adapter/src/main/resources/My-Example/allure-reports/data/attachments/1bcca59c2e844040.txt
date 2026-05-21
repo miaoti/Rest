@@ -1,1 +1,0 @@
-{"boughtDateEnd":"","boughtDateStart":"","enableBoughtDateQuery":true,"enableStateQuery":true,"enableTravelDateQuery":false,"loginId":"\u0000\u0001\u0002","state":4,"travelDateEnd":"","travelDateStart":""}

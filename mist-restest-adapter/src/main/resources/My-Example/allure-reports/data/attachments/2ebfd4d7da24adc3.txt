@@ -1,1 +1,0 @@
-{"averageSpeed":420,"confortClass":14,"economyClass":130,"id":"1367db1f-461e-4ab7-87ad-2bcc05fd9cb7","name":"NonExistentStation"}

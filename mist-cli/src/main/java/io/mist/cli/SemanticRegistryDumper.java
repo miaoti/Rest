@@ -2,7 +2,7 @@ package io.mist.cli;
 
 import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
 import io.mist.core.spec.TestConfigurationObject;
-import es.us.isa.restest.specification.OpenAPISpecification;
+import io.mist.core.spec.OpenAPISpecification;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.TraceWorkflowExtractor;
 import io.mist.core.workflow.WorkflowScenario;
@@ -24,7 +24,7 @@ import java.util.Map;
  * <p>Usage (from the repo root):
  * <pre>
  *   mvn -q compile
- *   mvn -q exec:java -Dexec.mainClass=es.us.isa.restest.main.SemanticRegistryDumper
+ *   mvn -q exec:java -Dexec.mainClass=io.mist.cli.SemanticRegistryDumper
  * </pre>
  */
 public class SemanticRegistryDumper {
@@ -63,7 +63,7 @@ public class SemanticRegistryDumper {
 
         SemanticDependencyRegistry reg = SemanticDependencyRegistry.build(
                 serviceConfigs,
-                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
+                io.mist.cli.spi.PojoConverter.toOpenApiMap(serviceSpecs),
                 scenarios);
         reg.dumpRegistryToFile(OUTPUT_PATH);
 

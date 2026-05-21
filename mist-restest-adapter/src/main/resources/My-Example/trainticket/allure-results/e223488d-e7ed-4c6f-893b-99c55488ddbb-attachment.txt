@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-price-service` during `INSERT ts.price_config` operation where MySQL throws `Data truncation: Data too long for column 'id' at row 1` exception. The `id` column in the `ts.price_config` table cannot accommodate the data being inserted.
-
-**FIX:**
-Increase the column size of `id` in `ts.price_config` table to accommodate the incoming data, or validate and truncate the input data in `ts-price-service` before insertion to ensure it fits within the column's defined length constraints.

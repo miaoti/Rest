@@ -1,3 +1,0 @@
-Original Status: 403
-Original Response: {"timestamp":"2026-05-09T03:20:23.150+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/trains"}
-Enhanced Parameters: {name=Beijing-Shanghai High Speed, id=G1234}

@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"26b6df9e-67c0-437c-9c10-98639705f2f3","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-234567","cont...
-Enhanced Parameters: {accountId=acc-123456, contactsDocumentNumber=ABC123456, trainNumber=D5678, seatNumber=12A}

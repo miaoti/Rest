@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:** `ts-gateway-service` initiated a `POST` request resulting in a `400` error due to a JSON parsing error within the `ts-admin-order-service`. The failing request was `edu.fudan.common.entity.Order["status"]` attempting to deserialize "true" as an integer.
-
-**FIX:**  Review the data being sent in the `POST` request from `ts-gateway-service`. Specifically, ensure the `status` field within the `Order` entity is consistently a valid integer (0, 1, 2, etc.) and not a string representation of a boolean ("true", "false").  Validate data types at the source of the request.

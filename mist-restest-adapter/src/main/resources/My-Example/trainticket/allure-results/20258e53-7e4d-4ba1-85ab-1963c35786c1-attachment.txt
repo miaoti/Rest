@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Times Square Station","id":"AR-2026-001","loginId":"svc_account_12345","startStation":"Union Station","stationList":"Grand Central Terminal,Penn Station,Union Station,Times Square Station,Broadway Station"}

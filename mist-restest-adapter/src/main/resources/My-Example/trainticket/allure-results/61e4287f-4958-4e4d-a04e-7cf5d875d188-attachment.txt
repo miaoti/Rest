@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"bdff1643-1657-44d9-a405-75000797c177","trainType":"Local","routeId":"RT-00001","basicPriceRate":150.75,"firstClassPriceRate":125.5}}

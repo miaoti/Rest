@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-travel-plan-service` fails to deserialize `TripInfo.departureTime` as `String` from JSON request body. The request sends a JSON object (START_OBJECT token) where a string value is expected. This causes `HttpMessageNotReadableException` with HTTP 400 propagated to `ts-gateway-service`.
-
-FIX: In the client sending requests to `ts-travel-plan-service`, change `departureTime` field value from a JSON object to a string (e.g., `"2024-01-01 10:00:00"`) in the request body. Alternatively, modify `TripInfo` entity in `ts-travel-plan-service` to accept `departureTime` as a complex type (e.g., `LocalDateTime`) with proper `@JsonFormat` annotation.

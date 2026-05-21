@@ -1,3 +1,0 @@
-Original Status: 403
-Original Response: {"timestamp":"2026-05-09T03:16:08.772+00:00","status":403,"error":"Forbidden","message":"","path":"/api/v1/adminbasicservice/adminbasic/trains"}
-Enhanced Parameters: {confortClass=2, economyClass=100, averageSpeed=250, id=123456}

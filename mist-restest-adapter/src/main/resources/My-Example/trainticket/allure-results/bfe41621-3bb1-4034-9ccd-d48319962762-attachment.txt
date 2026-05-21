@@ -1,1 +1,0 @@
-{"basicPriceRate":125.5,"firstClassPriceRate":125.5,"id":"test361","routeId":"RT-INVALID-ROUTE","trainType":"InvalidTrainType"}

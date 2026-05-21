@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"b73780a0-04f2-4d0d-87a4-d4c766c80811","boughtDate":"2026-01-15","travelDate":"2026-01-15","travelTime":"08:30:00","accountId":"acc-789012","cont...
-Enhanced Parameters: {travelTime=08:30:00, documentType=1, contactsDocumentNumber=ABC123456, contactsName=John Smith, differenceMoney=150.00, seatNumber=8C, accountId=acc-789012, coachNumber=12, travelDate=2026-01-15, boughtDate=2026-01-15, price=1299.99, seatClass=1, from=Beijing, id=123, to=trainticket_notice@163.com, trainNumber=G1234, status=1}

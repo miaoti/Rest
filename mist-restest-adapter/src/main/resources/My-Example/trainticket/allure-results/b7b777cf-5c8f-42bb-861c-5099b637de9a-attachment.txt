@@ -1,7 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-**ROOT CAUSE:**
-The failure occurs in `ts-price-service` during `INSERT ts.price_config` operation with `HTTP Status: 0` due to `java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'Express-RT-12345' for key 'route_type_idx'`. The database constraint violation happens when attempting to insert a duplicate record where `route_type_idx` already exists.
-
-**FIX:**
-Implement duplicate detection and handling in `ts-price-service` before INSERT operations. Add pre-check logic to verify if `route_type_idx` already exists, or modify the database schema to allow upsert operations using `ON DUPLICATE KEY UPDATE` or `MERGE` statements to prevent constraint violations.

@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: ts-gateway-service POST operation failed with HTTP 403 Forbidden in 1.052ms at the gateway layer. The failure is not propagated to downstream services (ts-admin-basic-info-service), indicating the request was rejected before reaching the backend.
-
-FIX: Check gateway authentication/authorization configuration for the POST endpoint. Verify JWT tokens, API keys, or OAuth credentials in the request headers. Ensure the gateway's security rules permit the specific POST operation and that the caller has proper permissions. If using Spring Cloud Gateway, review GlobalFilter or SecurityFilter chain for 403 triggers.

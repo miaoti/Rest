@@ -1,1 +1,0 @@
-{"boughtDateEnd":"2024-12-31","boughtDateStart":"2024-01-01","enableBoughtDateQuery":true,"enableStateQuery":true,"enableTravelDateQuery":false,"loginId":"invalid_user","state":23,"travelDateEnd":"1","travelDateStart":"invalid-date"}

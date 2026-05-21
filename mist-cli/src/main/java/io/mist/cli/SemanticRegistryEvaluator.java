@@ -6,7 +6,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import io.mist.core.multiservice.MicroserviceTestConfigurationIO;
 import io.mist.core.spec.TestConfigurationObject;
-import es.us.isa.restest.specification.OpenAPISpecification;
+import io.mist.core.spec.OpenAPISpecification;
 import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.registry.SemanticDependencyRegistry.Pass;
 import io.mist.core.workflow.TraceWorkflowExtractor;
@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Evaluates the {@link es.us.isa.restest.workflow.SemanticDependencyRegistry}
+ * Evaluates the {@link io.mist.core.registry.SemanticDependencyRegistry}
  * against a manually curated ground-truth file and reports Precision/Recall/F1.
  *
  * <p>Inputs:
@@ -267,7 +267,7 @@ public class SemanticRegistryEvaluator {
         SemanticDependencyRegistry reg =
                 SemanticDependencyRegistry.build(
                         configs,
-                        io.mist.adapter.restest.PojoConverter.toOpenApiMap(specs),
+                        io.mist.cli.spi.PojoConverter.toOpenApiMap(specs),
                         scenarios, passes);
 
         File tmp = File.createTempFile("registry-eval", ".json");

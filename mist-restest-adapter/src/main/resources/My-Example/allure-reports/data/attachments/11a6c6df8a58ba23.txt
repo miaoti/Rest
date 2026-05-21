@@ -1,1 +1,0 @@
-{"boughtDateEnd":"","boughtDateStart":"","enableBoughtDateQuery":true,"enableStateQuery":false,"enableTravelDateQuery":true,"loginId":"admin006","state":8,"travelDateEnd":"","travelDateStart":"'; DROP TABLE users; --"}

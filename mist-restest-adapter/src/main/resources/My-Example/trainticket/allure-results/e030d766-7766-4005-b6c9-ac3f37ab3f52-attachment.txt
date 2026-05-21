@@ -1,1 +1,0 @@
-{"status":1,"msg":"Create success","data":{"id":"AR-2026-001","trainType":"<script>alert('XSS')</script>","routeId":"RT-12345","basicPriceRate":125.5,"firstClassPriceRate":125.5}}

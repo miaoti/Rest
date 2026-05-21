@@ -1,1 +1,0 @@
-{"averageSpeed":180,"confortClass":7,"economyClass":140,"id":"!@#$%^&*(){}[]|\\:;\"'<>?,./","name":"E5 Series Hayabusa"}

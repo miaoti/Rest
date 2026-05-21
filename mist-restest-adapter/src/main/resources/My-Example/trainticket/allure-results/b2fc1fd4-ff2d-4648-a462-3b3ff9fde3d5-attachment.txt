@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Grand Central Terminal","id":"jinan","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":"NonExistent1"}

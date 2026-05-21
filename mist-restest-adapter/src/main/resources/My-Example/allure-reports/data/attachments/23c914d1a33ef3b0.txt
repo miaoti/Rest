@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-travel2-service` operation `Travel2Controller.queryInfo` fails with `java.lang.NullPointerException` at 52.657ms execution time. This is the sole root cause, with 3 propagated failures across total 4 failed spans.
-
-FIX: Inspect `Travel2Controller.queryInfo` method for null object dereference. Add null checks before accessing object properties or method calls. Specifically validate request body, query parameters, or any `Optional`/`@Nullable` fields. Use `Objects.requireNonNull()` or conditional checks to prevent NPE. If external data (e.g., from database or cache) is expected, ensure retrieval handles missing records gracefully.

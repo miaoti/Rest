@@ -1,1 +1,0 @@
-{"name":"Express-Train","averageSpeed":"200","id":"train-001","confortClass":"50","economyClass":"100"}

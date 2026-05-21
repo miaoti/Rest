@@ -1,5 +1,0 @@
-🔍 ROOT CAUSE ANALYSIS
-─────────────────────
-ROOT CAUSE: `ts-route-plan-service` POST operation fails with HTTP 400 (Bad Request) in 1.21ms, indicating immediate rejection of malformed or invalid input data at the service boundary. The 7 propagated failures across 8 total failed spans confirm all downstream calls (ts-travel-service, ts-travel-plan-service, ts-gateway-service) depend on this service's success.
-
-FIX: Validate request payload structure, required fields, and data types sent to `ts-route-plan-service` POST endpoint. Check API contract for mandatory parameters (e.g., route ID, date, seat type) and ensure client sends correct JSON format. Add request validation middleware in ts-route-plan-service to return descriptive 400 error messages identifying the specific invalid field.

@@ -1,1 +1,0 @@
-{"basicPriceRate":89.99,"firstClassPriceRate":true,"id":"shijiazhuang","routeId":"RT-12345","trainType":"Express"}

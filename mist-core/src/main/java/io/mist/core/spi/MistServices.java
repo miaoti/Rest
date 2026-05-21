@@ -13,7 +13,7 @@ import java.util.ServiceLoader;
  * {@link NullPointerException} ten frames deep.
  *
  * <p>The bundled {@code mist-restest-adapter} module ships an adapter
- * for each SPI under {@code io.mist.adapter.restest} and registers it
+ * for each SPI under {@code io.mist.cli.spi} and registers it
  * via {@code META-INF/services/}. Running {@code mist-cli} without the
  * adapter on the classpath is a configuration error that this class
  * surfaces cleanly.

@@ -1,1 +1,0 @@
-{"distanceList":"15.2","endStation":"Grand Central Terminal","id":"f8a1b2c3-d4e5-4f6a-7b8c-9d0e1f2a3b4c","loginId":"admin_user_001","startStation":"Chicago Union Station","stationList":" "}

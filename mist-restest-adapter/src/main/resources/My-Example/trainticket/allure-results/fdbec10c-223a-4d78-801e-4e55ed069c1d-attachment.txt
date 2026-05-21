@@ -1,1 +1,0 @@
-{"timestamp":"2026-01-09T07:53:59.651+00:00","status":400,"error":"Bad Request","message":"","path":"/api/v1/adminorderservice/adminorder"}

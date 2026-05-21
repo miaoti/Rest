@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"399d9dea-5530-44a3-9e71-7a84ddb0778b","boughtDate":"2026-02-20","travelDate":"2026-02-05","travelTime":"08:30:00","accountId":"acc-789012","cont...
-Enhanced Parameters: {accountId=acc-123456, contactsDocumentNumber=XYZ789012, price=899.50, trainNumber=D5678}

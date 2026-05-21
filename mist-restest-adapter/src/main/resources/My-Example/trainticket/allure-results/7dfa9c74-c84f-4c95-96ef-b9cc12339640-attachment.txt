@@ -1,3 +1,0 @@
-Original Status: 200
-Original Response: {"status":1,"msg":"Add new Order Success","data":{"id":"368feb42-4ccd-42c3-93b3-5f101c1a6a95","boughtDate":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA...
-Enhanced Parameters: {travelTime=08:30:00, documentType=1, contactsDocumentNumber=ABC123456, contactsName=John Smith, differenceMoney=150.00, seatNumber=12A, accountId=acc-789012, coachNumber=12, travelDate=2026-01-15, price=1299.99, seatClass=1, from=Beijing, id=AR-2026-001, to=Beijing, trainNumber=G1234, status=1}
