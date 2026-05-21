@@ -4,9 +4,11 @@
 > Status: **B1.A inventory complete; B1.D sever done; B1.C migration partly
 > done (33 MIST-owned classes + 2 util helpers + SmartInputFetcher +
 > TestCaseEnhancer = 37 classes total promoted into `mist-core`);
-> B1.B-vendor of the seven leaf configuration POJOs done. Cardinal § 7.5
-> criterion ("`mist-core/src/main/java` has zero `es.us.isa` references")
-> is now met.**
+> B1.B-vendor of the seven leaf configuration POJOs done; B1.E SPI
+> surface defined (`io.mist.core.spi`) and B1.F adapter-side spec
+> loader registered via `META-INF/services/`. Cardinal § 7.5 criterion
+> ("`mist-core/src/main/java` has zero `es.us.isa` references") is now
+> met.**
 
 ## 1. What this branch has done
 
@@ -48,15 +50,18 @@ mist-core/src/main/java/io/mist/core/
 ├── registry/        (3 files — RootApiRegistry + ApiTree + RootApiEntry)
 ├── smart/           (11 files — smart-fetch data classes + caches + SmartInputFetcher)
 ├── spec/            (7 files — vendored configuration POJOs, B1.B)
+├── spi/             (5 files — MistSpec, MistSpecLoader, MistTestWriter,
+│                                MistTestExecutor, MistServices, B1.E)
 ├── util/            (3 files — SeededRandom + ConsoleProgressBar + IDGenerator)
 ├── value/           (2 files — ValueProvenance + ResolvedValue, unchanged)
 └── workflow/        (5 files — WorkflowScenario, WorkflowStep, NounKeyMap,
                                  WorkflowScenarioUtils, TraceWorkflowExtractor)
 ```
 
-`mist-core` total Java files: **66** (up from 55 at the previous snapshot,
+`mist-core` total Java files: **71** (up from 55 at the previous snapshot,
 17 at the start of B1). `mist-restest-adapter` MIST-relevant files left in
-its tree: **51**.
+its tree: **51**, plus the new `io.mist.adapter.restest.*` package with
+two SPI implementations and a `META-INF/services/` registration.
 
 ## 3. Category A — `AbstractTestCaseGenerator` surface MIST actually used (closed)
 
@@ -193,5 +198,5 @@ view, test-case base, util.
 | 7.4 Gate B1.D — Seeded demo byte-identical to baseline | ⏳ not run — bundled demo needs the remote TrainTicket cluster at `http://129.62.148.112:32677` |
 | **7.5 — `mist-core` has zero `es.us.isa` references** | **✅ verified with `grep -rE 'es\.us\.isa' mist-core/src/main/java`** |
 | 7.5 — `mist-core` unit tests pass without RESTest on the classpath | ✅ no RESTest in `mvn -pl mist-core dependency:tree` |
-| 7.5 / 7.6 — SPI gates (interface files in `io.mist.core.spi`, `META-INF/services`) | ⏳ deferred (no consumers in mist-core yet; prompt § 6 #5 forbids inventing SPIs for hypothetical needs) |
+| 7.5 / 7.6 — SPI gates (interface files in `io.mist.core.spi`, `META-INF/services`) | 🟡 partial — `MistSpec`, `MistSpecLoader`, `MistTestWriter<T>`, `MistTestExecutor` interfaces defined; `RestestMistSpecLoader` adapter registered. Writer / executor adapter wrappers deferred until a `mist-core`-resident consumer exists |
 | 7.7 — final cleanup | ⏳ deferred (positioning doc citations, README diagram, flow.md class names) |

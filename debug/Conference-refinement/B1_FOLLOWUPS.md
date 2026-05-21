@@ -69,24 +69,40 @@ reference swaps, or (b) the type is wrapped as a `MistXxx` SPI.
 | `enhancer/TestCaseEnhancer` | `io.mist.core.enhancer.TestCaseEnhancer` |
 | `configuration/multiservice/MstConfig` (legacy loader) | `io.mist.core.config.legacy.MstConfig` |
 
-### SPI scaffolding (B1.E + B1.F, deferred)
+### SPI scaffolding (B1.E + B1.F, partial)
 
 The prompt's § Phase B1.E enumerates a "minimum viable SPI surface"
 (`MistSpecLoader`, `MistSpec`, `MistOperation`, `MistParameter`,
-`MistTestWriter`, `MistTestExecutor`). These interfaces are NOT yet
-defined in this branch because:
+`MistTestWriter`, `MistTestExecutor`). This branch lands:
 
-- Prompt § 6 #5 forbids inventing SPIs for hypothetical needs.
-- `mist-core` currently has zero consumers that would call these
-  interfaces — the generation pipeline that would consume them still
-  lives in the adapter.
-- The SPI shape will become obvious once the pipeline starts moving
-  (Phase B1.C continuation): each `OpenAPISpecification x = …` call
-  site that has to cross the package boundary into `mist-core` will
-  reveal exactly which method signature `MistSpec` must expose.
+- **All four interfaces** in `io.mist.core.spi`: `MistSpec`,
+  `MistSpecLoader`, `MistTestWriter<T>`, `MistTestExecutor`. Plus a
+  lazily-resolving service locator `MistServices` that raises a
+  descriptive `IllegalStateException` (not an NPE) when an SPI has
+  no implementation on the runtime classpath.
+- **The adapter-side spec loader**: `io.mist.adapter.restest.RestestMistSpec`
+  and `io.mist.adapter.restest.RestestMistSpecLoader` wrap
+  RESTest's `OpenAPISpecification` and register via
+  `META-INF/services/io.mist.core.spi.MistSpecLoader`.
+- **Smoke test**: `MistServicesTest` in mist-core verifies the
+  locator class loads cleanly and `isPresent()` returns `false`
+  when nothing is registered (mist-core's own test scope).
 
-When the SPI surface is defined, the matching `META-INF/services/`
-registration goes in `mist-restest-adapter/src/main/resources/`.
+Still deferred (per prompt § 6 #5 — "don't invent SPIs for
+hypothetical needs"):
+
+- The writer adapter (`RestAssuredJUnitWriter` implementing
+  `MistTestWriter<MultiServiceTestCase>`). Waits until either
+  `MultiServiceTestCase` is vendored or wrapped, AND a mist-core-side
+  consumer exists.
+- The executor adapter (`RestAssuredJUnitExecutor` implementing
+  `MistTestExecutor`). Waits until the executor flow leaves
+  `MistRunner`.
+- `MistOperation` and `MistParameter` interfaces. Currently
+  `MistSpec` exposes the raw `io.swagger.v3.oas.models.OpenAPI` model,
+  which the prompt's § Phase B1.E example pre-empts via richer
+  view methods. The richer surface will follow once a consumer in
+  mist-core actually needs it.
 
 ## Other deferred items
 
