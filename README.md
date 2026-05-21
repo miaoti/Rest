@@ -298,6 +298,41 @@ llm.openai_compatible.api.key=
 
 The `${VAR}` syntax is resolved at startup — see *API keys* below.
 
+### LLM cache control
+
+MIST persists every LLM response under `.mist/llm-call-cache.json`
+(SHA-256-keyed on the prompt). Two knobs gate the cache, settable from
+the MST `.properties` file or via `-D` (the latter takes precedence):
+
+```properties
+# mist.llm.cache.read = auto | true | false
+#   auto (default): read the cache only when -Drandom.seed=<n> is set,
+#                   so seeded runs reproduce byte-identically and
+#                   unseeded benchmark runs hit the real LLM.
+#   true:           always read — short-circuit LLM calls when the
+#                   cache is pre-populated (demo / reviewer artifact).
+#   false:          never read — every prompt goes to the LLM backend.
+mist.llm.cache.read=auto
+
+# mist.llm.cache.write = true | false
+#   true (default): write every response into the cache so future
+#                   seeded runs can replay them.
+#   false:          run-isolated — don't touch the shared cache file
+#                   (one-off no-cache benchmark).
+mist.llm.cache.write=true
+```
+
+Common combinations:
+
+| Goal | Setting |
+|---|---|
+| Reproduce a published number (cache + temp=0) | `-Drandom.seed=42`, leave defaults |
+| Cold-LLM run, full network calls | `-Dmist.llm.cache.read=false` |
+| Run isolated from the shared cache file | `-Dmist.llm.cache.read=false -Dmist.llm.cache.write=false` |
+| Use a side-channel cache file | `-Dmist.llm.cache.path=.mist/run-A.json` |
+
+The same three knobs also work as command-line `-D` flags for IDE play-button runs that bypass the MST file.
+
 ### Google Gemini
 
 ```properties
@@ -347,7 +382,7 @@ Endpoints matching `auth.skip.path.patterns` (CSV of regex, e.g. `^/actuator,^/a
 | `target/allure-report/`                        | Rendered HTML report (after `allure generate`) |
 | `logs/fault-detection-reports/`                | Injected-fault detection summary, matched against `injectedFaults/injected-faults.json` |
 | `logs/llm-communications/`                     | Per-call LLM request/response transcripts (`LLMCommunicationLogger`; gitignored) |
-| `.mist/llm-call-cache.json`                    | SHA-256-keyed cache of LLM responses. With `-Drandom.seed=<n>` set, lookups short-circuit backend HTTP and the cached transcript replays byte-for-byte; unseeded runs still write through, so a later seeded run can replay them. Commit the file alongside the SUT for an artifact-bundle that reproduces from scratch. |
+| `.mist/llm-call-cache.json`                    | SHA-256-keyed cache of LLM responses. Default: read enabled only when `-Drandom.seed=<n>` is set (so seeded runs reproduce byte-identically and unseeded benchmark runs hit the real LLM); write always on. Both gates are overridable from the MST `.properties` file or via `-D`. See *LLM cache control* below. |
 | `.mist/parameter-error-analysis-cache.json`    | Parameter-error analyser cache |
 | `.mist/intelligent-analysis-cache.json`        | Trace error analyser intelligent cache |
 | `.mist/trace-shape-invariants.json`            | Phase 2 Trace Shape Oracle persisted invariants |
