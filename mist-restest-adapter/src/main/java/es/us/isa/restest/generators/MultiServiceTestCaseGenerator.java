@@ -15,7 +15,7 @@ import io.mist.core.bandit.ThompsonScheduler;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
-import es.us.isa.restest.workflow.SemanticDependencyRegistry;
+import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
 import es.us.isa.restest.workflow.pipeline.PipelineContext;
@@ -302,7 +302,10 @@ public class MultiServiceTestCaseGenerator {
         log.info("Root API mode: onlyFirstBusinessStep={} (true → prune step-API spans, default)", this.onlyFirstBusinessStep);
         this.faultyRatio = (float) mstCfg.faulty().ratio();
         this.faultyRoundRobin = mstCfg.faulty().roundRobin();
-        this.dependencyRegistry = SemanticDependencyRegistry.build(serviceConfigs, serviceSpecs, scenarios);
+        this.dependencyRegistry = SemanticDependencyRegistry.build(
+                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
+                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
+                scenarios);
 
         log.info("=== NEGATIVE TEST CONFIGURATION ===");
         log.info("faulty.ratio from MstConfig: {}", mstCfg.faulty().ratio());

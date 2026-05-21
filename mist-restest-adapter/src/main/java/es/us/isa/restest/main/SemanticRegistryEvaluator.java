@@ -7,8 +7,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
-import es.us.isa.restest.workflow.SemanticDependencyRegistry;
-import es.us.isa.restest.workflow.SemanticDependencyRegistry.Pass;
+import io.mist.core.registry.SemanticDependencyRegistry;
+import io.mist.core.registry.SemanticDependencyRegistry.Pass;
 import io.mist.core.workflow.TraceWorkflowExtractor;
 import io.mist.core.workflow.WorkflowScenario;
 
@@ -265,7 +265,10 @@ public class SemanticRegistryEvaluator {
         catch (Exception e) { scenarios = null; }
 
         SemanticDependencyRegistry reg =
-                SemanticDependencyRegistry.build(configs, specs, scenarios, passes);
+                SemanticDependencyRegistry.build(
+                        io.mist.adapter.restest.PojoConverter.toCoreMap(configs),
+                        io.mist.adapter.restest.PojoConverter.toOpenApiMap(specs),
+                        scenarios, passes);
 
         File tmp = File.createTempFile("registry-eval", ".json");
         tmp.deleteOnExit();

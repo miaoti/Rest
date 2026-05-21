@@ -1,9 +1,8 @@
-package es.us.isa.restest.workflow;
+package io.mist.core.registry;
 
-import es.us.isa.restest.configuration.pojos.Operation;
-import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
-import es.us.isa.restest.configuration.pojos.TestParameter;
-import es.us.isa.restest.specification.OpenAPISpecification;
+import io.mist.core.spec.Operation;
+import io.mist.core.spec.TestConfigurationObject;
+import io.mist.core.spec.TestParameter;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
 
@@ -207,11 +206,11 @@ public class SemanticDependencyRegistry {
      * for the new trace-driven Pass 2.
      *
      * @param serviceConfigs map of serviceName → parsed {@link TestConfigurationObject}
-     * @param serviceSpecs   map of serviceName → parsed {@link OpenAPISpecification} (nullable, kept for API compat)
+     * @param serviceSpecs   map of serviceName → parsed {@code OpenAPI} (nullable, kept for API compat)
      * @return a populated registry
      */
     public static SemanticDependencyRegistry build(Map<String, TestConfigurationObject> serviceConfigs,
-                                                   Map<String, OpenAPISpecification> serviceSpecs) {
+                                                   Map<String, OpenAPI> serviceSpecs) {
         return build(serviceConfigs, serviceSpecs, null);
     }
 
@@ -227,12 +226,12 @@ public class SemanticDependencyRegistry {
      * </ul>
      *
      * @param serviceConfigs map of serviceName → parsed {@link TestConfigurationObject}
-     * @param serviceSpecs   map of serviceName → parsed {@link OpenAPISpecification} (nullable, kept for API compat)
+     * @param serviceSpecs   map of serviceName → parsed {@code OpenAPI} (nullable, kept for API compat)
      * @param scenarios      list of recorded {@link WorkflowScenario}s with trace data (nullable)
      * @return a populated registry
      */
     public static SemanticDependencyRegistry build(Map<String, TestConfigurationObject> serviceConfigs,
-                                                   Map<String, OpenAPISpecification> serviceSpecs,
+                                                   Map<String, OpenAPI> serviceSpecs,
                                                    List<WorkflowScenario> scenarios) {
         return build(serviceConfigs, serviceSpecs, scenarios, defaultPasses());
     }
@@ -243,7 +242,7 @@ public class SemanticDependencyRegistry {
      * ID-suffixed-name consumer binding) always run regardless.
      */
     public static SemanticDependencyRegistry build(Map<String, TestConfigurationObject> serviceConfigs,
-                                                   Map<String, OpenAPISpecification> serviceSpecs,
+                                                   Map<String, OpenAPI> serviceSpecs,
                                                    List<WorkflowScenario> scenarios,
                                                    EnumSet<Pass> passes) {
         if (passes == null) passes = defaultPasses();
@@ -621,15 +620,15 @@ public class SemanticDependencyRegistry {
     // the consumerIndex from Pass 1b, registers it.  This is a safety net against
     // gaps in the generator-produced TestConfigurationObject.
     private static int scanSwaggerConsumers(SemanticDependencyRegistry reg,
-                                            Map<String, OpenAPISpecification> serviceSpecs) {
+                                            Map<String, OpenAPI> serviceSpecs) {
         int added = 0;
-        for (Map.Entry<String, OpenAPISpecification> svcEntry : serviceSpecs.entrySet()) {
+        for (Map.Entry<String, OpenAPI> svcEntry : serviceSpecs.entrySet()) {
             String svcName = svcEntry.getKey();
-            OpenAPISpecification spec = svcEntry.getValue();
-            if (spec == null || spec.getSpecification() == null
-                    || spec.getSpecification().getPaths() == null) continue;
+            OpenAPI spec = svcEntry.getValue();
+            if (spec == null
+                    || spec.getPaths() == null) continue;
 
-            for (Map.Entry<String, PathItem> pathEntry : spec.getSpecification().getPaths().entrySet()) {
+            for (Map.Entry<String, PathItem> pathEntry : spec.getPaths().entrySet()) {
                 String path = pathEntry.getKey();
                 PathItem pathItem = pathEntry.getValue();
                 if (pathItem == null) continue;
@@ -662,7 +661,7 @@ public class SemanticDependencyRegistry {
                     if (op.getRequestBody() != null && op.getRequestBody().getContent() != null) {
                         for (MediaType mt : op.getRequestBody().getContent().values()) {
                             if (mt == null || mt.getSchema() == null) continue;
-                            Schema<?> bodySchema = resolveSchemaRef(mt.getSchema(), spec.getSpecification(), svcName);
+                            Schema<?> bodySchema = resolveSchemaRef(mt.getSchema(), spec, svcName);
                             if (bodySchema == null || bodySchema.getProperties() == null) continue;
                             for (Object propName : bodySchema.getProperties().keySet()) {
                                 String pn = String.valueOf(propName);
@@ -788,24 +787,24 @@ public class SemanticDependencyRegistry {
     // The resolved dotted path (e.g. "data.id", "data[0].orderId") replaces
     // the heuristic default only when a match is found.
     private static int refineJsonPathsFromSchema(SemanticDependencyRegistry reg,
-                                                 Map<String, OpenAPISpecification> serviceSpecs) {
+                                                 Map<String, OpenAPI> serviceSpecs) {
         int refined = 0;
 
         // Index every OpenAPI operation across all services by canonical apiKey.
         Map<String, SchemaOperationRef> opByKey = new HashMap<>();
-        for (Map.Entry<String, OpenAPISpecification> svcEntry : serviceSpecs.entrySet()) {
+        for (Map.Entry<String, OpenAPI> svcEntry : serviceSpecs.entrySet()) {
             String svcName = svcEntry.getKey();
-            OpenAPISpecification spec = svcEntry.getValue();
-            if (spec == null || spec.getSpecification() == null
-                    || spec.getSpecification().getPaths() == null) continue;
-            for (Map.Entry<String, PathItem> pe : spec.getSpecification().getPaths().entrySet()) {
+            OpenAPI spec = svcEntry.getValue();
+            if (spec == null
+                    || spec.getPaths() == null) continue;
+            for (Map.Entry<String, PathItem> pe : spec.getPaths().entrySet()) {
                 String path = pe.getKey();
                 PathItem pathItem = pe.getValue();
                 if (pathItem == null) continue;
                 for (Map.Entry<PathItem.HttpMethod, io.swagger.v3.oas.models.Operation> me :
                         pathItem.readOperationsMap().entrySet()) {
                     String apiKey = me.getKey().name().toLowerCase(Locale.ROOT) + " " + canonicalizePath(path);
-                    opByKey.put(apiKey, new SchemaOperationRef(svcName, spec.getSpecification(), me.getValue()));
+                    opByKey.put(apiKey, new SchemaOperationRef(svcName, spec, me.getValue()));
                 }
             }
         }

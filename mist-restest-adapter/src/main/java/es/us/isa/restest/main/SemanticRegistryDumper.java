@@ -3,7 +3,7 @@ package es.us.isa.restest.main;
 import es.us.isa.restest.configuration.multiservice.MicroserviceTestConfigurationIO;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
-import es.us.isa.restest.workflow.SemanticDependencyRegistry;
+import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.TraceWorkflowExtractor;
 import io.mist.core.workflow.WorkflowScenario;
 
@@ -61,7 +61,10 @@ public class SemanticRegistryDumper {
             System.out.println("Trace extraction failed (" + e.getMessage() + ") — rebuilding registry without trace-driven refinement.");
         }
 
-        SemanticDependencyRegistry reg = SemanticDependencyRegistry.build(serviceConfigs, serviceSpecs, scenarios);
+        SemanticDependencyRegistry reg = SemanticDependencyRegistry.build(
+                io.mist.adapter.restest.PojoConverter.toCoreMap(serviceConfigs),
+                io.mist.adapter.restest.PojoConverter.toOpenApiMap(serviceSpecs),
+                scenarios);
         reg.dumpRegistryToFile(OUTPUT_PATH);
 
         System.out.println("Registry dumped to " + OUTPUT_PATH);

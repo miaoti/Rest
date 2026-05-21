@@ -8,7 +8,7 @@ import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.smart.SmartInputFetchConfig;
 import io.mist.core.smart.SmartInputFetcher;
 import es.us.isa.restest.specification.OpenAPISpecification;
-import es.us.isa.restest.workflow.SemanticDependencyRegistry;
+import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;
 
 import java.util.List;

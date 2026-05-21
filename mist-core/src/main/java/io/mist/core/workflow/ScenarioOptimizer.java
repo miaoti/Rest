@@ -1,5 +1,6 @@
-package es.us.isa.restest.workflow;
+package io.mist.core.workflow;
 
+import io.mist.core.registry.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
 

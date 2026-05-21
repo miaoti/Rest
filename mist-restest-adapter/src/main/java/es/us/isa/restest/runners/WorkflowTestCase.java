@@ -1,6 +1,5 @@
 package es.us.isa.restest.runners;
 
-import es.us.isa.restest.workflow.*;
 import es.us.isa.restest.util.*;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
