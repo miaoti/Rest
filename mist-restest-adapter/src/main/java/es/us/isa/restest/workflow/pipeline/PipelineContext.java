@@ -6,7 +6,7 @@ import io.mist.core.generation.AiDrivenLLMGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
 import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.smart.SmartInputFetchConfig;
-import es.us.isa.restest.inputs.smart.SmartInputFetcher;
+import io.mist.core.smart.SmartInputFetcher;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry;
 import io.mist.core.workflow.WorkflowScenario;

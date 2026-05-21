@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.smart;
+package io.mist.core.smart;
 
 import io.mist.core.generation.AiDrivenLLMGenerator;
 import io.mist.core.llm.ParameterInfo;

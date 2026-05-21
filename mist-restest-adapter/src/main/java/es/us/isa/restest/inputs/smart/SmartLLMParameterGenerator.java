@@ -9,6 +9,7 @@ import es.us.isa.restest.specification.OpenAPIParameter;
 import es.us.isa.restest.specification.OpenAPISpecificationVisitor;
 import io.mist.core.smart.InputFetchRegistry;
 import io.mist.core.smart.SmartInputFetchConfig;
+import io.mist.core.smart.SmartInputFetcher;
 import io.swagger.v3.oas.models.Operation;
 
 import org.apache.logging.log4j.LogManager;

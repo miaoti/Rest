@@ -9,7 +9,7 @@ import io.mist.core.generation.AiDrivenLLMGenerator;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.core.smart.InputFetchRegistry;
 import io.mist.core.smart.ParameterError;
-import es.us.isa.restest.inputs.smart.SmartInputFetcher;
+import io.mist.core.smart.SmartInputFetcher;
 import io.mist.core.smart.SmartInputFetchConfig;
 import io.mist.core.bandit.ThompsonScheduler;
 import es.us.isa.restest.specification.OpenAPISpecification;
