@@ -10,7 +10,7 @@ import es.us.isa.restest.coverage.CoverageMeter;
 import io.mist.core.enhancer.FailedTestCollector;
 import io.mist.core.enhancer.FailedTestResult;
 import es.us.isa.restest.enhancer.StatusCodeExplorationEnhancer;
-import es.us.isa.restest.enhancer.TestCaseEnhancer;
+import io.mist.core.enhancer.TestCaseEnhancer;
 import io.mist.core.enhancer.TestFileRegenerator;
 import io.mist.core.enhancer.TestResultCapture;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;

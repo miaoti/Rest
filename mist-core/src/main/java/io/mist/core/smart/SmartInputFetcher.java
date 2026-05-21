@@ -2285,7 +2285,7 @@ public class SmartInputFetcher {
 
     /**
      * True when the parameter name follows an ID convention — same boundary-aware
-     * rule used by {@link es.us.isa.restest.workflow.SemanticDependencyRegistry#isIdLikeParam}.
+     * rule used by the workflow-side {@code SemanticDependencyRegistry#isIdLikeParam}.
      * Boundary required: camelCase {@code Id}/{@code ID}/{@code UUID}/{@code Uuid},
      * snake-case {@code _id}/{@code _uuid}, or the bare names {@code id}/{@code uuid}.
      * English words ending in lowercase 'id' ({@code paid}, {@code valid}, {@code humid})
