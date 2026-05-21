@@ -1,5 +1,5 @@
-package es.us.isa.restest.generators;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+package io.mist.core.generation;
+import io.mist.core.llm.ParameterInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -48,7 +48,7 @@ public class AiDrivenLLMGenerator {
      * Generate comprehensive invalid input pool with 8 fault types
      * Delegates to ZeroShotLLMGenerator for actual generation
      */
-    public es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
+    public io.mist.core.fault.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
         log.info("Delegating invalid input pool generation to ZeroShotLLMGenerator for parameter '{}'", param.getName());
         return zeroShotLLM.generateInvalidInputPool(param);
     }

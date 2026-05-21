@@ -1,4 +1,4 @@
-package es.us.isa.restest.generators;
+package io.mist.core.generation;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -7,11 +7,10 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import io.mist.core.config.MstConfig;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.llm.ParameterInfo;
 import io.mist.llm.LLMService;
 import io.mist.llm.LLMConfig;
-import es.us.isa.restest.util.PropertyManager;
-import es.us.isa.restest.util.SeededRandom;
+import io.mist.core.util.SeededRandom;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import okhttp3.MediaType;
@@ -173,7 +172,7 @@ public class ZeroShotLLMGenerator {
      *       zero LLM calls; fastest and fully deterministic.</li>
      * </ul>
      */
-    public es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
+    public io.mist.core.fault.InvalidInputPool generateInvalidInputPool(ParameterInfo param) {
         String mode = MstConfig.instance().faulty().negativeInputGenerationMode()
                 .toLowerCase(java.util.Locale.ROOT)
                 .trim();
@@ -207,10 +206,10 @@ public class ZeroShotLLMGenerator {
      * <p>REGEX_MISMATCH and SEMANTIC_MISMATCH keep the LLM call because they benefit from
      * domain context the schema cannot express.
      */
-    private es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPoolSmart(ParameterInfo param) {
+    private io.mist.core.fault.InvalidInputPool generateInvalidInputPoolSmart(ParameterInfo param) {
         String paramType = safeStr(param.getType());
-        es.us.isa.restest.inputs.InvalidInputPool pool =
-            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), paramType);
+        io.mist.core.fault.InvalidInputPool pool =
+            new io.mist.core.fault.InvalidInputPool(param.getName(), paramType);
 
         HardcodedInvalidInputGenerator hc = hardcodedGen();
 
@@ -245,10 +244,10 @@ public class ZeroShotLLMGenerator {
      * LEGACY LLM MODE: the original behavior before the smart/hardcode split — LLM is called
      * for every contextual category.  Retained for ablation studies and head-to-head comparisons.
      */
-    private es.us.isa.restest.inputs.InvalidInputPool generateInvalidInputPoolAllLLM(ParameterInfo param) {
+    private io.mist.core.fault.InvalidInputPool generateInvalidInputPoolAllLLM(ParameterInfo param) {
         String paramType = safeStr(param.getType());
-        es.us.isa.restest.inputs.InvalidInputPool pool =
-            new es.us.isa.restest.inputs.InvalidInputPool(param.getName(), paramType);
+        io.mist.core.fault.InvalidInputPool pool =
+            new io.mist.core.fault.InvalidInputPool(param.getName(), paramType);
 
         // Same applicability gating as smart mode — fault types only fire when
         // they have a meaningful interpretation against the schema's primitive type.
@@ -277,7 +276,7 @@ public class ZeroShotLLMGenerator {
      * Generate type mismatch inputs - wrong data type for the parameter
      * CRITICAL: These are stored as raw objects (Integer, Boolean, etc.) NOT strings
      */
-    private void generateTypeMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateTypeMismatchInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
         
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
@@ -428,7 +427,7 @@ public class ZeroShotLLMGenerator {
     /**
      * Add default type mismatches based on parameter type
      */
-    private void addDefaultTypeMismatches(String paramType, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void addDefaultTypeMismatches(String paramType, io.mist.core.fault.InvalidInputPool pool) {
         switch (paramType) {
             case "string":
                 // String expects text — provide a numeric and a boolean. Null values are owned by
@@ -477,7 +476,7 @@ public class ZeroShotLLMGenerator {
     /**
      * Generate regex pattern mismatch inputs
      */
-    private void generateRegexMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateRegexMismatchInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         if (param.getRegex() == null || param.getRegex().isEmpty()) {
             // No regex constraint, skip this type
             return;
@@ -504,7 +503,7 @@ public class ZeroShotLLMGenerator {
     /**
      * Generate semantically invalid inputs
      */
-    private void generateSemanticMismatchInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateSemanticMismatchInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
                        "Generate 5-8 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
@@ -549,7 +548,7 @@ public class ZeroShotLLMGenerator {
     /**
      * Generate overflow inputs
      */
-    private void generateOverflowInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateOverflowInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         String paramType = safeStr(param.getType()).toLowerCase();
         
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
@@ -595,7 +594,7 @@ public class ZeroShotLLMGenerator {
      * as a fault-detection regression. This matches {@code HardcodedInvalidInputGenerator} and
      * the policy stated in {@code flow.md}.
      */
-    private void generateEmptyInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateEmptyInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         if (param.getRequired() == null || !param.getRequired()) {
             log.debug("⚠️ Skipping EMPTY_INPUT for optional parameter: {}", param.getName());
             return;
@@ -623,9 +622,9 @@ public class ZeroShotLLMGenerator {
     /**
      * Generate null inputs for REQUIRED parameters only.
      * Null is a valid value for optional parameters and must not be added to the negative pool —
-     * see {@link #generateEmptyInputs(ParameterInfo, es.us.isa.restest.inputs.InvalidInputPool)}.
+     * see {@link #generateEmptyInputs(ParameterInfo, io.mist.core.fault.InvalidInputPool)}.
      */
-    private void generateNullInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateNullInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         if (param.getRequired() == null || !param.getRequired()) {
             log.debug("⚠️ Skipping NULL_INPUT for optional parameter: {}", param.getName());
             return;
@@ -646,7 +645,7 @@ public class ZeroShotLLMGenerator {
     /**
      * Generate special character inputs (potential injection attempts)
      */
-    private void generateSpecialCharacterInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateSpecialCharacterInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
                        "Generate 5-8 values with SPECIAL CHARACTERS or INJECTION attempts for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n\n" +
@@ -675,7 +674,7 @@ public class ZeroShotLLMGenerator {
     /**
      * Generate boundary violation inputs
      */
-    private void generateBoundaryViolationInputs(ParameterInfo param, es.us.isa.restest.inputs.InvalidInputPool pool) {
+    private void generateBoundaryViolationInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
                        "Generate 5-8 BOUNDARY VIOLATION values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +

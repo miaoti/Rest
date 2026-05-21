@@ -2,7 +2,7 @@ package es.us.isa.restest.main;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.us.isa.restest.workflow.TraceWorkflowExtractor;
+import io.mist.core.workflow.TraceWorkflowExtractor;
 import io.mist.core.workflow.WorkflowScenario;
 
 import java.io.File;

@@ -2,8 +2,8 @@ package es.us.isa.restest.inputs.llm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import es.us.isa.restest.generators.AiDrivenLLMGenerator;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.generation.AiDrivenLLMGenerator;
+import io.mist.core.llm.ParameterInfo;
 import es.us.isa.restest.inputs.stateful.ParameterGenerator;
 import es.us.isa.restest.specification.OpenAPIParameter;
 import es.us.isa.restest.specification.OpenAPISpecificationVisitor;

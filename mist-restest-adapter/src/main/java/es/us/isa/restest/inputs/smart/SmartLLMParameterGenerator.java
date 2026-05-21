@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import io.mist.core.config.MstConfig;
 import es.us.isa.restest.inputs.llm.LLMParameterGenerator;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.llm.ParameterInfo;
 import es.us.isa.restest.specification.OpenAPIParameter;
 import es.us.isa.restest.specification.OpenAPISpecificationVisitor;
 import io.mist.core.smart.InputFetchRegistry;
@@ -29,7 +29,7 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
     private SmartInputFetcher smartFetcher;
     private SmartInputFetchConfig config;
     private boolean initialized = false;
-    private Random random = es.us.isa.restest.util.SeededRandom.create("SmartLLMParameterGenerator");
+    private Random random = io.mist.core.util.SeededRandom.create("SmartLLMParameterGenerator");
     
     public SmartLLMParameterGenerator() {
         super();
@@ -274,16 +274,16 @@ public class SmartLLMParameterGenerator extends LLMParameterGenerator {
     /**
      * Get access to the AiDrivenLLMGenerator from parent class
      */
-    private es.us.isa.restest.generators.AiDrivenLLMGenerator getAiDrivenGenerator() {
+    private io.mist.core.generation.AiDrivenLLMGenerator getAiDrivenGenerator() {
         try {
             // Use reflection to access the private aiDriven field from parent
             java.lang.reflect.Field field = getClass().getSuperclass().getDeclaredField("aiDriven");
             field.setAccessible(true);
-            return (es.us.isa.restest.generators.AiDrivenLLMGenerator) field.get(this);
+            return (io.mist.core.generation.AiDrivenLLMGenerator) field.get(this);
         } catch (Exception e) {
             logger.warn("Could not access AiDrivenLLMGenerator from parent: {}", e.getMessage());
             // Create a new instance as fallback
-            return new es.us.isa.restest.generators.AiDrivenLLMGenerator();
+            return new io.mist.core.generation.AiDrivenLLMGenerator();
         }
     }
     

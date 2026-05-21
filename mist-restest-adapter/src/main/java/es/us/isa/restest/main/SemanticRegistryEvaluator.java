@@ -9,7 +9,7 @@ import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.specification.OpenAPISpecification;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry;
 import es.us.isa.restest.workflow.SemanticDependencyRegistry.Pass;
-import es.us.isa.restest.workflow.TraceWorkflowExtractor;
+import io.mist.core.workflow.TraceWorkflowExtractor;
 import io.mist.core.workflow.WorkflowScenario;
 
 import java.io.File;

@@ -1,7 +1,7 @@
 package es.us.isa.restest.inputs.smart;
 
-import es.us.isa.restest.generators.AiDrivenLLMGenerator;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.generation.AiDrivenLLMGenerator;
+import io.mist.core.llm.ParameterInfo;
 import io.mist.core.smart.ApiMapping;
 import io.mist.core.smart.CacheConfig;
 import io.mist.core.smart.InputFetchRegistry;
@@ -164,7 +164,7 @@ public class SmartInputFetcher {
         this.llmService = LLMService.getInstance(llmProperties);
 
         this.objectMapper = new ObjectMapper();
-        this.random = es.us.isa.restest.util.SeededRandom.create("SmartInputFetcher");
+        this.random = io.mist.core.util.SeededRandom.create("SmartInputFetcher");
         this.openAPIDiscovery = new OpenAPIEndpointDiscovery();
 
         // Initialize authentication manager (Bug audit Finding #11: now accepts a generic

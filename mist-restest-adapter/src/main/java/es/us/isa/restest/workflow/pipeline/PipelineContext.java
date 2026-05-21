@@ -2,9 +2,9 @@ package es.us.isa.restest.workflow.pipeline;
 
 import io.mist.core.config.MstConfig;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
-import es.us.isa.restest.generators.AiDrivenLLMGenerator;
+import io.mist.core.generation.AiDrivenLLMGenerator;
 import es.us.isa.restest.generators.MultiServiceTestCaseGenerator;
-import es.us.isa.restest.inputs.InvalidInputPool;
+import io.mist.core.fault.InvalidInputPool;
 import io.mist.core.smart.SmartInputFetchConfig;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
 import es.us.isa.restest.specification.OpenAPISpecification;

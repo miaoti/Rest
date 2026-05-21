@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs.llm;
+package io.mist.core.llm;
 
 import java.util.List;
 

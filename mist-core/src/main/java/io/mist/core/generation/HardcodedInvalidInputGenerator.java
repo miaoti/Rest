@@ -1,8 +1,8 @@
-package es.us.isa.restest.generators;
+package io.mist.core.generation;
 
 import io.mist.core.fault.FaultTypeRegistry;
-import es.us.isa.restest.inputs.InvalidInputPool;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.fault.InvalidInputPool;
+import io.mist.core.llm.ParameterInfo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

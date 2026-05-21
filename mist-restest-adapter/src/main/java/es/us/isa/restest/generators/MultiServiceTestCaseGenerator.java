@@ -4,8 +4,9 @@ import io.mist.core.config.MstConfig;
 import es.us.isa.restest.configuration.pojos.Operation;
 import es.us.isa.restest.configuration.pojos.TestConfigurationObject;
 import es.us.isa.restest.configuration.pojos.TestParameter;
-import es.us.isa.restest.inputs.InvalidInputPool;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.fault.InvalidInputPool;
+import io.mist.core.generation.AiDrivenLLMGenerator;
+import io.mist.core.llm.ParameterInfo;
 import io.mist.core.smart.InputFetchRegistry;
 import io.mist.core.smart.ParameterError;
 import es.us.isa.restest.inputs.smart.SmartInputFetcher;
@@ -70,7 +71,7 @@ public class MultiServiceTestCaseGenerator {
      * collided silently in that case; the second enrolment overwrote the first.
      */
     private Map<String, Map<PoolKey, InvalidInputPool>> faultyParameterPools = new HashMap<>();
-    private Random random = es.us.isa.restest.util.SeededRandom.create("MultiServiceTestCaseGenerator");
+    private Random random = io.mist.core.util.SeededRandom.create("MultiServiceTestCaseGenerator");
     
     // Track which parameter should have invalid value in current test case (round-robin mode)
     private List<String> parameterRotation = new ArrayList<>();

@@ -2,7 +2,7 @@ package es.us.isa.restest.coverage;
 
 import io.mist.llm.LLMConfig;
 import io.mist.llm.LLMService;
-import es.us.isa.restest.inputs.llm.ParameterInfo;
+import io.mist.core.llm.ParameterInfo;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

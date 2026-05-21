@@ -1,4 +1,4 @@
-package es.us.isa.restest.inputs;
+package io.mist.core.fault;
 
 import java.util.*;
 

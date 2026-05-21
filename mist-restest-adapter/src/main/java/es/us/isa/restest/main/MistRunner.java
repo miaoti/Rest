@@ -26,7 +26,7 @@ import es.us.isa.restest.util.IDGenerator;
 import es.us.isa.restest.util.PropertyManager;
 import es.us.isa.restest.util.RESTestException;
 import es.us.isa.restest.util.Timer;
-import es.us.isa.restest.workflow.TraceWorkflowExtractor;
+import io.mist.core.workflow.TraceWorkflowExtractor;
 import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowScenarioUtils;
 import es.us.isa.restest.writers.IWriter;

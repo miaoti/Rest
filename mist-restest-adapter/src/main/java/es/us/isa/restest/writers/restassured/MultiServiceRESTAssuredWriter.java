@@ -234,7 +234,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 pw.println("    private static final boolean LLM_VALIDATION_ENABLED = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.enabled\", \"false\"));");
                 pw.println("    private static final boolean LLM_ONLY_2XX = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.only.2xx\", \"true\"));");
                 pw.println("    private static final boolean LLM_INCLUDE_RCA = Boolean.parseBoolean(System.getProperty(\"llm.response.validation.include.rca\", \"true\"));");
-                pw.println("    private static es.us.isa.restest.generators.ZeroShotLLMGenerator llmValidator;");
+                pw.println("    private static io.mist.core.generation.ZeroShotLLMGenerator llmValidator;");
                 pw.println();
 
                 // Phase 2.F: Trace Shape Oracle singleton — created once in @BeforeClass.
@@ -1227,7 +1227,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                 // Initialize LLM singletons once for the entire test class
                 pw.println("        // Initialize LLM validation singletons (ONCE per class, not per test)");
                 pw.println("        if (LLM_VALIDATION_ENABLED) {");
-                pw.println("            llmValidator = new es.us.isa.restest.generators.ZeroShotLLMGenerator();");
+                pw.println("            llmValidator = new io.mist.core.generation.ZeroShotLLMGenerator();");
                 pw.println("        }");
                 pw.println();
                 // Phase 2.F: reconstruct the Trace Shape Oracle from the JSON file MistRunner
@@ -1965,7 +1965,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
                                 pw.println("                                // Use class-level singleton (created once in @BeforeClass)");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult =");
+                                pw.println("                                io.mist.core.generation.ZeroShotLLMGenerator.ValidationResult validationResult =");
                                 pw.println("                                    llmValidator.validateNegativeTestResponse(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
@@ -2039,7 +2039,7 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                 pw.println("                                String validationBody = stepResponse" + stepIdx + ".getBody().asString();");
                                 pw.println("                                ");
                                 pw.println("                                // Use class-level singleton (created once in @BeforeClass)");
-                                pw.println("                                es.us.isa.restest.generators.ZeroShotLLMGenerator.ValidationResult validationResult =");
+                                pw.println("                                io.mist.core.generation.ZeroShotLLMGenerator.ValidationResult validationResult =");
                                 pw.println("                                    llmValidator.validateResponse(");
                                 pw.println("                                        actualStatusCode" + stepIdx + ",");
                                 pw.println("                                        validationBody,");
