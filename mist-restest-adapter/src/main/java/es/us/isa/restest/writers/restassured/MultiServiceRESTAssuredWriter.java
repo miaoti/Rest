@@ -5,7 +5,7 @@ import io.mist.core.util.ConsoleProgressBar;
 import es.us.isa.restest.testcases.MultiServiceTestCase;
 import es.us.isa.restest.testcases.TestCase;
 import es.us.isa.restest.util.RESTestException;
-import es.us.isa.restest.writers.restassured.RESTAssuredWriter;
+import es.us.isa.restest.writers.IWriter;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -32,12 +32,14 @@ import io.mist.core.analysis.TraceErrorAnalyzer;
  * Writes a JUnit/REST‑assured test‑suite that replays a
  * {@link MultiServiceTestCase}.
  */
-public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
+public class MultiServiceRESTAssuredWriter implements IWriter {
 
     /* ------------------------------------------------------------------ */
     private final String outputDir;
     private final String packageName;
     private final String baseURI;
+    /** Test class-name prefix; was inherited from RESTAssuredWriter. */
+    protected String testClassName;
 
     private boolean loggingEnabled        = false;
     private boolean allureReport          = false;
@@ -68,7 +70,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
                                          String baseURI,
                                          boolean logToFile) {
 
-        super(openAPIPath, testConfPath, outputDir, className, packageName, baseURI, logToFile);
+        // RESTAssuredWriter inheritance is severed: this writer is a
+        // pure MIST output formatter. The seven constructor args are
+        // captured locally; the parent's state (spec / conf parsing,
+        // OAI-validation flag, log-to-file flag, stateful-filter flag,
+        // etc.) was never read by the override paths below, so dropping
+        // them is safe.
         this.outputDir    = outputDir;
         this.packageName  = packageName;
         this.baseURI      = baseURI;
@@ -76,12 +83,12 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
         this.testClassName = className;
     }
 
-    /* ---------- delegate the feature‑toggles to super & keep local copy --- */
-    @Override public void setLogging(boolean logging)                    { super.setLogging(logging);          this.loggingEnabled        = logging; }
-    @Override public void setAllureReport(boolean allure)                { super.setAllureReport(allure);      this.allureReport          = allure;  }
-    @Override public void setEnableStats(boolean enableStats)            { super.setEnableStats(enableStats);  this.statsEnabled          = enableStats; }
-    @Override public void setEnableOutputCoverage(boolean enableOutput)  { super.setEnableOutputCoverage(enableOutput); this.outputCoverageEnabled = enableOutput; }
-    @Override public void setProxy(String proxy)                         { super.setProxy(proxy);              this.proxyHostPort         = proxy; }
+    /* ---------- feature toggles (parent inheritance severed) ----------- */
+    public void setLogging(boolean logging)                    { this.loggingEnabled        = logging; }
+    public void setAllureReport(boolean allure)                { this.allureReport          = allure;  }
+    public void setEnableStats(boolean enableStats)            { this.statsEnabled          = enableStats; }
+    public void setEnableOutputCoverage(boolean enableOutput)  { this.outputCoverageEnabled = enableOutput; }
+    public void setProxy(String proxy)                         { this.proxyHostPort         = proxy; }
 
     /**
      * Inject the Trace Shape Oracle and the on-disk store path used by
@@ -2704,15 +2711,18 @@ public class MultiServiceRESTAssuredWriter extends RESTAssuredWriter {
         pw.println("                Allure.addAttachment(\"🔍 Dependency Analysis Report\", \"text/plain\", depAnalysis.toString());");
     }
 
-    @Override
     public void setClassName(String className) {
-        super.setClassName(className);
         this.testClassName = className;
     }
 
-    @Override
     public void setTestId(String testId) {
-        super.setTestId(testId);
+        // No-op since RESTAssuredWriter inheritance was severed. Generated
+        // tests carry their own testId in package + class names.
+    }
 
+    /** Caller setter kept for source-compat with the previous RESTAssuredWriter API. */
+    public void setAPIName(String apiName) {
+        // No-op: previously stored on the parent; the writer never reads
+        // this field after the inheritance sever.
     }
 }
