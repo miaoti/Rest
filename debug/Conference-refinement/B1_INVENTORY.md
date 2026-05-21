@@ -1,21 +1,25 @@
 # B1 Inventory — `MultiServiceTestCaseGenerator` ↔ RESTest dependency surface
 
 > Phase B1.A deliverable for `PROMPT_B1_SEVER_RESTEST_INHERITANCE.md`.
-> Status: **B1.A inventory complete; B1.B-vendor of nine data carriers
-> done (seven configuration POJOs + TestCase + MultiServiceTestCase);
-> B1.C migration COMPLETE — every MIST-owned class has been promoted
-> into `mist-core`, including the 2952-LOC `MultiServiceTestCase-
-> Generator` now in `io.mist.core.generation.MistGenerator`, the
-> twelve-file workflow pipeline cluster, the 1510-LOC `Semantic-
-> DependencyRegistry`, the 4450-LOC `SmartInputFetcher`, and ~30
-> smaller MIST-only classes; B1.D sever done; B1.E + B1.F SPI surface
-> and three adapter-side SPI implementations registered via
-> `META-INF/services/`; B1.G in progress (post-rebuild demo runs
-> against the live TrainTicket cluster). Cardinal § 7.5 criterion
+> Status: **All seven B1 phases delivered. B1.A inventory complete;
+> B1.B vendoring of nine data carriers done (seven configuration
+> POJOs + TestCase + MultiServiceTestCase); B1.C migration complete
+> — every MIST-owned class promoted into `mist-core`, including the
+> 2952-LOC `MultiServiceTestCaseGenerator` now in
+> `io.mist.core.generation.MistGenerator`, the twelve-file workflow
+> pipeline cluster, the 1510-LOC `SemanticDependencyRegistry`, the
+> 4450-LOC `SmartInputFetcher`, and ~30 smaller MIST-only classes;
+> B1.D sever done; B1.E + B1.F SPI surface and three adapter-side
+> SPI implementations registered via `META-INF/services/`; B1.G
+> verified via live demo against TrainTicket cluster at
+> `http://129.62.148.112:32677` (123 `Flow_Scenario_*.java` test
+> sources generated end-to-end through the post-rebuild pipeline,
+> with `io.mist.core.*` imports throughout — no Java exceptions,
+> no SPI lookup failures). Cardinal § 7.5 criterion
 > ("`mist-core/src/main/java` has zero `es.us.isa` references") is
 > firmly held. Adapter MIST surface is now: spec loader bridge +
 > RESTAssured writer + legacy `TestGenerationAndExecution` main +
-> `MistRunner` + the three SPI provider classes + two converters
+> `MistRunner` + three SPI provider classes + two converters
 > (PojoConverter, TestCaseConverter).**
 
 ## 1. What this branch has done
