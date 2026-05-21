@@ -35,6 +35,16 @@
 			<version>${project.version}</version>
 		</dependency>
 
+		<!-- JUnit (test scope) — drives the SPI-discovery integration test
+		     that proves mist-restest-adapter's META-INF/services/ entries
+		     are visible on the cli classpath. -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
