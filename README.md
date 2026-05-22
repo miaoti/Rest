@@ -177,6 +177,89 @@ After any run, the fault-detection report lands under
 and the generated JUnit sources under the directory you pointed
 `test.target.dir` at.
 
+## Quick Start D — Reproduce the paper's numbers (artifact track)
+
+For artifact evaluation, peer review, or any context where you need
+the **byte-identical** generated test suite the paper reports. Under
+`-Drandom.seed=<n>`, MIST is fully deterministic: two consecutive
+runs produce byte-for-byte identical `Flow_Scenario_*.java` files,
+the test-class directory is named after the seed
+(`TrainTicketTwoStageTest_42`), and all LLM calls are served from
+the bundled cache instead of the network. Independently verified on
+2026-05-21; see
+[`debug/Conference-refinement/PROMPT_VERIFY_FIXES.md`](debug/Conference-refinement/PROMPT_VERIFY_FIXES.md)
+for the re-runnable verification protocol.
+
+```bash
+# 1. Build the reactor (same as Quick Start B).
+mvn clean install -DskipTests
+
+# 2. Reproduce the paper's headline detection-rate number.
+#    With -Drandom.seed=42, MIST short-circuits every LLM call to the
+#    bundled .mist/llm-call-cache.json blessed cache, so no network
+#    access or API key is required to reproduce.
+java -Drandom.seed=42 -jar mist-cli/target/mist.jar \
+     mist-cli/src/main/resources/My-Example/trainticket-demo.properties
+
+# 3. Sanity check: confirm byte-identical generation (does not need
+#    a live SUT; uses the noexec profile that skips test execution).
+java -Drandom.seed=42 -jar mist-cli/target/mist.jar \
+     mist-cli/src/main/resources/My-Example/trainticket-demo-noexec.properties
+find mist-cli/src/test/java/trainticket_twostage_test \
+     -name 'Flow_Scenario_*.java' -exec sha256sum {} \; | sort > /tmp/run1.sums
+# Repeat the same java command, then:
+diff /tmp/run1.sums /tmp/run2.sums   # expect empty
+```
+
+### Ablation rows (Path B § 4.2)
+
+The paper's ablation table is reproduced by changing only the JVM
+overrides — the same `.properties` file drives every row, so any
+difference between rows is causally attributable to the toggled
+contribution. Each row is independently byte-deterministic under its
+seed; the startup banner (`[MIST] ablation profile: ...`) identifies
+the active row on every run.
+
+| Row | Configuration | JVM overrides |
+|---|---|---|
+| **R1** | MIST-full | `-Drandom.seed=42 -Dmist.fault.mining.enabled=true` |
+| **R2** | MIST − trace-shape-oracle | `-Drandom.seed=42 -Dmst.oracle.shape.enabled=false -Dmist.fault.mining.enabled=true` |
+| **R3** | MIST − adaptive-fault (bundled default) | `-Drandom.seed=42` |
+| **R4** | MIST − trace-shape − adaptive | `-Drandom.seed=42 -Dmst.oracle.shape.enabled=false` |
+
+Finer-grained per-invariant gates
+(`mst.oracle.shape.invariants.{span_tree,status_propagation,response_envelope,timing}.enabled`)
+are documented in
+[`mist-cli/src/main/resources/My-Example/trainticket/flow.md`](mist-cli/src/main/resources/My-Example/trainticket/flow.md)
+§ "H2 ablation toggles". The full ablation matrix layout (rows × SUTs
+× metrics) lives in
+[`docs/mst-plans/PATH_B_POSITIONING.md`](docs/mst-plans/PATH_B_POSITIONING.md) § 4.
+
+### Shipping a new blessed cache
+
+The bundled `.mist/llm-call-cache.json` is what makes step 2 above
+work offline. To re-bless the cache against a fresh LLM (e.g. after
+changing a prompt or upgrading the model):
+
+```bash
+# 1. Wipe the existing cache and run once cold under the canonical seed.
+#    This is the only run that needs an API key.
+export DEEPSEEK_API_KEY=sk-...
+rm -f .mist/llm-call-cache.json
+java -Drandom.seed=42 -jar mist-cli/target/mist.jar \
+     mist-cli/src/main/resources/My-Example/trainticket-demo.properties
+
+# 2. Commit the new cache as data. .mist/ is gitignored by default;
+#    use a targeted negation to track only the cache file:
+#       echo '!/.mist/llm-call-cache.json' >> .gitignore
+git add .mist/llm-call-cache.json .gitignore
+git commit -m "data: re-bless LLM cache for artifact reproducibility"
+```
+
+Subsequent reviewer runs hit the cache and never call the LLM
+backend, so the reported numbers are reproducible even when the
+hosted provider returns non-deterministic tokens.
+
 ---
 
 ## What this does
