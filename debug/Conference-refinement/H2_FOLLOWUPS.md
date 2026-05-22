@@ -4,6 +4,48 @@ Notes captured during the H2 ablation infrastructure work that are
 **out of scope** for this branch (per PROMPT_H2_ABLATION_INFRASTRUCTURE.md
 section 0.3). Resolve under separate tickets.
 
+## 1. Pre-existing non-determinism under `-Drandom.seed=42` — **RESOLVED**
+
+**Resolution.** Root cause was an unseeded `new Random()` inside
+`MistGenerator.rankWithBanditUnchecked()`: the Thompson scheduler that
+re-ranks the fault queue was constructed via the no-arg
+`new ThompsonScheduler()` and therefore picked up a fresh, time-derived
+seed on every run. Even with `-Drandom.seed=42` set, the bandit's
+sampling order drifted across runs, which cascaded into different fault
+categories and different fall-back indices in `typeAwareFallbackValue`.
+
+The fix routes the bandit's RNG through `SeededRandom.create("bandit")`
+so the bandit shares the configured seed (under a distinct stream
+scope so its draws don't correlate with the generator's own
+`SeededRandom.create("MistGenerator")` instance).
+
+**Post-fix verification gate § 7.5.** With the bandit fix in place,
+running the bundled `trainticket-demo-noexec.properties` twice under
+`-Drandom.seed=42` for each ablation row yields:
+
+| Row | Toggles                                              | Byte-identical |
+|-----|------------------------------------------------------|----------------|
+| R1  | shape=true,  mining=true                             | 123 / 123 |
+| R2  | shape=false, mining=true                             | 123 / 123 |
+| R3  | shape=true,  mining=false  (bundled default)         | 123 / 123 |
+| R4  | shape=false, mining=false                            | 123 / 123 |
+
+(Comparison normalises the timestamped package suffix
+`TrainTicketTwoStageTest_<epoch-millis>` to `<TS>` and SHA-256s each
+`Flow_Scenario_*.java` pair.)
+
+R1≡R2≡R3≡R4 on the noexec profile is expected and not a bug: the
+oracle toggles affect runtime verdict only (Flow_Scenario_*.java
+generation is independent), and `mst.fault.mining.enabled` requires
+LLM (disabled in noexec). Cross-row generation divergence only fires
+when LLM is on, which is the live (`trainticket-demo.properties`)
+demo — a longer-running validation that is out of scope for this
+fix.
+
+---
+
+**Original report (kept for history):**
+
 ## 1. Pre-existing non-determinism under `-Drandom.seed=42`
 
 **Observed:** Running
@@ -48,10 +90,12 @@ verifies what it can:
 4. The toggle wiring is unit-tested at the TraceShapeOracle and
    MistGenerator.applyBanditGate seams.
 
-**Follow-up scope:** Pin the leaking randomness source. The bundled
-`-Drandom.seed=42` flag should produce byte-identical
-`Flow_Scenario_*.java` files across reruns of the same config. This
-is a prerequisite for the future-task ablation evaluation pipeline.
+**Follow-up scope:** ~~Pin the leaking randomness source.~~ **Resolved
+by the bandit-seeding fix above.** The bundled `-Drandom.seed=42`
+flag now produces byte-identical `Flow_Scenario_*.java` files
+across reruns of the same config — verified for R1/R2/R3/R4 on the
+`trainticket-demo-noexec.properties` profile, 123 / 123 files
+byte-identical per row.
 
 ## 2. Per-invariant attribution in AblationProfile.summary()
 

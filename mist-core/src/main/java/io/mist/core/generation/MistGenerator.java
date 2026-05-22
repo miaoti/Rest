@@ -223,7 +223,16 @@ public class MistGenerator {
     }
 
     private List<FaultTarget> rankWithBanditUnchecked(List<FaultTarget> queue) {
-        ThompsonScheduler bandit = new ThompsonScheduler();
+        // Route the bandit's RNG through SeededRandom so two runs with the
+        // same -Drandom.seed produce identical fault rankings. Previously
+        // the no-arg ThompsonScheduler() constructed a fresh
+        // {@code new Random()} (time-derived seed) on every call, which
+        // re-ordered the fault queue differently across runs and broke
+        // the byte-identical equivalence gate (PROMPT_H2 § 7.2).
+        // Using a scope distinct from MistGenerator's own stream
+        // ("bandit") keeps the two RNGs from sharing state.
+        ThompsonScheduler bandit = new ThompsonScheduler(
+                io.mist.core.util.SeededRandom.create("bandit"));
         InputFetchRegistry registry = loadRegistryQuietly();
         seedBanditFromRegistry(bandit, queue, registry);
         List<FaultTarget> ranked = bandit.rank(queue, MistGenerator::banditKey);
