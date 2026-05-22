@@ -707,7 +707,7 @@ public final class MistRunner {
             logger.debug("🧬 Trace Shape Oracle: loaded {} from disk (warm cache)", traceShapeStorePath);
         }
 
-        return new TraceShapeOracle(store);
+        return new TraceShapeOracle(store, io.mist.core.config.MstConfig.instance().oracle());
     }
 
     /**

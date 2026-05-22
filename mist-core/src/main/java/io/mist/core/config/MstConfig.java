@@ -128,8 +128,12 @@ public final class MstConfig {
      * Clears the cached singleton so a subsequent {@link #instance()} call
      * rebuilds from the current System properties. Intended for tests that
      * mutate {@code System.setProperty(...)} between cases.
+     *
+     * <p>Public so cross-package tests (e.g. ablation toggles exercised by
+     * {@code TraceShapeOracleIntegrationTest}) can refresh the singleton
+     * without reflection. Production code must not call this.
      */
-    static void resetForTesting() {
+    public static void resetForTesting() {
         synchronized (MstConfig.class) {
             INSTANCE = null;
         }

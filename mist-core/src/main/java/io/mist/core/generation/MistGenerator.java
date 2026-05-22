@@ -201,6 +201,11 @@ public class MistGenerator {
     private List<FaultTarget> rankWithBandit(List<FaultTarget> queue) {
         if (queue.size() <= 1) return queue;
 
+        if (!MstConfig.instance().scheduler().banditEnabled()) {
+            log.debug("Fault queue using insertion order (bandit disabled): {} targets", queue.size());
+            return queue;
+        }
+
         ThompsonScheduler bandit = new ThompsonScheduler();
         InputFetchRegistry registry = loadRegistryQuietly();
         seedBanditFromRegistry(bandit, queue, registry);

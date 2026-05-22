@@ -1,6 +1,9 @@
 package io.mist.core.oracle.shape;
 
 import com.google.gson.JsonObject;
+import io.mist.core.config.MstConfig;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -24,11 +27,36 @@ import static org.junit.Assert.assertTrue;
  * pipeline. Synthetic traces are written to disk and read back via
  * {@link TraceModel#fromJaegerJson(Path)} so the wiring under test matches
  * production usage.
+ *
+ * <p>The class-level setup explicitly enables the TimingEnvelope toggle so
+ * these tests continue to exercise the legacy four-invariant verdict shape;
+ * the production default for {@code mst.oracle.shape.invariants.timing.enabled}
+ * is {@code false} since the paper revision dropped TimingEnvelope from the
+ * named contribution.
  */
 public class TraceShapeOracleIntegrationTest {
 
     @Rule
     public TemporaryFolder tmp = new TemporaryFolder();
+
+    private String previousTimingEnabled;
+
+    @Before
+    public void enableTimingInvariant() {
+        previousTimingEnabled = System.getProperty("mst.oracle.shape.invariants.timing.enabled");
+        System.setProperty("mst.oracle.shape.invariants.timing.enabled", "true");
+        MstConfig.resetForTesting();
+    }
+
+    @After
+    public void restoreTimingInvariant() {
+        if (previousTimingEnabled == null) {
+            System.clearProperty("mst.oracle.shape.invariants.timing.enabled");
+        } else {
+            System.setProperty("mst.oracle.shape.invariants.timing.enabled", previousTimingEnabled);
+        }
+        MstConfig.resetForTesting();
+    }
 
     @Test
     public void oracleProducesPassVerdictOnConformantTrace() throws IOException {
