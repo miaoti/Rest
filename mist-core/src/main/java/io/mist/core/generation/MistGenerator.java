@@ -1,6 +1,8 @@
 package io.mist.core.generation;
 
 import io.mist.core.config.MstConfig;
+import io.mist.core.policy.EndpointPolicy;
+import io.mist.core.policy.EndpointPolicyResolver;
 import io.mist.core.spec.Operation;
 import io.mist.core.spec.TestConfigurationObject;
 import io.mist.core.spec.TestParameter;
@@ -559,8 +561,13 @@ public class MistGenerator {
         //     new variants for this scenario (pool is finite, no point trying more).
         int zeroStepStreak = 0;
         int dedupExhaustionStreak = 0;
-        final int K_ZERO_STEP = 3;
-        final int K_DEDUP_EXHAUSTED = 10;
+        // ── Per-endpoint adaptive policy (legacy = fixed 3/10/PAYLOAD) ─────
+        // When mst.adaptive.enabled=false (default), policy == LEGACY → identical
+        // pre-adaptive behaviour. When enabled, thresholds are resolved from the
+        // scenario's first root step (HTTP method + OpenAPI x-mist-* hints).
+        final EndpointPolicy policy = resolveEndpointPolicy(sc);
+        final int K_ZERO_STEP = policy.kZeroStep();
+        final int K_DEDUP_EXHAUSTED = policy.kDedupExhausted();
 
         ConsoleProgressBar.begin("Variants", variantCount);
         for (int v = 0; v < variantCount; v++) {
@@ -700,8 +707,11 @@ public class MistGenerator {
             } else {
                 zeroStepStreak = 0;
                 // Global payload deduplication for positive variants
+                // Honour policy.dedupMode(): OFF skips dedup entirely (POST and
+                // x-mist-stateful endpoints), PAYLOAD = current behaviour.
                 String fingerprint = buildPayloadFingerprint(tc);
-                if (tc.getFaulty() || seenPayloads.add(fingerprint)) {
+                boolean skipDedup = (policy.dedupMode() == EndpointPolicy.DedupMode.OFF);
+                if (tc.getFaulty() || skipDedup || seenPayloads.add(fingerprint)) {
                     variants.add(tc);
                     dedupExhaustionStreak = 0;
                 } else {
@@ -2724,6 +2734,36 @@ public class MistGenerator {
             if (literalKey.matches(poolKeyAsLiteralRegex)) return poolKey;
         }
         return null;
+    }
+
+    /**
+     * Resolve an {@link EndpointPolicy} for {@code scenario}. The policy is
+     * derived from the scenario's first root step (method + path) and any
+     * OpenAPI {@code x-mist-*} extensions on the matching Operation. When
+     * {@code mst.adaptive.enabled=false} returns {@link EndpointPolicy#LEGACY}
+     * to preserve byte-identical pre-adaptive behaviour.
+     */
+    private EndpointPolicy resolveEndpointPolicy(WorkflowScenario sc) {
+        MstConfig cfg = MstConfig.instance();
+        if (!cfg.adaptive().enabled()) {
+            return EndpointPolicy.LEGACY;
+        }
+        // Resolve from the first root step we can extract a method+path from.
+        for (WorkflowStep root : sc.getRootSteps()) {
+            String key = extractRootApiFromStep(root);
+            if (key == null) continue;
+            // key format: VERB__path_normalised — extract verb
+            int sep = key.indexOf("__");
+            String verb = (sep > 0) ? key.substring(0, sep) : "GET";
+            // For path extraction we don't need the literal path back, the resolver
+            // only uses method semantics + OpenAPI hints (which it does not yet read
+            // — phase 2 will wire in OpenAPISpecification.getExtension(path,method)).
+            EndpointPolicyResolver resolver = new EndpointPolicyResolver(
+                    cfg.adaptive().kDedupExhaustedDefault(),
+                    cfg.adaptive().kZeroStepDefault());
+            return resolver.resolve(verb, key, null);
+        }
+        return EndpointPolicy.LEGACY;
     }
 
     private boolean scenarioHasBuildableRoot(WorkflowScenario scenario) {

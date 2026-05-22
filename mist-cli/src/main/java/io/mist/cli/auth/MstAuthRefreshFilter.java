@@ -86,7 +86,11 @@ public final class MstAuthRefreshFilter implements OrderedFilter {
         // can't be "expired"; the 403 is a real authorization failure
         // (e.g. role-gated endpoint), so return it as-is.
         long ageNs = MstAuthHandler.nanosSinceTokenSet();
-        if (ageNs < 5_000_000_000L) {
+        // Threshold reads from MstConfig.adaptive().authTokenMinAgeNs(), defaulting
+        // to 5s (unchanged behaviour). Lets operators tune per-deployment without
+        // recompiling.
+        long minAgeNs = io.mist.core.config.MstConfig.instance().adaptive().authTokenMinAgeNs();
+        if (ageNs < minAgeNs) {
             return response;
         }
 

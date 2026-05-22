@@ -40,6 +40,7 @@ public final class MstConfig {
     private final Jaeger jaeger;
     private final Oracle oracle;
     private final Scheduler scheduler;
+    private final Adaptive adaptive;
 
     private static volatile MstConfig INSTANCE;
 
@@ -49,7 +50,7 @@ public final class MstConfig {
                       IntelligentAnalysisCache intelligentAnalysisCache,
                       StatusCodeExploration statusCodeExploration,
                       Enhancer enhancer, Jaeger jaeger,
-                      Oracle oracle, Scheduler scheduler) {
+                      Oracle oracle, Scheduler scheduler, Adaptive adaptive) {
         this.core = core;
         this.smartFetch = smartFetch;
         this.llm = llm;
@@ -64,6 +65,7 @@ public final class MstConfig {
         this.jaeger = jaeger;
         this.oracle = oracle;
         this.scheduler = scheduler;
+        this.adaptive = adaptive;
     }
 
     public Core core() { return core; }
@@ -80,6 +82,7 @@ public final class MstConfig {
     public Jaeger jaeger() { return jaeger; }
     public Oracle oracle() { return oracle; }
     public Scheduler scheduler() { return scheduler; }
+    public Adaptive adaptive() { return adaptive; }
 
     /**
      * Returns the JVM-wide singleton, lazily constructed from System
@@ -119,7 +122,8 @@ public final class MstConfig {
                 new Enhancer(),
                 new Jaeger(),
                 new Oracle(),
-                new Scheduler());
+                new Scheduler(),
+                new Adaptive());
         MstConfigValidator.validate(cfg);
         return cfg;
     }
@@ -421,5 +425,35 @@ public final class MstConfig {
         }
 
         public boolean banditEnabled() { return banditEnabled; }
+    }
+
+    /**
+     * Per-endpoint adaptive strategy toggle. When {@code mst.adaptive.enabled=false}
+     * (default) the legacy fixed thresholds (K_ZERO_STEP=3, K_DEDUP_EXHAUSTED=10,
+     * payload-only dedup, 5s auth refresh window) apply uniformly to every API,
+     * preserving byte-identical behaviour with pre-adaptive runs.
+     *
+     * <p>When {@code mst.adaptive.enabled=true} the generator and auth filter
+     * consult {@link io.mist.core.policy.EndpointPolicyResolver} for per-endpoint
+     * thresholds derived from HTTP method semantics + OpenAPI {@code x-mist-*}
+     * hints. See {@code docs/adaptive-strategy-research.md} for design.
+     */
+    public static final class Adaptive {
+        private final boolean enabled;
+        private final int kDedupExhaustedDefault;
+        private final int kZeroStepDefault;
+        private final long authTokenMinAgeNs;
+
+        public Adaptive() {
+            this.enabled = parseBool("mst.adaptive.enabled", "false");
+            this.kDedupExhaustedDefault = parseInt("mst.adaptive.k.dedup.exhausted", "10");
+            this.kZeroStepDefault = parseInt("mst.adaptive.k.zero.step", "3");
+            this.authTokenMinAgeNs = parseLong("mst.adaptive.auth.token.min.age.ns", "5000000000");
+        }
+
+        public boolean enabled() { return enabled; }
+        public int kDedupExhaustedDefault() { return kDedupExhaustedDefault; }
+        public int kZeroStepDefault() { return kZeroStepDefault; }
+        public long authTokenMinAgeNs() { return authTokenMinAgeNs; }
     }
 }

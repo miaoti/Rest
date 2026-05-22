@@ -118,6 +118,11 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.timing.enabled",
                 // Scheduler (ThompsonScheduler toggle)
                 "mst.scheduler.bandit.enabled",
+                // Adaptive per-endpoint strategy (docs/adaptive-strategy-research.md)
+                "mst.adaptive.enabled",
+                "mst.adaptive.k.dedup.exhausted",
+                "mst.adaptive.k.zero.step",
+                "mst.adaptive.auth.token.min.age.ns",
                 // Bootstrap loader (consumed by multiservice.MstConfig before
                 // the validator runs, but stays in System.properties)
                 "mst.config.path",
