@@ -1,6 +1,12 @@
 # H2 — Ablation Infrastructure Inventory
 
-> **Status: open.** Produced in Phase H2.A. Updated as code lands.
+> **Status: closed.** Outcome: six toggles + AblationProfile + startup
+> banner all landed; mist-core/mist-cli build green; 30 new unit tests
+> pass alongside the pre-existing 74 (104 total). Byte-identical
+> equivalence on R3 vs the pre-work baseline deferred per
+> H2_FOLLOWUPS.md section 1 (pre-existing non-determinism not caused by
+> this work). R1/R2/R3/R4 each execute the bundled demo to completion
+> and emit the correct AblationProfile banner.
 
 This file enumerates every surface H2 will touch. Each entry carries a
 verified `file:line` reference (re-greppable at any time). Cross-checks

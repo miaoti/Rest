@@ -198,14 +198,31 @@ public class MistGenerator {
      * (one bandit arm per queue entry) so no probe is wasted on an arm
      * that cannot be pulled.
      */
-    private List<FaultTarget> rankWithBandit(List<FaultTarget> queue) {
+    List<FaultTarget> rankWithBandit(List<FaultTarget> queue) {
         if (queue.size() <= 1) return queue;
+        return applyBanditGate(queue,
+                MstConfig.instance().scheduler().banditEnabled(),
+                this::rankWithBanditUnchecked);
+    }
 
-        if (!MstConfig.instance().scheduler().banditEnabled()) {
+    /**
+     * Gate seam for {@link #rankWithBandit(List)}. Returns {@code queue}
+     * unchanged when {@code banditEnabled} is false, otherwise delegates to
+     * {@code ranker}. Hoisted out of {@code rankWithBandit} so unit tests can
+     * verify the gate without instantiating a full MistGenerator. Package-
+     * private deliberately — the visible callers live in this class only.
+     */
+    static <T> List<T> applyBanditGate(List<T> queue, boolean banditEnabled,
+                                       java.util.function.UnaryOperator<List<T>> ranker) {
+        if (queue == null || queue.size() <= 1) return queue;
+        if (!banditEnabled) {
             log.debug("Fault queue using insertion order (bandit disabled): {} targets", queue.size());
             return queue;
         }
+        return ranker.apply(queue);
+    }
 
+    private List<FaultTarget> rankWithBanditUnchecked(List<FaultTarget> queue) {
         ThompsonScheduler bandit = new ThompsonScheduler();
         InputFetchRegistry registry = loadRegistryQuietly();
         seedBanditFromRegistry(bandit, queue, registry);
