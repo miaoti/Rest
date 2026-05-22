@@ -2748,22 +2748,35 @@ public class MistGenerator {
         if (!cfg.adaptive().enabled()) {
             return EndpointPolicy.LEGACY;
         }
-        // Resolve from the first root step we can extract a method+path from.
         for (WorkflowStep root : sc.getRootSteps()) {
             String key = extractRootApiFromStep(root);
             if (key == null) continue;
-            // key format: VERB__path_normalised — extract verb
             int sep = key.indexOf("__");
             String verb = (sep > 0) ? key.substring(0, sep) : "GET";
-            // For path extraction we don't need the literal path back, the resolver
-            // only uses method semantics + OpenAPI hints (which it does not yet read
-            // — phase 2 will wire in OpenAPISpecification.getExtension(path,method)).
-            EndpointPolicyResolver resolver = new EndpointPolicyResolver(
+            return decideEndpointPolicy(true, verb,
                     cfg.adaptive().kDedupExhaustedDefault(),
                     cfg.adaptive().kZeroStepDefault());
-            return resolver.resolve(verb, key, null);
         }
         return EndpointPolicy.LEGACY;
+    }
+
+    /**
+     * Test seam for the pure-function policy decision: given the adaptive
+     * toggle and an HTTP verb, return the policy. When {@code adaptiveEnabled}
+     * is false (or verb is null) returns {@link EndpointPolicy#LEGACY} so the
+     * variant loop runs byte-identical to its pre-adaptive form. Otherwise
+     * delegates to {@link EndpointPolicyResolver}. Hoisted out of the
+     * instance method above so the byte-identical contract is unit-testable
+     * without constructing a {@link WorkflowScenario}.
+     */
+    static EndpointPolicy decideEndpointPolicy(boolean adaptiveEnabled,
+                                                String verb,
+                                                int kDedupDefault,
+                                                int kZeroStepDefault) {
+        if (!adaptiveEnabled) return EndpointPolicy.LEGACY;
+        if (verb == null)     return EndpointPolicy.LEGACY;
+        return new EndpointPolicyResolver(kDedupDefault, kZeroStepDefault)
+                .resolve(verb, null, null);
     }
 
     private boolean scenarioHasBuildableRoot(WorkflowScenario scenario) {

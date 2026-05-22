@@ -118,6 +118,9 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.timing.enabled",
                 // Scheduler (ThompsonScheduler toggle)
                 "mst.scheduler.bandit.enabled",
+                // SUT preflight health check (probes registry before scenario gen)
+                "mst.preflight.enabled",
+                "mst.preflight.timeout.ms",
                 // Adaptive per-endpoint strategy (docs/adaptive-strategy-research.md)
                 "mst.adaptive.enabled",
                 "mst.adaptive.k.dedup.exhausted",

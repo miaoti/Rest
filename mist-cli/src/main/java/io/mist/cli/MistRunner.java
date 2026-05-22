@@ -15,8 +15,10 @@ import io.mist.core.enhancer.TestCaseEnhancer;
 import io.mist.core.enhancer.TestFileRegenerator;
 import io.mist.core.enhancer.TestResultCapture;
 import io.mist.core.generation.MistGenerator;
+import io.mist.core.health.SutHealthCheck;
 import io.mist.llm.LLMService;
 import io.mist.core.registry.RootApiRegistry;
+import io.mist.core.registry.RootApiEntry;
 // AllureReportManager + StatsReportManager were RESTest util classes;
 // after the sever the per-run stats summary is logged directly to log4j
 // and the Allure step annotations are emitted by the writer's printed
@@ -478,6 +480,12 @@ public final class MistRunner {
                     logger.debug("  - {}", apiKey);
                 }
             }
+
+            // SUT preflight: probe each root API once so an unhealthy endpoint
+            // surfaces in the startup banner rather than as silently-dropped
+            // scenarios five hours later (see Run 13 regression: GET admintravel
+            // returned 500 the whole run, observable only via log archaeology).
+            runSutPreflight(registry);
         } else {
             logger.warn("Root API Registry path not configured. Set 'root.api.registry.path' property to enable registry.");
         }
@@ -2529,5 +2537,78 @@ public final class MistRunner {
                 .toAbsolutePath().normalize().getParent();
         if (base == null) return value;
         return base.resolve(trimmed).normalize().toString();
+    }
+
+    /**
+     * Probe every root API in the registry once and log a single-line banner
+     * (plus per-endpoint details for any 5xx / transport failure). Driven by
+     * {@code mst.preflight.enabled} (default true) and
+     * {@code mst.preflight.timeout.ms} (default 5000). Never throws — a
+     * preflight failure is informational only and must not break the run.
+     */
+    private void runSutPreflight(RootApiRegistry registry) {
+        boolean enabled = Boolean.parseBoolean(
+                System.getProperty("mst.preflight.enabled", "true"));
+        if (!enabled) {
+            logger.info("SUT preflight skipped (mst.preflight.enabled=false)");
+            return;
+        }
+        try {
+            int timeoutMs = Integer.parseInt(
+                    System.getProperty("mst.preflight.timeout.ms", "5000"));
+
+            String baseUrl = readParameterValue("base.url");
+            if (baseUrl == null && spec != null && spec.getSpecification() != null
+                    && !spec.getSpecification().getServers().isEmpty()) {
+                baseUrl = spec.getSpecification().getServers().get(0).getUrl();
+            }
+            if (baseUrl == null || baseUrl.isEmpty()) {
+                logger.warn("SUT preflight skipped: no base.url and no OpenAPI server URL");
+                return;
+            }
+            String base = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+
+            java.util.List<SutHealthCheck.Endpoint> endpoints = new java.util.ArrayList<>();
+            for (String apiKey : registry.getAllRootApiKeys()) {
+                RootApiEntry entry = registry.getRootApiEntry(apiKey);
+                if (entry == null) continue;
+                String verb = entry.getMethod();
+                String path = entry.getPath();
+                if (verb == null || path == null) continue;
+                // Substitute path templates {x} with a literal so the URL is
+                // probeable. Spring controllers reach the same handler either
+                // way; if the SUT is broken, it 500s regardless of {x}.
+                String probePath = path.replaceAll("\\{[^}]+\\}", "1");
+                endpoints.add(new SutHealthCheck.Endpoint(verb, base + probePath));
+            }
+
+            if (endpoints.isEmpty()) {
+                logger.info("SUT preflight: registry empty, nothing to probe");
+                return;
+            }
+
+            logger.info("SUT preflight: probing {} root API endpoints at {} (timeout {}ms each)",
+                    endpoints.size(), base, timeoutMs);
+            SutHealthCheck.Report report = SutHealthCheck.check(
+                    endpoints, SutHealthCheck.httpClientProbe(timeoutMs));
+
+            if (report.allHealthy()) {
+                logger.info("SUT preflight: ✓ {}", report.summary());
+            } else {
+                logger.warn("SUT preflight: ⚠ {}", report.summary());
+                for (SutHealthCheck.Result r : report.unhealthy()) {
+                    String detail = r.errorMessage != null
+                            ? r.errorMessage
+                            : ("HTTP " + r.statusCode);
+                    logger.warn("  ✗ {} {} — {} ({}ms)",
+                            r.endpoint.verb, r.endpoint.url, detail, r.latencyMs);
+                }
+                logger.warn("  Scenarios touching these endpoints may drop silently. "
+                        + "Inspect SUT logs before relying on this run's detection counts.");
+            }
+        } catch (Throwable t) {
+            // Preflight is informational; never block the run.
+            logger.warn("SUT preflight aborted: {}: {}", t.getClass().getSimpleName(), t.getMessage());
+        }
     }
 }
