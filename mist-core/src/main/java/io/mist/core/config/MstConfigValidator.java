@@ -84,6 +84,8 @@ public final class MstConfigValidator {
                 "faulty.round-robin",
                 "faulty.dependency.ratio",
                 "negative.input.generation.mode",
+                // FaultMiner (gated directly via FaultMiner.ENABLED_PROPERTY)
+                "mist.fault.mining.enabled",
                 // ScenarioMerge
                 "trace.merge.max.session.gap.micros",
                 "trace.merge.max.roots.per.scenario",

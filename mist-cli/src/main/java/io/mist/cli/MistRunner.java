@@ -244,7 +244,10 @@ public final class MistRunner {
         // to a specific row of PATH_B_POSITIONING.md section 4.2.
         io.mist.core.config.AblationProfile ablationProfile =
                 io.mist.core.config.AblationProfile.from(io.mist.core.config.MstConfig.instance());
-        logger.info("[MIST] ablation profile: {}", ablationProfile.summary());
+        // logger.warn so the line clears the WARN+ console threshold
+        // installed by setupConsoleInterception (System.out.println from
+        // here is suppressed by the same wrapper).
+        logger.warn("[MIST] ablation profile: {}", ablationProfile.summary());
 
         // Create target directory if it does not exist
         createDir(inputs.targetDirJava);
@@ -762,7 +765,7 @@ public final class MistRunner {
             } catch (Exception ignored) { }
         }
         // Conventional fallback.
-        return workdir.resolve("mist-restest-adapter/src/main/resources/My-Example/trainticket/test-trace");
+        return workdir.resolve("mist-cli/src/main/resources/My-Example/trainticket/test-trace");
     }
 
     /**
