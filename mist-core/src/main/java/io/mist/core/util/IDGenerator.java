@@ -27,6 +27,16 @@ public class IDGenerator {
 	}
 
 	public static String generateTimeId() {
+		Long baseSeed = SeededRandom.getBaseSeed();
+		if (baseSeed != null) {
+			// Under -Drandom.seed, the time-of-day suffix would re-introduce
+			// the very non-determinism the seed flag exists to eliminate
+			// (the suffix flows into the generated test class name via
+			// MistRunner). Return the configured seed so two consecutive
+			// seeded runs produce identical Flow_Scenario_*.java sources
+			// without needing post-hoc normalisation.
+			return String.valueOf(baseSeed);
+		}
 		return String.valueOf(new Date().getTime());
 	}
 

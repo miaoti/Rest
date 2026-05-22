@@ -42,6 +42,46 @@ when LLM is on, which is the live (`trainticket-demo.properties`)
 demo — a longer-running validation that is out of scope for this
 fix.
 
+### 1.1 Second-order fix: drop the suffix normalisation
+
+The §1 verification table above relied on normalising the
+`TrainTicketTwoStageTest_<epoch-millis>` package suffix to a
+placeholder before SHA-256ing. That normalisation existed because
+`IDGenerator.generateTimeId()` returned `new Date().getTime()`
+unconditionally, so every seeded run picked a different wall-clock
+suffix and the generated test class name (and therefore the
+package directive at the top of every `Flow_Scenario_*.java`)
+disagreed across runs.
+
+The unseeded fallback is unchanged; the seeded path now uses the
+configured seed value as the suffix instead:
+
+```java
+public static String generateTimeId() {
+    Long baseSeed = SeededRandom.getBaseSeed();
+    if (baseSeed != null) return String.valueOf(baseSeed);
+    return String.valueOf(new Date().getTime());
+}
+```
+
+With this change, two `-Drandom.seed=42` runs of the noexec demo
+produce the package `TrainTicketTwoStageTest_42` in both runs, so
+the file contents agree at the byte level without preprocessing.
+
+**Verification (post-fix, no normalisation):**
+
+| Row | Toggles                                              | Byte-identical |
+|-----|------------------------------------------------------|----------------|
+| R3  | shape=true, mining=false  (bundled default, default seed)        | 123 / 123 raw  |
+
+`diff <run1.sums> <run2.sums>` is empty without any sed/awk pass
+over the file content. `mvn test -pl mist-core,mist-cli` continues
+to pass (100 + 4).
+
+The unseeded path is untouched, so production behaviour for users
+who do not set `random.seed` (every run gets a unique class name
+to avoid output collisions on parallel runs) is preserved.
+
 ---
 
 **Original report (kept for history):**
