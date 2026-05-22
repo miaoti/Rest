@@ -38,6 +38,8 @@ public final class MstConfig {
     private final StatusCodeExploration statusCodeExploration;
     private final Enhancer enhancer;
     private final Jaeger jaeger;
+    private final Oracle oracle;
+    private final Scheduler scheduler;
 
     private static volatile MstConfig INSTANCE;
 
@@ -46,7 +48,8 @@ public final class MstConfig {
                       SoftErrorCache softErrorCache, ParameterErrorCache parameterErrorCache,
                       IntelligentAnalysisCache intelligentAnalysisCache,
                       StatusCodeExploration statusCodeExploration,
-                      Enhancer enhancer, Jaeger jaeger) {
+                      Enhancer enhancer, Jaeger jaeger,
+                      Oracle oracle, Scheduler scheduler) {
         this.core = core;
         this.smartFetch = smartFetch;
         this.llm = llm;
@@ -59,6 +62,8 @@ public final class MstConfig {
         this.statusCodeExploration = statusCodeExploration;
         this.enhancer = enhancer;
         this.jaeger = jaeger;
+        this.oracle = oracle;
+        this.scheduler = scheduler;
     }
 
     public Core core() { return core; }
@@ -73,6 +78,8 @@ public final class MstConfig {
     public StatusCodeExploration statusCodeExploration() { return statusCodeExploration; }
     public Enhancer enhancer() { return enhancer; }
     public Jaeger jaeger() { return jaeger; }
+    public Oracle oracle() { return oracle; }
+    public Scheduler scheduler() { return scheduler; }
 
     /**
      * Returns the JVM-wide singleton, lazily constructed from System
@@ -110,7 +117,9 @@ public final class MstConfig {
                 new IntelligentAnalysisCache(),
                 new StatusCodeExploration(),
                 new Enhancer(),
-                new Jaeger());
+                new Jaeger(),
+                new Oracle(),
+                new Scheduler());
         MstConfigValidator.validate(cfg);
         return cfg;
     }
@@ -354,5 +363,59 @@ public final class MstConfig {
         public boolean enabled() { return enabled; }
         public String baseUrl() { return baseUrl; }
         public String lookback() { return lookback; }
+    }
+
+    /**
+     * Trace Shape Oracle and per-invariant toggles. The whole-oracle gate
+     * ({@code mst.oracle.shape.enabled}) short-circuits
+     * {@link io.mist.core.oracle.shape.TraceShapeOracle#evaluate} to an empty
+     * verdict; the four per-invariant gates skip one invariant each inside
+     * that same method.
+     *
+     * <p>The {@code timing} invariant defaults to {@code false} because the
+     * paper revision dropped it from the named contribution; the other four
+     * default to {@code true} to preserve byte-identical generated test
+     * files against the pre-toggle baseline.
+     */
+    public static final class Oracle {
+        private final boolean shapeOracleEnabled;
+        private final boolean spanTreeInvariantEnabled;
+        private final boolean statusPropagationInvariantEnabled;
+        private final boolean responseEnvelopeInvariantEnabled;
+        private final boolean timingEnvelopeInvariantEnabled;
+
+        public Oracle() {
+            this.shapeOracleEnabled = parseBool("mst.oracle.shape.enabled", "true");
+            this.spanTreeInvariantEnabled = parseBool(
+                    "mst.oracle.shape.invariants.span_tree.enabled", "true");
+            this.statusPropagationInvariantEnabled = parseBool(
+                    "mst.oracle.shape.invariants.status_propagation.enabled", "true");
+            this.responseEnvelopeInvariantEnabled = parseBool(
+                    "mst.oracle.shape.invariants.response_envelope.enabled", "true");
+            this.timingEnvelopeInvariantEnabled = parseBool(
+                    "mst.oracle.shape.invariants.timing.enabled", "false");
+        }
+
+        public boolean shapeOracleEnabled() { return shapeOracleEnabled; }
+        public boolean spanTreeInvariantEnabled() { return spanTreeInvariantEnabled; }
+        public boolean statusPropagationInvariantEnabled() { return statusPropagationInvariantEnabled; }
+        public boolean responseEnvelopeInvariantEnabled() { return responseEnvelopeInvariantEnabled; }
+        public boolean timingEnvelopeInvariantEnabled() { return timingEnvelopeInvariantEnabled; }
+    }
+
+    /**
+     * Fault-queue scheduler toggle. When
+     * {@code mst.scheduler.bandit.enabled=false} (default {@code true}) the
+     * generator preserves insertion order of the fault queue without ever
+     * constructing the Thompson-sampling bandit.
+     */
+    public static final class Scheduler {
+        private final boolean banditEnabled;
+
+        public Scheduler() {
+            this.banditEnabled = parseBool("mst.scheduler.bandit.enabled", "true");
+        }
+
+        public boolean banditEnabled() { return banditEnabled; }
     }
 }
