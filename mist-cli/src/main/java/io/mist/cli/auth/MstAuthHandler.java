@@ -48,6 +48,8 @@ public final class MstAuthHandler {
 
     private static final Object LOGIN_LOCK = new Object();
     private static volatile String cachedToken;
+    /** nanos when cachedToken was last set — lets the filter skip relogin if token is fresh. */
+    private static volatile long tokenSetNanos = 0L;
     private static volatile boolean configLoaded;
 
     // Resolved configuration (mutable only via reload())
@@ -131,6 +133,7 @@ public final class MstAuthHandler {
             case PER_TEST:
                 String fresh = login();
                 cachedToken = fresh;
+                if (fresh != null) tokenSetNanos = System.nanoTime();
                 return fresh != null;
             case PER_JVM:
             default:
@@ -138,6 +141,7 @@ public final class MstAuthHandler {
                 synchronized (LOGIN_LOCK) {
                     if (cachedToken == null) {
                         cachedToken = login();
+                        if (cachedToken != null) tokenSetNanos = System.nanoTime();
                     }
                 }
                 return cachedToken != null;
@@ -147,6 +151,13 @@ public final class MstAuthHandler {
     /** Force the next {@link #ensureReady()} (PER_JVM only) to log in again. */
     public static void invalidate() {
         cachedToken = null;
+        tokenSetNanos = 0L;
+    }
+
+    /** Nanos since the current cachedToken was minted (or Long.MAX_VALUE if none/uncached mode). */
+    public static long nanosSinceTokenSet() {
+        if (tokenSetNanos == 0L) return Long.MAX_VALUE;
+        return System.nanoTime() - tokenSetNanos;
     }
 
     /**

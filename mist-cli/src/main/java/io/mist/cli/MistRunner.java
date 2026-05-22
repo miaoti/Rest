@@ -239,6 +239,13 @@ public final class MistRunner {
         // version is running, before any per-phase work begins.
         io.mist.core.util.ConsoleProgressBar.banner("v1.6.0-SNAPSHOT");
 
+        // Ablation profile banner: surfaces which R1-R4 configuration this
+        // run materialises so downstream paper-writing can attribute results
+        // to a specific row of PATH_B_POSITIONING.md section 4.2.
+        io.mist.core.config.AblationProfile ablationProfile =
+                io.mist.core.config.AblationProfile.from(io.mist.core.config.MstConfig.instance());
+        logger.info("[MIST] ablation profile: {}", ablationProfile.summary());
+
         // Create target directory if it does not exist
         createDir(inputs.targetDirJava);
 
@@ -707,7 +714,7 @@ public final class MistRunner {
             logger.debug("🧬 Trace Shape Oracle: loaded {} from disk (warm cache)", traceShapeStorePath);
         }
 
-        return new TraceShapeOracle(store);
+        return new TraceShapeOracle(store, io.mist.core.config.MstConfig.instance().oracle());
     }
 
     /**

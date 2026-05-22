@@ -24,6 +24,17 @@ public final class TraceShapeVerdict {
         this.outcomes = Collections.unmodifiableList(new ArrayList<>(outcomes));
     }
 
+    /**
+     * Verdict produced when the entire Trace Shape Oracle is gated off via
+     * {@code mst.oracle.shape.enabled=false}. Always passes and carries
+     * zero invariant outcomes so downstream consumers (writer, Allure
+     * attachments) treat the verdict as a clean no-op instead of having
+     * to special-case {@code null}.
+     */
+    public static TraceShapeVerdict empty() {
+        return new TraceShapeVerdict(true, Collections.emptyList());
+    }
+
     public boolean isPassed() { return passed; }
     public List<InvariantOutcome> getOutcomes() { return outcomes; }
 

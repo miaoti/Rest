@@ -108,6 +108,14 @@ public final class MstConfigValidator {
                 "jaeger.enabled",
                 "jaeger.base.url",
                 "jaeger.lookback",
+                // Oracle (Trace Shape Oracle + 4 invariant toggles)
+                "mst.oracle.shape.enabled",
+                "mst.oracle.shape.invariants.span_tree.enabled",
+                "mst.oracle.shape.invariants.status_propagation.enabled",
+                "mst.oracle.shape.invariants.response_envelope.enabled",
+                "mst.oracle.shape.invariants.timing.enabled",
+                // Scheduler (ThompsonScheduler toggle)
+                "mst.scheduler.bandit.enabled",
                 // Bootstrap loader (consumed by multiservice.MstConfig before
                 // the validator runs, but stays in System.properties)
                 "mst.config.path",
