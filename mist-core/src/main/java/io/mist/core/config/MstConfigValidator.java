@@ -121,6 +121,7 @@ public final class MstConfigValidator {
                 // SUT preflight health check (probes registry before scenario gen)
                 "mst.preflight.enabled",
                 "mst.preflight.timeout.ms",
+                "mst.preflight.auth.enabled",
                 // Adaptive per-endpoint strategy (docs/adaptive-strategy-research.md)
                 "mst.adaptive.enabled",
                 "mst.adaptive.k.dedup.exhausted",

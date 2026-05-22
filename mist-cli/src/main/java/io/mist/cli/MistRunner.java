@@ -14,6 +14,7 @@ import io.mist.core.enhancer.StatusCodeExplorationEnhancer;
 import io.mist.core.enhancer.TestCaseEnhancer;
 import io.mist.core.enhancer.TestFileRegenerator;
 import io.mist.core.enhancer.TestResultCapture;
+import io.mist.cli.auth.MstAuthHandler;
 import io.mist.core.generation.MistGenerator;
 import io.mist.core.health.SutHealthCheck;
 import io.mist.llm.LLMService;
@@ -2587,15 +2588,24 @@ public final class MistRunner {
                 return;
             }
 
-            logger.info("SUT preflight: probing {} root API endpoints at {} (timeout {}ms each)",
-                    endpoints.size(), base, timeoutMs);
+            // Attach the same Authorization header the actual run will send,
+            // so handlers that 403 unauthenticated (= "reachable") but 500
+            // under valid auth (= actually broken for our purposes) surface
+            // here instead of cascading into silent scenario drops. Falls
+            // back to unauthenticated probe if no token is available.
+            // Driven by mst.preflight.auth.enabled (default true).
+            java.util.Map<String, String> authHeaders = buildPreflightAuthHeaders();
+            String authMode = authHeaders.isEmpty() ? "unauthenticated" : "authenticated";
+
+            logger.info("SUT preflight ({}): probing {} root API endpoints at {} (timeout {}ms each)",
+                    authMode, endpoints.size(), base, timeoutMs);
             SutHealthCheck.Report report = SutHealthCheck.check(
-                    endpoints, SutHealthCheck.httpClientProbe(timeoutMs));
+                    endpoints, SutHealthCheck.httpClientProbe(timeoutMs, authHeaders));
 
             if (report.allHealthy()) {
-                logger.info("SUT preflight: ✓ {}", report.summary());
+                logger.info("SUT preflight: ✓ {} ({})", report.summary(), authMode);
             } else {
-                logger.warn("SUT preflight: ⚠ {}", report.summary());
+                logger.warn("SUT preflight: ⚠ {} ({})", report.summary(), authMode);
                 for (SutHealthCheck.Result r : report.unhealthy()) {
                     String detail = r.errorMessage != null
                             ? r.errorMessage
@@ -2609,6 +2619,53 @@ public final class MistRunner {
         } catch (Throwable t) {
             // Preflight is informational; never block the run.
             logger.warn("SUT preflight aborted: {}: {}", t.getClass().getSimpleName(), t.getMessage());
+        }
+    }
+
+    /**
+     * Build the Authorization-style headers the preflight should attach so
+     * its probes match the auth shape the actual run will send. Returns an
+     * empty map (= unauthenticated probe) when:
+     * <ul>
+     *   <li>{@code mst.preflight.auth.enabled=false} (opt-out switch)</li>
+     *   <li>{@code MstAuthHandler} is in NONE mode (no auth at all)</li>
+     *   <li>login fails or the resolved token is empty</li>
+     * </ul>
+     * Never throws — any auth-resolution failure degrades to the existing
+     * unauthenticated probe behaviour with a single WARN line.
+     */
+    private java.util.Map<String, String> buildPreflightAuthHeaders() {
+        boolean authProbe = Boolean.parseBoolean(
+                System.getProperty("mst.preflight.auth.enabled", "true"));
+        if (!authProbe) {
+            return java.util.Collections.emptyMap();
+        }
+        try {
+            if (MstAuthHandler.getMode() == MstAuthHandler.Mode.NONE) {
+                return java.util.Collections.emptyMap();
+            }
+            boolean ready = MstAuthHandler.ensureReady();
+            if (!ready) {
+                logger.warn("SUT preflight: auth not ready (login failed or no token); "
+                        + "falling back to unauthenticated probe");
+                return java.util.Collections.emptyMap();
+            }
+            String token = MstAuthHandler.getDefaultToken();
+            if (token == null || token.isEmpty()) {
+                return java.util.Collections.emptyMap();
+            }
+            String header = MstAuthHandler.getTokenHeader();
+            String prefix = MstAuthHandler.getTokenPrefix();
+            String value  = (prefix == null || prefix.isEmpty()) ? token : (prefix.trim() + " " + token);
+            java.util.Map<String, String> headers = new java.util.LinkedHashMap<>();
+            headers.put(header, value);
+            headers.put("Content-Type", "application/json");
+            return headers;
+        } catch (Throwable t) {
+            logger.warn("SUT preflight: auth header build failed ({}: {}); "
+                    + "falling back to unauthenticated probe",
+                    t.getClass().getSimpleName(), t.getMessage());
+            return java.util.Collections.emptyMap();
         }
     }
 }
