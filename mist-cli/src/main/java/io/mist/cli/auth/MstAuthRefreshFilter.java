@@ -79,6 +79,17 @@ public final class MstAuthRefreshFilter implements OrderedFilter {
         // or per-test override gone wrong); refreshing would change semantics.
         if (requestSpec.getHeaders().getValue(header) == null) return response;
 
+        // Skip the refresh+retry when the cached token was minted less than
+        // 5s ago. Under parallel execution N concurrent 403s would otherwise
+        // each invalidate the cache + re-login + retry, multiplying load on
+        // the login endpoint and producing N identical 403s. A fresh token
+        // can't be "expired"; the 403 is a real authorization failure
+        // (e.g. role-gated endpoint), so return it as-is.
+        long ageNs = MstAuthHandler.nanosSinceTokenSet();
+        if (ageNs < 5_000_000_000L) {
+            return response;
+        }
+
         log.info("MstAuthRefreshFilter: {} received from {} {}, refreshing token and retrying once",
                 status, requestSpec.getMethod(), requestSpec.getURI());
 
