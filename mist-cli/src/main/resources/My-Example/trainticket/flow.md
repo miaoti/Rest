@@ -1,25 +1,22 @@
-### MST Mode End-to-End Flow (MistMain → MistRunner; legacy: TestGenerationAndExecution)
+### MST Mode End-to-End Flow (MistMain → MistRunner)
 
-> **Path B entry points.** After Phase 1, the primary launch path is
-> `java -jar mist-cli/target/mist.jar trainticket-demo.properties`, whose
-> `Main-Class` is `io.mist.cli.MistMain`. `MistMain` loads the properties
-> file, builds a `MstConfig` via `MstConfig.fromSystemProperties()`, and
-> delegates to `MistRunner.run()` (lives at
-> `mist-restest-adapter/src/main/java/es/us/isa/restest/main/MistRunner.java`).
-> The legacy `java -jar mist-restest-adapter/target/restest.jar` path
-> continues to work for the ICSME 2026 demo: the MST branch in
-> `TestGenerationAndExecution.main` is now a one-line delegation that
-> reaches the same `MistRunner`, so both entry points produce
-> byte-identical output under `-Drandom.seed=42`. The flowchart below
-> still refers to the steps as if they were inside the legacy main class;
-> in the post-Path-B layout every box from D onward lives inside
-> `MistRunner` instead.
+> **Entry point.** The launch path is
+> `java -jar mist-cli/target/mist.jar trainticket-demo.properties`,
+> whose `Main-Class` is `io.mist.cli.MistMain`. `MistMain` loads the
+> properties file, builds a `MstConfig` via
+> `MstConfig.fromSystemProperties()`, and delegates to
+> `MistRunner.run()` (lives at
+> `mist-cli/src/main/java/io/mist/cli/MistRunner.java`). The legacy
+> `restest.jar` / `TestGenerationAndExecution` main class was retired
+> during the 1.6 RESTest sever; `mist.jar` is now the only supported
+> entry point. The flowchart below describes the steps inside
+> `MistRunner`.
 
 ```mermaid
 flowchart TD
-    A[Start MIST: java -jar mist.jar or legacy java -jar restest.jar] --> B[Read properties]
+    A[Start MIST: java -jar mist.jar] --> B[Read properties]
     B --> C{generator equals MST}
-    C -->|No legacy path only| Z[Classic modes RT CBT FT ART LLM]
+    C -->|always — non-MST generators retired in B1 sever| Z[unreachable]
     C -->|Yes always for MistMain| D[Init fault detection and load injected faults]
     D --> E[Load OpenAPI spec]
     E --> F[Load multi service YAML to serviceConfigs]
@@ -881,7 +878,7 @@ flowchart LR
 - **GEMINI** — Google Gemini REST API.
 - **OPENAI_COMPATIBLE** — any provider speaking OpenAI's `/v1/chat/completions` shape. Covers hosted APIs (DeepSeek — the default test target — plus OpenAI, OpenRouter, Together, Groq, Mistral, ...) and self-hosted OpenAI shims (`gpt4all`, `llama.cpp --api`). When `llm.openai_compatible.api.key` is non-empty, `LLMService.generateWithOpenAICompatible` adds an `Authorization: Bearer <key>` header; when empty it sends an unauthenticated request. The deprecated `llm.local.*` property keys are still accepted as aliases — the new name reflects that this backend is not "local" in the typical case.
 
-**`llm.openai_compatible.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `mist-restest-adapter/src/test/java/es/us/isa/restest/llm/LLMConfigEnvResolverTest.java`.
+**`llm.openai_compatible.api.key` resolution**: the property accepts `${ENV_VAR}` or `${ENV_VAR:default}` syntax; `LLMConfig.resolveEnvPlaceholder` reads from `System.getenv` first, then `System.getProperty` (so IntelliJ run configs can pass `-DDEEPSEEK_API_KEY=…`). A missing variable resolves to `""` so the auth header is simply omitted — the literal `${…}` placeholder never reaches the wire. Locked in by `mist-llm/src/test/java/io/mist/llm/LLMConfigEnvResolverTest.java`.
 
 **DeepSeek example** (no edits to the existing `trainticket-demo.properties` needed; copy `deepseek-config.properties` or set these four lines):
 
@@ -1055,13 +1052,51 @@ flowchart TD
 > `MstConfig.fromSystemProperties()` and exposed through immutable
 > sub-records (`MstConfig.instance().core()`,
 > `MstConfig.instance().smartFetch()`, `MstConfig.instance().llm()`,
-> `MstConfig.instance().faulty()`, etc.). Code outside `MstConfig` must
-> not call `System.getProperty("mst.*")` directly. With
+> `MstConfig.instance().faulty()`, `MstConfig.instance().oracle()`,
+> `MstConfig.instance().scheduler()`, etc.). Code outside `MstConfig`
+> must not call `System.getProperty("mst.*")` directly. With
 > `mst.config.strict=true` the validator fails the run on unknown keys
 > or conflicting values.
 
+#### H2 ablation toggles (added 2026-05-21 for ICSE/FSE/ASE/ISSTA
+main-track ablation matrix; defaults preserve current behaviour
+except where noted):
+
+| Key | Default | Effect when `false` |
+|---|---|---|
+| `mst.oracle.shape.enabled` | `true` | `TraceShapeOracle.evaluate(...)` short-circuits to an empty verdict (`passed=true`, `violations=[]`); no invariant code runs |
+| `mst.oracle.shape.invariants.span_tree.enabled` | `true` | `SpanTreeShapeInvariant` skipped |
+| `mst.oracle.shape.invariants.status_propagation.enabled` | `true` | `StatusPropagationInvariant` skipped |
+| `mst.oracle.shape.invariants.response_envelope.enabled` | `true` | `ResponseEnvelopeInvariant` skipped |
+| `mst.oracle.shape.invariants.timing.enabled` | **`false`** | `TimingEnvelopeInvariant` skipped. Default-off because the paper revision dropped `Timing` from the 3-invariant contribution; the code path stays as an experimental hook |
+| `mst.scheduler.bandit.enabled` | `true` | `MistGenerator.applyBanditGate` returns insertion-order queue; no Thompson re-ranking |
+| `mst.fault.mining.enabled` (pre-existing) | `false` | `FaultMiner` does not extend the registry with SUT-specific categories at run time |
+
+`MistRunner` logs the resulting `AblationProfile` summary line
+immediately after config load, e.g.:
+
+```
+[MIST] ablation profile: [oracle:on bandit:on faultmining:off]
+```
+
+The published ablation rows (`PATH_B_POSITIONING.md` § 4.2) are
+realised as toggle combinations:
+
+| Row | `mst.oracle.shape.enabled` | `mst.fault.mining.enabled` |
+|---|---|---|
+| R1 MIST-full | `true` | `true` (override) |
+| R2 −trace-shape-oracle | `false` | `true` |
+| R3 bundled-default | `true` | `false` |
+| R4 −trace-shape −adaptive | `false` | `false` |
+
+Under `-Drandom.seed=42` each row reproduces byte-for-byte across
+runs (verified: 123 / 123 `Flow_Scenario_*.java` files identical per
+row). The bandit's RNG goes through
+`io.mist.core.util.SeededRandom.create("bandit")` so its Thompson
+samples respect the configured seed.
+
 **Core MST Configuration:**
-- generator == MST: switches to multi-service flow (legacy `restest.jar` entry only; `mist.jar` is always MST)
+- generator == MST: the only generator mode after the B1 sever (`mist.jar` is always MST; the legacy classic-mode dispatcher was retired)
 - testsperoperation / test.variants.per.scenario: number of variants per scenario
 - mst.generate.only.first.step: **default `true` (Root API Mode — primary)**. When `true`, keeps all top-level root APIs in a scenario but prunes internal step-API / service-to-service spans. When `false` (Multi-Step Replay), every internal HTTP span in the trace also becomes its own step in the generated test. Despite its legacy name, this flag does NOT restrict a scenario to a single step — a scenario with 3 root APIs still produces a 3-step test in Root API Mode.
 - faulty.ratio: percentage of test variants that should be intentionally faulty (e.g., 0.1 = 10%)
@@ -1535,8 +1570,10 @@ mist-core/src/main/java/io/mist/core/oracle/shape/
     ResponseEnvelopeInvariant.java
 ```
 
-It depends on no class under `es.us.isa.restest.*`; the writer is the only
-bridge from RESTest test code into the oracle.
+The TSO lives entirely in `io.mist.core.oracle.shape.*`; the
+`mist-cli` writer is the only bridge from test-execution code into
+the oracle (it emits a `TraceShapeOracle` field + `@BeforeClass`
+bootstrap into each generated `Flow_Scenario_*.java`).
 
 ### Data Flow
 
@@ -1564,7 +1601,7 @@ flowchart LR
 
 | File | Purpose |
 |------|---------|
-| `mist-restest-adapter/src/main/resources/My-Example/trainticket/test-trace/*.json` | TrainTicket seed-trace corpus (the same JSON/JSONL files the workflow extractor consumes) |
+| `mist-cli/src/main/resources/My-Example/trainticket/test-trace/*.json` | TrainTicket seed-trace corpus (the same JSON/JSONL files the workflow extractor consumes) |
 | `mist-core/src/main/resources/mist/seed-trace-labels.json` | Maps each trace file basename to either `"known-good"` (default) or `"known-bad"`; unknown files default to `known-good`. Edit this file to exclude a trace cluster from invariant learning. |
 | `MstConfig.instance().traceShapeOracle().*()` *(planned)* | Wires `mist.tso.enabled` and `mist.tso.store.path` into the runner |
 
@@ -1645,7 +1682,7 @@ if (!verdict.isPassed()) {
 ```
 
 The actual emission lives in
-`mist-restest-adapter/src/main/java/es/us/isa/restest/writers/restassured/MultiServiceRESTAssuredWriter.java`
+`mist-cli/src/main/java/io/mist/cli/writer/MultiServiceRESTAssuredWriter.java`
 at the `Allure.addAttachment("Trace Shape Oracle Verdict", ...)` call site
 (currently around line 633). Verdicts are independently consumable from the
 existing soft-error pass/fail flow described in the validation matrix
@@ -1877,7 +1914,7 @@ the live Jaeger trace, via:
 Allure.addAttachment("Trace Shape Oracle Verdict", "application/json", verdictJson);
 ```
 
-(See line ~633 of `mist-restest-adapter/src/main/java/es/us/isa/restest/writers/restassured/MultiServiceRESTAssuredWriter.java`.)
+(See line ~633 of `mist-cli/src/main/java/io/mist/cli/writer/MultiServiceRESTAssuredWriter.java`.)
 The `ResponseEnvelopeInvariant` outcome shows up as one entry inside that
 verdict's `outcomes[]` array, alongside the other three invariant kinds.
 
