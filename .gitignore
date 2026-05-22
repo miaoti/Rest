@@ -120,3 +120,6 @@ src/main/resources/My-Example/trainticket/traces/traces-1759192647565.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192663045.json
 src/main/resources/My-Example/trainticket/traces/traces-1759192669037.json
 .api_keys
+
+# Generated demo outputs — written by MistRunner during a run, never edited by hand
+mist-cli/src/test/java/trainticket_twostage_test/
