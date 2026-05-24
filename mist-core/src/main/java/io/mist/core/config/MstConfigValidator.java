@@ -76,6 +76,8 @@ public final class MstConfigValidator {
                 "smart.input.fetch.schema.discovery.timeout.ms",
                 // Llm
                 "mist.llm.cache.path",
+                "mist.llm.cache.read",
+                "mist.llm.cache.write",
                 "llm.response.validation.enabled",
                 "llm.response.validation.only.2xx",
                 "llm.response.validation.include.rca",
@@ -118,6 +120,10 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.timing.enabled",
                 // Scheduler (ThompsonScheduler toggle)
                 "mst.scheduler.bandit.enabled",
+                // Test-execution timing knobs (read by MistRunner + generated tests)
+                "mst.test.parallelism",
+                "mst.test.inter.scenario.delay.ms",
+                "mst.test.jaeger.propagation.delay.ms",
                 // SUT preflight health check (probes registry before scenario gen)
                 "mst.preflight.enabled",
                 "mst.preflight.timeout.ms",

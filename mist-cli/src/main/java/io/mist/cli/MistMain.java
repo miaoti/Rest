@@ -98,6 +98,31 @@ public final class MistMain {
         MstConfig config = MstConfig.fromSystemProperties();
         Path workdir = Paths.get(System.getProperty("user.dir"));
 
+        // Fail fast with a readable error if the .properties file is missing
+        // the two required input keys. Without this guard, a missing key
+        // surfaces as a NullPointerException from FileInputStream deep inside
+        // createMstGenerator — same root cause but the trace points at the
+        // wrong line and gives no hint about the actual fix.
+        String oasPathChk  = coreProps.getProperty("oas.path");
+        String confPathChk = coreProps.getProperty("conf.path");
+        if (oasPathChk == null || oasPathChk.trim().isEmpty()
+                || confPathChk == null || confPathChk.trim().isEmpty()) {
+            System.err.println("MIST: properties file is missing required key(s):");
+            System.err.println("  file: " + propsFile);
+            if (oasPathChk == null || oasPathChk.trim().isEmpty()) {
+                System.err.println("    oas.path   (path to OpenAPI specification yaml)");
+            }
+            if (confPathChk == null || confPathChk.trim().isEmpty()) {
+                System.err.println("    conf.path  (path to multi-service configuration yaml)");
+            }
+            System.err.println();
+            System.err.println("For the bundled TrainTicket demo, your properties file should include:");
+            System.err.println("  oas.path=trainticket/merged_openapi_spec 1.yaml");
+            System.err.println("  conf.path=trainticket/real-system-conf.yaml");
+            System.exit(2);
+            return;
+        }
+
         MistRunner.Inputs inputs = MistRunner.Inputs.builder()
                 .testClassName(coreProps.getProperty("testclass.name"))
                 .targetDirJava(coreProps.getProperty("test.target.dir"))
