@@ -260,12 +260,29 @@ public final class MstAuthHandler {
             String body = loginBodyTemplate
                     .replace("${username}", loginUsername)
                     .replace("${password}", loginPassword);
-            log.info("MstAuthHandler: POST {} (mode={}, user={})", loginUrl, mode, loginUsername);
+            // Compose a full URL when loginUrl is path-only ("/api/v1/users/login").
+            // RestAssured.post(path) needs RestAssured.baseURI set, which the
+            // writer-emitted setup in generated tests does — but the SUT
+            // preflight runs BEFORE any generated test, so baseURI is unset
+            // and the post hits localhost. base.url is pushed to System
+            // properties by MistMain (see commit fixing this bug).
+            String fullLoginUrl = loginUrl;
+            if (loginUrl != null && !loginUrl.startsWith("http://")
+                                 && !loginUrl.startsWith("https://")) {
+                String base = System.getProperty("base.url", "");
+                if (!base.isEmpty()) {
+                    String sep = (base.endsWith("/") || loginUrl.startsWith("/")) ? "" : "/";
+                    String trimmedBase = base.endsWith("/") && loginUrl.startsWith("/")
+                            ? base.substring(0, base.length() - 1) : base;
+                    fullLoginUrl = trimmedBase + sep + loginUrl;
+                }
+            }
+            log.info("MstAuthHandler: POST {} (mode={}, user={})", fullLoginUrl, mode, loginUsername);
             Response res = RestAssured.given()
                     .contentType("application/json")
                     .body(body)
                     .when()
-                    .post(loginUrl)
+                    .post(fullLoginUrl)
                     .then()
                     .statusCode(loginExpectedStatus)
                     .extract().response();

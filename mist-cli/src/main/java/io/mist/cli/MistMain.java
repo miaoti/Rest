@@ -65,6 +65,27 @@ public final class MistMain {
         // longer matters for input lookup).
         MistPathResolver.resolveInputPaths(coreProps, propsFile.toFile());
 
+        // Push core-file network keys to System.properties so code that
+        // runs before any generated test has set RestAssured.baseURI
+        // (notably the SUT preflight + MstAuthHandler login, both added
+        // in commits 534b028e + ddb38cb3) can read base.url + auth.*
+        // directly. The MST file already does this via
+        // applyToSystemProperties; the core file did not have an
+        // analogous push because pre-preflight MIST only needed these at
+        // test-runtime, by which time the writer-emitted
+        // RestAssured.baseURI = "..." line had already run.
+        for (String key : new String[]{
+                "base.url",
+                "auth.mode", "auth.static.token", "auth.header", "auth.token.prefix",
+                "auth.login.url", "auth.login.username", "auth.login.password",
+                "auth.login.body.template", "auth.login.token.json.path",
+                "auth.login.expected.status"}) {
+            String v = coreProps.getProperty(key);
+            if (v != null && System.getProperty(key) == null) {
+                System.setProperty(key, v);
+            }
+        }
+
         // MST mode loads its dedicated properties file via mst.config.path and
         // pushes those keys (only) to System properties — same code path the
         // legacy TestGenerationAndExecution.loadMstConfig() takes. Keeping the
