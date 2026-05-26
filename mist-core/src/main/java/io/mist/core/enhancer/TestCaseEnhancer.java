@@ -10,10 +10,20 @@ import io.mist.llm.LLMService;
 import io.mist.core.util.ConsoleProgressBar;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 /**
  * Test Case Enhancer that uses LLM to improve failed test inputs.
@@ -39,8 +49,9 @@ public class TestCaseEnhancer {
     private final int maxTokens;
     private final double temperature;
     
-    // Cache of enhanced parameters by test key
-    private final Map<String, Map<String, String>> enhancedParametersCache = new HashMap<>();
+    // Cache of enhanced parameters by test key. Concurrent because enhanceBatch
+    // now distributes results from a parallel executor.
+    private final Map<String, Map<String, String>> enhancedParametersCache = new ConcurrentHashMap<>();
     
     public TestCaseEnhancer(LLMService llmService) {
         this(llmService, 500, 0.7);
@@ -83,40 +94,294 @@ public class TestCaseEnhancer {
     
     /**
      * Enhance multiple failed tests in batch.
+     *
+     * <p>The implementation has three stages:
+     * <ol>
+     *   <li><b>Group</b> by canonical scenario+fault+error fingerprint
+     *       (negative tests only, when {@code mst.enhancer.dedup.negative=true});
+     *       positive tests stay unique per test method name so their per-variant
+     *       diversity is preserved.</li>
+     *   <li><b>Resolve</b> each group via the persistent {@link EnhancementCache}
+     *       (when {@code mst.enhancer.cache.enabled=true}); cache misses queue
+     *       for a real LLM call, dispatched through a bounded thread pool
+     *       (size = {@code mst.enhancer.parallelism}, default 8) with a
+     *       {@link Semaphore} guard so concurrent calls don't exceed the
+     *       provider's rate limit window.</li>
+     *   <li><b>Distribute</b> the group result back to every member, rehydrating
+     *       per-test identity (testClassName, testMethodName) so downstream
+     *       {@code TestFileRegenerator} sees the original test in each result.
+     *       The variant's distinctive INVALID-parameter value remains in place
+     *       because the LLM never produces a replacement for it (its name is
+     *       absent from {@code enhancedParameters}).</li>
+     * </ol>
      */
     public List<EnhancementResult> enhanceBatch(List<FailedTestResult> failedTests) {
-        log.info("🔧 Enhancing {} failed tests...", failedTests.size());
+        if (failedTests == null || failedTests.isEmpty()) {
+            log.info("🔧 Enhancing 0 failed tests — nothing to do");
+            return new ArrayList<>();
+        }
 
-        List<EnhancementResult> results = new ArrayList<>();
+        int parallelism = sysIntProp("mst.enhancer.parallelism", 8);
+        boolean dedupNegative = sysBoolProp("mst.enhancer.dedup.negative", true);
+        boolean cacheEnabled = sysBoolProp("mst.enhancer.cache.enabled", true);
+
+        log.info("🔧 Enhancing {} failed tests (parallelism={}, dedup.negative={}, cache.enabled={})",
+                failedTests.size(), parallelism, dedupNegative, cacheEnabled);
+
+        // ── Phase 1: group by canonical key (or unique identity for positives) ──
+        String[] keys = new String[failedTests.size()];
+        Map<String, List<Integer>> groupToIndices = new LinkedHashMap<>();
+        int negCount = 0;
+        int posCount = 0;
+        for (int i = 0; i < failedTests.size(); i++) {
+            FailedTestResult ft = failedTests.get(i);
+            if (dedupNegative && ft.isNegativeTest()) {
+                keys[i] = canonicalKey(ft);
+                negCount++;
+            } else {
+                // Positives (P1) and dedup-disabled: each gets a unique key so
+                // the LLM is invoked independently per test.
+                keys[i] = "unique:" + ft.getTestClassName() + "." + ft.getTestMethodName();
+                posCount++;
+            }
+            groupToIndices.computeIfAbsent(keys[i], k -> new ArrayList<>()).add(i);
+        }
+        int uniqueGroups = groupToIndices.size();
+        int reductionFactor = Math.max(1, failedTests.size() / Math.max(1, uniqueGroups));
+        log.info("📊 Grouping: {} negative + {} positive → {} unique LLM calls needed ({}x reduction)",
+                negCount, posCount, uniqueGroups, reductionFactor);
+
+        // ── Phase 2: cache lookup ──
+        EnhancementCache cache = cacheEnabled ? EnhancementCache.getInstance() : null;
+        Map<String, EnhancementResult> resolvedByKey = new ConcurrentHashMap<>();
+        List<String> toCall = new ArrayList<>();
+        for (String key : groupToIndices.keySet()) {
+            if (cache != null) {
+                Optional<EnhancementCache.CachedEnhancement> hit = cache.get(key);
+                if (hit.isPresent()) {
+                    EnhancementCache.CachedEnhancement ce = hit.get();
+                    // testClass/Method fields are filled per-test in Phase 4 — we
+                    // store the shared template here with placeholder identifiers.
+                    resolvedByKey.put(key, EnhancementResult.success(
+                            "", "",
+                            new LinkedHashMap<>(ce.enhancedParameters),
+                            ce.reasoning));
+                    continue;
+                }
+            }
+            toCall.add(key);
+        }
+        int cacheHits = uniqueGroups - toCall.size();
+        log.info("📁 Cache: {} hits, {} require LLM calls", cacheHits, toCall.size());
+
+        // ── Phase 3: parallel LLM execution with bounded concurrency ──
+        if (!toCall.isEmpty()) {
+            int effectiveParallelism = Math.max(1, Math.min(parallelism, toCall.size()));
+            ExecutorService exec = Executors.newFixedThreadPool(effectiveParallelism, r -> {
+                Thread t = new Thread(r, "enhance-llm");
+                t.setDaemon(true);
+                return t;
+            });
+            Semaphore gate = new Semaphore(effectiveParallelism);
+            ConsoleProgressBar.begin("Enhancing", toCall.size());
+            List<CompletableFuture<Void>> futures = new ArrayList<>(toCall.size());
+            for (String key : toCall) {
+                int representativeIdx = groupToIndices.get(key).get(0);
+                FailedTestResult representative = failedTests.get(representativeIdx);
+                futures.add(CompletableFuture.runAsync(() -> {
+                    try {
+                        gate.acquire();
+                        try {
+                            EnhancementResult r = enhance(representative);
+                            resolvedByKey.put(key, r);
+                            if (cache != null && r.isSuccess()) {
+                                cache.put(key, new EnhancementCache.CachedEnhancement(
+                                        r.getEnhancedParameters(), r.getReasoning()));
+                            }
+                        } finally {
+                            gate.release();
+                            ConsoleProgressBar.update(representative.getTestMethodName());
+                        }
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        resolvedByKey.put(key, EnhancementResult.failed("Interrupted"));
+                    } catch (Throwable t) {
+                        log.error("Enhancement task failed for key={}: {}",
+                                shortKey(key), t.toString());
+                        resolvedByKey.put(key,
+                                EnhancementResult.failed("Exception: " + t.getMessage()));
+                    }
+                }, exec));
+            }
+            try {
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            } finally {
+                exec.shutdown();
+                ConsoleProgressBar.complete();
+            }
+        }
+
+        // ── Phase 4: distribute results back to per-test slots ──
+        List<EnhancementResult> results = new ArrayList<>(
+                Collections.nCopies(failedTests.size(), (EnhancementResult) null));
         int enhanced = 0;
         int failed = 0;
-
-        ConsoleProgressBar.begin("Enhancing", failedTests.size());
-        for (FailedTestResult failedTest : failedTests) {
-            try {
-                EnhancementResult result = enhance(failedTest);
-                results.add(result);
-
-                if (result.isSuccess()) {
+        for (Map.Entry<String, List<Integer>> e : groupToIndices.entrySet()) {
+            EnhancementResult shared = resolvedByKey.get(e.getKey());
+            for (int idx : e.getValue()) {
+                FailedTestResult ft = failedTests.get(idx);
+                EnhancementResult perTest;
+                if (shared != null && shared.isSuccess()) {
+                    // Defensive copy: each test's params map is independent, so
+                    // any later mutation by the regenerator stays test-local.
+                    perTest = EnhancementResult.success(
+                            ft.getTestClassName(),
+                            ft.getTestMethodName(),
+                            new LinkedHashMap<>(shared.getEnhancedParameters()),
+                            shared.getReasoning());
+                    enhancedParametersCache.put(
+                            ft.getTestClassName() + "." + ft.getTestMethodName(),
+                            perTest.getEnhancedParameters());
                     enhanced++;
-                    // Cache the enhanced parameters
-                    String testKey = failedTest.getTestClassName() + "." + failedTest.getTestMethodName();
-                    enhancedParametersCache.put(testKey, result.getEnhancedParameters());
+                } else if (shared != null) {
+                    // Share the failed result; no per-test identity needed.
+                    perTest = shared;
+                    failed++;
                 } else {
+                    perTest = EnhancementResult.failed("No result for canonical group");
                     failed++;
                 }
-
-            } catch (Exception e) {
-                log.error("Error enhancing test {}: {}", failedTest.getTestMethodName(), e.getMessage());
-                results.add(EnhancementResult.failed("Exception: " + e.getMessage()));
-                failed++;
+                results.set(idx, perTest);
             }
-            ConsoleProgressBar.update(failedTest.getTestMethodName());
         }
-        ConsoleProgressBar.complete();
 
-        log.info("✅ Enhancement complete: {} enhanced, {} failed", enhanced, failed);
+        int llmCallsMade = toCall.size();
+        int savedByDedupOrCache = failedTests.size() - llmCallsMade - cacheHits;
+        log.info("✅ Enhancement complete: {} enhanced, {} failed (LLM calls: {}, cache hits: {}, saved: {})",
+                enhanced, failed, llmCallsMade, cacheHits, savedByDedupOrCache);
         return results;
+    }
+
+    /**
+     * Compute the canonical-key fingerprint for {@code ft}. Used as the
+     * deduplication / cache key for negative tests. The fields included are
+     * exactly those that affect the LLM's output:
+     * <ul>
+     *   <li>HTTP method + endpoint (in prompt)</li>
+     *   <li>failedStepIndex (regenerator applies step-scoped edits)</li>
+     *   <li>actualStatusCode (different status → different LLM advice)</li>
+     *   <li>response body fingerprint (truncated + normalized; 200 chars matches
+     *       the prompt's own truncation)</li>
+     *   <li>parameter SCHEMA fingerprint — names+types+locations+required, sorted
+     *       (concrete values are excluded by design; variants vary by value)</li>
+     *   <li>invalid-parameter NAMES (sorted; values stripped — distinguishes
+     *       _SPECIAL_CHARACTERS vs _OVERFLOW fault types)</li>
+     *   <li>locked-dependency NAMES (sorted)</li>
+     * </ul>
+     * Excluded: testMethodName/testClassName/scenarioName, parameter values,
+     * errorMessage/failureType (derivable from status + body).
+     */
+    String canonicalKey(FailedTestResult ft) {
+        JSONObject k = new JSONObject();
+        k.put("m", nullSafe(ft.getHttpMethod()));
+        k.put("e", nullSafe(ft.getEndpoint()));
+        k.put("s", ft.getFailedStepIndex());
+        k.put("c", ft.getActualStatusCode());
+        k.put("b", sha256Hex(canonicalizeResponse(ft.getResponseBody(), 200)));
+        k.put("p", paramSchemaFingerprint(ft));
+        k.put("i", sortedJsonArray(stripValueSuffixes(ft.getInvalidParameters())));
+        k.put("l", sortedJsonArray(ft.getLockedDependencyParams()));
+        return sha256Hex(k.toString());
+    }
+
+    private static String paramSchemaFingerprint(FailedTestResult ft) {
+        Set<String> locked = ft.getLockedDependencyParams();
+        if (locked == null) locked = Collections.emptySet();
+        int targetStep = ft.getFailedStepIndex();
+        List<String> rows = new ArrayList<>();
+        for (ParameterSnapshot p : ft.getParameters()) {
+            // Match TestCaseEnhancer.buildUserPrompt:208-217: when failedStepIndex
+            // is positive, only that step's params are shown; else all of them.
+            if (targetStep > 0 && p.getStepIndex() != targetStep) continue;
+            if (locked.contains(p.getName())) continue;
+            rows.add(nullSafe(p.getName()) + "|"
+                    + nullSafe(p.getType()) + "|"
+                    + nullSafe(p.getLocation()) + "|"
+                    + p.isRequired());
+        }
+        Collections.sort(rows);
+        return sha256Hex(String.join("\n", rows));
+    }
+
+    /**
+     * Convert {@code "accountId=BAD_CHARS_8"} entries into bare names
+     * {@code "accountId"}. Names alone determine LLM advice (the prompt only
+     * lists names — see buildUserPrompt:195-196).
+     */
+    private static List<String> stripValueSuffixes(List<String> namesWithValues) {
+        if (namesWithValues == null) return Collections.emptyList();
+        List<String> out = new ArrayList<>(namesWithValues.size());
+        for (String raw : namesWithValues) {
+            if (raw == null) continue;
+            int eq = raw.indexOf('=');
+            out.add(eq >= 0 ? raw.substring(0, eq) : raw);
+        }
+        return out;
+    }
+
+    private static JSONArray sortedJsonArray(Collection<String> values) {
+        List<String> copy = values == null ? Collections.emptyList() : new ArrayList<>(values);
+        Collections.sort(copy);
+        return new JSONArray(copy);
+    }
+
+    /**
+     * Lowercase + collapse-whitespace + truncate. Matches the prompt's
+     * 500-char truncation rule loosely but at 200 chars for tighter key
+     * locality (the leading 200 chars of an error body almost always
+     * determine the LLM's response, and longer bodies vary in noise).
+     */
+    private static String canonicalizeResponse(String body, int maxChars) {
+        if (body == null) return "";
+        String norm = body.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
+        return norm.length() > maxChars ? norm.substring(0, maxChars) : norm;
+    }
+
+    private static String nullSafe(String s) {
+        return s == null ? "" : s;
+    }
+
+    private static String sha256Hex(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(digest.length * 2);
+            for (byte b : digest) hex.append(String.format("%02x", b));
+            return hex.toString();
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new IllegalStateException("SHA-256 not available", nsae);
+        }
+    }
+
+    private static String shortKey(String key) {
+        return key == null ? "null" : (key.length() > 12 ? key.substring(0, 12) + "..." : key);
+    }
+
+    private static int sysIntProp(String name, int defaultValue) {
+        String v = System.getProperty(name);
+        if (v == null || v.trim().isEmpty()) return defaultValue;
+        try {
+            return Integer.parseInt(v.trim());
+        } catch (NumberFormatException ignored) {
+            log.warn("Invalid integer for system property {}={}, falling back to {}", name, v, defaultValue);
+            return defaultValue;
+        }
+    }
+
+    private static boolean sysBoolProp(String name, boolean defaultValue) {
+        String v = System.getProperty(name);
+        if (v == null || v.trim().isEmpty()) return defaultValue;
+        return Boolean.parseBoolean(v.trim());
     }
     
     /**
