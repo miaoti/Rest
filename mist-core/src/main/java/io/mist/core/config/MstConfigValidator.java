@@ -108,6 +108,11 @@ public final class MstConfigValidator {
                 "test.enhancer.enabled",
                 "test.enhancer.rounds",
                 "test.enhancer.skip.5xx",
+                // Enhancer dedup + parallel + persistent cache (commit 967e5a2e)
+                "mst.enhancer.parallelism",
+                "mst.enhancer.dedup.negative",
+                "mst.enhancer.cache.enabled",
+                "mst.enhancer.cache.path",
                 // Jaeger
                 "jaeger.enabled",
                 "jaeger.base.url",
