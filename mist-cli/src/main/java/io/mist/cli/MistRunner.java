@@ -1208,16 +1208,28 @@ public final class MistRunner {
                                     } else {
                                         logger.info("✅ Compilation successful");
 
-                                        // STEP 3: Execute ALL tests (only exploration tests are new)
-                                        logger.info("🚀 Executing tests (exploration tests will run)...");
+                                        // STEP 3: Execute ONLY the new exploration tests.
+                                        //
+                                        // The exploration writer emits test methods named
+                                        // {originalMethod}_explore_{statusCode} into the SAME class
+                                        // files as the baseline.  Previously this step called
+                                        // executeTestsWithCollector without a filter, so JUnit ran
+                                        // every @Test method in every class — including the entire
+                                        // baseline that already executed in step 1, doubling Round 0
+                                        // wall time (~11h baseline becomes ~22h with the redundant
+                                        // re-run).  The "_explore_" filter restricts execution to
+                                        // just the new exploration methods.
+                                        logger.info("🚀 Executing ONLY new exploration tests (filter: '_explore_')...");
 
                                         TestResultCapture.enableCapture();
                                         FailedTestCollector explorationCollector = new FailedTestCollector(
                                             round, skip5xx, enhancerOutputDir);
 
-                                        // Execute with skipAllureClean=true to preserve results
+                                        // Execute with skipAllureClean=true to preserve results,
+                                        // methodNameFilter="_explore_" to skip baseline methods.
                                         Result execResult = executeTestsWithCollector(
-                                            fullPackageName, className, explorationCollector, true, true);
+                                            fullPackageName, className, explorationCollector,
+                                            true, true, "_explore_");
 
                                         if (execResult != null) {
                                             logger.info("✅ Execution complete: {} tests run, {} failures",
@@ -1392,7 +1404,7 @@ public final class MistRunner {
      */
     private Result executeTestsWithCollector(String fullPackageName, String className,
                                                     FailedTestCollector collector, boolean isFinalRound) {
-        return executeTestsWithCollector(fullPackageName, className, collector, isFinalRound, false);
+        return executeTestsWithCollector(fullPackageName, className, collector, isFinalRound, false, null);
     }
 
     /**
@@ -1402,6 +1414,20 @@ public final class MistRunner {
     private Result executeTestsWithCollector(String fullPackageName, String className,
                                                     FailedTestCollector collector, boolean isFinalRound,
                                                     boolean skipAllureClean) {
+        return executeTestsWithCollector(fullPackageName, className, collector, isFinalRound,
+                skipAllureClean, null);
+    }
+
+    /**
+     * Execute tests with a FailedTestCollector to gather failure information.
+     * @param skipAllureClean if true, skip Allure setup/cleaning (for exploration tests that should add to existing results)
+     * @param methodNameFilter if non-null, only test methods whose names contain
+     *        this substring are executed (skip baseline re-runs in step f).
+     */
+    private Result executeTestsWithCollector(String fullPackageName, String className,
+                                                    FailedTestCollector collector, boolean isFinalRound,
+                                                    boolean skipAllureClean,
+                                                    String methodNameFilter) {
         try {
             // Clean and setup
             cleanOldCompiledTestClasses(fullPackageName);
@@ -1491,6 +1517,31 @@ public final class MistRunner {
                 return null;
             }
 
+            // Optional method-name filter.  When set (e.g. "_explore_" for the
+            // post-status-code-exploration re-execute step), only test methods
+            // whose name contains this substring run; the rest are skipped.
+            // Without this, step f in Round 0 re-runs the entire baseline
+            // suite even though baseline already ran in step 1 — caller wanted
+            // "only new exploration tests", but executeTestsWithCollector used
+            // to run every @Test method in every class.
+            final org.junit.runner.manipulation.Filter mFilter;
+            if (methodNameFilter != null && !methodNameFilter.isEmpty()) {
+                final String needle = methodNameFilter;
+                mFilter = new org.junit.runner.manipulation.Filter() {
+                    @Override public boolean shouldRun(org.junit.runner.Description d) {
+                        if (d.isSuite()) return true;
+                        String m = d.getMethodName();
+                        return m != null && m.contains(needle);
+                    }
+                    @Override public String describe() {
+                        return "method name contains '" + needle + "'";
+                    }
+                };
+                logger.info("Method filter active: only running tests whose name contains '{}'", needle);
+            } else {
+                mFilter = null;
+            }
+
             // Resolve parallelism the same way executeTestClasses does.  Round-mode
             // (enhancement loop) used to ignore mst.test.parallelism entirely —
             // junit.run(...) over N test classes is serial, which capped throughput
@@ -1542,7 +1593,13 @@ public final class MistRunner {
                         ConsoleProgressBar.complete();
                     }
                 });
-                result = junit.run(testClasses.toArray(new Class[0]));
+                if (mFilter != null) {
+                    org.junit.runner.Request request = org.junit.runner.Request
+                            .classes(testClasses.toArray(new Class[0])).filterWith(mFilter);
+                    result = junit.run(request);
+                } else {
+                    result = junit.run(testClasses.toArray(new Class[0]));
+                }
             } else {
                 // Parallel path. Each task runs ONE test class on a fresh
                 // JUnitCore with its own AllureJunit4 listener (Allure's lifecycle
@@ -1567,6 +1624,11 @@ public final class MistRunner {
                         JUnitCore local = new JUnitCore();
                         local.addListener(new AllureJunit4());
                         try {
+                            if (mFilter != null) {
+                                org.junit.runner.Request req = org.junit.runner.Request
+                                        .aClass(c).filterWith(mFilter);
+                                return local.run(req);
+                            }
                             return local.run(c);
                         } finally {
                             int n = progressIdx.incrementAndGet();
