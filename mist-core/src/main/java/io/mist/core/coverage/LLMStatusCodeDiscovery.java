@@ -2,6 +2,7 @@ package io.mist.core.coverage;
 
 import io.mist.llm.LLMConfig;
 import io.mist.llm.LLMService;
+import io.mist.core.config.CacheToggle;
 import io.mist.core.llm.ParameterInfo;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,12 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,14 +30,61 @@ import java.util.regex.Pattern;
 public class LLMStatusCodeDiscovery {
     
     private static final Logger log = LogManager.getLogger(LLMStatusCodeDiscovery.class);
-    
+
+    /** Heuristic: a "stable" path segment starts with a lowercase letter, is at
+     * least 2 characters long, and consists only of lowercase letters/digits/
+     * {._-}. Curly-brace template literals like "{id}" are also stable.
+     *
+     * <p>Min-length 2 collapses single-character path values ({@code /account/x},
+     * {@code /trip/a}) while preserving common short resource names with digits
+     * like {@code v1}, {@code v2}. Anything else (URL-encoded values, FALLBACK_*,
+     * mixed case, leading digit, special chars, single letters) is treated as a
+     * parameter value and replaced with {@code {id}} in {@link #normalizePath}.
+     */
+    private static final Pattern STABLE_PATH_SEGMENT =
+            Pattern.compile("^([a-z][a-z0-9_.\\-]{1,29}|\\{[^}]+\\})$");
+
+    /** Default disk path for the persistent cache. */
+    private static final String DEFAULT_CACHE_PATH = ".mist/llm-status-code-discovery-cache.json";
+
+    /** Property: cache file path (default {@value #DEFAULT_CACHE_PATH}).
+     *  Read/write enable comes from the shared {@link CacheToggle} — there is
+     *  NO per-cache read/write toggle, intentionally, to keep operator UX to a
+     *  single {@code mst.cache.read} / {@code mst.cache.write} pair. */
+    public static final String PROP_PATH = "mst.status.code.discovery.cache.path";
+
     private final LLMService llmService;
-    
-    // Cache to avoid redundant LLM calls for the same API
+
+    // Signature-keyed cache: same endpoint signature → same status-code list
+    // regardless of which concrete URL/value the caller passed. Persisted to
+    // disk so identical signatures across runs reuse the LLM result and the
+    // run is reproducible for paper/A会 numbers. Key shape:
+    //    "<METHOD> <normalizedPath>|<paramSchemaFingerprint>"
     private final Map<String, List<StatusCodeTarget>> discoveryCache = new HashMap<>();
-    
+    private final Path persistPath;
+    private final Object diskLock = new Object();
+
     public LLMStatusCodeDiscovery(LLMService llmService) {
+        this(llmService, Paths.get(System.getProperty(PROP_PATH, DEFAULT_CACHE_PATH)));
+    }
+
+    /** Package-visible constructor for tests: lets the test pin the cache file
+     *  regardless of System properties. Read/write decisions still come from
+     *  {@link CacheToggle} at lookup/save time so tests can flip
+     *  {@code mst.cache.read} / {@code mst.cache.write} in the same way as
+     *  production. */
+    LLMStatusCodeDiscovery(LLMService llmService, Path persistPath) {
         this.llmService = llmService;
+        this.persistPath = persistPath;
+        // Always load on construction — read-only playback (cache.read=true,
+        // cache.write=false) still needs entries in memory; refresh mode
+        // (read=false, write=true) loads so new puts merge with existing
+        // rather than clobber the on-disk file.
+        loadFromDisk();
+        if (!CacheToggle.canRead() || !CacheToggle.canWrite()) {
+            log.info("LLMStatusCodeDiscovery cache: master read={} write={} (loaded {} entries)",
+                    CacheToggle.canRead(), CacheToggle.canWrite(), discoveryCache.size());
+        }
     }
     
     /**
@@ -62,19 +116,26 @@ public class LLMStatusCodeDiscovery {
             Set<Integer> observedStatusCodes,
             List<String> sampleResponses) {
         
-        String apiKey = getApiKey(httpMethod, path);
-        
-        // Check cache first
-        if (discoveryCache.containsKey(apiKey)) {
-            log.debug("Using cached status code discovery for {}", apiKey);
-            return new ArrayList<>(discoveryCache.get(apiKey));
+        // Build the signature-based cache key. Same (method, normalized-path,
+        // sorted-parameter-schema) returns the same status-code list regardless
+        // of which concrete URL the caller passed. Observed status codes and
+        // sample responses are NOT in the key — they're hints to the LLM on
+        // first call, not part of the endpoint identity.
+        String cacheKey = buildSignatureCacheKey(httpMethod, path, parameters);
+
+        // Check cache first. Read is gated by the master {@link CacheToggle}:
+        // when {@code mst.cache.read=false} the lookup is skipped so every
+        // call hits the LLM (useful for refresh mode with write=true).
+        if (CacheToggle.canRead() && discoveryCache.containsKey(cacheKey)) {
+            log.debug("Using cached status code discovery for {}", cacheKey);
+            return new ArrayList<>(discoveryCache.get(cacheKey));
         }
-        
+
         log.info("Discovering status codes for {} {} (service: {})", httpMethod, path, serviceName);
-        
-        String prompt = buildDiscoveryPrompt(serviceName, httpMethod, path, parameters, 
+
+        String prompt = buildDiscoveryPrompt(serviceName, httpMethod, path, parameters,
                                              observedStatusCodes, sampleResponses);
-        
+
         String systemPrompt = buildSystemPrompt();
         
         try {
@@ -92,17 +153,22 @@ public class LLMStatusCodeDiscovery {
                 return createDefaultTargets(observedStatusCodes);
             }
             
-            // Cache the result
-            discoveryCache.put(apiKey, new ArrayList<>(targets));
-            
-            log.info("Discovered {} possible status codes for {}: {}", 
-                targets.size(), apiKey, 
+            // Cache the result + persist to disk so a future run with the same
+            // endpoint signature hits the cache instead of re-asking the LLM.
+            // Skipped when master {@code mst.cache.write=false} (read-only playback).
+            if (CacheToggle.canWrite()) {
+                discoveryCache.put(cacheKey, new ArrayList<>(targets));
+                saveToDisk();
+            }
+
+            log.info("Discovered {} possible status codes for {}: {}",
+                targets.size(), cacheKey,
                 targets.stream().map(t -> String.valueOf(t.getStatusCode())).reduce((a, b) -> a + ", " + b).orElse(""));
-            
+
             return targets;
-            
+
         } catch (Exception e) {
-            log.error("Error during status code discovery for {}: {}", apiKey, e.getMessage(), e);
+            log.error("Error during status code discovery for {}: {}", cacheKey, e.getMessage(), e);
             return createDefaultTargets(observedStatusCodes);
         }
     }
@@ -340,23 +406,136 @@ public class LLMStatusCodeDiscovery {
     }
     
     /**
-     * Get a unique key for an API operation.
+     * Get a unique key for an API operation. PUBLIC because external code (e.g.
+     * {@code StatusCodeCoverageTracker}) keys by this same string.
      */
     public static String getApiKey(String httpMethod, String path) {
         return httpMethod.toUpperCase() + " " + normalizePath(path);
     }
-    
+
     /**
-     * Normalize path by replacing path parameters with placeholders.
+     * Normalize a concrete request path to a stable endpoint signature.
+     *
+     * <p>Path parameter values come from the test generator's invalid-input pools
+     * — values like {@code FALLBACK_orderId_3}, {@code %00%01%02},
+     * {@code ../../../etc/passwd}, {@code XXXX…overflow}, or random UUIDs —
+     * which would make each invocation produce a different cache key and
+     * defeat reuse. We replace every "value-like" path segment with the
+     * literal {@code {id}} so the normalized path matches what the OpenAPI
+     * path template would look like.
+     *
+     * <p>A segment is "stable" (kept verbatim) if it starts with a lowercase
+     * letter and consists only of lowercase letters, digits, {@code _}, {@code .},
+     * or {@code -}; or if it is already a {@code {…}} template literal.
+     * Everything else is normalized.
      */
-    private static String normalizePath(String path) {
-        // Replace UUID-like patterns
-        String normalized = path.replaceAll("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", "{id}");
-        // Replace numeric IDs
-        normalized = normalized.replaceAll("/\\d+(?=/|$)", "/{id}");
-        return normalized;
+    public static String normalizePath(String path) {
+        if (path == null || path.isEmpty()) return path == null ? "" : path;
+        String[] parts = path.split("/", -1);
+        StringBuilder sb = new StringBuilder(path.length());
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) sb.append('/');
+            String seg = parts[i];
+            if (seg.isEmpty()) continue;
+            if (STABLE_PATH_SEGMENT.matcher(seg).matches()) {
+                sb.append(seg);
+            } else {
+                sb.append("{id}");
+            }
+        }
+        return sb.toString();
     }
-    
+
+    /**
+     * Build the signature-based cache key from method + normalized path +
+     * parameter schema. Schema fingerprint sorts param tuples
+     * {@code name|type|location|required} alphabetically so map-iteration
+     * order is irrelevant and the key is deterministic.
+     */
+    static String buildSignatureCacheKey(String httpMethod, String path,
+                                         List<ParameterInfo> parameters) {
+        List<String> rows = new ArrayList<>();
+        if (parameters != null) {
+            for (ParameterInfo p : parameters) {
+                String name = p.getName() == null ? "" : p.getName();
+                String type = p.getType() == null ? "" : p.getType();
+                String loc = p.getInLocation() == null ? "" : p.getInLocation();
+                boolean req = Boolean.TRUE.equals(p.getRequired());
+                rows.add(name + "|" + type + "|" + loc + "|" + req);
+            }
+        }
+        Collections.sort(rows);
+        return getApiKey(httpMethod, path) + "|" + String.join(",", rows);
+    }
+
+    /**
+     * Load cache entries from disk on startup. Missing file is a cold start
+     * (info-logged, not an error). A malformed file logs a warning and the
+     * cache stays empty — we never throw at construction because callers may
+     * not have control over the persistent file's state.
+     */
+    private void loadFromDisk() {
+        if (persistPath == null) return;
+        if (!Files.exists(persistPath)) {
+            log.info("LLMStatusCodeDiscovery cache: cold start, no file at {}", persistPath);
+            return;
+        }
+        try {
+            String content = new String(Files.readAllBytes(persistPath), StandardCharsets.UTF_8);
+            if (content.trim().isEmpty()) return;
+            JSONObject obj = new JSONObject(content);
+            int loaded = 0;
+            for (String key : obj.keySet()) {
+                try {
+                    JSONArray arr = obj.getJSONArray(key);
+                    List<StatusCodeTarget> targets = parseDiscoveryResponse(arr.toString());
+                    if (!targets.isEmpty()) {
+                        discoveryCache.put(key, targets);
+                        loaded++;
+                    }
+                } catch (Exception entryEx) {
+                    log.warn("LLMStatusCodeDiscovery cache: skipping malformed entry {}: {}",
+                            key, entryEx.getMessage());
+                }
+            }
+            log.info("LLMStatusCodeDiscovery cache: loaded {} entries from {}", loaded, persistPath);
+        } catch (Exception e) {
+            log.warn("LLMStatusCodeDiscovery cache: failed to load {}: {}", persistPath, e.getMessage());
+        }
+    }
+
+    /**
+     * Persist the in-memory cache to disk via atomic temp+rename so partial
+     * writes don't corrupt the file on JVM crash.
+     */
+    private void saveToDisk() {
+        if (persistPath == null) return;
+        synchronized (diskLock) {
+            try {
+                JSONObject obj = new JSONObject();
+                for (Map.Entry<String, List<StatusCodeTarget>> e : discoveryCache.entrySet()) {
+                    JSONArray arr = new JSONArray();
+                    for (StatusCodeTarget t : e.getValue()) {
+                        arr.put(t.toJSON());
+                    }
+                    obj.put(e.getKey(), arr);
+                }
+                Path parent = persistPath.getParent();
+                if (parent != null) Files.createDirectories(parent);
+                Path tmp = persistPath.resolveSibling(persistPath.getFileName().toString() + ".tmp");
+                Files.write(tmp, obj.toString(2).getBytes(StandardCharsets.UTF_8));
+                try {
+                    Files.move(tmp, persistPath,
+                            StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (java.nio.file.AtomicMoveNotSupportedException atomicEx) {
+                    Files.move(tmp, persistPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (IOException ioe) {
+                log.warn("LLMStatusCodeDiscovery cache: save failed: {}", ioe.getMessage());
+            }
+        }
+    }
+
     /**
      * Clear the discovery cache.
      */

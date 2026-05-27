@@ -1,6 +1,7 @@
 package io.mist.core.enhancer;
 
 import io.mist.core.auth.AuthManipulationStrategy;
+import io.mist.core.config.CacheToggle;
 import io.mist.core.coverage.LLMStatusCodeDiscovery;
 import io.mist.core.coverage.StatusCodeCoverageTracker;
 import io.mist.core.coverage.StatusCodeTarget;
@@ -17,6 +18,12 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,6 +62,19 @@ public class StatusCodeExplorationEnhancer {
     
     // Track failed inputs per (apiKey, statusCode) to avoid repeating them
     private final Map<String, Set<String>> failedInputsPerTarget = new HashMap<>();
+
+    // ─── Signature-based persistent cache for exploration suggestions ────
+    /** Cache file path property. Default {@code .mist/llm-exploration-suggest-cache.json}.
+     *  Read/write is governed by the master {@link CacheToggle} pair so operators
+     *  set caching policy in ONE place ({@code mst.cache.read} / {@code mst.cache.write}). */
+    public static final String PROP_CACHE_PATH = "mst.exploration.suggest.cache.path";
+
+    private static final String DEFAULT_CACHE_PATH = ".mist/llm-exploration-suggest-cache.json";
+
+    /** Cache entries: signature → raw LLM response JSON string. Re-parsed on hit. */
+    private final Map<String, String> evaluationCache = new HashMap<>();
+    private final Path cachePersistPath;
+    private final Object cacheDiskLock = new Object();
     
     /**
      * Callback interface for executing a single exploration test.
@@ -80,6 +100,12 @@ public class StatusCodeExplorationEnhancer {
         this.authStrategy = new AuthManipulationStrategy();
         this.maxTokens = 1000;
         this.temperature = 0.3;
+        this.cachePersistPath = Paths.get(System.getProperty(PROP_CACHE_PATH, DEFAULT_CACHE_PATH));
+        loadCacheFromDisk();
+        if (!CacheToggle.canRead() || !CacheToggle.canWrite()) {
+            log.info("ExplorationEnhancer LLM-suggest cache: master read={} write={} (loaded {} entries)",
+                    CacheToggle.canRead(), CacheToggle.canWrite(), evaluationCache.size());
+        }
     }
     
     /**
@@ -534,26 +560,145 @@ public class StatusCodeExplorationEnhancer {
     
     /**
      * Ask LLM if this test is a good candidate for status code exploration on the given step.
+     *
+     * <p>Signature-keyed by (per-step method+normalized-path, target step idx,
+     * sorted untriggered status codes, sorted parameter schema). On a hit the
+     * cached raw LLM response is re-parsed — concrete invalid values vary per
+     * variant but the suggestion strategy is endpoint-property not invocation-
+     * property, so caching is safe.
      */
     private List<ExplorationSuggestion> evaluateExplorationCandidate(
             MultiServiceTestCase test,
             TestExecutionResult result,
             List<StatusCodeTarget> untriggeredCodes,
             int targetStepIndex) {
-        
+
+        String cacheKey = buildExplorationCacheKey(test, untriggeredCodes, targetStepIndex);
+
+        if (CacheToggle.canRead()) {
+            String cached = evaluationCache.get(cacheKey);
+            if (cached != null) {
+                log.debug("Exploration suggest cache HIT: {} step {}", test.getOperationId(), targetStepIndex);
+                return parseExplorationResponse(cached);
+            }
+        }
+
         String systemPrompt = buildExplorationSystemPrompt();
         String userPrompt = buildExplorationUserPrompt(test, result, untriggeredCodes, targetStepIndex);
-        
+
         log.debug("Evaluating exploration candidate: {} step {}", test.getOperationId(), targetStepIndex);
-        
+
         String llmResponse = llmService.generateText(systemPrompt, userPrompt, maxTokens, temperature);
-        
+
         if (llmResponse == null || llmResponse.trim().isEmpty()) {
             log.warn("LLM returned empty response for exploration evaluation");
             return Collections.emptyList();
         }
-        
+
+        if (CacheToggle.canWrite()) {
+            evaluationCache.put(cacheKey, llmResponse);
+            saveCacheToDisk();
+        }
+
         return parseExplorationResponse(llmResponse);
+    }
+
+    /**
+     * Build the signature-based cache key. Includes only fields that determine
+     * the LLM's strategy:
+     * <ul>
+     *   <li>Method + normalized path for every step up to and including the
+     *       target (workflow context dictates which params can be modified).</li>
+     *   <li>Target step index (the LLM's job is "modify THIS step's params").</li>
+     *   <li>Sorted untriggered status code set (the goal of the suggestion).</li>
+     *   <li>Sorted parameter schema (name|type|location|required) for the
+     *       target step. Concrete parameter VALUES are excluded — they vary
+     *       per variant but don't change the suggestion strategy.</li>
+     * </ul>
+     */
+    private String buildExplorationCacheKey(MultiServiceTestCase test,
+                                            List<StatusCodeTarget> untriggeredCodes,
+                                            int targetStepIndex) {
+        StringBuilder sb = new StringBuilder();
+        // workflow steps up to target
+        int upper = Math.min(targetStepIndex + 1, test.getSteps().size());
+        for (int s = 0; s < upper; s++) {
+            MultiServiceTestCase.StepCall step = test.getSteps().get(s);
+            String m = step.getMethod() != null ? step.getMethod().getMethod().toUpperCase() : "GET";
+            sb.append(m).append(' ')
+              .append(LLMStatusCodeDiscovery.normalizePath(step.getPath()))
+              .append('|');
+        }
+        sb.append("target=").append(targetStepIndex).append('|');
+        // sorted untriggered status codes
+        List<Integer> codes = new ArrayList<>();
+        if (untriggeredCodes != null) {
+            for (StatusCodeTarget t : untriggeredCodes) codes.add(t.getStatusCode());
+        }
+        Collections.sort(codes);
+        sb.append("untrig=").append(codes).append('|');
+        // sorted param-schema of target step
+        if (targetStepIndex < test.getSteps().size()) {
+            MultiServiceTestCase.StepCall targetStep = test.getSteps().get(targetStepIndex);
+            List<String> rows = new ArrayList<>();
+            for (String name : targetStep.getPathParams().keySet())
+                rows.add(name + "|string|path|false");
+            for (String name : targetStep.getQueryParams().keySet())
+                rows.add(name + "|string|query|false");
+            for (String name : targetStep.getBodyFields().keySet())
+                rows.add(name + "|string|body|false");
+            Collections.sort(rows);
+            sb.append("params=").append(String.join(",", rows));
+        }
+        return sb.toString();
+    }
+
+    /** Load the persistent suggest cache file. Cold start / corrupt file logs warn. */
+    private void loadCacheFromDisk() {
+        if (cachePersistPath == null) return;
+        if (!Files.exists(cachePersistPath)) {
+            log.info("ExplorationEnhancer suggest cache: cold start (no file at {})", cachePersistPath);
+            return;
+        }
+        try {
+            String content = new String(Files.readAllBytes(cachePersistPath), StandardCharsets.UTF_8);
+            if (content.trim().isEmpty()) return;
+            JSONObject obj = new JSONObject(content);
+            for (String key : obj.keySet()) {
+                evaluationCache.put(key, obj.optString(key, ""));
+            }
+            log.info("ExplorationEnhancer suggest cache: loaded {} entries from {}",
+                    evaluationCache.size(), cachePersistPath);
+        } catch (Exception e) {
+            log.warn("ExplorationEnhancer suggest cache: failed to load {}: {}",
+                    cachePersistPath, e.getMessage());
+        }
+    }
+
+    /** Atomic temp+rename save. Falls back to plain replace on filesystems
+     *  (e.g. tmpfs overlays) that don't support ATOMIC_MOVE. */
+    private void saveCacheToDisk() {
+        if (cachePersistPath == null) return;
+        synchronized (cacheDiskLock) {
+            try {
+                JSONObject obj = new JSONObject();
+                for (Map.Entry<String, String> e : evaluationCache.entrySet()) {
+                    obj.put(e.getKey(), e.getValue());
+                }
+                Path parent = cachePersistPath.getParent();
+                if (parent != null) Files.createDirectories(parent);
+                Path tmp = cachePersistPath.resolveSibling(cachePersistPath.getFileName().toString() + ".tmp");
+                Files.write(tmp, obj.toString(2).getBytes(StandardCharsets.UTF_8));
+                try {
+                    Files.move(tmp, cachePersistPath,
+                            StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (java.nio.file.AtomicMoveNotSupportedException atomicEx) {
+                    Files.move(tmp, cachePersistPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (IOException ioe) {
+                log.warn("ExplorationEnhancer suggest cache: save failed: {}", ioe.getMessage());
+            }
+        }
     }
     
     private String buildExplorationSystemPrompt() {

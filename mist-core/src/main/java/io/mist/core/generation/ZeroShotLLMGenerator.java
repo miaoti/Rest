@@ -1,12 +1,20 @@
 package io.mist.core.generation;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import io.mist.core.config.CacheToggle;
 import io.mist.core.config.MstConfig;
+import io.mist.core.coverage.LLMStatusCodeDiscovery;
 import io.mist.core.llm.ParameterInfo;
 import io.mist.llm.LLMService;
 import io.mist.llm.LLMConfig;
@@ -36,6 +44,20 @@ public class ZeroShotLLMGenerator {
 
     // LLM service for unified model access
     private final LLMService llmService;
+
+    // ─── Signature-keyed LLM Validation cache ────────────────────────────
+    /** Cache file path for {@link #validateResponse} / {@link #validateNegativeTestResponse}
+     *  results. Default {@code .mist/llm-validation-cache.json}. Read/write gated
+     *  by the master {@link CacheToggle} pair. */
+    public static final String PROP_VALIDATION_CACHE_PATH = "mst.llm.validation.cache.path";
+    private static final String DEFAULT_VALIDATION_CACHE_PATH = ".mist/llm-validation-cache.json";
+
+    /** signature → serialized ValidationResult JSON. */
+    private final Map<String, String> validationCache = new ConcurrentHashMap<>();
+    private final Path validationCachePath = Paths.get(System.getProperty(
+            PROP_VALIDATION_CACHE_PATH, DEFAULT_VALIDATION_CACHE_PATH));
+    private final Object validationCacheDiskLock = new Object();
+    private volatile boolean validationCacheLoaded = false;
 
     // Reproducible RNG for the LLM-unavailable fallback path; honours
     // -Drandom.seed so the "test<N>" placeholder values are deterministic
@@ -1245,6 +1267,18 @@ public class ZeroShotLLMGenerator {
      * @return ValidationResult containing isFailed flag and RCA explanation
      */
     public ValidationResult validateResponse(int statusCode, String responseBody, String serviceName, String method, String path) {
+        // Cache lookup — content-level fingerprint, not raw prompt hash.
+        // Same (method, normalized-path, status, body-fingerprint) endpoint
+        // gets the same verdict regardless of which test invocation asked.
+        ensureValidationCacheLoaded();
+        String cacheKey = buildValidationCacheKey("pos", method, path, statusCode, responseBody, null);
+        if (CacheToggle.canRead()) {
+            String cached = validationCache.get(cacheKey);
+            if (cached != null) {
+                ValidationResult vr = parseCachedValidation(cached);
+                if (vr != null) return vr;
+            }
+        }
         // Build system prompt (instructions and criteria)
         StringBuilder systemPrompt = new StringBuilder();
         systemPrompt.append("You are an API testing expert analyzing response data.\n\n");
@@ -1324,11 +1358,17 @@ public class ZeroShotLLMGenerator {
                 }
             }
             
-            return new ValidationResult(isFailed, rca, llmResponse);
-            
+            ValidationResult result = new ValidationResult(isFailed, rca, llmResponse);
+            if (CacheToggle.canWrite()) {
+                validationCache.put(cacheKey, serializeValidation(result));
+                saveValidationCacheToDisk();
+            }
+            return result;
+
         } catch (Exception e) {
             System.err.println("⚠️ Failed to validate response with LLM: " + e.getMessage());
-            // Return non-failed by default to avoid false positives
+            // Return non-failed by default to avoid false positives. Don't
+            // cache LLM-failure verdicts — transient (rate-limit, network).
             return new ValidationResult(false, "LLM validation failed: " + e.getMessage(), "");
         }
     }
@@ -1345,9 +1385,27 @@ public class ZeroShotLLMGenerator {
      * @param invalidParameters Map of parameter name to invalid value that was intentionally set
      * @return ValidationResult containing isFailed flag (true = error related to invalid input) and RCA explanation
      */
-    public ValidationResult validateNegativeTestResponse(int statusCode, String responseBody, 
+    public ValidationResult validateNegativeTestResponse(int statusCode, String responseBody,
             String serviceName, String method, String path, java.util.Map<String, String> invalidParameters) {
-        
+
+        // Cache lookup: key includes the sorted set of invalid-parameter NAMES
+        // (not values) because the LLM's verdict ("is this error related to
+        // the invalid input?") depends on which params we marked invalid, not
+        // on their specific values.
+        ensureValidationCacheLoaded();
+        List<String> invalidParamNames = invalidParameters == null
+                ? Collections.emptyList()
+                : new ArrayList<>(invalidParameters.keySet());
+        Collections.sort(invalidParamNames);
+        String cacheKey = buildValidationCacheKey("neg", method, path, statusCode, responseBody, invalidParamNames);
+        if (CacheToggle.canRead()) {
+            String cached = validationCache.get(cacheKey);
+            if (cached != null) {
+                ValidationResult vr = parseCachedValidation(cached);
+                if (vr != null) return vr;
+            }
+        }
+
         // Build system prompt for negative test validation
         StringBuilder systemPrompt = new StringBuilder();
         systemPrompt.append("You are an API testing expert validating NEGATIVE TEST results.\n\n");
@@ -1485,7 +1543,12 @@ public class ZeroShotLLMGenerator {
                 enhancedRca = "[INVALID INPUT CORRECTLY REJECTED] " + rca;
             }
             
-            return new ValidationResult(negativeTestPassed, enhancedRca, llmResponse);
+            ValidationResult negResult = new ValidationResult(negativeTestPassed, enhancedRca, llmResponse);
+            if (CacheToggle.canWrite()) {
+                validationCache.put(cacheKey, serializeValidation(negResult));
+                saveValidationCacheToDisk();
+            }
+            return negResult;
             
         } catch (Exception e) {
             // Better error handling with exception type
@@ -1603,6 +1666,116 @@ public class ZeroShotLLMGenerator {
     /**
      * Result of LLM response validation
      */
+    // ─── LLM Validation cache helpers ────────────────────────────────────
+
+    /**
+     * Build the signature-based cache key for an LLM Validation call.
+     *
+     * @param kind {@code "pos"} for {@link #validateResponse} (positive-test
+     *             validation) or {@code "neg"} for
+     *             {@link #validateNegativeTestResponse}. Same fingerprint
+     *             across the two kinds doesn't collide because the LLM tasks
+     *             are different (and the key namespace separates them).
+     * @param invalidParamNames sorted parameter names for the negative path,
+     *             or {@code null}/empty for the positive path.
+     */
+    private static String buildValidationCacheKey(String kind, String method, String path,
+                                                  int statusCode, String responseBody,
+                                                  List<String> invalidParamNames) {
+        String m = method == null ? "" : method.toUpperCase(Locale.ROOT);
+        String normPath = LLMStatusCodeDiscovery.normalizePath(path == null ? "" : path);
+        String bodyFp = responseBodyFingerprint(responseBody);
+        StringBuilder sb = new StringBuilder();
+        sb.append(kind).append('|').append(m).append(' ').append(normPath)
+          .append('|').append(statusCode).append('|').append(bodyFp);
+        if (invalidParamNames != null && !invalidParamNames.isEmpty()) {
+            sb.append('|').append(String.join(",", invalidParamNames));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Fingerprint a response body for use in the validation cache key:
+     * lower-cased, whitespace-collapsed, truncated to the first 200 chars.
+     * Mirrors the {@code TraceErrorAnalyzer.canonicalizeResponse} pattern so
+     * the same shape of error body yields the same key across runs.
+     */
+    private static String responseBodyFingerprint(String body) {
+        if (body == null) return "";
+        String norm = body.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
+        return norm.length() > 200 ? norm.substring(0, 200) : norm;
+    }
+
+    private static String serializeValidation(ValidationResult vr) {
+        JSONObject obj = new JSONObject();
+        obj.put("failed", vr.isFailed());
+        obj.put("rca", vr.getRca() == null ? "" : vr.getRca());
+        // raw LLM response NOT included in the cache — it's bulky and tests
+        // only consume isFailed + rca through ValidationResult getters.
+        return obj.toString();
+    }
+
+    private static ValidationResult parseCachedValidation(String json) {
+        try {
+            JSONObject obj = new JSONObject(json);
+            return new ValidationResult(
+                    obj.optBoolean("failed", false),
+                    obj.optString("rca", ""),
+                    "");
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void ensureValidationCacheLoaded() {
+        if (validationCacheLoaded) return;
+        synchronized (validationCacheDiskLock) {
+            if (validationCacheLoaded) return;
+            validationCacheLoaded = true;
+            if (validationCachePath == null || !Files.exists(validationCachePath)) {
+                log.info("LLM Validation cache: cold start at {}", validationCachePath);
+                return;
+            }
+            try {
+                String content = new String(Files.readAllBytes(validationCachePath), StandardCharsets.UTF_8);
+                if (content.trim().isEmpty()) return;
+                JSONObject obj = new JSONObject(content);
+                for (String key : obj.keySet()) {
+                    validationCache.put(key, obj.optString(key, ""));
+                }
+                log.info("LLM Validation cache: loaded {} entries from {}",
+                        validationCache.size(), validationCachePath);
+            } catch (Exception e) {
+                log.warn("LLM Validation cache: load failed: {}", e.getMessage());
+            }
+        }
+    }
+
+    private void saveValidationCacheToDisk() {
+        if (validationCachePath == null) return;
+        synchronized (validationCacheDiskLock) {
+            try {
+                JSONObject obj = new JSONObject();
+                for (Map.Entry<String, String> e : validationCache.entrySet()) {
+                    obj.put(e.getKey(), e.getValue());
+                }
+                Path parent = validationCachePath.getParent();
+                if (parent != null) Files.createDirectories(parent);
+                Path tmp = validationCachePath.resolveSibling(
+                        validationCachePath.getFileName().toString() + ".tmp");
+                Files.write(tmp, obj.toString(2).getBytes(StandardCharsets.UTF_8));
+                try {
+                    Files.move(tmp, validationCachePath,
+                            StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (java.nio.file.AtomicMoveNotSupportedException atomicEx) {
+                    Files.move(tmp, validationCachePath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } catch (IOException ioe) {
+                log.warn("LLM Validation cache: save failed: {}", ioe.getMessage());
+            }
+        }
+    }
+
     public static class ValidationResult {
         private final boolean failed;
         private final String rca;

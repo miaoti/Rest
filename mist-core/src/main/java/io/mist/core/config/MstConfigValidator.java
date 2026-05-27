@@ -104,6 +104,17 @@ public final class MstConfigValidator {
                 "status.code.exploration.enabled",
                 "status.code.exploration.max.per.test",
                 "status.code.exploration.max.per.round",
+                // Master cache trigger (single source of truth — see CacheToggle).
+                // Signature-based reproducibility caches (LLMStatusCodeDiscovery,
+                // ExplorationEnhancer, LLM Validation) all honor this single pair.
+                "mst.cache.read",
+                "mst.cache.write",
+                // LLMStatusCodeDiscovery persistent cache path
+                "mst.status.code.discovery.cache.path",
+                // Exploration suggest LLM cache path
+                "mst.exploration.suggest.cache.path",
+                // LLM Validation response cache path
+                "mst.llm.validation.cache.path",
                 // Enhancer
                 "test.enhancer.enabled",
                 "test.enhancer.rounds",
