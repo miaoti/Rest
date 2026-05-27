@@ -40,7 +40,13 @@ public final class EndpointPolicyResolver {
         EndpointPolicy.DedupMode mode = methodDefault(httpMethod);
         int kDedup = methodKDedup(httpMethod);
         int kZero = defaultKZeroStep;
-        int variantBudget = -1;
+        // Default variant budget. POST/PATCH carry DedupMode.OFF so the variant
+        // loop has no fingerprint-based natural cap; without a budget, the
+        // exhaustive fault-injection queue (params × fault-types) could grow to
+        // hundreds of variants → multi-MB single-file Java sources → javac OOM
+        // at default heap. Other methods stay -1 because PAYLOAD dedup caps
+        // them organically via K_DEDUP_EXHAUSTED.
+        int variantBudget = methodVariantBudget(httpMethod);
 
         if (extensions != null && !extensions.isEmpty()) {
             Object hintMode = lookupCaseInsensitive(extensions, "x-mist-dedup-mode");
@@ -96,6 +102,28 @@ public final class EndpointPolicyResolver {
                 return Math.max(defaultKDedupExhausted, 25);
             default:
                 return defaultKDedupExhausted;
+        }
+    }
+
+    /**
+     * Default per-method variant budget. Returned by {@link #resolve} so
+     * MistGenerator can hard-cap how many variants a single scenario emits.
+     * Only POST/PATCH (which get {@link EndpointPolicy.DedupMode#OFF} by
+     * Layer 1) need this cap — their variant loop has no fingerprint-based
+     * stopping rule, so the exhaustive fault queue can run unbounded and the
+     * resulting test file outgrows javac. 50 is empirically chosen: large
+     * enough to cover Thompson-ranked high-value fault targets, small enough
+     * that even worst-case single-file Java sources stay under ~3 MB.
+     */
+    private int methodVariantBudget(String method) {
+        if (method == null) return -1;
+        String m = method.toUpperCase(Locale.ROOT);
+        switch (m) {
+            case "POST":
+            case "PATCH":
+                return 50;
+            default:
+                return -1;
         }
     }
 

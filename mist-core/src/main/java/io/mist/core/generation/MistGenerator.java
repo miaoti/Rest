@@ -520,6 +520,22 @@ public class MistGenerator {
         int requiredNegative = Math.max(Math.round(configuredVariantCount * faultyRatio), totalNegativeSlots);
         int variantCount = positiveBase + requiredNegative;
 
+        // ── 2a. Per-endpoint variant-budget cap ────────────────────────
+        // Resolve policy early so a budget>0 can cap variantCount BEFORE
+        // anything downstream allocates per-variant state. Without this,
+        // scenarios with large exhaustive fault queues (POST + many params ×
+        // 4 fault types easily exceeds 500) overflow into single-file Java
+        // sources that javac cannot compile at default heap. The bandit
+        // ranking at line 513 already biased high-value fault targets to the
+        // front, so capping at the budget keeps the most informative tests.
+        final EndpointPolicy policy = resolveEndpointPolicy(sc);
+        if (policy.variantBudget() > 0 && variantCount > policy.variantBudget()) {
+            log.info("Variant budget cap: scenario {} would emit {} variants " +
+                     "({} positive, {} negative); capping at {} per policy.variantBudget()",
+                    baseCounter, variantCount, positiveBase, requiredNegative, policy.variantBudget());
+            variantCount = policy.variantBudget();
+        }
+
         if (variantCount > configuredVariantCount) {
             log.info("Dynamic Variant Sizing: overriding configured {} to {} " +
                      "({}+ positive, {} negative covering {} exhaustive fault targets)",
@@ -565,7 +581,7 @@ public class MistGenerator {
         // When mst.adaptive.enabled=false (default), policy == LEGACY → identical
         // pre-adaptive behaviour. When enabled, thresholds are resolved from the
         // scenario's first root step (HTTP method + OpenAPI x-mist-* hints).
-        final EndpointPolicy policy = resolveEndpointPolicy(sc);
+        // policy was already resolved in section 2a above (variant-budget cap).
         final int K_ZERO_STEP = policy.kZeroStep();
         final int K_DEDUP_EXHAUSTED = policy.kDedupExhausted();
 

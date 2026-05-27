@@ -53,12 +53,18 @@ public class EndpointPolicyResolverTest {
     public void postIsAlwaysOffDedup() {
         EndpointPolicy p = resolver.resolve("POST", "/api/v1/orders");
         assertEquals(EndpointPolicy.DedupMode.OFF, p.dedupMode());
+        // OFF dedup has no fingerprint-based natural stopping rule, so POST
+        // carries a hard variant budget to bound the exhaustive fault queue
+        // and keep generated single-file Java sources within javac's heap.
+        assertEquals(50, p.variantBudget());
     }
 
     @Test
     public void patchIsAlwaysOffDedup() {
         EndpointPolicy p = resolver.resolve("PATCH", "/api/v1/orders/1");
         assertEquals(EndpointPolicy.DedupMode.OFF, p.dedupMode());
+        // Same reasoning as POST: OFF dedup needs a finite cap.
+        assertEquals(50, p.variantBudget());
     }
 
     @Test
@@ -72,6 +78,9 @@ public class EndpointPolicyResolverTest {
         assertEquals(EndpointPolicy.DedupMode.PAYLOAD, del.dedupMode());
         assertEquals(10, put.kDedupExhausted());
         assertEquals(10, del.kDedupExhausted());
+        // PAYLOAD dedup already self-caps via K_DEDUP_EXHAUSTED, no budget needed.
+        assertEquals(-1, put.variantBudget());
+        assertEquals(-1, del.variantBudget());
     }
 
     @Test
