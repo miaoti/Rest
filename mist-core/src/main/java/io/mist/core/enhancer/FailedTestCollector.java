@@ -86,10 +86,23 @@ public class FailedTestCollector extends RunListener {
     @Override
     public void testRunFinished(Result result) throws Exception {
         log.info("🔍 FailedTestCollector: Test run finished. Failures: {}", result.getFailureCount());
-        
-        // Collect all captured failures
+        drainFromTestResultCapture();
+    }
+
+    /**
+     * Drain {@link TestResultCapture}'s in-memory captured results into this
+     * collector's {@link #failedTests} list and persist them to disk.
+     *
+     * <p>This is the body of {@link #testRunFinished(Result)} extracted so the
+     * parallel-execution path in MistRunner can run multiple JUnitCores (each
+     * without its own collector listener), then drain once at the end.  Running
+     * the drain per-JUnitCore would race on
+     * {@link TestResultCapture#enableCapture()} / {@code disable…} and lose
+     * results.
+     */
+    public void drainFromTestResultCapture() {
         Map<String, FailedTestResult> capturedResults = TestResultCapture.disableCaptureAndGetResults();
-        
+
         for (FailedTestResult failed : capturedResults.values()) {
             // Skip 5xx errors if configured
             if (skip5xx && failed.getActualStatusCode() >= 500) {
@@ -110,10 +123,10 @@ public class FailedTestCollector extends RunListener {
             failed.setEnhancementRound(currentRound);
             failedTests.add(failed);
         }
-        
-        log.info("📊 Collected {} enhanceable failed tests (skipped {} total)", 
+
+        log.info("📊 Collected {} enhanceable failed tests (skipped {} total)",
                 failedTests.size(), capturedResults.size() - failedTests.size());
-        
+
         // Save to file
         saveFailedTestsToFile();
     }

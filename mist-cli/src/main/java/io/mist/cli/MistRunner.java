@@ -1491,46 +1491,146 @@ public final class MistRunner {
                 return null;
             }
 
-            // Create JUnit runner
-            JUnitCore junit = new JUnitCore();
+            // Resolve parallelism the same way executeTestClasses does.  Round-mode
+            // (enhancement loop) used to ignore mst.test.parallelism entirely —
+            // junit.run(...) over N test classes is serial, which capped throughput
+            // at ~1 scenario/sec even with parallelism=8 set. Audit #21 already
+            // cleared the six shared resources (MstAuth/SmartInputFetcher/LLMConfig/
+            // LLMCallCache/ParameterErrorAnalyzer/generated-test statics) for
+            // parallel access, and #22 added a JVM-wide lock around the
+            // writer-emitted InputFetchRegistry mutate block.
+            boolean llmValidationOn = parseBooleanProperty(
+                    System.getProperty("llm.response.validation.enabled"),
+                    readParameterValue("llm.response.validation.enabled"),
+                    false);
+            int parallelism = resolveTestParallelism(
+                    Runtime.getRuntime().availableProcessors(),
+                    System.getProperty("mst.test.parallelism"),
+                    readParameterValue("mst.test.parallelism"),
+                    llmValidationOn);
+            logger.info("Round-mode test execution parallelism: {} ({}; CPUs={}, LLM validation={})",
+                    parallelism,
+                    parallelism <= 1 ? "sequential" : "parallel",
+                    Runtime.getRuntime().availableProcessors(),
+                    llmValidationOn ? "on" : "off");
 
-            // ALWAYS add AllureJunit4 listener - required for Allure lifecycle management
-            // The generated tests use Allure.step(), Allure.parameter(), etc. which need
-            // an active Allure test context to avoid "no test case running" errors
-            AllureJunit4 allureListener = new AllureJunit4();
-            junit.addListener(allureListener);
-
-            // Add our collector
-            junit.addListener(collector);
-
-            // Add console listener with progress tracking
-            junit.addListener(new RunListener() {
-                @Override
-                public void testRunStarted(Description description) {
-                    ConsoleProgressBar.begin("tests", description.testCount());
-                }
-
-                @Override
-                public void testStarted(Description description) {
-                    ConsoleProgressBar.update(description.getMethodName());
-                    logger.debug("Starting: {}", description.getMethodName());
-                }
-
-                @Override
-                public void testFailure(Failure failure) {
-                    logger.debug("Failed: {} - {}", failure.getDescription().getMethodName(),
-                            failure.getMessage() != null ? failure.getMessage().substring(0, Math.min(100, failure.getMessage().length())) : "");
-                }
-
-                @Override
-                public void testRunFinished(Result result) {
-                    ConsoleProgressBar.complete();
-                }
-            });
-
-            // Execute
             Timer.startCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
-            Result result = junit.run(testClasses.toArray(new Class[0]));
+            Result result;
+
+            if (parallelism <= 1) {
+                // Sequential path — preserved byte-for-byte for parallelism=1.
+                JUnitCore junit = new JUnitCore();
+                junit.addListener(new AllureJunit4());
+                junit.addListener(collector);
+                junit.addListener(new RunListener() {
+                    @Override
+                    public void testRunStarted(Description description) {
+                        ConsoleProgressBar.begin("tests", description.testCount());
+                    }
+                    @Override
+                    public void testStarted(Description description) {
+                        ConsoleProgressBar.update(description.getMethodName());
+                        logger.debug("Starting: {}", description.getMethodName());
+                    }
+                    @Override
+                    public void testFailure(Failure failure) {
+                        logger.debug("Failed: {} - {}", failure.getDescription().getMethodName(),
+                                failure.getMessage() != null ? failure.getMessage().substring(0, Math.min(100, failure.getMessage().length())) : "");
+                    }
+                    @Override
+                    public void testRunFinished(Result r) {
+                        ConsoleProgressBar.complete();
+                    }
+                });
+                result = junit.run(testClasses.toArray(new Class[0]));
+            } else {
+                // Parallel path. Each task runs ONE test class on a fresh
+                // JUnitCore with its own AllureJunit4 listener (Allure's lifecycle
+                // is ThreadLocal).  The shared {@code collector} is NOT added as a
+                // listener to any task: its testRunStarted would call
+                // {@code TestResultCapture.enableCapture()} which clears the
+                // global capturedResults map — a race condition across N parallel
+                // tasks would lose results.  Instead we enable capture once here,
+                // let TestResultCapture's per-thread ThreadLocal + global
+                // ConcurrentHashMap accumulate all results, then drain once at the
+                // end into the master collector.
+                io.mist.core.enhancer.TestResultCapture.enableCapture();
+                ConsoleProgressBar.begin("tests-parallel", testClasses.size());
+
+                ExecutorService pool = Executors.newFixedThreadPool(parallelism);
+                final java.util.concurrent.atomic.AtomicInteger progressIdx =
+                        new java.util.concurrent.atomic.AtomicInteger();
+                List<Callable<Result>> tasks = new ArrayList<>();
+                for (Class<?> testCls : testClasses) {
+                    final Class<?> c = testCls;
+                    tasks.add(() -> {
+                        JUnitCore local = new JUnitCore();
+                        local.addListener(new AllureJunit4());
+                        try {
+                            return local.run(c);
+                        } finally {
+                            int n = progressIdx.incrementAndGet();
+                            ConsoleProgressBar.update("class " + n + "/" + testClasses.size());
+                        }
+                    });
+                }
+
+                int aggRun = 0, aggFailure = 0, aggIgnore = 0;
+                long aggRunTime = 0L;
+                List<Failure> aggFailures = new ArrayList<>();
+                long wallStart = System.currentTimeMillis();
+                try {
+                    List<Future<Result>> futures = pool.invokeAll(tasks);
+                    pool.shutdown();
+                    if (!pool.awaitTermination(24, TimeUnit.HOURS)) {
+                        logger.warn("Parallel test execution did not complete within 24h cap; forcing shutdown");
+                        pool.shutdownNow();
+                    }
+                    for (Future<Result> fut : futures) {
+                        try {
+                            Result r = fut.get();
+                            aggRun += r.getRunCount();
+                            aggFailure += r.getFailureCount();
+                            aggIgnore += r.getIgnoreCount();
+                            aggFailures.addAll(r.getFailures());
+                        } catch (Exception taskEx) {
+                            logger.error("Parallel test-class execution threw: {}", taskEx.toString());
+                            aggFailure++;
+                        }
+                    }
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    pool.shutdownNow();
+                    logger.error("Parallel execution interrupted; partial results follow");
+                }
+                aggRunTime = System.currentTimeMillis() - wallStart;
+                ConsoleProgressBar.complete();
+
+                // Drain captured results into the master collector exactly once.
+                // This replaces the per-JUnitCore testRunFinished() that the
+                // serial path triggers via the collector listener.
+                collector.drainFromTestResultCapture();
+
+                // Synthesize an aggregate Result so callers see correct counts.
+                // We construct it by reflection-free wrapping: JUnit 4's Result
+                // has no public mutator API, so wrap the aggregated counts in a
+                // delegating subclass.
+                final int finalRun = aggRun;
+                final int finalFailureCount = aggFailure;
+                final int finalIgnore = aggIgnore;
+                final long finalRunTime = aggRunTime;
+                final List<Failure> finalFailures = aggFailures;
+                result = new Result() {
+                    private static final long serialVersionUID = 1L;
+                    @Override public int getRunCount() { return finalRun; }
+                    @Override public int getFailureCount() { return finalFailureCount; }
+                    @Override public int getIgnoreCount() { return finalIgnore; }
+                    @Override public long getRunTime() { return finalRunTime; }
+                    @Override public List<Failure> getFailures() { return finalFailures; }
+                    @Override public boolean wasSuccessful() { return finalFailureCount == 0; }
+                };
+            }
+
             Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 
             return result;
