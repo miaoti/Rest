@@ -44,19 +44,22 @@ detection-count rollup but for oracles.
 
 ### Recording path
 
-Each invariant class (already at `mist-core/src/main/java/io/mist/core/
-oracle/shape/invariant/`) currently logs the violation. Add one call
-per emit-point:
+The four invariant classes in `mist-core/src/main/java/io/mist/core/
+oracle/shape/invariant/` don't carry test-identity context (testClass,
+testMethodName, traceId) — they only know their `rootApiKey` and the
+{@link TraceModel} the oracle handed them. Recording at the
+verdict-consumption site is therefore where both the failure outcome
+and the test identity are simultaneously in scope.
 
-```java
-log.warn("...invariant violation...", details);
-FaultDetectionTracker.getInstance().recordOracleAnomaly(
-    "SPAN_TREE",                          // oracle name
-    endpointSig(rootStep),                // "POST /api/v1/orders"
-    violationFingerprint(verdict),        // hash of expected-vs-actual shape
-    new AnomalySample(testClassName, testMethodName, traceId)
-);
-```
+Concretely, the generated test method's `attachJaegerTrace` calls
+`oracle.evaluate(model, rootApiKey, targetService, targetParam)` and
+hands the resulting `TraceShapeVerdict` to
+`FaultDetectionTracker.recordVerdict(verdict, rootApiKey, testClass,
+testMethod, traceId)`. The tracker iterates `verdict.getOutcomes()` and
+for each failing outcome calls the internal `recordOracleAnomaly(kind,
+rootApiKey, violationFingerprint(kind, detail), …, testClass,
+testMethod, traceId)` — same data, same dedup key shape, just routed
+through the verdict instead of called directly by each invariant.
 
 `violationFingerprint` is a stable hash over the kind of mismatch — e.g.
 "missing edge order-service→payment-service at depth 2", not the

@@ -391,6 +391,11 @@ public final class MstConfig {
         private final boolean statusPropagationInvariantEnabled;
         private final boolean responseEnvelopeInvariantEnabled;
         private final boolean timingEnvelopeInvariantEnabled;
+        // Phase 2 part 2 (FIXES.md F1+F3): kill switch for the
+        // TargetAttributionInvariant. Default true preserves the byte-for-byte
+        // attribution histograms from Run 22; setting false drops the perf
+        // cost of TraceAttribution.attribute() AND the report buckets.
+        private final boolean targetAttributionInvariantEnabled;
 
         public Oracle() {
             this.shapeOracleEnabled = parseBool("mst.oracle.shape.enabled", "true");
@@ -402,6 +407,8 @@ public final class MstConfig {
                     "mst.oracle.shape.invariants.response_envelope.enabled", "true");
             this.timingEnvelopeInvariantEnabled = parseBool(
                     "mst.oracle.shape.invariants.timing.enabled", "false");
+            this.targetAttributionInvariantEnabled = parseBool(
+                    "mst.oracle.shape.invariants.target_attribution.enabled", "true");
         }
 
         public boolean shapeOracleEnabled() { return shapeOracleEnabled; }
@@ -409,6 +416,7 @@ public final class MstConfig {
         public boolean statusPropagationInvariantEnabled() { return statusPropagationInvariantEnabled; }
         public boolean responseEnvelopeInvariantEnabled() { return responseEnvelopeInvariantEnabled; }
         public boolean timingEnvelopeInvariantEnabled() { return timingEnvelopeInvariantEnabled; }
+        public boolean targetAttributionInvariantEnabled() { return targetAttributionInvariantEnabled; }
     }
 
     /**

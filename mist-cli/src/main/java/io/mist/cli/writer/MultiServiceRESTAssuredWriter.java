@@ -678,7 +678,11 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                    try {");
                     pw.println("                        String rootApiKey = method + \" \" + path;");
                     pw.println("                        TraceModel model = TraceShapeAdapter.toModel(globalBestTrace, rootApiKey);");
-                    pw.println("                        TraceShapeVerdict verdict = oracle.evaluate(model, rootApiKey);");
+                    pw.println("                        // FIXES.md F1+F3: target-aware overload runs TargetAttributionInvariant");
+                    pw.println("                        // when the per-test target context + ablation flag are both set, so");
+                    pw.println("                        // attribution is embedded as one of the verdict outcomes and the");
+                    pw.println("                        // report-rendering path collapses it uniformly with the other 4.");
+                    pw.println("                        TraceShapeVerdict verdict = oracle.evaluate(model, rootApiKey, targetService, targetParam);");
                     pw.println("                        LAST_VERDICT.set(verdict);");
                     pw.println("                        StringBuilder verdictJson = new StringBuilder();");
                     pw.println("                        verdictJson.append(\"{\\n  \\\"rootApiKey\\\": \\\"\").append(rootApiKey.replace(\"\\\\\", \"\\\\\\\\\").replace(\"\\\"\", \"\\\\\\\"\")).append(\"\\\",\\n\");");
@@ -714,7 +718,7 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                        // traceparent) — Jaeger may return a stale or wrong trace.");
                     pw.println("                        try {");
                     pw.println("                            io.mist.core.analysis.FaultDetectionTracker.getInstance()");
-                    pw.println("                                .recordVerdict(verdict, model, rootApiKey, " + className + ".class.getName(), testMethodName, markerTraceId, targetService, targetParam);");
+                    pw.println("                                .recordVerdict(verdict, rootApiKey, " + className + ".class.getName(), testMethodName, markerTraceId);");
                     pw.println("                        } catch (Throwable anomalyEx) {");
                     pw.println("                            Allure.addAttachment(\"Oracle Anomaly Record Error\", \"text/plain\", anomalyEx.toString());");
                     pw.println("                        }");

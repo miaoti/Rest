@@ -134,6 +134,8 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.status_propagation.enabled",
                 "mst.oracle.shape.invariants.response_envelope.enabled",
                 "mst.oracle.shape.invariants.timing.enabled",
+                // FIXES.md F2: TargetAttributionInvariant kill switch
+                "mst.oracle.shape.invariants.target_attribution.enabled",
                 // Phase 0: surface oracle violations in the fault-detection report
                 "mist.report.oracle.anomalies.enabled",
                 // Phase 1: opt-in two-phase positive-first / negative-second flow

@@ -206,18 +206,22 @@ public class FaultDetectionTracker {
                                            String testClassName,
                                            String testMethodName,
                                            String traceId) {
-        recordVerdict(verdict, null, rootApiKey, testClassName, testMethodName, traceId, null, null);
+        recordVerdictInternal(verdict, null, rootApiKey, testClassName, testMethodName,
+                traceId, null, null);
     }
 
     /**
-     * Phase 2: extended verdict recording that also runs trace-attribution
-     * for negative tests. When {@code trace} + {@code targetService} are
-     * non-null, each failing outcome's anomaly entry gets its attribution
-     * histogram bumped (TARGET / WRONG_PARAM / UPSTREAM / NO_ATTRIBUTION).
+     * Phase 2 part 3 entry point that explicitly carries
+     * {@code targetService} + {@code targetParam}. Kept for callers (mainly
+     * unit tests) that build a {@link TraceShapeVerdict} without an embedded
+     * TARGET_ATTRIBUTION outcome; the implementation falls back to computing
+     * attribution inline in that case.
      *
-     * <p>{@code targetParam} may be null when the test has no specific
-     * target parameter (e.g. service-level fault); attribution falls back
-     * to service-only matching in that case.
+     * <p>Post-FIXES.md F1+F3 the production writer goes through
+     * {@code TraceShapeOracle.evaluate(trace, rootApiKey, targetService,
+     * targetParam)} which embeds the attribution as a verdict outcome, and
+     * then calls the 5-arg overload above — this 8-arg path is an
+     * alternative entry kept for backward compatibility with existing tests.
      */
     public synchronized void recordVerdict(TraceShapeVerdict verdict,
                                            TraceModel trace,
@@ -227,14 +231,32 @@ public class FaultDetectionTracker {
                                            String traceId,
                                            String targetService,
                                            String targetParam) {
+        recordVerdictInternal(verdict, trace, rootApiKey, testClassName, testMethodName,
+                traceId, targetService, targetParam);
+    }
+
+    private void recordVerdictInternal(TraceShapeVerdict verdict,
+                                       TraceModel trace,
+                                       String rootApiKey,
+                                       String testClassName,
+                                       String testMethodName,
+                                       String traceId,
+                                       String targetService,
+                                       String targetParam) {
         if (verdict == null) return;
         List<TraceShapeVerdict.InvariantOutcome> outcomes = verdict.getOutcomes();
         if (outcomes == null || outcomes.isEmpty()) return;
 
-        // Compute attribution once per call: every failing outcome on this
-        // trace shares the same trace, so the leaf-error walk is identical.
-        AttributionVerdict attribution = null;
-        if (trace != null && targetService != null && !targetService.isEmpty()) {
+        // FIXES.md F1+F3: prefer attribution carried by the verdict (set by
+        // TargetAttributionInvariant inside TraceShapeOracle). Fall back to
+        // computing inline only when the verdict carries no attribution
+        // outcome AND the caller provided target context — keeps the
+        // 8-arg overload working for unit tests that construct verdicts
+        // without the embedded outcome.
+        AttributionVerdict attribution = extractAttribution(outcomes);
+        if (attribution == null
+                && trace != null
+                && targetService != null && !targetService.isEmpty()) {
             try {
                 attribution = TraceAttribution.attribute(trace, targetService, targetParam);
             } catch (Throwable t) {
@@ -244,6 +266,10 @@ public class FaultDetectionTracker {
 
         for (TraceShapeVerdict.InvariantOutcome o : outcomes) {
             if (o == null || o.passed) continue;
+            // TARGET_ATTRIBUTION outcomes are diagnostic classifications,
+            // not anomalies. They're consumed above as the attribution
+            // bucket key; do not record them as their own anomalies.
+            if ("TARGET_ATTRIBUTION".equals(o.kind)) continue;
             String violationSig = fingerprintViolation(o.kind, o.detail);
             recordOracleAnomaly(
                     o.kind,
@@ -255,7 +281,6 @@ public class FaultDetectionTracker {
                     testMethodName,
                     traceId);
             if (attribution != null) {
-                // Same delimiter as recordOracleAnomaly's key construction.
                 String key = o.kind + "\u0001" + (rootApiKey == null ? "" : rootApiKey) + "\u0001" + violationSig;
                 OracleAnomaly anomaly = oracleAnomalies.get(key);
                 if (anomaly != null) {
@@ -263,6 +288,28 @@ public class FaultDetectionTracker {
                 }
             }
         }
+    }
+
+    /**
+     * Find the AttributionVerdict embedded in a TARGET_ATTRIBUTION outcome,
+     * regardless of its passed flag (TARGET_REJECTION and NO_ATTRIBUTION
+     * are informative too — they just classify as not-a-deviation). Returns
+     * null when no such outcome is present or its detail isn't a recognized
+     * verdict name.
+     */
+    private static AttributionVerdict extractAttribution(List<TraceShapeVerdict.InvariantOutcome> outcomes) {
+        for (TraceShapeVerdict.InvariantOutcome o : outcomes) {
+            if (o == null) continue;
+            if (!"TARGET_ATTRIBUTION".equals(o.kind)) continue;
+            String d = o.detail;
+            if (d == null || d.isEmpty()) return null;
+            try {
+                return AttributionVerdict.valueOf(d);
+            } catch (IllegalArgumentException ex) {
+                return null;
+            }
+        }
+        return null;
     }
 
     /**

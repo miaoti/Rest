@@ -4,6 +4,7 @@ import io.mist.core.config.MstConfig;
 import io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant;
 import io.mist.core.oracle.shape.invariant.SpanTreeShapeInvariant;
 import io.mist.core.oracle.shape.invariant.StatusPropagationInvariant;
+import io.mist.core.oracle.shape.invariant.TargetAttributionInvariant;
 import io.mist.core.oracle.shape.invariant.TimingEnvelopeInvariant;
 
 /**
@@ -27,6 +28,7 @@ public final class TraceShapeOracle {
     private final boolean statusPropagationEnabled;
     private final boolean responseEnvelopeEnabled;
     private final boolean timingEnvelopeEnabled;
+    private final boolean targetAttributionEnabled;
 
     public TraceShapeOracle(ShapeInvariantStore store, MstConfig.Oracle oracleConfig) {
         this.store = store == null ? new ShapeInvariantStore() : store;
@@ -36,6 +38,7 @@ public final class TraceShapeOracle {
         this.statusPropagationEnabled = cfg.statusPropagationInvariantEnabled();
         this.responseEnvelopeEnabled = cfg.responseEnvelopeInvariantEnabled();
         this.timingEnvelopeEnabled = cfg.timingEnvelopeInvariantEnabled();
+        this.targetAttributionEnabled = cfg.targetAttributionInvariantEnabled();
     }
 
     public TraceShapeOracle(ShapeInvariantStore store) {
@@ -43,6 +46,31 @@ public final class TraceShapeOracle {
     }
 
     public TraceShapeVerdict evaluate(TraceModel trace, String rootApiKey) {
+        return evaluate(trace, rootApiKey, null, null);
+    }
+
+    /**
+     * Phase 2 part 2 (FIXES.md F1+F3): negative-test-aware overload. When
+     * {@code targetService} is non-null and the target-attribution invariant
+     * is enabled, appends a {@link TargetAttributionInvariant} outcome to
+     * the verdict so the report can render the attribution classification
+     * (TARGET / WRONG_PARAM / UPSTREAM / NO_ATTRIBUTION) alongside the four
+     * structural invariants.
+     *
+     * <p>Setting {@code mst.oracle.shape.invariants.target_attribution.enabled
+     * =false} skips the invariant entirely — no
+     * {@link io.mist.core.oracle.attribution.TraceAttribution#attribute
+     * TraceAttribution.attribute} call, no outcome appended, no perf cost.
+     *
+     * <p>Note: the whole-oracle gate {@code mst.oracle.shape.enabled=false}
+     * also disables this overload — it short-circuits to
+     * {@link TraceShapeVerdict#empty()} before any invariant runs. To
+     * surface attribution without the four structural invariants, leave
+     * {@code mst.oracle.shape.enabled=true} and toggle the per-invariant
+     * flags off individually.
+     */
+    public TraceShapeVerdict evaluate(TraceModel trace, String rootApiKey,
+                                      String targetService, String targetParam) {
         if (!shapeOracleEnabled) return TraceShapeVerdict.empty();
         TraceShapeVerdict.Builder builder = TraceShapeVerdict.builder();
         if (spanTreeEnabled) {
@@ -56,6 +84,11 @@ public final class TraceShapeOracle {
         }
         if (responseEnvelopeEnabled) {
             builder.add(ResponseEnvelopeInvariant.load(rootApiKey, store).evaluate(trace));
+        }
+        if (targetAttributionEnabled
+                && targetService != null && !targetService.isEmpty()) {
+            builder.add(new TargetAttributionInvariant(rootApiKey, targetService, targetParam)
+                    .evaluate(trace));
         }
         return builder.build();
     }
