@@ -1,5 +1,6 @@
 package io.mist.core.analysis;
 
+import io.mist.core.oracle.shape.TraceShapeVerdict;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -9,8 +10,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +34,12 @@ public class FaultDetectionTracker {
     private final Map<String, InjectedFault> injectedFaults = new ConcurrentHashMap<>();
     private final Map<String, List<FaultDetection>> detectedFaults = new ConcurrentHashMap<>();
     private final Set<String> allTestCases = ConcurrentHashMap.newKeySet();
+
+    // Phase 0: TraceShapeOracle violations that fired but didn't match an
+    // injected fault name. Keyed by (oracle, endpointSig, violationFingerprint)
+    // so same-shape violations across many tests collapse into one entry with
+    // its hitCount incremented. See recordOracleAnomaly / recordVerdict.
+    private final Map<String, OracleAnomaly> oracleAnomalies = new ConcurrentHashMap<>();
     
     // Metadata
     private String experimentName;
@@ -123,6 +133,131 @@ public class FaultDetectionTracker {
     public synchronized void recordTestCase(String testClassName, String testMethodName) {
         String fullTestName = testClassName + "." + testMethodName;
         allTestCases.add(fullTestName);
+    }
+
+    /**
+     * Record one oracle violation against the parallel anomaly map. Same
+     * (oracle, endpointSig, violationSig) tuples collapse into one entry whose
+     * hitCount is incremented; the first-seen sample wins (never overwritten)
+     * so each anomaly carries a stable, reproducible example.
+     *
+     * <p>Severity is preserved (ERROR / WARN / INFO) so the report can show
+     * what kind of finding it is.
+     *
+     * <p>Independent of {@link #recordDetectedFault}: a single test may both
+     * detect an injected fault by name AND fire an oracle violation; the two
+     * appear in their respective sections.
+     */
+    public synchronized void recordOracleAnomaly(String oracle,
+                                                 String endpointSig,
+                                                 String violationSig,
+                                                 String violationDetail,
+                                                 String severity,
+                                                 String testClassName,
+                                                 String testMethodName,
+                                                 String traceId) {
+        if (oracle == null || oracle.isEmpty()) return;
+        if (endpointSig == null) endpointSig = "";
+        if (violationSig == null || violationSig.isEmpty()) return;
+
+        // 0x01 SOH is a control char that can't appear in oracle / endpoint /
+        // fingerprint strings, so it's a safer delimiter than "::" (paths or
+        // method names could theoretically contain "::").
+        String key = oracle + "\u0001" + endpointSig + "\u0001" + violationSig;
+        long now = System.currentTimeMillis();
+        OracleAnomaly existing = oracleAnomalies.get(key);
+        if (existing == null) {
+            OracleAnomaly anomaly = new OracleAnomaly(
+                    oracle,
+                    endpointSig,
+                    violationSig,
+                    violationDetail == null ? "" : violationDetail,
+                    severity == null ? "" : severity,
+                    testClassName == null ? "" : testClassName,
+                    testMethodName == null ? "" : testMethodName,
+                    traceId == null ? "" : traceId,
+                    now);
+            oracleAnomalies.put(key, anomaly);
+        } else {
+            existing.hitCount++;
+            existing.lastSeenTs = now;
+        }
+    }
+
+    /**
+     * Convenience: record every failing outcome in a TraceShapeOracle verdict
+     * against the anomaly map. Used by generated test code, called once per
+     * step-trace evaluation. Passing outcomes are skipped.
+     *
+     * <p>This is the production wiring path. The four invariant classes
+     * themselves don't call {@link #recordOracleAnomaly} directly because they
+     * emit verdicts (not log lines) and have no test-identity context.
+     * Recording at the verdict-consumption site (generated test code, inside
+     * {@code attachJaegerTrace}) is where both verdict and identity are in
+     * scope. Violations from oracle runs outside the generated-test path
+     * (e.g. ad-hoc replay against a stored trace) must call
+     * {@link #recordOracleAnomaly} directly.
+     */
+    public synchronized void recordVerdict(TraceShapeVerdict verdict,
+                                           String rootApiKey,
+                                           String testClassName,
+                                           String testMethodName,
+                                           String traceId) {
+        if (verdict == null) return;
+        List<TraceShapeVerdict.InvariantOutcome> outcomes = verdict.getOutcomes();
+        if (outcomes == null || outcomes.isEmpty()) return;
+        for (TraceShapeVerdict.InvariantOutcome o : outcomes) {
+            if (o == null || o.passed) continue;
+            String violationSig = fingerprintViolation(o.kind, o.detail);
+            recordOracleAnomaly(
+                    o.kind,
+                    rootApiKey,
+                    violationSig,
+                    o.detail,
+                    o.severity == null ? "" : o.severity.name(),
+                    testClassName,
+                    testMethodName,
+                    traceId);
+        }
+    }
+
+    /**
+     * Stable fingerprint of an invariant violation. Normalizes whitespace and
+     * runs of digits with units (durations, p99 thresholds) so two timing
+     * outliers on the same span shape collapse, while structural details
+     * (depth, status code, edge endpoints) stay distinguishable.
+     *
+     * <p>SHA-256 hex; first 16 chars used as a compact, sort-friendly key.
+     */
+    static String fingerprintViolation(String kind, String detail) {
+        String normalized = (detail == null ? "" : detail)
+                .toLowerCase()
+                .replaceAll("\\s+", " ")
+                .trim()
+                // Duration literals with unit suffixes — collapse the numeric
+                // value so two timing outliers on the same shape share an fp.
+                // Order matters: longer units (ns/ms) before "µs"/"us"/"s".
+                .replaceAll("\\d+\\s*ns\\b", "<DUR>")
+                .replaceAll("\\d+\\s*ms\\b", "<DUR>")
+                .replaceAll("\\d+\\s*[µu]s\\b", "<DUR>")
+                // Standalone hex blobs of length >= 8 (real Jaeger span IDs
+                // are 16 hex chars, trace IDs 32). 8 is the smallest threshold
+                // that won't collapse common all-hex English words like "facade"
+                // or "decade" (6 chars) into <HEX>.
+                .replaceAll("\\b[0-9a-f]{8,}\\b", "<HEX>")
+                // Explicit keyed forms (kept for robustness).
+                .replaceAll("traceid=[0-9a-f]+", "traceid=<HEX>")
+                .replaceAll("spanid=[0-9a-f]+", "spanid=<HEX>");
+        String input = (kind == null ? "" : kind) + "::" + normalized;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(16);
+            for (int i = 0; i < 8; i++) hex.append(String.format("%02x", hash[i]));
+            return hex.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return Integer.toHexString(input.hashCode());
+        }
     }
     
     /**
@@ -258,6 +393,50 @@ public class FaultDetectionTracker {
             }
         }
         
+        // Phase 0: Oracle Anomalies Section — surfaces trace-shape oracle
+        // violations that fired but didn't match an injected fault by name.
+        // Gated by mist.report.oracle.anomalies.enabled (default true). Set
+        // false to reproduce the legacy report shape byte-for-byte.
+        boolean anomaliesEnabled = !"false".equalsIgnoreCase(
+                System.getProperty("mist.report.oracle.anomalies.enabled", "true"));
+        if (anomaliesEnabled && !oracleAnomalies.isEmpty()) {
+            List<OracleAnomaly> sorted = new ArrayList<>(oracleAnomalies.values());
+            sorted.sort((a, b) -> Integer.compare(b.hitCount, a.hitCount));
+            long totalHits = 0L;
+            for (OracleAnomaly a : sorted) totalHits += a.hitCount;
+
+            writer.println("=" + "=".repeat(79));
+            writer.println("ORACLE ANOMALIES (" + sorted.size() + " distinct, " + totalHits + " hits)");
+            writer.println("=" + "=".repeat(79));
+            writer.println();
+            writer.println("These are TraceShapeOracle invariant violations the tool detected.");
+            writer.println("They are tool-detected trace-shape deviations, NOT confirmed bugs —");
+            writer.println("an upper-bound bug-finding signal. Entries also matching an injected");
+            writer.println("fault name appear in the DETECTED FAULTS section above.");
+            writer.println();
+
+            int n = 1;
+            for (OracleAnomaly a : sorted) {
+                writer.printf("%d. %s  |  %s%n", n++, a.oracle,
+                        a.endpointSig == null || a.endpointSig.isEmpty() ? "(no endpoint)" : a.endpointSig);
+                if (a.severity != null && !a.severity.isEmpty()) {
+                    writer.printf("   Severity:      %s%n", a.severity);
+                }
+                writer.printf("   Violation:     %s%n",
+                        a.violationDetail == null || a.violationDetail.isEmpty() ? "(no detail)" : a.violationDetail);
+                writer.printf("   Hits:          %d time(s)%n", a.hitCount);
+                writer.printf("   First seen:    %s%n", displayFormat.format(new Date(a.firstSeenTs)));
+                writer.printf("   Last seen:     %s%n", displayFormat.format(new Date(a.lastSeenTs)));
+                if (a.sampleTestClass != null && !a.sampleTestClass.isEmpty()) {
+                    writer.printf("   Example test:  %s.%s%n", a.sampleTestClass, a.sampleTestMethod);
+                }
+                if (a.sampleTraceId != null && !a.sampleTraceId.isEmpty()) {
+                    writer.printf("   Example trace: %s%n", a.sampleTraceId);
+                }
+                writer.println();
+            }
+        }
+
         // Test Cases Summary
         if (!allTestCases.isEmpty()) {
             writer.println("=" + "=".repeat(79));
@@ -286,6 +465,7 @@ public class FaultDetectionTracker {
     public synchronized void reset() {
         detectedFaults.clear();
         allTestCases.clear();
+        oracleAnomalies.clear();
         trackingStartTime = System.currentTimeMillis();
         logger.info("FaultDetectionTracker reset for new test run");
     }
@@ -301,7 +481,18 @@ public class FaultDetectionTracker {
         stats.put("detectionRate", injectedFaults.size() > 0 
             ? (detectedFaults.size() * 100.0 / injectedFaults.size()) : 0.0);
         stats.put("totalTestCases", allTestCases.size());
+        int totalAnomalyHits = 0;
+        for (OracleAnomaly a : oracleAnomalies.values()) totalAnomalyHits += a.hitCount;
+        stats.put("oracleAnomaliesDistinct", oracleAnomalies.size());
+        stats.put("oracleAnomaliesTotalHits", totalAnomalyHits);
         return stats;
+    }
+
+    /**
+     * Test-only: read-only view of oracle anomalies for assertions.
+     */
+    Map<String, OracleAnomaly> getOracleAnomaliesForTest() {
+        return Collections.unmodifiableMap(oracleAnomalies);
     }
     
     // Inner classes for data structures
@@ -324,14 +515,50 @@ public class FaultDetectionTracker {
         final String testMethodName;
         final long timestamp;
         final String responseBody;
-        
-        FaultDetection(String faultName, String testClassName, String testMethodName, 
+
+        FaultDetection(String faultName, String testClassName, String testMethodName,
                       long timestamp, String responseBody) {
             this.faultName = faultName;
             this.testClassName = testClassName;
             this.testMethodName = testMethodName;
             this.timestamp = timestamp;
             this.responseBody = responseBody;
+        }
+    }
+
+    /**
+     * A trace-shape oracle violation collapsed across all tests that fired
+     * the same kind of mismatch against the same endpoint. First-seen sample
+     * is preserved; {@link #hitCount} grows with each recurrence.
+     */
+    static final class OracleAnomaly {
+        final String oracle;
+        final String endpointSig;
+        final String violationSig;
+        final String violationDetail;
+        final String severity;
+        final String sampleTestClass;
+        final String sampleTestMethod;
+        final String sampleTraceId;
+        final long firstSeenTs;
+        long lastSeenTs;
+        int hitCount;
+
+        OracleAnomaly(String oracle, String endpointSig, String violationSig,
+                      String violationDetail, String severity,
+                      String sampleTestClass, String sampleTestMethod,
+                      String sampleTraceId, long ts) {
+            this.oracle = oracle;
+            this.endpointSig = endpointSig;
+            this.violationSig = violationSig;
+            this.violationDetail = violationDetail;
+            this.severity = severity;
+            this.sampleTestClass = sampleTestClass;
+            this.sampleTestMethod = sampleTestMethod;
+            this.sampleTraceId = sampleTraceId;
+            this.firstSeenTs = ts;
+            this.lastSeenTs = ts;
+            this.hitCount = 1;
         }
     }
 }

@@ -284,7 +284,7 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
                     pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
                     pw.println();
-                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId) {");
+                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId, String testMethodName) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
@@ -703,6 +703,20 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                                    Allure.step(\"❌ shape violation: \" + o.kind + \" \" + o.detail);");
                     pw.println("                                }");
                     pw.println("                            }");
+                    pw.println("                        }");
+                    pw.println("                        // Phase 0: credit ALL failing outcomes (any severity) to the");
+                    pw.println("                        // tracker's anomaly map so the fault-detection report surfaces");
+                    pw.println("                        // them as a separate bucket. Called per-step (attachJaegerTrace");
+                    pw.println("                        // fires once per step), so a 5-step test records up to 5 sets of");
+                    pw.println("                        // outcomes — the first-seen sample for any (oracle,endpoint,sig)");
+                    pw.println("                        // tuple wins. markerTraceId is preferred over model.getTraceId()");
+                    pw.println("                        // because the marker is the in-process request marker (W3C");
+                    pw.println("                        // traceparent) — Jaeger may return a stale or wrong trace.");
+                    pw.println("                        try {");
+                    pw.println("                            io.mist.core.analysis.FaultDetectionTracker.getInstance()");
+                    pw.println("                                .recordVerdict(verdict, rootApiKey, " + className + ".class.getName(), testMethodName, markerTraceId);");
+                    pw.println("                        } catch (Throwable anomalyEx) {");
+                    pw.println("                            Allure.addAttachment(\"Oracle Anomaly Record Error\", \"text/plain\", anomalyEx.toString());");
                     pw.println("                        }");
                     pw.println("                    } catch (Throwable tsoEx) {");
                     pw.println("                        Allure.addAttachment(\"Trace Shape Oracle Error\", \"text/plain\", \"Oracle evaluation failed: \" + tsoEx.toString());");
@@ -2164,7 +2178,7 @@ public class MultiServiceRESTAssuredWriter {
                             pw.println("                                try { Thread.sleep(__jaegerPropagationDelayMs); }");
                             pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                             pw.println("                            }");
-                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ");");
+                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\");");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
                             pw.println("                        }");
@@ -2333,7 +2347,7 @@ public class MultiServiceRESTAssuredWriter {
                         pw.println("                            try { Thread.sleep(__jaegerPropagationDelayMs); }");
                         pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                         pw.println("                        }");
-                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ");");
+                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\");");
                         pw.println("                        ");
                         // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted
                         // SoftErrorRuleCache used to encode (a soft error in a 2xx response on a

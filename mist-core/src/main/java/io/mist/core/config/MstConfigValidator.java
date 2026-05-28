@@ -134,6 +134,8 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.status_propagation.enabled",
                 "mst.oracle.shape.invariants.response_envelope.enabled",
                 "mst.oracle.shape.invariants.timing.enabled",
+                // Phase 0: surface oracle violations in the fault-detection report
+                "mist.report.oracle.anomalies.enabled",
                 // Scheduler (ThompsonScheduler toggle)
                 "mst.scheduler.bandit.enabled",
                 // Test-execution timing knobs (read by MistRunner + generated tests)
