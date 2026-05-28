@@ -136,6 +136,10 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.timing.enabled",
                 // Phase 0: surface oracle violations in the fault-detection report
                 "mist.report.oracle.anomalies.enabled",
+                // Phase 1: opt-in two-phase positive-first / negative-second flow
+                // (currently a reserved flag; verified-pool filter runs
+                // unconditionally on every Sniper non-target pull).
+                "mst.two.phase.enabled",
                 // Scheduler (ThompsonScheduler toggle)
                 "mst.scheduler.bandit.enabled",
                 // Test-execution timing knobs (read by MistRunner + generated tests)

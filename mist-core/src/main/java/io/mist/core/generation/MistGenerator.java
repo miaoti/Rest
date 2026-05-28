@@ -278,6 +278,31 @@ public class MistGenerator {
         }
     }
 
+    /**
+     * Phase 1: when the registry holds VERIFIED_VALID entries that intersect
+     * with the raw pool for this endpoint+param, return the intersection so
+     * callers draw only from values the SUT has accepted before. Falls back
+     * to the raw pool when the registry is null, has no entries for this
+     * endpoint+param, or the intersection is empty.
+     *
+     * <p>Endpoint signature matches the writer-side
+     * {@code recordParameterSuccess} contract: {@code "<METHOD> <route>"}.
+     */
+    private List<String> preferVerifiedValues(List<String> rawPool, String verb,
+                                              String route, String paramName) {
+        if (rawPool == null || rawPool.isEmpty()) return rawPool == null ? java.util.Collections.emptyList() : rawPool;
+        if (poolStatusRegistry == null) return rawPool;
+        String endpoint = verb.toUpperCase() + " " + route;
+        List<String> verified = poolStatusRegistry.getVerifiedValues(endpoint, paramName);
+        if (verified.isEmpty()) return rawPool;
+        // Intersect raw pool with verified — preserves rawPool's ordering for
+        // deterministic random.nextInt indexing across runs with the same seed.
+        java.util.Set<String> verifiedSet = new java.util.HashSet<>(verified);
+        List<String> intersection = new ArrayList<>();
+        for (String v : rawPool) if (verifiedSet.contains(v)) intersection.add(v);
+        return intersection.isEmpty() ? rawPool : intersection;
+    }
+
     // Pattern to match HTTP operations in operation names
     private static final Pattern HTTP_OPERATION_PATTERN = 
         Pattern.compile("^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\\s+(.+)$", Pattern.CASE_INSENSITIVE);
@@ -408,8 +433,17 @@ public class MistGenerator {
     // Shared parameter pools grouped by root API to avoid redundant LLM/semantic generation
     private Map<String, Map<String, List<String>>> sharedParameterPools = new HashMap<>();
 
+    // Phase 1: registry of SUT-verified pool values, loaded once at generate()
+    // start so the per-parameter Sniper pool pull can prefer verified values
+    // over the raw pool. null when smart.input.fetch is disabled or the
+    // registry file is missing — falls back to raw pool with no behavior change.
+    private InputFetchRegistry poolStatusRegistry;
+
     /** Produce test cases using two-stage LLM + semantic expansion approach. */
     public Collection<TestCase> generate() {
+        // Phase 1: load registry once per generate() so Sniper can prefer
+        // SUT-verified values for non-target params. Cheap (one YAML parse).
+        this.poolStatusRegistry = loadRegistryQuietly();
         List<TestCase> out = new ArrayList<>();
         int counter = 1;
 
@@ -1055,8 +1089,14 @@ public class MistGenerator {
                             Map<String, List<String>> pool = sharedParameterPools.get(currentRootApiKey);
                             if (pool != null && pool.containsKey(p.getName())) {
                                 List<String> poolVals = pool.get(p.getName());
-                                if (!poolVals.isEmpty()) {
-                                    String poolValue = poolVals.get(random.nextInt(poolVals.size()));
+                                // Phase 1: prefer SUT-verified values when available. If the
+                                // registry has VERIFIED_VALID entries that overlap with the raw
+                                // pool, draw from the overlap so Sniper's non-target params land
+                                // on values the SUT has accepted before. Empty intersection or
+                                // null registry falls back to raw pool with no behavior change.
+                                List<String> candidates = preferVerifiedValues(poolVals, verb, route, p.getName());
+                                if (!candidates.isEmpty()) {
+                                    String poolValue = candidates.get(random.nextInt(candidates.size()));
                                     if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
                                         typedVal = convertStringToTypedValue(poolValue, p);
                                         typedValSet = true;

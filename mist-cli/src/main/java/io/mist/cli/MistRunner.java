@@ -1708,11 +1708,71 @@ public final class MistRunner {
 
             Timer.stopCounting(Timer.TestStep.TEST_SUITE_EXECUTION);
 
+            // Phase 1: drain the per-step recordParameterSuccess observations
+            // accumulated by generated tests in TestResultCapture into the
+            // InputFetchRegistry on disk. Subsequent runs (or subsequent
+            // generations within this run) read the VERIFIED_VALID values via
+            // MistGenerator.preferVerifiedValues, so Sniper's non-target
+            // params land on values the SUT has accepted before.
+            drainParameterObservationsToRegistry();
+
             return result;
 
         } catch (Exception e) {
             logger.error("Error executing tests with collector: {}", e.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Phase 1: snapshot all (endpoint, paramName) → values that returned 2xx
+     * during the test execution, mark them VERIFIED_VALID on the registry,
+     * and persist with the same atomic-temp-rename used by other registry
+     * mutations. Best-effort: any I/O failure logs a warning and continues
+     * (drained observations are simply discarded for this run).
+     *
+     * <p>TODO(phase-1.5): called from inside executeTestsWithCollector which
+     * fires once per enhancement round, so a 5-round run drains 5 times.
+     * The drain is cheap (~ms) per round, but the in-memory
+     * poolStatusRegistry in MistGenerator is loaded once in generate() so
+     * round-2 variants don't see round-1's verified entries. Move to a
+     * single end-of-run call site or refresh registry between rounds when
+     * two-phase orchestration lands.
+     *
+     * <p>Cross-process safety: file rename is atomic, but two JVMs writing
+     * concurrently can clobber each other's verified entries. Single-
+     * process operation is the expected case.
+     */
+    private void drainParameterObservationsToRegistry() {
+        try {
+            Map<String, java.util.Set<String>> obs =
+                    io.mist.core.enhancer.TestResultCapture.getParameterSuccessSnapshot();
+            if (obs.isEmpty()) return;
+            String path = System.getProperty("smart.input.fetch.registry.path",
+                    "input-fetch-registry.yaml");
+            File f = new File(path);
+            io.mist.core.smart.InputFetchRegistry registry;
+            if (f.exists()) {
+                registry = io.mist.core.smart.InputFetchRegistry.loadFromFile(f);
+            } else {
+                registry = new io.mist.core.smart.InputFetchRegistry();
+            }
+            int verified = 0;
+            for (Map.Entry<String, java.util.Set<String>> e : obs.entrySet()) {
+                int delim = e.getKey().indexOf('\u0001');
+                if (delim < 0) continue;
+                String endpoint = e.getKey().substring(0, delim);
+                String paramName = e.getKey().substring(delim + 1);
+                for (String v : e.getValue()) {
+                    registry.markVerified(endpoint, paramName, v);
+                    verified++;
+                }
+            }
+            registry.saveToFile(f);
+            io.mist.core.enhancer.TestResultCapture.clearParameterObservations();
+            logger.info("📚 Phase 1: drained {} verified parameter values into {}", verified, path);
+        } catch (Exception e) {
+            logger.warn("Phase 1 drain failed (continuing): {}", e.getMessage());
         }
     }
 

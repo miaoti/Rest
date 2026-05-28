@@ -27,6 +27,15 @@ public class TestResultCapture {
     
     // Global storage for all captured results (thread-safe)
     private static final Map<String, FailedTestResult> capturedResults = new ConcurrentHashMap<>();
+
+    // Phase 1: per-value observations from positive (non-faulty) test steps.
+    // Keyed by "<endpoint>\u0001<paramName>" (\u0001 delimiter so paths
+    // containing "::" don't collide). Values are concurrent sets so writer
+    // emissions from parallel JUnitCores don't race.
+    private static final Map<String, java.util.Set<String>> parameterSuccessObservations
+            = new ConcurrentHashMap<>();
+    private static final Map<String, java.util.Set<String>> parameterRejectObservations
+            = new ConcurrentHashMap<>();
     
     // Flag to enable/disable capture
     private static volatile boolean captureEnabled = false;
@@ -326,6 +335,85 @@ public class TestResultCapture {
         }
     }
     
+    /**
+     * Phase 1: record one parameter-value observation on a 2xx step of a
+     * positive (non-faulty) test. The MistRunner drains these into
+     * {@link io.mist.core.smart.InputFetchRegistry#markVerified} between
+     * Phase A and Phase B. Recording is gated on {@link #captureEnabled} so
+     * idle generations don't accumulate noise. Idempotent for the same
+     * (endpoint, paramName, value) triple within a phase.
+     */
+    public static void recordParameterSuccess(String endpoint, String paramName,
+                                              String value, int statusCode) {
+        if (!captureEnabled) return;
+        if (endpoint == null || paramName == null || value == null) return;
+        if (statusCode < 200 || statusCode >= 300) return;
+        // Only record for positive (non-faulty) tests. Negative variants
+        // deliberately inject invalid values for the target parameter; their
+        // non-target params come from the same pool but the 2xx success path
+        // here is never reached on a negative variant. Belt-and-braces guard
+        // in case a fault doesn't actually trigger and a negative test passes.
+        TestContext context = currentContext.get();
+        if (context != null && context.isNegativeTest) return;
+        String key = endpoint + "\u0001" + paramName;
+        parameterSuccessObservations
+                .computeIfAbsent(key, k -> ConcurrentHashMap.newKeySet())
+                .add(value);
+    }
+
+    /**
+     * Phase 1: record one parameter-value observation on a 4xx/5xx step of a
+     * positive (non-faulty) test — the SUT rejected the value despite our
+     * intent to succeed, so the value is suspect for future positive runs.
+     * Not yet wired by the writer (success path is enough for Phase 1's
+     * Sniper filter); kept here so a future writer hook can emit it.
+     */
+    public static void recordParameterReject(String endpoint, String paramName,
+                                             String value, int statusCode) {
+        if (!captureEnabled) return;
+        if (endpoint == null || paramName == null || value == null) return;
+        if (statusCode < 400) return;
+        String key = endpoint + "\u0001" + paramName;
+        parameterRejectObservations
+                .computeIfAbsent(key, k -> ConcurrentHashMap.newKeySet())
+                .add(value);
+    }
+
+    /**
+     * Snapshot of all observed (endpoint, paramName) → values that returned
+     * 2xx during the current capture window. Defensive deep copy: callers
+     * can iterate without races against ongoing writer emissions.
+     */
+    public static Map<String, java.util.Set<String>> getParameterSuccessSnapshot() {
+        Map<String, java.util.Set<String>> snapshot = new java.util.HashMap<>();
+        for (Map.Entry<String, java.util.Set<String>> e : parameterSuccessObservations.entrySet()) {
+            snapshot.put(e.getKey(), new java.util.HashSet<>(e.getValue()));
+        }
+        return snapshot;
+    }
+
+    /**
+     * Snapshot of all observed (endpoint, paramName) → values that returned
+     * 4xx/5xx during the current capture window.
+     */
+    public static Map<String, java.util.Set<String>> getParameterRejectSnapshot() {
+        Map<String, java.util.Set<String>> snapshot = new java.util.HashMap<>();
+        for (Map.Entry<String, java.util.Set<String>> e : parameterRejectObservations.entrySet()) {
+            snapshot.put(e.getKey(), new java.util.HashSet<>(e.getValue()));
+        }
+        return snapshot;
+    }
+
+    /**
+     * Clear the parameter-observation maps between phases. Mirrors the
+     * idempotent enableCapture clear-on-transition semantics: caller is
+     * expected to drain first (via getParameterSuccessSnapshot) then clear.
+     */
+    public static void clearParameterObservations() {
+        parameterSuccessObservations.clear();
+        parameterRejectObservations.clear();
+    }
+
     /**
      * Add an invalid parameter (for negative tests).
      * These parameters are intentionally invalid and should NOT be changed during enhancement.

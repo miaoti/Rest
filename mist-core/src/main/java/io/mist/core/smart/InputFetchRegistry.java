@@ -28,6 +28,11 @@ public class InputFetchRegistry {
     private Map<String, String> llmPrompts;
     private CacheConfig cacheConfig;
     private Map<String, Map<String, List<ParameterError>>> parameterErrors; // API endpoint -> parameter -> errors
+    // Phase 1: per-value SUT-verified status for non-target parameter values.
+    // Nesting mirrors parameterErrors: endpoint -> paramName -> value -> status.
+    // Populated by the writer-side recordParameterSuccess drain after a 2xx
+    // positive step; consumed by MistGenerator's Sniper non-target picker.
+    private Map<String, Map<String, Map<String, PoolEntryStatus>>> poolEntryStatus;
     
     // Jackson mapper for YAML serialization
     private static final ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory())
@@ -41,8 +46,22 @@ public class InputFetchRegistry {
         this.llmPrompts = new HashMap<>();
         this.cacheConfig = new CacheConfig();
         this.parameterErrors = new HashMap<>();
-        
+        this.poolEntryStatus = new HashMap<>();
+
         initializeDefaults();
+    }
+
+    /**
+     * Phase 1: classification of a pool value's known validity per the SUT.
+     * UNVERIFIED is the default for values that have never been observed in
+     * a positive 2xx response. VERIFIED_VALID is set after the value flows
+     * through a successful positive test step. REJECTED_BY_SUT is set when
+     * the same value triggered a 4xx/5xx in a positive (non-faulty) step.
+     */
+    public enum PoolEntryStatus {
+        UNVERIFIED,
+        VERIFIED_VALID,
+        REJECTED_BY_SUT
     }
     
     /**
@@ -334,6 +353,78 @@ public class InputFetchRegistry {
         return context.toString();
     }
     
+    // ---------------------------------------------------------------------
+    // Phase 1: SUT-verified pool status (non-target parameter values)
+    // ---------------------------------------------------------------------
+
+    /**
+     * Mark {@code value} as VERIFIED_VALID for the given endpoint+param. Called
+     * by the test-result drain after a positive (non-faulty) test step
+     * returned 2xx with this value in scope. Idempotent; promotes
+     * REJECTED_BY_SUT → VERIFIED_VALID when the SUT eventually accepts a
+     * previously-rejected value (e.g. data fixture became available).
+     */
+    public synchronized void markVerified(String endpoint, String paramName, String value) {
+        if (endpoint == null || paramName == null || value == null) return;
+        poolEntryStatus
+                .computeIfAbsent(endpoint, k -> new HashMap<>())
+                .computeIfAbsent(paramName, k -> new HashMap<>())
+                .put(value, PoolEntryStatus.VERIFIED_VALID);
+    }
+
+    /**
+     * Mark {@code value} as REJECTED_BY_SUT for the given endpoint+param.
+     * Called when a positive (non-faulty) step returns 4xx/5xx with this
+     * value in scope. Never overwrites a VERIFIED_VALID entry (a single
+     * verified observation outweighs intermittent rejections).
+     */
+    public synchronized void markRejected(String endpoint, String paramName, String value) {
+        if (endpoint == null || paramName == null || value == null) return;
+        Map<String, PoolEntryStatus> perValue = poolEntryStatus
+                .computeIfAbsent(endpoint, k -> new HashMap<>())
+                .computeIfAbsent(paramName, k -> new HashMap<>());
+        if (perValue.get(value) != PoolEntryStatus.VERIFIED_VALID) {
+            perValue.put(value, PoolEntryStatus.REJECTED_BY_SUT);
+        }
+    }
+
+    /**
+     * Return the list of values currently classified VERIFIED_VALID for the
+     * given endpoint+param. Returns an empty list if none are verified —
+     * caller falls back to the raw shared pool with a warning.
+     */
+    public synchronized List<String> getVerifiedValues(String endpoint, String paramName) {
+        Map<String, Map<String, PoolEntryStatus>> byParam = poolEntryStatus.get(endpoint);
+        if (byParam == null) return Collections.emptyList();
+        Map<String, PoolEntryStatus> byValue = byParam.get(paramName);
+        if (byValue == null) return Collections.emptyList();
+        List<String> verified = new ArrayList<>();
+        for (Map.Entry<String, PoolEntryStatus> e : byValue.entrySet()) {
+            if (e.getValue() == PoolEntryStatus.VERIFIED_VALID) verified.add(e.getKey());
+        }
+        return verified;
+    }
+
+    /**
+     * Status query — returns {@link PoolEntryStatus#UNVERIFIED} when the
+     * value has never been observed. Test-only and diagnostic use.
+     */
+    public synchronized PoolEntryStatus getPoolEntryStatus(String endpoint, String paramName, String value) {
+        Map<String, Map<String, PoolEntryStatus>> byParam = poolEntryStatus.get(endpoint);
+        if (byParam == null) return PoolEntryStatus.UNVERIFIED;
+        Map<String, PoolEntryStatus> byValue = byParam.get(paramName);
+        if (byValue == null) return PoolEntryStatus.UNVERIFIED;
+        PoolEntryStatus s = byValue.get(value);
+        return s == null ? PoolEntryStatus.UNVERIFIED : s;
+    }
+
+    /**
+     * Test-only read-only view of the nested status map for assertions.
+     */
+    Map<String, Map<String, Map<String, PoolEntryStatus>>> getPoolEntryStatusMapForTest() {
+        return Collections.unmodifiableMap(poolEntryStatus);
+    }
+
     /**
      * Get all service names from mappings and patterns
      */
@@ -463,6 +554,10 @@ public class InputFetchRegistry {
         public Map<String, String> llmPrompts;
         public CacheConfigData cache;
         public Map<String, Map<String, List<ParameterErrorData>>> parameterErrors;
+        // Phase 1: per-value SUT-verified status; nested as endpoint -> param
+        // -> value -> status. Optional in YAML; legacy files load with this
+        // field null and we treat all values as UNVERIFIED on first run.
+        public Map<String, Map<String, Map<String, PoolEntryStatus>>> poolEntryStatus;
         
         public static RegistryData fromRegistry(InputFetchRegistry registry) {
             RegistryData data = new RegistryData();
@@ -499,10 +594,24 @@ public class InputFetchRegistry {
                 }
                 data.parameterErrors.put(endpointEntry.getKey(), parameterErrorsData);
             }
-            
+
+            // Phase 1: serialize the per-value verified/rejected status map.
+            // Deep copy so YAML serde doesn't share references with the live registry.
+            if (registry.poolEntryStatus != null && !registry.poolEntryStatus.isEmpty()) {
+                data.poolEntryStatus = new HashMap<>();
+                for (Map.Entry<String, Map<String, Map<String, PoolEntryStatus>>> e1
+                        : registry.poolEntryStatus.entrySet()) {
+                    Map<String, Map<String, PoolEntryStatus>> byParam = new HashMap<>();
+                    for (Map.Entry<String, Map<String, PoolEntryStatus>> e2 : e1.getValue().entrySet()) {
+                        byParam.put(e2.getKey(), new HashMap<>(e2.getValue()));
+                    }
+                    data.poolEntryStatus.put(e1.getKey(), byParam);
+                }
+            }
+
             return data;
         }
-        
+
         public InputFetchRegistry toRegistry() {
             InputFetchRegistry registry = new InputFetchRegistry();
             registry.version = this.version;
@@ -546,7 +655,21 @@ public class InputFetchRegistry {
                     registry.parameterErrors.put(endpointEntry.getKey(), parameterErrors);
                 }
             }
-            
+
+            // Phase 1: load per-value verified/rejected status. Legacy YAMLs
+            // without the field load with poolEntryStatus already initialized
+            // empty by the InputFetchRegistry constructor.
+            if (this.poolEntryStatus != null) {
+                for (Map.Entry<String, Map<String, Map<String, PoolEntryStatus>>> e1
+                        : this.poolEntryStatus.entrySet()) {
+                    Map<String, Map<String, PoolEntryStatus>> byParam = new HashMap<>();
+                    for (Map.Entry<String, Map<String, PoolEntryStatus>> e2 : e1.getValue().entrySet()) {
+                        byParam.put(e2.getKey(), new HashMap<>(e2.getValue()));
+                    }
+                    registry.poolEntryStatus.put(e1.getKey(), byParam);
+                }
+            }
+
             return registry;
         }
     }
