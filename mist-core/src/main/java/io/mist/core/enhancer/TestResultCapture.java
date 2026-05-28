@@ -33,11 +33,28 @@ public class TestResultCapture {
     
     /**
      * Enable result capture (called before test execution starts).
+     *
+     * <p>Idempotent: only clears {@link #capturedResults} on the FIRST call
+     * when capture is currently disabled. Subsequent calls while capture is
+     * already enabled are no-ops. This lets parallel JUnitCores each register
+     * a {@code FailedTestCollector} listener without racing to clear the
+     * shared results map — each listener's {@code testRunStarted} fires
+     * {@code enableCapture()}, but only the first one wins the clear.
+     *
+     * <p>Before this idempotency guard, commit e3d7e4b6 sidestepped the race
+     * by NOT registering the listener on per-task JUnitCores at all, but that
+     * meant {@code testFailure} never fired and {@code markTestFailed} was
+     * never called — so every parallel run reported 0 enhanceable failures.
      */
-    public static void enableCapture() {
-        captureEnabled = true;
-        capturedResults.clear();
-        log.info("Test result capture ENABLED");
+    public static synchronized void enableCapture() {
+        if (!captureEnabled) {
+            capturedResults.clear();
+            captureEnabled = true;
+            log.info("Test result capture ENABLED (map cleared)");
+        } else {
+            log.debug("Test result capture already enabled — preserving {} captured results",
+                    capturedResults.size());
+        }
     }
     
     /**

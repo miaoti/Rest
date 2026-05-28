@@ -1617,12 +1617,25 @@ public final class MistRunner {
                 ExecutorService pool = Executors.newFixedThreadPool(parallelism);
                 final java.util.concurrent.atomic.AtomicInteger progressIdx =
                         new java.util.concurrent.atomic.AtomicInteger();
+                // Use the SAME collector across all parallel JUnitCores. After the
+                // enableCapture idempotency guard added to TestResultCapture, it
+                // is safe to register the collector listener on every per-task
+                // JUnitCore — the first listener's testRunStarted clears the
+                // global results map, every subsequent listener is a no-op. The
+                // collector's testFailure calls markTestFailed which is the only
+                // path that converts a JUnit failure into a FailedTestResult.
+                // Without registering the listener on per-task cores (the state
+                // before this fix), markTestFailed never fired and Enhanceable
+                // Failures was always 0 even when JUnit reported thousands of
+                // raw failures (Run 21.b symptom).
+                final FailedTestCollector parallelCollector = collector;
                 List<Callable<Result>> tasks = new ArrayList<>();
                 for (Class<?> testCls : testClasses) {
                     final Class<?> c = testCls;
                     tasks.add(() -> {
                         JUnitCore local = new JUnitCore();
                         local.addListener(new AllureJunit4());
+                        local.addListener(parallelCollector);
                         try {
                             if (mFilter != null) {
                                 org.junit.runner.Request req = org.junit.runner.Request

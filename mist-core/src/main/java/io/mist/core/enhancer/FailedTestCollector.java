@@ -12,8 +12,10 @@ import org.junit.runner.notification.RunListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * JUnit RunListener that collects failed test information for enhancement.
@@ -26,6 +28,11 @@ public class FailedTestCollector extends RunListener {
             .enable(SerializationFeature.INDENT_OUTPUT);
     
     private final List<FailedTestResult> failedTests = new ArrayList<>();
+    // Tracks which test keys (class.method) have already been drained into
+    // failedTests, so calling drainFromTestResultCapture multiple times (once
+    // per parallel JUnitCore's testRunFinished) doesn't duplicate entries.
+    // Keyed by testClassName + "." + testMethodName.
+    private final Set<String> drainedKeys = new HashSet<>();
     private final int currentRound;
     private final boolean skip5xx;
     private final String outputDir;
@@ -100,14 +107,29 @@ public class FailedTestCollector extends RunListener {
      * {@link TestResultCapture#enableCapture()} / {@code disable…} and lose
      * results.
      */
-    public void drainFromTestResultCapture() {
-        Map<String, FailedTestResult> capturedResults = TestResultCapture.disableCaptureAndGetResults();
+    public synchronized void drainFromTestResultCapture() {
+        // Use snapshot — NOT disable — because in parallel mode this method is
+        // called once per per-task JUnitCore's testRunFinished. Disabling on
+        // the first call would cause subsequent tasks' markTestFailed to drop
+        // results. MistRunner explicitly disables capture once after all
+        // parallel tasks finish (or it stays enabled until the next round
+        // re-enables it idempotently — both are fine).
+        Map<String, FailedTestResult> capturedResults = TestResultCapture.getResultsSnapshot();
 
+        int addedThisDrain = 0;
+        int skippedThisDrain = 0;
         for (FailedTestResult failed : capturedResults.values()) {
+            String testKey = failed.getTestClassName() + "." + failed.getTestMethodName();
+            // Idempotency: this captured result was already drained earlier
+            // (e.g. by an earlier JUnitCore's testRunFinished). Skip without
+            // re-adding so failedTests holds at most one entry per test.
+            if (!drainedKeys.add(testKey)) continue;
+
             // Skip 5xx errors if configured
             if (skip5xx && failed.getActualStatusCode() >= 500) {
                 log.debug("⏭️  Skipping 5xx error: {} (status: {})",
                         failed.getTestMethodName(), failed.getActualStatusCode());
+                skippedThisDrain++;
                 continue;
             }
 
@@ -117,15 +139,18 @@ public class FailedTestCollector extends RunListener {
             if (failed.isBypassTriggered()) {
                 log.debug("⏭️  Skipping enhancement: {} (step ran in ⚡ Bypass Mode — upstream failure caused fallback)",
                         failed.getTestMethodName());
+                skippedThisDrain++;
                 continue;
             }
 
             failed.setEnhancementRound(currentRound);
             failedTests.add(failed);
+            addedThisDrain++;
         }
 
-        log.info("📊 Collected {} enhanceable failed tests (skipped {} total)",
-                failedTests.size(), capturedResults.size() - failedTests.size());
+        log.info("📊 Collected {} enhanceable failed tests (added {} skipped {} this drain; cumulative skipped {})",
+                failedTests.size(), addedThisDrain, skippedThisDrain,
+                capturedResults.size() - failedTests.size());
 
         // Save to file
         saveFailedTestsToFile();
