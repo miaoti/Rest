@@ -48,8 +48,8 @@ Each phase has its own design doc in this directory:
 
 | Source | What it tells us |
 |---|---|
-| `logs/fault-detection-reports/fault-detection-summary-trainticket_twostage_test_42-20260528-000554.txt` | Run 22 final: 10/10 with 2,439 total detection events across 15,036 tests |
-| `logs/fault-detection-reports/fault-detection-summary-trainticket_twostage_test_42-20260527-143912.txt` | Run 21.b final: 7/10 (pre-listener-fix baseline) |
+| [`runs/run22-fault-detection-10of10.txt`](runs/run22-fault-detection-10of10.txt) | Run 22 final report: 10/10 with 2,439 total detection events across 15,036 tests (2.4 MB) |
+| [`runs/run21b-fault-detection-7of10.txt`](runs/run21b-fault-detection-7of10.txt) | Run 21.b final: 7/10 (pre-listener-fix baseline, ~2.1 MB) |
 | `.mist/enhancement-cache.json` (1.8 MB, Run 22) | Run-22 EnhancementCache contents — same prompts on Run 23+ now hit cache |
 | `.mist/llm-validation-cache.json` (1.7 MB, Run 22) | Run-22 LLM Validation cache; same response fingerprints free on rerun |
 | Agent A audit (oracle catch-rate, in-session transcript) | 7,094 SPAN_TREE_SHAPE + 3,735 STATUS_PROPAGATION violations during Run 21.b; 6,735 of these have no matching fault name |
