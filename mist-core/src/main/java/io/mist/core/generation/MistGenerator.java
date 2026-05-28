@@ -45,7 +45,15 @@ public class MistGenerator {
 
     private final Map<String, OpenAPI>          serviceSpecs;
     private final Map<String, TestConfigurationObject>       serviceConfigs;
-    private final List<WorkflowScenario>                     scenarios;
+    private List<WorkflowScenario>                           scenarios;
+    // Phase 1 part 2: snapshot of the scenarios list as received from the
+    // constructor (shallow — same WorkflowScenario refs). The workflow
+    // pipeline stages (Phase25Dedup, Phase3Shattering, Phase35Dedup,
+    // Phase4Decomposition) mutate the live scenarios list in place; without
+    // a snapshot, a second generate() call (Phase B) operates on the post-
+    // Phase-A residue and produces zero / wrong variants. resetForNewPhase
+    // restores this.scenarios to a fresh copy of originalScenarios.
+    private final List<WorkflowScenario>                     originalScenarios;
     private final boolean                                    useLLM;
     private final AiDrivenLLMGenerator                       llmGen = new AiDrivenLLMGenerator();
     
@@ -317,6 +325,7 @@ public class MistGenerator {
         this.serviceSpecs     = serviceSpecs;
         this.serviceConfigs   = serviceConfigs;
         this.scenarios        = scenarios;
+        this.originalScenarios = new ArrayList<>(scenarios);  // shallow snapshot
         this.useLLM           = useLLMforParams;
         // Root API Mode is the PRIMARY mode (per the paper).  When true, the generator
         // keeps all top-level root API spans in every test case and prunes internal
@@ -432,6 +441,52 @@ public class MistGenerator {
 
     // Shared parameter pools grouped by root API to avoid redundant LLM/semantic generation
     private Map<String, Map<String, List<String>>> sharedParameterPools = new HashMap<>();
+
+    /**
+     * Phase 1 part 2: temporarily override {@link #faultyRatio} for a single
+     * {@code generate()} call. Used by MistRunner's two-phase flow to force
+     * Phase A to produce only positive variants ({@code 0.0f}) before
+     * restoring the original ratio for Phase B. Caller is responsible for
+     * restoring; no internal stack.
+     */
+    public void setFaultyRatio(float ratio) {
+        this.faultyRatio = ratio;
+    }
+
+    /**
+     * Phase 1 part 2: current {@link #faultyRatio} so the runner can save +
+     * restore it around Phase A.
+     */
+    public float getFaultyRatio() {
+        return this.faultyRatio;
+    }
+
+    /**
+     * Phase 1 part 2: clear cross-call dedup state so a second
+     * {@code generate()} call (Phase B in the two-phase flow) produces
+     * variants without being suppressed by Phase A's approval set.
+     *
+     * <p>{@code seenPayloads} and {@code dedupExhaustionStreak} are per-
+     * scenario locals initialized inside the variant loop, so they don't
+     * survive across {@code generate()} calls; only {@code approvedApiKeys}
+     * is a class field that accumulates.
+     *
+     * <p>Also reloads {@link #poolStatusRegistry} so Phase B's Sniper
+     * preferVerifiedValues sees the values that Phase A's drain pushed to
+     * disk between the two calls.
+     */
+    public void resetForNewPhase() {
+        approvedApiKeys.clear();
+        poolStatusRegistry = loadRegistryQuietly();
+        // Replace the live scenarios list with a fresh copy of the original
+        // refs so Phase B's pipeline stages see the pre-Phase-A state.
+        // NOTE: this is a shallow restore — individual WorkflowScenario
+        // instances may carry mutated internal state from Phase A's stages.
+        // For trainticket's stage set this is observably fine; if a future
+        // stage mutates WorkflowScenario fields directly, this needs to
+        // become a deep clone.
+        this.scenarios = new ArrayList<>(originalScenarios);
+    }
 
     // Phase 1: registry of SUT-verified pool values, loaded once at generate()
     // start so the per-parameter Sniper pool pull can prefer verified values

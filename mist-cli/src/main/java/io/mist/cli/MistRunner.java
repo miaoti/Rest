@@ -306,67 +306,29 @@ public final class MistRunner {
             mstWriter = (MultiServiceRESTAssuredWriter) writer;
         }
 
-        // Generate test cases
-        logger.info("Generating tests");
-        Timer.startCounting(Timer.TestStep.TEST_SUITE_GENERATION);
-        // MistGenerator (mist-core) returns io.mist.core.testcase.TestCase
-        // instances. MistRunner now operates on mist-core test cases
-        // end-to-end (status-code enhancer, stats report, etc. all
-        // consume the mist-core carriers); only the RESTAssured writer
-        // call below needs the adapter-flavoured TestCase carriers, so
-        // TestCaseConverter runs at that single boundary.
-        Collection<TestCase> testCases = generator.generate();
-        Timer.stopCounting(Timer.TestStep.TEST_SUITE_GENERATION);
+        // Phase 1 part 2: two-phase positive-first / negative-second flow.
+        // When enabled, run the generate→write→execute pipeline twice with
+        // different config:
+        //   Phase A: faulty.ratio=0 (positives only), no enhancer, suffix _phaseA
+        //   Phase B: original faulty.ratio + enhancer (if configured), suffix _phaseB
+        // The Phase A drain (already wired in part 1, inside
+        // executeTestsWithCollector) pushes VERIFIED_VALID entries to the
+        // registry between the two calls; MistGenerator.resetForNewPhase()
+        // reloads the registry so Phase B's Sniper sees them.
+        boolean twoPhaseEnabled = Boolean.parseBoolean(
+                System.getProperty("mst.two.phase.enabled", "false"));
 
-        // Store MST test cases for status code exploration (used during enhancement)
-        generatedMSTTestCases.clear();
-        for (TestCase tc : testCases) {
-            if (tc instanceof MultiServiceTestCase) {
-                generatedMSTTestCases.add((MultiServiceTestCase) tc);
-            }
+        Collection<TestCase> testCases;
+        if (twoPhaseEnabled) {
+            logger.info("═══════════════════════════════════════════════════════════════════════════");
+            logger.info("🔀 TWO-PHASE FLOW ENABLED: Phase A (positive baseline) → drain → Phase B (negatives)");
+            logger.info("═══════════════════════════════════════════════════════════════════════════");
+            testCases = runTwoPhasePipeline(generator, writer, className, id);
+        } else {
+            testCases = runSinglePhasePipeline(generator, writer, className, id);
         }
-        logger.info("📋 Stored {} MST test cases for status code exploration", generatedMSTTestCases.size());
 
-        // Stats report writer was a RESTest helper; replaced by inline
-        // log4j summary lines later in the run.
-
-        // Write test cases using MultiServiceRESTAssuredWriter (creates multiple files).
-        // The writer's input surface is still Collection<RESTest-side TestCase>;
-        // bridge across the boundary here via TestCaseConverter.
-        logger.info("Writing {} test cases to multiple files in folder structure", testCases.size());
-        logger.info("TARGET: All test files will be in timestamped package: {}.{}", inputs.packageName, className);
-        writer.write(testCases);
-
-        // Execute tests if enabled
         if (Boolean.TRUE.equals(inputs.executeTestCases)) {
-            logger.info("Executing generated test cases");
-            logger.info("ISOLATION: Only executing tests from current run (timestamp: {})", id);
-
-            // For MST mode, find the actual generated test classes and execute them individually
-            String actualPackageName = inputs.packageName + "." + className;
-
-            // Check if Test Case Enhancer is enabled. We use the FQN here
-            // because this file already imports the legacy
-            // io.mist.core.config.legacy.MstConfig (Properties-file loader)
-            // and the new typed POJO lives at io.mist.core.config.MstConfig.
-            io.mist.core.config.MstConfig.Enhancer enhancerCfg =
-                    io.mist.core.config.MstConfig.instance().enhancer();
-            boolean enhancerEnabled = enhancerCfg.enabled();
-            int enhancerRounds = enhancerCfg.rounds();
-            boolean skip5xx = enhancerCfg.skip5xx();
-
-            if (enhancerEnabled) {
-                logger.info("═══════════════════════════════════════════════════════════════════════════");
-                logger.info("🔧 TEST CASE ENHANCER ENABLED - {} enhancement round(s) configured", enhancerRounds);
-                logger.info("═══════════════════════════════════════════════════════════════════════════");
-
-                // Execute with enhancement loop
-                executeWithEnhancement(actualPackageName, className, enhancerRounds, skip5xx, id);
-            } else {
-                // Standard single execution
-                executeGeneratedTestsWithJUnit(actualPackageName, className);
-            }
-
             // Allure report aggregation was driven by RESTest's
             // AllureReportManager (now removed). The generated tests still
             // emit per-test Allure annotations via the writer, so the raw
@@ -407,6 +369,140 @@ public final class MistRunner {
                 .testCaseCount(testCases.size())
                 .runId(id)
                 .build();
+    }
+
+    /**
+     * Single-phase pipeline (legacy default flow). Generate → write → execute.
+     * Returns the generated test cases so the caller can report counts.
+     *
+     * <p>{@code forceDisableEnhancer} short-circuits the enhancer for Phase A
+     * of the two-phase flow (where the generator produces 0 negatives so
+     * there's nothing for the enhancer to recover from). Passing
+     * {@code false} preserves the existing MstConfig.enhancer.enabled
+     * behavior for the legacy single-phase path. Note we can't rely on
+     * System.setProperty here because MstConfig is a singleton cached on
+     * first instance() call (earlier in run()).
+     */
+    private Collection<TestCase> runSinglePhasePipeline(MistGenerator generator,
+                                                        MultiServiceRESTAssuredWriter writer,
+                                                        String className,
+                                                        String id) throws Exception {
+        return runSinglePhasePipeline(generator, writer, className, id, /*forceDisableEnhancer=*/false);
+    }
+
+    private Collection<TestCase> runSinglePhasePipeline(MistGenerator generator,
+                                                        MultiServiceRESTAssuredWriter writer,
+                                                        String className,
+                                                        String id,
+                                                        boolean forceDisableEnhancer) throws Exception {
+        // Generate
+        logger.info("Generating tests");
+        Timer.startCounting(Timer.TestStep.TEST_SUITE_GENERATION);
+        Collection<TestCase> testCases = generator.generate();
+        Timer.stopCounting(Timer.TestStep.TEST_SUITE_GENERATION);
+
+        // Track for status-code exploration during enhancement
+        generatedMSTTestCases.clear();
+        for (TestCase tc : testCases) {
+            if (tc instanceof MultiServiceTestCase) {
+                generatedMSTTestCases.add((MultiServiceTestCase) tc);
+            }
+        }
+        logger.info("📋 Stored {} MST test cases for status code exploration", generatedMSTTestCases.size());
+
+        // Write
+        logger.info("Writing {} test cases to multiple files in folder structure", testCases.size());
+        logger.info("TARGET: All test files will be in timestamped package: {}.{}", inputs.packageName, className);
+        writer.write(testCases);
+
+        // Execute
+        if (Boolean.TRUE.equals(inputs.executeTestCases)) {
+            logger.info("Executing generated test cases");
+            logger.info("ISOLATION: Only executing tests from current run (timestamp: {})", id);
+            String actualPackageName = inputs.packageName + "." + className;
+            io.mist.core.config.MstConfig.Enhancer enhancerCfg =
+                    io.mist.core.config.MstConfig.instance().enhancer();
+            boolean enhancerEnabled = enhancerCfg.enabled() && !forceDisableEnhancer;
+            int enhancerRounds = enhancerCfg.rounds();
+            boolean skip5xx = enhancerCfg.skip5xx();
+            if (enhancerEnabled) {
+                logger.info("═══════════════════════════════════════════════════════════════════════════");
+                logger.info("🔧 TEST CASE ENHANCER ENABLED - {} enhancement round(s) configured", enhancerRounds);
+                logger.info("═══════════════════════════════════════════════════════════════════════════");
+                executeWithEnhancement(actualPackageName, className, enhancerRounds, skip5xx, id);
+            } else {
+                executeGeneratedTestsWithJUnit(actualPackageName, className);
+            }
+        }
+        return testCases;
+    }
+
+    /**
+     * Phase 1 part 2: two-phase pipeline.
+     * <ul>
+     *   <li>Phase A: faulty.ratio=0 forces positives only; no enhancer (since
+     *       there are no faulty variants for the enhancer to rescue). Suffix
+     *       {@code _phaseA} on the generated class name so files don't collide.
+     *       executeTestsWithCollector drains TestResultCapture's success
+     *       observations into the InputFetchRegistry as VERIFIED_VALID at the
+     *       end of Phase A.</li>
+     *   <li>Inter-phase reset: MistGenerator.resetForNewPhase() clears
+     *       approvedApiKeys and reloads the registry so Phase B's Sniper
+     *       preferVerifiedValues sees Phase A's verifications.</li>
+     *   <li>Phase B: original faulty.ratio; enhancer (if configured). Suffix
+     *       {@code _phaseB}. Negatives now draw non-target values from the
+     *       verified pool.</li>
+     * </ul>
+     * Returns the Phase B test cases (the primary deliverable) for count
+     * reporting; Phase A's cases are the baseline and don't contribute to
+     * the fault-detection report numerator.
+     */
+    private Collection<TestCase> runTwoPhasePipeline(MistGenerator generator,
+                                                     MultiServiceRESTAssuredWriter writer,
+                                                     String baseClassName,
+                                                     String id) throws Exception {
+        float originalRatio = generator.getFaultyRatio();
+        try {
+            // -------- Phase A: positive baseline --------
+            String phaseAClassName = baseClassName + "_phaseA";
+            logger.info("🔀 PHASE A: positive baseline (faulty.ratio=0, no enhancer, class={})",
+                    phaseAClassName);
+            generator.setFaultyRatio(0.0f);
+            writer.setClassName(phaseAClassName);
+            // forceDisableEnhancer=true: Phase A has no negatives for the
+            // enhancer to rescue. Passing as a parameter avoids the
+            // System.setProperty trap (MstConfig is a cached singleton).
+            runSinglePhasePipeline(generator, writer, phaseAClassName, id,
+                    /*forceDisableEnhancer=*/true);
+
+            // -------- Inter-phase: reset state --------
+            // Phase A drain already pushed observations to the registry
+            // inside executeTestsWithCollector. Now reset the generator's
+            // per-phase dedup + reload its registry view AND restore the
+            // scenarios list to its pre-Phase-A state (the pipeline stages
+            // mutate scenarios in place; without restore Phase B sees the
+            // already-deduped/shattered residue and may produce 0 variants).
+            // Also reset FaultDetectionTracker counters: Phase A's positive
+            // baseline shouldn't contribute to the detection report.
+            logger.info("🔀 INTER-PHASE: resetting generator + tracker state, reloading verified pool");
+            generator.resetForNewPhase();
+            FaultDetectionTracker.getInstance().reset();
+            // reset() clears injected-faults too in some implementations;
+            // ours doesn't (verified — reset only clears detectedFaults,
+            // allTestCases, oracleAnomalies, trackingStartTime).
+
+            // -------- Phase B: negatives with verified pool --------
+            String phaseBClassName = baseClassName + "_phaseB";
+            logger.info("🔀 PHASE B: negatives with verified pool (faulty.ratio={}, class={})",
+                    originalRatio, phaseBClassName);
+            generator.setFaultyRatio(originalRatio);
+            writer.setClassName(phaseBClassName);
+            return runSinglePhasePipeline(generator, writer, phaseBClassName, id);
+        } finally {
+            // Belt-and-braces: ensure faultyRatio is restored even if Phase B
+            // fails part-way through (e.g. write failure).
+            generator.setFaultyRatio(originalRatio);
+        }
     }
 
     /**
@@ -1858,8 +1954,9 @@ public final class MistRunner {
             String packagePath = fullPackageName.replace('.', '/');
             File currentPackageDir = new File(testClassesDir, packagePath);
 
-            // Only clean if we're dealing with a timestamped package (contains underscore and numbers)
-            if (fullPackageName.matches(".*_\\d+")) {
+            // Only clean if we're dealing with a timestamped package (contains underscore and numbers,
+            // optionally followed by a "_phaseA" / "_phaseB" suffix from the two-phase orchestrator).
+            if (fullPackageName.matches(".*_\\d+(?:_phase[AB])?")) {
                 logger.info("Cleaning old compiled test classes to ensure isolation...");
 
                 // Get the base package (e.g., "trainticket_twostage_test")
@@ -1872,7 +1969,8 @@ public final class MistRunner {
                         int cleanedCount = 0;
                         for (File oldDir : oldPackageDirs) {
                             // Only clean directories that look like old timestamped packages
-                            if (!oldDir.equals(currentPackageDir) && oldDir.getName().matches(".*_\\d+")) {
+                            if (!oldDir.equals(currentPackageDir)
+                                    && oldDir.getName().matches(".*_\\d+(?:_phase[AB])?")) {
                                 if (deleteDirectory(oldDir)) {
                                     cleanedCount++;
                                     logger.debug("Cleaned old package directory: {}", oldDir.getName());
