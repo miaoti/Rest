@@ -284,7 +284,7 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
                     pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
                     pw.println();
-                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId, String testMethodName) {");
+                    pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId, String testMethodName, String targetService, String targetParam) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
@@ -714,7 +714,7 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                        // traceparent) — Jaeger may return a stale or wrong trace.");
                     pw.println("                        try {");
                     pw.println("                            io.mist.core.analysis.FaultDetectionTracker.getInstance()");
-                    pw.println("                                .recordVerdict(verdict, rootApiKey, " + className + ".class.getName(), testMethodName, markerTraceId);");
+                    pw.println("                                .recordVerdict(verdict, model, rootApiKey, " + className + ".class.getName(), testMethodName, markerTraceId, targetService, targetParam);");
                     pw.println("                        } catch (Throwable anomalyEx) {");
                     pw.println("                            Allure.addAttachment(\"Oracle Anomaly Record Error\", \"text/plain\", anomalyEx.toString());");
                     pw.println("                        }");
@@ -1310,13 +1310,61 @@ public class MultiServiceRESTAssuredWriter {
 
                     pw.println("    @Test");
                     pw.println("    public void " + testMethodName + "() throws Exception {");
-                    
+
                     /* ------------ Record test case for fault detection tracking ---------- */
                     pw.println("        // Record test execution for fault detection tracking");
                     pw.println("        io.mist.core.analysis.FaultDetectionTracker.getInstance()");
                     pw.println("            .recordTestCase(this.getClass().getName(), \"" + testMethodName + "\");");
                     pw.println();
-                    
+
+                    /* ------------ Phase 2: target service + param for trace attribution ---- */
+                    // Resolve at write-time so the generated code carries them as literal
+                    // strings. attribute() runs inside attachJaegerTrace per step; for
+                    // positive tests (and for negative tests where target root cannot be
+                    // resolved) both stay null and FaultDetectionTracker skips attribution.
+                    //
+                    // Format mismatch: MistGenerator writes the target id as "Root N"
+                    // (display text consumed elsewhere) but StepCall.hierarchicalId is
+                    // "RN" / "R1.2" etc. — normalize the prefix before matching, and do
+                    // NOT fall back to a different step because using the wrong service
+                    // produces phantom UPSTREAM/WRONG_PARAM counts in the attribution
+                    // rollup. Null is the honest signal.
+                    MultiServiceTestCase __mstcForTarget = (MultiServiceTestCase) scenario;
+                    String __targetServiceLiteral = "null";
+                    String __targetParamLiteral = "null";
+                    if (__mstcForTarget.getFaulty() && !__mstcForTarget.getFaultyParameters().isEmpty()) {
+                        String __targetRootId = __mstcForTarget.getTargetFaultRootId();
+                        // Normalize: "Root 2" -> "R2". Leave "R1.2" / "R1" alone.
+                        String __normalized = __targetRootId;
+                        if (__normalized != null && __normalized.startsWith("Root ")) {
+                            __normalized = "R" + __normalized.substring("Root ".length()).trim();
+                        }
+                        String __resolvedSvc = null;
+                        if (__normalized != null && !__normalized.isEmpty()) {
+                            for (MultiServiceTestCase.StepCall __s : __mstcForTarget.getSteps()) {
+                                if (__normalized.equals(__s.getHierarchicalId())) {
+                                    __resolvedSvc = __s.getServiceName();
+                                    break;
+                                }
+                            }
+                        }
+                        if (__resolvedSvc != null && !__resolvedSvc.isEmpty()) {
+                            __targetServiceLiteral = "\"" + escape(__resolvedSvc) + "\"";
+                        }
+                        // First faulty param: "paramName=faultyValue" → take the name half.
+                        // MistGenerator's invariant: every faulty entry contains '=', so
+                        // indexOf('=') > 0. The check is defensive only.
+                        String __firstFault = __mstcForTarget.getFaultyParameters().get(0);
+                        int __eq = __firstFault == null ? -1 : __firstFault.indexOf('=');
+                        if (__eq > 0) {
+                            __targetParamLiteral = "\"" + escape(__firstFault.substring(0, __eq)) + "\"";
+                        }
+                    }
+                    pw.println("        // Phase 2: trace-attribution target (negative tests only).");
+                    pw.println("        final String __targetService = " + __targetServiceLiteral + ";");
+                    pw.println("        final String __targetParam = " + __targetParamLiteral + ";");
+                    pw.println();
+
                     /* ------------ Set up Test Case Enhancer capture ---------- */
                     MultiServiceTestCase mstc = (MultiServiceTestCase) scenario;
                     String firstEndpoint = "";
@@ -2208,7 +2256,7 @@ public class MultiServiceRESTAssuredWriter {
                             pw.println("                                try { Thread.sleep(__jaegerPropagationDelayMs); }");
                             pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                             pw.println("                            }");
-                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\");");
+                            pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\", __targetService, __targetParam);");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
                             pw.println("                        }");
@@ -2377,7 +2425,7 @@ public class MultiServiceRESTAssuredWriter {
                         pw.println("                            try { Thread.sleep(__jaegerPropagationDelayMs); }");
                         pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                         pw.println("                        }");
-                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\");");
+                        pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\", __targetService, __targetParam);");
                         pw.println("                        ");
                         // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted
                         // SoftErrorRuleCache used to encode (a soft error in a 2xx response on a

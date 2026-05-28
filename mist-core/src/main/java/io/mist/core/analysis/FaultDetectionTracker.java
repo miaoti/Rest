@@ -1,5 +1,8 @@
 package io.mist.core.analysis;
 
+import io.mist.core.oracle.attribution.AttributionVerdict;
+import io.mist.core.oracle.attribution.TraceAttribution;
+import io.mist.core.oracle.shape.TraceModel;
 import io.mist.core.oracle.shape.TraceShapeVerdict;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -203,9 +206,42 @@ public class FaultDetectionTracker {
                                            String testClassName,
                                            String testMethodName,
                                            String traceId) {
+        recordVerdict(verdict, null, rootApiKey, testClassName, testMethodName, traceId, null, null);
+    }
+
+    /**
+     * Phase 2: extended verdict recording that also runs trace-attribution
+     * for negative tests. When {@code trace} + {@code targetService} are
+     * non-null, each failing outcome's anomaly entry gets its attribution
+     * histogram bumped (TARGET / WRONG_PARAM / UPSTREAM / NO_ATTRIBUTION).
+     *
+     * <p>{@code targetParam} may be null when the test has no specific
+     * target parameter (e.g. service-level fault); attribution falls back
+     * to service-only matching in that case.
+     */
+    public synchronized void recordVerdict(TraceShapeVerdict verdict,
+                                           TraceModel trace,
+                                           String rootApiKey,
+                                           String testClassName,
+                                           String testMethodName,
+                                           String traceId,
+                                           String targetService,
+                                           String targetParam) {
         if (verdict == null) return;
         List<TraceShapeVerdict.InvariantOutcome> outcomes = verdict.getOutcomes();
         if (outcomes == null || outcomes.isEmpty()) return;
+
+        // Compute attribution once per call: every failing outcome on this
+        // trace shares the same trace, so the leaf-error walk is identical.
+        AttributionVerdict attribution = null;
+        if (trace != null && targetService != null && !targetService.isEmpty()) {
+            try {
+                attribution = TraceAttribution.attribute(trace, targetService, targetParam);
+            } catch (Throwable t) {
+                logger.debug("Attribution failed for trace {}: {}", traceId, t.toString());
+            }
+        }
+
         for (TraceShapeVerdict.InvariantOutcome o : outcomes) {
             if (o == null || o.passed) continue;
             String violationSig = fingerprintViolation(o.kind, o.detail);
@@ -218,6 +254,14 @@ public class FaultDetectionTracker {
                     testClassName,
                     testMethodName,
                     traceId);
+            if (attribution != null) {
+                // Same delimiter as recordOracleAnomaly's key construction.
+                String key = o.kind + "\u0001" + (rootApiKey == null ? "" : rootApiKey) + "\u0001" + violationSig;
+                OracleAnomaly anomaly = oracleAnomalies.get(key);
+                if (anomaly != null) {
+                    anomaly.attributionCounts.merge(attribution, 1, Integer::sum);
+                }
+            }
         }
     }
 
@@ -415,6 +459,27 @@ public class FaultDetectionTracker {
             writer.println("fault name appear in the DETECTED FAULTS section above.");
             writer.println();
 
+            // Phase 2: attribution roll-up. Sums all per-anomaly attribution
+            // histograms into a single line so a reviewer sees the
+            // tool's confirmed-bug-detection count at a glance, separate
+            // from the upper-bound anomaly count above.
+            Map<AttributionVerdict, Long> rollup = new EnumMap<>(AttributionVerdict.class);
+            for (OracleAnomaly a : sorted) {
+                for (Map.Entry<AttributionVerdict, Integer> e : a.attributionCounts.entrySet()) {
+                    rollup.merge(e.getKey(), e.getValue().longValue(), Long::sum);
+                }
+            }
+            if (!rollup.isEmpty()) {
+                writer.println("Attribution roll-up (target = SUT-confirmed bug-detection event):");
+                for (AttributionVerdict v : AttributionVerdict.values()) {
+                    Long c = rollup.get(v);
+                    if (c != null && c > 0) {
+                        writer.printf("  %-22s %d%n", v.name() + ":", c);
+                    }
+                }
+                writer.println();
+            }
+
             int n = 1;
             for (OracleAnomaly a : sorted) {
                 writer.printf("%d. %s  |  %s%n", n++, a.oracle,
@@ -427,6 +492,18 @@ public class FaultDetectionTracker {
                 writer.printf("   Hits:          %d time(s)%n", a.hitCount);
                 writer.printf("   First seen:    %s%n", displayFormat.format(new Date(a.firstSeenTs)));
                 writer.printf("   Last seen:     %s%n", displayFormat.format(new Date(a.lastSeenTs)));
+                // Phase 2: attribution histogram in increasing-confidence order.
+                if (!a.attributionCounts.isEmpty()) {
+                    StringBuilder attr = new StringBuilder();
+                    for (AttributionVerdict v : AttributionVerdict.values()) {
+                        Integer c = a.attributionCounts.get(v);
+                        if (c != null && c > 0) {
+                            if (attr.length() > 0) attr.append(", ");
+                            attr.append(v.name()).append(": ").append(c);
+                        }
+                    }
+                    writer.printf("   Attribution:   %s%n", attr);
+                }
                 if (a.sampleTestClass != null && !a.sampleTestClass.isEmpty()) {
                     writer.printf("   Example test:  %s.%s%n", a.sampleTestClass, a.sampleTestMethod);
                 }
@@ -543,6 +620,10 @@ public class FaultDetectionTracker {
         final long firstSeenTs;
         long lastSeenTs;
         int hitCount;
+        // Phase 2: per-anomaly attribution histogram. Each verdict iteration
+        // that visits this anomaly increments one bucket. Empty when no
+        // negative-target context was passed (positive tests, ad-hoc runs).
+        final Map<AttributionVerdict, Integer> attributionCounts = new EnumMap<>(AttributionVerdict.class);
 
         OracleAnomaly(String oracle, String endpointSig, String violationSig,
                       String violationDetail, String severity,
