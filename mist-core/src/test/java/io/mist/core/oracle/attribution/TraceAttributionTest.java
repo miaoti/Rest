@@ -119,6 +119,41 @@ public class TraceAttributionTest {
     }
 
     @Test
+    public void findLeafError_picksDeepestAmongParallelErrors_FIXES_F6() {
+        // s0 (error root) ->
+        //   s1 (error) -> s2 (error)       — left branch, depth 2
+        //   s3 (error)                     — right branch, depth 1
+        // Algorithm is greedy DFS keeping deepest leaf across branches.
+        // Deepest is s2 (depth 2); s3 is shallower so should never win.
+        TraceModel trace = buildJaeger(
+                span("s0", null, "ts-order-service", "createOrder", 500, "ERROR"),
+                span("s1", "s0", "ts-payment-service", "charge", 500, "ERROR"),
+                span("s2", "s1", "ts-fraud-service", "verify", 500, "ERROR"),
+                span("s3", "s0", "ts-cart-service", "lockCart", 500, "ERROR"));
+        TraceModel.Span leaf = LeafErrorSpanFinder.findLeafError(trace);
+        assertNotNull(leaf);
+        assertEquals("deepest error wins across parallel branches", "s2", leaf.spanId);
+    }
+
+    @Test
+    public void findLeafError_parallelErrorsAtEqualDepth_picksOne_FIXES_F6() {
+        // s0 (error root) ->
+        //   s1 (error)  } both at depth 1; algorithm picks ONE arbitrarily.
+        //   s2 (error)  } The contract: a leaf is returned and it's an error.
+        TraceModel trace = buildJaeger(
+                span("s0", null, "ts-order-service", "createOrder", 400, "ERROR"),
+                span("s1", "s0", "ts-payment-service", "charge", 400, "ERROR"),
+                span("s2", "s0", "ts-cart-service", "lockCart", 400, "ERROR"));
+        TraceModel.Span leaf = LeafErrorSpanFinder.findLeafError(trace);
+        assertNotNull(leaf);
+        assertTrue("picks one of the two equal-depth error children",
+                "s1".equals(leaf.spanId) || "s2".equals(leaf.spanId));
+        // And whichever is picked: it's an error span (sanity).
+        assertTrue("returned span is error-tagged",
+                LeafErrorSpanFinder.isErrorTagged(leaf));
+    }
+
+    @Test
     public void attribute_targetRejection_serviceAndParamMatch() {
         TraceModel trace = buildJaeger(
                 span("s0", null, "ts-order-service", "createOrder", 400, "ERROR"),

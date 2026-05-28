@@ -293,6 +293,10 @@ public final class MistRunner {
         }
         FaultDetectionTracker.getInstance().reset();
         FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
+        // FIXES.md F4: drop the JVM-wide TraceModel cache so a JVM that the
+        // harness reuses across runs doesn't serve stale models from a
+        // prior run.
+        io.mist.core.analysis.TraceShapeAdapter.clearCache();
         logger.info("🔍 Fault Detection Tracker initialized from: {}", faultsJsonPath);
 
         // Set up writer
@@ -490,6 +494,16 @@ public final class MistRunner {
             // reset() clears injected-faults too in some implementations;
             // ours doesn't (verified — reset only clears detectedFaults,
             // allTestCases, oracleAnomalies, trackingStartTime).
+            // FIXES.md F4: drop the per-traceId TraceModel cache so Phase B
+            // starts with a clean cache slate (Phase A trace IDs are stale —
+            // Phase B regenerates tests with fresh markerTraceIds).
+            io.mist.core.analysis.TraceShapeAdapter.clearCache();
+            // FIXES.md F7: explicit ConsoleProgressBar reset so the terminal
+            // shows two cleanly separated bar lifecycles. The next begin()
+            // call in Phase B's executeTestsWithCollector resets state
+            // anyway, but doing it here makes the phase boundary visible
+            // when the operator is watching the output live.
+            io.mist.core.util.ConsoleProgressBar.complete();
 
             // -------- Phase B: negatives with verified pool --------
             String phaseBClassName = baseClassName + "_phaseB";

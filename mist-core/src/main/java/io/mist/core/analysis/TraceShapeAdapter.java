@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Adapter that converts the writer-side Jaeger trace JSON into a
@@ -26,8 +27,39 @@ public final class TraceShapeAdapter {
 
     private TraceShapeAdapter() { }
 
+    // FIXES.md F4: per-traceId cache. Jaeger traces are immutable once a
+    // span tree is finalized, so the conversion is a pure function of the
+    // traceId for our usage. Multi-step tests where the same parent
+    // traceId appears in every step's pulled JSON now reuse the same
+    // TraceModel instance instead of rebuilding it N times.
+    //
+    // Scope is JVM-wide. MistRunner.run() calls clearCache() at the start
+    // of each test run so leftover entries from a prior run don't return
+    // stale data — guards against JVMs that the harness reuses.
+    private static final ConcurrentHashMap<String, TraceModel> CACHE = new ConcurrentHashMap<>();
+
+    /**
+     * Drop all cached {@link TraceModel} instances. Call at the start of a
+     * test run; benign no-op otherwise.
+     */
+    public static void clearCache() {
+        CACHE.clear();
+    }
+
+    /**
+     * Test-only: count of currently-cached models.
+     */
+    static int cacheSize() {
+        return CACHE.size();
+    }
+
     /**
      * Convert one Jaeger trace JSON object into a {@link TraceModel}.
+     *
+     * <p>Returns a cached instance when one is already present for the same
+     * {@code traceID}. The cache is keyed by traceId only; {@code rootApiKey}
+     * does not participate (the conversion result is independent of it —
+     * the parameter is retained on the signature for caller symmetry).
      *
      * @param jaegerTrace one trace wrapper ({@code spans}, optional
      *                    {@code processes}); never null
@@ -41,6 +73,18 @@ public final class TraceShapeAdapter {
             return new TraceModel("", new ArrayList<>());
         }
         String traceId = jaegerTrace.optString("traceID", jaegerTrace.optString("traceId", ""));
+        if (!traceId.isEmpty()) {
+            TraceModel cached = CACHE.get(traceId);
+            if (cached != null) return cached;
+        }
+        TraceModel built = buildModel(jaegerTrace, traceId);
+        if (!traceId.isEmpty()) {
+            CACHE.put(traceId, built);
+        }
+        return built;
+    }
+
+    private static TraceModel buildModel(JSONObject jaegerTrace, String traceId) {
         JSONArray spans = jaegerTrace.optJSONArray("spans");
         if (spans == null) {
             return new TraceModel(traceId, new ArrayList<>());
