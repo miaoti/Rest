@@ -1503,6 +1503,17 @@ public class MultiServiceRESTAssuredWriter {
                     int stepIdx = 1;
                     for (MultiServiceTestCase.StepCall step : scenario.getSteps()) {
 
+                        // Phase 1: a per-step parameter map scoped to THIS step only.
+                        // allStepParameters (declared at method scope above) is the
+                        // cumulative map used by attachJaegerTrace's Allure attachment
+                        // — keeping it cumulative is intentional so the trace UI shows
+                        // all params for the scenario. But the Phase 1
+                        // recordParameterSuccess loop must iterate ONLY this step's
+                        // params so earlier steps' params aren't mis-attributed to this
+                        // step's endpoint.
+                        pw.println("        final java.util.Map<String, String> stepParams" + stepIdx
+                                + " = new java.util.HashMap<>();");
+
                         String verb = step.getMethod() == null || step.getMethod().getMethod() == null
                                 ? "get"
                                 : step.getMethod().getMethod().toLowerCase();
@@ -1891,6 +1902,7 @@ public class MultiServiceRESTAssuredWriter {
                                 pw.println("                        }");
                                 pw.println("                        if (" + varName + "Value != null) {");
                                 pw.println("                            allStepParameters.put(\"" + escape(paramName) + "\", " + varName + "Value);");
+                                pw.println("                            stepParams" + stepIdx + ".put(\"" + escape(paramName) + "\", " + varName + "Value);");
                                 if (step.getMethod().getMethod().equalsIgnoreCase("GET")) {
                                     pw.println("                            req = req.queryParam(\"" + escape(paramName) + "\", " + varName + "Value);");
                                 } else {
@@ -1902,6 +1914,7 @@ public class MultiServiceRESTAssuredWriter {
                             // Add body parameters if any
                             if (!requestBody.isEmpty()) {
                                 pw.println("                        allStepParameters.put(\"body\", \"" + escape(requestBody) + "\");");
+                                pw.println("                        stepParams" + stepIdx + ".put(\"body\", \"" + escape(requestBody) + "\");");
                             }
                             
                             // ── W3C traceparent header (parallel-safe trace correlation) ──
@@ -2165,16 +2178,13 @@ public class MultiServiceRESTAssuredWriter {
                             pw.println("                            // preferVerifiedValues reads via the registry. Using the");
                             pw.println("                            // resolved path would key the registry on concrete IDs that");
                             pw.println("                            // generation-time reads can never match.");
-                            pw.println("                            // TODO(phase-1.5): allStepParameters here is the CUMULATIVE");
-                            pw.println("                            // map across all steps so far in this test method, so a");
-                            pw.println("                            // multi-step scenario records earlier steps' params against");
-                            pw.println("                            // this step's endpoint. Single-step scenarios are unaffected.");
+                            pw.println("                            // Iterate the step-scoped map (declared at the top of this");
+                            pw.println("                            // step's emission), NOT allStepParameters which is cumulative");
+                            pw.println("                            // across all steps in this test method.");
                             pw.println("                            String __ep" + stepIdx + " = \"" + verb.toUpperCase() + " " + escape(step.getMethod().getTestPath()) + "\";");
-                            pw.println("                            if (allStepParameters != null) {");
-                            pw.println("                                for (java.util.Map.Entry<String, String> __pe : allStepParameters.entrySet()) {");
-                            pw.println("                                    io.mist.core.enhancer.TestResultCapture.recordParameterSuccess(");
-                            pw.println("                                        __ep" + stepIdx + ", __pe.getKey(), __pe.getValue(), actualStatus);");
-                            pw.println("                                }");
+                            pw.println("                            for (java.util.Map.Entry<String, String> __pe : stepParams" + stepIdx + ".entrySet()) {");
+                            pw.println("                                io.mist.core.enhancer.TestResultCapture.recordParameterSuccess(");
+                            pw.println("                                    __ep" + stepIdx + ", __pe.getKey(), __pe.getValue(), actualStatus);");
                             pw.println("                            }");
                             pw.println("                            ");
                             pw.println("                            // Single success status parameter");
