@@ -2,7 +2,7 @@
 
 Master-student briefs that close the three eval gaps named in
 `paper/main_issta.tex` §6 Limitations; each fits a 3-credit CSI 5v90 with
-a thesis-extension path, and SP1 is the critical-path input for SP2/SP3.
+a thesis-extension path, as I think, and SP1 is the critical-path input for SP2/SP3.
 
 | ID  | Brief | One-line |
 |-----|-------|----------|
