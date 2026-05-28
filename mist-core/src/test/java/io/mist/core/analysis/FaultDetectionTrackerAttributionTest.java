@@ -3,6 +3,7 @@ package io.mist.core.analysis;
 import io.mist.core.oracle.attribution.AttributionVerdict;
 import io.mist.core.oracle.shape.TraceModel;
 import io.mist.core.oracle.shape.TraceShapeVerdict;
+import io.mist.core.oracle.shape.invariant.TargetAttributionInvariant;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +22,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Phase 2 part 3 contract: attribution counts on OracleAnomaly,
- * attribution roll-up in report, behavior when target context is null.
+ * Phase 2 part 3 + FIXES.md F3 cleanup contract: the attribution
+ * histogram on {@link FaultDetectionTracker.OracleAnomaly} is populated
+ * ONLY when the verdict carries a TARGET_ATTRIBUTION outcome (set by
+ * {@link TargetAttributionInvariant} inside TraceShapeOracle). There is
+ * no inline fallback; the per-invariant flag is the single kill switch.
  */
 public class FaultDetectionTrackerAttributionTest {
 
@@ -54,46 +58,50 @@ public class FaultDetectionTrackerAttributionTest {
     }
 
     @Test
-    public void recordVerdict_nullTargets_skipsAttribution() {
+    public void recordVerdict_noAttributionOutcome_emptyHistogram() {
         TraceShapeVerdict v = oneFailingVerdict();
         FaultDetectionTracker t = FaultDetectionTracker.getInstance();
         t.recordVerdict(v, "POST /x", "C", "m", "trace-1");
         assertEquals(1, t.getOracleAnomaliesForTest().size());
         FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
-        assertTrue(a.attributionCounts.isEmpty());
+        assertTrue("no TARGET_ATTRIBUTION outcome → no histogram entry",
+                a.attributionCounts.isEmpty());
     }
 
     @Test
-    public void recordVerdict_targetRejection_incrementsBucket() {
-        TraceShapeVerdict v = oneFailingVerdict();
-        TraceModel trace = traceWithLeafError("ts-order-service", "validateSeatNumber");
-        FaultDetectionTracker t = FaultDetectionTracker.getInstance();
-        t.recordVerdict(v, trace, "POST /x", "C", "m", "trace-1",
+    public void recordVerdict_targetRejectionOutcome_incrementsBucket() {
+        TraceShapeVerdict v = verdictWithAttribution(
+                traceWithLeafError("ts-order-service", "validateSeatNumber"),
                 "ts-order-service", "seatNumber");
-        FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
-        assertEquals(Integer.valueOf(1), a.attributionCounts.get(AttributionVerdict.TARGET_REJECTION));
+        FaultDetectionTracker.getInstance().recordVerdict(v, "POST /x", "C", "m", "trace-1");
+        FaultDetectionTracker.OracleAnomaly a = FaultDetectionTracker.getInstance()
+                .getOracleAnomaliesForTest().values().iterator().next();
+        assertEquals(Integer.valueOf(1),
+                a.attributionCounts.get(AttributionVerdict.TARGET_REJECTION));
     }
 
     @Test
-    public void recordVerdict_upstreamRejection_incrementsBucket() {
-        TraceShapeVerdict v = oneFailingVerdict();
-        TraceModel trace = traceWithLeafError("ts-payment-service", "charge");
-        FaultDetectionTracker t = FaultDetectionTracker.getInstance();
-        t.recordVerdict(v, trace, "POST /x", "C", "m", "trace-1",
+    public void recordVerdict_upstreamRejectionOutcome_incrementsBucket() {
+        TraceShapeVerdict v = verdictWithAttribution(
+                traceWithLeafError("ts-payment-service", "charge"),
                 "ts-order-service", "seatNumber");
-        FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
-        assertEquals(Integer.valueOf(1), a.attributionCounts.get(AttributionVerdict.UPSTREAM_REJECTION));
+        FaultDetectionTracker.getInstance().recordVerdict(v, "POST /x", "C", "m", "trace-1");
+        FaultDetectionTracker.OracleAnomaly a = FaultDetectionTracker.getInstance()
+                .getOracleAnomaliesForTest().values().iterator().next();
+        assertEquals(Integer.valueOf(1),
+                a.attributionCounts.get(AttributionVerdict.UPSTREAM_REJECTION));
     }
 
     @Test
-    public void recordVerdict_wrongParamRejection_incrementsBucket() {
-        TraceShapeVerdict v = oneFailingVerdict();
-        TraceModel trace = traceWithLeafError("ts-order-service", "validateContactsName");
-        FaultDetectionTracker t = FaultDetectionTracker.getInstance();
-        t.recordVerdict(v, trace, "POST /x", "C", "m", "trace-1",
+    public void recordVerdict_wrongParamOutcome_incrementsBucket() {
+        TraceShapeVerdict v = verdictWithAttribution(
+                traceWithLeafError("ts-order-service", "validateContactsName"),
                 "ts-order-service", "seatNumber");
-        FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
-        assertEquals(Integer.valueOf(1), a.attributionCounts.get(AttributionVerdict.WRONG_PARAM_REJECTION));
+        FaultDetectionTracker.getInstance().recordVerdict(v, "POST /x", "C", "m", "trace-1");
+        FaultDetectionTracker.OracleAnomaly a = FaultDetectionTracker.getInstance()
+                .getOracleAnomaliesForTest().values().iterator().next();
+        assertEquals(Integer.valueOf(1),
+                a.attributionCounts.get(AttributionVerdict.WRONG_PARAM_REJECTION));
     }
 
     @Test
@@ -102,12 +110,14 @@ public class FaultDetectionTrackerAttributionTest {
         TraceModel target = traceWithLeafError("ts-order-service", "validateSeatNumber");
         TraceModel upstream = traceWithLeafError("ts-payment-service", "charge");
         for (int i = 0; i < 3; i++) {
-            t.recordVerdict(oneFailingVerdict(), target, "POST /x", "C", "m" + i, "tr" + i,
-                    "ts-order-service", "seatNumber");
+            t.recordVerdict(
+                    verdictWithAttribution(target, "ts-order-service", "seatNumber"),
+                    "POST /x", "C", "m" + i, "tr" + i);
         }
         for (int i = 0; i < 5; i++) {
-            t.recordVerdict(oneFailingVerdict(), upstream, "POST /x", "C", "u" + i, "tu" + i,
-                    "ts-order-service", "seatNumber");
+            t.recordVerdict(
+                    verdictWithAttribution(upstream, "ts-order-service", "seatNumber"),
+                    "POST /x", "C", "u" + i, "tu" + i);
         }
         FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
         assertEquals(8, a.hitCount);
@@ -119,8 +129,9 @@ public class FaultDetectionTrackerAttributionTest {
     public void report_emitsAttributionLine_perAnomaly() throws IOException {
         FaultDetectionTracker t = FaultDetectionTracker.getInstance();
         TraceModel target = traceWithLeafError("ts-order-service", "validateSeatNumber");
-        t.recordVerdict(oneFailingVerdict(), target, "POST /x", "C", "m", "tr",
-                "ts-order-service", "seatNumber");
+        t.recordVerdict(
+                verdictWithAttribution(target, "ts-order-service", "seatNumber"),
+                "POST /x", "C", "m", "tr");
 
         Path reportDir = Files.createTempDirectory("fdt-attr-");
         try {
@@ -139,39 +150,66 @@ public class FaultDetectionTrackerAttributionTest {
     }
 
     @Test
-    public void recordVerdict_nullTrace_recordsAnomalyButSkipsAttribution() {
+    public void noAttributionOutcomeForUnknownTrace_emptyHistogram() {
+        // Verdict has only a STATUS_PROPAGATION failure; no TARGET_ATTRIBUTION
+        // outcome was appended (the kill switch was off, or the target was
+        // unknown). Histogram stays empty regardless of whether the
+        // FaultDetectionTracker would otherwise compute attribution.
         TraceShapeVerdict v = oneFailingVerdict();
-        FaultDetectionTracker t = FaultDetectionTracker.getInstance();
-        t.recordVerdict(v, null /* trace */, "POST /x", "C", "m", "tr",
-                "ts-order-service", "seatNumber");
-        assertEquals(1, t.getOracleAnomaliesForTest().size());
-        FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
-        assertTrue("null trace cannot produce attribution", a.attributionCounts.isEmpty());
+        FaultDetectionTracker.getInstance().recordVerdict(v, "POST /x", "C", "m", "tr");
+        FaultDetectionTracker.OracleAnomaly a = FaultDetectionTracker.getInstance()
+                .getOracleAnomaliesForTest().values().iterator().next();
+        assertTrue("no attribution outcome → no histogram", a.attributionCounts.isEmpty());
     }
 
     @Test
-    public void recordVerdict_nullTargetService_skipsAttribution() {
-        TraceShapeVerdict v = oneFailingVerdict();
-        TraceModel trace = traceWithLeafError("ts-order-service", "validateSeat");
-        FaultDetectionTracker t = FaultDetectionTracker.getInstance();
-        t.recordVerdict(v, trace, "POST /x", "C", "m", "tr",
-                null /* targetService */, "seatNumber");
-        FaultDetectionTracker.OracleAnomaly a = t.getOracleAnomaliesForTest().values().iterator().next();
-        assertTrue("no target service → no attribution", a.attributionCounts.isEmpty());
+    public void noAttributionVerdict_outcomePresentButValueNo_ATTRIBUTION() {
+        // Verdict carries a TARGET_ATTRIBUTION outcome whose detail is
+        // NO_ATTRIBUTION. The histogram should still bump that bucket for
+        // each anomaly, so the report shows the algorithm WAS run but
+        // couldn't reach a conclusion.
+        TraceShapeVerdict v = verdictWithAttribution(
+                traceNoError() /* no leaf → NO_ATTRIBUTION */,
+                "ts-x", "p");
+        FaultDetectionTracker.getInstance().recordVerdict(v, "POST /x", "C", "m", "tr");
+        FaultDetectionTracker.OracleAnomaly a = FaultDetectionTracker.getInstance()
+                .getOracleAnomaliesForTest().values().iterator().next();
+        assertEquals(Integer.valueOf(1),
+                a.attributionCounts.get(AttributionVerdict.NO_ATTRIBUTION));
     }
 
     @Test
     public void resetClearsAttribution() {
         FaultDetectionTracker t = FaultDetectionTracker.getInstance();
         TraceModel target = traceWithLeafError("ts-order-service", "validateSeatNumber");
-        t.recordVerdict(oneFailingVerdict(), target, "POST /x", "C", "m", "tr",
-                "ts-order-service", "seatNumber");
+        t.recordVerdict(
+                verdictWithAttribution(target, "ts-order-service", "seatNumber"),
+                "POST /x", "C", "m", "tr");
         assertEquals(1, t.getOracleAnomaliesForTest().size());
         t.reset();
         assertEquals(0, t.getOracleAnomaliesForTest().size());
     }
 
     // ---------------------------------------------------------------------
+
+    /**
+     * Build a verdict with one STATUS_PROPAGATION failure AND a
+     * TARGET_ATTRIBUTION outcome computed by the real invariant. Mirrors
+     * the production path (TraceShapeOracle.evaluate(4-arg) builds the
+     * same outcome chain) so attribute computation goes through the same
+     * code in tests as in prod.
+     */
+    private static TraceShapeVerdict verdictWithAttribution(TraceModel trace,
+                                                            String targetService,
+                                                            String targetParam) {
+        TraceShapeVerdict.Builder b = TraceShapeVerdict.builder();
+        for (TraceShapeVerdict.InvariantOutcome o : oneFailingVerdict().getOutcomes()) {
+            b.add(o);
+        }
+        b.add(new TargetAttributionInvariant("POST /x", targetService, targetParam)
+                .evaluate(trace));
+        return b.build();
+    }
 
     private static TraceShapeVerdict oneFailingVerdict() {
         return TraceShapeVerdict.builder()
@@ -188,6 +226,14 @@ public class FaultDetectionTrackerAttributionTest {
         return new TraceModel("test-trace", Arrays.asList(
                 new TraceModel.Span("root", null, "ts-gateway", "POST /x", 500, "ERROR", 0L, tags),
                 new TraceModel.Span("leaf", "root", leafService, leafOp, 500, "ERROR", 0L, tags)));
+    }
+
+    private static TraceModel traceNoError() {
+        Map<String, String> tags = new HashMap<>();
+        tags.put("http.status_code", "200");
+        tags.put("otel.status_code", "OK");
+        return new TraceModel("test-trace", Collections.singletonList(
+                new TraceModel.Span("root", null, "ts-gateway", "POST /x", 200, "OK", 0L, tags)));
     }
 
     private static void deleteRecursive(File f) {

@@ -1,8 +1,6 @@
 package io.mist.core.analysis;
 
 import io.mist.core.oracle.attribution.AttributionVerdict;
-import io.mist.core.oracle.attribution.TraceAttribution;
-import io.mist.core.oracle.shape.TraceModel;
 import io.mist.core.oracle.shape.TraceShapeVerdict;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -206,63 +204,18 @@ public class FaultDetectionTracker {
                                            String testClassName,
                                            String testMethodName,
                                            String traceId) {
-        recordVerdictInternal(verdict, null, rootApiKey, testClassName, testMethodName,
-                traceId, null, null);
-    }
-
-    /**
-     * Phase 2 part 3 entry point that explicitly carries
-     * {@code targetService} + {@code targetParam}. Kept for callers (mainly
-     * unit tests) that build a {@link TraceShapeVerdict} without an embedded
-     * TARGET_ATTRIBUTION outcome; the implementation falls back to computing
-     * attribution inline in that case.
-     *
-     * <p>Post-FIXES.md F1+F3 the production writer goes through
-     * {@code TraceShapeOracle.evaluate(trace, rootApiKey, targetService,
-     * targetParam)} which embeds the attribution as a verdict outcome, and
-     * then calls the 5-arg overload above — this 8-arg path is an
-     * alternative entry kept for backward compatibility with existing tests.
-     */
-    public synchronized void recordVerdict(TraceShapeVerdict verdict,
-                                           TraceModel trace,
-                                           String rootApiKey,
-                                           String testClassName,
-                                           String testMethodName,
-                                           String traceId,
-                                           String targetService,
-                                           String targetParam) {
-        recordVerdictInternal(verdict, trace, rootApiKey, testClassName, testMethodName,
-                traceId, targetService, targetParam);
-    }
-
-    private void recordVerdictInternal(TraceShapeVerdict verdict,
-                                       TraceModel trace,
-                                       String rootApiKey,
-                                       String testClassName,
-                                       String testMethodName,
-                                       String traceId,
-                                       String targetService,
-                                       String targetParam) {
         if (verdict == null) return;
         List<TraceShapeVerdict.InvariantOutcome> outcomes = verdict.getOutcomes();
         if (outcomes == null || outcomes.isEmpty()) return;
 
-        // FIXES.md F1+F3: prefer attribution carried by the verdict (set by
-        // TargetAttributionInvariant inside TraceShapeOracle). Fall back to
-        // computing inline only when the verdict carries no attribution
-        // outcome AND the caller provided target context — keeps the
-        // 8-arg overload working for unit tests that construct verdicts
-        // without the embedded outcome.
+        // FIXES.md F1+F3: attribution is ONLY taken from the verdict (set
+        // by TargetAttributionInvariant inside TraceShapeOracle, gated by
+        // mst.oracle.shape.invariants.target_attribution.enabled). No
+        // inline TraceAttribution.attribute() fallback: the single kill
+        // switch flag fully disables the path. Callers that need
+        // attribution must run the invariant first and embed its outcome
+        // in the verdict.
         AttributionVerdict attribution = extractAttribution(outcomes);
-        if (attribution == null
-                && trace != null
-                && targetService != null && !targetService.isEmpty()) {
-            try {
-                attribution = TraceAttribution.attribute(trace, targetService, targetParam);
-            } catch (Throwable t) {
-                logger.debug("Attribution failed for trace {}: {}", traceId, t.toString());
-            }
-        }
 
         for (TraceShapeVerdict.InvariantOutcome o : outcomes) {
             if (o == null || o.passed) continue;
