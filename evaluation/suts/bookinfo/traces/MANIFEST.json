@@ -1,0 +1,13 @@
+{
+  "sut": "bookinfo",
+  "source": "Istio Bookinfo sample (istio-1.30.0/samples/bookinfo) on kind + Istio + Jaeger; see ../deploy/deploy.sh",
+  "capture_date": "2026-05-29",
+  "capture_method": "Traffic driven through the Istio ingress gateway (../workload/traffic.sh). Masked traces captured with ratings scaled to 0 (../workload/inject-ratings-outage.sh on); healthy control with ratings restored. Pulled from the Jaeger query API GET /jaeger/api/traces/<id>.",
+  "trace_format": "Jaeger query-API JSON ({\"data\":[{\"traceID\",\"spans\",\"processes\"}]}); consumed by io.mist.core.oracle.shape.TraceModel.fromJaegerJson",
+  "traces": [
+    {"file": "masked_ratings_outage_f13dbc33d5858c49da37f039a0243c3a.json", "kind": "masked", "note": "8 spans: ingressgateway/productpage 200, reviews->ratings 503/ERROR/UH (swallowed). HIDDEN_DOWNSTREAM_FAILURE fires (ERROR)."},
+    {"file": "masked_ratings_outage_c80623f59e318b99bc556c41f818e5b2.json", "kind": "masked", "note": "same shape; second instance."},
+    {"file": "healthy_3c613a26a5388abff9cb10726dbd8b47.json", "kind": "healthy", "note": "9 spans, all 2xx (ratings restored). Oracle silent — the control."}
+  ],
+  "note": "Small demonstrative corpus (2 masked + 1 healthy) for the hidden-downstream A/B. A >=100-trace nominal corpus (SP1 requirement) is produced by a sustained workload run; not required for the phenomenon demonstration."
+}
