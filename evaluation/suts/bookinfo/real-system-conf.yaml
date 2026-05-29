@@ -4,12 +4,12 @@ testConfiguration:
     - expectedResponse: 200
       method: get
       operationId: getProducts
-      testPath: /products
+      testPath: /api/v1/products
       testParameters: null
     - expectedResponse: 200
       method: get
       operationId: getProduct
-      testPath: /products/{id}
+      testPath: /api/v1/products/{id}
       testParameters:
       - name: id
         in: path
@@ -34,7 +34,7 @@ testConfiguration:
     - expectedResponse: 200
       method: get
       operationId: getProductReviews
-      testPath: /products/{id}/reviews
+      testPath: /api/v1/products/{id}/reviews
       testParameters:
       - name: id
         in: path
@@ -59,7 +59,7 @@ testConfiguration:
     - expectedResponse: 200
       method: get
       operationId: getProductRatings
-      testPath: /products/{id}/ratings
+      testPath: /api/v1/products/{id}/ratings
       testParameters:
       - name: id
         in: path
