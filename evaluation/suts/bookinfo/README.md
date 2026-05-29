@@ -17,7 +17,7 @@ defensively and fails loudly); Bookinfo produces it naturally, which makes the e
 - `openapi/bookinfo-swagger.yaml` — the SUT's OpenAPI spec (MIST input #1).
 - `real-system-conf.yaml` — generated from the swagger via `io.mist.cli.MistConfGenMain` (MIST input #2a).
 - `bookinfo-demo.properties` + `bookinfo-mst.properties` — MIST profiles, core + mst (MIST input #2b).
-- `traces/` — captured Jaeger traces, masked + healthy (MIST input #3); see `traces/MANIFEST.json`.
+- `traces/` — captured Jaeger traces, masked + healthy (MIST input #3); see `MANIFEST.json`.
 - `injectedFaults/injected-faults.json` — empty: Bookinfo's failure is an ORACLE ANOMALY
   (`HIDDEN_DOWNSTREAM_FAILURE`), not a SUT-reported named fault.
 - `OracleCheck.java` — runs the real `HiddenDownstreamFailure` oracle on a captured trace.
