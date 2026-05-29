@@ -70,7 +70,21 @@ java -cp mist-cli/target/mist.jar io.mist.cli.MistConfGenMain \
   evaluation/suts/bookinfo/real-system-conf.yaml
 ```
 
+## End-to-end pipeline demo (generate → execute → oracle)
+After a MIST run has generated the tests under `.runtime/`, run the full matrix against the live SUT:
+```bash
+evaluation/suts/bookinfo/run-oracle-e2e.sh
+```
+It compiles the MIST-generated JUnit tests (with a JDK 21 — the oracle/test are MIST's, only the
+compile/launch is external), toggles a real `ratings` outage, and runs four cases:
+`/products` (outage → oracle silent, PASS), **`/reviews` (outage → HIDDEN_DOWNSTREAM_FAILURE, FAIL)**,
+`/ratings` (outage → 503 LOUD, response-level catches), `/reviews` (healthy → silent, PASS control).
+
 ## Evidence
-`docs/main-contribution/evidence/bookinfo_hidden_downstream.md` — the A/B: the trace oracle FIRES
-(ERROR) on the masked trace and is silent on the healthy control, while a response-level oracle
-sees HTTP 200 (and misses it) in both cases.
+- `docs/main-contribution/evidence/bookinfo_hidden_downstream.md` — direct-oracle A/B on `/productpage`:
+  the trace oracle FIRES (ERROR) on the masked trace, silent on the healthy control, while a
+  response-level oracle sees HTTP 200 (and misses it) in both cases.
+- `docs/main-contribution/evidence/bookinfo_e2e_pipeline.md` — **full pipeline**: MIST generates +
+  executes a `/api/v1/products/{id}/reviews` test; under a real ratings outage the response is 200
+  (response-level PASS) but MIST's trace oracle fails it on `HIDDEN_DOWNSTREAM_FAILURE`. Includes the
+  4-case sensitivity/specificity matrix + honest caveats. Evidence traces in `bookinfo_e2e_traces/`.
