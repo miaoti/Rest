@@ -3,7 +3,6 @@ package io.mist.core.oracle.shape;
 import io.mist.core.config.MstConfig;
 import io.mist.core.oracle.shape.invariant.HiddenDownstreamFailureInvariant;
 import io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant;
-import io.mist.core.oracle.shape.invariant.SilentAcceptanceInvariant;
 import io.mist.core.oracle.shape.invariant.SpanTreeShapeInvariant;
 import io.mist.core.oracle.shape.invariant.StatusPropagationInvariant;
 import io.mist.core.oracle.shape.invariant.TargetAttributionInvariant;
@@ -32,7 +31,6 @@ public final class TraceShapeOracle {
     private final boolean timingEnvelopeEnabled;
     private final boolean targetAttributionEnabled;
     private final boolean hiddenDownstreamFailureEnabled;
-    private final boolean silentAcceptanceEnabled;
 
     public TraceShapeOracle(ShapeInvariantStore store, MstConfig.Oracle oracleConfig) {
         this.store = store == null ? new ShapeInvariantStore() : store;
@@ -44,7 +42,6 @@ public final class TraceShapeOracle {
         this.timingEnvelopeEnabled = cfg.timingEnvelopeInvariantEnabled();
         this.targetAttributionEnabled = cfg.targetAttributionInvariantEnabled();
         this.hiddenDownstreamFailureEnabled = cfg.hiddenDownstreamFailureInvariantEnabled();
-        this.silentAcceptanceEnabled = cfg.silentAcceptanceInvariantEnabled();
     }
 
     public TraceShapeOracle(ShapeInvariantStore store) {
@@ -96,15 +93,10 @@ public final class TraceShapeOracle {
             builder.add(new TargetAttributionInvariant(rootApiKey, targetService, targetParam)
                     .evaluate(trace));
         }
-        // Phase 3: intent-aware detectors (opt-in). HiddenDownstreamFailure is
-        // intent-agnostic; SilentAcceptance only fires when a target is present.
+        // Phase 3: intent-agnostic trace detector (opt-in) — flags a swallowed
+        // downstream failure that response-level / soft-error oracles cannot see.
         if (hiddenDownstreamFailureEnabled) {
             builder.add(new HiddenDownstreamFailureInvariant(rootApiKey).evaluate(trace));
-        }
-        if (silentAcceptanceEnabled
-                && targetService != null && !targetService.isEmpty()) {
-            builder.add(new SilentAcceptanceInvariant(rootApiKey, targetService, targetParam)
-                    .evaluate(trace));
         }
         return builder.build();
     }

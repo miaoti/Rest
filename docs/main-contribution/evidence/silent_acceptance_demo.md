@@ -1,5 +1,7 @@
 # Evidence — intent-aware trace oracle detects SILENT ACCEPTANCE (controlled mutation, real SUT)
 
+> **STATUS (2026-05-29): SUPERSEDED — silent-acceptance is no longer the contribution, and the `SilentAcceptanceInvariant` shown here has been REMOVED from the tool.** Two findings made it redundant: (1) RESTifAI (ICSE'26 demo) already detects HTTP-200-instead-of-4xx silent-accept at the response level; (2) MIST *itself* already ships an LLM "soft-error" check (LLM Response Validation) that adjudicates a 2xx-for-a-negative-test by reading the response body — so a trace-based silent-accept detector merely duplicated an existing capability. It was deleted (mist-core 266/0/0 after removal). This file is retained as a **historical record** that the capability was built and demonstrated end-to-end on the live SUT. The real main contribution is **HIDDEN-DOWNSTREAM-FAILURE** detection (a gateway 2xx hiding a downstream 5xx) — invisible to RESTifAI, to response-level oracles, *and* to MIST's own soft-error check (the response body is clean; only the **trace** exposes it) — plus the automated intent-conditioning mechanism. See `../RESEARCH_a-conference-viability.md`.
+
 Reproducible evidence for the main contribution: a **label-free, intent-aware trace
 oracle** detects *silent acceptance of invalid input* — a bug class that the
 response-status / fault-name oracle structurally cannot see. Demonstrated end-to-end on
@@ -56,4 +58,4 @@ returned 2xx"* (WARN, 70 hits).
 - A single hand-crafted mutant is an anecdote; the paper-grade version is a **mutation
   study** over the 10 tracked faults (each turned into a silent-accept and/or
   hidden-downstream mutant) reporting trace-oracle detection rate vs the baseline (0 by
-  construction for these classes). See [[../TARGET_ARCHITECTURE]].
+  construction for these classes). See the design doc `debug/oracle_arch/TARGET_ARCHITECTURE.md`.

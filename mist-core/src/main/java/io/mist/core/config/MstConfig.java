@@ -396,10 +396,9 @@ public final class MstConfig {
         // attribution histograms from Run 22; setting false drops the perf
         // cost of TraceAttribution.attribute() AND the report buckets.
         private final boolean targetAttributionInvariantEnabled;
-        // Phase 3: intent-aware oracle detectors. Default false (opt-in) so
-        // legacy verdicts stay byte-identical until an operator enables them.
+        // Phase 3: intent-agnostic hidden-downstream-failure detector. Default
+        // false (opt-in) so legacy verdicts stay byte-identical until enabled.
         private final boolean hiddenDownstreamFailureInvariantEnabled;
-        private final boolean silentAcceptanceInvariantEnabled;
 
         public Oracle() {
             this.shapeOracleEnabled = parseBool("mst.oracle.shape.enabled", "true");
@@ -415,8 +414,6 @@ public final class MstConfig {
                     "mst.oracle.shape.invariants.target_attribution.enabled", "true");
             this.hiddenDownstreamFailureInvariantEnabled = parseBool(
                     "mst.oracle.shape.invariants.hidden_downstream_failure.enabled", "false");
-            this.silentAcceptanceInvariantEnabled = parseBool(
-                    "mst.oracle.shape.invariants.silent_acceptance.enabled", "false");
         }
 
         public boolean shapeOracleEnabled() { return shapeOracleEnabled; }
@@ -426,7 +423,6 @@ public final class MstConfig {
         public boolean timingEnvelopeInvariantEnabled() { return timingEnvelopeInvariantEnabled; }
         public boolean targetAttributionInvariantEnabled() { return targetAttributionInvariantEnabled; }
         public boolean hiddenDownstreamFailureInvariantEnabled() { return hiddenDownstreamFailureInvariantEnabled; }
-        public boolean silentAcceptanceInvariantEnabled() { return silentAcceptanceInvariantEnabled; }
     }
 
     /**

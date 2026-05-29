@@ -136,9 +136,8 @@ public final class MstConfigValidator {
                 "mst.oracle.shape.invariants.timing.enabled",
                 // FIXES.md F2: TargetAttributionInvariant kill switch
                 "mst.oracle.shape.invariants.target_attribution.enabled",
-                // Phase 3: intent-aware detectors (opt-in, default off)
+                // Phase 3: intent-agnostic trace detector (opt-in, default off)
                 "mst.oracle.shape.invariants.hidden_downstream_failure.enabled",
-                "mst.oracle.shape.invariants.silent_acceptance.enabled",
                 // Phase 0: surface oracle violations in the fault-detection report
                 "mist.report.oracle.anomalies.enabled",
                 // Phase 1: opt-in two-phase positive-first / negative-second flow
