@@ -9,21 +9,27 @@ import java.util.Set;
  * Phase 2: maps a leaf-error span's (service, operation) to the set of
  * parameter names that span is likely responsible for validating.
  *
- * <p>Three tiers (Phase 1 spec):
+ * <p>The Phase 1 spec envisions three tiers, but <b>only tier 2 is
+ * implemented in code today</b>. Tiers 1 and 3 are documented design
+ * intent with <b>no code path</b> in {@link #isResponsibleFor} — recorded
+ * here as future work, not active fallbacks:
  * <ol>
- *   <li><b>OpenAPI extension hint</b> — exact match via
- *       {@code x-mist-param-validator-method}. Highest reliability;
- *       implementation deferred (no existing SUT publishes this).</li>
- *   <li><b>Naming heuristic</b> — split operation name into tokens
- *       (camelCase, snake_case, dot.case) and check token overlap with
- *       the candidate param name's tokens. {@code validateSeatNumber}
- *       overlaps with {@code seatNumber} via tokens {seat, number}.</li>
- *   <li><b>Probe cache</b> — deliberately-malformed-body probe records
- *       which param correlates with each leaf. Deferred to follow-up.</li>
+ *   <li><b>OpenAPI extension hint</b> (NOT implemented) — would match via
+ *       {@code x-mist-param-validator-method}; no SUT publishes it and no
+ *       lookup code exists.</li>
+ *   <li><b>Naming heuristic</b> (the only live tier) — split operation name
+ *       into tokens (camelCase, snake_case, dot.case) and check token overlap
+ *       with the candidate param's tokens. {@code validateSeatNumber} overlaps
+ *       {@code seatNumber} via tokens {seat, number}.</li>
+ *   <li><b>Probe cache</b> (NOT implemented) — would record which param
+ *       correlates with each leaf via malformed-body probes.</li>
  * </ol>
  *
- * <p>This Phase 2 release lands tier 2 only; tier 1 is wired but won't
- * fire until SUTs publish the extension; tier 3 is left as a hook.
+ * <p>Consequence of tier-2-only: on SUTs whose span operation names are not
+ * param-descriptive (e.g. generic controller methods like
+ * {@code RouteController.createAndModifyRoute}), token overlap fails and the
+ * classifier yields WRONG_PARAM_REJECTION rather than TARGET_REJECTION — i.e.
+ * param-level attribution degrades to service-level on such SUTs.
  */
 public final class MethodToParamMapper {
 
