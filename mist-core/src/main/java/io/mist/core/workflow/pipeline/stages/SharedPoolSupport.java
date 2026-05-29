@@ -150,18 +150,17 @@ public final class SharedPoolSupport {
             return parameterPool;
         }
 
-        // Get service configuration
-        TestConfigurationObject cfg = serviceConfigs.get(service);
-        if (cfg == null) {
-            log.warn("No configuration for service '{}' for root API: {}", service, rootApiKey);
+        // Resolve the operation: service-name match first, then a template-aware
+        // endpoint fallback so a service-name mismatch (e.g. Bookinfo trace
+        // "productpage.default" vs conf "productpage") still finds the op and
+        // builds a NON-empty pool. firstBusinessStep is the root by construction.
+        StageSupport.ResolvedOperation resolved =
+                StageSupport.resolveOperation(serviceConfigs, service, verb, route);
+        if (resolved == null) {
+            log.warn("No operation config for {} {} (service '{}') for root API: {}", verb, route, service, rootApiKey);
             return parameterPool;
         }
-
-        Operation opCfg = StageSupport.findOperation(cfg, verb, route);
-        if (opCfg == null) {
-            log.warn("No operation config for {} {} in service '{}' for root API: {}", verb, route, service, rootApiKey);
-            return parameterPool;
-        }
+        Operation opCfg = resolved.op;
 
         // Generate parameter values for all parameters in this operation
         if (opCfg.getTestParameters() != null && useLLM) {
@@ -381,11 +380,13 @@ public final class SharedPoolSupport {
             return faultyPool;
         }
 
-        TestConfigurationObject cfg = serviceConfigs.get(service);
-        if (cfg == null) { return faultyPool; }
-
-        Operation opCfg = StageSupport.findOperation(cfg, verb, route);
-        if (opCfg == null) { return faultyPool; }
+        // Service-name match first, then template-aware endpoint fallback, so a
+        // service-name mismatch still yields a NON-empty faulty pool (no faulty
+        // pool → no negative tests). businessStep is the root by construction.
+        StageSupport.ResolvedOperation resolved =
+                StageSupport.resolveOperation(serviceConfigs, service, verb, route);
+        if (resolved == null) { return faultyPool; }
+        Operation opCfg = resolved.op;
 
         if (opCfg.getTestParameters() != null && useLLM) {
             List<String> allParamNames = new ArrayList<>();

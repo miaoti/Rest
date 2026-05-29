@@ -22,6 +22,7 @@ import io.mist.core.workflow.WorkflowScenario;
 import io.mist.core.workflow.WorkflowStep;
 import io.mist.core.workflow.pipeline.PipelineContext;
 import io.mist.core.workflow.pipeline.WorkflowPipeline;
+import io.mist.core.workflow.pipeline.stages.StageSupport;
 import io.mist.core.workflow.pipeline.stages.Phase25DedupStage;
 import io.mist.core.workflow.pipeline.stages.Phase35DedupStage;
 import io.mist.core.workflow.pipeline.stages.Phase3ShatteringStage;
@@ -496,6 +497,13 @@ public class MistGenerator {
 
     /** Produce test cases using two-stage LLM + semantic expansion approach. */
     public Collection<TestCase> generate() {
+        // Reset the endpoint-fallback counter for this run. It increments only
+        // when service-name matching misses and a step is resolved to a conf op
+        // by HTTP method+path instead (cross-SUT generalisation). For train-ticket
+        // this MUST remain 0 — trace service names equal conf keys, so the
+        // service-name match always wins first and output is byte-identical.
+        StageSupport.resetEndpointFallbackCount();
+
         // Phase 1: load registry once per generate() so Sniper can prefer
         // SUT-verified values for non-target params. Cheap (one YAML parse).
         this.poolStatusRegistry = loadRegistryQuietly();
@@ -541,6 +549,11 @@ public class MistGenerator {
         ConsoleProgressBar.complete();
 
         logJitBindingMetrics();
+        // Confirm whether the endpoint (method+path) fallback was needed this
+        // run. 0 ⇒ pure service-name matching (expected for train-ticket); >0 ⇒
+        // a SUT with diverging trace service names relied on the generalisation.
+        log.info("Endpoint-fallback fired {}× this generation run (0 = service-name match always succeeded).",
+                StageSupport.getEndpointFallbackCount());
         return out;
     }
 
@@ -968,8 +981,36 @@ public class MistGenerator {
         }
 
         /* 2. Load service-specific test-configuration ------------------------------ */
+        // Service-name match FIRST (train-ticket always resolves here, so its
+        // generated output is byte-identical). The template-aware ENDPOINT
+        // fallback is gated to the ROOT / FIRST-BUSINESS step only — we never
+        // fall back for arbitrary deep descendants, which would over-generate
+        // variants for intentionally skipped downstream services.
+        //
+        // Gateway/proxy spans (e.g. train-ticket ts-gateway-service, Bookinfo
+        // istio-ingressgateway) are explicitly EXCLUDED from the fallback: they
+        // are routing-only and the designed behaviour is to propagate to their
+        // children (gotoChildren below, which forwards the root flag). For
+        // train-ticket the business child then matches by service name, so the
+        // fallback never fires (count stays 0 / output byte-identical). For
+        // Bookinfo the gateway is skipped here and the real BFF business step
+        // (productpage.default) arrives next as the root, where the fallback
+        // can fire if its service name is absent from the conf keys.
         TestConfigurationObject cfg = serviceConfigs.get(service);
-        if (cfg == null) {
+        Operation opCfg = (cfg != null) ? findOperation(cfg, verb, route) : null;
+
+        boolean rootStep = isTopLevelRoot || tc.getSteps().isEmpty();
+        boolean gatewaySpan = isGatewayOperation(service, opName);
+        if (opCfg == null && rootStep && !gatewaySpan) {
+            StageSupport.ResolvedOperation resolved =
+                    StageSupport.resolveOperation(serviceConfigs, service, verb, route);
+            if (resolved != null) {
+                cfg = resolved.cfg;
+                opCfg = resolved.op;
+            }
+        }
+
+        if (cfg == null && opCfg == null) {
             // Routing-only services (e.g. ts-gateway-service) intentionally have no
             // per-service test config; propagating to children is the designed behaviour,
             // not an anomaly. DEBUG-level so it doesn't dominate the run log
@@ -980,7 +1021,6 @@ public class MistGenerator {
             return;
         }
 
-        Operation opCfg = findOperation(cfg, verb, route);
         if (opCfg == null) {
             log.warn("No Operation config {} {} in service '{}' (step {})", verb, route, service, stepNumber);
             gotoChildren(span, tc, context, stepNumber, rootIndex, isTopLevelRoot,
@@ -2147,6 +2187,22 @@ public class MistGenerator {
     }
 
     /**
+     * Is this span a gateway / transparent-proxy span (e.g. train-ticket
+     * {@code ts-gateway-service}, Bookinfo {@code istio-ingressgateway}, or a
+     * wildcard {@code "<VERB> /*"} routing op)? Mirrors the canonical predicate
+     * used by {@code extractRootApiFromStep} / {@code findFirstBusinessStep}.
+     * Gateway spans are routing-only: the designed behaviour is to propagate to
+     * their children, NOT to build a StepCall or fire the endpoint fallback for
+     * them (doing so changes train-ticket output).
+     */
+    private boolean isGatewayOperation(String service, String opName) {
+        String s = service != null ? service.toLowerCase(Locale.ROOT) : "";
+        if (s.contains("gateway")) return true;
+        return "POST /*".equals(opName) || "GET /*".equals(opName)
+                || "PUT /*".equals(opName) || "DELETE /*".equals(opName);
+    }
+
+    /**
      * Process children with hierarchical numbering.
      */
     private void gotoChildren(WorkflowStep parent,
@@ -2218,9 +2274,20 @@ public class MistGenerator {
                 cfg.getTestConfiguration().getOperations() == null)
             return null;
 
-        return cfg.getTestConfiguration().getOperations().stream()
+        // Exact path match FIRST — train-ticket paths carry no path-params, so
+        // they always match here and generation stays byte-identical.
+        Operation exact = cfg.getTestConfiguration().getOperations().stream()
                 .filter(o -> verb.equalsIgnoreCase(o.getMethod()) &&
                         path.equals(o.getTestPath()))
+                .findFirst().orElse(null);
+        if (exact != null) return exact;
+
+        // No exact hit: accept a path-template match so a concrete trace path
+        // (/products/0/ratings) matches the templated conf path
+        // (/products/{id}/ratings). Shared single-source matcher in StageSupport.
+        return cfg.getTestConfiguration().getOperations().stream()
+                .filter(o -> verb.equalsIgnoreCase(o.getMethod()) &&
+                        StageSupport.pathMatchesTemplate(path, o.getTestPath()))
                 .findFirst().orElse(null);
     }
 
@@ -2892,7 +2959,17 @@ public class MistGenerator {
 
     private boolean scenarioHasBuildableRoot(WorkflowScenario scenario) {
         for (WorkflowStep root : scenario.getRootSteps()) {
+            // (1) Exact service-name match anywhere in the subtree (unchanged —
+            //     train-ticket always lands here, so it is byte-identical).
             if (subtreeHasConfiguredService(root)) {
+                return true;
+            }
+            // (2) Endpoint fallback, gated to the ROOT / first-business step only:
+            //     a SUT whose trace service names differ from the conf keys
+            //     (Bookinfo: "productpage.default" vs conf "productpage") is still
+            //     buildable if the root's HTTP method+path resolves to a conf op.
+            WorkflowStep businessRoot = StageSupport.findFirstBusinessStepRecursive(root);
+            if (businessRoot != null && rootStepResolvesByEndpoint(businessRoot)) {
                 return true;
             }
         }
@@ -2910,6 +2987,35 @@ public class MistGenerator {
             }
         }
         return false;
+    }
+
+    /**
+     * Does this (root) business step resolve to a conf operation via the
+     * service-name-first / endpoint-fallback {@link StageSupport#resolveOperation}?
+     * Used only for the root step in {@link #scenarioHasBuildableRoot} so we do
+     * NOT mark a scenario buildable on the strength of a deep descendant.
+     */
+    private boolean rootStepResolvesByEndpoint(WorkflowStep step) {
+        String service = step.getServiceName();
+        String verb = null, route = null;
+
+        Matcher m = HTTP_OPERATION_PATTERN.matcher(step.getOperationName());
+        if (m.matches()) {
+            verb = m.group(1).toLowerCase(Locale.ROOT);
+            route = m.group(2);
+        } else {
+            Map<String, String> outputs = step.getOutputFields();
+            String httpMethod = outputs.get("http.method");
+            String httpTarget = outputs.get("http.target");
+            String httpUrl = outputs.get("http.url");
+            if (httpMethod != null && (httpTarget != null || httpUrl != null)) {
+                verb = httpMethod.toLowerCase(Locale.ROOT);
+                route = httpTarget != null ? httpTarget : extractPathFromUrl(httpUrl);
+            }
+        }
+        if (verb == null || route == null) return false;
+
+        return StageSupport.resolveOperation(serviceConfigs, service, verb, route) != null;
     }
 
     /**
