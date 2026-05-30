@@ -289,8 +289,11 @@ public final class MistRunner {
         FaultDetectionTracker.getInstance().reset();
         if (faultsJsonPath == null || faultsJsonPath.isEmpty()) {
             // No named-fault registry configured: treat as "no injected faults". SUT-agnostic
-            // default — do not assume a train-ticket fault file exists.
+            // default — do not assume a train-ticket fault file exists. Still INITIALIZE the
+            // tracker (empty) so the fault-detection report — the executed-test list + the
+            // ORACLE ANOMALIES section — is still generated, just with 0 named faults.
             logger.info("🔍 No fault.detection.injected.faults.path configured; proceeding with no named injected faults");
+            FaultDetectionTracker.getInstance().initializeWithNoFaults();
         } else {
             FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
             logger.info("🔍 Fault Detection Tracker initialized from: {}", faultsJsonPath);

@@ -92,6 +92,20 @@ public class FaultDetectionTracker {
             logger.error("Failed to parse injected faults JSON: {}", e.getMessage(), e);
         }
     }
+
+    /**
+     * Initialize the tracker with NO named injected faults — the SUT-agnostic default when
+     * no {@code fault.detection.injected.faults.path} is configured (a SUT that doesn't ship
+     * a train-ticket-style injected-faults file). The fault-detection report (the executed
+     * test list + the ORACLE ANOMALIES section) is still generated; there are simply 0 named
+     * faults to correlate. Without this, {@code initialized} stayed false and report
+     * generation was skipped ("not initialized. Cannot generate report") on any non-TT SUT.
+     */
+    public synchronized void initializeWithNoFaults() {
+        injectedFaults.clear();
+        initialized = true;
+        logger.info("FaultDetectionTracker initialized with no named injected faults");
+    }
     
     /**
      * Record a detected fault from a test execution
