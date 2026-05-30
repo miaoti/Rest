@@ -1118,11 +1118,11 @@ public class SmartInputFetcher {
             prompt.append("7. If no relevant field exists, respond with: NO_MATCH\n\n");
 
             prompt.append("Examples:\n");
-            prompt.append("Parameter 'startStation' → field 'from' (if from contains station names)\n");
-            prompt.append("Parameter 'endStation' → field 'to' (if to contains station names)\n");
+            prompt.append("Parameter 'origin' → field 'from' (if from contains matching values)\n");
+            prompt.append("Parameter 'destination' → field 'to' (if to contains matching values)\n");
             prompt.append("Parameter 'userId' → field 'accountId' (if accountId contains IDs)\n");
             prompt.append("Parameter 'distance' → field 'price' (if price contains numbers, not UUIDs)\n");
-            prompt.append("Parameter 'trainId' → field 'trainNumber' (if trainNumber contains train IDs)\n\n");
+            prompt.append("Parameter 'itemId' → field 'itemNumber' (if itemNumber contains matching IDs)\n\n");
 
             prompt.append("Which field is most relevant for parameter '").append(paramName).append("'?");
 
@@ -1874,11 +1874,6 @@ public class SmartInputFetcher {
                 if (isArrayType) {
                     prompt.append("Example: [\"10 miles\", \"25 km\", \"150 meters\"]\n");
                 }
-            } else if (paramName.contains("station")) {
-                prompt.append("Semantic hint: This represents a train station name\n");
-                if (isArrayType) {
-                    prompt.append("Example: [\"Shanghai\", \"Beijing\", \"Guangzhou\"]\n");
-                }
             } else if (isIdLikeParamName(paramName)) {
                 prompt.append("Semantic hint: This represents an identifier\n");
             } else if (paramName.contains("price") || paramName.contains("rate")) {
@@ -2106,10 +2101,10 @@ public class SmartInputFetcher {
         prompt.append("9. Return each value on a separate line\n");
         prompt.append("10. If no relevant values found, respond with: NO_VALUES_FOUND\n\n");
 
-        prompt.append("Example for parameter 'stationName':\n");
-        prompt.append("Shanghai\n");
-        prompt.append("Beijing\n");
-        prompt.append("Nanjing\n");
+        prompt.append("Example for a name-like parameter:\n");
+        prompt.append("<first value from the response>\n");
+        prompt.append("<second value from the response>\n");
+        prompt.append("<third value from the response>\n");
 
         return prompt.toString();
     }
@@ -2382,8 +2377,6 @@ public class SmartInputFetcher {
                 || paramType.equals("long") || paramType.equals("number")
                 || paramType.equals("double") || paramType.equals("float")) {
             prompt.append("5. CRITICAL: This is a numeric parameter — every value MUST be a parseable number with no units, currency symbols, or letters.\n");
-        } else if (paramName.contains("station")) {
-            prompt.append("5. For station parameters: generate actual city/station names, not UUIDs or random strings\n");
         } else if (isIdLikeParamName(paramName) && !paramName.contains("station")) {
             prompt.append("5. For ID parameters: generate actual UUID-like strings or meaningful IDs\n");
         } else if (paramName.contains("distance")) {
@@ -2403,15 +2396,12 @@ public class SmartInputFetcher {
             prompt.append("If existing values are [true] → generate: false\n");
             prompt.append("If existing values are [false] → generate: true\n");
             prompt.append("(Only the two literal tokens 'true' and 'false' are valid.)\n");
-        } else if (paramName.contains("station")) {
-            prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
-            prompt.append("If existing values are [wuxi, suzhou] → generate: hangzhou, nanjing, changzhou\n");
         } else if (paramName.contains("distance")) {
             prompt.append("If existing values are [100, 250] → generate: 150, 300, 75\n");
             prompt.append("If existing values are [10 miles, 50 km] → generate: 25 miles, 75 km, 100 meters\n");
         } else {
-            prompt.append("If existing values are [Shanghai, Beijing] → generate: Nanjing, Hangzhou, Suzhou\n");
-            prompt.append("If existing values are [G1237, D2468] → generate: K5678, T9012, Z3456\n");
+            prompt.append("If existing values are [item-1, item-2] → generate: item-3, item-4, item-5\n");
+            prompt.append("If existing values are [SKU-1234, SKU-2468] → generate: SKU-5678, SKU-9012, SKU-3456\n");
             prompt.append("If existing values are [admin, user123] → generate: manager, guest456, operator\n");
         }
 
@@ -2663,9 +2653,9 @@ public class SmartInputFetcher {
 
         prompt.append("Consider semantic similarity, naming patterns, and data types.\n");
         prompt.append("Examples of relevant matches:\n");
-        prompt.append("- Field 'stationName' is relevant for parameter 'endStation'\n");
-        prompt.append("- Field 'trainId' is relevant for parameter 'trainNumber'\n");
-        prompt.append("- Field 'seatType' is relevant for parameter 'seatClass'\n");
+        prompt.append("- Field 'itemName' is relevant for parameter 'productName'\n");
+        prompt.append("- Field 'itemId' is relevant for parameter 'itemNumber'\n");
+        prompt.append("- Field 'categoryType' is relevant for parameter 'categoryClass'\n");
         prompt.append("- Field 'userId' is relevant for parameter 'loginId'\n\n");
 
         prompt.append("Respond with 'YES' if relevant, 'NO' if not relevant.");
@@ -2889,8 +2879,11 @@ public class SmartInputFetcher {
             return true;
         }
 
-        // Accept short alphanumeric IDs
-        if (cleanValue.matches("[a-zA-Z0-9._-]{1,20}")) {
+        // Accept opaque alphanumeric IDs (any SUT's id scheme): no whitespace, a generous
+        // length cap, and the common id punctuation including ':' (e.g. composite/URN-style
+        // keys). Avoids over-restricting to UUID / {1,20}-char tokens, which rejected valid
+        // non-train-ticket identifiers.
+        if (cleanValue.matches("[a-zA-Z0-9._:-]{1,64}")) {
             return true;
         }
 
@@ -3766,10 +3759,10 @@ public class SmartInputFetcher {
                   "3. Do NOT return explanatory text like 'The format appears to be...'\n" +
                   "4. Do NOT return generic words like 'objects', 'data', 'items'\n" +
                   "5. For IDs: return actual ID values like 'route123' or 'abc-def-123'\n" +
-                  "6. For names: return actual names like 'Shanghai' or 'Beijing'\n" +
+                  "6. For names: return actual names like 'Acme Corp' or 'item-42'\n" +
                   "7. For numbers: return actual numbers like '100' or '25.5'\n" +
                   "8. If no suitable value exists, return 'NO_GOOD_MATCH'\n" +
-                  "Examples: 'Shanghai', 'route123', '25.5', 'G1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'";
+                  "Examples: 'Acme Corp', 'route123', '25.5', 'SKU-1234' - NOT 'delivery route)', 'objects', 'The format appears to be UUID'";
 
           log.debug("[Direct Value Extraction LLM] Using LLM service with model type: {}", llmService.getConfig().getModelType());
           log.debug("[Direct Value Extraction LLM] User prompt: {}", prompt);
@@ -3883,27 +3876,27 @@ public class SmartInputFetcher {
           if (isArrayParameter) {
               prompt.append("Array Examples:\n");
               prompt.append("- For 'distances' (array): [\"10 miles\", \"50 km\", \"100 meters\"]\n");
-              prompt.append("- For 'stations' (array): [\"Shanghai\", \"Beijing\", \"Guangzhou\"]\n");
+              prompt.append("- For 'names' (array): [\"Acme Corp\", \"Globex\", \"Initech\"]\n");
               prompt.append("- For 'userIds' (array): [\"user123\", \"john.doe\", \"admin\"]\n");
-              prompt.append("- For 'trainNumbers' (array): [\"G1237\", \"D2468\", \"K1234\"]\n");
+              prompt.append("- For 'itemIds' (array): [\"item-42\", \"SKU-1234\", \"SKU-2468\"]\n");
               prompt.append("- For 'prices' (array): [\"150.50\", \"89.99\", \"200.00\"]\n");
               prompt.append("- For 'dates' (array): [\"2024-12-25\", \"2024-01-15\", \"2024-03-10\"]\n");
 
-              prompt.append("\nRespond with ONLY a JSON array (e.g., [\"Shanghai\", \"Beijing\"] or [\"10 miles\", \"50 km\"]).\n");
+              prompt.append("\nRespond with ONLY a JSON array (e.g., [\"Acme Corp\", \"Globex\"] or [\"10 miles\", \"50 km\"]).\n");
               prompt.append("Generate 2-3 realistic values in the array.\n");
               prompt.append("Do NOT include explanations or extra text.\n");
           } else {
               prompt.append("Single Value Examples:\n");
-              prompt.append("- For 'endStation' (string): 'Shanghai' or 'Beijing' or 'New York'\n");
-              prompt.append("- For 'startStation' (string): 'Tokyo' or 'London' or 'Paris'\n");
+              prompt.append("- For a destination name (string): 'New York' or 'London' or 'Paris'\n");
+              prompt.append("- For an origin name (string): 'Tokyo' or 'Berlin' or 'Madrid'\n");
               prompt.append("- For 'userId' (string): 'user123' or 'john.doe'\n");
-              prompt.append("- For 'trainNumber' (string): 'G1237' or 'D2468'\n");
+              prompt.append("- For 'itemId' (string): 'item-42' or 'SKU-1234'\n");
               prompt.append("- For 'price' (number): '150.50' or '89.99'\n");
               prompt.append("- For 'distance' (number): '350' or '1200'\n");
               prompt.append("- For 'date' (string): '2024-12-25' or '2024-01-15'\n");
               prompt.append("- For 'time' (string): '14:30' or '09:15'\n");
 
-              prompt.append("\nRespond with ONLY the generated value (e.g., 'Shanghai' or '150.50' or 'G1237').\n");
+              prompt.append("\nRespond with ONLY the generated value (e.g., 'Acme Corp' or '150.50' or 'item-42').\n");
               prompt.append("Do NOT include quotes, explanations, or JSONPath expressions.\n");
           }
 

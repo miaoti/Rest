@@ -2518,7 +2518,7 @@ public class MistGenerator {
                                 route = extractPathFromUrl(httpUrl);
                             } else {
                                 // Use service name as fallback to create a meaningful route
-                                route = "/api/v1/" + serviceName.replace("ts-", "").replace("-service", "");
+                                route = "/" + serviceName;
                             }
                         } else {
                             // Check if we can extract from attributes/tags for other formats
@@ -2540,7 +2540,7 @@ public class MistGenerator {
                             } else if (httpMethod != null) {
                                 // If we only have the method, try to construct a meaningful name
                                 verb = httpMethod.toLowerCase(Locale.ROOT);
-                                route = "/api/v1/" + serviceName.replace("ts-", "").replace("-service", "");
+                                route = "/" + serviceName;
                             }
                         }
                     }

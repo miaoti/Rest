@@ -757,9 +757,24 @@ public class SemanticDependencyRegistry {
         //   "ts-admin-order-service"  ↔ stem "order"  → admin-variant, lower priority
         if (pb.serviceName != null && stem != null) {
             String svcLc = pb.serviceName.toLowerCase(Locale.ROOT);
-            String canonical = "ts-" + stem + "-service";
-            if (svcLc.equals(canonical)) {
-                score += 60;                       // exact canonical service for this stem
+            // Derive the canonical match structurally instead of requiring the literal
+            // "ts-<stem>-service" shape, so producers on any SUT (e.g. "order-service",
+            // "order", "myapp-order-svc") still earn the strongest bonus. We tokenize on
+            // non-alphanumeric boundaries, drop generic prefix/suffix tokens, and treat the
+            // service as the canonical producer when the remaining tokens are exactly {stem}.
+            String[] svcTokens = svcLc.split("[^a-z0-9]+");
+            java.util.List<String> meaningful = new java.util.ArrayList<>();
+            for (String tok : svcTokens) {
+                if (tok.isEmpty()) continue;
+                if (tok.equals("ts") || tok.equals("service") || tok.equals("services")
+                        || tok.equals("svc") || tok.equals("srv") || tok.equals("api")) {
+                    continue;                      // generic naming affixes, not part of the entity
+                }
+                meaningful.add(tok);
+            }
+            boolean isCanonical = meaningful.size() == 1 && meaningful.get(0).equals(stem);
+            if (isCanonical) {
+                score += 60;                       // canonical service named after this stem
             } else if (svcLc.contains("-" + stem + "-")) {
                 score += 25;                       // stem appears as a whole path segment in svc name (wait-order, admin-order)
             } else if (svcLc.contains(stem)) {
@@ -1324,16 +1339,14 @@ public class SemanticDependencyRegistry {
         String lc = segment.toLowerCase(Locale.ROOT);
         // Verbs/modifiers that commonly appear as trailing path segments but are NOT entities.
         switch (lc) {
-            case "cheapest": case "quickest": case "cheapestroute": case "quickestroute":
+            case "cheapest": case "quickest":
             case "refresh":  case "refreshed":
             case "login":    case "logout":   case "register":   case "signup":
             case "query":    case "search":   case "find":       case "lookup":
-            case "byid":     case "byids":    case "byname":     case "byrouteidsandtraintype":
+            case "byid":     case "byids":    case "byname":
             case "money":    case "amount":   case "balance":
-            case "transferresult":
             case "idlist":   case "namelist":
-            case "minstation": case "minstopstation":
-            case "left":     case "left_parallel": case "left_ticket":
+            case "left":
             case "error":    case "success":
                 return false;
         }

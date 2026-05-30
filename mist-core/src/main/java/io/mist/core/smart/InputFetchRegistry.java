@@ -489,11 +489,11 @@ public class InputFetchRegistry {
                 "- For list parameters: you can combine multiple values with commas\n" +
                 "- Ensure the returned value matches the parameter type\n\n" +
                 "Examples:\n" +
-                "- For 'stationName': use values from 'from', 'to', or similar fields\n" +
+                "- For a location/name parameter: use values from semantically related fields (e.g. 'from', 'to', 'name')\n" +
                 "- For 'price': use values from 'price' or cost-related fields\n" +
                 "- For 'id': use any ID field from the response\n" +
-                "- For 'distanceList': use numeric values or station names that could represent distances\n\n" +
-                "Respond with ONLY the extracted value (e.g., 'Shanghai' or '100.0' or 'G1237')\n" +
+                "- For a list parameter: use numeric values or names that match the element type\n\n" +
+                "Respond with ONLY the extracted value (e.g., '<a value from the response>' or '100.0')\n" +
                 "If no suitable value exists in the response: NO_GOOD_MATCH");
         
         llmPrompts.put("valueSelection",

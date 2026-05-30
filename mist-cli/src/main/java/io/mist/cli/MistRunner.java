@@ -286,18 +286,19 @@ public final class MistRunner {
         // 🔍 FAULT DETECTION: Initialize tracker with injected faults
         logger.info("🔍 Initializing Fault Detection Tracker...");
         String faultsJsonPath = resolveInputPath(readParameterValue("fault.detection.injected.faults.path"));
-        if (faultsJsonPath == null || faultsJsonPath.isEmpty()) {
-            // Default path if not configured
-            faultsJsonPath = resolveInputPath(
-                    "src/main/resources/My-Example/trainticket/injectedFaults/injected-faults.json");
-        }
         FaultDetectionTracker.getInstance().reset();
-        FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
+        if (faultsJsonPath == null || faultsJsonPath.isEmpty()) {
+            // No named-fault registry configured: treat as "no injected faults". SUT-agnostic
+            // default — do not assume a train-ticket fault file exists.
+            logger.info("🔍 No fault.detection.injected.faults.path configured; proceeding with no named injected faults");
+        } else {
+            FaultDetectionTracker.getInstance().loadInjectedFaults(faultsJsonPath);
+            logger.info("🔍 Fault Detection Tracker initialized from: {}", faultsJsonPath);
+        }
         // FIXES.md F4: drop the JVM-wide TraceModel cache so a JVM that the
         // harness reuses across runs doesn't serve stale models from a
         // prior run.
         io.mist.core.analysis.TraceShapeAdapter.clearCache();
-        logger.info("🔍 Fault Detection Tracker initialized from: {}", faultsJsonPath);
 
         // Set up writer
         if (writer instanceof MultiServiceRESTAssuredWriter) {

@@ -144,6 +144,16 @@ public final class MistMain {
             return;
         }
 
+        // Resolve the trace directory. If the SUT-specific key is absent we fall back to the
+        // bundled TrainTicket demo trace dir so the no-arg demo path keeps working, but warn
+        // loudly so a real (non-train-ticket) run does not silently consume demo traces.
+        String traceFilePath = coreProps.getProperty("trace.file.path");
+        if (traceFilePath == null || traceFilePath.trim().isEmpty()) {
+            traceFilePath = "src/main/resources/My-Example/trainticket/test-trace";
+            System.err.println("MIST: 'trace.file.path' not set in " + propsFile
+                    + "; falling back to the bundled TrainTicket demo trace dir: " + traceFilePath);
+        }
+
         MistRunner.Inputs inputs = MistRunner.Inputs.builder()
                 .testClassName(coreProps.getProperty("testclass.name"))
                 .targetDirJava(coreProps.getProperty("test.target.dir"))
@@ -153,9 +163,7 @@ public final class MistMain {
                 .confPath(coreProps.getProperty("conf.path"))
                 .propertiesFilePath(propsFile.toString())
                 .mstPropertiesFilePath(mstConfigPath)
-                .traceFilePath(coreProps.getProperty(
-                        "trace.file.path",
-                        "src/main/resources/My-Example/trainticket/test-trace"))
+                .traceFilePath(traceFilePath)
                 .numTestCases(parseIntOrNull(coreProps.getProperty("testsperoperation")))
                 .faultyRatio(parseFloatOrNull(coreProps.getProperty("faulty.ratio")))
                 .executeTestCases(parseBoolOrNull(coreProps.getProperty("experiment.execute")))

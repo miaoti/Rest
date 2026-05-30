@@ -860,13 +860,13 @@ public class StatusCodeExplorationEnhancer {
         prompt.append("    {\n");
         prompt.append("      \"targetStatusCode\": 400,\n");
         prompt.append("      \"strategy\": \"Send malformed request body\",\n");
-        prompt.append("      \"parameterChanges\": {\"startPlace\": \"\", \"endPlace\": \"invalid\"},\n");
+        prompt.append("      \"parameterChanges\": {\"<bodyField>\": \"\", \"<otherField>\": \"invalid\"},\n");
         prompt.append("      \"requiresAuthManipulation\": false\n");
         prompt.append("    },\n");
         prompt.append("    {\n");
         prompt.append("      \"targetStatusCode\": 404,\n");
         prompt.append("      \"strategy\": \"Request non-existent resource\",\n");
-        prompt.append("      \"parameterChanges\": {\"trainId\": \"NONEXISTENT_999\"},\n");
+        prompt.append("      \"parameterChanges\": {\"<pathParam>\": \"NONEXISTENT_999\"},\n");
         prompt.append("      \"requiresAuthManipulation\": false\n");
         prompt.append("    }\n");
         prompt.append("  ]\n");

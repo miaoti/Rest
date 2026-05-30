@@ -538,17 +538,17 @@ public class ZeroShotLLMGenerator {
                        "3. Single characters or digits that can't be valid\n" +
                        "If this is a comma-separated list, generate lists with non-existent or invalid items or make some values as null or empty.\n\n" +
                        "Examples:\n" +
-                       "- Station name: X, AB, 1, NonExistentStation, FakeCity123\n" +
+                       "- Name: X, AB, 1, NonExistentName, FakeValue123\n" +
                        "- Route ID: a, 0, -, FAKE-ROUTE-999, invalid_id\n" +
                        "- Age parameter: -5, 999, -100, 0\n" +
                        "- Email parameter: a, @, invalid@, nodomain, test@@test\n" +
                        "- Date parameter: 1, x, 2025-02-30, 2025-13-01\n" +
                        "- Country code: Z, XX, ZZZ, 9, 999\n" +
-                       "- Train type: x, 1, !, InvalidType, FakeTrain\n" +
+                       "- Category code: x, 1, !, InvalidType, FakeCategory\n" +
                        "- Price rate: a, x, -, NaN, infinity\n" +
-                       "- Station list: X, NonExistent1,NonExistent2, ,InvalidStation\n\n" +
+                       "- String list: X, NonExistent1,NonExistent2, ,InvalidItem\n\n" +
                        "OUTPUT FORMAT: Return ONLY the raw values, one per line. Do NOT include parameter names or quotes.\n" +
-                       "WRONG: stationList=\"value\"\n" +
+                       "WRONG: paramName=\"value\"\n" +
                        "RIGHT: value\n\n" +
                        "Return only the semantically invalid values, one per line:";
         

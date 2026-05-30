@@ -89,8 +89,13 @@ public class ApiTree {
             return false;
         }
         
-        // Must have an API path starting with /api/v1/
-        if (path == null || !path.startsWith("/api/v1/")) {
+        // Must have a real, rooted API path (any base path, not just /api/v1/).
+        // Reject nulls, non-rooted paths, and bare wildcards like "/", "/*", "/**".
+        if (path == null || !path.startsWith("/")) {
+            return false;
+        }
+        String trimmedPath = path.trim();
+        if (trimmedPath.equals("/") || trimmedPath.equals("/*") || trimmedPath.equals("/**")) {
             return false;
         }
         
