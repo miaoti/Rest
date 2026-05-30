@@ -708,6 +708,27 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                                }");
                     pw.println("                            }");
                     pw.println("                        }");
+                    // Dedicated, human-readable surfacing of a HIDDEN downstream failure — the
+                    // highest-value finding (invisible to status/schema/response-body oracles).
+                    // Previously it was buried in the JSON verdict blob + a generic step line;
+                    // now it gets a titled attachment + a filterable label + a parameter so the
+                    // user sees, plainly, that a 2xx hid a downstream 5xx and which span it was.
+                    pw.println("                        if (!verdict.isPassed()) {");
+                    pw.println("                            for (TraceShapeVerdict.InvariantOutcome o : outcomes) {");
+                    pw.println("                                if (!o.passed && \"HIDDEN_DOWNSTREAM_FAILURE\".equals(o.kind)) {");
+                    pw.println("                                    StringBuilder hd = new StringBuilder();");
+                    pw.println("                                    hd.append(\"HIDDEN DOWNSTREAM FAILURE  [severity=\").append(o.severity).append(\"]\\n\\n\");");
+                    pw.println("                                    hd.append(\"The client-facing call '\").append(rootApiKey).append(\"' returned a SUCCESS (2xx) response,\\n\");");
+                    pw.println("                                    hd.append(\"but a downstream span server-errored and the failure was SWALLOWED — it never\\n\");");
+                    pw.println("                                    hd.append(\"surfaced to the caller. No status/schema/response-body oracle can see this;\\n\");");
+                    pw.println("                                    hd.append(\"it is observable only in the distributed trace.\\n\\n\");");
+                    pw.println("                                    hd.append(\"Swallowed downstream span(s):\\n  \").append(o.detail);");
+                    pw.println("                                    Allure.addAttachment(\"🕳️ HIDDEN DOWNSTREAM FAILURE — swallowed 5xx behind a 2xx\", \"text/plain\", hd.toString());");
+                    pw.println("                                    Allure.label(\"mist.anomaly\", \"HIDDEN_DOWNSTREAM_FAILURE\");");
+                    pw.println("                                    Allure.parameter(\"🕳️ Hidden downstream failure\", o.detail);");
+                    pw.println("                                }");
+                    pw.println("                            }");
+                    pw.println("                        }");
                     pw.println("                        // Phase 0: credit ALL failing outcomes (any severity) to the");
                     pw.println("                        // tracker's anomaly map so the fault-detection report surfaces");
                     pw.println("                        // them as a separate bucket. Called per-step (attachJaegerTrace");
