@@ -1,0 +1,418 @@
+swagger: "2.0"
+info:
+  description: "User-facing REST API exposed by the WeaveWorks Sock Shop front-end\
+    \ service. The front-end (Node/Express, port 8079) proxies these browser-facing\
+    \ routes to the back-end microservices: catalogue, carts, orders and user. Only\
+    \ read-only (GET) endpoints are described here, which is the safest surface for\
+    \ a generated negative-test run. Each operation is tagged with the owning\
+    \ microservice."
+  version: "1.0.0"
+  title: "Sock Shop Front-End API"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: "/"
+tags:
+- name: "catalogue"
+  description: "Product (sock) catalogue: list, search, lookup and tags. Proxied by\
+    \ the front-end to the catalogue service."
+- name: "cart"
+  description: "The current customer's shopping cart. Proxied by the front-end to\
+    \ the carts service."
+- name: "order"
+  description: "Customer orders. Proxied by the front-end to the orders service."
+- name: "user"
+  description: "Customer accounts, payment cards and addresses. Proxied by the\
+    \ front-end to the user service."
+externalDocs:
+  description: "WeaveWorks Sock Shop (microservices-demo) front-end API source"
+  url: "https://github.com/microservices-demo/front-end"
+paths:
+  /catalogue:
+    get:
+      tags:
+      - "catalogue"
+      summary: "List catalogue items"
+      description: "List socks in the catalogue, optionally filtered by tags, sorted\
+        \ and paginated. The front-end proxies this to the catalogue service List\
+        \ endpoint."
+      operationId: "listCatalogue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "page"
+        in: "query"
+        description: "1-based page number (defaults to 1)."
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "size"
+        in: "query"
+        description: "Number of items per page (defaults to 10)."
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "tags"
+        in: "query"
+        description: "Comma-separated list of tags to filter by."
+        required: false
+        type: "string"
+      - name: "sort"
+        in: "query"
+        description: "Field to sort by (defaults to id)."
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Sock"
+        400:
+          description: "Invalid query parameter"
+  /catalogue/size:
+    get:
+      tags:
+      - "catalogue"
+      summary: "Count catalogue items"
+      description: "Return the number of socks in the catalogue, optionally filtered\
+        \ by tags. The front-end proxies this to the catalogue service Count endpoint."
+      operationId: "getCatalogueSize"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "tags"
+        in: "query"
+        description: "Comma-separated list of tags to filter the count by."
+        required: false
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/CatalogueSize"
+  /catalogue/{id}:
+    get:
+      tags:
+      - "catalogue"
+      summary: "Get a catalogue item"
+      description: "Get detailed information about a single sock by its id. The\
+        \ front-end proxies this to the catalogue service Get endpoint."
+      operationId: "getCatalogueItem"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Catalogue item id (UUID-style string)."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Sock"
+        404:
+          description: "Catalogue item not found"
+  /tags:
+    get:
+      tags:
+      - "catalogue"
+      summary: "List catalogue tags"
+      description: "List all tags available in the catalogue. The front-end proxies\
+        \ this to the catalogue service Tags endpoint."
+      operationId: "listTags"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Tags"
+  /cart:
+    get:
+      tags:
+      - "cart"
+      summary: "Get the current cart"
+      description: "Return the items in the current customer's shopping cart. The\
+        \ front-end resolves the customer id from the session and proxies this to\
+        \ the carts service items endpoint."
+      operationId: "getCart"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CartItem"
+  /orders:
+    get:
+      tags:
+      - "order"
+      summary: "List the current customer's orders"
+      description: "List orders for the current customer, sorted by date. The\
+        \ front-end resolves the customer id from the session and proxies this to\
+        \ the orders service customer search endpoint."
+      operationId: "listOrders"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Order"
+  /customers:
+    get:
+      tags:
+      - "user"
+      summary: "List customers"
+      description: "List customer accounts. The front-end proxies this to the user\
+        \ service customers endpoint."
+      operationId: "listCustomers"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+  /customers/{id}:
+    get:
+      tags:
+      - "user"
+      summary: "Get a customer"
+      description: "Get a single customer account by id. The front-end proxies this\
+        \ to the user service customers endpoint."
+      operationId: "getCustomer"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Customer id (UUID-style string)."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Customer"
+        404:
+          description: "Customer not found"
+  /cards:
+    get:
+      tags:
+      - "user"
+      summary: "List payment cards"
+      description: "List stored payment cards. The front-end proxies this to the\
+        \ user service cards endpoint."
+      operationId: "listCards"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+  /cards/{id}:
+    get:
+      tags:
+      - "user"
+      summary: "Get a payment card"
+      description: "Get a single stored payment card by id. The front-end proxies\
+        \ this to the user service cards endpoint."
+      operationId: "getCard"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Card id (UUID-style string)."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Card"
+        404:
+          description: "Card not found"
+  /addresses:
+    get:
+      tags:
+      - "user"
+      summary: "List addresses"
+      description: "List stored shipping/billing addresses. The front-end proxies\
+        \ this to the user service addresses endpoint."
+      operationId: "listAddresses"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: "object"
+definitions:
+  Sock:
+    type: "object"
+    description: "A sock product in the catalogue"
+    properties:
+      id:
+        type: "string"
+        description: "Catalogue item id"
+      name:
+        type: "string"
+        description: "Product name"
+      description:
+        type: "string"
+        description: "Product description"
+      imageUrl:
+        type: "array"
+        description: "Image URLs for the product"
+        items:
+          type: "string"
+      price:
+        type: "number"
+        format: "float"
+        description: "Unit price"
+      count:
+        type: "integer"
+        format: "int32"
+        description: "Quantity in stock"
+      tag:
+        type: "array"
+        description: "Tags applied to the product"
+        items:
+          type: "string"
+    required:
+    - "id"
+    - "name"
+    - "price"
+  CatalogueSize:
+    type: "object"
+    description: "Count of catalogue items"
+    properties:
+      size:
+        type: "integer"
+        format: "int32"
+        description: "Number of catalogue items matching the query"
+    required:
+    - "size"
+  Tags:
+    type: "object"
+    description: "List of catalogue tags"
+    properties:
+      tags:
+        type: "array"
+        description: "Available tags"
+        items:
+          type: "string"
+    required:
+    - "tags"
+  CartItem:
+    type: "object"
+    description: "An item in the shopping cart"
+    properties:
+      itemId:
+        type: "string"
+        description: "Catalogue item id of the cart line"
+      quantity:
+        type: "integer"
+        format: "int32"
+        description: "Quantity of this item in the cart"
+      unitPrice:
+        type: "number"
+        format: "float"
+        description: "Unit price of this item"
+    required:
+    - "itemId"
+    - "quantity"
+  Order:
+    type: "object"
+    description: "A customer order"
+    properties:
+      id:
+        type: "string"
+        description: "Order id"
+      customerId:
+        type: "string"
+        description: "Id of the customer who placed the order"
+      date:
+        type: "string"
+        description: "Order date"
+      total:
+        type: "number"
+        format: "float"
+        description: "Order total"
+      status:
+        type: "string"
+        description: "Order status"
+    required:
+    - "id"
+    - "customerId"
+  Customer:
+    type: "object"
+    description: "A customer account"
+    properties:
+      id:
+        type: "string"
+        description: "Customer id"
+      firstName:
+        type: "string"
+        description: "Customer first name"
+      lastName:
+        type: "string"
+        description: "Customer last name"
+      username:
+        type: "string"
+        description: "Login username"
+    required:
+    - "id"
+    - "username"
+  Card:
+    type: "object"
+    description: "A stored payment card"
+    properties:
+      id:
+        type: "string"
+        description: "Card id"
+      longNum:
+        type: "string"
+        description: "Card number (masked)"
+      expires:
+        type: "string"
+        description: "Card expiry date"
+      ccv:
+        type: "string"
+        description: "Card security code (masked)"
+    required:
+    - "id"
+  Address:
+    type: "object"
+    description: "A stored shipping/billing address"
+    properties:
+      id:
+        type: "string"
+        description: "Address id"
+      number:
+        type: "string"
+        description: "Street number"
+      street:
+        type: "string"
+        description: "Street name"
+      city:
+        type: "string"
+        description: "City"
+      postcode:
+        type: "string"
+        description: "Postal code"
+      country:
+        type: "string"
+        description: "Country"
+    required:
+    - "id"
