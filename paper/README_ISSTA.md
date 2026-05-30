@@ -1,12 +1,13 @@
 # Building the MIST tool-demo paper
 
-> **Active target as of 2026-05-19: ICSE 2027 Tool Demonstration and Data
-> Showcase Track** (deadline Oct 23, 2026; 4 pages incl. references;
-> `IEEEtran[10pt,conference]`; single-anonymous). The active paper file
-> is `main.tex`.
+> **Active target as of 2026-05-30: SPLASH/ISSTA 2026 Posters and Tool
+> Demonstrations** (submission June 26, 2026 AoE; 4 pages body + 1 page refs;
+> `acmart[sigconf,screen,review]`; single-blind; a YouTube screencast is
+> mandatory). The active paper file is `main_issta.tex`; `main.tex` (ICSE 2027,
+> IEEEtran) is kept as a fallback.
 >
-> The earlier ISSTA 2026 / ICSME 2026 windows have all closed; see
-> the deprecation banner at the top of `main_issta.tex` for details.
+> See `REVIEW_ISSTA_2026.md` for the current review + change plan. The
+> `NOTES_TO_AUTHOR.md` ledger is ICSME-era and partly superseded.
 
 This directory carries two paper variants:
 
