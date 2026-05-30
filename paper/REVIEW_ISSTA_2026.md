@@ -271,3 +271,30 @@ HTTP-503→ERROR; Online Boutique gRPC→WARN); **soft-error (G1) on 2 SUTs**
 abstract/§5/limitations updated. The cluster was restored after each induced
 outage; Online Boutique was deployed into namespace `boutique` (sidecar-injected)
 and left running for reproduction (teardown: `kubectl delete ns boutique`).
+
+---
+
+## 9. Online Boutique promoted to 4th bundled SUT (2026-05-30)
+
+Per the author's decision (count must be consistent; bundle it). Online Boutique
+is now a full SP1 bundle at `evaluation/suts/boutique/` (same shape as
+bookinfo/sockshop): `deploy/deploy.sh`, `openapi/boutique-swagger.yaml`,
+`real-system-conf.yaml` (1 service `frontend`, 9 ops — its only HTTP surface;
+the rest is internal gRPC), `boutique-demo.properties` + `boutique-mst.properties`,
+`workload/capture-traces.sh`, `traces/` (healthy seed + adservice-outage evidence),
+`README.md` (honest about the HTML-frontend/gRPC shape).
+
+**End-to-end run (SP1 req #7):** `java -jar mist.jar boutique-demo.properties`
+generated **22 scenario files / 38 test cases**, executed against the live SUT,
+produced 38 Allure results + a fault-detection report, **exit 0** (run
+`boutique_hidden_downstream_1780164710192`; report committed at
+`docs/main-contribution/evidence/boutique_run_fault-detection-summary.txt`).
+0 injected faults (correct — Boutique uses a real outage; the report still
+generates via the no-faults path).
+
+Paper updated: abstract/§1/§5/limitations now say **four** SUTs and name Online
+Boutique; the abstract count inconsistency (said "three" while naming Boutique)
+is fixed. Final coverage: **hidden-downstream (G2) on 2 SUTs/2 protocols**
+(Bookinfo HTTP, Online Boutique gRPC), **soft-error (G1) on 2 SUTs** (TrainTicket,
+Sock Shop), **fault-injection detection 10/10 on TrainTicket**, and the demo runs
+end-to-end on all **four** bundled SUTs.
