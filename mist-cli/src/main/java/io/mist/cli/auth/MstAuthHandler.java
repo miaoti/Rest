@@ -79,13 +79,21 @@ public final class MstAuthHandler {
 
     /** Re-read configuration from System properties. Public for tests. */
     public static synchronized void reload() {
-        String modeStr = System.getProperty("auth.mode", "per_jvm").trim().toLowerCase();
+        // Default NONE: do not assume the SUT needs authentication. Previously this
+        // defaulted to PER_JVM (a train-ticket-centric assumption), so ANY SUT that
+        // doesn't require login — and didn't explicitly set auth.mode=none — had every
+        // generated test attempt a login (e.g. /api/v1/users/login → 404 on Bookinfo),
+        // fail, and SKIP every request. train-ticket sets auth.mode=per_jvm explicitly
+        // in its own properties, so it is unaffected; a no-auth SUT now works with no
+        // auth config at all. Unknown/typo'd values also resolve to NONE (fail-open to
+        // "no auth" rather than silently attempting a login).
+        String modeStr = System.getProperty("auth.mode", "none").trim().toLowerCase();
         switch (modeStr) {
-            case "none":         mode = Mode.NONE; break;
             case "static_token": mode = Mode.STATIC_TOKEN; break;
             case "per_test":     mode = Mode.PER_TEST; break;
-            case "per_jvm":
-            default:             mode = Mode.PER_JVM; break;
+            case "per_jvm":      mode = Mode.PER_JVM; break;
+            case "none":
+            default:             mode = Mode.NONE; break;
         }
         tokenHeader        = System.getProperty("auth.token.header", "Authorization");
         tokenPrefix        = System.getProperty("auth.token.prefix", "Bearer ");
