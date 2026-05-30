@@ -450,28 +450,20 @@ public class InputFetchRegistry {
      * Initialize default patterns and prompts
      */
     private void initializeDefaults() {
-        // Default service patterns
-        servicePatterns.add(new ServicePattern(".*[Ss]tation.*", 
-                Arrays.asList("ts-station-service"), 
-                Arrays.asList("/api/v1/stationservice/stations")));
-        
-        servicePatterns.add(new ServicePattern(".*[Uu]ser.*", 
-                Arrays.asList("ts-user-service", "ts-contacts-service"), 
-                Arrays.asList("/api/v1/userservice/users", "/api/v1/contactservice/contacts")));
-        
-        servicePatterns.add(new ServicePattern(".*[Tt]rain.*", 
-                Arrays.asList("ts-train-service", "ts-travel-service"), 
-                Arrays.asList("/api/v1/trainservice/trains", "/api/v1/travelservice/trips")));
-        
-        servicePatterns.add(new ServicePattern(".*[Rr]oute.*", 
-                Arrays.asList("ts-route-service", "ts-route-plan-service"), 
-                Arrays.asList("/api/v1/routeservice/routes", "/api/v1/routeplanservice/routePlans")));
-        
-        servicePatterns.add(new ServicePattern(".*[Oo]rder.*", 
-                Arrays.asList("ts-order-service", "ts-order-other-service"), 
-                Arrays.asList("/api/v1/orderservice/orders", "/api/v1/orderOtherservice/orderOthers")));
-        
-        // Default LLM prompts
+        // NOTE: no hardcoded service patterns are seeded here. These used to inject
+        // train-ticket service names (ts-station-service, ts-order-service, ...) and
+        // train-ticket endpoint paths UNCONDITIONALLY into every InputFetchRegistry.
+        // On a SUT whose own input-fetch-registry.yaml is absent (e.g. Bookinfo), that
+        // leaked ts-* names into the smart-fetch LLM discovery candidate list, so the
+        // LLM "discovered" ts-travel-service / ts-order-service for unrelated params
+        // (a generation-generalization bug). Service patterns are SUT-specific and now
+        // live ONLY in each SUT's input-fetch-registry.yaml — train-ticket's file
+        // carries them under `servicePatterns:` and toRegistry() loads them (replacing
+        // this empty default). A SUT with no registry file gets an EMPTY pattern set,
+        // which is correct: smart-fetch finds no candidates and falls back cleanly,
+        // instead of hallucinating train-ticket services.
+
+        // Default LLM prompts (SUT-agnostic prompt templates — these stay)
         llmPrompts.put("apiDiscovery", 
                 "Parameter: {parameterName} (type: {parameterType}, location: {parameterLocation})\n" +
                 "Description: {parameterDescription}\n\n" +
