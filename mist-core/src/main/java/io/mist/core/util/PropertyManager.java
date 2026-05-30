@@ -58,8 +58,21 @@ public class PropertyManager {
 				 if (cp != null) {
 					 globalProperties.load(cp);
 				 } else {
-					 try (FileInputStream defaultProperties = new FileInputStream(globalPropertyFilePath)) {
-						 globalProperties.load(defaultProperties);
+					 // The legacy default config (src/main/resources/config.properties) is
+					 // OPTIONAL: bundled on the classpath for normal runs, and simply absent
+					 // when running from a packaged jar in an arbitrary cwd (e.g. a per-SUT
+					 // .runtime/ dir). Only read it when present — otherwise use empty global
+					 // properties silently (callers treat a missing key as "not set"). The
+					 // previous unconditional FileInputStream threw FileNotFoundException on
+					 // every single-arg readProperty call from such a cwd, spamming the log
+					 // with a scary (but non-fatal) stack trace.
+					 java.io.File defaultFile = new java.io.File(globalPropertyFilePath);
+					 if (defaultFile.isFile()) {
+						 try (FileInputStream defaultProperties = new FileInputStream(defaultFile)) {
+							 globalProperties.load(defaultProperties);
+						 }
+					 } else {
+						 logger.debug("No global properties on classpath or at {}; using empty defaults.", globalPropertyFilePath);
 					 }
 				 }
 			 } catch (IOException e) {

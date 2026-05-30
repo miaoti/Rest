@@ -2041,19 +2041,19 @@ public final class MistRunner {
                 testClassesDir.mkdirs();
             }
 
-            // 🔧 FIX: Check if main classes are compiled - required for test compilation
-            // If target/classes doesn't exist or is empty, fall back to Maven which will compile both
-            if (!mainClassesDir.exists() || mainClassesDir.list() == null || mainClassesDir.list().length == 0) {
-                logger.info("Main classes not found in target/classes. Using Maven to compile both main and test classes...");
-                return fallbackMavenCompilation();
-            }
-
-            // Verify essential main classes exist (spot check). The class was at
-            // es/us/isa/restest/testcases/MultiServiceTestCase pre-sever; the
-            // mist-core vendored version is now the only copy.
-            File testCaseClass = new File(mainClassesDir, "io/mist/core/testcase/MultiServiceTestCase.class");
-            if (!testCaseClass.exists()) {
-                logger.info("Essential main classes not compiled. Using Maven to compile both main and test classes...");
+            // Main classes for test compilation may be (a) loose .class files under
+            // mist-cli/target/classes (repo/IDE/Maven run), OR (b) bundled in the shaded
+            // jar already on the runtime classpath (running `java -jar mist.jar` from an
+            // arbitrary per-SUT cwd, e.g. evaluation/suts/<sut>/.runtime/). Only fall back
+            // to Maven when the main classes are available in NEITHER place — otherwise the
+            // in-process/external javac path (whose classpath includes java.class.path = the
+            // shaded jar) can compile the generated tests directly, without a project pom.
+            boolean mainClassesOnClasspath =
+                MistRunner.class.getResource("/io/mist/core/testcase/MultiServiceTestCase.class") != null;
+            boolean mainClassesOnDisk = mainClassesDir.exists()
+                && new File(mainClassesDir, "io/mist/core/testcase/MultiServiceTestCase.class").exists();
+            if (!mainClassesOnClasspath && !mainClassesOnDisk) {
+                logger.info("Main classes not found in target/classes or on the runtime classpath. Using Maven to compile both main and test classes...");
                 return fallbackMavenCompilation();
             }
 
@@ -2071,15 +2071,9 @@ public final class MistRunner {
             String javaVersion = System.getProperty("java.version");
             logger.info("Using Java version: {} for compilation", javaVersion);
 
-            // Get Java compiler (this uses the JDK that's running, which should be Java 11 in IntelliJ)
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            if (compiler == null) {
-                logger.error("Java compiler not available. Make sure you're running with JDK (not JRE)");
-                logger.error("Current Java home: {}", System.getProperty("java.home"));
-                return fallbackMavenCompilation();
-            }
-
-            // Build classpath including all dependencies
+            // Build classpath including all dependencies. java.class.path = the shaded
+            // jar carries io.mist.* + junit/rest-assured/allure/json, so this is complete
+            // even from a per-SUT cwd with no target/dependency.
             String classpath = buildCompilationClasspath(mainClassesDir);
             logger.debug("Compilation classpath: {}", classpath);
 
@@ -2098,20 +2092,36 @@ public final class MistRunner {
                 .map(File::getAbsolutePath)
                 .collect(Collectors.toList());
 
-            // Combine options and file names
-            List<String> compilerArgs = new ArrayList<>();
-            compilerArgs.addAll(options);
-            compilerArgs.addAll(fileNames);
-
-            // 🔧 FIX: Capture compiler output to detect compilation errors
-            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-            PrintStream errorPrintStream = new PrintStream(errorStream);
-
-            // Run compilation with error capture
-            int result = compiler.run(null, errorPrintStream, errorPrintStream, compilerArgs.toArray(new String[0]));
+            // Prefer the in-process compiler (JDK launch). When the running JVM is a JRE,
+            // ToolProvider.getSystemJavaCompiler() returns null — fall back to an external
+            // `javac` (located via -Dmist.javac / JAVA_HOME / standard JDK roots / PATH)
+            // using the SAME options, instead of Maven (which needs a pom at the cwd and
+            // fails from a per-SUT .runtime/ dir).
+            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+            int result;
+            String errorOutput;
+            if (compiler != null) {
+                List<String> compilerArgs = new ArrayList<>();
+                compilerArgs.addAll(options);
+                compilerArgs.addAll(fileNames);
+                ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+                PrintStream errorPrintStream = new PrintStream(errorStream);
+                result = compiler.run(null, errorPrintStream, errorPrintStream, compilerArgs.toArray(new String[0]));
+                errorOutput = errorStream.toString();
+            } else {
+                String javacPath = locateJavac();
+                if (javacPath == null) {
+                    logger.error("No in-process Java compiler (running on a JRE) and no external javac found.");
+                    logger.error("Set -Dmist.javac=/path/to/javac or JAVA_HOME to a JDK. Current java.home: {}", System.getProperty("java.home"));
+                    return fallbackMavenCompilation();
+                }
+                logger.info("In-process compiler unavailable (JRE); compiling generated tests with external javac: {}", javacPath);
+                StringBuilder extErr = new StringBuilder();
+                result = compileWithExternalJavac(javacPath, options, fileNames, extErr);
+                errorOutput = extErr.toString();
+            }
 
             // Check for any error output even if result is 0
-            String errorOutput = errorStream.toString();
             if (!errorOutput.isEmpty()) {
                 logger.warn("Compilation output:\n{}", errorOutput);
             }
@@ -2163,6 +2173,80 @@ public final class MistRunner {
         } catch (Exception e) {
             logger.warn("Fast compilation failed: {} - falling back to Maven", e.getMessage());
             return fallbackMavenCompilation();
+        }
+    }
+
+    /**
+     * Locate a usable external {@code javac} for the case where the running JVM is a
+     * JRE (so {@link ToolProvider#getSystemJavaCompiler()} is null). Search order:
+     * {@code -Dmist.javac} override, {@code $JAVA_HOME/bin/javac}, the running JVM's
+     * {@code java.home}, standard JDK install roots ({@code /usr/lib/jvm}, {@code /opt}),
+     * then {@code javac} on {@code PATH}. Returns null if none is runnable.
+     */
+    private String locateJavac() {
+        java.util.List<String> candidates = new ArrayList<>();
+        String override = System.getProperty("mist.javac");
+        if (override != null && !override.isBlank()) candidates.add(override);
+        String javaHome = System.getenv("JAVA_HOME");
+        if (javaHome != null && !javaHome.isBlank())
+            candidates.add(javaHome + File.separator + "bin" + File.separator + "javac");
+        String jvmHome = System.getProperty("java.home");
+        if (jvmHome != null && !jvmHome.isBlank())
+            candidates.add(jvmHome + File.separator + "bin" + File.separator + "javac");
+        for (String c : candidates) {
+            File f = new File(c);
+            if (f.isFile() && f.canExecute()) return f.getAbsolutePath();
+        }
+        // Standard JDK install roots (no user-specific hardcoding; a no-op when absent).
+        for (String rootPath : new String[] { "/usr/lib/jvm", "/opt" }) {
+            File[] kids = new File(rootPath).listFiles();
+            if (kids == null) continue;
+            for (File k : kids) {
+                File jc = new File(k, "bin" + File.separator + "javac");
+                if (jc.isFile() && jc.canExecute()) return jc.getAbsolutePath();
+            }
+        }
+        // `javac` on PATH, if it runs.
+        try {
+            Process p = new ProcessBuilder("javac", "-version").redirectErrorStream(true).start();
+            if (p.waitFor() == 0) return "javac";
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (Exception ignored) {
+            // not on PATH
+        }
+        return null;
+    }
+
+    /**
+     * Compile the generated test sources with an external {@code javac} process, using
+     * the same options as the in-process path. Args are passed directly to
+     * {@link ProcessBuilder} (no shell), so paths with separators need no quoting. Returns
+     * the process exit code (0 = success); appends javac output to {@code errOut}.
+     */
+    private int compileWithExternalJavac(String javacPath, List<String> options,
+                                         List<String> fileNames, StringBuilder errOut) {
+        try {
+            List<String> cmd = new ArrayList<>();
+            cmd.add(javacPath);
+            cmd.addAll(options);
+            cmd.addAll(fileNames);
+            ProcessBuilder pb = new ProcessBuilder(cmd);
+            pb.redirectErrorStream(true);
+            Process p = pb.start();
+            try (java.io.BufferedReader r = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(p.getInputStream()))) {
+                String line;
+                while ((line = r.readLine()) != null) errOut.append(line).append('\n');
+            }
+            return p.waitFor();
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            errOut.append("external javac interrupted");
+            return 1;
+        } catch (Exception e) {
+            errOut.append("external javac invocation failed: ").append(e.getMessage());
+            return 1;
         }
     }
 
@@ -2288,6 +2372,19 @@ public final class MistRunner {
         try {
             long startTime = System.currentTimeMillis();
             String baseDir = System.getProperty("user.dir");
+
+            // The Maven fallback shells out to `mvn` in the cwd. From a per-SUT dir
+            // (e.g. .runtime/) there is no pom.xml, so `mvn` would exit non-zero with a
+            // cryptic message. Detect that up front and emit an actionable error instead
+            // — the in-process/external javac path (see compileTestClasses) is the right
+            // route there; this fallback is only for project-rooted runs.
+            if (!new File(baseDir, "pom.xml").exists()) {
+                logger.error("❌ Maven fallback cannot run: no pom.xml in the working directory ({}).", baseDir);
+                logger.error("   Running `java -jar mist.jar` from a per-SUT dir uses the in-process/external javac "
+                    + "compiler instead — ensure a JDK is reachable (set -Dmist.javac=/path/to/javac or JAVA_HOME), "
+                    + "or run MIST from the repo root where a pom.xml exists.");
+                return false;
+            }
 
             // Use Maven with optimized settings for speed
             // IMPORTANT: Use "compile test-compile" to ensure main classes are compiled first
