@@ -276,13 +276,19 @@ public class MultiServiceRESTAssuredWriter {
                 pw.println();
 
                 if (allureReport) {
-                    pw.println("    // Jaeger configuration");
-                    pw.println("    private static final boolean JAEGER_ENABLED = Boolean.parseBoolean(System.getProperty(\"jaeger.enabled\", \"true\"));");
-                    pw.println("    // ⚠️ CRITICAL: Use /traces/{id} endpoint to fetch COMPLETE trace with all spans");
-                    pw.println("    // /traces endpoint returns list with summaries (limited spans)");
-                    pw.println("    // /traces/{id} endpoint returns COMPLETE trace tree with all spans");
-                    pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"http://129.62.148.112:30005/jaeger/ui/api\");");
-                    pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"10m\");");
+                    // Emit the SUT's OWN configured Jaeger settings (read at generation
+                    // time from System properties, which MstConfig populates) as the
+                    // generated-test defaults — instead of a hardcoded train-ticket cluster
+                    // IP. The property still overrides at runtime; this only fixes the
+                    // fallback so a generated test isn't pinned to a dead TT cluster.
+                    String __jaegerBaseDefault = System.getProperty("jaeger.base.url", "http://localhost:16686");
+                    String __jaegerEnabledDefault = System.getProperty("jaeger.enabled", "false");
+                    String __jaegerLookbackDefault = System.getProperty("jaeger.lookback", "10m");
+                    pw.println("    // Jaeger configuration (defaults captured from this run's config)");
+                    pw.println("    private static final boolean JAEGER_ENABLED = Boolean.parseBoolean(System.getProperty(\"jaeger.enabled\", \"" + __jaegerEnabledDefault + "\"));");
+                    pw.println("    // /traces/{id} returns the COMPLETE trace tree with all spans");
+                    pw.println("    private static final String JAEGER_BASE_URL = System.getProperty(\"jaeger.base.url\", \"" + escape(__jaegerBaseDefault) + "\");");
+                    pw.println("    private static final String JAEGER_LOOKBACK = System.getProperty(\"jaeger.lookback\", \"" + escape(__jaegerLookbackDefault) + "\");");
                     pw.println();
                     pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId, String testMethodName, String targetService, String targetParam) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");

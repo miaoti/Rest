@@ -75,35 +75,65 @@ public class OpenAPIEndpointDiscovery {
                     return;
                 }
                 
-                // Extract service name from x-service-name extension
-                JsonNode serviceNameNode = operationNode.get("x-service-name");
-                if (serviceNameNode != null && serviceNameNode.isTextual()) {
-                    String serviceName = serviceNameNode.asText();
-                    
+                // Derive the service name: x-service-name extension first, then
+                // OpenAPI tags (an off-the-shelf swagger groups by tags, not by the
+                // train-ticket-specific x-service-name extension).
+                String serviceName = deriveServiceName(operationNode);
+                if (serviceName != null && !serviceName.isEmpty()) {
                     // Extract operation details
                     String operationId = getTextValue(operationNode, "operationId");
                     String summary = getTextValue(operationNode, "summary");
                     String description = getTextValue(operationNode, "description");
-                    
+
                     // Create endpoint info
                     EndpointInfo endpoint = new EndpointInfo(
-                        path, 
-                        method.toUpperCase(), 
-                        serviceName, 
-                        operationId, 
-                        summary, 
+                        path,
+                        method.toUpperCase(),
+                        serviceName,
+                        operationId,
+                        summary,
                         description
                     );
-                    
+
                     // Add to service mapping
                     serviceEndpoints.computeIfAbsent(serviceName, k -> new ArrayList<>()).add(endpoint);
-                    
+
                     log.debug("Found endpoint: {} {} for service {}", method.toUpperCase(), path, serviceName);
                 }
             });
         });
     }
     
+    /**
+     * Derive a service name for an operation: the {@code x-service-name} extension
+     * first, then OpenAPI {@code tags} (preferring a tag ending in "service", else
+     * the first tag). Returns null when neither is present. Previously only
+     * {@code x-service-name} was honored, so an off-the-shelf swagger that groups by
+     * tags (e.g. Bookinfo: product/review/rating, no x-service-name) registered ZERO
+     * services and smart-fetch had no candidate list to ground LLM discovery against
+     * (it then hallucinated train-ticket service names). This mirrors the conf
+     * generator's {@code determineServiceName} cascade.
+     */
+    private String deriveServiceName(JsonNode operationNode) {
+        JsonNode ext = operationNode.get("x-service-name");
+        if (ext != null && ext.isTextual() && !ext.asText().trim().isEmpty()) {
+            return ext.asText().trim();
+        }
+        JsonNode tags = operationNode.get("tags");
+        if (tags != null && tags.isArray() && tags.size() > 0) {
+            String first = null;
+            for (JsonNode t : tags) {
+                if (t == null || !t.isTextual()) continue;
+                String tag = t.asText().trim();
+                if (tag.isEmpty()) continue;
+                if (first == null) first = tag;
+                if (tag.toLowerCase().endsWith("service")) return tag;
+            }
+            if (first != null) return first;
+        }
+        return null;
+    }
+
     /**
      * Check if the given string is an HTTP method
      */

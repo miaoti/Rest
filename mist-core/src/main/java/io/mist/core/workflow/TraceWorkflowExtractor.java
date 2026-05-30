@@ -83,12 +83,22 @@ public class TraceWorkflowExtractor {
                 }
             }
         } else {
-            // Single file processing
+            // Single file processing. A non-trace JSON dropped in as trace.file.path
+            // (a MANIFEST.json, a config, or a Jaeger *search* export) must NOT abort
+            // the whole run — skip it with a clear message, mirroring the directory
+            // branch's per-file resilience above.
             File singleFile = new File(fileOrDirPath);
             String fileName = singleFile.getName();
-            String fileNameWithoutExt = fileName.lastIndexOf('.') != -1 ? 
+            String fileNameWithoutExt = fileName.lastIndexOf('.') != -1 ?
                 fileName.substring(0, fileName.lastIndexOf('.')) : fileName;
-            allScenarios = extractScenariosFromFile(fileOrDirPath, fileNameWithoutExt);
+            try {
+                allScenarios = extractScenariosFromFile(fileOrDirPath, fileNameWithoutExt);
+            } catch (Exception e) {
+                log.error("Trace file '{}' is not a recognized Jaeger/OTel trace ({}); skipping. "
+                        + "Point trace.file.path at a directory of trace files or a valid trace JSON.",
+                        fileName, e.getMessage());
+                allScenarios = new ArrayList<>();
+            }
         }
         
         return allScenarios;

@@ -689,14 +689,49 @@ public final class MistRunner {
     }
 
     /**
+     * Pick a USABLE base URL from the OpenAPI servers: the first http(s) server URL
+     * that is not a license/doc URL. Train-ticket's spec lists the Apache-license URL
+     * as servers[0], so a naive servers.get(0) yields a junk base. Returns null when
+     * none is usable.
+     */
+    private String pickUsableServerBaseUrl() {
+        try {
+            if (spec == null || spec.getSpecification() == null) return null;
+            java.util.List<io.swagger.v3.oas.models.servers.Server> servers =
+                    spec.getSpecification().getServers();
+            if (servers == null) return null;
+            for (io.swagger.v3.oas.models.servers.Server s : servers) {
+                String url = (s == null) ? null : s.getUrl();
+                if (url == null || url.trim().isEmpty()) continue;
+                if (!url.startsWith("http://") && !url.startsWith("https://")) continue; // need a host
+                String lower = url.toLowerCase();
+                if (lower.contains("/licenses/") || lower.matches(".*\\.(html?|json|ya?ml|xml|txt|pdf)$")) continue;
+                return url;
+            }
+        } catch (Exception e) {
+            // fall through to null
+        }
+        return null;
+    }
+
+    /**
      * Lifted MST branch from the dropped {@code TestGenerationAndExecution.createWriter()}.
      */
     private MultiServiceRESTAssuredWriter createMstWriter() {
         // Get base URL from properties or default
         String baseUrl = readParameterValue("base.url");
         if (baseUrl == null) {
-            // Fallback to spec if no base.url property is set
-            baseUrl = spec.getSpecification().getServers().get(0).getUrl();
+            // Fallback to a USABLE spec server URL. NOT just servers[0]: train-ticket's
+            // spec carries the Apache-license URL as its first server, which would become
+            // a junk base. Skip non-http(s) / license / doc URLs; if none is usable,
+            // fail fast with an actionable message rather than POSTing to a wrong host.
+            baseUrl = pickUsableServerBaseUrl();
+            if (baseUrl == null) {
+                throw new IllegalStateException(
+                    "No 'base.url' set and the OpenAPI spec has no usable http(s) server URL. "
+                    + "Set base.url=http(s)://host:port in the SUT's properties.");
+            }
+            logger.warn("base.url not set; using OpenAPI server URL: {}", baseUrl);
         }
 
         // Multi‑service mode: hand off to the specialized writer
@@ -3003,12 +3038,11 @@ public final class MistRunner {
                     System.getProperty("mst.preflight.timeout.ms", "5000"));
 
             String baseUrl = readParameterValue("base.url");
-            if (baseUrl == null && spec != null && spec.getSpecification() != null
-                    && !spec.getSpecification().getServers().isEmpty()) {
-                baseUrl = spec.getSpecification().getServers().get(0).getUrl();
+            if (baseUrl == null) {
+                baseUrl = pickUsableServerBaseUrl(); // skip license/non-http servers
             }
             if (baseUrl == null || baseUrl.isEmpty()) {
-                logger.warn("SUT preflight skipped: no base.url and no OpenAPI server URL");
+                logger.warn("SUT preflight skipped: no base.url and no usable OpenAPI server URL");
                 return;
             }
             String base = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;

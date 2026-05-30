@@ -62,7 +62,7 @@ public class MicroserviceTestConfigurationGenerator {
             opsByService.computeIfAbsent(serviceName, k -> new ArrayList<>());
 
             OperationConfig opConfig = new OperationConfig();
-            opConfig.setTestPath(apiOp.getPath());
+            opConfig.setTestPath(applyBasePath(apiOp.getPath()));
             opConfig.setMethod(apiOp.getMethod().toLowerCase());
             String opId = apiOp.getOperationId();
             if (opId == null || opId.isEmpty()) {
@@ -242,6 +242,60 @@ public class MicroserviceTestConfigurationGenerator {
 
         // 4. Fallback.
         return "DefaultService";
+    }
+
+    /**
+     * Prepend the spec's server base path (swagger 2.0 {@code basePath}, or an
+     * OpenAPI 3.0 {@code servers[].url} path component) to an operation path, so the
+     * generated {@code testPath} matches the URL a client/trace actually uses.
+     * Without this, a SUT whose swagger declares a base path (e.g. Bookinfo
+     * {@code basePath: /api/v1}, paths {@code /products}) produced testPaths like
+     * {@code /products} that never matched the {@code /api/v1/products} in its traces
+     * (the per-SUT "conf basePath" hand-fix). Idempotent (never double-prefixes); a
+     * SUT whose paths already embed the base path (e.g. train-ticket) is unchanged.
+     */
+    private String applyBasePath(String path) {
+        if (path == null) return null;
+        String base = serverBasePath();
+        if (base.isEmpty() || path.equals(base) || path.startsWith(base + "/")) {
+            return path;
+        }
+        return base + path;
+    }
+
+    /**
+     * The usable server base path, or "" when the spec has none. A relative server
+     * URL ({@code /api/v1}) IS the base path; an absolute URL contributes its path
+     * component. Junk/doc server URLs (e.g. train-ticket's Apache-license URL,
+     * whose path ends in {@code .html}) are skipped so they are never mistaken for a
+     * base path.
+     */
+    private String serverBasePath() {
+        try {
+            java.util.List<io.swagger.v3.oas.models.servers.Server> servers =
+                    openApiSpec.getSpecification().getServers();
+            if (servers == null) return "";
+            for (io.swagger.v3.oas.models.servers.Server s : servers) {
+                String url = (s == null) ? null : s.getUrl();
+                if (url == null || url.trim().isEmpty()) continue;
+                String p;
+                if (url.startsWith("/")) {
+                    p = url;                              // relative server URL == base path
+                } else {
+                    try { p = new URL(url).getPath(); }   // absolute: take the path component
+                    catch (Exception e) { continue; }
+                }
+                if (p == null) continue;
+                p = p.replaceAll("/+$", "");              // strip trailing slash(es)
+                if (p.isEmpty() || !p.startsWith("/")) continue;
+                String last = p.substring(p.lastIndexOf('/') + 1).toLowerCase();
+                if (last.matches(".*\\.(html?|json|ya?ml|xml|txt|pdf)$")) continue; // license/doc URL
+                return p;
+            }
+        } catch (Exception e) {
+            // no usable base path
+        }
+        return "";
     }
 
     /**

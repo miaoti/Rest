@@ -75,7 +75,7 @@ public class SmartInputFetchConfig {
         this.enabled = false;
         this.smartFetchPercentage = 0.3;
         this.registryPath = "input-fetch-registry.yaml";
-        this.openApiSpecPath = "src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml";
+        this.openApiSpecPath = ""; // no SUT-specific default; fromProperties falls back to oas.path
         this.llmDiscoveryEnabled = true;
         this.llmEndpointSelectionEnabled = true;
         this.maxCandidates = 5;
@@ -116,8 +116,11 @@ public class SmartInputFetchConfig {
         config.registryPath = properties.getOrDefault(
             "smart.input.fetch.registry.path", "input-fetch-registry.yaml");
         
+        // Default to the SUT's own OpenAPI spec (oas.path) rather than a hardcoded
+        // train-ticket spec, so smart-fetch grounds against the SUT actually under test.
         config.openApiSpecPath = properties.getOrDefault(
-            "smart.input.fetch.openapi.spec.path", "src/main/resources/My-Example/trainticket/merged_openapi_spec 1.yaml");
+            "smart.input.fetch.openapi.spec.path",
+            properties.getOrDefault("oas.path", ""));
         
         config.llmDiscoveryEnabled = Boolean.parseBoolean(
             properties.getOrDefault("smart.input.fetch.llm.discovery.enabled", "true"));
