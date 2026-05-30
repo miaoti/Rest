@@ -9,10 +9,12 @@ import io.mist.core.oracle.shape.invariant.TargetAttributionInvariant;
 import io.mist.core.oracle.shape.invariant.TimingEnvelopeInvariant;
 
 /**
- * Top-level entry point for runtime evaluation. Loads the four invariant
- * kinds for a given root API from the {@link ShapeInvariantStore} and runs
- * them against a {@link TraceModel}. The aggregate verdict's {@code passed}
- * flag is true iff every ERROR-severity invariant outcome is true.
+ * Top-level entry point for runtime evaluation. Runs the enabled invariant
+ * kinds for a given root API — the four learned structural invariants loaded
+ * from the {@link ShapeInvariantStore} plus the two evaluation-only invariants
+ * (target-attribution, hidden-downstream-failure) — against a {@link TraceModel}.
+ * The aggregate verdict's {@code passed} flag is true iff every ERROR-severity
+ * invariant outcome is true.
  *
  * <p>Each invariant is gated by a flag carried on the
  * {@link MstConfig.Oracle} record passed to the constructor. When the

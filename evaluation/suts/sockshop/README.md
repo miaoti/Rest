@@ -18,7 +18,7 @@ code edits and NO hand-fixed config**, after the train-ticket assumptions were c
   through the shared Istio ingress gateway. `deploy.sh teardown` removes it.
 - `workload/capture-traces.sh` — drive the catalogue endpoints through the ingress (W3C
   `traceparent` markers) and pull the traces.
-- `openapi/sockshop-swagger.yaml` — the SUT's OpenAPI (11 GET ops, 4 services by **tags**).
+- `openapi/sockshop-swagger.yaml` — the SUT's OpenAPI (26 ops incl. 12 writes, 4 services by **tags**).
 - `real-system-conf.yaml` — generated from the swagger via `io.mist.cli.MistConfGenMain` with
   NO hand-editing (basePath auto-applied — a no-op here since the API is at root).
 - `sockshop-demo.properties` + `sockshop-mst.properties` — minimal MIST profiles.

@@ -10,14 +10,22 @@
 > `restest.jar` / `TestGenerationAndExecution` main class was retired
 > during the 1.6 RESTest sever; `mist.jar` is now the only supported
 > entry point. The flowchart below describes the steps inside
-> `MistRunner`.
+> `MistRunner`. Before generation, `MistRunner.bootstrapTraceShapeOracle()`
+> loads/learns the trace-shape invariants; the writer emits a per-step oracle
+> evaluation into each generated `Flow_Scenario_*.java`.
+
+> **SUT scope.** This doc uses TrainTicket for illustration, but MIST is
+> multi-SUT (`evaluation/suts/bookinfo`, `evaluation/suts/sockshop`).
+> TrainTicket-specific paths (`/api/v1/ts-*`), the TT noun-map, and the TT seed
+> traces below are **examples**, not hardcoded universal behaviour — per-SUT
+> service patterns, OpenAPI tags, and `*.properties` drive non-TT runs.
 
 ```mermaid
 flowchart TD
     A[Start MIST: java -jar mist.jar] --> B[Read properties]
     B --> C{generator equals MST}
     C -->|always — non-MST generators retired in B1 sever| Z[unreachable]
-    C -->|Yes always for MistMain| D[Init fault detection and load injected faults]
+    C -->|Yes always for MistMain| D[Init fault detection: load injected faults OR initializeWithNoFaults if none configured]
     D --> E[Load OpenAPI spec]
     E --> F[Load multi service YAML to serviceConfigs]
     F --> G[Build serviceSpecs map]
@@ -58,13 +66,23 @@ flowchart TD
     R --> S{experiment execute}
     S -->|true| T[Execute generated tests]
     T --> T1[Clean test classes and setup Allure]
-    T1 --> T2[Compile tests then fallback maven]
+    T1 --> T2[Compile tests: in-process JavaCompiler, else external javac via -Dmist.javac/JAVA_HOME/PATH]
     T2 --> T3[Add target/test-classes to classpath]
     T3 --> T4[Load classes and attach Allure]
-    T4 --> T5[Run; log results]
-    T5 --> U{allure report}
+    T4 --> T5[Run tests]
+    T5 --> TSO["Per step: fetch live Jaeger trace → TraceShapeOracle.evaluate (6 invariants) → attach 'Trace Shape Oracle Verdict'"]
+    TSO --> TSOd{ERROR-severity violation?}
+    TSOd -->|positive variant| FAILP[AssertionError: positive variant fails on oracle violation]
+    TSOd -->|hidden-downstream: swallowed 5xx behind 2xx| HD["Attach 🕳️ HIDDEN DOWNSTREAM FAILURE + label mist.anomaly"]
+    TSOd -->|negative + RESPONSE_ENVELOPE soft-error| PASSN[Flip negative FAIL → PASS]
+    TSOd -->|none| LOGR[Log results]
+    FAILP --> U
+    HD --> U
+    PASSN --> U
+    LOGR --> U
+    U{allure report}
     U -->|true| V[Generate Allure report]
-    T5 --> W[Generate fault detection report]
+    TSOd --> W[Generate fault detection report]
     S -->|false| X[Skip execution]
     V --> Y[Generate stats report]
     W --> Y
@@ -848,6 +866,17 @@ flowchart TD
 | 2 | LLM-discovered mappings (new this session, then saved) | LLM selects service → infers endpoint → GET → LLM extracts |
 | — | Fallback | `fallbackToLLM()` (pure generation, no HTTP call) |
 
+> **Per-SUT, not built-in.** `InputFetchRegistry.initializeDefaults()` ships only
+> generic prompt templates — it no longer hardcodes train-ticket `ts-*` service
+> patterns (those leaked into LLM discovery for unrelated SUTs, so the model once
+> "discovered" `ts-travel-service` for non-TT params). Each SUT supplies its own
+> service patterns via its `input-fetch-registry.yaml`, loaded by
+> `InputFetchRegistry.toRegistry()`. Service-name grounding
+> (`OpenAPIEndpointDiscovery.deriveServiceName`) resolves `x-service-name` →
+> OpenAPI `tags` (a tag ending in "service" preferred), so off-the-shelf specs
+> that group by tags (Bookinfo, Sock Shop) register correctly. The TrainTicket
+> framing in this section is illustrative.
+
 **Key Design Decisions:**
 - **JSONPath is fully retired**: `fetchFromApiMapping` always calls `extractValueDirectlyFromResponse` regardless of `ApiMapping.extractPath`. The legacy `extractValueFromResponse` (JSONPath) method has zero call sites and is dead code.
 - **Trace endpoints are session-scoped**: Trace-observed `ApiMapping` objects are never added to `registry.addMapping()` and are never persisted to YAML. Only LLM-discovered mappings are saved.
@@ -873,8 +902,8 @@ flowchart LR
     J --> K[Return text]
 ```
 
-**Backends**:
-- **OLLAMA** — local Ollama daemon (default for TrainTicket: `qwen2.5-coder:14b` at `http://localhost:11434`).
+**Backends** (the **code default is `OPENAI_COMPATIBLE`** — `LLMConfig`; `trainticket-demo.properties` itself sets no `llm.model.type`, so even TT-demo inherits `openai_compatible`, and the SP1/DeepSeek runs use it):
+- **OLLAMA** — local Ollama daemon (its own default model is `gemma3:4b` at `http://localhost:11434`); used only when `llm.model.type=ollama` is set explicitly.
 - **GEMINI** — Google Gemini REST API.
 - **OPENAI_COMPATIBLE** — any provider speaking OpenAI's `/v1/chat/completions` shape. Covers hosted APIs (DeepSeek — the default test target — plus OpenAI, OpenRouter, Together, Groq, Mistral, ...) and self-hosted OpenAI shims (`gpt4all`, `llama.cpp --api`). When `llm.openai_compatible.api.key` is non-empty, `LLMService.generateWithOpenAICompatible` adds an `Authorization: Bearer <key>` header; when empty it sends an unauthenticated request. The deprecated `llm.local.*` property keys are still accepted as aliases — the new name reflects that this backend is not "local" in the typical case.
 
@@ -1103,7 +1132,8 @@ samples respect the configured seed.
 - faulty.round-robin: true (default) = one param per test cycling, false = 1-3 random params per test
 
 **Trace Shape Oracle (Path B Phase 2):**
-- `mist.tso.enabled`: master switch (default `true`); when off, the oracle does not evaluate or attach verdicts
+- `mst.oracle.shape.enabled`: master switch (default `true`); when off, `TraceShapeOracle.evaluate(...)` short-circuits to an empty (passing) verdict — no invariant runs
+- per-invariant gates (`mst.oracle.shape.invariants.<name>.enabled`): `span_tree`=`true`, `status_propagation`=`true`, `response_envelope`=`true`, `timing`=**`false`**, `target_attribution`=`true`, `hidden_downstream_failure`=**`false`** (opt-in)
 - `mist.tso.store.path`: persistent invariant store path (default `.mist/trace-shape-invariants.json`)
 
 **Adaptive Fault Taxonomy (Path B Phase 3):**
@@ -1121,9 +1151,13 @@ samples respect the configured seed.
 - smart.input.fetch.cache.enabled / ttl: cache values and TTL
 
 **LLM Configuration:**
-- llm.enabled: enables LLM; llm.model.type: gemini / openai_compatible / ollama (legacy `local` accepted as deprecated alias for openai_compatible)
+- llm.enabled: enables LLM; llm.model.type: gemini / openai_compatible / ollama (legacy `local` accepted as deprecated alias for openai_compatible). **Code default: `openai_compatible`** (`LLMConfig`)
 - llm.gemini.*, llm.openai_compatible.* (legacy llm.local.*), llm.ollama.*: backend-specific
 - llm.rate.limit.retry.enabled / max.retries: retry policy
+
+**Authentication (`MstAuthHandler`):**
+- `auth.mode`: default **`none`** — no login is attempted and every generated request skips auth (the SUT-agnostic default; unknown values fail-open to `none`). Modes: `none` (default) / `static_token` / `per_test` / `per_jvm`. TrainTicket opts in explicitly with `auth.mode=per_jvm`; Bookinfo / Sock Shop leave it unset (→ `none`)
+- `auth.login.url` / `auth.login.username` / `auth.login.password` / `auth.token.header` / `auth.token.prefix` / `auth.login.body.template`: only consulted when `auth.mode != none`
 
 **LLM Response Validation (Soft Error Detection):**
 - llm.response.validation.enabled: enables LLM-powered validation of 2XX responses (default: true)
@@ -1132,13 +1166,13 @@ samples respect the configured seed.
 
 **Jaeger Trace Fetching:**
 - jaeger.enabled: enables Jaeger trace fetching for error analysis
-- jaeger.base.url: Jaeger API endpoint for fetching traces
+- jaeger.base.url: Jaeger API endpoint for fetching traces (default `http://localhost:16686`)
 - jaeger.lookback: lookback period for trace queries (e.g., "10m", "1h")
 
 **Root API Registry & Fault Detection:**
 - root.api.registry.path: enables Root API registry population from scenarios for architectural observation and JSON export; it does **not** itself filter redundant scenarios during generation
 - fault.detection.enabled: enables fault detection tracking
-- fault.detection.injected.faults.path: path to injected faults JSON registry
+- fault.detection.injected.faults.path: path to injected faults JSON registry. **When unset**, `FaultDetectionTracker.initializeWithNoFaults()` runs (`MistRunner` ~296) and the report still generates (executed-test list + ORACLE ANOMALIES) with 0 named faults — required so non-TrainTicket SUTs (Bookinfo / Sock Shop) produce a report
 - fault.detection.report.dir: directory where fault detection reports are saved
 
 **Session-Based Heuristic Trace Merging (Phase 2):**
@@ -1568,6 +1602,8 @@ mist-core/src/main/java/io/mist/core/oracle/shape/
     StatusPropagationInvariant.java
     TimingEnvelopeInvariant.java
     ResponseEnvelopeInvariant.java
+    TargetAttributionInvariant.java          # intent-conditioned, no learned state
+    HiddenDownstreamFailureInvariant.java    # label-free, no learned state
 ```
 
 The TSO lives entirely in `io.mist.core.oracle.shape.*`; the
@@ -1603,12 +1639,16 @@ flowchart LR
 |------|---------|
 | `mist-cli/src/main/resources/My-Example/trainticket/test-trace/*.json` | TrainTicket seed-trace corpus (the same JSON/JSONL files the workflow extractor consumes) |
 | `mist-core/src/main/resources/mist/seed-trace-labels.json` | Maps each trace file basename to either `"known-good"` (default) or `"known-bad"`; unknown files default to `known-good`. Edit this file to exclude a trace cluster from invariant learning. |
-| `MstConfig.instance().traceShapeOracle().*()` *(planned)* | Wires `mist.tso.enabled` and `mist.tso.store.path` into the runner |
+| `MstConfig.instance().oracle().*()` | Wires `mst.oracle.shape.enabled` (+ the per-invariant gates) and `mist.tso.store.path` into the runner |
 
 The learner reads labels, walks the seed corpus, groups traces by their root
 API key (HTTP method + path of the outermost span), and for each `known-good`
-trace cluster runs all four invariant kinds' `learn(traces)` step. The result
-is persisted via `ShapeInvariantStore.persist(...)` into a single JSON file.
+trace cluster runs the **four learned (structural) invariants'** `learn(traces)`
+step. The result is persisted via `ShapeInvariantStore.persist(...)` into a
+single JSON file. The two label-free / intent-conditioned invariants
+(`TargetAttribution`, `HiddenDownstreamFailure`) carry **no learned state** — they
+are constructed fresh and evaluated per trace at test time, so they need no seed
+corpus.
 
 ### Invariant Taxonomy
 
@@ -1619,18 +1659,57 @@ flowchart TB
     INV --> SP[StatusPropagationInvariant<br/>per root API:<br/>http.status_code at each level,<br/>otel.status_code distribution]
     INV --> TE[TimingEnvelopeInvariant<br/>per root API:<br/>p50/p95/p99 total duration,<br/>per-span p50/p95]
     INV --> RE[ResponseEnvelopeInvariant<br/>per root API:<br/>confirmed-success + confirmed-failure<br/>primary-field values<br/>SUBSUMES the deleted SoftErrorRuleCache]
+    INV --> TA[TargetAttributionInvariant<br/>intent-conditioned, label-free:<br/>did the trace's leaf rejection land on<br/>the attacked targetService/targetParam?]
+    INV --> HD[HiddenDownstreamFailureInvariant<br/>label-free:<br/>2xx at entry but a downstream span<br/>http&gt;=500 / otel=ERROR was swallowed]
 ```
 
 | Kind | What it learns | What it flags | Default severity |
 |------|----------------|---------------|------------------|
 | `SpanTreeShapeInvariant` | Set of `(parent.service, child.service)` edges that appear in ≥ K% of known-good traces, plus per-level fan-out distribution | Unexpected service edges; missing edges that the learned set required; fan-out outliers | `ERROR` |
 | `StatusPropagationInvariant` | Per-level distribution of `http.status_code` and `otel.status_code` across known-good traces | Spans whose status code falls outside the learned distribution at their position in the tree | `ERROR` |
-| `TimingEnvelopeInvariant` | Per-root-API total-duration percentiles (p50, p95, p99) and per-span percentiles | Traces whose total duration exceeds the learned p99, or any individual span exceeding its p99 by ≥ 2× | `WARNING` (noisy by nature) |
+| `TimingEnvelopeInvariant` | Per-root-API total-duration percentiles (p50, p95, p99) and per-span percentiles | Traces whose total duration exceeds the learned p99, or any individual span exceeding its p99 by ≥ 2× | `WARN` (noisy by nature; default-off) |
 | `ResponseEnvelopeInvariant` | Per-root-API confirmed-success and confirmed-failure value sets for the primary response-envelope field (e.g. `status`) | 2xx responses whose primary-field value is in the failure set (soft errors); unknown values trigger an LLM classification call that grows the set | `ERROR` |
+| `TargetAttributionInvariant` *(no learned state; intent-conditioned)* | Nothing — reads the negative test's intent (`targetService`, `targetParam`) | Trace's leaf rejection landed on the **wrong** param (`WRONG_PARAM_REJECTION`) or an **upstream** service (`UPSTREAM_REJECTION`); `TARGET_REJECTION` / `NO_ATTRIBUTION` pass | `INFO` (advisory) |
+| `HiddenDownstreamFailureInvariant` *(no learned state; label-free)* | Nothing — pure structural check | Entry span is `2xx` but some downstream span server-errored (`http>=500` ⇒ swallowed `ERROR`; `otel=ERROR`-only ⇒ `WARN`) | `ERROR` / `WARN` |
 
-The Trace Shape Oracle's overall verdict is `passed = AND of all invariant
-outcomes`; individual outcomes carry their own `severity` so the runner can
-treat `WARNING`-only violations as non-blocking.
+The Trace Shape Oracle's overall verdict is `passed = AND of all ERROR-severity
+invariant outcomes`; each outcome carries its own `severity` (`ERROR` / `WARN` /
+`INFO`) so the runner treats `WARN`/`INFO`-only violations as non-blocking.
+
+### Hidden Downstream Failure Invariant (the item-#1 novel contribution)
+
+`HiddenDownstreamFailureInvariant` (`ShapeInvariant<Void>` — no learned state)
+detects a **swallowed** downstream failure: the client receives a clean `2xx`,
+so the only evidence of the failure is a span *off* the response path. This is
+invisible to a status-code oracle, to a schema oracle, **and** to MIST's own LLM
+soft-error check (the response body looks fine).
+
+**Algorithm** (`HiddenDownstreamFailureInvariant.evaluate`):
+1. Identify the client-facing **entry** span by `rootApiKey` (fallback: all
+   parentless spans — precision degrades on partial Jaeger views).
+2. If the entry span itself server-errored, the failure is **LOUD** → pass (a
+   status oracle already catches it).
+3. If the entry is `2xx` **and any other span** server-errored, that failure was
+   **swallowed** → flag it.
+
+**Server error** is defined as `http.status_code >= 500` **OR**
+`otel.status_code = ERROR` — deliberately *not* `>= 400`, because a downstream
+`4xx` is usually benign control-flow, not a fault.
+
+**Severity (confidence split).** A swallowed span with `http >= 500` is a real
+failure → `ERROR` (fails the verdict, and fails a positive variant). A span with
+only `otel = ERROR` and no HTTP 5xx is lower-confidence → `WARN` (surfaced,
+non-blocking).
+
+**Default OFF — opt-in.** `mst.oracle.shape.invariants.hidden_downstream_failure.enabled`
+defaults to `false`; it is enabled in `evaluation/suts/bookinfo/bookinfo-mst.properties`,
+`evaluation/suts/sockshop/sockshop-mst.properties`, and
+`mist-cli/src/main/resources/My-Example/hidden-downstream-mst.properties`.
+
+**Allure surfacing.** When it fires, the writer emits a dedicated attachment
+`🕳️ HIDDEN DOWNSTREAM FAILURE — swallowed 5xx behind a 2xx` and tags the test with
+`Allure.label("mist.anomaly", "HIDDEN_DOWNSTREAM_FAILURE")`, so the anomaly is
+filterable in the report rather than buried in the verdict JSON.
 
 ### Verdict Shape
 
@@ -1646,10 +1725,11 @@ flowchart LR
 The verdict POJO `TraceShapeVerdict` carries:
 - `rootApiKey: String` — the `METHOD path` key the oracle was asked about.
 - `passed: boolean` — overall AND across all `ERROR`-severity outcomes.
-- `outcomes: List<InvariantOutcome>` — one entry per invariant kind, each with
-  `kind` (`SPAN_TREE_SHAPE`, `STATUS_PROPAGATION`, `TIMING_ENVELOPE`,
-  `RESPONSE_ENVELOPE`), `passed`, `severity` (`ERROR`/`WARNING`), and `detail`
-  (human-readable explanation of the violation).
+- `outcomes: List<InvariantOutcome>` — one entry per active invariant kind, each
+  with `kind` (`SPAN_TREE_SHAPE`, `STATUS_PROPAGATION`, `TIMING_ENVELOPE`,
+  `RESPONSE_ENVELOPE`, `TARGET_ATTRIBUTION`, `HIDDEN_DOWNSTREAM_FAILURE`),
+  `passed`, `severity` (`ERROR` / `WARN` / `INFO`), and `detail` (human-readable
+  explanation of the violation).
 
 ### Persistent State
 
@@ -1665,28 +1745,40 @@ also handles a one-shot migration from the deleted soft-error cache's legacy
 
 The Trace Shape Oracle is invoked from the generated test code (emitted by
 `MultiServiceRESTAssuredWriter`) immediately after each step's Jaeger trace
-fetch. The writer emits roughly:
+fetch. The `evaluate(...)` call is **intent-conditioned** — it passes the
+attacked `targetService` / `targetParam` so `TargetAttributionInvariant` can
+judge *where* a rejection landed. The writer emits roughly:
 
 ```java
-TraceShapeVerdict verdict = oracle.evaluate(model, rootApiKey);
+TraceShapeVerdict verdict = oracle.evaluate(model, rootApiKey, targetService, targetParam);
 LAST_VERDICT.set(verdict);
-// Build verdict JSON
 Allure.addAttachment("Trace Shape Oracle Verdict", "application/json", verdictJson);
-if (!verdict.isPassed()) {
-    for (InvariantOutcome o : verdict.getOutcomes()) {
-        if (!o.passed && o.severity == Severity.ERROR) {
-            Allure.step("❌ shape violation: " + o.kind + " " + o.detail);
-        }
+for (InvariantOutcome o : verdict.getOutcomes()) {
+    if (!o.passed && o.severity == Severity.ERROR) {
+        Allure.step("❌ shape violation: " + o.kind + " " + o.detail);
+    }
+    if ("HIDDEN_DOWNSTREAM_FAILURE".equals(o.kind) && !o.passed) {
+        Allure.addAttachment("🕳️ HIDDEN DOWNSTREAM FAILURE — swallowed 5xx behind a 2xx", "text/plain", hd);
+        Allure.label("mist.anomaly", "HIDDEN_DOWNSTREAM_FAILURE");
     }
 }
 ```
 
+Two pass/fail flips ride on the stored `LAST_VERDICT`:
+- **Positive variant fails on violation.** A positive (non-faulty) variant throws
+  `AssertionError("Positive variant failed — Trace Shape Oracle verdict has
+  violation(s)…")` when any `ERROR`-severity outcome failed
+  (`MultiServiceRESTAssuredWriter` ~2295). This is what makes the Bookinfo
+  hidden-downstream case turn red.
+- **Negative variant passes on soft-error.** A negative variant flips its
+  expected-failure check to **PASS** when `ResponseEnvelopeInvariant` reports a
+  `RESPONSE_ENVELOPE` violation (~2462) — the modern replacement for the deleted
+  `SoftErrorRuleCache`.
+
 The actual emission lives in
-`mist-cli/src/main/java/io/mist/cli/writer/MultiServiceRESTAssuredWriter.java`
-at the `Allure.addAttachment("Trace Shape Oracle Verdict", ...)` call site
-(currently around line 633). Verdicts are independently consumable from the
-existing soft-error pass/fail flow described in the validation matrix
-elsewhere in this document.
+`mist-cli/src/main/java/io/mist/cli/writer/MultiServiceRESTAssuredWriter.java`:
+the per-step `oracle.evaluate(...)` at ~688 and the
+`Allure.addAttachment("Trace Shape Oracle Verdict", ...)` at ~706.
 
 ### Relationship to the Legacy Soft-Error Cache
 
@@ -1704,15 +1796,17 @@ that `otel.status_code=ERROR` is never in the known-good distribution.
 | Class | Responsibility |
 |-------|----------------|
 | `io.mist.core.oracle.shape.TraceShapeLearner` | Static `learn(seedCorpusDir, labelsFile, store)`: walks the corpus, groups traces by root API, runs each invariant's `learn(...)` and persists the result. |
-| `io.mist.core.oracle.shape.TraceShapeOracle` | Stateful evaluator: `evaluate(traceModel, rootApiKey) → TraceShapeVerdict`. Composes outcomes from all four invariant kinds. |
+| `io.mist.core.oracle.shape.TraceShapeOracle` | Evaluator: `evaluate(traceModel, rootApiKey, targetService, targetParam) → TraceShapeVerdict`. Composes outcomes from all **six** invariant kinds (four learned + two evaluation-only). |
 | `io.mist.core.oracle.shape.ShapeInvariantStore` | File-backed JSON store at `.mist/trace-shape-invariants.json`; atomic-rename writes. |
 | `io.mist.core.oracle.shape.TraceShapeVerdict` | Verdict POJO with `outcomes`, `passed`, `rootApiKey`. |
-| `io.mist.core.oracle.shape.TraceModel` | Normalised in-memory representation of a Jaeger/OTel trace consumed by the four invariants — keeps the invariants decoupled from the wire format. |
+| `io.mist.core.oracle.shape.TraceModel` | Normalised in-memory representation of a Jaeger/OTel trace consumed by all six invariants — keeps the invariants decoupled from the wire format. |
 | `io.mist.core.oracle.shape.invariant.SpanTreeShapeInvariant` | Service-edge set + per-level fan-out distribution. |
 | `io.mist.core.oracle.shape.invariant.StatusPropagationInvariant` | Per-level HTTP / OTel status distribution. |
 | `io.mist.core.oracle.shape.invariant.TimingEnvelopeInvariant` | Per-span and total-duration percentile envelope. |
 | `io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant` | 2xx soft-error detection (subsumes the deleted cache). |
-| `MultiServiceRESTAssuredWriter` | Emits the per-step `oracle.evaluate(...)` call and the `Trace Shape Oracle Verdict` Allure attachment. |
+| `io.mist.core.oracle.shape.invariant.TargetAttributionInvariant` | Intent-conditioned (no learned state): classifies the trace's leaf rejection as TARGET / WRONG_PARAM / UPSTREAM / NO_ATTRIBUTION vs the attacked `targetService`/`targetParam`; severity `INFO`. |
+| `io.mist.core.oracle.shape.invariant.HiddenDownstreamFailureInvariant` | Label-free (no learned state): flags a downstream `http>=500`/`otel=ERROR` span swallowed behind a `2xx` entry; severity `ERROR` (5xx) or `WARN` (otel-only). |
+| `MultiServiceRESTAssuredWriter` | Emits the per-step `oracle.evaluate(...)` call, the `Trace Shape Oracle Verdict` Allure attachment, the `🕳️` hidden-downstream attachment, and the positive-fail / negative-flip wiring. |
 
 ---
 
@@ -1720,12 +1814,13 @@ that `otel.status_code=ERROR` is never in the known-good distribution.
 
 > **Path B note.** This section used to describe a standalone `SoftErrorRuleCache`
 > bolted onto the writer. Path B Phase 2 **deleted** that class and folded its
-> contract into one of the four invariants of the Trace Shape Oracle — the
+> contract into one of the six invariants of the Trace Shape Oracle — the
 > `ResponseEnvelopeInvariant` — which now lives in
 > `mist-core/src/main/java/io/mist/core/oracle/shape/invariant/ResponseEnvelopeInvariant.java`.
 > The "learn only from observation" pattern is preserved verbatim; only the
-> housing changed. The other three invariants (span tree shape, status
-> propagation, timing envelope) are described in the **Trace Shape Oracle**
+> housing changed. The other five invariants (span tree shape, status
+> propagation, timing envelope, target attribution, hidden-downstream failure)
+> are described in the **Trace Shape Oracle**
 > section above. This section keeps a focused write-up of the response-envelope
 > behaviour because it is the only invariant family that was visible to users
 > before Path B.
@@ -1901,7 +1996,7 @@ release.
 
 | Property | Default | Purpose |
 |----------|---------|---------|
-| `mist.tso.enabled` | `true` | Master switch for the Trace Shape Oracle; gates all four invariants including this one |
+| `mst.oracle.shape.enabled` | `true` | Master switch for the Trace Shape Oracle; gates all six invariants including this one |
 | `mist.tso.store.path` | `.mist/trace-shape-invariants.json` | File path for persisted invariant state |
 | `soft.error.cache.enabled` *(deprecated)* | `true` | Legacy alias; still honoured for one release |
 
@@ -1914,9 +2009,9 @@ the live Jaeger trace, via:
 Allure.addAttachment("Trace Shape Oracle Verdict", "application/json", verdictJson);
 ```
 
-(See line ~633 of `mist-cli/src/main/java/io/mist/cli/writer/MultiServiceRESTAssuredWriter.java`.)
+(See ~706 of `mist-cli/src/main/java/io/mist/cli/writer/MultiServiceRESTAssuredWriter.java`.)
 The `ResponseEnvelopeInvariant` outcome shows up as one entry inside that
-verdict's `outcomes[]` array, alongside the other three invariant kinds.
+verdict's `outcomes[]` array, alongside the other five invariant kinds.
 
 ### Classes Involved
 
@@ -1925,7 +2020,7 @@ verdict's `outcomes[]` array, alongside the other three invariant kinds.
 | `io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant` | The invariant itself: stores per-root-API confirmed-success / confirmed-failure value lists; `learn(traces)` seeds from the labelled corpus and `evaluate(trace)` returns the per-step verdict outcome |
 | `io.mist.core.oracle.shape.invariant.ResponseEnvelopeInvariant.Data` | The persisted record (replaces the deleted `SoftErrorRuleCache.FieldCheck`) — primary field name, confirmed-success values, confirmed-failure values, known patterns |
 | `io.mist.core.oracle.shape.ShapeInvariantStore` | File-backed JSON store under `.mist/trace-shape-invariants.json`; atomic rename via a `.tmp` sidecar so concurrent readers never see a partially-written state |
-| `io.mist.core.oracle.shape.TraceShapeOracle` | Orchestrator: composes this invariant with the other three kinds and produces a single `TraceShapeVerdict` per evaluated trace |
+| `io.mist.core.oracle.shape.TraceShapeOracle` | Orchestrator: composes this invariant with the other five kinds and produces a single `TraceShapeVerdict` per evaluated trace |
 | `ZeroShotLLMGenerator` | `validateResponseAndGenerateRule()` — enhanced prompt that reports only observed values; consumed by the invariant on miss |
 | `MultiServiceRESTAssuredWriter` | Generates test code that invokes `TraceShapeOracle.evaluate(...)` after the per-step trace fetch and attaches the verdict to Allure |
 
