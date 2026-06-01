@@ -146,6 +146,14 @@ public final class SharedPoolSupport {
         }
 
         if (verb == null || route == null) {
+            // Fallback: the rootApiKey itself encodes method + path (e.g. "POST__cart_checkout"
+            // -> POST /cart/checkout, "GET__" -> GET /). Istio/wildcard span operation names
+            // don't match HTTP_OPERATION_PATTERN and the trace may omit http.method/http.target,
+            // so without this the pool stays empty and no tests are produced for the root.
+            String[] mp = methodPathFromRootKey(rootApiKey);
+            if (mp != null) { verb = mp[0]; route = mp[1]; }
+        }
+        if (verb == null || route == null) {
             log.warn("Could not extract HTTP method/path for root API: {}", rootApiKey);
             return parameterPool;
         }
@@ -399,6 +407,15 @@ public final class SharedPoolSupport {
             }
         }
         if (verb == null || route == null) {
+            // Fallback: parse method + path from the rootApiKey (see the sibling above).
+            // Without this, Istio/wildcard SUTs (e.g. Online Boutique) produce an EMPTY
+            // faulty pool -> ZERO negative tests. A gRPC-internal root (no matching conf
+            // operation) still yields an empty pool via resolveOperation below, so this
+            // only enables faulty pools for real, resolvable HTTP endpoints.
+            String[] mp = methodPathFromRootKey(rootApiKey);
+            if (mp != null) { verb = mp[0]; route = mp[1]; }
+        }
+        if (verb == null || route == null) {
             log.warn("Cannot extract HTTP info for root key '{}'", rootApiKey);
             return faultyPool;
         }
@@ -467,5 +484,22 @@ public final class SharedPoolSupport {
         log.info("Faulty pool for '{}': {} params, {} total invalid values",
                 rootApiKey, faultyPool.size(), totalInvalidValues);
         return faultyPool;
+    }
+
+    /**
+     * Parse a "METHOD__path" root key (the registry/trace encoding where '_' stands in for
+     * '/') into {method, route}: "POST__cart_checkout" -> {"post","/cart/checkout"},
+     * "GET__" -> {"get","/"}. Used as a fallback when the span operation name is a wildcard
+     * (Istio) and the trace omits http.method/http.target, so faulty pools — and hence
+     * negative tests — still get generated for resolvable HTTP roots. Returns null if the
+     * key has no "__" separator.
+     */
+    static String[] methodPathFromRootKey(String rootApiKey) {
+        if (rootApiKey == null) return null;
+        int us = rootApiKey.indexOf("__");
+        if (us <= 0) return null;
+        String verb = rootApiKey.substring(0, us).toLowerCase();
+        String route = "/" + rootApiKey.substring(us + 2).replace("_", "/");
+        return new String[]{ verb, route };
     }
 }
