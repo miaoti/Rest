@@ -142,17 +142,54 @@ Gaps found in the codebase:
    surface and removes the need to hand-wave the WARN case.
 
 ## Status (2026-06-01)
-- **P0#1 end-of-run console summary — DONE.** `FaultDetectionTracker.summarizeAnomalies()` +
-  `AnomalySummary.render()` (mist-core) print a prominent stdout block grouped by kind × severity
-  with friendly labels (🕳️ hidden downstream / 🟡 soft error), a distinct-anomaly count line, and
-  pointers to the `.txt` + Allure; wired into `MistRunner.run()` before the return. Pure-additive
-  (no behaviour change). Verified: compiles, and a render smoke test prints the expected block
-  (and `✓ No oracle anomalies detected.` on a clean run).
-- **P0#2 exit code — deliberately held.** Tying exit≠0 to ERROR findings is the right CI default
-  (semgrep/Schemathesis model) but would change the process exit code and could break callers that
-  expect 0 (e.g. the TrainTicket detection scripts). Left as a one-line follow-up for an explicit
-  decision: `.exitCode(summary.errorCount > 0 ? 1 : 0)` + an opt-in `--fail-on=warn`.
+- **P0#1 end-of-run console summary — implemented, a BLOCKER found in review and FIXED.**
+  `FaultDetectionTracker.summarizeAnomalies()` + `AnomalySummary.render(reportDir, ascii)` (mist-core)
+  print a prominent stdout block grouped by kind × severity, **plus the top findings inline
+  (offending endpoint + the swallowed span)**, a distinct-vs-occurrences count line, a one-line
+  gating explainer (ERROR fails the test; WARN/INFO don't), and pointers to the `.txt` + Allure.
+  - **Blocker (caught by review, fixed):** the first cut printed via `System.out.println`, but
+    `MistRunner.run()` replaces `System.out` with a log4j `LoggerStream` at INFO and the console
+    appender is gated at WARN+ — so the summary was logged to the file but **never reached the
+    terminal** (my "smoke test" was a false positive: it called `render()` before the interception).
+    Fix: print via `ConsoleProgressBar.printRaw()` (raw `FileDescriptor.out`, UTF-8), the same
+    channel the startup banner uses to bypass the filter. ASCII fallback when stdout isn't UTF-8 or
+    `NO_COLOR` is set. Verified: `FaultDetectionTrackerSummaryTest` (4 tests) + mvn compile.
+- **P0#2 exit code — deliberately held** (reviewers agree it's the right default but flag the risk).
+  Tying exit≠0 to ERROR findings is the CI-standard model (semgrep/Schemathesis/ESLint) but changes
+  the process exit code and could break callers expecting 0 (the TrainTicket scripts). One-line
+  follow-up, gate it: `.exitCode(summary.errorCount > 0 ? 1 : 0)` behind `--fail-on=error|warn|never`
+  (default `error`).
 - P0#3 / P1 / P2 — not yet done.
+
+## Independent review & disposition (2026-06-01)
+Three adversarial reviewers (user-perspective, competitor-perspective, code-bug) — none had reviewed
+this before; the user asked. Per-finding disposition (grep-verified):
+- **[BLOCKER] Summary swallowed by the log4j WARN+ console filter — ACCEPT, FIXED.** Confirmed:
+  `MistRunner:237` setupConsoleInterception → `System.setOut(LoggerStream(INFO, mirrorToStream=false))`
+  (`LoggerStream:66-69`), console appender at WARN+. Fixed via `ConsoleProgressBar.printRaw` (raw FD).
+- **[MAJOR] Emoji mojibake under non-UTF-8 charset — ACCEPT, FIXED.** UTF-8 raw stream + ASCII fallback.
+- **[MAJOR] "Noticeable but not actionable" (no endpoint shown) — ACCEPT, FIXED.** `render` now inlines
+  the top findings' endpoint + swallowed-span detail (data already on `OracleAnomaly`).
+- **[MAJOR] WARN-keeps-test-green not communicated — ACCEPT, FIXED.** Added the gating explainer line.
+- **[MINOR] "N test cases executed" / "distinct" wording — ACCEPT, FIXED.** Reworded to
+  "M anomalies across N executed test cases" + "K unique findings, H occurrences".
+- **[code A/B] run-path coverage + same-JVM tracker — VERIFIED PASS** (no bug): the print is on the
+  single common return of `run()`; generated tests run in-process via `JUnitCore` sharing the
+  singleton (not forked), so the tracker is populated before the print.
+- **[code D/E/F] encapsulation / thread-safety / counts — PASS:** `byKind`/`findings` are fresh
+  snapshots; `summarizeAnomalies()` is `synchronized`; counts are distinct, TARGET_ATTRIBUTION excluded.
+- **[BLOCKER/competitor] no exit-code gating on findings (CI no-op) — ACCEPT, DEFER** = P0#2 above.
+- **[BLOCKER/competitor] confidence welded to surfacing (WARN = invisible) — ACCEPT, PARTIAL:** the
+  console summary now surfaces WARN regardless of test colour; full decoupling needs SARIF + exit code.
+- **[BLOCKER/competitor] no SARIF/JSON machine output — ACCEPT, DEFER (P2).** The fingerprint already
+  computed (`fingerprintViolation`) makes this ~80% done; emit SARIF 2.1.0 → GitHub Security tab + PR.
+- **[MAJOR/competitor] no PR/CI-native surfacing — ACCEPT, DEFER** (follows SARIF).
+- **[MAJOR/competitor] no cross-run baseline/suppression → alert fatigue — ACCEPT, DEFER.** Persist
+  the existing fingerprint set; classify new vs known; gate on new.
+- **[MODERATE/competitor] no severity-gating config — ACCEPT, DEFER** (pairs with P0#2).
+- **[competitor] FP/precision number on a real SUT with tolerated downstream errors — ACCEPT, OPEN:**
+  a study item for the paper before gating CI on the detector.
+- **[nits] %-format overflow, double blank line, unconditional Allure line — partial/won't-fix (cosmetic).**
 
 ## Bottom line
 Keeping WARN non-failing by default is well-supported (alert fatigue, symptom-vs-cause, uncertain

@@ -132,6 +132,23 @@ public final class ConsoleProgressBar {
     private static final PrintStream RAW_STDOUT =
             new PrintStream(new FileOutputStream(FileDescriptor.out), true);
 
+    /** UTF-8 raw stream — like {@link #RAW_STDOUT} but explicitly UTF-8 so emoji /
+     *  box glyphs don't mojibake under a non-UTF-8 default charset. */
+    private static final PrintStream RAW_STDOUT_UTF8 =
+            new PrintStream(new FileOutputStream(FileDescriptor.out), true,
+                            java.nio.charset.StandardCharsets.UTF_8);
+
+    /**
+     * Print a block directly to the terminal, bypassing the log4j {@code WARN+}
+     * console filter (so an end-of-run summary reaches a user who only reads
+     * stdout — a plain {@code System.out.println} is re-routed to the INFO logger
+     * and dropped by the console appender). UTF-8 encoded.
+     */
+    public static void printRaw(String s) {
+        RAW_STDOUT_UTF8.println(s);
+        RAW_STDOUT_UTF8.flush();
+    }
+
     private static final Deque<Frame> STACK = new ArrayDeque<>();
     private static final Map<Phase, Double> completedFraction = new EnumMap<>(Phase.class);
 

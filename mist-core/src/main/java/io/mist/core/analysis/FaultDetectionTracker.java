@@ -589,7 +589,8 @@ public class FaultDetectionTracker {
      */
     public synchronized AnomalySummary summarizeAnomalies() {
         Map<String, int[]> byKind = new java.util.TreeMap<>(); // kind -> {error, warn, info}
-        int error = 0, warn = 0, info = 0;
+        java.util.List<Finding> findings = new java.util.ArrayList<>();
+        int error = 0, warn = 0, info = 0, hits = 0;
         for (OracleAnomaly a : oracleAnomalies.values()) {
             String kind = (a.oracle == null || a.oracle.isEmpty()) ? "UNKNOWN" : a.oracle;
             String sev  = (a.severity == null || a.severity.isEmpty()) ? "INFO" : a.severity.toUpperCase();
@@ -597,43 +598,83 @@ public class FaultDetectionTracker {
             if ("ERROR".equals(sev))     { row[0]++; error++; }
             else if ("WARN".equals(sev)) { row[1]++; warn++; }
             else                         { row[2]++; info++; }
+            hits += a.hitCount;
+            findings.add(new Finding(kind, sev, a.endpointSig, a.violationDetail, a.hitCount, a.sampleTraceId));
         }
-        return new AnomalySummary(byKind, error, warn, info, allTestCases.size());
+        // ERROR first, then by recurrence — so the most actionable findings lead.
+        findings.sort((x, y) -> {
+            int r = Integer.compare(sevRank(x.severity), sevRank(y.severity));
+            return r != 0 ? r : Integer.compare(y.hits, x.hits);
+        });
+        return new AnomalySummary(byKind, error, warn, info, allTestCases.size(), hits, findings);
+    }
+
+    private static int sevRank(String s) { return "ERROR".equals(s) ? 0 : "WARN".equals(s) ? 1 : 2; }
+
+    /** One oracle finding, with the data a user needs to act (endpoint + swallowed span). */
+    public static final class Finding {
+        public final String kind, severity, endpoint, detail, traceId;
+        public final int hits;
+        Finding(String kind, String severity, String endpoint, String detail, int hits, String traceId) {
+            this.kind = kind; this.severity = severity; this.endpoint = endpoint;
+            this.detail = detail; this.hits = hits; this.traceId = traceId;
+        }
     }
 
     /**
-     * Immutable view of the anomaly counts for the end-of-run console summary,
-     * with {@link #render} formatting the prominent stdout block.
+     * View of the anomaly counts + top findings for the end-of-run console summary,
+     * with {@link #render} formatting the prominent stdout block. {@code byKind} and
+     * {@code findings} are fresh per call (snapshots, safe for the caller to read).
      */
     public static final class AnomalySummary {
         public final Map<String, int[]> byKind; // kind -> {errorCount, warnCount, infoCount}
-        public final int errorCount, warnCount, infoCount, testCaseCount;
+        public final int errorCount, warnCount, infoCount, testCaseCount, totalHits;
+        public final java.util.List<Finding> findings; // sorted: ERROR first, then by hits desc
 
-        AnomalySummary(Map<String, int[]> byKind, int e, int w, int i, int t) {
-            this.byKind = byKind; this.errorCount = e; this.warnCount = w; this.infoCount = i; this.testCaseCount = t;
+        AnomalySummary(Map<String, int[]> byKind, int e, int w, int i, int t, int hits,
+                       java.util.List<Finding> findings) {
+            this.byKind = byKind; this.errorCount = e; this.warnCount = w; this.infoCount = i;
+            this.testCaseCount = t; this.totalHits = hits; this.findings = findings;
         }
         public int total() { return errorCount + warnCount + infoCount; }
 
-        private static String label(String kind) {
+        private static String label(String kind, boolean ascii) {
             switch (kind) {
-                case "HIDDEN_DOWNSTREAM_FAILURE": return "🕳️  Hidden downstream failure  (a 2xx hid a swallowed downstream error)";
-                case "RESPONSE_ENVELOPE":         return "🟡  Soft error                 (a 2xx body that is actually an error)";
-                case "STATUS_PROPAGATION":        return "↕️  Status-propagation anomaly";
-                case "SPAN_TREE_SHAPE":           return "🌲  Span-tree shape anomaly";
-                case "TIMING_ENVELOPE":           return "⏱️  Timing-envelope anomaly";
-                default:                          return kind;
+                case "HIDDEN_DOWNSTREAM_FAILURE": return (ascii ? "[HIDDEN]   " : "🕳️  ") + "Hidden downstream failure  (a 2xx hid a swallowed downstream error)";
+                case "RESPONSE_ENVELOPE":         return (ascii ? "[SOFT-ERR] " : "🟡  ") + "Soft error  (a 2xx body that is actually an error)";
+                case "STATUS_PROPAGATION":        return (ascii ? "[STATUS]   " : "↕️  ") + "Status-propagation anomaly";
+                case "SPAN_TREE_SHAPE":           return (ascii ? "[SHAPE]    " : "🌲  ") + "Span-tree shape anomaly";
+                case "TIMING_ENVELOPE":           return (ascii ? "[TIMING]   " : "⏱️  ") + "Timing-envelope anomaly";
+                default:                          return (ascii ? "[" + kind + "] " : "") + kind;
             }
         }
+        private static String trunc(String s, int n) {
+            if (s == null) return "";
+            s = s.replace('\n', ' ').trim();
+            return s.length() <= n ? s : s.substring(0, Math.max(0, n - 3)) + "...";
+        }
 
-        /** Format the prominent end-of-run findings summary for stdout. */
-        public String render(String reportDir) {
+        /** Default (UTF-8/emoji) rendering. */
+        public String render(String reportDir) { return render(reportDir, false); }
+
+        /**
+         * Format the prominent end-of-run findings summary for stdout.
+         * @param ascii true → plain-ASCII (no emoji/box glyphs) for non-UTF-8 / NO_COLOR terminals.
+         */
+        public String render(String reportDir, boolean ascii) {
+            String bullet = ascii ? ">" : "▸";
+            String arrow  = ascii ? "->" : "→";
+            String sep    = ascii ? " | " : " · ";
+            String ok     = ascii ? "[OK]" : "✓";
             String bar = "==================================================================";
             StringBuilder sb = new StringBuilder("\n").append(bar).append("\n");
-            sb.append("  MIST findings — ").append(testCaseCount).append(" test case(s) executed\n");
             if (total() == 0) {
-                sb.append("  ✓ No oracle anomalies detected.\n").append(bar).append("\n");
+                sb.append("  MIST findings: ").append(ok).append(" no oracle anomalies across ")
+                  .append(testCaseCount).append(" executed test case(s)\n").append(bar).append("\n");
                 return sb.toString();
             }
+            sb.append("  MIST findings — ").append(total()).append(total() == 1 ? " anomaly" : " anomalies")
+              .append(" across ").append(testCaseCount).append(" executed test case(s)\n");
             sb.append("  ------------------------------------------------------------\n");
             for (Map.Entry<String, int[]> e : byKind.entrySet()) {
                 int[] r = e.getValue();
@@ -641,14 +682,35 @@ public class FaultDetectionTracker {
                 if (r[0] > 0) c.append("ERROR ").append(r[0]).append("  ");
                 if (r[1] > 0) c.append("WARN ").append(r[1]).append("  ");
                 if (r[2] > 0) c.append("INFO ").append(r[2]).append("  ");
-                sb.append("  ").append(String.format("%-16s", c.toString().trim()))
-                  .append(label(e.getKey())).append("\n");
+                sb.append("  ").append(String.format("%-15s", c.toString().trim())).append(" ")
+                  .append(label(e.getKey(), ascii)).append("\n");
+            }
+            // The actionable part: which endpoint, and what was swallowed.
+            int shown = Math.min(findings.size(), 5);
+            if (shown > 0) {
+                sb.append("  ------------------------------------------------------------\n");
+                for (int i = 0; i < shown; i++) {
+                    Finding f = findings.get(i);
+                    String tid = (f.traceId == null || f.traceId.isEmpty()) ? ""
+                            : ", trace " + (f.traceId.length() > 8 ? f.traceId.substring(0, 8) : f.traceId);
+                    sb.append("  ").append(bullet).append(" ").append(String.format("%-5s", f.severity))
+                      .append(" ").append(trunc(f.endpoint, 46)).append("  ").append(arrow).append("  ")
+                      .append(trunc(f.detail, 70)).append("   (").append(f.hits).append("x").append(tid).append(")\n");
+                }
+                if (findings.size() > shown) {
+                    sb.append("  ").append(bullet).append(" (+").append(findings.size() - shown)
+                      .append(" more — see the detail report)\n");
+                }
             }
             sb.append("  ------------------------------------------------------------\n");
-            sb.append("  ").append(errorCount).append(" ERROR  ·  ").append(warnCount)
-              .append(" WARN  ·  ").append(infoCount).append(" INFO   (distinct anomalies)\n");
-            sb.append("  ▸ detail: ").append(reportDir == null ? "logs/fault-detection-reports/" : reportDir).append("/\n");
-            sb.append("  ▸ Allure: allure serve target/allure-results\n");
+            sb.append("  ").append(errorCount).append(" ERROR").append(sep).append(warnCount)
+              .append(" WARN").append(sep).append(infoCount).append(" INFO")
+              .append("   (").append(total()).append(" unique findings, ").append(totalHits).append(" occurrences)\n");
+            // Relate findings to pass/fail so counts aren't misread as failed-test counts.
+            sb.append("  ERROR findings fail the test (red); WARN/INFO are reported but do NOT fail it.\n");
+            sb.append("  ").append(bullet).append(" detail: ")
+              .append(reportDir == null ? "logs/fault-detection-reports/" : reportDir).append("/\n");
+            sb.append("  ").append(bullet).append(" Allure: allure serve target/allure-results\n");
             sb.append(bar).append("\n");
             return sb.toString();
         }

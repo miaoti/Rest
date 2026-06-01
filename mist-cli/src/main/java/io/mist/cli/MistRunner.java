@@ -372,18 +372,28 @@ public final class MistRunner {
 
         Timer.stopCounting(Timer.TestStep.ALL);
 
-        // Discoverability (P0): print a prominent end-of-run findings summary to
-        // stdout so a hidden-downstream / soft-error finding is visible to a user
-        // who only reads the terminal. Without this the finding lives only in the
-        // Allure report or the .txt report, which most users never open. (Exit-code
-        // gating on findings is a deliberate follow-up — it would change the
-        // process exit code and could break callers that expect 0.)
+        // Discoverability (P0): print a prominent end-of-run findings summary so a
+        // hidden-downstream / soft-error finding is visible to a user who only reads
+        // the terminal. It MUST bypass the log4j console filter: run() replaced
+        // System.out with a LoggerStream at INFO (setupConsoleInterception), and the
+        // console appender is gated at WARN+, so a plain System.out.println would be
+        // swallowed. ConsoleProgressBar.printRaw writes to the raw FD (UTF-8), the
+        // same channel the startup banner uses. Falls back to ASCII when stdout is
+        // not UTF-8 or NO_COLOR is set. (Exit-code gating on findings is a deliberate
+        // follow-up — it would change the process exit code and could break callers
+        // that expect 0.)
         String anomalyReportDir = readParameterValue("fault.detection.report.dir");
         if (anomalyReportDir == null || anomalyReportDir.isEmpty()) {
             anomalyReportDir = "logs/fault-detection-reports";
         }
-        System.out.println(
-                FaultDetectionTracker.getInstance().summarizeAnomalies().render(anomalyReportDir));
+        String stdoutEnc = System.getProperty("stdout.encoding",
+                System.getProperty("file.encoding", ""));
+        boolean asciiOnly = System.getenv("NO_COLOR") != null
+                || !stdoutEnc.toUpperCase().contains("UTF");
+        String findingsSummary = FaultDetectionTracker.getInstance()
+                .summarizeAnomalies().render(anomalyReportDir, asciiOnly);
+        io.mist.core.util.ConsoleProgressBar.printRaw(findingsSummary); // terminal (bypass log4j WARN+ filter)
+        logger.info("Findings summary:\n{}", findingsSummary);          // also retained in the run log file
 
         return MistRunResult.builder()
                 .exitCode(0)
