@@ -73,7 +73,11 @@ public class SmartInputFetchConfig {
     public SmartInputFetchConfig() {
         // Default values
         this.enabled = false;
-        this.smartFetchPercentage = 0.3;
+        // Grounding-first default: 1.0 makes the percentage gate always attempt a smart
+        // fetch and fall back to the LLM only when it yields no usable value, so grounding
+        // works generically without per-SUT tuning. Lower it per SUT to re-introduce
+        // deliberate LLM diversity injection.
+        this.smartFetchPercentage = 1.0;
         this.registryPath = "input-fetch-registry.yaml";
         this.openApiSpecPath = ""; // no SUT-specific default; fromProperties falls back to oas.path
         this.llmDiscoveryEnabled = true;
@@ -111,7 +115,7 @@ public class SmartInputFetchConfig {
             properties.getOrDefault("smart.input.fetch.enabled", "false"));
         
         config.smartFetchPercentage = Double.parseDouble(
-            properties.getOrDefault("smart.input.fetch.percentage", "0.3"));
+            properties.getOrDefault("smart.input.fetch.percentage", "1.0"));
         
         config.registryPath = properties.getOrDefault(
             "smart.input.fetch.registry.path", "input-fetch-registry.yaml");

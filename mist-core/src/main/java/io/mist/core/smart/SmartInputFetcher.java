@@ -419,9 +419,19 @@ public class SmartInputFetcher {
             log.warn("No mappings for '{}' and discovery is disabled", paramName);
         }
 
-        // Try each mapping in order of score
+        // Rank by score. Grounding fix B: a generic param↔producer name-affinity prior breaks COLD-START
+        // ties (e.g. endStation -> stationservice, not a fresh high-priority trains discovery). It is applied
+        // ONLY when no candidate has earned SUT feedback yet (all successRate≈0); once any producer has a real
+        // successRate, calculateScore alone decides, so the prior can never override accumulated SUT truth.
+        // Keys are precomputed once (not re-evaluated per comparison).
+        final String affinityParam = parameterInfo.getName();
+        final boolean coldStart = mappings.stream().mapToDouble(ApiMapping::getSuccessRate).max().orElse(0.0) < 1e-9;
+        final java.util.Map<ApiMapping, Double> rankKey = new java.util.IdentityHashMap<>();
+        for (ApiMapping m : mappings) {
+            rankKey.put(m, rankingScore(m, affinityParam, coldStart));
+        }
         for (ApiMapping mapping : mappings.stream()
-                .sorted((a, b) -> Double.compare(b.calculateScore(), a.calculateScore()))
+                .sorted((a, b) -> Double.compare(rankKey.get(b), rankKey.get(a)))
                 .limit(config.getMaxCandidates())
                 .collect(Collectors.toList())) {
 
@@ -439,8 +449,13 @@ public class SmartInputFetcher {
                 if (value != null && !value.trim().isEmpty()) {
                     // Validate value before caching and returning
                     if (isValidValueForParameter(value, parameterInfo)) {
-                        // Update success rate and cache only valid values
-                        mapping.updateSuccessRate(true);
+                        // Grounding fix B (de-poison): do NOT raise successRate on a local format-check pass.
+                        // Format-validity is not producer-correctness — a train id passes the check but the SUT
+                        // rejects it 400 as a station, and rewarding it here cemented the wrong producer at
+                        // successRate≈0.99. successRate is therefore demote-only on this path (the failure
+                        // branches below still lower it); raising it on a real SUT 2xx is future work (fix A,
+                        // producer-keyed feedback — see debug/grounding/). Until then the cold-start name-affinity
+                        // prior carries producer selection. Here we only cache + return the format-valid value.
                         registryDirty = true;
                         resetMappingFailure(parameterInfo, mapping);
                         cacheValue(parameterInfo, value);
@@ -460,6 +475,37 @@ public class SmartInputFetcher {
                 log.debug("Failed to fetch from mapping {}: {}", mapping, e.getMessage());
                 mapping.updateSuccessRate(false);
                 registryDirty = true;
+            }
+        }
+
+        // Grounding fix E: a parameter that already had an existing (possibly poisoned) registry
+        // mapping never reached the discovery branch above — that only fires when the mapping list
+        // is EMPTY. So e.g. a station param whose only stored mapping is a bad route-lookup endpoint
+        // ({start}/{end} it cannot fill) would fall straight to the LLM and invent a fake station.
+        // If every existing mapping just failed, try discovery as a last resort so the real producer
+        // (e.g. /stations) can still be found and the value gets grounded to live SUT data.
+        if (!mappings.isEmpty() && config.isLlmDiscoveryEnabled()) {
+            log.info("All {} existing mappings failed for '{}'; attempting discovery fallback...",
+                    mappings.size(), paramName);
+            for (ApiMapping mapping : discoverApiMappings(parameterInfo).stream()
+                    .sorted((a, b) -> Double.compare(b.calculateScore(), a.calculateScore()))
+                    .limit(config.getMaxCandidates())
+                    .collect(Collectors.toList())) {
+                if (isMappingQuarantined(parameterInfo, mapping)) continue;
+                try {
+                    String value = fetchFromApiMapping(mapping, parameterInfo);
+                    if (value != null && !value.trim().isEmpty()
+                            && isValidValueForParameter(value, parameterInfo)) {
+                        mapping.updateSuccessRate(true);
+                        registryDirty = true;
+                        resetMappingFailure(parameterInfo, mapping);
+                        cacheValue(parameterInfo, value);
+                        log.info("Discovery-fallback grounded '{}' = {} via {}", paramName, value, mapping.getEndpoint());
+                        return value;
+                    }
+                } catch (Exception e) {
+                    log.debug("Discovery-fallback fetch failed for {}: {}", mapping, e.getMessage());
+                }
             }
         }
 
@@ -578,7 +624,15 @@ public class SmartInputFetcher {
                     continue;
                 }
                 // Bug audit Findings #4 + #22: whitelist + lowercase canonicalization.
-                String canonical = knownByLower.get(trimmed.toLowerCase(java.util.Locale.ROOT));
+                // Grounding fix C: accept stem/fuzzy matches too — LLMs emit descriptive names like
+                // "stationservice" that never exact-match terse known names like "ts-station-service".
+                // Still rejects genuinely-unknown services (the stem must overlap a real known one),
+                // so the cross-SUT-hallucination guard the whitelist was added for is preserved.
+                String low = trimmed.toLowerCase(java.util.Locale.ROOT);
+                String canonical = knownByLower.get(low);
+                if (canonical == null) {
+                    canonical = fuzzyMatchService(low, knownByLower);
+                }
                 if (canonical == null) {
                     log.warn("LLM suggested unknown service '{}' for parameter '{}'; dropping (whitelist enforcement)",
                             trimmed, parameterInfo.getName());
@@ -608,6 +662,85 @@ public class SmartInputFetcher {
         }
 
         return mappings;
+    }
+
+    /**
+     * Grounding fix C: match an LLM-suggested service name to a known one by stem
+     * (drop {@code ts-} prefix, {@code service/svc/srv} suffix, and hyphens), so
+     * {@code "stationservice"} matches {@code "ts-station-service"}. Returns the canonical
+     * known service name, or null if no real stem overlap (keeps the hallucination guard).
+     */
+    private static String fuzzyMatchService(String suggestedLower, java.util.Map<String, String> knownByLower) {
+        String sStem = stemService(suggestedLower);
+        if (sStem.length() < 3) return null;
+        for (java.util.Map.Entry<String, String> e : knownByLower.entrySet()) {
+            String kStem = stemService(e.getKey());
+            if (kStem.length() < 3) continue;
+            if (kStem.equals(sStem) || kStem.contains(sStem) || sStem.contains(kStem)) {
+                return e.getValue();
+            }
+        }
+        return null;
+    }
+
+    private static String stemService(String lower) {
+        return lower.replace("ts-", "").replace("-service", "").replace("service", "")
+                    .replace("svc", "").replace("srv", "").replace("-", "").trim();
+    }
+
+    /** Weight of the param↔producer name-affinity prior in cold-start producer ranking (grounding fix B). */
+    static final double NAME_AFFINITY_WEIGHT = 0.3;
+
+    /** Path/version noise tokens that must not count as a name match. */
+    private static final java.util.Set<String> AFFINITY_NOISE = java.util.Set.of("api", "www", "rest");
+
+    /**
+     * Producer-ranking key: base {@link ApiMapping#calculateScore()} plus, ONLY at cold-start (no candidate
+     * has earned SUT feedback), a generic name-affinity prior. Gating to cold-start guarantees the prior breaks
+     * ties but never overrides an accumulated successRate signal once execution feedback exists (fix A).
+     */
+    static double rankingScore(ApiMapping mapping, String paramName, boolean coldStart) {
+        double base = mapping.calculateScore();
+        return coldStart ? base + NAME_AFFINITY_WEIGHT * nameAffinity(paramName, mapping) : base;
+    }
+
+    /**
+     * Generic param↔producer name affinity in [0,1]: the fraction of the parameter's normalised name tokens
+     * that also appear (by token EQUALITY, not substring) in the candidate producer's service+endpoint tokens.
+     * Both sides are normalised identically (see {@link #normTokens}), so "endStation" -> {end, station} matches
+     * a "stationservice"/"stations" producer but not "trains" or "vendors". No SUT-specific hardcoding — the
+     * heuristic a human uses ("a station parameter is served by the station service"). Cold-start tie-breaker only.
+     */
+    static double nameAffinity(String paramName, ApiMapping mapping) {
+        if (paramName == null || mapping == null) return 0.0;
+        java.util.Set<String> paramTokens = normTokens(paramName);
+        if (paramTokens.isEmpty()) return 0.0;
+        String svc = mapping.getService() == null ? "" : mapping.getService();
+        String ep = mapping.getEndpoint() == null ? "" : mapping.getEndpoint();
+        java.util.Set<String> producerTokens = normTokens(svc + " " + ep);
+        int matched = 0;
+        for (String t : paramTokens) {
+            if (producerTokens.contains(t)) matched++;
+        }
+        return (double) matched / paramTokens.size();
+    }
+
+    /**
+     * Split a camelCase / snake / kebab / path string into normalised lowercase tokens: strip the
+     * {@code service}/{@code svc}/{@code srv} suffix and a trailing plural 's', drop path/version noise and
+     * tokens shorter than 3 chars. Applied symmetrically to the parameter name and the producer service+endpoint
+     * so equality matching works across "endStation"/"stationservice"/"stations" (grounding fix B).
+     */
+    static java.util.Set<String> normTokens(String s) {
+        java.util.Set<String> out = new java.util.LinkedHashSet<>();
+        if (s == null) return out;
+        String spaced = s.replaceAll("([a-z0-9])([A-Z])", "$1 $2").replaceAll("[^A-Za-z0-9]+", " ");
+        for (String part : spaced.trim().split("\\s+")) {
+            String low = part.toLowerCase().replace("service", "").replace("svc", "").replace("srv", "");
+            if (low.endsWith("s") && low.length() > 3) low = low.substring(0, low.length() - 1);
+            if (low.length() >= 3 && !AFFINITY_NOISE.contains(low)) out.add(low);
+        }
+        return out;
     }
 
     /**

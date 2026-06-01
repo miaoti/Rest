@@ -198,18 +198,27 @@ public final class SharedPoolSupport {
                 ParameterInfo info = StageSupport.createParameterInfoWithContext(p, apiName, service, allParamNames);
                 Set<String> uniqueValues = new LinkedHashSet<>();
 
-                // Phase 1: Smart Input Fetching
+                // Phase 1: Smart Input Fetching. Grounding fix B: track which values are
+                // GROUNDED (fetched live/cached from the SUT) vs LLM-invented, via provenance.
+                Set<String> groundedValues = new LinkedHashSet<>();
                 if (smartFetcher != null && smartFetchConfig != null && smartFetchConfig.isEnabled()) {
                     try {
                         for (int i = 0; i < targetPoolSize && uniqueValues.size() < targetPoolSize; i++) {
-                            String smartValue = smartFetcher.fetchSmartInput(info);
-                            if (smartValue != null && !smartValue.trim().isEmpty()) {
-                                uniqueValues.add(smartValue);
+                            java.util.Optional<io.mist.core.value.ResolvedValue> rv =
+                                    smartFetcher.fetchSmartInputWithProvenance(info);
+                            if (rv.isEmpty()) continue;
+                            String smartValue = rv.get().value();
+                            if (smartValue == null || smartValue.trim().isEmpty()) continue;
+                            uniqueValues.add(smartValue);
+                            io.mist.core.value.ValueProvenance prov = rv.get().provenance();
+                            if (prov == io.mist.core.value.ValueProvenance.RESOLVED_LIVE
+                                    || prov == io.mist.core.value.ValueProvenance.RESOLVED_CACHE) {
+                                groundedValues.add(smartValue);
                             }
                         }
                         if (!uniqueValues.isEmpty()) {
-                            log.info("Smart Fetch Pool → parameter '{}': {} unique smart values",
-                                    p.getName(), uniqueValues.size());
+                            log.info("Smart Fetch Pool → parameter '{}': {} unique values ({} grounded from SUT)",
+                                    p.getName(), uniqueValues.size(), groundedValues.size());
                         }
                     } catch (Exception e) {
                         log.debug("Smart fetching failed for shared pool parameter '{}': {}",
@@ -217,7 +226,21 @@ public final class SharedPoolSupport {
                     }
                 }
 
-                // Phase 2: LLM top-up with dynamic howMany
+                // Grounding fix B: if the SUT actually grounded this parameter (a producer
+                // endpoint exists and returned real values), make the pool GROUNDED-DOMINANT
+                // rather than diluting it with LLM-invented padding to reach targetPoolSize.
+                // Variants then draw real, SUT-accepted values. The LLM top-up below runs ONLY
+                // for parameters the SUT could not ground (no producer source) — that residual is
+                // the inherent value-generation problem, not a tool defect.
+                if (!groundedValues.isEmpty()) {
+                    parameterPool.put(p.getName(), new ArrayList<>(groundedValues));
+                    ConsoleProgressBar.update(p.getName());
+                    log.info("Generated GROUNDED shared pool for '{}' (in={}): {} live values",
+                            p.getName(), sharedNormalisedIn, groundedValues.size());
+                    continue;
+                }
+
+                // Phase 2: LLM top-up with dynamic howMany (only when grounding produced nothing).
                 if (uniqueValues.size() < targetPoolSize) {
                     int needed = targetPoolSize - uniqueValues.size();
                     log.info("Smart fetch provided {} values for '{}', requesting {} more from LLM",

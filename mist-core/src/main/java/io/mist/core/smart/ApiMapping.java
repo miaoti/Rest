@@ -110,7 +110,12 @@ public class ApiMapping {
     public double calculateScore() {
         double priorityScore = priority / 10.0;
         long daysSince = lastUsed != null ? ChronoUnit.DAYS.between(lastUsed, LocalDateTime.now()) : decayDays;
-        double recentnessScore = Math.max(0.0, 1.0 - (double) daysSince / decayDays);
+        // Grounding fix B: reward recent *successful use*, not recent *creation*. A mapping that has never
+        // succeeded against the SUT (successRate==0, e.g. a brand-new LLM-discovered producer) gets no
+        // recentness bonus, so a fresh wrong-producer guess cannot outrank a known producer on freshness alone.
+        double recentnessScore = successRate > 0.0
+                ? Math.max(0.0, 1.0 - (double) daysSince / decayDays)
+                : 0.0;
         return (0.5 * priorityScore) + (0.3 * successRate) + (0.2 * recentnessScore);
     }
     
