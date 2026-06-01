@@ -211,6 +211,20 @@ public class TestFileRegenerator {
         methodContent = methodContent.replaceAll(queryPattern,
                 Matcher.quoteReplacement("queryParams.put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")"));
 
+        // Pattern 7: two-phase per-field capture line — stepParams<N>.put("paramName", "oldValue").
+        // Emitted per body field for VERIFIED_VALID harvest; rewrite it so a rescued positive harvests the
+        // ENHANCED value, not the stale synthetic placeholder. The stepParams index (group 1) is preserved.
+        java.util.regex.Matcher __spMatcher = java.util.regex.Pattern.compile(
+                "stepParams(\\d*)\\.put\\(\"" + Pattern.quote(paramName) + "\",\\s*\"[^\"]*\"\\)")
+                .matcher(methodContent);
+        StringBuilder __spOut = new StringBuilder();
+        while (__spMatcher.find()) {
+            __spMatcher.appendReplacement(__spOut, Matcher.quoteReplacement(
+                    "stepParams" + __spMatcher.group(1) + ".put(\"" + paramName + "\", \"" + escapeJava(newValue) + "\")"));
+        }
+        __spMatcher.appendTail(__spOut);
+        methodContent = __spOut.toString();
+
         // Pattern 6: Allure parameter reporting
         String allurePattern = "Allure\\.parameter\\(\"🔴 Invalid Parameters\",\\s*\"" +
                 Pattern.quote(paramName) + "=[^\"]*\"\\)";

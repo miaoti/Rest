@@ -439,14 +439,15 @@ public final class MistRunner {
                 logger.info("═══════════════════════════════════════════════════════════════════════════");
                 executeWithEnhancement(actualPackageName, className, enhancerRounds, skip5xx, id);
             } else if (forceDisableEnhancer) {
-                // Fix A (two-phase Phase A): a single capture-enabled execution with 0 enhancer rounds — no
-                // negative-rescue retries (Phase A is positives-only and has nothing to enhance), but the loop
-                // still runs executeTestsWithCollector once, which enableCapture()s and then
-                // drainParameterObservationsToRegistry()s. This is what marks the positive values that returned
-                // 2xx as VERIFIED_VALID for Phase B's verified pool. Plain executeGeneratedTestsWithJUnit never
-                // enables capture, which left the verified pool permanently empty (see debug/grounding/).
-                logger.info("🔧 PHASE A: capture-only execution (0 enhancer rounds) to harvest VERIFIED_VALID");
-                executeWithEnhancement(actualPackageName, className, 0, skip5xx, id,
+                // Fix A (two-phase Phase A): capture-enabled execution WITH the enhancer's error-guided
+                // rescue. Phase A is positives-only; a positive whose param could not be grounded (synthetic
+                // placeholder, kept a positive in Phase-A rescue mode) 400s, the enhancer reads the SUT error
+                // message and regenerates a valid value → 2xx → recordParameterSuccess harvests it as
+                // VERIFIED_VALID. executeTestsWithCollector (inside the loop) enableCapture()s + drains.
+                // exploreStatusCodes=false keeps error-seeking status-code exploration out of the baseline.
+                int phaseARounds = Math.max(1, enhancerRounds);
+                logger.info("🔧 PHASE A: capture + enhancer-rescue ({} round(s)) to harvest VERIFIED_VALID", phaseARounds);
+                executeWithEnhancement(actualPackageName, className, phaseARounds, skip5xx, id,
                         /*exploreStatusCodes=*/false);
             } else {
                 executeGeneratedTestsWithJUnit(actualPackageName, className);
@@ -483,13 +484,16 @@ public final class MistRunner {
         try {
             // -------- Phase A: positive baseline --------
             String phaseAClassName = baseClassName + "_phaseA";
-            logger.info("🔀 PHASE A: positive baseline (faulty.ratio=0, no enhancer, class={})",
+            logger.info("🔀 PHASE A: positive baseline (faulty.ratio=0, enhancer-rescue on, class={})",
                     phaseAClassName);
             generator.setFaultyRatio(0.0f);
             writer.setClassName(phaseAClassName);
-            // forceDisableEnhancer=true: Phase A has no negatives for the
-            // enhancer to rescue. Passing as a parameter avoids the
-            // System.setProperty trap (MstConfig is a cached singleton).
+            // Phase-A rescue: keep synthetic-placeholder positives as rescue-target positives (expects
+            // 2xx) so the enhancer can rescue their 400 into a 2xx and harvest VERIFIED_VALID.
+            writer.setPhaseARescuePlaceholders(true);
+            // forceDisableEnhancer=true routes Phase A to the dedicated capture+enhancer-rescue executor
+            // (not the normal enhancer path); passing as a parameter avoids the System.setProperty trap
+            // (MstConfig is a cached singleton).
             runSinglePhasePipeline(generator, writer, phaseAClassName, id,
                     /*forceDisableEnhancer=*/true);
 
@@ -525,6 +529,8 @@ public final class MistRunner {
                     originalRatio, phaseBClassName);
             generator.setFaultyRatio(originalRatio);
             writer.setClassName(phaseBClassName);
+            // Phase B: restore normal placeholder→negative reclassification (false-positive avoidance).
+            writer.setPhaseARescuePlaceholders(false);
             return runSinglePhasePipeline(generator, writer, phaseBClassName, id);
         } finally {
             // Belt-and-braces: ensure faultyRatio is restored even if Phase B

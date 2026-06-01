@@ -1432,7 +1432,12 @@ public class MultiServiceRESTAssuredWriter {
                     // generator could not resolve every parameter falls back to synthetic
                     // placeholders (FALLBACK_/LLM_EMPTY/STEP1_/VAL_); the SUT will reject those,
                     // so the oracle expects an error response just as for Sniper-designed faults.
-                    boolean isNegativeTest = scenario.getFaulty() || mstc.hasSyntheticPlaceholder();
+                    // EXCEPTION — two-phase Phase-A rescue mode: keep such a positive a POSITIVE
+                    // (expects 2xx) so its 400 fails the positive assertion and the enhancer rescues it
+                    // from the SUT error message; the rescued 2xx then harvests VERIFIED_VALID. Genuine
+                    // faulty variants (scenario.getFaulty()) stay negative regardless.
+                    boolean isNegativeTest = scenario.getFaulty()
+                            || (mstc.hasSyntheticPlaceholder() && !phaseARescuePlaceholders);
                     pw.println();
                     
                     /* ------------ Allure Taxonomy: parentSuite / suite / subSuite + @DisplayName ---------- */
@@ -2013,7 +2018,19 @@ public class MultiServiceRESTAssuredWriter {
                             // Add body parameters if any
                             if (!requestBody.isEmpty()) {
                                 pw.println("                        allStepParameters.put(\"body\", \"" + escape(requestBody) + "\");");
-                                pw.println("                        stepParams" + stepIdx + ".put(\"body\", \"" + escape(requestBody) + "\");");
+                                // Two-phase VERIFIED_VALID fix: enrol body fields INDIVIDUALLY into stepParams
+                                // (paramName = field name, value = that field's value) so the per-step
+                                // recordParameterSuccess key matches the field-level pool key that
+                                // MistGenerator.preferVerifiedValues queries (e.g. "startStation"). Emitting the
+                                // whole serialized body under "body" never matched any field-level pool key, so
+                                // the verified pool was a no-op for body endpoints. The human-readable body blob
+                                // is still kept in allStepParameters above for the Allure trace attachment.
+                                if (step.getBodyFields() != null) {
+                                    for (java.util.Map.Entry<String, String> __bf : step.getBodyFields().entrySet()) {
+                                        pw.println("                        stepParams" + stepIdx + ".put(\""
+                                                + escape(__bf.getKey()) + "\", \"" + escape(__bf.getValue()) + "\");");
+                                    }
+                                }
                             }
                             
                             // ── W3C traceparent header (parallel-safe trace correlation) ──
@@ -2854,8 +2871,22 @@ public class MultiServiceRESTAssuredWriter {
         pw.println("                Allure.addAttachment(\"🔍 Dependency Analysis Report\", \"text/plain\", depAnalysis.toString());");
     }
 
+    /** Two-phase Phase-A rescue mode (see {@link #setPhaseARescuePlaceholders}). */
+    private boolean phaseARescuePlaceholders = false;
+
     public void setClassName(String className) {
         this.testClassName = className;
+    }
+
+    /**
+     * Two-phase Phase-A rescue mode: when true, a positive scenario whose generator could not ground
+     * every parameter (synthetic placeholder) is treated as a rescue-target POSITIVE (expects 2xx)
+     * instead of being reclassified as a negative. Its 400 then fails the positive assertion → the
+     * enhancer rescues it from the SUT's error message → the rescued 2xx harvests VERIFIED_VALID for
+     * the verified pool. Off (default) keeps the normal false-positive-avoidance reclassification.
+     */
+    public void setPhaseARescuePlaceholders(boolean v) {
+        this.phaseARescuePlaceholders = v;
     }
 
     public void setTestId(String testId) {

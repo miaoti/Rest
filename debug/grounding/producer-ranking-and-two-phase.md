@@ -73,6 +73,56 @@ re-pollutes the DB).
 yet lower the *producer* `ApiMapping.successRate`. Until A2, Fix B's name-affinity carries cold-start producer
 selection. Do A2 with the attribution leg.
 
+**V2 ROOT CAUSE (2026-06-01, isolated via a `recordParameterSuccess` diagnostic).** Two bugs were stacked:
+(1) the verified entries were keyed at body-blob granularity — FIXED by emitting `recordParameterSuccess` per body
+field in `MultiServiceRESTAssuredWriter.java` (~2014; confirmed: Phase A now calls it with `param='startStation'`
+etc., endpoint `POST <path>` matching the lookup). (2) But the payoff STILL doesn't engage for adminroute because
+**Phase A produces no clean 2xx positive to harvest**: the diagnostic showed all 166 Phase-A station-param calls were
+`status=400, neg=true`. Root: `MultiServiceRESTAssuredWriter.java:1435` `isNegativeTest = scenario.getFaulty() ||
+mstc.hasSyntheticPlaceholder()` — adminroute's `distanceList` has **no producer**, so it gets a synthetic placeholder,
+which (a) marks the WHOLE adminroute test `isNegativeTest=true` (gating `recordParameterSuccess` on `!isNegativeTest`)
+and (b) makes the request 400 (gating it on 2xx). So nothing is harvested → verified pool empty → no narrowing.
+**This is the grounding open problem, not a keying bug**: the keying fix is correct + necessary and WILL engage for any
+endpoint whose params all ground (clean 2xx Phase-A positive); adminroute is blocked solely because `distanceList`
+can't be grounded. Demonstrating live narrowing requires a fully-groundable endpoint. Original symptom below.
+
+**V2 RESOLVED (2026-06-01) — enhancer-rescue loop.** Rather than give up on ungroundable-param positives, Phase A now
+uses the enhancer's error-feedback to rescue them (the field-standard execution-feedback grounding of
+RESTler/DeepREST/AutoRestTest/LlamaRestTest). Four coupled changes:
+(1) **Writer per-field VERIFIED_VALID keying** (`MultiServiceRESTAssuredWriter.java` ~2014) — emit
+`recordParameterSuccess` per body field, not one blob under `"body"`, so the capture key matches the field-level pool
+key `preferVerifiedValues` queries.
+(2) **Phase-A rescue flag** (`MultiServiceRESTAssuredWriter.java`: `setPhaseARescuePlaceholders`; gates the
+`hasSyntheticPlaceholder()` reclassification at :1435) — in Phase A a placeholder positive stays a POSITIVE (expects
+2xx) instead of being reclassified negative, so its 400 fails the positive assertion (the enhancer's expected-vs-actual
+trigger) AND `recordParameterSuccess`'s `!isNegativeTest` gate (`TestResultCapture.java:357`) lets the rescued value be
+harvested.
+(3) **Enhancer ON for Phase A** (`MistRunner.java` runSinglePhasePipeline: my A1 `rounds=0` → `Math.max(1, enhancerRounds)`)
+— the enhancer reads the SUT's 400 error and regenerates a valid value → 2xx.
+(4) **Phase toggles** (`MistRunner.java` runTwoPhasePipeline) — set the rescue flag true before Phase A, false before Phase B.
+(5) **Regenerator Pattern 7** (`TestFileRegenerator.java`, reviewer fix) — the per-field `stepParams<N>.put` capture line
+is now rewritten on rescue too (preserving the step index), so a rescued param harvests the ENHANCED value, not the
+stale placeholder.
+**Verified live (scoped TT adminroute two-phase, all 5 changes):** `PHASE A: capture + enhancer-rescue (1 round)` → 34
+enhancer regenerations → INTER-PHASE → Phase B: **869 narrowing events**; `startStation`, `endStation`, `id`, `loginId`
+all narrowed to single SUT-2xx-verified values; **0 regenerated-test compile errors** (Pattern 7 safe). Reviewer verdict
+was commit-with-fixes → its only MAJOR (stale rescued-param harvest) is fixed by Pattern 7 and re-verified; the payoff is
+real and now reaches the station params. Credit: the maintainer's insight to use the enhancer's error-feedback as the
+grounding-completion path (field-standard: RESTler/DeepREST/AutoRestTest/LlamaRestTest).
+
+**V2 finding (2026-06-01) — the verified-pool PAYOFF does NOT engage for body-field params.** A1 makes the two-phase
+*flow* run (capture→drain→reload, confirmed). But a scoped TT two-phase run shows `preferVerifiedValues` narrows
+**0** params: Phase B pulled `startStation=9988776655` (a polluted value), `endStation`, `stationList` from the
+**raw** pool, not verified values. Root cause: `VERIFIED_VALID` is captured at **whole-body-blob** granularity
+(`{"id","name"}`, `{"startStation":...,"endStation":...}`), which never matches the **field-level** pool keys
+(`startStation`), so `MistGenerator.preferVerifiedValues(endpoint,"startStation")` returns empty and falls back to
+the raw pool. This is a pre-existing keying-granularity bug in `recordParameterSuccess`/`markVerified` vs the
+field-level Sniper pool — **not** an A1 regression (A1 only made the capture run, exposing it). Consequence:
+two-phase's "Phase B uses SUT-validated non-target values" benefit is currently a no-op for body endpoints
+(e.g. adminroute). Fixing needs field-level verified capture for body params — deeper, bundle with A2. (A temporary
+`Verified pool → … narrowed … ✅` log was added to `MistGenerator.preferVerifiedValues` as the diagnostic that
+surfaced this; uncommitted.)
+
 ### Original design notes
 Route Phase A through a capture-enabled executor (`executeTestsWithCollector` with `enhancerRounds=0`) so it
 `enableCapture()` + `drainParameterObservationsToRegistry()` → VERIFIED_VALID populates → Phase B `preferVerifiedValues`

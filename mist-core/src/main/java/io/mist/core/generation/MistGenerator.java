@@ -309,6 +309,12 @@ public class MistGenerator {
         java.util.Set<String> verifiedSet = new java.util.HashSet<>(verified);
         List<String> intersection = new ArrayList<>();
         for (String v : rawPool) if (verifiedSet.contains(v)) intersection.add(v);
+        if (!intersection.isEmpty()) {
+            // Observability + two-phase verification: this non-target param's pool was narrowed to
+            // values the SUT accepted (2xx) in Phase A, so Phase B draws only from SUT-verified inputs.
+            log.info("Verified pool → {} {} {}: narrowed {} pool value(s) to {} SUT-verified {} ✅",
+                    verb.toUpperCase(), route, paramName, rawPool.size(), intersection.size(), intersection);
+        }
         return intersection.isEmpty() ? rawPool : intersection;
     }
 
