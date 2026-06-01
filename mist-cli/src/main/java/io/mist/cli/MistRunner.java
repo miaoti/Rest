@@ -372,6 +372,19 @@ public final class MistRunner {
 
         Timer.stopCounting(Timer.TestStep.ALL);
 
+        // Discoverability (P0): print a prominent end-of-run findings summary to
+        // stdout so a hidden-downstream / soft-error finding is visible to a user
+        // who only reads the terminal. Without this the finding lives only in the
+        // Allure report or the .txt report, which most users never open. (Exit-code
+        // gating on findings is a deliberate follow-up — it would change the
+        // process exit code and could break callers that expect 0.)
+        String anomalyReportDir = readParameterValue("fault.detection.report.dir");
+        if (anomalyReportDir == null || anomalyReportDir.isEmpty()) {
+            anomalyReportDir = "logs/fault-detection-reports";
+        }
+        System.out.println(
+                FaultDetectionTracker.getInstance().summarizeAnomalies().render(anomalyReportDir));
+
         return MistRunResult.builder()
                 .exitCode(0)
                 .testCaseCount(testCases.size())

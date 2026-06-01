@@ -580,6 +580,81 @@ public class FaultDetectionTracker {
     }
 
     /**
+     * End-of-run console summary of oracle findings, grouped by kind × severity.
+     * Distinct anomalies (not raw hits) are counted, matching the report's
+     * "distinct" bucket. This drives the prominent stdout summary so a
+     * hidden-downstream / soft-error finding is visible to a user who only reads
+     * the terminal — without it the finding lives only in the Allure report or
+     * the .txt report, which most users never open.
+     */
+    public synchronized AnomalySummary summarizeAnomalies() {
+        Map<String, int[]> byKind = new java.util.TreeMap<>(); // kind -> {error, warn, info}
+        int error = 0, warn = 0, info = 0;
+        for (OracleAnomaly a : oracleAnomalies.values()) {
+            String kind = (a.oracle == null || a.oracle.isEmpty()) ? "UNKNOWN" : a.oracle;
+            String sev  = (a.severity == null || a.severity.isEmpty()) ? "INFO" : a.severity.toUpperCase();
+            int[] row = byKind.computeIfAbsent(kind, k -> new int[3]);
+            if ("ERROR".equals(sev))     { row[0]++; error++; }
+            else if ("WARN".equals(sev)) { row[1]++; warn++; }
+            else                         { row[2]++; info++; }
+        }
+        return new AnomalySummary(byKind, error, warn, info, allTestCases.size());
+    }
+
+    /**
+     * Immutable view of the anomaly counts for the end-of-run console summary,
+     * with {@link #render} formatting the prominent stdout block.
+     */
+    public static final class AnomalySummary {
+        public final Map<String, int[]> byKind; // kind -> {errorCount, warnCount, infoCount}
+        public final int errorCount, warnCount, infoCount, testCaseCount;
+
+        AnomalySummary(Map<String, int[]> byKind, int e, int w, int i, int t) {
+            this.byKind = byKind; this.errorCount = e; this.warnCount = w; this.infoCount = i; this.testCaseCount = t;
+        }
+        public int total() { return errorCount + warnCount + infoCount; }
+
+        private static String label(String kind) {
+            switch (kind) {
+                case "HIDDEN_DOWNSTREAM_FAILURE": return "🕳️  Hidden downstream failure  (a 2xx hid a swallowed downstream error)";
+                case "RESPONSE_ENVELOPE":         return "🟡  Soft error                 (a 2xx body that is actually an error)";
+                case "STATUS_PROPAGATION":        return "↕️  Status-propagation anomaly";
+                case "SPAN_TREE_SHAPE":           return "🌲  Span-tree shape anomaly";
+                case "TIMING_ENVELOPE":           return "⏱️  Timing-envelope anomaly";
+                default:                          return kind;
+            }
+        }
+
+        /** Format the prominent end-of-run findings summary for stdout. */
+        public String render(String reportDir) {
+            String bar = "==================================================================";
+            StringBuilder sb = new StringBuilder("\n").append(bar).append("\n");
+            sb.append("  MIST findings — ").append(testCaseCount).append(" test case(s) executed\n");
+            if (total() == 0) {
+                sb.append("  ✓ No oracle anomalies detected.\n").append(bar).append("\n");
+                return sb.toString();
+            }
+            sb.append("  ------------------------------------------------------------\n");
+            for (Map.Entry<String, int[]> e : byKind.entrySet()) {
+                int[] r = e.getValue();
+                StringBuilder c = new StringBuilder();
+                if (r[0] > 0) c.append("ERROR ").append(r[0]).append("  ");
+                if (r[1] > 0) c.append("WARN ").append(r[1]).append("  ");
+                if (r[2] > 0) c.append("INFO ").append(r[2]).append("  ");
+                sb.append("  ").append(String.format("%-16s", c.toString().trim()))
+                  .append(label(e.getKey())).append("\n");
+            }
+            sb.append("  ------------------------------------------------------------\n");
+            sb.append("  ").append(errorCount).append(" ERROR  ·  ").append(warnCount)
+              .append(" WARN  ·  ").append(infoCount).append(" INFO   (distinct anomalies)\n");
+            sb.append("  ▸ detail: ").append(reportDir == null ? "logs/fault-detection-reports/" : reportDir).append("/\n");
+            sb.append("  ▸ Allure: allure serve target/allure-results\n");
+            sb.append(bar).append("\n");
+            return sb.toString();
+        }
+    }
+
+    /**
      * Test-only: read-only view of oracle anomalies for assertions.
      */
     Map<String, OracleAnomaly> getOracleAnomaliesForTest() {
