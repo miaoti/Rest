@@ -139,6 +139,34 @@ public class TraceShapeOracleIntegrationTest {
         assertTrue(summary.contains("RESPONSE_ENVELOPE"));
     }
 
+    @Test
+    public void envelopeClassifierWiredThroughOracle_failsOnSoftError() throws IOException {
+        ShapeInvariantStore store = freshStore();
+        // No learned data needed: the wired classifier drives the verdict. ResponseEnvelope
+        // is enabled by default; a 2xx body whose status is classified a failure must fail.
+        Map<String, String> tags = new HashMap<>();
+        tags.put("http.method", "GET");
+        tags.put("http.target", "/api/v1/orders");
+        tags.put("http.response.body", "{\"status\":0,\"msg\":\"not found\",\"data\":null}");
+        TraceModel.Span root = new TraceModel.Span("r", null, "gateway", "GET /api/v1/orders", 200, "OK", 1500L, tags);
+        TraceModel soft = new TraceModel("soft", Collections.singletonList(root));
+
+        TraceShapeOracle oracle = new TraceShapeOracle(store)
+                .setEnvelopeClassifier((api, field, val, body) -> "0".equals(val) ? Boolean.TRUE : Boolean.FALSE);
+        TraceShapeVerdict verdict = oracle.evaluate(soft, "GET /api/v1/orders");
+
+        assertFalse("soft error must fail the oracle via the wired classifier: " + verdict.summary(),
+                verdict.isPassed());
+        boolean responseEnvelopeFailed = false;
+        for (TraceShapeVerdict.InvariantOutcome o : verdict.getOutcomes()) {
+            if ("RESPONSE_ENVELOPE".equals(o.kind) && !o.passed
+                    && o.severity == TraceShapeVerdict.Severity.ERROR) {
+                responseEnvelopeFailed = true;
+            }
+        }
+        assertTrue("RESPONSE_ENVELOPE should be a failing ERROR outcome", responseEnvelopeFailed);
+    }
+
     // ----- helpers ----------------------------------------------------
 
     private ShapeInvariantStore freshStore() throws IOException {

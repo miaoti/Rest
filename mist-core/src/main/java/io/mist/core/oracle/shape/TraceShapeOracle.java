@@ -34,6 +34,9 @@ public final class TraceShapeOracle {
     private final boolean targetAttributionEnabled;
     private final boolean hiddenDownstreamFailureEnabled;
 
+    /** Optional runtime classifier propagated to ResponseEnvelopeInvariant (null => legacy permissive). */
+    private ResponseEnvelopeInvariant.EnvelopeClassifier envelopeClassifier;
+
     public TraceShapeOracle(ShapeInvariantStore store, MstConfig.Oracle oracleConfig) {
         this.store = store == null ? new ShapeInvariantStore() : store;
         MstConfig.Oracle cfg = oracleConfig == null ? new MstConfig.Oracle() : oracleConfig;
@@ -48,6 +51,17 @@ public final class TraceShapeOracle {
 
     public TraceShapeOracle(ShapeInvariantStore store) {
         this(store, MstConfig.instance().oracle());
+    }
+
+    /**
+     * Wire a runtime envelope classifier (typically LLM-backed) used by
+     * {@link ResponseEnvelopeInvariant} to classify a previously-unseen 2xx
+     * {@code primaryField} value once, then cache it. Null (the default) keeps the
+     * legacy permissive behaviour. Returns {@code this} for chaining.
+     */
+    public TraceShapeOracle setEnvelopeClassifier(ResponseEnvelopeInvariant.EnvelopeClassifier classifier) {
+        this.envelopeClassifier = classifier;
+        return this;
     }
 
     public TraceShapeVerdict evaluate(TraceModel trace, String rootApiKey) {
@@ -88,7 +102,9 @@ public final class TraceShapeOracle {
             builder.add(TimingEnvelopeInvariant.load(rootApiKey, store).evaluate(trace));
         }
         if (responseEnvelopeEnabled) {
-            builder.add(ResponseEnvelopeInvariant.load(rootApiKey, store).evaluate(trace));
+            builder.add(ResponseEnvelopeInvariant.load(rootApiKey, store)
+                    .withClassifier(envelopeClassifier, store)
+                    .evaluate(trace));
         }
         if (targetAttributionEnabled
                 && targetService != null && !targetService.isEmpty()) {

@@ -250,6 +250,9 @@ public class MultiServiceRESTAssuredWriter {
                 pw.println("    // Per-step verdict, populated from inside attachJaegerTrace(...) so the test-method assertion");
                 pw.println("    // path can consult it when deciding whether to flip a negative test from FAIL to PASS.");
                 pw.println("    private static final ThreadLocal<TraceShapeVerdict> LAST_VERDICT = new ThreadLocal<>();");
+                pw.println("    // Phase 4.x: carries the live client response body into attachJaegerTrace() so the");
+                pw.println("    // ResponseEnvelope invariant can read it (Jaeger spans omit http.response.body).");
+                pw.println("    private static final ThreadLocal<String> CLIENT_RESPONSE_BODY = new ThreadLocal<>();");
                 pw.println();
 
                 // Fix 3 Layer 3: output-coverage backstop. A shared set of response
@@ -681,6 +684,15 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                    try {");
                     pw.println("                        String rootApiKey = method + \" \" + path;");
                     pw.println("                        TraceModel model = TraceShapeAdapter.toModel(globalBestTrace, rootApiKey);");
+                    pw.println("                        // Phase 4.x: inject the live client response body into the model's root");
+                    pw.println("                        // span(s) so ResponseEnvelopeInvariant can read it (Jaeger spans omit it).");
+                    pw.println("                        String __clientBody = CLIENT_RESPONSE_BODY.get();");
+                    pw.println("                        CLIENT_RESPONSE_BODY.remove();");
+                    pw.println("                        if (__clientBody != null && !__clientBody.isEmpty() && model != null) {");
+                    pw.println("                            for (TraceModel.Span __rs : model.roots()) {");
+                    pw.println("                                if (__rs.tags != null) __rs.tags.put(\"http.response.body\", __clientBody);");
+                    pw.println("                            }");
+                    pw.println("                        }");
                     pw.println("                        // FIXES.md F1+F3: target-aware overload runs TargetAttributionInvariant");
                     pw.println("                        // when the per-test target context + ablation flag are both set, so");
                     pw.println("                        // attribution is embedded as one of the verdict outcomes and the");
@@ -1287,6 +1299,21 @@ public class MultiServiceRESTAssuredWriter {
                 pw.println("        } catch (Throwable tsoEx) {");
                 pw.println("            System.err.println(\"[Trace Shape Oracle] init failed: \" + tsoEx.getMessage());");
                 pw.println("            oracle = null;");
+                pw.println("        }");
+                pw.println("        // Phase 4.x: wire the LLM-backed envelope classifier so ResponseEnvelope can");
+                pw.println("        // classify+cache a previously-unseen 2xx body value (the paper's one-shot-LLM-");
+                pw.println("        // on-first-2xx behaviour). Reuses the existing validateResponse soft-error model.");
+                pw.println("        if (oracle != null && LLM_VALIDATION_ENABLED && llmValidator != null) {");
+                pw.println("            oracle.setEnvelopeClassifier((rootApi, field, value, body) -> {");
+                pw.println("                try {");
+                pw.println("                    int __sp = rootApi == null ? -1 : rootApi.indexOf(' ');");
+                pw.println("                    String __m = __sp > 0 ? rootApi.substring(0, __sp) : \"GET\";");
+                pw.println("                    String __p = __sp > 0 ? rootApi.substring(__sp + 1) : (rootApi == null ? \"\" : rootApi);");
+                pw.println("                    io.mist.core.generation.ZeroShotLLMGenerator.ValidationResult __vr =");
+                pw.println("                        llmValidator.validateResponse(200, body, \"\", __m, __p);");
+                pw.println("                    return __vr == null ? null : Boolean.valueOf(__vr.isFailed());");
+                pw.println("                } catch (Throwable __t) { return null; }");
+                pw.println("            });");
                 pw.println("        }");
                 pw.println("    }");
                 pw.println();
@@ -2280,6 +2307,7 @@ public class MultiServiceRESTAssuredWriter {
                             pw.println("                                try { Thread.sleep(__jaegerPropagationDelayMs); }");
                             pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                             pw.println("                            }");
+                            pw.println("                            CLIENT_RESPONSE_BODY.set(responseBody);");
                             pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\", __targetService, __targetParam);");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
@@ -2449,6 +2477,7 @@ public class MultiServiceRESTAssuredWriter {
                         pw.println("                            try { Thread.sleep(__jaegerPropagationDelayMs); }");
                         pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                         pw.println("                        }");
+                        pw.println("                        CLIENT_RESPONSE_BODY.set(failedResponseBody);");
                         pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\", __targetService, __targetParam);");
                         pw.println("                        ");
                         // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted
