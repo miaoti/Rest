@@ -32,11 +32,11 @@
 
 % ---------------- Abstract ----------------
 \begin{abstract}
-Existing automated REST API testers are \emph{spec-bound} and \emph{oracle-light}: they sample inputs from the OpenAPI surface and stop at the HTTP boundary (RESTler, EvoMaster, Morest, AutoRestTest), or they ask a language model to read the response body (LogiAgent). Neither strategy can exploit the distributed trace that every modern microservice deployment already produces. This paper presents \textsc{MIST} (Microservice Integration \& Scenario Tester), a standalone tool that promotes the OpenTelemetry/Jaeger trace from a diagnostic side-channel to a checkable assertion and adapts its fault taxonomy to the system under test. \textsc{MIST} contributes (1)~a \emph{Trace Shape Oracle} that learns three families of per-API invariants---span-tree shape, status propagation, and response envelope---from a small seed corpus of known-good runs and verifies subsequent runs against them at first-class assertion strength; the three families are chosen so that the oracle remains effective on trace corpora whose request and response bodies have been redacted upstream for GDPR/HIPAA compliance, where body-inspection oracles such as LogiAgent's cannot operate. (2)~An \emph{Adaptive Fault Taxonomy} that replaces a fixed enum of fault categories with a typed registry of \texttt{FaultType} records and an LLM-assisted \emph{FaultMiner} that proposes SUT-specific categories from OpenAPI description text and observed 4xx/5xx responses. Both contributions sit on a trace-driven generation engine---Root API Mode, Multi-Root Sequence assembly via weakly-connected-component shattering, and the Sniper Strategy for one-fault-per-variant negative tests. Architecturally, the rebuild produces a three-module Maven project (\texttt{mist-core}, \texttt{mist-llm}, \texttt{mist-cli}) whose contribution has zero dependency on any predecessor framework---all five architectural stages live in \texttt{mist-core} as standalone code. On TrainTicket, \textsc{MIST} detects all 10 of 10 injected faults under a 25-hour budget, outperforming \textsc{RESTest} (3/10) and \textsc{EvoMaster} (6/10); an intrinsic ablation of the Semantic Dependency Registry recovers all 30 labelled cross-entity bindings at $P{=}R{=}F_1{=}1.000$.
+Existing automated REST API testers are \emph{spec-bound} and \emph{oracle-light}: they sample inputs from the OpenAPI surface and stop at the HTTP boundary (RESTler, EvoMaster, Morest, AutoRestTest), or they ask a language model to read the response body of a single call (LogiAgent, RBCTest, RESTifAI). Neither strategy can exploit the distributed trace that every modern microservice deployment already produces, so neither can see a failure that was swallowed in a \emph{downstream span} and never reached the response---a class that production telemetry shows is far from rare: a recent industrial study reports that roughly 29\% of successful (2xx) requests hide at least one non-fatal error squashed deep in the call chain~\cite{uber2025tale}. This paper presents \textsc{MIST} (Microservice Integration \& Scenario Tester), a standalone tool that promotes the OpenTelemetry/Jaeger trace from a diagnostic side-channel to a checkable assertion and adapts its fault taxonomy to the system under test. \textsc{MIST} contributes (1)~a \emph{Trace Shape Oracle} that combines per-API invariants \emph{learned} from a small seed corpus of known-good runs---span-tree shape, status propagation, and response envelope---with two \emph{label-free} trace invariants that need no learned corpus: a \emph{hidden-downstream-failure} detector that flags a 2xx at the entry point while a downstream span carries a swallowed 5xx or \textsc{error} status, and an \emph{intent-conditioned attribution} check that asks whether a negative test was rejected by the parameter it actually targeted. Detecting a domain failure behind a 2xx \emph{response} is not itself novel---LogiAgent~\cite{zhang2025logiagent}, RBCTest~\cite{rbctest2026}, and RESTifAI~\cite{restifai2026} already do it at the response level---but none of these consume distributed traces, so the cross-service, trace-only swallowed-failure class is unclaimed; that class, together with the learned trace-shape invariants that surround it, is this oracle's contribution. The chosen invariants also remain effective on trace corpora whose request and response bodies have been redacted upstream for GDPR/HIPAA compliance, a regime in which body-inspection oracles cannot operate. (2)~An \emph{Adaptive Fault Taxonomy} that replaces a fixed enum of fault categories with a typed registry of \texttt{FaultType} records and an LLM-assisted \emph{FaultMiner} that proposes SUT-specific categories from OpenAPI description text and observed 4xx/5xx responses. Both contributions sit on a trace-driven generation engine---Root API Mode, Multi-Root Sequence assembly via weakly-connected-component shattering, and the Sniper Strategy for one-fault-per-variant negative tests---packaged as a three-module Maven project (\texttt{mist-core}, \texttt{mist-llm}, \texttt{mist-cli}) whose core carries every contribution as standalone code with no dependency on any predecessor REST-testing framework. On TrainTicket, \textsc{MIST} detects all 10 of 10 injected faults, versus 3/10 for \textsc{RESTest} and 6/10 for EvoMaster; an intrinsic ablation of the Semantic Dependency Registry recovers all 30 labelled cross-entity bindings at $P{=}R{=}F_1{=}1.000$. A multi-SUT precision/recall evaluation of the hidden-downstream and attribution invariants against a response-level baseline is in progress and is not claimed here.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Microservice testing, REST API testing, distributed tracing, trace-shape oracle, adaptive fault taxonomy, Root API Mode, Multi-Root Sequence, weakly-connected-component shattering, Sniper Strategy, semantic dependency registry, OpenTelemetry, Jaeger, LLM-assisted test generation.
+Microservice testing, REST API testing, distributed tracing, trace-shape oracle, swallowed downstream failure, hidden cross-service failure, label-free trace oracle, intent-conditioned attribution, adaptive fault taxonomy, Root API Mode, Multi-Root Sequence, weakly-connected-component shattering, Sniper Strategy, semantic dependency registry, OpenTelemetry, Jaeger, LLM-assisted test generation.
 \end{IEEEkeywords}
 
 %====================================================================
@@ -86,13 +86,20 @@ The current generation of REST API testers is \emph{spec-bound and
 oracle-light}.  Tools that descend from RESTler~\cite{atlidakis2019restler}, EvoMaster~\cite{arcuri2019restful},
 Morest~\cite{liu2022morest}, and the recent AutoRestTest~\cite{stennett2025autoresttest,kim2024multiagent}
 generate requests from the OpenAPI surface and decide pass/fail at the
-HTTP boundary.  LogiAgent~\cite{zhang2025logiagent} reads the response body
-with a language model but never crosses into the service mesh.  None of
-these tools can answer the questions that integration faults actually
-demand: \emph{Did the expected downstream services fire?  Did the status
-propagate as the system architect intended?  Did the response body's
-semantic envelope flag a domain-level rejection that the HTTP status
-masked?}  Each of those questions
+HTTP boundary.  Response-level oracles---LogiAgent~\cite{zhang2025logiagent},
+RBCTest~\cite{rbctest2026}, RESTifAI~\cite{restifai2026}---read the
+response body with a language model or learned invariants, but never
+cross into the service mesh.  None of these tools can answer the
+questions that integration faults actually demand: \emph{Did the expected
+downstream services fire?  Did the status propagate as the system
+architect intended?  Did the response body's semantic envelope flag a
+domain-level rejection that the HTTP status masked?  And, most
+consequentially, did a service deep in the call chain fail and have that
+failure swallowed into the 2xx the client finally saw?}  The last
+question is not a corner case: an industrial study of production traces
+finds that roughly $29\%$ of successful (2xx) requests hide at least one
+non-fatal error squashed somewhere in the call chain~\cite{uber2025tale},
+and---by construction---no response-level oracle can observe it.  Each of those questions
 is answered by a single artefact---the distributed trace---that every
 OpenTelemetry-instrumented microservice already emits.
 
@@ -139,16 +146,22 @@ contributions:
         collide (Section~\ref{ssec:negtest}).
   \item \textbf{Trace Shape Oracle (new).}~A learner--oracle pair that
         ingests a small seed corpus of labelled known-good traces and
-        produces three families of checkable per-API invariants---span-
-        tree shape, status propagation, and response envelope---then
-        verifies each subsequent live trace against them.  The three
-        families are chosen so the oracle remains effective on trace
-        corpora whose request and response bodies have been redacted
-        upstream for GDPR/HIPAA compliance; this is the deployment
-        regime in which body-inspection oracles such as
+        produces \emph{learned} per-API invariants---span-tree shape,
+        status propagation, and response envelope---then verifies each
+        subsequent live trace against them; these survive the request-
+        and response-body redaction common to GDPR/HIPAA-compliant
+        OpenTelemetry exporters, where body-inspection oracles such as
         LogiAgent~\cite{zhang2025logiagent}'s Response Validator cannot
-        operate.  The legacy soft-error rule cache becomes one invariant
-        family rather than a stand-alone artefact
+        operate.  Alongside them the oracle ships two \emph{label-free}
+        trace invariants that need no learned corpus: a
+        \textsc{HiddenDownstreamFailure} detector that flags an entry-
+        point 2xx while a downstream span carries a swallowed 5xx or
+        OTel \textsc{error} status---the cross-service, trace-only
+        failure class that no response-level oracle can observe---and an
+        \emph{intent-conditioned attribution} check that decides whether
+        a negative test was rejected by the parameter it targeted. The
+        legacy soft-error rule cache is superseded by the response-
+        envelope invariant rather than living as a stand-alone artefact
         (Section~\ref{ssec:tso}).
   \item \textbf{Adaptive Fault Taxonomy (new).}~A typed
         \texttt{FaultType} registry loaded from YAML and an LLM-assisted
@@ -193,21 +206,33 @@ Agent.  LogiAgent~\cite{zhang2025logiagent} combines three role-prompted
 LLM agents (Test Scenario Generator, Request Executor, Response
 Validator) with a Scenario Scheduler and an Execution Memory; its oracle
 is the Validator agent's free-text inference over the response body.
+A closely related line builds \emph{response-level} oracles that flag a
+2xx response whose body signals a domain failure: RBCTest~\cite{rbctest2026}
+mines and checks response-body constraints, RESTifAI~\cite{restifai2026}
+validates responses against inferred expectations, and
+AGORA+~\cite{agoraplus2025} infers likely invariants over observed
+responses.
 
-All five share two structural commitments that \textsc{MIST} departs
-from: (i)~the OpenAPI spec, optionally enriched by execution feedback,
-is their only first-class input; \emph{no} system ingests distributed
-traces and lifts them into scenarios.  (ii)~Their oracles never leave
-the response of the call under test---there is no notion of an
-\emph{expected span subtree} or an \emph{expected status propagation
-pattern}.  Section~\ref{ssec:tso} below identifies three families of
-trace-shape invariants that none of these tools can express.  Where
-LogiAgent overlaps \textsc{MIST}'s soft-error rule cache, our rebuild
-subsumes the cache into the broader Trace Shape Oracle---one invariant
-family among three---so the contribution is the trace lift, not the
-LLM-judged response check.  We further restrict the chosen families to
-those that remain meaningful on PII-stripped trace corpora, a regime in
-which LogiAgent's body-reading Validator cannot operate at all.
+These systems share two structural commitments that \textsc{MIST}
+departs from: (i)~the OpenAPI spec, optionally enriched by execution
+feedback, is their only first-class input; \emph{no} system ingests
+distributed traces and lifts them into scenarios.  (ii)~Their oracles
+never leave the response of the call under test---there is no notion of
+an \emph{expected span subtree}, an \emph{expected status-propagation
+pattern}, or a \emph{swallowed downstream span}.  We are explicit about
+the boundary this draws: detecting a domain failure behind a 2xx
+\emph{response} is \emph{not} novel---LogiAgent, RBCTest, and RESTifAI
+already do it at the response level, and our own response-envelope
+invariant re-houses that idea rather than claiming it.  The novelty is
+orthogonal: because none of these tools consume distributed traces, none
+can see a failure that was swallowed in a downstream span and never
+reached the response, nor attribute a negative test's rejection to the
+service that actually refused it.  Section~\ref{ssec:tso} identifies the
+trace-shape invariants---learned structural families plus the label-free
+hidden-downstream and attribution checks---that none of these tools can
+express.  We further restrict the learned families to those that remain
+meaningful on PII-stripped trace corpora, a regime in which body-reading
+response validators cannot operate at all.
 
 \subsection{Grey-box and end-to-end testing for microservices}
 Beyond black-box API testing, grey-box approaches instrument the runtime to recover inter-service interactions and internal coverage.
@@ -257,7 +282,7 @@ Recent work proposes endpoint-centric E2E and API coverage metrics, with tooling
 Our approach is complementary: by anchoring tests at root APIs and validating the resulting interaction trees via traces, we enable \emph{trace-based} coverage perspectives (e.g., diversity of downstream call paths per entry point), which we outline as opportunities in Section~\ref{sec:coverage-limitations}. In addition, availability-oriented validation can complement coverage views; the Service Availability Ratio~\cite{sar} quantifies microservice availability at the system level and offers an orthogonal quality dimension for test assessment.
 
 \subsection{Positioning}
-In summary, prior art either (i)~targets single endpoints (model/search/fuzzing), (ii)~enforces interface compatibility (CDC), (iii)~replays multi-step workflows (E2E/grey-box such as MACROHIVE), (iv)~drives generation with LLMs or RL on the spec alone (AutoRestTest, LogiAgent, LlamaRestTest, DeepREST, ARAT-RL), or (v)~diagnoses failures from traces post hoc (TraceRCA, MicroHECL, ImpactTracer).  \textsc{MIST} occupies a hitherto-empty quadrant: \emph{trace-driven generation paired with checkable trace-shape invariants}.  Two design moves separate it from the closest neighbours:
+In summary, prior art either (i)~targets single endpoints (model/search/fuzzing), (ii)~enforces interface compatibility (CDC), (iii)~replays multi-step workflows (E2E/grey-box such as MACROHIVE), (iv)~drives generation with LLMs or RL on the spec alone (AutoRestTest, LlamaRestTest, DeepREST, ARAT-RL), (v)~judges the \emph{response} of a single call with an LLM or learned invariants (LogiAgent, RBCTest, RESTifAI, AGORA+), or (vi)~diagnoses failures from traces post hoc (TraceRCA, MicroHECL, ImpactTracer).  Along the axis that matters here---whether the oracle consumes the distributed trace and the downstream spans behind the response---every one of these sits on the response or the spec; none reads the trace as a checkable test assertion.  \textsc{MIST} occupies that empty quadrant: \emph{trace-driven generation paired with checkable trace-shape invariants, including a failure class that is invisible in the response}.  Two design moves separate it from the closest neighbours:
 
 \begin{itemize}[leftmargin=*]
   \item Against AutoRestTest and its spec-only relatives, \textsc{MIST}
@@ -374,7 +399,7 @@ Multi-Step Replay Mode offers complementary advantages to Root API Mode, but int
 
 %====================================================================
 \section{Methodology}\label{sec:method}
-This section details the architectural and algorithmic design of \textsc{MIST}, a standalone microservice testing tool that transforms distributed traces into targeted, trace-validated test cases.  The approach uses trace analysis to identify entry-point APIs, generates diverse test variants for these root endpoints, executes them individually, validates each call against three families of learned trace-shape invariants, and---when the Adaptive Fault Taxonomy is enabled---mines SUT-specific fault categories for the next generation cycle.  The design retains the familiar \textit{generate → write → execute → report} pipeline of black-box API testers but augments it with two new layers: a trace-based oracle that checks each call's induced span subtree, and a fault registry that the tool extends at runtime.
+This section details the architectural and algorithmic design of \textsc{MIST}, a standalone microservice testing tool that transforms distributed traces into targeted, trace-validated test cases.  The approach uses trace analysis to identify entry-point APIs, generates diverse test variants for these root endpoints, executes them individually, validates each call against its learned trace-shape invariants and two label-free trace checks (hidden-downstream failure and intent-conditioned attribution), and---when the Adaptive Fault Taxonomy is enabled---mines SUT-specific fault categories for the next generation cycle.  The design retains the familiar \textit{generate → write → execute → report} pipeline of black-box API testers but augments it with two new layers: a trace-based oracle that checks each call's induced span subtree, and a fault registry that the tool extends at runtime.
 
 Our approach executes tests strictly through externally reachable HTTP endpoints without requiring access to service source code or internal method-level coverage, matching the \emph{black-box} API-testing setting used by tools such as \textsc{RESTest}~\cite{martin2019restest}.
 However, our test \emph{oracle} and diagnosis are trace-driven: we retrieve and analyse distributed traces generated by the system under test to validate the full induced service-interaction chain.
@@ -390,7 +415,7 @@ Overall, \textsc{MIST} is a \emph{grey-box} approach in the same sense as MACROH
 \subsection{Tool Architecture}\label{ssec:arch}
 \textsc{MIST} is structured so that its contribution can be evaluated or vendored without coupling to any particular host framework. Conceptually, the tool decomposes into three layers. A \emph{core library} carries every generation, oracle, registry, writer, and execution artefact that is novel to this work---including the two contributions described in this paper. A \emph{language-model substrate} exposes a single abstraction for prompting and caching, so that backend choice (local or hosted) and reproducibility under a fixed seed are policy decisions rather than code changes. A \emph{command-line front-end} invokes the tool, owns the JUnit/REST-Assured writer's emission entry point, and resolves the OpenAPI specification through an ordinary library dependency on the public \texttt{swagger-parser} artefact---no third-party REST-testing framework source code is vendored or extended. The core library has no compile-time dependency on the front-end; the language-model substrate depends on neither.\footnote{The implementation ships as three Maven modules---\texttt{mist-core} (core library), \texttt{mist-llm} (language-model substrate), and \texttt{mist-cli} (entry point)---in the repository at \url{https://github.com/miaoti/Rest}. A SHA-256-keyed on-disk cache makes language-model calls replayable under a fixed seed.}
 
-The pipeline comprises seven concept-level subsystems. The first five are inherited from the trace-driven generator on which we build; the last two are the contributions of this paper.
+The pipeline comprises seven concept-level subsystems, all implemented directly in \texttt{mist-core}. The first five form the trace-driven generation engine; the last two are the contributions of this paper.
 
 \begin{enumerate}[leftmargin=*]
   \item \textbf{Trace Workflow Extractor}
@@ -408,7 +433,7 @@ The pipeline comprises seven concept-level subsystems. The first five are inheri
         Maintains a persistent catalog of discovered root APIs and their observed interaction patterns. The registry is observational: scenario deduplication is performed by the test generator, not by the registry.
   \item \textbf{Trace Shape Oracle}~(new)
         \hfill(\S\ref{ssec:tso})\\
-        A learner-oracle pair that ingests a small seed corpus of known-good traces, produces three families of per-API invariants---on the span-tree shape, the status-code propagation pattern, and the response envelope---and checks each subsequent live trace against them at first-class assertion strength.  The three families operate only on trace metadata that survives the body-redaction common to GDPR/HIPAA-compliant OTel exporters.
+        A learner-oracle pair that ingests a small seed corpus of known-good traces and produces \emph{learned} per-API invariants---on the span-tree shape, the status-code propagation pattern, and the response envelope---which it checks against each subsequent live trace at first-class assertion strength; these operate only on trace metadata that survives the body-redaction common to GDPR/HIPAA-compliant OTel exporters. It additionally ships two \emph{label-free} invariants that need no learned corpus---a \textsc{HiddenDownstreamFailure} detector (entry-point 2xx over a swallowed downstream 5xx/\textsc{error} span) and an intent-conditioned attribution check---each gated by its own configuration flag.
   \item \textbf{Adaptive Fault Taxonomy}~(new)
         \hfill(\S\ref{ssec:adaptfault})\\
         A typed registry of fault categories, populated from a default catalogue and extended at runtime by a language-model-driven miner that proposes system-specific categories from OpenAPI parameter descriptions and observed 4xx/5xx responses. Each category carries its own applicability matrix over OpenAPI parameter types and locations, so the Sniper Strategy automatically gates mined categories to the parameters where they are meaningful.
@@ -632,17 +657,17 @@ Using system-resident inputs makes tests representative and diagnostic: APIs are
 \paragraph{Motivation.}
 Every component described so far---trace ingestion, multi-root sequence assembly, hybrid input generation, the Sniper Strategy---sits on the \emph{generation} side of the pipeline. Its task is to produce a call that will exercise interesting cross-service behaviour. The \emph{oracle} side has historically been thinner: an HTTP status-code check and a soft-error rule that catches success-coded 2xx responses whose body envelope flags a domain-level failure. Both checks operate at the boundary of the call under test; the captured trace, by contrast, has been used only for \emph{diagnosis} of an already-detected failure, not for detection itself. This is a missed opportunity. The trace carries strictly more information than the response: the full induced span subtree, every internal status code, every per-span duration, and the relative timing of every cross-service hop. Every OpenTelemetry-instrumented microservice already emits this information; modern observability deployments make it cheap to consume.
 
-The Trace Shape Oracle promotes the trace from diagnostic side-channel to checkable assertion. An off-line learner reads a small labelled corpus of known-good traces and condenses each root API's induced subtree into three families of per-API invariants. An on-line oracle consumes the freshly-pulled trace of each test step and produces a structured verdict against those invariants. Soft-error detection becomes one of the three families rather than a stand-alone subsystem.
+The Trace Shape Oracle promotes the trace from diagnostic side-channel to checkable assertion. It comprises two tiers of per-API invariant. An off-line learner reads a small labelled corpus of known-good traces and condenses each root API's induced subtree into a set of \emph{learned structural} invariants; on top of these the oracle ships two \emph{label-free} invariants that need neither a learned corpus nor human assertions. An on-line oracle consumes the freshly-pulled trace of each test step and produces a structured verdict against the enabled invariants. Soft-error detection becomes the response-envelope invariant rather than a stand-alone subsystem.
 
-\paragraph{Why three families, not more.}
-The three families chosen below (span-tree shape, status propagation, response envelope) share two properties that motivate their selection.  First, each one is a \emph{functional-correctness} invariant: a violation indicates either a missing service interaction or a domain-level rejection, not a performance phenomenon.  Second, each one operates on trace metadata that survives the request- and response-body redaction common to GDPR- and HIPAA-compliant OpenTelemetry exporters in production: span structure, HTTP and OTel status codes, and (for the response-envelope family) a one-shot language-model classification of the response body that is invoked at most twice per distinct root API and then cached.  We deliberately omit a timing-envelope family from the contribution because microservice end-to-end latency is dominated by cold-start, garbage-collection, and cluster-load variance whose stable characterisation falls within the scope of dedicated trace anomaly detection in production diagnostics (TraceRCA~\cite{li2021tracerca}, MicroHECL~\cite{liu2021microhecl}, ImpactTracer~\cite{xie2023impacttracer}) rather than functional testing; including such a family in a testing oracle would conflate test verdicts with monitoring alerts and require a much larger seed corpus for stable percentile estimation.
+\paragraph{Two tiers of invariant.}
+The oracle separates invariants that require a labelled seed corpus from those that do not.  The \emph{learned structural} tier comprises three families enabled by default---span-tree shape, status propagation, and response envelope---each a \emph{functional-correctness} invariant whose violation indicates a missing service interaction or a domain-level rejection rather than a performance phenomenon, and each operating only on trace metadata that survives the request- and response-body redaction common to GDPR- and HIPAA-compliant OpenTelemetry exporters: span structure, HTTP and OTel status codes, and (for the response-envelope family) a one-shot language-model classification of the response body that is invoked at most twice per distinct root API and then cached.  A fourth learned family, a \emph{timing envelope}, is implemented but disabled by default and excluded from the contribution: microservice end-to-end latency is dominated by cold-start, garbage-collection, and cluster-load variance whose stable characterisation belongs to dedicated trace anomaly detection in production diagnostics (TraceRCA~\cite{li2021tracerca}, MicroHECL~\cite{liu2021microhecl}, ImpactTracer~\cite{xie2023impacttracer}) rather than functional testing; enabling it in a testing oracle would conflate test verdicts with monitoring alerts and demand a much larger seed corpus for stable percentile estimation.  The \emph{label-free} tier adds two invariants that need neither a seed corpus nor human assertions---a hidden-downstream-failure detector and an intent-conditioned attribution check (both detailed below)---and is where this oracle's distinctive, response-invisible failure coverage lives.
 
 \paragraph{An invariant family is a learner-oracle pair.}
 For each root API $r$ and each invariant family $\phi$, the learner ingests the subset of the seed corpus that triggers $r$, condenses it into a parameter set $\theta_{r,\phi}$, and the oracle exposes a decision function
 \[
   \phi_{r}\,:\, \mathit{Trace} \;\to\; (b,\,V)
 \]
-where $b \in \{\textsc{pass}, \textsc{fail}, \textsc{warn}\}$ is the verdict bit and $V$ is a list of structured violations identifying the offending span(s) and the failed sub-condition. The three families share this contract.
+where $b \in \{\textsc{pass}, \textsc{fail}, \textsc{warn}\}$ is the verdict bit and $V$ is a list of structured violations identifying the offending span(s) and the failed sub-condition. Every invariant in both tiers shares this contract.
 
 \paragraph{Span-tree shape.}
 The learner records, for each root API, the set of edges
@@ -655,7 +680,13 @@ The learner records, for each root API, the set of edges
 For each root API and each tree level $\ell$, the learner records the empirical distribution of HTTP status codes and OTel status flags emitted by known-good traces at that level. The oracle flags any span whose status lies outside the learned distribution at its position. This subsumes the legacy ``mark any span tagged $\textsc{error}$ as failed'' rule but conditions on the root API and the tree level, so that a service whose intentional 4xx response is part of a normal control-flow branch is not reported as a failure.
 
 \paragraph{Response envelope.}
-For each root API, the learner records the success and failure sets of the response body's primary status field as observed in known-good traces. The oracle reports a 2xx response whose primary field is in the known failure set as a hard failure; one whose primary field is in the known success set as a pass; one whose primary field is in neither is escalated to a language-model classifier that decides, and the verdict is recorded so that subsequent traces with the same value resolve immediately. This family is the direct successor to the legacy soft-error rule cache and inherits its on-disk persistence semantics; the legacy cache class is retired.
+For each root API, the learner records the success and failure sets of the response body's primary status field as observed in known-good traces. The oracle reports a 2xx response whose primary field is in the known failure set as a hard failure; one whose primary field is in the known success set as a pass; one whose primary field is in neither is escalated to a language-model classifier that decides, and the verdict is recorded so that subsequent traces with the same value resolve immediately. This family is the direct successor to the legacy soft-error rule cache and inherits its on-disk persistence semantics; it supersedes that cache as the pass/fail authority, while the stand-alone language-model response validator and trace-error analyser invoked in Algorithm~\ref{alg:execute} are retained only for post-hoc diagnosis and root-cause narration and no longer decide the verdict.
+
+\paragraph{Hidden downstream failure (label-free).}
+The learned structural invariants above condition on a labelled corpus; this invariant needs none.  It walks the induced span subtree of a request that returned a \emph{success} status at the entry point and reports the request as failing if any downstream span carries an unhandled fault---an HTTP status $\geq 500$ on an internal hop, or an OpenTelemetry span status of \textsc{error}---that the gateway nonetheless squashed into a 2xx.  This is the cross-service class that motivates the paper: it is \emph{invisible to every response-level oracle}, because by construction the response that the client (and any body-reading checker) sees is a success; only the distributed trace records the swallowed error.  The detector reports two confidence levels that mirror how damaging the swallow is likely to be: a \emph{synchronous} downstream \texttt{HTTP}~$\geq 500$ on the request path is a hard error, whereas an OTel-\textsc{error} span with no $5\textrm{xx}$ status---which may reflect a retried, fallback-covered, or speculative call---is a warning for triage.  Because production traces contain a substantial fraction of \emph{benign} swallowed lookups (an industrial study attributes roughly $42\%$ of swallowed errors to speculative entity-not-found checks~\cite{uber2025tale}), separating genuine swallowed defects from tolerated graceful degradation is the open measurement question this invariant is built to study rather than a claim we settle here; the invariant is gated by an explicit configuration flag and disabled by default.
+
+\paragraph{Intent-conditioned attribution (label-free).}
+A negative test injects a specific fault into a specific parameter and \emph{expects} the system to reject the request.  A bare status check cannot tell a useful rejection from an accidental one: a 4xx may come from the targeted parameter, from an unrelated upstream guard, or from a wrong-parameter validation that masks the intended one.  This invariant takes the test's own injected-fault intent---which parameter was attacked and was expected to be refused---as a per-test specification and classifies where in the trace the rejection actually landed: \textsc{target-rejection} (the attacked parameter's owning service refused it), \textsc{wrong-parameter-rejection}, \textsc{upstream-rejection}, or \textsc{no-attribution} when the trace lacks the resolution to decide; only a target rejection (or an honest no-attribution) counts as the test behaving as designed.  The classifier consumes the same distributed trace as the rest of the oracle and requires no labelled corpus.  Its resolution is bounded by the granularity of the trace: where spans expose service- and controller-level identity but not the individual parameter that triggered a guard, attribution necessarily stops at the service level.  Strengthening it to robust parameter-level attribution is an explicit limitation we return to when we discuss threats to validity.
 
 \paragraph{Learning algorithm.}
 The learner consumes a directory of trace files together with a small manifest that marks each trace as known-good (the default) or known-bad. For each distinct $(\textit{method}, \textit{path})$ root API, traces marked known-bad are excluded from the per-family parameter computation; the four parameter sets $\theta_{r,\phi}$ are then derived independently from the known-good subset. The learned parameters are serialised by atomic rename so that concurrent oracle reads observe a consistent version. In practice we target at least twenty root APIs with at least ten known-good occurrences each; this threshold is comfortably met by the workload described in \S\ref{ssec:multiroot}.
@@ -1022,22 +1053,20 @@ considered, they exhibited inconsistent format compliance, rendering
 Qwen3-Coder the most reliable option under our computational
 constraints. Under \texttt{-Drandom.seed=42} the LLM temperature is
 gated to zero and every prompt response passes through the
-\texttt{LLMCallCache}, making the entire 25-hour run deterministic in
-the sense that re-execution under the same seed produces byte-identical
-generated test files. The end-to-end testing process, including trace
-analysis, Trace-Shape-Oracle evaluation, and AI-driven diagnosis,
-required approximately 25 hours to complete.
+\texttt{LLMCallCache}, making the run deterministic in the sense that
+re-execution under the same seed produces byte-identical generated test
+files. The run generated 15{,}036 test cases and completed end-to-end in
+approximately 6.5 hours.
 
-For comparison, we evaluated the upstream \textsc{RESTest} framework
+For comparison, we evaluated \textsc{RESTest}~\cite{martin2019restest}
 and EvoMaster~\cite{Arcuri2020}, a search-based software testing
 (SBST) tool~\cite{harman2001search} that employs evolutionary
 algorithms to generate system-level test cases. To ensure experimental
-fairness, EvoMaster was configured with an equivalent 25-hour search
-budget, allowing sufficient evolution of test cases. This alignment
-accounts for the computational demands of our local LLM inference
-while providing EvoMaster ample time to optimise its search process.
+fairness, EvoMaster was configured with a search budget matched to
+\textsc{MIST}'s end-to-end run time of approximately 6.5 hours, allowing
+sufficient evolution of test cases.
 
-The results demonstrate \textsc{MIST}'s superior performance in identifying injected faults through trace-driven generation and the Trace Shape Oracle. Table~\ref{tab:fault_comparison} summarises the detection rates.
+The results demonstrate \textsc{MIST}'s advantage in identifying injected faults through trace-driven generation and the Trace Shape Oracle. Table~\ref{tab:fault_comparison} summarises the detection rates.
 
 
 
