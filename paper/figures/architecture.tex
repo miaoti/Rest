@@ -24,7 +24,7 @@
 \node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits MST conf}}};
 \node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep.\ Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
 \node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{Root API Mode, 5-phase pipeline}}};
-\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace Shape Oracle}\\{\scriptsize \textcolor{gray!50!black}{6 invariants incl.\ hidden-downstream}}};
+\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace Shape Oracle}\\{\scriptsize \textcolor{gray!50!black}{4 learned + 2 structural invariants}}};
 
 \node[inputbox] (inputs) at (1.9,-2.5) {\textbf{Inputs}\\\scriptsize\\\enspace$\bullet$ OpenAPI specification (one file or aggregated /v3/api-docs)\\\enspace$\bullet$ Jaeger / OpenTelemetry traces (one file or a directory)\\\enspace$\bullet$ run configuration (\texttt{.properties} file)};
 \node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Strategy}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant; FaultMiner}}};
