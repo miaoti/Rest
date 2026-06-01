@@ -22,8 +22,16 @@ import java.util.TreeSet;
  * set of {@code primaryField} values observed alongside a 2xx HTTP status in
  * the seed corpus (the {@code successSet}). At runtime, a 2xx span whose root
  * response body carries a {@code primaryField} value outside the success set
- * is flagged when the value is present in the {@code failureSet}; otherwise
- * the result is deferred to LLM classification.
+ * is flagged when the value is present in the {@code failureSet}.
+ *
+ * <p><b>Learn-only-from-observation (Phase 4.x).</b> When an {@link EnvelopeClassifier}
+ * is wired in (via {@link #withClassifier}), an otherwise-unknown value triggers a
+ * <em>single</em> classification call: the result is recorded into the live
+ * success/failure set and (when a {@link ShapeInvariantStore} is supplied) persisted,
+ * so every later occurrence of that value resolves from the cache with no further
+ * call. This restores the runtime "first-2xx → classify → cache" behaviour of the
+ * deleted {@code SoftErrorRuleCache}. With no classifier wired the invariant stays
+ * permissive on unknown values (legacy behaviour preserved byte-for-byte).
  *
  * <p>Defaults: the primary field is {@code status} (override via
  * {@link #setPrimaryField(String)}). The root response body is read from the
@@ -34,15 +42,51 @@ public final class ResponseEnvelopeInvariant implements ShapeInvariant<ResponseE
     public static final String KIND = "RESPONSE_ENVELOPE";
     public static final String DEFAULT_PRIMARY_FIELD = "status";
 
+    /**
+     * One-shot classifier for a previously-unseen {@code primaryField} value on a 2xx
+     * response. Implemented in the LLM layer and injected at runtime so {@code mist-core}
+     * stays free of a hard LLM dependency.
+     */
+    @FunctionalInterface
+    public interface EnvelopeClassifier {
+        /**
+         * @return {@code Boolean.TRUE} if {@code observedValue} denotes a soft-error/failure,
+         *         {@code Boolean.FALSE} if it denotes success, or {@code null} if the value
+         *         could not be classified (the invariant then stays permissive).
+         */
+        Boolean classifyFailure(String rootApiKey, String primaryField, String observedValue, String fullBody);
+    }
+
     private final String rootApiKey;
     private final Data data;
     private String primaryField;
+
+    /** Mutable working sets seeded from {@link #data}; grown by on-the-fly classification. */
+    private final Set<String> liveSuccess;
+    private final Set<String> liveFailure;
+
+    /** Optional runtime wiring (null => legacy permissive behaviour). */
+    private EnvelopeClassifier classifier;
+    private ShapeInvariantStore cacheStore;
 
     public ResponseEnvelopeInvariant(String rootApiKey, Data data) {
         this.rootApiKey = rootApiKey;
         this.data = data == null ? Data.empty() : data;
         this.primaryField = data == null || data.primaryField == null || data.primaryField.isEmpty()
                 ? DEFAULT_PRIMARY_FIELD : data.primaryField;
+        this.liveSuccess = new TreeSet<>(this.data.successSet);
+        this.liveFailure = new TreeSet<>(this.data.failureSet);
+    }
+
+    /**
+     * Wire a runtime classifier (and optional cache store). When set, an unknown 2xx
+     * {@code primaryField} value is classified once and recorded; failures then fail the
+     * invariant. Returns {@code this} for chaining.
+     */
+    public ResponseEnvelopeInvariant withClassifier(EnvelopeClassifier classifier, ShapeInvariantStore cacheStore) {
+        this.classifier = classifier;
+        this.cacheStore = cacheStore;
+        return this;
     }
 
     public void setPrimaryField(String primaryField) {
@@ -56,7 +100,8 @@ public final class ResponseEnvelopeInvariant implements ShapeInvariant<ResponseE
 
     @Override
     public TraceShapeVerdict.InvariantOutcome evaluate(TraceModel trace) {
-        if (data.successSet.isEmpty() && data.failureSet.isEmpty()) {
+        // With no learned data AND no classifier there is nothing to check; stay silent.
+        if (liveSuccess.isEmpty() && liveFailure.isEmpty() && classifier == null) {
             return TraceShapeVerdict.InvariantOutcome.pass(KIND, rootApiKey, TraceShapeVerdict.Severity.ERROR);
         }
         List<String> evidence = new ArrayList<>();
@@ -68,17 +113,35 @@ public final class ResponseEnvelopeInvariant implements ShapeInvariant<ResponseE
             if (body == null || body.isEmpty()) continue;
             String observed = extractPrimaryValue(body, primaryField);
             if (observed == null) continue;
-            if (data.successSet.contains(observed)) continue;
-            if (data.failureSet.contains(observed)) {
+            if (liveSuccess.contains(observed)) continue;
+            if (liveFailure.contains(observed)) {
                 evidence.add(root.spanId);
                 details.add(primaryField + "=" + observed + " is in learned failureSet");
                 anyFailureSet = true;
+            } else if (classifier != null) {
+                // First sighting of this value: classify once, record, and cache.
+                Boolean isFailure;
+                try {
+                    isFailure = classifier.classifyFailure(rootApiKey, primaryField, observed, body);
+                } catch (RuntimeException ex) {
+                    isFailure = null; // a flaky classifier must not crash the oracle
+                }
+                if (isFailure == null) {
+                    evidence.add(root.spanId);
+                    details.add(primaryField + "=" + observed + " could not be classified");
+                } else if (isFailure) {
+                    liveFailure.add(observed);
+                    persistLive();
+                    evidence.add(root.spanId);
+                    details.add(primaryField + "=" + observed + " classified as failure (LLM, cached)");
+                    anyFailureSet = true;
+                } else {
+                    liveSuccess.add(observed);
+                    persistLive();
+                }
             } else {
-                // TODO(Phase 4.x) LLM classify: invoke LLMService.classify(...)
-                // here and add the result to the appropriate set on the fly.
-                // Until that wiring lands we leave the verdict permissive but
-                // record the unknown value as INFO-level evidence so the next
-                // learner pass picks it up.
+                // Legacy permissive path: no classifier wired. Record the unknown value
+                // as INFO so the next learner pass can pick it up, but do not fail.
                 evidence.add(root.spanId);
                 details.add(primaryField + "=" + observed + " is unknown (needs LLM classification)");
             }
@@ -94,6 +157,14 @@ public final class ResponseEnvelopeInvariant implements ShapeInvariant<ResponseE
         return new TraceShapeVerdict.InvariantOutcome(
                 KIND, rootApiKey, true, TraceShapeVerdict.Severity.INFO,
                 String.join("; ", details), evidence);
+    }
+
+    /** Persist the current live sets back to the cache store, if one is wired. */
+    private void persistLive() {
+        if (cacheStore == null) return;
+        Data updated = new Data(primaryField, liveSuccess, liveFailure);
+        cacheStore.put(storeKey(rootApiKey), updated.toJson());
+        cacheStore.flush();
     }
 
     /** Parse {@code body} and return the string form of {@code field}, or null. */
@@ -135,6 +206,12 @@ public final class ResponseEnvelopeInvariant implements ShapeInvariant<ResponseE
     }
 
     public Data getData() { return data; }
+
+    /** Live success set (seeded from learned data, grown by runtime classification). */
+    public Set<String> getLiveSuccessSet() { return Collections.unmodifiableSet(liveSuccess); }
+
+    /** Live failure set (seeded from learned data, grown by runtime classification). */
+    public Set<String> getLiveFailureSet() { return Collections.unmodifiableSet(liveFailure); }
 
     public static String storeKey(String rootApiKey) { return KIND + "::" + rootApiKey; }
 

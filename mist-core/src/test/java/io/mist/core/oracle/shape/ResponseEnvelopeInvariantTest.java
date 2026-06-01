@@ -84,6 +84,50 @@ public class ResponseEnvelopeInvariantTest {
         assertTrue("non-2xx must not be evaluated by this invariant", inv.evaluate(candidate).passed);
     }
 
+    // --- Phase 4.x: runtime classifier wiring (learn-only-from-observation) ---
+
+    @Test
+    public void classifierFlagsUnknownAsFailure_failsAndCaches() {
+        // Empty learned data + a classifier that calls status=0 a failure.
+        ResponseEnvelopeInvariant inv = new ResponseEnvelopeInvariant("POST /x", ResponseEnvelopeInvariant.Data.empty())
+                .withClassifier((api, field, value, body) -> "0".equals(value) ? Boolean.TRUE : Boolean.FALSE, null);
+        TraceModel bad = buildTrace("bad", rootSpan("a", 200, "{\"status\":0,\"msg\":\"not found\"}"));
+        TraceShapeVerdict.InvariantOutcome out = inv.evaluate(bad);
+        assertFalse("classifier-flagged soft error must fail", out.passed);
+        assertEquals(TraceShapeVerdict.Severity.ERROR, out.severity);
+        assertTrue("value cached into live failure set", inv.getLiveFailureSet().contains("0"));
+    }
+
+    @Test
+    public void classifierFlagsUnknownAsSuccess_passesAndCaches() {
+        ResponseEnvelopeInvariant inv = new ResponseEnvelopeInvariant("POST /x", ResponseEnvelopeInvariant.Data.empty())
+                .withClassifier((api, field, value, body) -> Boolean.FALSE, null);
+        TraceModel ok = buildTrace("ok", rootSpan("a", 200, "{\"status\":7}"));
+        assertTrue("classifier-confirmed success passes", inv.evaluate(ok).passed);
+        assertTrue("value cached into live success set", inv.getLiveSuccessSet().contains("7"));
+    }
+
+    @Test
+    public void classifierCalledOncePerValue_thenCached() {
+        int[] calls = {0};
+        ResponseEnvelopeInvariant inv = new ResponseEnvelopeInvariant("POST /x", ResponseEnvelopeInvariant.Data.empty())
+                .withClassifier((api, field, value, body) -> { calls[0]++; return Boolean.TRUE; }, null);
+        TraceModel bad = buildTrace("bad", rootSpan("a", 200, "{\"status\":0}"));
+        inv.evaluate(bad);
+        inv.evaluate(bad); // same value again resolves from the cached failure set
+        assertEquals("second sighting must not re-invoke the classifier", 1, calls[0]);
+    }
+
+    @Test
+    public void classifierReturningNullStaysPermissive() {
+        ResponseEnvelopeInvariant inv = new ResponseEnvelopeInvariant("POST /x", ResponseEnvelopeInvariant.Data.empty())
+                .withClassifier((api, field, value, body) -> null, null);
+        TraceModel candidate = buildTrace("c", rootSpan("a", 200, "{\"status\":9}"));
+        TraceShapeVerdict.InvariantOutcome out = inv.evaluate(candidate);
+        assertTrue("unclassifiable value must not fail", out.passed);
+        assertFalse("nothing cached when classifier abstains", inv.getLiveFailureSet().contains("9"));
+    }
+
     private TraceModel buildTrace(String tid, TraceModel.Span span) {
         return new TraceModel(tid, Collections.singletonList(span));
     }
