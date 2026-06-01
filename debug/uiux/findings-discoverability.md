@@ -198,3 +198,28 @@ every framework surveyed. The contribution needs a **run-level count a user sees
 (console summary + exit code + Allure overview), one **filterable handle** (tag/category), and one
 **opt-in escalation** (`--fail-on=warn`). P0 items 1–3 are low-effort (plumbing partly exists) and
 are what make the demo's hidden-downstream claim *visible* rather than asserted.
+
+## End-to-end validation on a live SUT (2026-06-01)
+Ran the FULL pipeline (generate→execute→oracle) on Online Boutique under a live `adservice`
+outage to confirm the finding actually surfaces in the reports. It uncovered a BLOCKER the offline
+`OracleCheck` could never catch:
+- **The trace-shape oracle threw `UnsupportedOperationException` on every test** → a "Trace Shape
+  Oracle Error" attachment, NO verdict → 0 findings (console summary AND Allure both said "no
+  anomalies" *despite the outage*). Root cause: `TraceModel.Span` wrapped `tags` in
+  `Collections.unmodifiableMap`, so the writer's response-body injection (`root.tags.put(...)`,
+  added for ResponseEnvelope) threw. A regression introduced post-2026-05-30; offline `OracleCheck`
+  never injects a body, so the bug **hid behind green offline evidence**. Fixed — `Span` now stores a
+  mutable `HashMap` copy (commit `7e2f9356`); a repro over the captured outage trace fires
+  `HIDDEN_DOWNSTREAM_FAILURE` 7/12 (matching `OracleCheck`) instead of throwing.
+- **After the fix the full run surfaces it end-to-end.** Console summary:
+  `🕳️ Hidden downstream failure  WARN 1 — POST /cart → "...1 downstream span server-errored
+  (swallowed): frontend→adservice...:9555 http=200 otel=ERROR" (11×, trace 1c28b419)`; the Allure
+  verdict shows `HIDDEN_DOWNSTREAM_FAILURE passed:false / WARN` with that swallowed span; **0** oracle
+  errors.
+- **Empirically confirms the discoverability thesis.** The WARN finding leaves the Allure test
+  **GREEN** (an attachment on a passing test — exactly the reviewer's critique); the **console
+  summary is the surface that makes it impossible to miss**. (Caveat: the e2e firing is sparser than
+  the offline 7/12 — the generated tests' marker-fetched traces vary and many requests 422 — but it
+  *does* fire, on `POST /cart`.)
+- **Lesson:** running only the offline harness would never have caught this — the live full run +
+  reading the actual report was the validation that mattered.
