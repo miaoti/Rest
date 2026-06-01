@@ -1,15 +1,16 @@
-% Figure 2: Captured Jaeger trace, a Sniper negative variant against
-% POST /api/v1/adminrouteservice/adminroute on TrainTicket.
-% Trace ID: d4c577d47bcba04a00ef9b3edcbcacf6 (test_negative_POST_1_81).
-% Source: src/main/resources/My-Example/trainticket/allure-results/
-%   4a67e7c8-4fd2-4b6a-a698-1b1cec487a6d-attachment.txt
+% Figure 2: Captured Jaeger trace of GET /api/v1/products/{id}/reviews on Istio
+% Bookinfo under a real `ratings` outage (ratings scaled to 0). The client-facing
+% entry returns HTTP 200 (reviews degrades gracefully), yet a deeper ratings span
+% server-errored (503 / otel=ERROR) and was swallowed -- a HiddenDownstreamFailure.
+% Source (committed): docs/main-contribution/evidence/bookinfo_e2e_traces/
+%   masked_reviews_ratings_outage.json  (6 spans; productpage 200 -> reviews 200
+%   -> ratings 503 otel=ERROR). Reproduced by evaluation/suts/bookinfo/run-oracle-e2e.sh.
 %
-% Layout: Gantt-style timeline + tabular metadata, the standard for
-% distributed-trace figures (cf. Sigelman et al., Dapper; Jaeger UI;
-% Mace et al., Pivot Tracing).  Each span is one row; columns are
+% Layout: Gantt-style timeline + tabular metadata, the standard for distributed-
+% trace figures (cf. Sigelman et al., Dapper; Jaeger UI; Mace et al., Pivot
+% Tracing). Each span is one row; columns are
 %   span name | service | HTTP | timeline bar | duration.
-% The highlighted row is the span the Trace-Aware Oracle pins the
-% rejection to; a "soft error" tag links it to the captured body.
+% The highlighted row is the swallowed downstream failure the trace oracle fires on.
 \begin{tikzpicture}[
   font=\footnotesize,
   >={Stealth[length=2mm]},
@@ -19,6 +20,8 @@
                    font=\scriptsize, text=gray!50!black},
   statlbl/.style ={anchor=base, inner sep=1pt, text depth=0pt,
                    font=\scriptsize\bfseries, text=gray!25!black},
+  staterr/.style ={anchor=base, inner sep=1pt, text depth=0pt,
+                   font=\scriptsize\bfseries, text=red!70!black},
   durlbl/.style  ={anchor=base east, inner sep=1pt, text depth=0pt,
                    font=\scriptsize, text=gray!45!black},
   hdrlbl/.style  ={anchor=base west, inner sep=1pt,
@@ -30,7 +33,7 @@
   barar/.style   ={draw=orange!50!brown, fill=orange!20, line width=0.35pt,
                    rounded corners=0.4pt, minimum height=2.6mm,
                    inner sep=0pt, anchor=west},
-  barhi/.style   ={draw=orange!75!black, fill=orange!42, line width=0.8pt,
+  barhi/.style   ={draw=red!75!black, fill=red!35, line width=0.8pt,
                    rounded corners=0.4pt, minimum height=2.9mm,
                    inner sep=0pt, anchor=west},
   % --- Tree connector (left-margin hierarchy) ---
@@ -39,8 +42,8 @@
   vbox/.style    ={draw=gray!55, line width=0.5pt, rounded corners=2pt,
                    fill=gray!5, align=left, inner sep=5pt,
                    font=\footnotesize, text width=9.6cm},
-  bodybox/.style ={draw=orange!60!black, line width=0.6pt, rounded corners=2pt,
-                   fill=orange!6, align=left, inner sep=5pt,
+  bodybox/.style ={draw=red!55!black, line width=0.6pt, rounded corners=2pt,
+                   fill=red!5, align=left, inner sep=5pt,
                    font=\scriptsize\ttfamily, text width=5.6cm}
 ]
 
@@ -51,95 +54,65 @@
 \node[hdrlbl] at (6.00, 0.55) {Service};
 \node[hdrlbl, anchor=base] at (9.75, 0.55) {HTTP};
 \node[hdrlbl] at (10.10, 0.55)
-  {Timeline\quad\textit{\scriptsize(1\,ms\,$\approx$\,0.72\,cm)}};
+  {Timeline\quad\textit{\scriptsize(10\,ms\,$\approx$\,0.56\,cm)}};
 \node[hdrlbl, anchor=base east] at (16.95, 0.55) {Duration};
 \draw[gray!45, line width=0.3pt] (-0.05, 0.30) -- (16.98, 0.30);
 
 % =============================================================
-% Span rows.
-% Layout columns (cm):
-%   span name col      x in [0.00, 5.90]   (indent steps 0.18..1.46)
-%   service col        x in [6.00, 9.50]
-%   HTTP status col    x  = 9.75 (centred)
-%   timeline bar col   x in [10.10, 14.95]   (1 ms = 0.72 cm)
-%   duration col       right-aligned at x = 16.95
-% Bars are drawn with anchor=west and a small upward offset (0.08 cm)
-% so they centre on the row's x-height rather than the text baseline.
-% Bar starts are staggered to suggest call nesting (parent starts
-% first, child starts slightly later, etc.).
+% Span rows (productpage -> reviews -> ratings), real outage trace.
+%   timeline bar col   x in [10.10, 14.95]   (10 ms = 0.56 cm)
 % =============================================================
 
-% Row A : POST /adminroute  @ ts-gateway-service     6.1 ms, 200
-\node[spanlbl] at (0.18,  0.00) {\textbf{POST /adminroute}};
-\node[svclbl]  at (6.00,  0.00) {ts-gateway-service};
+% Row A : GET /api/v1/products/0/reviews  @ productpage   85 ms, 200  (client-facing entry)
+\node[spanlbl] at (0.18,  0.00) {\textbf{GET /api/v1/products/0/reviews}};
+\node[svclbl]  at (6.00,  0.00) {productpage.default};
 \node[statlbl] at (9.75,  0.00) {200};
-\node[bargw, minimum width=4.392cm] at (10.100,  0.08) {};
-\node[durlbl]  at (16.95, 0.00) {6.1\,ms};
+\node[bargw, minimum width=4.760cm] at (10.100,  0.08) {};
+\node[durlbl]  at (16.95, 0.00) {85\,ms};
 
-% Row B : FilteringWebHandler.handle  @ ts-gateway-service     5.6 ms
-\node[spanlbl] at (0.50, -0.55) {FilteringWebHandler.handle};
-\node[svclbl]  at (6.00, -0.55) {ts-gateway-service};
-\node[bargw, minimum width=4.032cm] at (10.244, -0.47) {};
-\node[durlbl]  at (16.95, -0.55) {5.6\,ms};
+% Row B : GET reviews  @ reviews   80 ms, 200  (productpage -> reviews; swallows the failure)
+\node[spanlbl] at (0.50, -0.55) {GET /reviews/0  (productpage\,$\to$\,reviews)};
+\node[svclbl]  at (6.00, -0.55) {reviews.default};
+\node[statlbl] at (9.75, -0.55) {200};
+\node[bargw, minimum width=4.480cm] at (10.300, -0.47) {};
+\node[durlbl]  at (16.95, -0.55) {80\,ms};
 
-% Row C : POST (gateway client)  ts-gateway -> ts-admin-route     4.0 ms, 200
-\node[spanlbl] at (0.82, -1.10) {POST (gateway~client)};
-\node[svclbl]  at (6.00, -1.10) {ts-gateway-service};
-\node[statlbl] at (9.75, -1.10) {200};
-\node[bargw, minimum width=2.880cm] at (10.460, -1.02) {};
-\node[durlbl]  at (16.95, -1.10) {4.0\,ms};
-
-% Row D : POST /adminroute  @ ts-admin-route-service     3.6 ms, 200  [highlighted]
-\node[spanlbl] at (1.14, -1.65) {\textbf{POST /adminroute}};
-\node[svclbl]  at (6.00, -1.65) {ts-admin-route-service};
-\node[statlbl] at (9.75, -1.65) {200};
-\node[barhi, minimum width=2.592cm] at (10.604, -1.57) {};
-\node[durlbl]  at (16.95, -1.65) {3.6\,ms};
-
-% Row E : AdminRouteController.addRoute  @ ts-admin-route-service     1.0 ms
-\node[spanlbl] at (1.46, -2.20) {AdminRouteController.addRoute};
-\node[svclbl]  at (6.00, -2.20) {ts-admin-route-service};
-\node[barar, minimum width=0.720cm] at (11.540, -2.12) {};
-\node[durlbl]  at (16.95, -2.20) {1.0\,ms};
+% Row C : GET ratings  @ ratings   0.2 ms, 503 + otel=ERROR  [highlighted: swallowed downstream failure]
+\node[spanlbl] at (0.82, -1.10) {\textbf{GET /ratings/0}  (reviews\,$\to$\,ratings)};
+\node[svclbl]  at (6.00, -1.10) {ratings.default};
+\node[staterr] at (9.75, -1.10) {503};
+\node[barhi, minimum width=0.120cm] at (14.700, -1.02) {};
+\node[anchor=base west, font=\scriptsize\bfseries, text=red!70!black, inner sep=1pt]
+      (errtag) at (14.95, -1.10) {503 / otel=ERROR \;(swallowed)};
+\node[durlbl]  at (16.95, -1.55) {0.2\,ms};
 
 % --- Hierarchical tree connectors in the left margin.
-%     Each level indents 0.32 cm; the small "L" connects parent
-%     vertical to child horizontal stub.
 \draw[treeln] (0.06, -0.08) -- (0.06, -0.55) -- (0.14, -0.55);
 \draw[treeln] (0.38, -0.63) -- (0.38, -1.10) -- (0.46, -1.10);
-\draw[treeln] (0.70, -1.18) -- (0.70, -1.65) -- (0.78, -1.65);
-\draw[treeln] (1.02, -1.73) -- (1.02, -2.20) -- (1.10, -2.20);
-
-% --- Soft-error tag, anchored just past the end of the highlighted bar
-\node[anchor=base west, font=\scriptsize\bfseries, text=orange!70!black,
-      inner sep=1pt] (softtag) at (13.30, -1.65) {soft error};
 
 % =============================================================
-% Trace-Aware Oracle verdict (bottom-left)
+% Trace Shape Oracle verdict (bottom-left)
 % =============================================================
-\node[vbox, anchor=north west] (vrd) at (-0.05, -2.85) {%
+\node[vbox, anchor=north west] (vrd) at (-0.05, -1.95) {%
 \textbf{Trace Shape Oracle verdict.}\\[2pt]
-\begin{tabular}{@{}l@{\hspace{0.7em}}p{6.0cm}@{}}
-\textbf{SpanTreeShape}     & passes (tree matches learned shape). \\
-\textbf{StatusPropagation} & passes (every span returns 200; no \texttt{otel.status\_code=ERROR}). \\
-\textbf{ResponseEnvelope}  & \emph{fails} on \texttt{\{status:0,\,data:null\}}; invariant learned from the first 2xx response, then cached. \\
-\textbf{Attribution}       & rejection pinned to \texttt{ts-admin-route-service} (highlighted span). \\
+\begin{tabular}{@{}l@{\hspace{0.7em}}p{6.4cm}@{}}
+\textbf{Response-level} & \emph{passes / misses}: entry is \texttt{HTTP 200}; a status-, schema-, or body-only oracle records the run as success. \\
+\textbf{StatusPropagation} & passes (no learned per-API baseline for this SUT). \\
+\textbf{HiddenDownstreamFailure} & \emph{fires} (\textsc{error}): the \texttt{200} entry hides a \texttt{ratings} span at \texttt{503}/\texttt{otel.status\_code=ERROR}, swallowed by \texttt{reviews}. Label-free, no LLM. \\
 \end{tabular}};
 
 % =============================================================
-% Response body callout (bottom-right)
+% Client response callout (bottom-right)
 % =============================================================
-\node[bodybox, anchor=north east] (body) at (16.95, -2.85) {%
-\textnormal{\footnotesize\textbf{Response body}} (HTTP 200):\\[2pt]
-\{\\
-\ \ "status": 0,\\
-\ \ "msg": "start or end station\\
-\ \ \ \ \ \ \ \ \ not include in stationList.",\\
-\ \ "data": null\\
-\}};
+\node[bodybox, anchor=north east] (body) at (16.95, -1.95) {%
+\textnormal{\footnotesize\textbf{Client response}} (HTTP 200):\\[2pt]
+reviews rendered \emph{without} ratings\\
+(graceful degradation). The swallowed\\
+\texttt{503} is \textbf{not} in the client\\
+response --- only in the trace.};
 
-% --- Arrow: soft-error tag drops straight down to the body callout ---
-\draw[->, thick, orange!70!black]
-     (softtag.south) -- (softtag.south |- body.north);
+% --- Arrow: swallowed tag drops to the response callout ---
+\draw[->, thick, red!65!black]
+     (errtag.south) -- (errtag.south |- body.north);
 
 \end{tikzpicture}
