@@ -129,7 +129,7 @@ upstream public `codewisdom/*` images. Built-in account `admin`/`222222`. See th
 | Paper claim | Reproduce via | Evidence / output | Needs |
 |---|---|---|---|
 | Bookinfo: 200 hides a swallowed downstream 5xx; trace oracle catches it, response-level misses (Fig.1) | §5 cmd 1 / §6.2 | `bookinfo_e2e_traces/`, `bookinfo_e2e_pipeline.md` | offline / kind |
-| Online Boutique: same over gRPC, clean body (7 of 12 outage traces fire, 0 healthy) | §5 cmd 2 / §6.2 | `boutique_e2e_traces/`, `boutique_e2e_pipeline.md` | offline / kind |
+| Online Boutique: same over gRPC, clean body (7 of 12 committed outage traces fire — every frontend trace through the failed adservice — 0 healthy; fresh re-capture confirms 24/40, 0/30) | §5 cmd 2 / §6.2 | `boutique_e2e_traces/` (+ `*_recapture.json`), `boutique_e2e_pipeline.md` | offline / kind |
 | TrainTicket soft error (200 + status:0) caught by ResponseEnvelope (§2) | §5 cmd 3 | `responseenvelope_live_softerror.txt` | offline + 1 LLM call |
 | TrainTicket: MIST detects all 10 injected faults / 15,036 tests (§5) | §6.3 (or inspect) | `debug/negative_test/runs/run22-fault-detection-10of10.txt` | committed report / live=beefy host |
 | Sock Shop soft error (200 + {status_code:500}) | inspect / §6.2 | `sockshop_softerror/sockshop_catalogue_outage.json` | committed body / kind |

@@ -74,3 +74,28 @@ java -cp mist-cli/target/mist.jar evaluation/suts/bookinfo/OracleCheck.java \
      docs/main-contribution/evidence/boutique_e2e_traces/boutique_adservice_outage.json "GET /"
 kubectl scale deploy adservice -n boutique --replicas=1          # restore
 ```
+
+## Re-capture & double-check (2026-06-01)
+The "X of 12" count is **workload-mix dependent**, not a stable headline: the deep,
+`adservice`-bearing frontend traces come from Online Boutique's built-in
+`loadgenerator` (realistic user journeys), and the captured set is "the N most recent
+frontend traces", so the exact ratio reflects how many of those journeys traversed
+`adservice`. On the committed `boutique_adservice_outage.json`: **8 of 12** traces route
+through `adservice`; **7** fire (all 7 are `frontend`-rooted: root `HTTP 200` + a
+swallowed `adservice` `otel=ERROR`). The 8th `adservice`-routing trace is rooted at
+`productcatalogservice` (an internal entry, not the client-facing `frontend`), so from
+the edge it is correctly **not** flagged; the other 4 traces never reach `adservice`.
+So "every **frontend** trace that routed through the failed `adservice` fires" = 7/7,
+and **0** of the 12 healthy controls fire. (The paper previously quoted "8 of 12",
+conflating the *route-through* count with the *fire* count; corrected to 7.)
+
+A fresh re-capture (`workload/capture-traces-controlled.sh`: `loadgenerator` kept
+running, `adservice` scaled to 0, Jaeger warmed) independently reproduces this —
+**24 of 40** outage traces flagged, all root-`200` with a swallowed `adservice` error,
+and **0 of 30** healthy. Committed: `boutique_adservice_outage_recapture.json`,
+`boutique_frontend_healthy_recapture.json`.
+
+> Capture gotcha (learned here): a plain `curl /` yields a shallow 1–2 span trace with
+> no downstream fan-out, and a freshly-restarted Jaeger needs ~60s of warm traffic
+> before traces are deep. Drive via the `loadgenerator` and warm up first, or the oracle
+> sees no swallowed span and (correctly) does not fire — a false 0.
