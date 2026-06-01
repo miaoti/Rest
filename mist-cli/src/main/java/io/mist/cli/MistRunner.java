@@ -438,6 +438,16 @@ public final class MistRunner {
                 logger.info("🔧 TEST CASE ENHANCER ENABLED - {} enhancement round(s) configured", enhancerRounds);
                 logger.info("═══════════════════════════════════════════════════════════════════════════");
                 executeWithEnhancement(actualPackageName, className, enhancerRounds, skip5xx, id);
+            } else if (forceDisableEnhancer) {
+                // Fix A (two-phase Phase A): a single capture-enabled execution with 0 enhancer rounds — no
+                // negative-rescue retries (Phase A is positives-only and has nothing to enhance), but the loop
+                // still runs executeTestsWithCollector once, which enableCapture()s and then
+                // drainParameterObservationsToRegistry()s. This is what marks the positive values that returned
+                // 2xx as VERIFIED_VALID for Phase B's verified pool. Plain executeGeneratedTestsWithJUnit never
+                // enables capture, which left the verified pool permanently empty (see debug/grounding/).
+                logger.info("🔧 PHASE A: capture-only execution (0 enhancer rounds) to harvest VERIFIED_VALID");
+                executeWithEnhancement(actualPackageName, className, 0, skip5xx, id,
+                        /*exploreStatusCodes=*/false);
             } else {
                 executeGeneratedTestsWithJUnit(actualPackageName, className);
             }
@@ -1218,6 +1228,14 @@ public final class MistRunner {
      */
     private void executeWithEnhancement(String fullPackageName, String className,
                                                int enhancerRounds, boolean skip5xx, String testId) {
+        // Default: status-code exploration follows its own config flag (orthogonal to enhancer rounds).
+        executeWithEnhancement(fullPackageName, className, enhancerRounds, skip5xx, testId,
+                /*exploreStatusCodes=*/true);
+    }
+
+    private void executeWithEnhancement(String fullPackageName, String className,
+                                               int enhancerRounds, boolean skip5xx, String testId,
+                                               boolean exploreStatusCodes) {
         logger.info("╔══════════════════════════════════════════════════════════════════════════════╗");
         logger.info("║              TEST CASE ENHANCER - MULTI-ROUND EXECUTION                     ║");
         logger.info("╠══════════════════════════════════════════════════════════════════════════════╣");
@@ -1230,7 +1248,12 @@ public final class MistRunner {
         // Check if status code exploration is enabled
         io.mist.core.config.MstConfig.StatusCodeExploration sceCfg =
                 io.mist.core.config.MstConfig.instance().statusCodeExploration();
-        boolean statusCodeExplorationEnabled = sceCfg.enabled();
+        // Fix A: status-code exploration is orthogonal to enhancer rounds, but it is an error-seeking
+        // step that must NOT run in the two-phase positives-only Phase A (it would inject error tests,
+        // recompiles, LLM calls and a second SUT execution into the positive baseline). The Phase-A
+        // caller passes exploreStatusCodes=false; every other caller keeps the config flag as-is, so a
+        // legitimate rounds=0 + SCE-on single-phase run still explores.
+        boolean statusCodeExplorationEnabled = sceCfg.enabled() && exploreStatusCodes;
         int maxExplorationPerTest = sceCfg.maxPerTest();
         int maxExplorationPerRound = sceCfg.maxPerRound();
 

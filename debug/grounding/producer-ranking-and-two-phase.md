@@ -52,7 +52,28 @@
 3. **Recentness gate:** in `calculateScore()` count recentness only when `successRate>0` (reward recent *successful use*,
    not recent *creation*) — kills the freshness bonus a fresh discovery currently enjoys.
 
-## Fix A (two-phase validity loop) — larger, opt-in follow-on
+## Fix A — A1 DONE (2026-06-01), A2 still open
+
+**A1 (Phase-A capture) — implemented + verified.** Phase A (`forceDisableEnhancer=true`) now routes through
+`executeWithEnhancement(..., rounds=0, ...)` instead of `executeGeneratedTestsWithJUnit` — one capture-enabled
+`executeTestsWithCollector` execution (no retries) that `enableCapture()`s + `drainParameterObservationsToRegistry()`s.
+Verified end-to-end on TT: `PHASE A: capture-only execution → INTER-PHASE: resetting → reloading verified pool →
+PHASE B: negatives`, VERIFIED_VALID populated. Reviewer fix applied: `executeWithEnhancement`
+gains an explicit `exploreStatusCodes` param (5-arg overload defaults it true, so existing callers and a
+legitimate `rounds=0 + SCE-on` config are unchanged); the Phase-A capture call passes `false` so status-code
+exploration does NOT inject error-seeking tests into the positives-only baseline. (Gating on `enhancerRounds>0`
+would have wrongly coupled SCE to the retry-round count — they are orthogonal.)
+**Known edge (accepted):** `executeWithEnhancement`'s outer catch falls back to non-capturing
+`executeGeneratedTestsWithJUnit` on any exception → on a transient Phase-A failure the verified pool stays empty
+and the suite re-executes once (graceful degradation to pre-A1 behaviour; shared catch, not hardened to avoid
+risking the enhancer path). Opt-in: `mst.two.phase.enabled` stays default-off (~2× SUT execution + Phase A
+re-pollutes the DB).
+
+**A2 (producer-keyed feedback) — still open.** `markVerified` is value-keyed, not producer-keyed, so a 4xx does not
+yet lower the *producer* `ApiMapping.successRate`. Until A2, Fix B's name-affinity carries cold-start producer
+selection. Do A2 with the attribution leg.
+
+### Original design notes
 Route Phase A through a capture-enabled executor (`executeTestsWithCollector` with `enhancerRounds=0`) so it
 `enableCapture()` + `drainParameterObservationsToRegistry()` → VERIFIED_VALID populates → Phase B `preferVerifiedValues`
 uses only SUT-validated values. Keep `mst.two.phase.enabled` **opt-in** (it ~2× SUT execution). To let A also correct
