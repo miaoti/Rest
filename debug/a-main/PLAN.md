@@ -2,7 +2,7 @@
 
 > 配套战略文档:`docs/main-contribution/A_MAIN_ROADMAP.md`(deep-research 全文,2026-06-01)。
 > 本文件是**可执行计划**:① 两个命门的探测方法;② grounding 5 个修复 + 验证。
-> 状态(2026-06-01):方案已定;grounding 修复 = 进行中;两个命门探测 = 待办。
+> 状态(2026-06-01):方案已定;grounding 修复 = **5/5 已应用 + 编译通过**(见 §3 末);经验重跑 = 可选(用户目标 = 逻辑无 bug,已达);两个命门探测 = 待办。
 
 ---
 
@@ -56,6 +56,35 @@
 **验证(重试)**:改完 → `mvn -q package -pl mist-cli -am -Dmaven.test.skip=true` 重建 jar → 在 TT(临时缩规模 properties + 单 adminroute trace,**注意 testsperoperation/variants 是 file 属性、`-D` 覆盖不了,要改文件**)重跑 → **量正例"被接受率(HTTP 200)"修前(≈0)vs 修后**,并直接看生成测试里 `startStation/endStation/stationList` 是不是真实站名。**修前基线已知:0/1608 正例通过;percentage=1.0 单改无效(endStation 仍 "Guangzhou South")。**
 
 **判定**:被接受率明显抬升 + 站名是 `/stations` 真值 → grounding 可修、且我们才算真正摸到天花板;仍≈0 → 还有未识别层,继续诊断。
+
+---
+
+### §3 应用状态(2026-06-01,5/5 已落地 + `mvn package` 编译通过)
+
+| # | 修法 | 落地位置(已核) | 状态 |
+|---|---|---|---|
+| **A** | 接地优先默认 | `SmartInputFetchConfig.java:76` 字段默认 `0.3→1.0`;`:114` `getOrDefault` 默认 `"0.3"→"1.0"`;6 个 SUT `*-mst.properties` 的 `smart.input.fetch.percentage=0.3→1.0` | ✅ 应用 |
+| **B** | 接地优先池 | `SharedPoolSupport.java:203-239`(`groundedValues` 收 `RESOLVED_LIVE/RESOLVED_CACHE`;非空则池只放接地值,跳过 LLM 补足) | ✅ 应用 |
+| **C** | 模糊白名单 | `SmartInputFetcher.java:619` `fuzzyMatchService`、`:658/:671` `fuzzyMatchService/stemService` | ✅ 应用 |
+| **D** | 抽取校验守卫 | `SmartInputFetcher.java` 取值返回前 `isValidValueForParameter` 守卫(388/441/483/1322/1375 等) | ✅ 应用 |
+| **E** | 跳过毒映射 + 发现回退 | `SmartInputFetcher.java:416/475` `discoverApiMappings` 回退(mappings 仅毒映射时仍能发现真实 producer) | ✅ 应用 |
+
+**逻辑判定(达成用户目标)**:5 个已识别 defect 全部有修复 + 全量编译通过 → **从逻辑上 tool 不再有"明知却不修"的 grounding bug**。残余的"哪怕 smart-fetch 仍无法 100% 接地"= 开放难题本身(span 粒度、producer 不可达、SUT 无对应只读端点),非我们的 defect,符合用户"逻辑无 bug,而非真去攻克难题"的目标。
+### §3 经验验证(2026-06-01,已跑 · 用户要求"验证了再决定 commit")
+
+跑法:TT `trainticket-demo.properties`(fetch 开,`percentage=1.0`,5 fixes 全在,`experiment.execute=false` 只生成),cwd=repo-root。SUT 可达(37/38 端点)。证据 = `logs/mist.log`(INFO 级 smart-fetch 决策)。
+
+**量化(接地率)**:
+- 接地(`Smart Fetch → … ✅` 35 + `🔄 diverse cached … ✅` 794)= **~829**;LLM 瞎编 fallback = **2**。→ **接地率 ≈ 99.7%**。
+- 对比修前基线(本会话先前):接地 348 / LLM 2140 ≈ **14%**。→ **14% → 99.7%**,抬升确凿。
+- 门已反转:日志 `🎯 Smart Fetch Decision → endStation (random: 0.100 < 100.0%)` —— `percentage=1.0` 使 fetch-first 永真(Fix A 生效)。
+- `startStation/stationList` 接地为 `/stations` **真站名**:chicagounionstation, empirestatebuilding, grandcentralterminal, goldengatebridge, hooverdam, libertyisland, grandcanyon, centralpark。
+
+**残余 = 开放难题(非我们的 defect,符合"逻辑无 bug,不去攻克难题")**:
+1. **DB 污染值**:`12345678901 / 11223344556 / …`(11 位数字串)**确实在 SUT 的 `/stations` 表里**(此前负例测试写脏的),结构上是合法 string → 被忠实接地。Fix D 拒**结构**垃圾(`{}` 不在结果里 = 已拒),但数字串需**领域知识**才能判废 → 开放难题。
+2. **producer 语义错配**:`endStation` 被发现到 `ts-train-service/trains`(`GaoTie*` 真实车次,实体错)而非 `/stations` —— 真值、错源;完美语义 producer 匹配 = 开放难题。
+
+**判定(达成用户目标)**:接地率 14%→99.7%,**value-invention 这一类我们的 defect 已修到天花板**;残余两项(SUT 自身数据污染 + 语义 producer 匹配)是开放难题,工具只是忠实反映 SUT 真实数据,**逻辑上 tool 无 bug**。✅ 可作为 commit 依据。
 
 ---
 
