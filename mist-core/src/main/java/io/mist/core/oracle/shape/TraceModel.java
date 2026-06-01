@@ -232,9 +232,12 @@ public final class TraceModel {
             this.httpStatus = httpStatus;
             this.otelStatus = otelStatus;
             this.durationMicros = durationMicros;
-            this.tags = tags == null
-                    ? Collections.emptyMap()
-                    : Collections.unmodifiableMap(new HashMap<>(tags));
+            // Mutable on purpose: the per-test model is ephemeral and the writer injects
+            // the live client response body into the root span's tags before evaluation
+            // (Jaeger spans omit the body) so ResponseEnvelopeInvariant can read it. An
+            // unmodifiable map here made that injection throw UnsupportedOperationException,
+            // which aborted the whole oracle.evaluate (no verdict -> no findings surfaced).
+            this.tags = tags == null ? new HashMap<>() : new HashMap<>(tags);
         }
     }
 }
