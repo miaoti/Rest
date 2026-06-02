@@ -17,8 +17,6 @@
 
 % --- Packages (acmart loads hyperref/url/cite/natbib/amsmath/amssymb/booktabs
 %     internally; do NOT reload them here -- an option clash will follow). ---
-\usepackage{algorithm}
-\usepackage{algpseudocode}
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -39,6 +37,16 @@
   xleftmargin=4pt, xrightmargin=2pt, aboveskip=3pt, belowskip=3pt,
   morekeywords={for,each,if,then,else,return,let,select,one,exactly,end,procedure,Sniper}
 }
+
+% --- Compact float/caption spacing to help fit the 4-page budget.
+%     (Safe lengths; verify ACM format before camera-ready. Section-heading
+%     spacing is acmart-class-managed -- do not hack it without compiling.) ---
+\setlength{\textfloatsep}{7pt plus 1pt minus 1pt}
+\setlength{\intextsep}{7pt plus 1pt minus 1pt}
+\setlength{\floatsep}{6pt plus 1pt minus 1pt}
+\setlength{\dbltextfloatsep}{8pt plus 1pt minus 1pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
 
 % =============================================================================
 % ACM rights / conference metadata. ISBN and DOI stay as harmless placeholders
@@ -142,12 +150,12 @@ A second, harder case carries \emph{no} body evidence. Under a real \texttt{rati
 % =============================================================================
 \section{Tool Architecture}\label{sec:arch}
 
-\begin{figure*}[t]
+\begin{figure}[t]
   \centering
-  \resizebox{\textwidth}{!}{\input{figures/architecture.tex}}
-  \caption{MIST architecture and Maven module layout. \texttt{mist-core} owns all five architectural stages (spec ingest, semantic dependency registry, sequence generator, sniper strategy, trace-shape oracle) and depends on no third-party source. \texttt{mist-cli} ships the launcher \texttt{mist.jar}, the JUnit/REST-Assured writer, and the test executor. \texttt{mist-llm} is LLM dispatch and call cache. Solid arrows are MIST-issued HTTP requests; the dashed arrow is the Jaeger trace pulled back per step by the Trace Shape Oracle.}
+  \resizebox{\columnwidth}{!}{\input{figures/architecture.tex}}
+  \caption{MIST architecture and Maven modules. \texttt{mist-core} owns all five stages (spec ingest, semantic dependency registry, sequence generator, sniper strategy, trace-shape oracle) with no third-party source; \texttt{mist-cli} ships \texttt{mist.jar}, the JUnit/REST-Assured writer, and the executor; \texttt{mist-llm} is LLM dispatch + cache. Solid arrows: MIST-issued HTTP; dashed: the per-step Jaeger trace.}
   \label{fig:arch}
-\end{figure*}
+\end{figure}
 
 MIST is a Maven reactor of three modules (Figure~\ref{fig:arch}). \texttt{mist-core} owns all five architectural stages described below and contains no third-party source code: the OpenAPI parser wrapper (\texttt{io.mist.core.spec.*}), the semantic dependency registry (\texttt{io.mist.core.registry.*}), the sequence generator (\texttt{io.mist.core.generation.MistGenerator}), the sniper fault registry (\texttt{io.mist.core.fault.*}), and the trace-shape oracle (\texttt{io.mist.core.oracle.shape.*}) all live here. \texttt{mist-cli} ships the launcher \texttt{mist.jar}, the JUnit/REST-Assured writer, the test executor, and the SPI provider classes that let \texttt{mist-core} stay framework-agnostic. \texttt{mist-llm} is LLM dispatch and call cache. The build depends on REST-Assured, swagger-parser, Allure, and JUnit as ordinary Maven library artifacts --- every black-box REST tester does~\cite{MartinLopez2021RESTest,Arcuri2019EvoMasterTOSEM,Atlidakis2019RESTler} --- but the MIST repository does not vendor any forked third-party source.
 
@@ -170,18 +178,7 @@ Internal endpoints presuppose state only specific upstream calls can mint (an \t
 
 \subsection{Sniper Strategy}\label{sec:sniper}
 
-Mutating several parameters at once leaves the oracle unable to blame an anomaly on any specific cause; a single-fault test on a non-root call has the dual problem (its trace prefix is driven by other, possibly mutated, values). The Sniper Strategy (Alg.~\ref{alg:sniper}) fixes both: one parameter, one fault category, at the first root call.
-
-\begin{algorithm}[t]
-\caption{Sniper variant generation.}\label{alg:sniper}
-\begin{algorithmic}[1]
-\State $r \gets$ first root call in the scenario
-\State $k \gets$ round-robin pick of \texttt{PoolKey(name, location)} on $r$;\ \  $c \gets$ fault category applicable to $k$'s schema
-\State $v \gets pools[r][k][c].\textrm{nextRoundRobin}()$
-\State lock $(r, k, c, v)$ on the variant; fill the rest from positive sources (shared pool, smart fetch, JIT bind)
-\State record $(r, k, c, v)$ as the fault target
-\end{algorithmic}
-\end{algorithm}
+Mutating several parameters at once leaves the oracle unable to blame an anomaly on any specific cause; a single-fault test on a non-root call has the dual problem (its trace prefix is driven by other, possibly mutated, values). The Sniper Strategy fixes both: at the first root call it locks one round-robin-picked parameter to one applicable fault category and value, recorded as the fault target $(r,k,c,v)$, and fills the rest from positive sources (shared pool, smart fetch, JIT bind).
 
 \texttt{PoolKey(name, location)} lets same-named parameters at path/query/header/cookie/body enrol independently; a schema-aware filter rejects nonsense (no 5000-char \textsc{overflow} on a boolean). The recorded $(r, k, c, v)$ tuple attributes each failure to its mutation. A \emph{placeholder} provenance tag --- no value could be grounded against the live SUT --- reclassifies an ostensibly positive variant as negative up front, cutting false positives. Opt-in, \texttt{FaultMiner} mines SUT-specific categories beyond the nine defaults from OpenAPI descriptions and observed 4xx/5xx bodies, for manual promotion.
 
