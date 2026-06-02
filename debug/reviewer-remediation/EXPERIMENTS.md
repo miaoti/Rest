@@ -40,3 +40,18 @@ Paper fix = add that honest caveat in §5; do NOT claim a clean FP rate. (Caveat
 3rd body is a plausible-but-constructed control, not a captured TT response, so this
 is a *risk demonstration*, not a measured FP rate — recorded here for the team; the
 classifier's `data:null` handling is worth a follow-up if G1 is ever foregrounded.)
+
+## A1b — Bookinfo Fig 2 / Table 1 headline case, re-run (closes verification)
+Same OracleCheck harness, rootApiKey `GET /api/v1/products/0/reviews`:
+
+| trace (committed) | FIRES | severity | paper |
+|---|---|---|---|
+| masked_reviews_ratings_outage.json | **1** | **ERROR** | row 2: FIRES (red) ✅ |
+| healthy_reviews_control.json | 0 | — (silent) | row 4: silent ✅ |
+
+Verbatim on the masked case matches Figure 2 exactly: client-facing ROOT
+`productpage …/api/v1/products* http=200 otel=null`; downstream ERROR
+`reviews→ratings http=503 otel=ERROR`; RESPONSE-LEVEL PASS (misses); TRACE oracle
+HIDDEN_DOWNSTREAM_FAILURE FIRES severity=ERROR. Every trace-oracle result in the
+paper (Boutique 4 numbers + Bookinfo Fig 2/Table 1 + the ResponseEnvelope flip) is
+now independently reproduced with MIST's shipped classes.
