@@ -6,7 +6,7 @@
 > trace's entry points, observe internals via traces), the *Sniper
 > Strategy* generation engine (one fault per negative variant with full
 > per-fault attribution, over an Adaptive Fault Taxonomy that mines
-> SUT-specific categories on top of 8 built-in ones), and the *Trace
+> SUT-specific categories on top of 9 built-in ones), and the *Trace
 > Shape Oracle* (a learner + oracle that promotes a Jaeger trace into a
 > checkable assertion across four invariant families). Submitted to
 > **ISSTA 2026 Tool Demonstrations**.

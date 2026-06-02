@@ -179,3 +179,25 @@ User confirmed a full page is free, picked: G1 result + Threats-to-validity + re
   clean-body swallowed failure an LLM body/business-logic oracle cannot see. Bib 19=19,
   all verified. (R1's named neighbours addressed; 2411.07098 turned out to be the
   AutoRestTest research paper.)
+
+## ROUND 3 (2026-06-02) — unanimous 3× Weak Accept; fixed A–F
+Round-3 cold panel = 3× Weak Accept (up from 2WA+1WR); reviewers confirmed the
+round-1/2 overclaims are resolved. New finding: the honesty work OVER-corrected.
+- **A** ✅ rebalance over-hedging: §6 Limitations now leads with the capability
+  (in-process fires on both SUTs) then "Its scope is bounded"; dropped "best-effort,
+  lower-assurance complement" → "opt-in LLM judgment, complementing …"; §1 contribution
+  "(shown on real outages, not yet input-elicited)" → "(demonstrated on real outages)".
+- **B** ✅ abstract "no SUT or LLM" scoped to "this label-free verdict".
+- **C** ✅ §6 "closes the generation→oracle loop" → "couples trace-driven generation
+  with a trace-based functional oracle" (removes the loop-closed overclaim for G2).
+- **D** ✅ §5 states the 7/12 & 24/40 matrices re-run offline via OracleCheck over the
+  committed traces (proven in A1).
+- **E** ✅ §5 splits "generated 15,036" (throughput) from "matched 10/10 via the SUT's
+  own fault registry" (execution-time marker match).
+- **F** ✅ README "8 built-in"→9 (verified: fault-types.default.yaml has 9);
+  LogiAgent "discards the cross-service context" → "reads each response body rather
+  than the cross-service trace"; §5 OracleCheck listing now uses the real resolvable
+  trace path + real rootApiKey; bookinfo-demo.properties TrainTicket banner → Bookinfo.
+Verify: main 340/340, refs.bib balanced, 19 cited=19 entries, 0 dangling/unused, no
+em-dash/semicolon, no residual "lower-assurance"/"not-yet-input-elicited"/"closes…loop".
+Open: F4 screencast (author), F12 groupId (deferred).
