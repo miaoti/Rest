@@ -33,7 +33,7 @@ Options:
                      Requires --jaeger-start and --jaeger-end. The exporter
                      writes to --post-exec-trace-dir (default: <out>/post_exec_traces)
                      and the metric pipeline then reads from there.
-  --jaeger-base URL  Jaeger UI API base (default: http://129.62.148.112:30005/jaeger/ui/api)
+  --jaeger-base URL  Jaeger UI API base (default: http://localhost:30005/jaeger/ui/api)
   --jaeger-service S Repeatable service name (default: ts-gateway-service)
   --jaeger-start TS  Window start (epoch s/ms/us — auto-detected)
   --jaeger-end TS    Window end (epoch s/ms/us — auto-detected)

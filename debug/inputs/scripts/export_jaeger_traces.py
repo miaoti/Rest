@@ -27,7 +27,7 @@ The exporter:
 
 Usage:
     python3 export_jaeger_traces.py \
-        --base http://129.62.148.112:30005/jaeger/ui/api \
+        --base http://localhost:30005/jaeger/ui/api \
         --service ts-gateway-service \
         --start "$START_EPOCH" --end "$END_EPOCH" \
         --out logs/post_exec_traces/
@@ -321,7 +321,7 @@ def write_output(traces: list[dict], out_dir: Path) -> Path:
 def main(argv: list[str], client_factory=JaegerClient) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--base", default=os.environ.get(
-        "JAEGER_BASE_URL", "http://129.62.148.112:30005/jaeger/ui/api"))
+        "JAEGER_BASE_URL", "http://localhost:30005/jaeger/ui/api"))
     p.add_argument("--service", action="append", default=None,
                    help="Repeatable. Service name to query. Default: "
                         "ts-gateway-service (recommended for distributed traces).")
