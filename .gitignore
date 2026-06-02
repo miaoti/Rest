@@ -130,3 +130,6 @@ mist-cli/src/test/java/trainticket_twostage_test/
 
 # Generated Allure HTML report — regenerated per run, not a source artifact
 allure-report/
+
+# Allure report assets (build output)
+/allure/
