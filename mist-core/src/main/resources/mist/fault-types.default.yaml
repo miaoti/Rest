@@ -57,3 +57,13 @@ faults:
     applicableTo: [string, integer, number, array]
     applicableLocations: [path, query, header, cookie, body]
     source: DEFAULT
+
+  # Schema-aware enum violation: a value of the correct TYPE that is NOT a member
+  # of the declared enum. Passes the type check but should be rejected by enum
+  # validation — a 2xx acceptance is a silent-acceptance (under-validation) bug.
+  # Only fires when the schema declares an enum (see generateEnumViolationInputs).
+  - id: ENUM_VIOLATION
+    displayName: Enum Violation
+    applicableTo: [string, integer, number]
+    applicableLocations: [path, query, header, cookie, body]
+    source: DEFAULT

@@ -59,6 +59,7 @@ public class HardcodedInvalidInputGenerator {
         if (applies("NULL_INPUT", paramType))          generateNullInputs(param, pool);
         if (applies("SPECIAL_CHARACTERS", paramType))  generateSpecialCharacterInputs(param, pool);
         if (applies("BOUNDARY_VIOLATION", paramType))  generateBoundaryViolationInputs(param, pool);
+        if (applies("ENUM_VIOLATION", paramType))      generateEnumViolationInputs(param, pool);
         if (applies("REGEX_MISMATCH", paramType))      generateRegexMismatchInputs(param, pool);
         if (applies("SEMANTIC_MISMATCH", paramType))   generateSemanticMismatchInputs(param, pool);
         
@@ -173,7 +174,17 @@ public class HardcodedInvalidInputGenerator {
         
         switch (paramType) {
             case "string":
-                // Very long strings
+                // Honor the declared maxLength. BOUNDARY_VIOLATION already emits the
+                // precise maxLength+1 off-by-one (generateBoundaryViolationInputs,
+                // HIG ~417), so a *bounded* string needs no coarse "giant string" here
+                // — that would just be a duplicate "too long" value. Fire the large
+                // sentinels ONLY when the field is unbounded (BVA has no neighbour to
+                // violate, so a sentinel is the right stand-in).
+                if (param.getMaxLength() != null) {
+                    log.debug("    ⤷ OVERFLOW deferring to BOUNDARY_VIOLATION (maxLength={} declared)",
+                            param.getMaxLength());
+                    break;
+                }
                 pool.addValue("OVERFLOW", "A".repeat(1000));
                 pool.addValue("OVERFLOW", "X".repeat(5000));
                 pool.addValue("OVERFLOW", "Z".repeat(10000));
@@ -446,6 +457,125 @@ public class HardcodedInvalidInputGenerator {
         }
     }
     
+    /**
+     * Generate enum-violation inputs: values of the correct TYPE that are NOT
+     * members of the declared {@code enum}. Such a value passes the type check
+     * but should be rejected by enum validation — a server that accepts it (2xx)
+     * has an enum under-validation (silent-acceptance) bug.
+     *
+     * <p>No-op when no enum is declared (mirrors BOUNDARY's skip-when-unbounded:
+     * the fault label always has schema grounding, so it stays D10-NIFP
+     * label-pure). Numeric members are parsed from the {@code List<String>} enum;
+     * non-parseable members are skipped, and numeric candidates are emitted as
+     * raw {@link Number}s (parity with BOUNDARY) so that only the enum check —
+     * not the type check — is what rejects them.
+     *
+     * <p>Package-private for reuse by {@link ZeroShotLLMGenerator}'s smart/llm modes.
+     */
+    void generateEnumViolationInputs(ParameterInfo param, InvalidInputPool pool) {
+        if (!param.hasEnum()) {
+            log.debug("    ⤷ skipping ENUM_VIOLATION: no enum declared in schema");
+            return;
+        }
+        List<String> members = param.getEnumValues();
+        String paramType = safeStr(param.getType()).toLowerCase();
+        log.debug("  📝 Generating ENUM_VIOLATION for '{}' (enum size {})", param.getName(), members.size());
+
+        switch (paramType) {
+            case "integer":
+            case "int":
+            case "long": {
+                List<Long> nums = parseLongMembers(members);
+                if (nums.isEmpty()) {
+                    // Typed integer but no member parses as a long — fall back to a
+                    // string non-member so the fault still fires.
+                    addStringEnumViolations(members, pool);
+                    return;
+                }
+                long max = Collections.max(nums);
+                long min = Collections.min(nums);
+                if (max < Long.MAX_VALUE)                    addLongIfNotMember(pool, nums, max + 1);
+                if (min > Long.MIN_VALUE && (min - 1) != max) addLongIfNotMember(pool, nums, min - 1);
+                // Gap value: an integer strictly between two distinct sorted members.
+                Long gap = firstGapLong(nums);
+                if (gap != null)                              addLongIfNotMember(pool, nums, gap);
+                break;
+            }
+            case "number":
+            case "double":
+            case "float": {
+                List<Double> nums = parseDoubleMembers(members);
+                if (nums.isEmpty()) {
+                    addStringEnumViolations(members, pool);
+                    return;
+                }
+                double max = Collections.max(nums);
+                double min = Collections.min(nums);
+                if (Double.isFinite(max)) addDoubleIfNotMember(pool, nums, max + 1.0);
+                if (Double.isFinite(min)) addDoubleIfNotMember(pool, nums, min - 1.0);
+                break;
+            }
+            default:
+                // string (and any other) — emit fresh, well-formed non-member strings.
+                addStringEnumViolations(members, pool);
+                break;
+        }
+    }
+
+    /** Emit right-type (string) values that are guaranteed not in the enum set. */
+    private void addStringEnumViolations(List<String> members, InvalidInputPool pool) {
+        String first = members.isEmpty() ? "x" : members.get(0);
+        for (String candidate : new String[]{
+                "__not_in_enum__",
+                first + "_x",
+                UUID.randomUUID().toString()}) {
+            if (!members.contains(candidate)) {
+                pool.addValue("ENUM_VIOLATION", candidate);
+            }
+        }
+    }
+
+    private static void addLongIfNotMember(InvalidInputPool pool, List<Long> members, long candidate) {
+        if (!members.contains(candidate)) {
+            pool.addValue("ENUM_VIOLATION", candidate);
+        }
+    }
+
+    private static void addDoubleIfNotMember(InvalidInputPool pool, List<Double> members, double candidate) {
+        if (!members.contains(candidate)) {
+            pool.addValue("ENUM_VIOLATION", candidate);
+        }
+    }
+
+    private static List<Long> parseLongMembers(List<String> members) {
+        List<Long> out = new ArrayList<>();
+        for (String m : members) {
+            if (m == null) continue;
+            try { out.add(Long.parseLong(m.trim())); } catch (NumberFormatException ignore) { /* skip non-numeric */ }
+        }
+        return out;
+    }
+
+    private static List<Double> parseDoubleMembers(List<String> members) {
+        List<Double> out = new ArrayList<>();
+        for (String m : members) {
+            if (m == null) continue;
+            try { out.add(Double.parseDouble(m.trim())); } catch (NumberFormatException ignore) { /* skip */ }
+        }
+        return out;
+    }
+
+    /** First integer strictly between two distinct sorted members, or null if none. */
+    private static Long firstGapLong(List<Long> nums) {
+        List<Long> sorted = new ArrayList<>(new TreeSet<>(nums)); // dedup + ascending
+        for (int i = 0; i + 1 < sorted.size(); i++) {
+            if (sorted.get(i + 1) - sorted.get(i) >= 2) {
+                return sorted.get(i) + 1;
+            }
+        }
+        return null;
+    }
+
     /**
      * Generate regex mismatch inputs based on parameter name patterns.
      */

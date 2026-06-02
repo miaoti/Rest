@@ -251,6 +251,9 @@ public class ZeroShotLLMGenerator {
             hc.generateSpecialCharacterInputs(param, pool);
         if (HardcodedInvalidInputGenerator.applies("BOUNDARY_VIOLATION", paramType))
             hc.generateBoundaryViolationInputs(param, pool);
+        // Enum violation is deterministic (a typed non-member) — no LLM needed.
+        if (HardcodedInvalidInputGenerator.applies("ENUM_VIOLATION", paramType))
+            hc.generateEnumViolationInputs(param, pool);
 
         // Context-aware categories — LLM earns its keep here.
         if (HardcodedInvalidInputGenerator.applies("REGEX_MISMATCH", paramType))
@@ -271,6 +274,8 @@ public class ZeroShotLLMGenerator {
         io.mist.core.fault.InvalidInputPool pool =
             new io.mist.core.fault.InvalidInputPool(param.getName(), paramType);
 
+        HardcodedInvalidInputGenerator hc = hardcodedGen();
+
         // Same applicability gating as smart mode — fault types only fire when
         // they have a meaningful interpretation against the schema's primitive type.
         if (HardcodedInvalidInputGenerator.applies("TYPE_MISMATCH", paramType))
@@ -289,6 +294,9 @@ public class ZeroShotLLMGenerator {
             generateSpecialCharacterInputs(param, pool);
         if (HardcodedInvalidInputGenerator.applies("BOUNDARY_VIOLATION", paramType))
             generateBoundaryViolationInputs(param, pool);
+        // Enum violation has no LLM variant — always the deterministic typed non-member.
+        if (HardcodedInvalidInputGenerator.applies("ENUM_VIOLATION", paramType))
+            hc.generateEnumViolationInputs(param, pool);
 
         System.out.println("*** [LLM] Generated invalid input pool:\n" + pool.getPoolSummary());
         return pool;
@@ -526,10 +534,20 @@ public class ZeroShotLLMGenerator {
      * Generate semantically invalid inputs
      */
     private void generateSemanticMismatchInputs(ParameterInfo param, io.mist.core.fault.InvalidInputPool pool) {
+        // When an enum is declared, those are the VALID values. Tell the model to
+        // AVOID them (inverted framing — never a MUST-use list, which would pull the
+        // model toward validity). ENUM_VIOLATION already covers non-members
+        // deterministically; this just stops SEMANTIC from accidentally emitting a
+        // member the SUT would accept (which would defeat the negative).
+        String enumHint = param.hasEnum()
+                ? "These values are VALID and must NOT be produced (avoid them): ["
+                  + String.join(", ", param.getEnumValues()) + "]\n"
+                : "";
         String prompt = "Current Date/Time: " + getCurrentTimestamp() + "\n\n" +
                        "Generate 5-8 SEMANTICALLY INVALID values for parameter '" + param.getName() + "'.\n" +
                        "Type: " + param.getType() + "\n" +
-                       "Description: " + safeStr(param.getDescription()) + "\n\n" +
+                       "Description: " + safeStr(param.getDescription()) + "\n" +
+                       enumHint + "\n" +
                        "Generate values that have correct type and format but are MEANINGLESS or IMPOSSIBLE.\n" +
                        "IMPORTANT: Include BOTH long meaningless values AND very SHORT invalid values!\n\n" +
                        "Categories to cover:\n" +
@@ -554,11 +572,16 @@ public class ZeroShotLLMGenerator {
         
         String response = callLLM(prompt);
         List<String> values = parseLines(response);
-        
+
         for (String value : values) {
+            // Post-filter (Schemathesis `not is_valid` discipline, enum dimension):
+            // an enum member is a VALID value, so it is not a negative — drop it.
+            if (param.hasEnum() && param.getEnumValues().contains(value)) {
+                continue;
+            }
             pool.addValue("SEMANTIC_MISMATCH", value);
         }
-        
+
         // Also add some hardcoded very short semantic mismatches that LLM might miss
         pool.addValue("SEMANTIC_MISMATCH", "x");
         pool.addValue("SEMANTIC_MISMATCH", "1");
@@ -601,9 +624,13 @@ public class ZeroShotLLMGenerator {
             pool.addValue("OVERFLOW", value);
         }
         
-        // Add guaranteed overflow values
+        // Add guaranteed overflow values. For strings, honor a declared maxLength:
+        // BOUNDARY_VIOLATION owns the precise maxLength+1, so only fire the giant
+        // sentinel when the field is unbounded (avoids a duplicate "too long" value).
         if ("string".equals(paramType)) {
-            pool.addValue("OVERFLOW", "A".repeat(10000)); // Very long string
+            if (param.getMaxLength() == null) {
+                pool.addValue("OVERFLOW", "A".repeat(10000)); // Very long string
+            }
         } else if (paramType.contains("int")) {
             pool.addValue("OVERFLOW", Integer.MAX_VALUE);
         }

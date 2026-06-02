@@ -18,8 +18,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * Locks in the default-YAML registry semantics. The eight default ids match
- * the legacy {@code InvalidInputType} enum byte-for-byte; this fixture
+ * Locks in the default-YAML registry semantics. Eight of the default ids match
+ * the legacy {@code InvalidInputType} enum byte-for-byte; ENUM_VIOLATION is a
+ * later schema-aware addition (still {@code DEFAULT} source). This fixture
  * encodes the legacy applicability matrix as an explicit table so the
  * registry's YAML-loaded values remain pinned to the same semantics.
  */
@@ -31,7 +32,7 @@ public class FaultTypeRegistryTest {
     private static final String[] OAS_TYPES = {"string", "integer", "number", "boolean", "array", "object"};
 
     @Test
-    public void loadDefaultExposesEightLegacyIds() {
+    public void loadDefaultExposesAllDefaultIds() {
         FaultTypeRegistry registry = FaultTypeRegistry.loadDefault();
         Set<String> expected = new HashSet<>(Arrays.asList(
                 "TYPE_MISMATCH",
@@ -41,7 +42,8 @@ public class FaultTypeRegistryTest {
                 "EMPTY_INPUT",
                 "NULL_INPUT",
                 "SPECIAL_CHARACTERS",
-                "BOUNDARY_VIOLATION"));
+                "BOUNDARY_VIOLATION",
+                "ENUM_VIOLATION"));
         assertEquals(expected.size(), registry.size());
         for (String id : expected) {
             assertNotNull("registry must expose default id " + id, registry.byId(id));

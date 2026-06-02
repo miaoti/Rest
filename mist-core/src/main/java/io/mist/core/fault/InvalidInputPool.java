@@ -32,6 +32,7 @@ public class InvalidInputPool {
      */
     private static final List<String> PRIORITIZED_TYPE_ORDER = Arrays.asList(
             "BOUNDARY_VIOLATION",
+            "ENUM_VIOLATION",
             "OVERFLOW",
             "NULL_INPUT",
             "EMPTY_INPUT",

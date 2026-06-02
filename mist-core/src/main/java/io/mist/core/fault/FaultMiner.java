@@ -70,7 +70,7 @@ public final class FaultMiner {
     static final Set<String> ALLOWED_LOCATIONS = Collections.unmodifiableSet(new LinkedHashSet<>(
             Arrays.asList("path", "query", "header", "cookie", "body")));
 
-    /** The eight legacy defaults — candidates colliding with these are rejected silently. */
+    /** The built-in defaults — candidates colliding with these are rejected silently. */
     static final Set<String> DEFAULT_IDS = Collections.unmodifiableSet(new LinkedHashSet<>(
             Arrays.asList(
                     "TYPE_MISMATCH",
@@ -80,7 +80,8 @@ public final class FaultMiner {
                     "EMPTY_INPUT",
                     "NULL_INPUT",
                     "SPECIAL_CHARACTERS",
-                    "BOUNDARY_VIOLATION")));
+                    "BOUNDARY_VIOLATION",
+                    "ENUM_VIOLATION")));
 
     private static final Pattern UPPER_SNAKE_CASE = Pattern.compile("^[A-Z][A-Z0-9_]*$");
 
@@ -97,7 +98,8 @@ public final class FaultMiner {
             "   \"applicableLocations\": [\"path\"|\"query\"|\"header\"|\"cookie\"|\"body\", ...]}\n" +
             "Do not propose categories that overlap with these defaults:\n" +
             "  TYPE_MISMATCH, REGEX_MISMATCH, SEMANTIC_MISMATCH, OVERFLOW,\n" +
-            "  EMPTY_INPUT, NULL_INPUT, SPECIAL_CHARACTERS, BOUNDARY_VIOLATION.\n";
+            "  EMPTY_INPUT, NULL_INPUT, SPECIAL_CHARACTERS, BOUNDARY_VIOLATION,\n" +
+            "  ENUM_VIOLATION.\n";
 
     private static final Logger log = LogManager.getLogger(FaultMiner.class);
 
