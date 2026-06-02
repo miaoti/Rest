@@ -35,3 +35,14 @@ Trace Shape Oracle overall passed: false
   SPAN_TREE_SHAPE: pass  severity=ERROR
   STATUS_PROPAGATION: pass  severity=ERROR
   RESPONSE_ENVELOPE: FAIL  severity=ERROR  detail=status=1 classified as failure (LLM, cached)
+
+### CASE 4 (Sock Shop soft error, status_code:500 — FALSE NEGATIVE: classifier MISSES it)
+# Added 2026-06-02: backs the paper's claim that the classifier is format-dependent
+# (flips TrainTicket's status:0 but misses Sock Shop's status_code:500 envelope).
+Soft-error response (HTTP 200): {"error":"Do: database connection error","status_code":500,"status_text":"Internal Server Error"}
+Root API: GET /catalogue
+Status-class oracle: PASS (HTTP is 200)
+Trace Shape Oracle overall passed: true
+  SPAN_TREE_SHAPE: pass  severity=ERROR
+  STATUS_PROPAGATION: pass  severity=ERROR
+  RESPONSE_ENVELOPE: pass  severity=ERROR
