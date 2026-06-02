@@ -143,10 +143,13 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
         TraceShapeVerdict.Severity sev = anyHttp5xx
                 ? TraceShapeVerdict.Severity.ERROR
                 : TraceShapeVerdict.Severity.WARN;
+        // The verdict message is JUST the concise relation(s) — "caller ──▶ callee (codes)".
+        // The "client got 2xx, swallowed" framing belongs to the consumer (console summary,
+        // .txt report, Allure 🕳️ box), which already say it; repeating it here double-printed it.
         return TraceShapeVerdict.InvariantOutcome.fail(
                 KIND, rootApiKey, sev,
-                "caller returned 2xx but " + swallowed.size()
-                        + " downstream call(s) failed and were SWALLOWED (caller ──▶ failed callee): " + detail,
+                (swallowed.size() > 1 ? swallowed.size() + " swallowed downstream call(s): " : "")
+                        + detail,
                 swallowed);
     }
 
