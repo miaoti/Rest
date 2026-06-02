@@ -1,1 +1,0 @@
-{"distanceList":"800","distances":"25.6","endStation":"Borough hall","id":"users","loginId":"guest789","startStation":"los angeles union station","stationList":"Sydney central railway station","stations":"Baker Street"}

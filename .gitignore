@@ -127,3 +127,6 @@ mist-cli/src/test/java/trainticket_twostage_test/
 # JVM heap dumps and per-SUT runtime scratch (logs, .mist) — never artifacts
 *.hprof
 **/.runtime/
+
+# Generated Allure HTML report — regenerated per run, not a source artifact
+allure-report/

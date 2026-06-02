@@ -1,1 +1,0 @@
-{"distanceList":"800","distances":"10","endStation":"Borough Hall","id":"Sydney_measured_####kbps","loginId":"admins","startStation":"San Francisco International Airport","stationList":"London Victoria Station","stations":"Downtown Crossing"}

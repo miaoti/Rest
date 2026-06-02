@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"10","endStation":"springfield train station","id":"user_456","loginId":"guests","startStation":"Los Angeles Union Station","stationList":"London victoria station","stations":"Downtown Crossing"}

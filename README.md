@@ -56,7 +56,7 @@ from an IntelliJ play-button all produce the same result.
 | **OpenAPI spec** of the system under test | `oas.path` | `trainticket/merged_openapi_spec 1.yaml` |
 | **MST test configuration** (one YAML file per SUT, copy + edit the bundled one) | `conf.path` | `trainticket/real-system-conf.yaml` |
 | **Jaeger / OpenTelemetry traces** (single file *or* directory of `.json` / `.jsonl`) | `trace.file.path` | `trainticket/test-trace` |
-| **Target system base URL** | `base.url` | `http://129.62.148.112:32677` |
+| **Target system base URL** | `base.url` | `http://<your-sut-host>:32677` |
 | **MST-mode overlay** (extra MIST-only keys) | `mst.config.path` | `trainticket-mst.properties` |
 
 Two more keys sit in the MIST-mode overlay:
@@ -305,7 +305,7 @@ Full pipeline (Phase 1 cross-trace merging → Phase 2 session merging → Phase
 | LLM backend | one of: Ollama (local), DeepSeek / OpenAI-compatible HTTP, Google Gemini |
 | Target system | reachable HTTP base URL + an OpenAPI spec + Jaeger traces |
 
-The TrainTicket demo points at a public deployment (`http://129.62.148.112:32677`); replace the `base.url` and `jaeger.base.url` keys in the config to use your own.
+The TrainTicket demo expects a TrainTicket deployment you provide; set the `base.url` and `jaeger.base.url` keys in the config to your own host (e.g. `http://localhost:32677` via `kubectl port-forward`).
 
 ---
 

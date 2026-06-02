@@ -1,1 +1,0 @@
-{"distanceList":"300","distances":"9.9","endStation":"Borough hall","id":"uniqueness","loginId":"Sydney_measured_####kbps","startStation":"Los Angeles Union Station","stationList":"Tokyo Shinjuku Station","stations":"union square"}
