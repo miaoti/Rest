@@ -95,8 +95,7 @@
 \node[vbox, anchor=north west] (vrd) at (-0.05, -1.55) {%
 \textbf{Trace Shape Oracle verdict.}\\[2pt]
 \begin{tabular}{@{}l@{\hspace{0.7em}}p{6.4cm}@{}}
-\textbf{Response-level} & \emph{passes / misses}: entry is \texttt{HTTP 200}. A status-, schema-, or body-only oracle records the run as success. \\
-\textbf{StatusPropagation} & passes (no learned per-API baseline for this SUT). \\
+\textbf{Response-level} & \emph{passes / misses}: the \texttt{HTTP 200} entry reads as success to status-, schema-, and body-only oracles. \\
 \textbf{HiddenDownstreamFailure} & \emph{fires} (\textsc{error}): the \texttt{200} entry hides a \texttt{ratings} span at \texttt{503}/\texttt{otel.status\_code=ERROR}, swallowed by \texttt{reviews}. Label-free, no LLM. \\
 \end{tabular}};
 
