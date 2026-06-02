@@ -84,7 +84,6 @@
 \node[barhi, minimum width=0.120cm] at (14.700, -1.02) {};
 \node[anchor=base west, font=\scriptsize\bfseries, text=red!70!black, inner sep=1pt]
       (errtag) at (14.95, -1.10) {503 / otel=ERROR \;(swallowed)};
-\node[durlbl]  at (16.95, -1.55) {0.2\,ms};
 
 % --- Hierarchical tree connectors in the left margin.
 \draw[treeln] (0.06, -0.08) -- (0.06, -0.55) -- (0.14, -0.55);
@@ -93,7 +92,7 @@
 % =============================================================
 % Trace Shape Oracle verdict (bottom-left)
 % =============================================================
-\node[vbox, anchor=north west] (vrd) at (-0.05, -1.95) {%
+\node[vbox, anchor=north west] (vrd) at (-0.05, -1.55) {%
 \textbf{Trace Shape Oracle verdict.}\\[2pt]
 \begin{tabular}{@{}l@{\hspace{0.7em}}p{6.4cm}@{}}
 \textbf{Response-level} & \emph{passes / misses}: entry is \texttt{HTTP 200}; a status-, schema-, or body-only oracle records the run as success. \\
@@ -104,7 +103,7 @@
 % =============================================================
 % Client response callout (bottom-right)
 % =============================================================
-\node[bodybox, anchor=north east] (body) at (16.95, -1.95) {%
+\node[bodybox, anchor=north east] (body) at (16.95, -1.55) {%
 \textnormal{\footnotesize\textbf{Client response}} (HTTP 200):\\[2pt]
 reviews rendered \emph{without} ratings\\
 (graceful degradation). The swallowed\\
