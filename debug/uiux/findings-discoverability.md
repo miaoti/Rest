@@ -223,3 +223,25 @@ outage to confirm the finding actually surfaces in the reports. It uncovered a B
   *does* fire, on `POST /cart`.)
 - **Lesson:** running only the offline harness would never have caught this — the live full run +
   reading the actual report was the validation that mattered.
+
+## Full-pipeline validity — 5 fixes (2026-06-01, part 2)
+Inspecting the Allure report (no negative tests; vacuous RCA; wrong trace) led to five real
+bugs, all fixed + e2e-verified on Boutique (live, adservice outage, loadgenerator paused).
+The headline: MIST's full pipeline did NOT actually detect hidden-downstream e2e — the
+contribution worked only offline (`OracleCheck` on nested loadgenerator traces). Now: **0→7
+hidden-downstream findings firing on MIST's OWN marker-matched traces, each traced to the
+exact test + trace.**
+
+| # | Bug | Fix | e2e verified | Commit |
+|---|---|---|---|---|
+| 1 | Istio wildcard op-name → empty faulty pool → **0 negative tests** | `methodPathFromRootKey` parses the rootApiKey | 0→**384 negatives** | e4a693db |
+| 3 | marker poll ~1s exhausts → silent time-window fallback → **wrong trace** | `mst.test.jaeger.propagation.delay.ms=5000` | **555 marker-matched** / 19 fallback | e4a693db |
+| 4 | externally-driven trace is flat/orphaned (entry inbound span absent) → invariant mis-reads swallowed egress error as a "loud co-root" → **misses 551/555** | writer injects real client status `mist.client.status`; invariant anchors on it (topology = offline fallback, unchanged 7/12) | **0→7 findings fire** on MIST's own traces | cccc69f7 (+7e2f9356 mutable tags) |
+| 2 | RCA = fixed boilerplate ("review the response body…") | grounded RCA: actual client status + response body | compiles (firing path has error tags → LLM branch) | cccc69f7 |
+| 5 | 🕳️ attachment + `mist.anomaly` label gated on `!isPassed()` = ERROR-only → **WARN buried** | gate on the per-outcome failing check (any severity) | 0→**550 attachments + 550 labels** | a5fa5c3c |
+
+Final e2e: `MIST findings — 7 anomalies across 575 test cases · WARN 7 🕳️ Hidden downstream
+failure · 7 unique, 1099 occurrences`; report `Example test: Flow_Scenario_175.
+test_negative_flow_S175_v18_fault_Root1_SPECIAL_CHARACTERS · Example trace: 2276ea24…`.
+The "viz vs paper" mismatch is resolved, and the contribution is now e2e-real, not offline-only.
+See [[project_externally_driven_trace_validity]].
