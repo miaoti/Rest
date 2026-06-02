@@ -92,13 +92,16 @@ Traces: `bookinfo_e2e_traces/masked_reviews_ratings_outage.json`, `.../healthy_r
    compiles the generated tests with a JDK 21, runs the four cases toggling the outage, prints verdicts).
 
 ## Caveats (honest)
-- **Test harness.** The MIST-generated tests were compiled with `javac` and executed via
-  `org.junit.runner.JUnitCore`, not MIST's own in-JVM compile+execute. Two environmental reasons:
-  the host exposes a **JRE** on `PATH` (no `javac`/in-process compiler), and MIST's Maven-compile
-  fallback runs from the per-SUT `.runtime/` cwd which has no `pom.xml`. The **test source and the
-  oracle are 100% MIST's**; only the compile/launch was external. Making MIST's compile+execute
-  JDK-aware and project-layout-independent (so the full jar runs push-button per SUT) is a tracked
-  follow-up — it does not affect this result.
+- **Test harness (this 2026-05-29 run). SUPERSEDED 2026-06-02 → see `bookinfo_inprocess_e2e/`.**
+  The full in-process generate→compile→execute→oracle loop now runs on the live Bookinfo SUT in
+  one JVM and fires at ERROR (commit `87915f42`,
+  `bookinfo_inprocess_e2e/bookinfo_inprocess_fault-detection-summary.txt`). At the time of *this*
+  run the generated tests were compiled with an external `javac` and executed via
+  `org.junit.runner.JUnitCore` because the host exposed only a **JRE** (no in-process compiler) and
+  MIST's Maven-compile fallback ran from the per-SUT `.runtime/` cwd which has no `pom.xml`. MIST's
+  compile step was subsequently made JDK-aware — it uses the in-process `ToolProvider` compiler,
+  falling back to an external `javac` only on a JRE host. The test source and oracle were always
+  100% MIST's; only that run's compile/launch was external.
 - **Oracle flag.** `mst.oracle.shape.invariants.hidden_downstream_failure.enabled` **defaults to
   `false`** in `MstConfig`; the committed `bookinfo-mst.properties` sets it `true` (a normal MIST run
   enables it from the file). The direct JUnit run set it via `-D`. The other shape invariants

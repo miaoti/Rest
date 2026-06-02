@@ -10,7 +10,10 @@ lets a reviewer reproduce the paper's headline results. Source:
 - **Zero-infra path (≈10 min, no SUT, no cluster):** the shipped trace oracle reproduces
   both headline detections directly from **committed traces** — `HiddenDownstreamFailure`
   on Bookinfo/Online-Boutique and `ResponseEnvelope` (soft error) on TrainTicket. This is
-  both the kick-the-tires smoke test **and** a genuine result-reproduction (§5).
+  both the kick-the-tires smoke test **and** a genuine result-reproduction (§5; one command:
+  `evaluation/run-offline-oracle.sh` builds the jar from the current commit, then runs both G2
+  oracle checks). Committed **in-process** full-loop run reports (live SUT, generate→execute→oracle
+  in one JVM) are under `docs/main-contribution/evidence/{bookinfo,boutique}_inprocess_e2e/`.
 - **Light SUTs (kind/Docker):** Bookinfo, Sock Shop, Online Boutique deploy on a laptop-class
   kind cluster (§6.2).
 - **Heavy SUT (optional, gated):** the 40-service TrainTicket needs a beefy host; the offline
@@ -130,6 +133,7 @@ upstream public `codewisdom/*` images. Built-in account `admin`/`222222`. See th
 |---|---|---|---|
 | Bookinfo: 200 hides a swallowed downstream 5xx; trace oracle catches it, response-level misses (Fig.1) | §5 cmd 1 / §6.2 | `bookinfo_e2e_traces/`, `bookinfo_e2e_pipeline.md` | offline / kind |
 | Online Boutique: same over gRPC, clean body (7 of 12 committed outage traces fire — every frontend trace through the failed adservice — 0 healthy; fresh re-capture confirms 24/40, 0/30) | §5 cmd 2 / §6.2 | `boutique_e2e_traces/` (+ `*_recapture.json`), `boutique_e2e_pipeline.md` | offline / kind |
+| Full in-process loop on a live SUT: MIST generates+executes its own tests and the oracle fires in one JVM (Bookinfo HTTP → ERROR/red; Online Boutique gRPC → WARN) | §6.2 (live) / inspect committed report | `bookinfo_inprocess_e2e/` (166 tests, ERROR), `boutique_inprocess_e2e/` (579 tests, WARN) | kind / committed report |
 | TrainTicket soft error (200 + status:0) caught by ResponseEnvelope (§2) | §5 cmd 3 | `responseenvelope_live_softerror.txt` | offline + 1 LLM call |
 | TrainTicket: MIST detects all 10 injected faults / 15,036 tests (§5) | §6.3 (or inspect) | `debug/negative_test/runs/run22-fault-detection-10of10.txt` | committed report / live=beefy host |
 | Sock Shop soft error (200 + {status_code:500}) | inspect / §6.2 | `sockshop_softerror/sockshop_catalogue_outage.json` | committed body / kind |
