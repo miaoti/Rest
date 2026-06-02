@@ -1,7 +1,7 @@
 % =============================================================================
 % Bibliography for the MIST tool-demo paper, ISSTA 2026 Tool Demonstrations.
-% Best-effort entries; entries marked TODO have uncertain DBLP keys and
-% must be verified before submission.
+% Comparator/benchmark/standard entries verified against ACM DL / IEEE Xplore
+% (2026-06-02). Recent tool/NIER entries carry publisher metadata where issued.
 % =============================================================================
 
 % ---------- REST API testing tools ----------
@@ -48,30 +48,35 @@
 }
 
 @inproceedings{Kim2024RESTGPT,
-  author    = {Myeongsoo Kim and Tyler Stennett and Saurabh Sinha and Alessandro Orso},
-  title     = {{RESTGPT}: Leveraging {LLMs} to Generate Realistic Test Inputs for {REST} {APIs}},
-  booktitle = {{IEEE/ACM} International Conference on Software Engineering: New Ideas and Emerging Results ({ICSE-NIER})},
-  publisher = {{IEEE}},
+  author    = {Myeongsoo Kim and Tyler Stennett and Dhruv Shah and Saurabh Sinha and Alessandro Orso},
+  title     = {Leveraging Large Language Models to Improve {REST} {API} Testing},
+  booktitle = {Proceedings of the 2024 {ACM/IEEE} 44th International Conference on Software Engineering: New Ideas and Emerging Results ({ICSE-NIER})},
+  pages     = {37--41},
+  publisher = {{ACM}},
   year      = {2024},
-  note      = {TODO-RESTGPT: verify pages/DOI on DBLP}
+  doi       = {10.1145/3639476.3639769}
 }
 
-@inproceedings{Kim2025LlamaRestTest,
-  author    = {Myeongsoo Kim and Tyler Stennett and Saurabh Sinha and Alessandro Orso},
+@article{Kim2025LlamaRestTest,
+  author    = {Myeongsoo Kim and Saurabh Sinha and Alessandro Orso},
   title     = {{LlamaRestTest}: Effective {REST} {API} Testing with Small Language Models},
-  booktitle = {Proceedings of the {ACM} on Software Engineering ({PACMSE}, {FSE} 2025)},
-  publisher = {{ACM}},
+  journal   = {Proceedings of the {ACM} on Software Engineering},
+  volume    = {2},
+  number    = {{FSE}},
+  articleno = {FSE022},
+  numpages  = {24},
   year      = {2025},
-  note      = {TODO-LlamaRestTest: verify volume/DOI on DBLP}
+  doi       = {10.1145/3715737}
 }
 
 @inproceedings{Stennett2025AutoRestTest,
   author    = {Tyler Stennett and Myeongsoo Kim and Saurabh Sinha and Alessandro Orso},
   title     = {{AutoRestTest}: A Tool for Automated {REST} {API} Testing Using {LLMs} and {MARL}},
-  booktitle = {{IEEE/ACM} International Conference on Software Engineering ({ICSE}) Demonstrations},
+  booktitle = {Proceedings of the 2025 {IEEE/ACM} 47th International Conference on Software Engineering: Companion Proceedings ({ICSE-Companion})},
+  pages     = {21--24},
   publisher = {{IEEE}},
   year      = {2025},
-  note      = {TODO-AutoRestTest: verify pages/DOI on DBLP}
+  doi       = {10.1109/ICSE-Companion66252.2025.00015}
 }
 
 @inproceedings{HatfieldDodds2022Schemathesis,
@@ -102,14 +107,6 @@
   year         = {2026}
 }
 
-@misc{Jaeger,
-  author       = {{The Jaeger Authors}},
-  title        = {{Jaeger}: Open Source, End-to-End Distributed Tracing},
-  howpublished = {\url{https://www.jaegertracing.io}},
-  note         = {Accessed: 2026-05-08},
-  year         = {2026}
-}
-
 % ---------- TrainTicket benchmark ----------
 
 @article{Zhou2018BenchTraintAnalysisSurvey,
@@ -120,18 +117,10 @@
   number    = {2},
   pages     = {243--260},
   year      = {2021},
-  note      = {TODO-TrainTicket: verify volume/number/pages against DBLP (this is the TrainTicket benchmark/empirical-study paper).}
+  doi       = {10.1109/TSE.2018.2887384}
 }
 
 % ---------- Background: REST / OpenAPI ----------
-
-@misc{OpenAPISpec,
-  title        = {{OpenAPI} {Specification} v3.1.0},
-  author       = {{OpenAPI Initiative}},
-  howpublished = {\url{https://spec.openapis.org/oas/v3.1.0}},
-  year         = {2021},
-  note         = {Accessed: 2026-05-08}
-}
 
 @inproceedings{Atlidakis2019RESTler,
   author    = {Vaggelis Atlidakis and Patrice Godefroid and Marina Polishchuk},
@@ -170,7 +159,6 @@
 }
 
 % TraceRCA: trace-driven root-cause analysis in microservice systems (IWQoS'21).
-% Note: best-effort entry — verify pages/DOI on DBLP before submission.
 @inproceedings{Li2021TraceRCA,
   author    = {Zeyan Li and Junjie Chen and Rui Jiao and Nengwen Zhao and Zhijun Wang and Shuwei Zhang and Yanjun Wu and Long Jiang and Leiqin Yan and Zikai Wang and Zhekang Chen and Wenchi Zhang and Xiaohui Nie and Kaixin Sui and Dan Pei},
   title     = {Practical Root Cause Localization for Microservice Systems via Trace Analysis},
@@ -179,7 +167,6 @@
   pages     = {1--10},
   publisher = {{IEEE}},
   doi       = {10.1109/IWQOS52092.2021.9521340},
-  note      = {TODO-TraceRCA: verify pages/DOI on DBLP}
 }
 
 % Nezha (ESEC/FSE'23): multi-modal trace+log+metric root-cause analysis.
