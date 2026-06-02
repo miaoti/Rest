@@ -123,3 +123,7 @@ src/main/resources/My-Example/trainticket/traces/traces-1759192669037.json
 
 # Generated demo outputs — written by MistRunner during a run, never edited by hand
 mist-cli/src/test/java/trainticket_twostage_test/
+
+# JVM heap dumps and per-SUT runtime scratch (logs, .mist) — never artifacts
+*.hprof
+**/.runtime/
