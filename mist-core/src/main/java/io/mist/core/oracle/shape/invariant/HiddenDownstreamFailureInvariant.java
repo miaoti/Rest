@@ -65,10 +65,30 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
         if (trace == null || trace.getSpans() == null || trace.getSpans().isEmpty()) {
             return pass();
         }
-        List<TraceModel.Span> roots = trace.roots();
+        List<TraceModel.Span> spans = trace.getSpans();
 
+        // Ground-truth client-facing status, injected by the writer from the ACTUAL
+        // test response. MIST drives EXTERNAL entry points; the external client is not
+        // itself traced, so the entry service's own inbound server span is frequently
+        // absent or orphaned in the captured trace (its spans appear as parentless
+        // client/egress spans). Trace topology then cannot reliably identify the entry
+        // or confirm the caller saw success — which silently suppressed real findings.
+        // When the writer supplies the real status we anchor on it; otherwise (offline
+        // replay over a captured, fully-nested trace) we fall back to the topology
+        // heuristic below.
+        Integer clientStatus = injectedClientStatus(spans);
+        if (clientStatus != null) {
+            if (clientStatus < 200 || clientStatus >= 300) {
+                return pass(); // caller saw the failure (or a client error) — not hidden
+            }
+            // Caller got a clean 2xx: every server-errored span in the trace was swallowed.
+            return scanSwallowed(spans, java.util.Collections.<String>emptySet());
+        }
+
+        // --- Topology fallback (no injected client status) ---
         // Identify the client-facing entry: prefer spans matching rootApiKey;
         // fall back to all parentless spans when nothing matches.
+        List<TraceModel.Span> roots = trace.roots();
         Set<String> entryIds = new HashSet<>();
         List<TraceModel.Span> entries = new ArrayList<>();
         for (TraceModel.Span r : roots) {
@@ -78,7 +98,6 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
             entries = roots;
             for (TraceModel.Span r : roots) entryIds.add(r.spanId);
         }
-
         // If the entry itself surfaced a server error, the failure was LOUD
         // (already visible to the caller) — not hidden.
         boolean entry2xx = false;
@@ -87,14 +106,29 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
             if (is2xx(e)) entry2xx = true;
         }
         if (!entry2xx) return pass();
+        return scanSwallowed(spans, entryIds);
+    }
 
-        // Any server-error span that is NOT the entry was swallowed: the caller
-        // got a clean 2xx while this span failed. A co-root downstream error in a
-        // partial view is counted here rather than suppressing the finding.
+    /** The writer-injected client-facing HTTP status (the real test response code), or null. */
+    private static Integer injectedClientStatus(List<TraceModel.Span> spans) {
+        for (TraceModel.Span s : spans) {
+            String v = s.tags == null ? null : s.tags.get("mist.client.status");
+            if (v != null && !v.isEmpty()) {
+                try { return Integer.parseInt(v.trim()); } catch (NumberFormatException ignore) { }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Collect every server-errored span (excluding the given entry ids) as swallowed,
+     * and build the verdict. The caller has already established the client saw a 2xx.
+     */
+    private TraceShapeVerdict.InvariantOutcome scanSwallowed(List<TraceModel.Span> spans, Set<String> entryIds) {
         List<String> swallowed = new ArrayList<>();
         boolean anyHttp5xx = false;
         StringBuilder detail = new StringBuilder();
-        for (TraceModel.Span s : trace.getSpans()) {
+        for (TraceModel.Span s : spans) {
             if (entryIds.contains(s.spanId) || !isServerError(s)) continue;
             swallowed.add(s.spanId);
             if (s.httpStatus >= 500) anyHttp5xx = true;
@@ -103,11 +137,9 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
                   .append(" http=").append(s.httpStatus).append(" otel=").append(s.otelStatus);
         }
         if (swallowed.isEmpty()) return pass();
-
         TraceShapeVerdict.Severity sev = anyHttp5xx
                 ? TraceShapeVerdict.Severity.ERROR
                 : TraceShapeVerdict.Severity.WARN;
-
         return TraceShapeVerdict.InvariantOutcome.fail(
                 KIND, rootApiKey, sev,
                 "caller received 2xx but " + swallowed.size()

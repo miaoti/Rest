@@ -253,6 +253,11 @@ public class MultiServiceRESTAssuredWriter {
                 pw.println("    // Phase 4.x: carries the live client response body into attachJaegerTrace() so the");
                 pw.println("    // ResponseEnvelope invariant can read it (Jaeger spans omit http.response.body).");
                 pw.println("    private static final ThreadLocal<String> CLIENT_RESPONSE_BODY = new ThreadLocal<>();");
+                // Ground-truth client-facing HTTP status of the step, injected into the model root
+                // span(s) as 'mist.client.status' so HiddenDownstreamFailureInvariant can anchor on
+                // the REAL response code — MIST drives external entry points whose own inbound span
+                // is often missing/orphaned in the trace, so topology alone can't confirm 2xx.
+                pw.println("    private static final ThreadLocal<Integer> CLIENT_RESPONSE_STATUS = new ThreadLocal<>();");
                 pw.println();
 
                 // Fix 3 Layer 3: output-coverage backstop. A shared set of response
@@ -647,26 +652,27 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                    Allure.addAttachment(\"🔗 API Call Trace\", \"text/plain\", traceTable);");
                     pw.println("                } else if (isStepFailed) {");
                     pw.println("                    // Test failed but trace has no technical errors - likely business logic validation failure");
+                    // Grounded RCA — state the CONCRETE cause from this test's actual response +
+                    // trace, not generic advice. (The previous fixed boilerplate said the same
+                    // thing every time and carried no information.)
                     pw.println("                    StringBuilder analysisMsg = new StringBuilder();");
                     pw.println("                    analysisMsg.append(\"═══════════════════════════════════════════════════════════════════════\\n\");");
-                    pw.println("                    analysisMsg.append(\"🔍 ROOT CAUSE ANALYSIS\\n\");");
+                    pw.println("                    analysisMsg.append(\"🔎 ROOT CAUSE (grounded in this test's actual response + trace)\\n\");");
                     pw.println("                    analysisMsg.append(\"═══════════════════════════════════════════════════════════════════════\\n\\n\");");
-                    pw.println("                    analysisMsg.append(\"**ANALYSIS STATUS:**\\n\");");
-                    pw.println("                    analysisMsg.append(\"The distributed trace for this failed test execution was successfully retrieved,\\n\");");
-                    pw.println("                    analysisMsg.append(\"however, it does not contain any technical error indicators (error tags).\\n\\n\");");
-                    pw.println("                    analysisMsg.append(\"**LIKELY CAUSE:**\\n\");");
-                    pw.println("                    analysisMsg.append(\"This failure is most likely due to business logic validation rather than\\n\");");
-                    pw.println("                    analysisMsg.append(\"a technical error. The service processed the request successfully but\\n\");");
-                    pw.println("                    analysisMsg.append(\"rejected it based on application-level validation rules (e.g., invalid\\n\");");
-                    pw.println("                    analysisMsg.append(\"business state, constraint violations, or semantic validation failures).\\n\\n\");");
-                    pw.println("                    analysisMsg.append(\"**RECOMMENDATIONS:**\\n\");");
-                    pw.println("                    analysisMsg.append(\"• Review the response body in the '📥 Response' section for validation error messages\\n\");");
-                    pw.println("                    analysisMsg.append(\"• Check the HTTP status code (e.g., 400 Bad Request, 422 Unprocessable Entity)\\n\");");
-                    pw.println("                    analysisMsg.append(\"• Examine the '🔗 API Call Trace' section to identify which service rejected the request\\n\");");
-                    pw.println("                    analysisMsg.append(\"• Verify input parameters against business rules and constraints\\n\");");
-                    pw.println("                    analysisMsg.append(\"• Consult the API documentation for validation requirements\\n\\n\");");
-                    pw.println("                    analysisMsg.append(\"For detailed trace information, see the '📈 Raw Trace Data' section below.\\n\");");
-                    pw.println("                    Allure.addAttachment(\"🤖 INTELLIGENT ANALYSIS (Based on Trace)\", \"text/plain\", analysisMsg.toString());");
+                    pw.println("                    analysisMsg.append(\"The trace shows NO swallowed downstream server error (no http>=500 / otel=ERROR\\n\");");
+                    pw.println("                    analysisMsg.append(\"span). So this is a CLIENT-FACING failure — the endpoint itself rejected the\\n\");");
+                    pw.println("                    analysisMsg.append(\"request (status/validation), not a hidden backend fault.\\n\\n\");");
+                    pw.println("                    Integer __rcaStatus = CLIENT_RESPONSE_STATUS.get();");
+                    pw.println("                    analysisMsg.append(\"Actual client response\");");
+                    pw.println("                    if (__rcaStatus != null) analysisMsg.append(\" — HTTP \").append(__rcaStatus);");
+                    pw.println("                    analysisMsg.append(\" (the concrete rejection reason):\\n\");");
+                    pw.println("                    String __rcaBody = CLIENT_RESPONSE_BODY.get();");
+                    pw.println("                    if (__rcaBody != null && !__rcaBody.isEmpty()) {");
+                    pw.println("                        analysisMsg.append(__rcaBody.length() > 800 ? __rcaBody.substring(0, 800) + \"…\" : __rcaBody).append(\"\\n\");");
+                    pw.println("                    } else {");
+                    pw.println("                        analysisMsg.append(\"(no response body captured for this step)\\n\");");
+                    pw.println("                    }");
+                    pw.println("                    Allure.addAttachment(\"🔎 ROOT CAUSE (grounded)\", \"text/plain\", analysisMsg.toString());");
                     pw.println("                    Allure.addAttachment(\"🔗 API Call Trace\", \"text/plain\", traceTable);");
                     pw.println("                } else {");
                     pw.println("                    // Test succeeded and trace has no errors");
@@ -688,9 +694,13 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                        // span(s) so ResponseEnvelopeInvariant can read it (Jaeger spans omit it).");
                     pw.println("                        String __clientBody = CLIENT_RESPONSE_BODY.get();");
                     pw.println("                        CLIENT_RESPONSE_BODY.remove();");
-                    pw.println("                        if (__clientBody != null && !__clientBody.isEmpty() && model != null) {");
+                    pw.println("                        Integer __clientStatus = CLIENT_RESPONSE_STATUS.get();");
+                    pw.println("                        CLIENT_RESPONSE_STATUS.remove();");
+                    pw.println("                        if (model != null) {");
                     pw.println("                            for (TraceModel.Span __rs : model.roots()) {");
-                    pw.println("                                if (__rs.tags != null) __rs.tags.put(\"http.response.body\", __clientBody);");
+                    pw.println("                                if (__rs.tags == null) continue;");
+                    pw.println("                                if (__clientBody != null && !__clientBody.isEmpty()) __rs.tags.put(\"http.response.body\", __clientBody);");
+                    pw.println("                                if (__clientStatus != null) __rs.tags.put(\"mist.client.status\", String.valueOf(__clientStatus));");
                     pw.println("                            }");
                     pw.println("                        }");
                     pw.println("                        // FIXES.md F1+F3: target-aware overload runs TargetAttributionInvariant");
@@ -2325,6 +2335,7 @@ public class MultiServiceRESTAssuredWriter {
                             pw.println("                                catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                             pw.println("                            }");
                             pw.println("                            CLIENT_RESPONSE_BODY.set(responseBody);");
+                            pw.println("                            CLIENT_RESPONSE_STATUS.set(actualStatus);");
                             pw.println("                            attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, false, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\", __targetService, __targetParam);");
                             pw.println("                        } catch (Exception e) {");
                             pw.println("                            Allure.parameter(\"🎯 Result\", \"✅ SUCCESS (response capture failed)\");");
@@ -2495,6 +2506,7 @@ public class MultiServiceRESTAssuredWriter {
                         pw.println("                            catch (InterruptedException ie) { Thread.currentThread().interrupt(); }");
                         pw.println("                        }");
                         pw.println("                        CLIENT_RESPONSE_BODY.set(failedResponseBody);");
+                        pw.println("                        if (failedStatusCode > 0) CLIENT_RESPONSE_STATUS.set(failedStatusCode);");
                         pw.println("                        attachJaegerTrace(\"" + escape(step.getServiceName()) + "\", \"" + verb.toUpperCase() + "\", \"" + escape(step.getPath()) + "\", requestStartMicros, allStepParameters, true, __mstTraceId" + stepIdx + ", \"" + escape(testMethodName) + "\", __targetService, __targetParam);");
                         pw.println("                        ");
                         // Phase 2.F: ResponseEnvelopeInvariant carries the contract the deleted
