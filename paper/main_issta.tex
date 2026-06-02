@@ -51,6 +51,18 @@
 % (e.g. ENUM_VIOLATION, otel.status_code=ERROR) in the narrow sigconf columns.
 \emergencystretch=3em
 \hfuzz=1.5pt
+% --- Tighten section / subsection spacing while KEEPING acmart's heading fonts
+%     (it styles headings via \@secfont / \@subsecfont; \providecommand falls back
+%     only if those are absent). Isolated + reversible: if a heading looks wrong
+%     or the build errors, revert just this commit. ---
+\makeatletter
+\providecommand\@secfont{\normalfont\large\bfseries}
+\providecommand\@subsecfont{\normalfont\bfseries}
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-1.4ex \@plus -.4ex \@minus -.2ex}{0.6ex \@plus .2ex}{\@secfont}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-1.0ex \@plus -.3ex \@minus -.2ex}{0.4ex \@plus .2ex}{\@subsecfont}}
+\makeatother
 
 % =============================================================================
 % ACM rights / conference metadata. ISBN and DOI stay as harmless placeholders
