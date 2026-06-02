@@ -182,10 +182,11 @@ and the generated JUnit sources under the directory you pointed
 For artifact evaluation, peer review, or any context where you need
 the **byte-identical** generated test suite the paper reports. Under
 `-Drandom.seed=<n>`, MIST is fully deterministic: two consecutive
-runs produce byte-for-byte identical `Flow_Scenario_*.java` files,
-the test-class directory is named after the seed
-(`TrainTicketTwoStageTest_42`), and all LLM calls are served from
-the bundled cache instead of the network. Independently verified on
+runs produce byte-for-byte identical `Flow_Scenario_*.java` files
+under `mist-cli/src/test/java/trainticket_twostage_test/` (the inner
+`TrainTicketTwoStageTest_<id>/` directory carries a per-run timestamp,
+but its generated file contents are seed-determined), and all LLM
+calls are served from the bundled cache instead of the network. Independently verified on
 2026-05-21; see
 [`debug/Conference-refinement/PROMPT_VERIFY_FIXES.md`](debug/Conference-refinement/PROMPT_VERIFY_FIXES.md)
 for the re-runnable verification protocol.
