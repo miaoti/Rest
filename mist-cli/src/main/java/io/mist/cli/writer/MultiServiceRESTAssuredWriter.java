@@ -738,7 +738,11 @@ public class MultiServiceRESTAssuredWriter {
                     // Previously it was buried in the JSON verdict blob + a generic step line;
                     // now it gets a titled attachment + a filterable label + a parameter so the
                     // user sees, plainly, that a 2xx hid a downstream 5xx and which span it was.
-                    pw.println("                        if (!verdict.isPassed()) {");
+                    // NOT gated on verdict.isPassed(): that is ERROR-only, but a hidden-downstream
+                    // is often WARN (a swallowed gRPC/otel error with no HTTP 5xx). Gating here is
+                    // exactly why the WARN finding was buried in the verdict JSON and never got the
+                    // titled attachment + filterable label. The per-outcome check below is the gate.
+                    pw.println("                        if (outcomes != null) {");
                     pw.println("                            for (TraceShapeVerdict.InvariantOutcome o : outcomes) {");
                     pw.println("                                if (!o.passed && \"HIDDEN_DOWNSTREAM_FAILURE\".equals(o.kind)) {");
                     pw.println("                                    StringBuilder hd = new StringBuilder();");
