@@ -51,18 +51,10 @@
 % (e.g. ENUM_VIOLATION, otel.status_code=ERROR) in the narrow sigconf columns.
 \emergencystretch=3em
 \hfuzz=1.5pt
-% --- Tighten section / subsection spacing while KEEPING acmart's heading fonts
-%     (it styles headings via \@secfont / \@subsecfont; \providecommand falls back
-%     only if those are absent). Isolated + reversible: if a heading looks wrong
-%     or the build errors, revert just this commit. ---
-\makeatletter
-\providecommand\@secfont{\normalfont\large\bfseries}
-\providecommand\@subsecfont{\normalfont\bfseries}
-\renewcommand\section{\@startsection{section}{1}{\z@}%
-  {-1.4ex \@plus -.4ex \@minus -.2ex}{0.6ex \@plus .2ex}{\@secfont}}
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-  {-1.0ex \@plus -.3ex \@minus -.2ex}{0.4ex \@plus .2ex}{\@subsecfont}}
-\makeatother
+% NOTE: do NOT redefine \section/\subsection to tighten heading spacing -- acmart
+% issues a hard "An attempt to redefine \section detected" error and refuses to
+% build. ACM fixes the heading spacing by class policy; recover space from
+% content (prose, figures, citations), not from the section skips.
 
 % =============================================================================
 % ACM rights / conference metadata. ISBN and DOI stay as harmless placeholders
@@ -158,6 +150,7 @@ MIST closes these gaps. Its differentiator versus AutoRestTest~\cite{Stennett202
   \resizebox{\textwidth}{!}{\input{figures/architecture.tex}}
   \caption{MIST architecture: \texttt{mist-core} (the five stages, no third-party source), \texttt{mist-cli} (launcher \texttt{mist.jar}, JUnit/REST-Assured writer, executor), \texttt{mist-llm} (LLM dispatch + cache). Solid arrows mark MIST HTTP requests, dashed the per-step Jaeger trace.}
   \label{fig:arch}
+  \Description{Block diagram of the MIST pipeline. Five components (Spec Ingestor, Semantic Dependency Registry, Sequence Generator in Root API Mode, Sniper Strategy, and Trace Shape Oracle) transform the inputs (an OpenAPI specification, Jaeger or OpenTelemetry traces, and a run configuration) into the outputs (JUnit test classes, an Allure report, and a fault-detection report). MIST sends HTTP requests to the System Under Test and reads back the per-step Jaeger trace.}
 \end{figure*}
 
 MIST is a Maven reactor of three modules (Figure~\ref{fig:arch}). \texttt{mist-core} owns all five architectural stages described below and contains no third-party source code: the OpenAPI parser wrapper (\texttt{io.mist.core.spec.*}), the semantic dependency registry (\texttt{io.mist.core.registry.*}), the sequence generator (\texttt{io.mist.core.generation.MistGenerator}), the sniper fault registry (\texttt{io.mist.core.fault.*}), and the trace-shape oracle (\texttt{io.mist.core.oracle.shape.*}) all live here. \texttt{mist-cli} ships the launcher \texttt{mist.jar}, the JUnit/REST-Assured writer, the test executor, and the SPI provider classes that let \texttt{mist-core} stay framework-agnostic. \texttt{mist-llm} is LLM dispatch and call cache. The build depends on REST-Assured, swagger-parser, Allure, and JUnit as ordinary Maven library artifacts, as every black-box REST tester does~\cite{MartinLopez2021RESTest,Arcuri2019EvoMasterTOSEM,Atlidakis2019RESTler}, but the MIST repository does not vendor any forked third-party source.
@@ -192,6 +185,7 @@ Mutating several parameters at once leaves the oracle unable to blame an anomaly
   \resizebox{\textwidth}{!}{\input{figures/trace_oracle.tex}}
   \caption{\texttt{GET /api/v1/products/\{id\}/reviews} on Istio Bookinfo under a real \texttt{ratings} outage (committed trace, IDs anonymised). The entry returns \texttt{HTTP 200} (\texttt{reviews} degrades gracefully), yet a deeper \texttt{ratings} span server-errored (\texttt{503}, \texttt{otel.status\_code=ERROR}) and was swallowed, invisible to status/schema/body oracles and caught by \textsc{HiddenDownstreamFailure} alone.}
   \label{fig:trace}
+  \Description{A distributed-trace timeline for an HTTP GET request on Istio Bookinfo under a ratings outage. The productpage entry span returns HTTP 200 and the reviews span returns 200, but the downstream ratings span returns 503 with an OpenTelemetry ERROR status and is swallowed by reviews. Response-level oracles read the 200 as success, while the Trace Shape Oracle HiddenDownstreamFailure invariant fires at ERROR.}
 \end{figure*}
 
 The Trace Shape Oracle reaches the right verdict on Figure~\ref{fig:trace} by evaluating each captured trace against several invariant families. \textsc{SpanTreeShape} checks the trace tree against the pattern recorded for the same root API, so a missing internal hop surfaces even when every observed call returns \texttt{200}. \textsc{StatusPropagation} flags any span whose status code falls outside the per-depth set learned from known-good runs (e.g.\ an \texttt{otel.\allowbreak status\_code=ERROR} or an unexpected \texttt{http.\allowbreak status\_code}). \textsc{ResponseEnvelope} applies body-pattern rules over learned success/failure value sets: the first unseen 2xx primary-field value per API is classified by one LLM call and cached, and it fails on a \texttt{status:0, data:null} soft error (a clean 2xx body flagging a domain rejection). \textsc{HiddenDownstreamFailure} (label-free, LLM-free, opt-in) fires when the client-facing entry returned 2xx but a deeper span server-errored (\texttt{http.\allowbreak status\_code}~$\geq 500$ or \texttt{otel.\allowbreak status\_code=ERROR}). A deeper \texttt{4xx} is benign. An HTTP-5xx swallow fails the test (\textsc{error}). An \texttt{otel}-only error (the gRPC case) is non-blocking \textsc{warn}. Because the untraced external client leaves the entry's own inbound span frequently absent, the live path anchors on the test's injected client status, using trace topology only for offline replay.
