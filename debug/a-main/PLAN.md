@@ -2,7 +2,42 @@
 
 > 配套战略文档:`docs/main-contribution/A_MAIN_ROADMAP.md`(deep-research 全文,2026-06-01)。
 > 本文件是**可执行计划**:① 两个命门的探测方法;② grounding 5 个修复 + 验证。
-> 状态(2026-06-01):方案已定;grounding 修复 = **5/5 已应用 + 编译通过**(见 §3 末);经验重跑 = 可选(用户目标 = 逻辑无 bug,已达);两个命门探测 = 待办。
+> 状态(2026-06-01 晚 = 本文件最新):方案已定;grounding 修复 = **5/5 已应用 + 编译通过**(§3);两个命门探测 = **已完成**(见 `VERDICT-2026-06-01.md` + `probe-attribution.md` / `probe-wildbugs.md`);头条 detector = **已升级为全链路 e2e**(见下「状态更新」)。
+
+---
+
+## §0 状态更新(2026-06-01 晚间 —— 本节晚于本文件其余部分,凡冲突以本节为准)
+
+> ⚠️ **doc 集时间线**(必读,否则会被自相矛盾的旧结论误导):
+> VERDICT/DISPOSITION/ROADMAP 提交于 **01:57** < ResponseEnvelope wiring 提交 **02:08/02:32** < 本 PLAN **03:02** < readiness **03:22** < paper 最新 **15:34** < **e2e validity 五修复 14:55–21:45** < UX 可读性 19:51–21:45。
+> 即:**任何旧 doc 里关于 ResponseEnvelope=no-op、OB 计数、"只离线 OracleCheck" 的结论,都早于把它们推翻的后续提交。** 本轮已派 3 个 reviewer agent 对着现网代码重新核实 paper(结果回填于本节末)。
+
+**1. 两命门探测已完成 → 结论未变(study 腿承重)。** `VERDICT-2026-06-01.md`:头条 HiddenDownstreamFailure 真实且有 live 证据;命门 A(attribution)弱、天花板 = service-level;命门 B(野生 bug)= 0 条可复现 → 用 real-outage-on-real-OSS + Uber 29%/Yuan 92% 引文替代。novelty 立在 **framing + prevalence study**,非机制、非 param-attribution、非野生语料。用户「机制 trivial」判断成立(§4)。
+
+**2. 【最大进展,旧 doc 全未反映】头条 detector 从"离线"升级为"全链路 e2e"。** 旧证据只来自 OFFLINE `OracleCheck` 跑手抓的 outage trace;本会话发现 **MIST 完整 generate→execute→oracle pipeline 之前静默漏检** hidden-downstream(externally-driven trace 是 flat/orphaned),并以 5 修复打通,**0→7 在 MIST 自己 marker-matched trace 上 fire**(Online Boutique,每条都能追到确切 test+trace)。详见 memory `project_externally_driven_trace_validity` + commit `e4a693db`/`cccc69f7`/`a5fa5c3c`/`7e2f9356`。
+   - **对 paper 的意义**:移除了 reviewer 反对点"你只离线跑 oracle / 全链路没演示过"。
+   - **caveat 仍在**:故障仍是 outage-driven(scale-to-0),非 input-driven —— 这条没变,ROADMAP T2 的 framing 决策仍成立。
+
+**3. ResponseEnvelope 的 "no-op" 结论已过时(但需确认 runtime 生效 + artifact)。** VERDICT/DISPOSITION(01:57)称其 no-op(failureSet 恒空、LLM=TODO);**02:08 `ee9ac5cf` + 02:32 `7fe78494` 已 wire `EnvelopeClassifier`**——`ResponseEnvelopeInvariant.java` 现有 `withClassifier`(L86)+ first-2xx classify→cache(L122-125)+ `liveFailure`(L78)。**待 reviewer agent 确认**:(a) runtime 是否真注入了 classifier(还是 injectable-but-never-injected = 实质仍 no-op);(b) 是否有 committed live-fire artifact(readiness 称 `docs/main-contribution/evidence/responseenvelope_live_softerror.txt` + `evaluation/ResponseEnvelopeLiveCheck.java`)。→ **这条是 paper integrity 命门,结果回填本节。**
+
+**4. OB 计数 doc 间不一致,以 paper 为准 = 7/12。** readiness「已落实 #4」写 8/12,但本会话 `7aea57e1` 又改回 **7/12**(理由:workload-mix dependent,"每条经过故障 adservice 的 frontend trace");paper 现为 7/12 + re-capture 24/40。readiness 的 8/12 行已过时。
+
+**5. UX 可读性已补(服务 tool-demo / screencast)。** findings 现在能在 Allure 正确 surface:550 个 🕳️ titled attachment + `mist.anomaly` label + passed-but-hidden 测试的 `📊 Scenario Result ⚠️ HIDDEN DOWNSTREAM FAILURE` + API Call Trace 方向化(`caller ──▶ callee`)+ Jaeger 深链。commit `eb785e9f`/`9a85ef3d`/`4e514394`。
+
+**6. reviewer 复核结果(3 agent 已完成,2026-06-01 晚)→ 判定:尚未 submission-ready,但很近——差一轮"attribution/scoping 措辞修 + 编 PDF 验页数",无需新实验。**
+   - **PC 评审 = WEAK-ACCEPT**(过 demo 门槛;卡:4 页溢出未验证、abstract 过度宣称、trace-RCA/Nezha 定位偏弱、OB 计数呈现松)。
+   - **可复现性 = YES**(实跑 shipped `OracleCheck`:Bookinfo FIRES@ERROR vs response PASS、OB 7/12+24/40 WARN、healthy 0/0;artifact 全 committed;**readiness 当年标的 #1 BLOCKER「可复现 overclaim」已证伪**)。
+   - **integrity = 4 条 OVERCLAIM(grep 实证,全 ACCEPT)**:
+     - (B1) **TT 10/10 是 SUT fault-NAME marker echo,非 trace oracle**:`MultiServiceRESTAssuredWriter.java:2286-2296`(读 `data.faultName`)+`FaultDetectionTracker.java:126-140`(registry 匹配);`run22-fault-detection-10of10.txt` 零 `RESPONSE_ENVELOPE`/`HIDDEN_DOWNSTREAM` 命中。paper L218/abstract 读作 oracle 检出 + 把 soft-error 归给 ResponseEnvelope = 失实。(印证 memory `project_amain_viability_probes`)
+     - (B2) **Sock Shop soft-error 不被 named ResponseEnvelope invariant 捕获**:实跑 → `RESPONSE_ENVELOPE: pass`(漏);因 `primaryField=status` 硬默认(`ResponseEnvelopeInvariant.java:43`)、Sock Shop body 无 `status` 键、`setPrimaryField` 零 runtime caller;真正捕获者 = legacy inline `validateResponse`(`MultiServiceRESTAssuredWriter.java:2228-2262`)。→ L224 + "subsumes SoftErrorRuleCache"(L162/201)失实。
+     - (B3) **"offline, no LLM" 对 soft-error 腿过度**:`ResponseEnvelopeLiveCheck` 需 live DeepSeek key;abstract(L115/209)blanket "offline…no LLM" vs §case(L216)"one DeepSeek call" 自相矛盾。HiddenDownstream/`OracleCheck` 腿确实离线(已实跑证实)。
+     - (B6) **HiddenDownstream 描述漏 injected-`mist.client.status` anchor**:L202 只写 topology fallback,但 live 路径真正靠注入状态(`HiddenDownstreamFailureInvariant.java:79-121`;externally-driven trace 无 nested entry span——见 `project_externally_driven_trace_validity`)+ 漏 opt-in 默认关(`MstConfig.java:415-416`)+ 漏 WARN(otel-only,非 failing)vs ERROR(http5xx)区别。
+   - **ResponseEnvelope no-op 结论确认已过时**:现 genuinely live(`TraceShapeOracle.java:104-107` + writer `:1348-1349` 真 wire;live artifact 经真 DeepSeek **从头复现** = 真 fire)——**但从未在 full-pipeline run 里 fire 过**(只 isolated harness;live `silent_accept_demo` 里是 `SILENT_ACCEPTANCE` 在 flag adminroute soft error)。→ 描述可保留"live one-shot LLM",但别再暗示它产出了 TT 检测。
+   - **对 readiness doc(03:22)的纠正**:其「修完 #1–#4 即 ready」过于乐观。#1 可复现已真修(✅);#2 ResponseEnvelope artifact 确产出(✅)——**但它没发现更深的 attribution 命门**:named invariant 不捕 Sock Shop(B2)+ TT 10/10 是 marker echo(B1)。这两条本轮深挖才暴露。
+   - **结论**:artifact 本身诚实且可复现,两个新机制真实;阻塞**全在 paper 正文的 attribution/scoping 措辞** + 一次 PDF 页数验证。修法 = 纯改写,会话已同步逐条 disposition + 建议措辞。
+   - **已落实(2026-06-01 晚,13 处改写 = git diff 12/12 行)**:B1(abstract+L218 TT 检测归因到 injected-fault registry marker、trace oracle 另算)、B2(L224 Sock Shop 归因到 LLM-backed body check、3 处 subsumes→replaces + 澄清 inline 检查另路)、B3(abstract+L209 离线 claim scope 到 HiddenDownstream/`OracleCheck`、soft-error 注明 one LLM call)、B6(L202 补 injected-`mist.client.status` anchor + opt-in 默认关 + WARN/ERROR)、A2(abstract+L133 "no code changes/end-to-end"→"配置级/no source changes")、A3(L246 trace-anomaly 定位 + delta 收紧)、A4(L222 OB 7/12 vs 24/40 呈现统一)、Fig1 caption(IDs anonymized + 全路径)。**A5 页数验证 = 用户自理。** grep 复核:7 条旧过度宣称残留全 0、新措辞全到位、18 cite key 全 resolve。
+   - **二次 review(2026-06-01,2 agent)→ 收敛 WEAK-ACCEPT→ACCEPT**:integrity 复审 8 项 **7 RESOLVED**;1 NEW-ISSUE = 我 round-1 的 A4 过度更正(写成 "fires on **every** frontend trace that routed through adservice 7/12",实测 8 条经过、shipped invariant 只 fire 7,recapture 24/25)→ **已软化**(去掉 "every",改"7 of 12…frontend traces that routed through adservice" + workload-mix 解释)。fresh-eyes PC 另抓:abstract key 元组 `(rootApi,…)`→`(paramName, paramLocation)`(对齐 `PoolKey`)、`replaces SoftErrorRuleCache` 3 次像 changelog 噪音→删到 1 处(L201)、L202 太密→拆句重排、L224 "no code changes"→"no source changes"、Table caption 加 silent-reason 注。**REJECT 1 条**:PC 称 "265 ops 实测 263"——核对 bundled spec(`merged_openapi_spec 1.yaml`)与 evaluation 版**完全相同、operationId+verb 都 265**,265 正确不改。round-2 共 7 处改写,grep+brace(375/375)复核通过。
+   - **⚠️ 两份副本风险**:13+7 处改写**只在 worktree 副本**;主 checkout `paper/main_issta.tex` 仍是旧版。**camera-ready 若从主 checkout build 则改动全不生效——必须 commit 到 inject-detection 并在主 checkout pull/checkout 同步。**
 
 ---
 
