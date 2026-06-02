@@ -746,14 +746,18 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println("                            for (TraceShapeVerdict.InvariantOutcome o : outcomes) {");
                     pw.println("                                if (!o.passed && \"HIDDEN_DOWNSTREAM_FAILURE\".equals(o.kind)) {");
                     pw.println("                                    StringBuilder hd = new StringBuilder();");
-                    pw.println("                                    hd.append(\"HIDDEN DOWNSTREAM FAILURE  [severity=\").append(o.severity).append(\"]\\n\\n\");");
-                    pw.println("                                    hd.append(\"The client-facing call '\").append(rootApiKey).append(\"' returned a SUCCESS (2xx) response,\\n\");");
-                    pw.println("                                    hd.append(\"but a downstream span server-errored and the failure was SWALLOWED — it never\\n\");");
-                    pw.println("                                    hd.append(\"surfaced to the caller. No status/schema/response-body oracle can see this;\\n\");");
-                    pw.println("                                    hd.append(\"it is observable only in the distributed trace.\\n\\n\");");
-                    pw.println("                                    hd.append(\"Swallowed downstream span(s):\\n  \").append(o.detail);");
-                    pw.println("                                    Allure.addAttachment(\"🕳️ HIDDEN DOWNSTREAM FAILURE — swallowed 5xx behind a 2xx\", \"text/plain\", hd.toString());");
+                    pw.println("                                    hd.append(\"🕳️ HIDDEN DOWNSTREAM FAILURE  [severity=\").append(o.severity).append(\"]\\n\\n\");");
+                    pw.println("                                    hd.append(\"WHAT THE CLIENT SAW:\\n  \").append(rootApiKey).append(\"  →  HTTP 2xx ✅   (looks fine — nothing wrong in status, schema, or body)\\n\\n\");");
+                    pw.println("                                    hd.append(\"WHAT ACTUALLY HAPPENED (only the trace shows it):\\n\");");
+                    pw.println("                                    hd.append(\"  A downstream call failed and was SWALLOWED — the caller returned 2xx anyway.\\n\");");
+                    pw.println("                                    hd.append(\"  Read as  caller ──▶ callee ;  the FAILURE is in the callee (the downstream service):\\n    \").append(o.detail).append(\"\\n\\n\");");
+                    pw.println("                                    hd.append(\"SEE IT VISUALLY:\\n\");");
+                    pw.println("                                    hd.append(\"  • '🔗 API Call Trace' attachment below — the span marked ❌ is this swallowed call.\\n\");");
+                    pw.println("                                    String __uiBase = JAEGER_BASE_URL.endsWith(\"/api\") ? JAEGER_BASE_URL.substring(0, JAEGER_BASE_URL.length() - 4) : JAEGER_BASE_URL;");
+                    pw.println("                                    hd.append(\"  • Jaeger trace tree (click): \").append(__uiBase).append(\"/trace/\").append(markerTraceId).append(\"\\n\");");
+                    pw.println("                                    Allure.addAttachment(\"🕳️ HIDDEN DOWNSTREAM FAILURE — swallowed downstream error behind a 2xx\", \"text/plain\", hd.toString());");
                     pw.println("                                    Allure.label(\"mist.anomaly\", \"HIDDEN_DOWNSTREAM_FAILURE\");");
+                    pw.println("                                    Allure.label(\"tag\", \"mist_hidden_downstream\");"); // filterable in the Allure UI (custom labels are not)
                     pw.println("                                    Allure.parameter(\"🕳️ Hidden downstream failure\", o.detail);");
                     pw.println("                                }");
                     pw.println("                            }");

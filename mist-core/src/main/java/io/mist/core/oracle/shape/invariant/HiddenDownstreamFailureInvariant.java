@@ -133,8 +133,11 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
             swallowed.add(s.spanId);
             if (s.httpStatus >= 500) anyHttp5xx = true;
             if (detail.length() > 0) detail.append("; ");
-            detail.append(s.service).append('/').append(s.operation)
-                  .append(" http=").append(s.httpStatus).append(" otel=").append(s.otelStatus);
+            // Direction-explicit: <caller/recorder> ──▶ <callee/target>. OTel records a failed
+            // downstream call on the CALLER's client span, so s.service is the caller (upstream)
+            // and s.operation is the callee (the downstream that actually failed).
+            detail.append(s.service).append(" ──▶ ").append(s.operation)
+                  .append(" (http=").append(s.httpStatus).append(" otel=").append(s.otelStatus).append(")");
         }
         if (swallowed.isEmpty()) return pass();
         TraceShapeVerdict.Severity sev = anyHttp5xx
@@ -142,8 +145,8 @@ public final class HiddenDownstreamFailureInvariant implements ShapeInvariant<Vo
                 : TraceShapeVerdict.Severity.WARN;
         return TraceShapeVerdict.InvariantOutcome.fail(
                 KIND, rootApiKey, sev,
-                "caller received 2xx but " + swallowed.size()
-                        + " downstream span(s) server-errored (swallowed): " + detail,
+                "caller returned 2xx but " + swallowed.size()
+                        + " downstream call(s) failed and were SWALLOWED (caller ──▶ failed callee): " + detail,
                 swallowed);
     }
 
