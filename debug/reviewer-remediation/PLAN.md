@@ -161,3 +161,21 @@ A1 → A2 → A3 (experiments first, they ground the text) → B1,B2,B3,B5 → C
 
 Verification: main/refs.bib/architecture/trace_oracle braces all balanced; cites all
 resolve (no dangling, no unused); no rendered em-dash / clause-semicolon introduced.
+
+## ADDITIONS (2026-06-02) — using the freed page to upgrade softened points
+User confirmed a full page is free, picked: G1 result + Threats-to-validity + related work.
+- **ADD-1 (G1 result)** ✅ §5 now reports the live ResponseEnvelope check (flips the
+  status:0 soft error, passes a status:1 success, false-positives on status:1/data:null)
+  honestly as a best-effort opt-in LLM judgment. (TT traces store no response bodies, so
+  this is a qualitative characterisation from the live A3 runs, not a large-N rate.)
+- **ADD-2 (Threats to validity)** ✅ new §6 paragraph: the swallowed-error-vs-graceful-
+  degradation policy (Fig 2 IS graceful degradation), the retry-recovered ERROR-span FP
+  and the no-span FN, and the ResponseEnvelope LLM error surface — why it ships opt-in at
+  two severities. Answers R2's policy critique (W9).
+- **ADD-3 (related work)** ✅ added the closest 2025 neighbours: AutoRestTest research
+  paper (\cite{Kim2025AutoRestTestSPDG}, ICSE'25, the SPDG/MARL method) and RESTifAI
+  (\cite{Kogler2025RESTifAI}, ICSE'26 demo, LLM functional oracles), and sharpened the
+  contrast: MIST's HiddenDownstreamFailure needs no model at oracle time and catches a
+  clean-body swallowed failure an LLM body/business-logic oracle cannot see. Bib 19=19,
+  all verified. (R1's named neighbours addressed; 2411.07098 turned out to be the
+  AutoRestTest research paper.)
