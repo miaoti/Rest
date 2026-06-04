@@ -43,7 +43,7 @@
 % internal flow: i -> ii -> iii (top), down to iv, iv -> v (bottom)
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
-\draw[flow] (gen.south) -- ++(0,-0.25) -| (mut.north);
+\draw[flow] (gen.south) |- (mut.east);
 \draw[flow] (mut)      -- (oracle);
 
 % ---- mist-cli (left): inputs/outputs hub ----
