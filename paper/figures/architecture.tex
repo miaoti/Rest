@@ -32,7 +32,7 @@
 \node[stage] (ingest)   at (5.0, 0.85)  {\textbf{(i) Spec Ingestor}\\OpenAPI parser};
 \node[stage] (registry) at (8.2, 0.85)  {\textbf{(ii) Semantic Dep.\ Registry}\\producer / consumer index};
 \node[stage] (gen)      at (11.4, 0.85)  {\textbf{(iii) Sequence Generator}\\Root API Mode};
-\node[stage] (mut)      at (11.4, -0.65) {\textbf{(iv) Fault Injector}\\Sniper Strategy};
+\node[stage] (mut)      at (9.8, -0.65)  {\textbf{(iv) Fault Injector}\\Sniper Strategy};
 \node[stage] (oracle)   at (6.6, -0.65)  {\textbf{(v) Trace Checker}\\Trace Shape Oracle};
 
 \begin{scope}[on background layer]
@@ -43,7 +43,7 @@
 % internal flow: i -> ii -> iii (top), down to iv, iv -> v (bottom)
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
-\draw[flow] (gen.south) -- (mut.north);
+\draw[flow] (gen.south) -- ++(0,-0.25) -| (mut.north);
 \draw[flow] (mut)      -- (oracle);
 
 % ---- mist-cli (left): inputs/outputs hub ----
