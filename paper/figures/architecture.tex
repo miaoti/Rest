@@ -1,70 +1,81 @@
-% Figure 1: MIST architecture, full-width sigconf version.
-% Each component box has a fontawesome icon, a bold name, and a subtitle.
+% Figure 1: MIST architecture, three Maven modules.
+%   mist-core  : owns the five architectural stages (i)-(v), drawn as one box.
+%   mist-cli   : entry mist.jar launcher, JUnit / REST-Assured writer, executor;
+%                inputs enter and outputs leave through it.
+%   mist-llm   : LLM dispatch and call cache.
+% mist-cli and mist-llm each exchange with mist-core over a bidirectional arrow.
+% mist-core drives the System Under Test and reads its traces back.
 \begin{tikzpicture}[
   font=\small,
-  >={Stealth[length=2.4mm]},
-  comp/.style    ={draw=blue!50!gray, line width=0.6pt, rounded corners=2.5pt,
-                   fill=blue!4, minimum width=30mm, minimum height=17mm,
-                   align=center, inner sep=2pt, text depth=0pt},
-  sut/.style     ={draw=gray!55, line width=0.5pt, rounded corners=2pt,
-                   fill=gray!10, minimum height=7mm, minimum width=24mm,
-                   align=center, inner sep=2pt, font=\footnotesize},
-  sutgap/.style  ={align=center, inner sep=1pt, font=\footnotesize\itshape,
-                   text=gray!70},
-  inputbox/.style ={draw=gray!50, line width=0.5pt, rounded corners=2.5pt,
-                    fill=gray!4, minimum height=17mm, minimum width=68mm,
-                    align=left, inner sep=4pt, text depth=0pt, font=\footnotesize},
-  outputbox/.style={draw=gray!50, line width=0.5pt, rounded corners=2.5pt,
-                    fill=gray!4, minimum height=17mm, minimum width=38mm,
-                    align=left, inner sep=4pt, text depth=0pt, font=\footnotesize},
-  flow/.style    ={->, thick, >=Stealth, draw=black!75},
-  backflow/.style={->, thick, dashed, >=Stealth, draw=black!75}
+  >={Stealth[length=2.2mm]},
+  stage/.style  ={draw=blue!45!gray, line width=0.5pt, rounded corners=2pt,
+                  fill=white, minimum width=26mm, minimum height=11mm,
+                  align=center, inner sep=2pt, text depth=0pt, font=\scriptsize},
+  module/.style ={draw=blue!55!gray, line width=0.9pt, rounded corners=3pt,
+                  fill=blue!4},
+  modbox/.style ={module, align=center, inner sep=3pt, font=\scriptsize,
+                  text width=27mm, minimum height=15mm},
+  io/.style     ={draw=gray!55, line width=0.5pt, rounded corners=2.5pt,
+                  fill=gray!7, align=center, inner sep=3pt, font=\scriptsize,
+                  text width=36mm},
+  sut/.style    ={draw=gray!60, line width=0.5pt, rounded corners=2.5pt,
+                  fill=gray!12, align=center, inner sep=3pt, font=\scriptsize,
+                  text width=48mm},
+  modlbl/.style ={font=\scriptsize\bfseries\ttfamily, text=blue!50!gray,
+                  fill=white, inner sep=1pt, rounded corners=1pt},
+  flow/.style   ={->, thick, draw=black!75},
+  bidir/.style  ={<->, line width=1.1pt, draw=blue!55!gray},
+  trace/.style  ={->, thick, dashed, draw=black!70}
 ]
 
-\node[comp] (ingest) at (0.0,0) {\textbf{(i) Spec Ingestor}\\{\scriptsize \textcolor{gray!50!black}{OpenAPI parser, emits MST conf}}};
-\node[comp] (registry) at (3.8,0) {\textbf{(ii) Semantic Dep.\ Registry}\\{\scriptsize \textcolor{gray!50!black}{ID-stem producer/consumer index}}};
-\node[comp] (gen) at (7.6,0) {\textbf{(iii) Sequence Generator}\\{\scriptsize \textcolor{gray!50!black}{Root API Mode, 5-phase pipeline}}};
-\node[comp] (oracle) at (11.4,0) {\textbf{(v) Trace Shape Oracle}\\{\scriptsize \textcolor{gray!50!black}{4 learned + 2 structural invariants}}};
+% ---- mist-core: the five stages (i)-(v), serpentine flow ----
+\node[stage] (ingest)   at (5.0, 0.85)  {\textbf{(i) Spec Ingestor}\\OpenAPI parser};
+\node[stage] (registry) at (8.2, 0.85)  {\textbf{(ii) Semantic Dep.\ Registry}\\producer / consumer index};
+\node[stage] (gen)      at (11.4, 0.85) {\textbf{(iii) Sequence Generator}\\Root API Mode};
+\node[stage] (mut)      at (9.8, -0.65) {\textbf{(iv) Sniper Strategy}\\one fault per variant};
+\node[stage] (oracle)   at (6.6, -0.65) {\textbf{(v) Trace Shape Oracle}\\4 learned + 2 structural};
 
-\node[inputbox] (inputs) at (1.9,-2.5) {\textbf{Inputs}\\\scriptsize\\\enspace$\bullet$ OpenAPI specification (one file or aggregated /v3/api-docs)\\\enspace$\bullet$ Jaeger / OpenTelemetry traces (one file or a directory)\\\enspace$\bullet$ run configuration (\texttt{.properties} file)};
-\node[comp] (mut) at (7.6,-2.5) {\textbf{(iv) Sniper Strategy}\\{\scriptsize \textcolor{gray!50!black}{one fault per variant; FaultMiner}}};
-\node[outputbox] (out) at (11.4,-2.5) {\textbf{Outputs}\\\scriptsize\\\enspace$\bullet$ JUnit test classes\\\enspace$\bullet$ Allure execution report\\\enspace$\bullet$ fault-detection report};
-
-\node[sut]    (gw)   at (15.0,-0.30)  {Gateway};
-\node[sut]    (svc1) at (15.0,-0.90)  {ts-route};
-\node[sut]    (svc2) at (15.0,-1.50)  {ts-order};
-\node[sutgap] (dots) at (15.0,-2.10)  {$\vdots$};
-\node[sut]    (jgr)  at (15.0,-2.70)  {Jaeger};
 \begin{scope}[on background layer]
-  \node[draw=gray!60, dotted, thick, rounded corners=4pt, inner sep=3mm,
-        fit=(gw)(jgr)] (sutbox) {};
+  \node[module, fit=(ingest)(registry)(gen)(mut)(oracle), inner sep=4mm] (core) {};
 \end{scope}
-\node[font=\scriptsize\bfseries, text=gray!50!black, fill=white, inner sep=1pt]
-     at (sutbox.north) {System Under Test};
+\node[modlbl, anchor=south west] at ([xshift=2mm]core.north west) {mist-core};
 
+% internal flow: i -> ii -> iii (top), down to iv, iv -> v (bottom)
 \draw[flow] (ingest)   -- (registry);
 \draw[flow] (registry) -- (gen);
-\draw[flow] (gen)      -- (oracle);
-
 \draw[flow] (gen.south) -- (mut.north);
+\draw[flow] (mut)      -- (oracle);
 
-\draw[flow] (mut.north east) -- ++(0,0.3) -| ([xshift=-3mm]oracle.south);
+% ---- mist-cli (left): inputs/outputs hub ----
+\node[modbox] (cli) at (1.0, 0.1)
+  {\texttt{mist.jar} launcher\\JUnit / REST-Assured writer\\test executor};
+\node[modlbl, anchor=south west] at ([xshift=2mm]cli.north west) {mist-cli};
 
-\draw[flow] (oracle.east) -- ([yshift=3mm]gw.west);
+% ---- mist-llm (right) ----
+\node[modbox] (llm) at (15.3, 0.1)
+  {LLM dispatch\\and call cache};
+\node[modlbl, anchor=south west] at ([xshift=2mm]llm.north west) {mist-llm};
 
-\draw[backflow] (jgr.west) -- ([xshift=-4mm]jgr.west) |- ([yshift=-3mm]oracle.east);
+% bidirectional module exchanges
+\draw[bidir] (cli.east)  -- (core.west);
+\draw[bidir] (core.east) -- (llm.west);
 
-\draw[flow] (oracle.south) -- (out.north);
+% ---- Inputs (into mist-cli) ----
+\node[io] (inputs) at (1.0, 2.0)
+  {\textbf{Inputs:} OpenAPI spec, Jaeger / OTel traces, \texttt{.properties} config};
+\draw[flow] (inputs) -- (cli);
 
-% --- Module band: 3 Maven modules (mist-core, mist-llm, mist-cli) after the
-%     adapter sever; mist-core now owns all five architectural stages (i-v)
-%     and depends on no third-party source; mist-cli houses the JUnit / REST-
-%     Assured writer and the test executor; mist-llm carries the LLM dispatch
-%     and call cache. The previous four-module reactor vendored a forked copy
-%     of RESTest in mist-restest-adapter; that module has been deleted.
-\node[font=\scriptsize, text=gray!55!black, anchor=west]
-     at (-0.55, -3.70) {Maven modules:};
-\node[font=\scriptsize\ttfamily, text=blue!50!gray, anchor=west]
-     at (1.05, -3.70) {mist-cli (entry mist.jar; writer, executor) , mist-core (i, ii, iii, iv, v) , mist-llm};
+% ---- Outputs (from mist-cli) ----
+\node[io] (out) at (1.0, -1.8)
+  {\textbf{Outputs:} JUnit tests, Allure report, fault-detection report};
+\draw[flow] (cli) -- (out);
+
+% ---- System Under Test (driven by mist-core, traces flow back) ----
+\node[sut] (sutb) at (8.2, -2.6)
+  {\textbf{System Under Test}\\Gateway $\to$ services $\to$ Jaeger};
+\draw[flow]  ([xshift=-7mm]core.south) -- ([xshift=-7mm]sutb.north)
+             node[midway, left=1pt, font=\scriptsize\itshape, text=black!65] {drive};
+\draw[trace] ([xshift=7mm]sutb.north) -- ([xshift=7mm]core.south)
+             node[midway, right=1pt, font=\scriptsize\itshape, text=black!65] {traces};
 
 \end{tikzpicture}
