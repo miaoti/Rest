@@ -155,6 +155,8 @@ MIST targets these gaps. Its differentiator versus AutoRestTest~\cite{Stennett20
 
 MIST is a Maven reactor of three modules (Figure~\ref{fig:arch}). \texttt{mist-core} owns all five architectural stages described below and contains no third-party source code: the OpenAPI parser wrapper (\texttt{io.mist.core.spec.*}), the semantic dependency registry (\texttt{io.mist.core.registry.*}), the sequence generator (\texttt{io.mist.core.generation.MistGenerator}), the sniper fault registry (\texttt{io.mist.core.fault.*}), and the trace-shape oracle (\texttt{io.mist.core.oracle.shape.*}) all live here. \texttt{mist-cli} ships the launcher \texttt{mist.jar}, the JUnit/REST-Assured writer, the test executor, and the SPI provider classes that let \texttt{mist-core} stay framework-agnostic. \texttt{mist-llm} is LLM dispatch and call cache. The build depends on REST-Assured, swagger-parser, Allure, and JUnit as ordinary Maven library artifacts, as every black-box REST tester does~\cite{MartinLopez2021RESTest,Arcuri2019EvoMasterTOSEM,Atlidakis2019RESTler}, but the MIST repository does not vendor any forked third-party source.
 
+These five stages form a pipeline that turns the spec and traces into cross-service tests the oracle checks.
+
 \textbf{(i) Spec Ingestor} parses one OpenAPI spec (or aggregates per-service \texttt{/v3/api-docs}) and emits an MST configuration. The bundled TrainTicket spec carries 265 operations across 37 REST-exposed services (the distinct \texttt{/api/v1/} service prefixes).
 
 \textbf{(ii) Semantic Dependency Registry} indexes producer/consumer pairs over spec and trace corpus. For every \texttt{Id}/\texttt{ID}/\texttt{uuid}-stemmed parameter, a 5-pass build mines the API and JSON path that historically produces a matching value.
