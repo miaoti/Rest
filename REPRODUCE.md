@@ -43,7 +43,7 @@ lets a reviewer reproduce the paper's headline results. Source:
 - An LLM for value synthesis + the soft-error classifier: **DeepSeek API key**
   (`export DEEPSEEK_API_KEY=...` or place it at `.api_keys/DEEPSEEK_API_KEY`) **or** a local
   **Ollama** (`ollama pull qwen3-coder:30b`). The §5 `HiddenDownstreamFailure` checks need **no LLM**;
-  only the `ResponseEnvelope` soft-error check calls the LLM (one cached call).
+  only the `ResponseEnvelope` soft-error check calls the LLM (one live call, cached for repeats).
 
 ## 3. Layout
 ```
@@ -58,7 +58,9 @@ debug/negative_test/runs/run22-fault-detection-10of10.txt   # TrainTicket 10/10 
 
 ## 4. Install
 ```bash
-git clone https://github.com/miaoti/Rest && cd Rest
+# the artifact lives on the inject-detection branch (pin it explicitly in case
+# the repository default branch differs)
+git clone -b inject-detection https://github.com/miaoti/Rest && cd Rest
 export JAVA_HOME=/path/to/jdk21          # a JDK, not a JRE
 mvn -q -DskipTests install               # builds mist-cli/target/mist.jar
 ```
@@ -99,8 +101,20 @@ committed transcript is at `docs/main-contribution/evidence/responseenvelope_liv
 Each bundle is self-contained; from the repo root:
 ```bash
 evaluation/suts/bookinfo/deploy/deploy.sh         # kind + Istio + Jaeger + Bookinfo (~8 min)
-# inject the real outage + run the end-to-end oracle matrix:
-evaluation/suts/bookinfo/workload/inject-ratings-outage.sh on
+# start the two port-forwards the deploy prints. Run each inside a restart loop —
+# a bare `kubectl port-forward` dies with "lost connection to pod" within minutes,
+# which would turn the later test runs into bogus connection failures
+# (run-oracle-e2e.sh also self-heals these if the gateway is unreachable):
+( while true; do kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80; sleep 2; done ) &
+( while true; do kubectl port-forward -n istio-system svc/tracing 16686:80; sleep 2; done ) &
+# one MIST generation run against the live SUT (run-oracle-e2e.sh replays the
+# tests it generates under .runtime/; needs a DeepSeek key for value synthesis):
+mkdir -p evaluation/suts/bookinfo/.runtime
+( cd evaluation/suts/bookinfo/.runtime && \
+  DEEPSEEK_API_KEY="$(cat ../../../../.api_keys/DEEPSEEK_API_KEY)" \
+  "$JAVA_HOME/bin/java" -jar ../../../../mist-cli/target/mist.jar ../bookinfo-demo.properties )
+# run the end-to-end oracle matrix (the script toggles the real ratings outage
+# itself and restores it; inject-ratings-outage.sh on|off is the manual toggle):
 evaluation/suts/bookinfo/run-oracle-e2e.sh        # 4-case sensitivity/specificity, see its README
 evaluation/suts/bookinfo/deploy/deploy.sh teardown
 ```
@@ -156,6 +170,14 @@ A 3–5 min screencast of the bundled demo: see the URL at the end of the paper 
 - **`no external javac` / compile fails** → you are on a JRE; set `JAVA_HOME` to a JDK 21.
 - **TrainTicket won't converge / load skyrockets** → too few cores for 40 services; see §6.3 caveat.
 - **`docker` permission denied** → add your user to the `docker` group (or use sudo).
+- **`kind create cluster` fails with `could not find a log line that matches "Reached target
+  .*Multi-User System"`** → the stock Linux inotify limits are too low for a kind node
+  (typical on Ubuntu when other watchers are running):
+  `sudo sysctl fs.inotify.max_user_watches=1048576 fs.inotify.max_user_instances=8192`.
+  Also plan on **one kind cluster per host** — a second concurrent cluster on a small box
+  can time out at `kubeadm` control-plane bootstrap.
+- **`deploy.sh` times out waiting for a pod** → slow image pulls on a busy host; the script
+  is idempotent, just re-run it (already-created resources are skipped).
 - **LLM step fails** → set `DEEPSEEK_API_KEY` (or switch to Ollama); only the ResponseEnvelope
   check needs it.
 - **Bookinfo/Boutique trace fetch empty** → allow a few seconds for Jaeger ingest before the oracle.

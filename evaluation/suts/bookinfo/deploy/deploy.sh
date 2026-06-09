@@ -29,6 +29,9 @@ command -v istioctl >/dev/null || cp "$ISTIO_DIR/bin/istioctl" "$BIN/"
 
 # 2. cluster
 kind get clusters 2>/dev/null | grep -qx "$CLUSTER" || kind create cluster --name "$CLUSTER" --wait 150s
+# idempotent re-runs: a pre-existing cluster may have no kubeconfig entry for the
+# current account (verified failure mode: istioctl falls back to localhost:8080)
+kind export kubeconfig --name "$CLUSTER"
 
 # 3. Istio (demo profile = tracing on) + Jaeger backend
 istioctl install --set profile=demo -y

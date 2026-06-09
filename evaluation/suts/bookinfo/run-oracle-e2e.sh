@@ -29,6 +29,27 @@ TMP="${TMPDIR:-/tmp}/bookinfo-e2e.$$"; mkdir -p "$TMP"
 JAEGER="${JAEGER_BASE_URL:-http://localhost:16686/jaeger/api}"
 GW="${GW:-http://localhost:8080}"
 
+# --- self-healing port-forwards ------------------------------------------------
+# A single `kubectl port-forward` dies with "lost connection to pod" well within
+# this script's >10-min runtime, which turns every later case into bogus
+# connection failures (verified live). If the gateway is unreachable, run our own
+# forwards in restart loops and tear them down on exit.
+PF_PIDS=()
+gw_up() { curl -s -o /dev/null --max-time 3 "$GW/productpage"; }
+cleanup_forwards() { for p in "${PF_PIDS[@]:-}"; do pkill -P "$p" 2>/dev/null; kill "$p" 2>/dev/null; done; }
+ensure_forwards() {
+  gw_up && return 0
+  if [ "${#PF_PIDS[@]}" -eq 0 ]; then
+    echo "gateway unreachable — starting auto-restarting port-forwards (8080 ingress, 16686 jaeger)"
+    ( while true; do kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80 >/dev/null 2>&1; sleep 2; done ) & PF_PIDS+=("$!")
+    ( while true; do kubectl port-forward -n istio-system svc/tracing 16686:80 >/dev/null 2>&1; sleep 2; done ) & PF_PIDS+=("$!")
+    trap cleanup_forwards EXIT
+  fi
+  local i; for i in $(seq 1 30); do gw_up && return 0; sleep 2; done
+  echo "ERROR: gateway still unreachable at $GW (is the cluster up?)"; exit 1
+}
+ensure_forwards
+
 # --- locate a full JDK 21 (needs javac; the host `java` may be a JRE) ----------
 JAVAC=""; JAVA=""
 for c in "${JDK_HOME:-}/bin/javac" $(command -v javac 2>/dev/null) \
@@ -95,7 +116,7 @@ FLAGS=( -Djaeger.base.url="$JAEGER" -Djaeger.enabled=true
         -Dmst.oracle.shape.invariants.response_envelope.enabled=false
         -Dmst.oracle.shape.invariants.target_attribution.enabled=false
         -Dllm.response.validation.enabled=false -Dllm.enabled=false -Dauth.mode=none )
-runtest() { ( cd "$RT" && "$JAVA" -cp "$CP" "${FLAGS[@]}" org.junit.runner.JUnitCore "$1" ) 2>&1 \
+runtest() { ensure_forwards; ( cd "$RT" && "$JAVA" -cp "$CP" "${FLAGS[@]}" org.junit.runner.JUnitCore "$1" ) 2>&1 \
   | grep -aiE '✅ Root|❌ Root|HIDDEN_DOWNSTREAM|Scenario (PASSED|FAILED)|OK \(|Tests run|got: [0-9]' | grep -aiv 'Could not'; }
 
 echo "=== outage ON ==="; kubectl scale deploy ratings-v1 --replicas=0 >/dev/null 2>&1

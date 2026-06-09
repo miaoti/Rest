@@ -180,37 +180,42 @@ and the generated JUnit sources under the directory you pointed
 ## Quick Start D — Reproduce the paper's numbers (artifact track)
 
 For artifact evaluation, peer review, or any context where you need
-the **byte-identical** generated test suite the paper reports. Under
-`-Drandom.seed=<n>`, MIST is fully deterministic: two consecutive
-runs produce byte-for-byte identical `Flow_Scenario_*.java` files
-under `mist-cli/src/test/java/trainticket_twostage_test/` (the inner
-`TrainTicketTwoStageTest_<id>/` directory carries a per-run timestamp,
-but its generated file contents are seed-determined), and all LLM
-calls are served from the bundled cache instead of the network. Independently verified on
-2026-05-21; see
-[`debug/Conference-refinement/PROMPT_VERIFY_FIXES.md`](debug/Conference-refinement/PROMPT_VERIFY_FIXES.md)
-for the re-runnable verification protocol.
+the **byte-identical** generated test suite the paper reports. The
+offline claim is scoped to *generation*: the bundled noexec profile
+disables the LLM (`llm.enabled=false`, hardcoded negative inputs), so
+under `-Drandom.seed=<n>` two consecutive runs produce byte-for-byte
+identical `Flow_Scenario_*.java` files under
+`mist-cli/src/test/java/trainticket_twostage_test/`, in a directory
+named after the seed (`TrainTicketTwoStageTest_42`; unseeded or
+execution runs use a per-run timestamp instead) — no SUT, no API key,
+no network at all. Re-verified on 2026-06-09 from a fresh clone inside
+a no-network namespace (123 files, identical SHA-256 sums across two
+runs); the earlier protocol is in
+[`debug/Conference-refinement/PROMPT_VERIFY_FIXES.md`](debug/Conference-refinement/PROMPT_VERIFY_FIXES.md).
 
 ```bash
 # 1. Build the reactor (same as Quick Start B).
 mvn clean install -DskipTests
 
-# 2. Reproduce the paper's headline detection-rate number.
-#    With -Drandom.seed=42, MIST short-circuits every LLM call to the
-#    bundled .mist/llm-call-cache.json blessed cache, so no network
-#    access or API key is required to reproduce.
-java -Drandom.seed=42 -jar mist-cli/target/mist.jar \
-     mist-cli/src/main/resources/My-Example/trainticket-demo.properties
-
-# 3. Sanity check: confirm byte-identical generation (does not need
-#    a live SUT; uses the noexec profile that skips test execution).
+# 2. Reproduce the paper's generated suite byte-identically, offline
+#    (noexec profile: skips execution, LLM disabled, no key needed).
 java -Drandom.seed=42 -jar mist-cli/target/mist.jar \
      mist-cli/src/main/resources/My-Example/trainticket-demo-noexec.properties
 find mist-cli/src/test/java/trainticket_twostage_test \
      -name 'Flow_Scenario_*.java' -exec sha256sum {} \; | sort > /tmp/run1.sums
-# Repeat the same java command, then:
+# Repeat the same java command, write /tmp/run2.sums, then:
 diff /tmp/run1.sums /tmp/run2.sums   # expect empty
 ```
+
+The headline **detection-rate** number (10/10 injected faults) is a
+*live* result, not an offline one: it needs the TrainTicket SUT up
+(`evaluation/suts/trainticket/deploy/deploy.sh`, heavy — see
+`REPRODUCE.md` §6.3) plus an LLM key, and the exact count varies with
+LLM output run to run. The evidence of record is the committed run
+report
+[`debug/negative_test/runs/run22-fault-detection-10of10.txt`](debug/negative_test/runs/run22-fault-detection-10of10.txt);
+`REPRODUCE.md` §5 reproduces the trace-oracle headline results offline
+from committed traces instead.
 
 ### Ablation rows (Path B § 4.2)
 
@@ -236,30 +241,41 @@ are documented in
 × metrics) lives in
 [`docs/mst-plans/PATH_B_POSITIONING.md`](docs/mst-plans/PATH_B_POSITIONING.md) § 4.
 
-### Shipping a new blessed cache
+### The LLM call cache is local replay, not a shipped artifact
 
-The bundled `.mist/llm-call-cache.json` is what makes step 2 above
-work offline. To re-bless the cache against a fresh LLM (e.g. after
-changing a prompt or upgrading the model):
+The repository does **not** ship a pre-populated
+`.mist/llm-call-cache.json` (the whole `.mist/` directory is
+gitignored). The cache makes *your own* seeded re-runs offline: with
+the default knobs (`mist.llm.cache.read=auto`,
+`mist.llm.cache.write=true`), one cold LLM-enabled run on your machine
+populates the cache, and every later run under the same
+`-Drandom.seed=<n>` replays from it without touching the network.
+
+Cache entries are keyed by a SHA-256 of the full prompt, so any change
+to a prompt template, the trace corpus, or the model invalidates the
+affected entries — they silently fall through to the live backend.
+That is why a committed "blessed cache" is not the reproduction path
+of record (an empirical check on 2026-06-09 confirmed a months-old
+cache no longer covers the current prompts). If you still want to
+ship one alongside a frozen SUT snapshot:
 
 ```bash
-# 1. Wipe the existing cache and run once cold under the canonical seed.
-#    This is the only run that needs an API key.
+# 1. Wipe the cache and run once cold under the canonical seed
+#    (the only run that needs an API key).
 export DEEPSEEK_API_KEY=sk-...
 rm -f .mist/llm-call-cache.json
 java -Drandom.seed=42 -jar mist-cli/target/mist.jar \
      mist-cli/src/main/resources/My-Example/trainticket-demo.properties
 
-# 2. Commit the new cache as data. .mist/ is gitignored by default;
-#    use a targeted negation to track only the cache file:
+# 2. Re-run the same command offline to prove the cache covers the run,
+#    then commit it as data (targeted .gitignore negation):
 #       echo '!/.mist/llm-call-cache.json' >> .gitignore
 git add .mist/llm-call-cache.json .gitignore
-git commit -m "data: re-bless LLM cache for artifact reproducibility"
+git commit -m "data: bless LLM cache for artifact reproducibility"
 ```
 
-Subsequent reviewer runs hit the cache and never call the LLM
-backend, so the reported numbers are reproducible even when the
-hosted provider returns non-deterministic tokens.
+Step 2's offline re-run is the acceptance test: bless a cache only at
+the exact commit whose prompts produced it.
 
 ---
 
@@ -300,7 +316,7 @@ Full pipeline (Phase 1 cross-trace merging → Phase 2 session merging → Phase
 
 | | Version |
 |---|---|
-| JDK | 11 (compile target is `-source 11 -target 11`) |
+| JDK | **21** (a full JDK, not a JRE — MIST compiles the generated tests in-process; bytecode target stays `-source 11 -target 11`) |
 | Maven | 3.6+ |
 | Allure CLI | bundled in `allure/` (Java 8+ required by Allure itself) |
 | LLM backend | one of: Ollama (local), DeepSeek / OpenAI-compatible HTTP, Google Gemini |
