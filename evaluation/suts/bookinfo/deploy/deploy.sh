@@ -37,6 +37,22 @@ kind export kubeconfig --name "$CLUSTER"
 istioctl install --set profile=demo -y
 kubectl apply -f "$ISTIO_DIR/samples/addons/jaeger.yaml"
 
+# 3b. Harden the Jaeger addon against slow restarts. The addon's all-in-one pod
+# keeps its badger store on an emptyDir that SURVIVES container restarts within
+# the pod, and ships only a ~30s liveness window (/status:13133, k8s-default
+# 3 failures x 10s, no startupProbe). On a long-lived cluster the store grows
+# until a container restart takes longer than that window, and the pod then
+# crash-loops forever (observed live after 9 days of 100%-sampled traffic:
+# 1745 badger SSTs, 153 restarts; diagnosis + fix evidence in
+# debug/a-rank-fixes/VALIDATION-2026-06-10.md). The startupProbe below gives a
+# (re)starting container up to 600s before the liveness probe takes over.
+# Strategic merge keyed by container name; re-running is a no-op (idempotent).
+kubectl patch deployment jaeger -n istio-system --type=strategic -p '{
+  "spec":{"template":{"spec":{"containers":[{"name":"jaeger","startupProbe":{
+    "httpGet":{"path":"/status","port":13133},
+    "periodSeconds":10,"failureThreshold":60,"timeoutSeconds":5}}]}}}}'
+kubectl rollout status deployment/jaeger -n istio-system --timeout=300s
+
 # 4. enable trace export (Istio >=1.21 needs a Telemetry resource), 100% sampling
 kubectl apply -f - <<'EOF'
 apiVersion: telemetry.istio.io/v1
