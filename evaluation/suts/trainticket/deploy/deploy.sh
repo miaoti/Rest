@@ -73,15 +73,26 @@ NAMESPACE=$NAMESPACE TAG=$TAG IMG_REPO=$IMG_REPO IMG_TAG=$TAG $DC compose up -d
 # 4. wait for the gateway (ts-ui-dashboard nginx). It crash-restarts until every
 #    upstream service it proxies is resolvable, then serves on :8080.
 echo "waiting for the SUT gateway on http://localhost:8080 (TrainTicket takes several minutes to converge)..."
+UP=""
 for i in $(seq 1 60); do
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 \
     -X POST http://localhost:8080/api/v1/users/login \
     -H 'Content-Type: application/json' -d '{"username":"admin","password":"222222"}' 2>/dev/null || true)
-  if [[ "$code" == "200" ]]; then echo "  gateway UP (login 200) after ${i}0s"; break; fi
+  if [[ "$code" == "200" ]]; then echo "  gateway UP (login 200) after ${i}0s"; UP=1; break; fi
   # nudge nginx to re-resolve upstreams as services finish booting
   [[ $((i % 6)) -eq 0 ]] && $DC restart train-ticket-injection-ts-ui-dashboard-1 >/dev/null 2>&1 || true
   sleep 10
 done
+
+if [[ -z "$UP" ]]; then
+  echo
+  echo "WARNING: the gateway never answered login 200 within 10 min. The containers are"
+  echo "up but the SUT has not converged yet — on a small host this can take longer"
+  echo "(or never finish under load; see REPRODUCE.md 6.3). Re-check manually with:"
+  echo "  curl -s -o /dev/null -w '%{http_code}\\n' -X POST http://localhost:8080/api/v1/users/login \\"
+  echo "       -H 'Content-Type: application/json' -d '{\"username\":\"admin\",\"password\":\"222222\"}'"
+  exit 1
+fi
 
 echo
 echo "TrainTicket up. Gateway: http://localhost:8080  (admin/222222, TT's built-in account)"
