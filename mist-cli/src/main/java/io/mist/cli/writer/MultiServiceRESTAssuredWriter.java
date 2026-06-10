@@ -300,6 +300,10 @@ public class MultiServiceRESTAssuredWriter {
                     pw.println();
                     pw.println("    private static void attachJaegerTrace(String service, String method, String path, long requestStartMicros, Map<String, String> stepParameters, boolean isStepFailed, String markerTraceId, String testMethodName, String targetService, String targetParam) {");
                     pw.println("        if (!JAEGER_ENABLED) return;");
+                    pw.println("        // Clear any verdict left by the previous step so a trace-fetch miss in");
+                    pw.println("        // THIS step cannot make the oracle gate read the previous step's verdict.");
+                    pw.println("        // Repopulated below via LAST_VERDICT.set(verdict) only when a trace is found.");
+                    pw.println("        LAST_VERDICT.remove();");
                     pw.println("        try {");
                     pw.println("            String operation = method + \" \" + path;");
                     pw.println("            String opEncoded = URLEncoder.encode(operation, StandardCharsets.UTF_8);");
@@ -2556,6 +2560,10 @@ public class MultiServiceRESTAssuredWriter {
                             pw.println("                                if (\"RESPONSE_ENVELOPE\".equals(o.kind) && !o.passed) { respEnvelopeViolation = true; break; }");
                             pw.println("                            }");
                             pw.println("                            if (respEnvelopeViolation) {");
+                            pw.println("                                // Overwrite the failed marker set at the top of this catch");
+                            pw.println("                                // block: without it the scenario-end tally still counts this");
+                            pw.println("                                // step as failed and fail()s the whole test, defeating the flip.");
+                            pw.println("                                stepResults.put(" + stepIdx + ", true);");
                             pw.println("                                Allure.step(\"✅ negative variant PASSED via ResponseEnvelopeInvariant violation (replaces SoftErrorRuleCache contract)\");");
                             pw.println("                                System.out.println(\"✅ Negative test PASSED: Trace Shape Oracle detected ResponseEnvelopeInvariant violation\");");
                             pw.println("                                return; // suppress the wrapping RuntimeException — variant is PASS");

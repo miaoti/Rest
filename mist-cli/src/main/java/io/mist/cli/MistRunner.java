@@ -1342,6 +1342,17 @@ public final class MistRunner {
                         isFinalRound ? "(FINAL - Results saved to Allure)" : "(Enhancement round)");
                 logger.info("═══════════════════════════════════════════════════════════════════════════");
 
+                // Clear the global captured-failures map before each round so a round's
+                // collector drains only THIS round's failures. The map is static and
+                // enableCapture() only clears on a disabled→enabled transition (which
+                // never recurs), so without this a test that failed in round 0 and
+                // passed after enhancement leaves a stale entry that gets re-drained,
+                // re-counted, and re-enhanced every later round. Clearing at the top
+                // (before execution) keeps the round-0 SCE second pass intact, since
+                // that pass runs after this round's execution has repopulated the map.
+                TestResultCapture.clearResults();
+                TestResultCapture.clearCurrentTest();
+
                 // Create collector for this round
                 FailedTestCollector collector = new FailedTestCollector(round, skip5xx, enhancerOutputDir);
 
@@ -3114,7 +3125,17 @@ public final class MistRunner {
                 // probeable. Spring controllers reach the same handler either
                 // way; if the SUT is broken, it 500s regardless of {x}.
                 String probePath = path.replaceAll("\\{[^}]+\\}", "1");
-                endpoints.add(new SutHealthCheck.Endpoint(verb, base + probePath));
+                // SAFETY: never issue a real write during a liveness preflight.
+                // An authenticated DELETE/PUT/PATCH/POST .../1 at startup would
+                // mutate or destroy SUT state on every run. Probe write verbs
+                // with GET instead — a 405/404/2xx still proves the server is
+                // reachable, which is all the preflight needs to establish.
+                String probeVerb = verb;
+                String v = verb.trim().toUpperCase(java.util.Locale.ROOT);
+                if (!v.equals("GET") && !v.equals("HEAD") && !v.equals("OPTIONS")) {
+                    probeVerb = "GET";
+                }
+                endpoints.add(new SutHealthCheck.Endpoint(probeVerb, base + probePath));
             }
 
             if (endpoints.isEmpty()) {

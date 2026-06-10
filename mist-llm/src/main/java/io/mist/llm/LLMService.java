@@ -219,6 +219,11 @@ public class LLMService implements LLMClient {
         String result = null;
         boolean success = false;
         String errorMessage = null;
+        // True when the result was produced by the Ollama per-call fallback rather
+        // than the configured primary backend. Such a result must NOT be written to
+        // the cache under the primary's key, or a later seeded reproduction would
+        // replay the fallback model's answer as if it were the primary's.
+        boolean servedByFallback = false;
 
         try {
             switch (config.getModelType()) {
@@ -253,6 +258,7 @@ public class LLMService implements LLMClient {
                 String fallback = generateWithOllama(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                 if (fallback != null) {
                     result = fallback;
+                    servedByFallback = true;
                     logger.info("[LLM] Ollama fallback succeeded ({} chars)", fallback.length());
                 } else {
                     logger.warn("[LLM] Ollama fallback also returned null — caller will use its own fallback");
@@ -273,6 +279,7 @@ public class LLMService implements LLMClient {
                     logger.warn("[LLM] Primary threw '{}' — falling back to Ollama for this call", errorMessage);
                     result = generateWithOllama(systemPrompt, userPrompt, maxTokens, effectiveTemperature);
                     if (result != null) {
+                        servedByFallback = true;
                         logger.info("[LLM] Ollama fallback succeeded after exception ({} chars)", result.length());
                     }
                 } catch (Exception fbErr) {
@@ -291,10 +298,13 @@ public class LLMService implements LLMClient {
         // shared cache file. Empty strings (content-filter refusals, etc.)
         // are skipped — caching those would prevent retries from ever
         // recovering.
-        if (result != null && !result.isEmpty() && cacheWriteEnabled()) {
+        if (result != null && !result.isEmpty() && !servedByFallback && cacheWriteEnabled()) {
             cache.put(cacheKey, result);
             logger.debug("LLMCallCache: write hit for key {} (backend {})",
                     abbreviateKey(cacheKey), backendName);
+        } else if (servedByFallback) {
+            logger.debug("LLMCallCache: skipping write for key {} — result served by Ollama fallback, "
+                    + "not the configured {} backend", abbreviateKey(cacheKey), backendName);
         }
 
         return result;

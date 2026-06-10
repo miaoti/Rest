@@ -574,20 +574,53 @@ public class ZeroShotLLMGenerator {
         List<String> values = parseLines(response);
 
         for (String value : values) {
-            // Post-filter (Schemathesis `not is_valid` discipline, enum dimension):
-            // an enum member is a VALID value, so it is not a negative — drop it.
-            if (param.hasEnum() && param.getEnumValues().contains(value)) {
-                continue;
-            }
+            if (isSecretlyValidSemantic(param, value)) continue;
             pool.addValue("SEMANTIC_MISMATCH", value);
         }
 
-        // Also add some hardcoded very short semantic mismatches that LLM might miss
-        pool.addValue("SEMANTIC_MISMATCH", "x");
-        pool.addValue("SEMANTIC_MISMATCH", "1");
-        pool.addValue("SEMANTIC_MISMATCH", "a");
-        pool.addValue("SEMANTIC_MISMATCH", "-");
-        pool.addValue("SEMANTIC_MISMATCH", "?");
+        // Also add some hardcoded very short semantic mismatches that LLM might miss.
+        // Run them through the same validity filter: e.g. "1" is a valid integer and
+        // would be a secretly-valid negative for an integer param; "x"/"a" could be
+        // enum members.
+        for (String pad : new String[]{"x", "1", "a", "-", "?"}) {
+            if (isSecretlyValidSemantic(param, pad)) continue;
+            pool.addValue("SEMANTIC_MISMATCH", pad);
+        }
+    }
+
+    /**
+     * A SEMANTIC_MISMATCH candidate is "secretly valid" — and so must not be emitted
+     * as a negative — when it is an enum member of an enum param, or when it parses as
+     * a valid value of a numeric/boolean param (the type binder would accept it).
+     */
+    private boolean isSecretlyValidSemantic(ParameterInfo param, String value) {
+        if (value == null) return false;
+        if (param.hasEnum() && param.getEnumValues().contains(value)) {
+            return true;
+        }
+        String t = safeStr(param.getType()).toLowerCase();
+        try {
+            switch (t) {
+                case "integer":
+                case "int":
+                case "long":
+                    Long.parseLong(value.trim());
+                    return true;
+                case "number":
+                case "double":
+                case "float":
+                    Double.parseDouble(value.trim());
+                    return true;
+                case "boolean":
+                case "bool":
+                    String b = value.trim().toLowerCase();
+                    return b.equals("true") || b.equals("false");
+                default:
+                    return false;
+            }
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
     }
     
     /**

@@ -114,15 +114,16 @@ public class HardcodedInvalidInputGenerator {
                 
             case "boolean":
             case "bool":
-                // Boolean expects true/false, provide strings/numbers
-                pool.addValue("TYPE_MISMATCH", "yes");
-                pool.addValue("TYPE_MISMATCH", "no");
+                // Boolean expects true/false. Common binders (Spring StringToBoolean,
+                // Jackson) coerce "yes"/"no"/"on"/"off"/1/0/"TRUE" back to a valid
+                // boolean, so those are secretly-valid negatives — exclude them. Keep
+                // only values no boolean binder accepts.
                 pool.addValue("TYPE_MISMATCH", "maybe");
-                pool.addValue("TYPE_MISMATCH", 1);
-                pool.addValue("TYPE_MISMATCH", 0);
-                pool.addValue("TYPE_MISMATCH", -1);
-                pool.addValue("TYPE_MISMATCH", "TRUE");
                 pool.addValue("TYPE_MISMATCH", 2);
+                pool.addValue("TYPE_MISMATCH", -1);
+                pool.addValue("TYPE_MISMATCH", "not_a_boolean");
+                pool.addValue("TYPE_MISMATCH", Arrays.asList(true, false));
+                pool.addValue("TYPE_MISMATCH", Collections.singletonMap("key", "value"));
                 break;
                 
             case "array":
@@ -193,27 +194,34 @@ public class HardcodedInvalidInputGenerator {
                 
             case "integer":
             case "int":
-                pool.addValue("OVERFLOW", Integer.MAX_VALUE);
-                pool.addValue("OVERFLOW", Integer.MIN_VALUE);
-                pool.addValue("OVERFLOW", Long.MAX_VALUE);
+                // int32-backed: Integer.MAX/MIN_VALUE are the in-range extremes, NOT
+                // overflows — a correct SUT accepts them (2xx) and the "negative" is
+                // secretly valid. Emit values that genuinely exceed int32 range.
+                pool.addValue("OVERFLOW", (long) Integer.MAX_VALUE + 1L);  // 2147483648
+                pool.addValue("OVERFLOW", (long) Integer.MIN_VALUE - 1L);  // -2147483649
+                pool.addValue("OVERFLOW", Long.MAX_VALUE);                 // overflows int32
                 pool.addValue("OVERFLOW", Long.MIN_VALUE);
-                pool.addValue("OVERFLOW", "99999999999999999999");
+                pool.addValue("OVERFLOW", "99999999999999999999");        // overflows int64 too
                 break;
-                
+
             case "long":
-                pool.addValue("OVERFLOW", Long.MAX_VALUE);
-                pool.addValue("OVERFLOW", Long.MIN_VALUE);
+                // int64-backed: Long.MAX/MIN_VALUE are the in-range extremes, so only
+                // values beyond int64 (string literals) actually overflow.
+                pool.addValue("OVERFLOW", "9223372036854775808");          // Long.MAX_VALUE + 1
+                pool.addValue("OVERFLOW", "-9223372036854775809");         // Long.MIN_VALUE - 1
                 pool.addValue("OVERFLOW", "999999999999999999999999999999");
                 break;
-                
+
             case "double":
             case "float":
             case "number":
-                pool.addValue("OVERFLOW", Double.MAX_VALUE);
-                pool.addValue("OVERFLOW", Double.MIN_VALUE);
-                pool.addValue("OVERFLOW", -Double.MAX_VALUE);
-                pool.addValue("OVERFLOW", "1E+309");
-                pool.addValue("OVERFLOW", "1E-324");
+                // Double.MAX_VALUE / -Double.MAX_VALUE are finite valid doubles, and
+                // Double.MIN_VALUE is the smallest POSITIVE double (~4.9E-324), i.e. an
+                // in-range value — none of these overflow. Only literals beyond the
+                // double range (parse to ±Infinity) are genuine overflows.
+                pool.addValue("OVERFLOW", "1E+309");                       // → +Infinity
+                pool.addValue("OVERFLOW", "-1E+309");                      // → -Infinity
+                pool.addValue("OVERFLOW", "1" + "0".repeat(400));          // far beyond double range
                 break;
                 
             case "array":
@@ -227,7 +235,7 @@ public class HardcodedInvalidInputGenerator {
                 
             default:
                 pool.addValue("OVERFLOW", "A".repeat(5000));
-                pool.addValue("OVERFLOW", Integer.MAX_VALUE);
+                pool.addValue("OVERFLOW", "99999999999999999999");  // overflows int32/int64
                 break;
         }
     }
@@ -298,16 +306,21 @@ public class HardcodedInvalidInputGenerator {
         
         log.debug("  📝 Generating NULL_INPUT for required parameter: {}", param.getName());
         
-        // Actual null
+        // Actual null — the genuine missing-required-value violation.
         pool.addValue("NULL_INPUT", null);
-        
-        // String representations of null (sometimes APIs parse these)
-        pool.addValue("NULL_INPUT", "null");
-        pool.addValue("NULL_INPUT", "NULL");
-        pool.addValue("NULL_INPUT", "null");
-        pool.addValue("NULL_INPUT", "nil");
-        pool.addValue("NULL_INPUT", "undefined");
-        pool.addValue("NULL_INPUT", "None");
+
+        // String representations of null only make sense for NON-string params:
+        // for a plain string field "null"/"undefined"/"None" are valid non-empty
+        // strings the SUT stores and accepts (secretly-valid negatives). For a
+        // numeric/boolean/object field they fail type binding, so they stay useful.
+        String ntype = safeStr(param.getType()).toLowerCase();
+        boolean isStringParam = ntype.isEmpty() || ntype.equals("string");
+        if (!isStringParam) {
+            pool.addValue("NULL_INPUT", "null");
+            pool.addValue("NULL_INPUT", "nil");
+            pool.addValue("NULL_INPUT", "undefined");
+            pool.addValue("NULL_INPUT", "None");
+        }
     }
     
     /**
@@ -424,7 +437,9 @@ public class HardcodedInvalidInputGenerator {
                 }
                 // Cap the maxLen+1 string at a sane upper bound so we don't blow up the
                 // JVM heap when a schema declares maxLength = Integer.MAX_VALUE.
-                if (maxLen != null && maxLen > 0 && maxLen < 100_000) {
+                // maxLen == 0 is valid (only "" allowed): "A".repeat(1) is the correct
+                // over-length violation, so guard on >= 0 here (unlike minLen).
+                if (maxLen != null && maxLen >= 0 && maxLen < 100_000) {
                     pool.addValue("BOUNDARY_VIOLATION", "A".repeat(maxLen + 1));
                 }
                 break;

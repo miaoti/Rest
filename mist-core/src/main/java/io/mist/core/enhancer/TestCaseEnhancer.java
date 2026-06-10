@@ -569,7 +569,11 @@ public class TestCaseEnhancer {
             if (root.has("enhancedParameters") && root.get("enhancedParameters").isArray()) {
                 for (JsonNode paramNode : root.get("enhancedParameters")) {
                     String name = paramNode.has("name") ? paramNode.get("name").asText() : null;
-                    String value = paramNode.has("value") ? paramNode.get("value").asText() : null;
+                    // Guard JSON null: paramNode.get("value").asText() on a NullNode
+                    // returns the literal string "null", which would be spliced into
+                    // the request as the value "null" rather than skipped.
+                    JsonNode valueNode = paramNode.get("value");
+                    String value = (valueNode != null && !valueNode.isNull()) ? valueNode.asText() : null;
                     if (name != null && value != null) {
                         enhancedParams.put(name, value);
                     }
@@ -593,7 +597,26 @@ public class TestCaseEnhancer {
                     }
                 }
             }
-            
+
+            // Layer A2: Strip the sniper TARGET parameters of a negative test. These
+            // hold the intentionally-injected fault value; the prompt asks the LLM not
+            // to touch them, but that is only advisory. If the LLM proposes a value for
+            // a target anyway, applying it would replace the fault value and silently
+            // turn the negative into a positive — corrupting detection metrics. Enforce
+            // it in code, mirroring the locked-dependency strip.
+            if (originalTest.isNegativeTest() && originalTest.getInvalidParameters() != null
+                    && !originalTest.getInvalidParameters().isEmpty()) {
+                Set<String> targets = new HashSet<>(stripValueSuffixes(originalTest.getInvalidParameters()));
+                Iterator<String> it = enhancedParams.keySet().iterator();
+                while (it.hasNext()) {
+                    String paramName = it.next();
+                    if (targets.contains(paramName)) {
+                        log.warn("LLM suggested modifying intentionally-invalid target '{}' of a negative test — stripped", paramName);
+                        it.remove();
+                    }
+                }
+            }
+
             if (enhancedParams.isEmpty()) {
                 return EnhancementResult.failed("No enhanced parameters found in LLM response (all were locked dependencies)");
             }

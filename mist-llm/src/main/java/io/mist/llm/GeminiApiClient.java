@@ -108,7 +108,8 @@ public class GeminiApiClient {
             
             requestBody.put("contents", contents);
             
-            logger.debug("[Gemini API] Sending request to: {}", url);
+            // Never log the URL verbatim — it carries the API key in the query string.
+            logger.debug("[Gemini API] Sending request to: {}/{}:generateContent", baseUrl, model);
             logger.debug("[Gemini API] Request body: {}", requestBody.toString());
             
             // Create HTTP request

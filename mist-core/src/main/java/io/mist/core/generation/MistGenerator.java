@@ -619,6 +619,15 @@ public class MistGenerator {
         // biasing known-buggy targets toward earlier variant indices so the
         // K_ZERO_STEP / K_DEDUP_EXHAUSTED early exits favour high-value tests.
         List<FaultTarget> faultQueue = rankWithBandit(buildFaultInjectionQueue(sc));
+        // faultyRatio == 0 is an explicit positives-only request (single-phase
+        // opt-out, or two-phase Phase A via MistRunner.setFaultyRatio(0)). The
+        // exhaustive per-FaultTarget floor below must not override it: variants
+        // are classified negative by index against faultQueue.size(), so the
+        // queue itself has to be emptied, not just requiredNegative.
+        if (faultyRatio <= 0f && !faultQueue.isEmpty()) {
+            log.info("faultyRatio=0 — suppressing {} fault target(s); positives-only generation", faultQueue.size());
+            faultQueue = java.util.Collections.emptyList();
+        }
         int totalNegativeSlots = faultQueue.size();
 
         // ── 2. Dynamic Variant Sizing ─────────────────────────────────
@@ -1195,7 +1204,13 @@ public class MistGenerator {
                                 // pool, draw from the overlap so Sniper's non-target params land
                                 // on values the SUT has accepted before. Empty intersection or
                                 // null registry falls back to raw pool with no behavior change.
-                                List<String> candidates = preferVerifiedValues(poolVals, verb, route, p.getName());
+                                // Key by the OpenAPI template path: the writer records
+                                // VERIFIED_VALID observations under "<VERB> <testPath>"
+                                // (template form). Span-derived routes can be concrete
+                                // (/orders/df2b…), which would silently miss the registry.
+                                String verifiedRoute = (opCfg.getTestPath() != null && !opCfg.getTestPath().isBlank())
+                                        ? opCfg.getTestPath() : route;
+                                List<String> candidates = preferVerifiedValues(poolVals, verb, verifiedRoute, p.getName());
                                 if (!candidates.isEmpty()) {
                                     String poolValue = candidates.get(random.nextInt(candidates.size()));
                                     if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
@@ -1304,9 +1319,32 @@ public class MistGenerator {
                 } else {
                     /* Subsequent Steps (2+): Check dependencies first, then use smart fetch for independent parameters */
 
+                    boolean isTargetNegativeParam = isFaultyVariant && targetFaultyParams != null && targetFaultyParams.contains(p.getName());
+
+                    /* 3-SNIPER. Fault replay for targets on roots >= 2. The first-business-step
+                     * injection branch never runs for them (tc already has steps by the time the
+                     * targeted root is traversed), so without this replay the target parameter
+                     * silently took a valid/placeholder value, addFaultyParameter was never
+                     * called, and the whole variant was demoted to positive — losing the fault
+                     * slot. Replays the exact value captured at queue build time, mirroring the
+                     * first-step round-robin branch. */
+                    if (isTargetNegativeParam && tc.hasTargetFaultValue()) {
+                        Object invalidValue = tc.getTargetFaultValue();
+                        if (p.getIn() != null && (p.getIn().equalsIgnoreCase("body") || p.getIn().equalsIgnoreCase("formData"))) {
+                            typedVal = invalidValue; // null → JSON null; Integer → JSON number; etc.
+                            typedValSet = true;
+                        }
+                        val = (invalidValue == null) ? "null" : convertObjectToString(invalidValue, p.getType());
+                        tc.addFaultyParameter(p.getName(), val);
+                        log.info("✅ Negative Test (subsequent root, step {}) → {} = {} [InvalidType: {}] - LOCKED",
+                                stepNumber, p.getName(),
+                                val.length() > 50 ? val.substring(0, 50) + "..." : val,
+                                tc.getFaultTypeCategory() != null ? tc.getFaultTypeCategory() : "Unknown");
+                    }
+
                     /* 3-PROV. Provenance-based resolution: use the exact value from a proven producer */
                     Map<String, String> provenance = span.getDataProvenance();
-                    if (!provenance.isEmpty() && provenance.containsKey(p.getName())) {
+                    if (val == null && !provenance.isEmpty() && provenance.containsKey(p.getName())) {
                         val = provenance.get(p.getName());
                         log.info("Provenance → {} {} = {} (exact value from proven cross-trace producer, step {})",
                                 service, p.getName(), val, stepNumber);
@@ -1332,8 +1370,6 @@ public class MistGenerator {
 
                     /* 3c. Use trace data if available and no context value ------------- */
                     // CRITICAL: Skip trace data for negative test parameters - they must use invalid values only
-                    boolean isTargetNegativeParam = isFaultyVariant && targetFaultyParams != null && targetFaultyParams.contains(p.getName());
-                    
                     if (val == null && !isTargetNegativeParam) {
                         val = getTraceParameterValue(span, p.getName());
                         if (val != null) {
@@ -1702,7 +1738,7 @@ public class MistGenerator {
         
         /* 6b. Update context with inputs for consistency across subsequent steps --- */
         // Store all input parameters used in this step for consistency in future steps
-        storeUsedInputsInContext(context, pathParams, queryParams, headerParams, bodyFields);
+        storeUsedInputsInContext(tc, context, pathParams, queryParams, headerParams, bodyFields);
         
         log.debug("Step {}: Stored {} input parameters and {} output fields in context for consistency", 
                 stepNumber, 
@@ -2094,28 +2130,42 @@ public class MistGenerator {
      * This ensures that if the same parameter is needed again (e.g., loginId), we reuse the same value
      * instead of generating a new one, maintaining consistency across the test case.
      */
-    private void storeUsedInputsInContext(Map<String, String> context,
+    private void storeUsedInputsInContext(MultiServiceTestCase tc,
+                                         Map<String, String> context,
                                          Map<String, String> pathParams,
                                          Map<String, String> queryParams,
                                          Map<String, String> headerParams,
                                          Map<String, Object> bodyFields) {
+        // Sniper contract: the injected fault value must reach exactly one request
+        // slot. Without this exclusion, a same-named parameter on a later root
+        // resolves via context.get("input.<name>") (step 3b) and re-fires the
+        // fault into a non-target step.
+        java.util.Set<String> faultyNames = new java.util.HashSet<>();
+        for (String fp : tc.getFaultyParameters()) {
+            faultyNames.add(fp.contains("=") ? fp.substring(0, fp.indexOf('=')) : fp);
+        }
+
         // Store path parameters with "input." prefix for consistency tracking
         for (Map.Entry<String, String> entry : pathParams.entrySet()) {
+            if (faultyNames.contains(entry.getKey())) continue;
             context.put("input." + entry.getKey(), entry.getValue());
         }
-        
-        // Store query parameters with "input." prefix for consistency tracking  
+
+        // Store query parameters with "input." prefix for consistency tracking
         for (Map.Entry<String, String> entry : queryParams.entrySet()) {
+            if (faultyNames.contains(entry.getKey())) continue;
             context.put("input." + entry.getKey(), entry.getValue());
         }
-        
+
         // Store header parameters with "input." prefix for consistency tracking
         for (Map.Entry<String, String> entry : headerParams.entrySet()) {
+            if (faultyNames.contains(entry.getKey())) continue;
             context.put("input." + entry.getKey(), entry.getValue());
         }
-        
+
         // Store body fields with "input." prefix for consistency tracking
         for (Map.Entry<String, Object> entry : bodyFields.entrySet()) {
+            if (faultyNames.contains(entry.getKey())) continue;
             Object value = entry.getValue();
             // Handle null values (e.g., from faulty test cases)
             context.put("input." + entry.getKey(), value == null ? null : value.toString());
