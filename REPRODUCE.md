@@ -101,6 +101,10 @@ committed transcript is at `docs/main-contribution/evidence/responseenvelope_liv
 Each bundle is self-contained; from the repo root:
 ```bash
 evaluation/suts/bookinfo/deploy/deploy.sh         # kind + Istio + Jaeger + Bookinfo (~8 min)
+# (deploy.sh also patches the Jaeger addon with a startupProbe and waits for its
+#  rollout — the stock addon keeps badger on an emptyDir with only a ~30s liveness
+#  window and crash-loops on long-lived clusters once the store grows; verified +
+#  hardened 2026-06-10, see debug/a-rank-fixes/VALIDATION-2026-06-10.md)
 # start the two port-forwards the deploy prints. Run each inside a restart loop —
 # a bare `kubectl port-forward` dies with "lost connection to pod" within minutes,
 # which would turn the later test runs into bogus connection failures
@@ -163,20 +167,26 @@ single-root partitions, so re-running generation can emit fewer test classes tha
 reports (15,036 TrainTicket / 166 Bookinfo / 579 Boutique). The committed reports remain faithful
 records of the binaries that produced them. (2) Oracle-anomaly "hits" totals in committed
 fault-detection reports are inflated: a step whose verdict failed a positive variant was recorded
-twice (success path + catch path, same marker). "Distinct" anomaly counts are unaffected, and so
-are the offline OracleCheck numbers (7/7, 24/40, 0/30). (3) Declared query parameters are now
+twice (success path + catch path, same marker). The current binary records it once — validated
+live on Bookinfo with a real ratings outage: the pre-fix binary reports `Hits: 2` and the fixed
+binary `Hits: 1` for one byte-identical executed test. "Distinct" anomaly counts are unaffected,
+and so are the offline OracleCheck numbers (7/7, 24/40, 0/30). (3) Declared query parameters are now
 emitted into requests (previously dropped at the writer), so Sock Shop catalogue re-runs exercise
 their parameters. (4) The shipped TrainTicket input-fetch registries were reset to successRate=0
 (stale pre-fix scores blocked the cold-start producer ranking). None of these change a paper claim:
 the 10/10 TrainTicket confirmations come from the SUT's own fault registry, and the
 hidden-downstream verdicts reproduce offline from committed traces.
 
-Live validation of (1)/(3)/(4) (2026-06-10, `debug/a-rank-fixes/VALIDATION-2026-06-10.md`): a fresh
+Live validation of (1)–(4) (2026-06-10, `debug/a-rank-fixes/VALIDATION-2026-06-10.md`): a fresh
 Sock Shop run (216 executed tests, exit 0) sent 301/301 catalogue requests WITH their query strings
 (front-end access log; previously 0), with sniper fault values arriving intact in query position,
 and emitted exactly one test class per root API (no duplicates). On the live TrainTicket,
 `TTEndStationLiveCheck` confirms smart fetch grounds `endStation` to a real station name with the
-de-poisoned registry.
+de-poisoned registry. For (2), a minimal live Bookinfo run (1 scenario × 1 positive variant, real
+ratings outage, healthy Jaeger) executed the byte-identical generated test under both binaries:
+`b5266f62` (pre-fix) reports `HIDDEN_DOWNSTREAM_FAILURE … Hits: 2`, the current binary `Hits: 1`,
+each with exactly 1 executed test case — the double-count is gone end-to-end, not just in unit
+tests (`FaultDetectionTracker*` suites: 27/27 green).
 
 ## 8. LLM determinism & variance
 Value synthesis + the soft-error classifier use an LLM, so generated test *values* and the exact
@@ -203,6 +213,14 @@ A 3–5 min screencast of the bundled demo: see the URL at the end of the paper 
 - **LLM step fails** → set `DEEPSEEK_API_KEY` (or switch to Ollama); only the ResponseEnvelope
   check needs it.
 - **Bookinfo/Boutique trace fetch empty** → allow a few seconds for Jaeger ingest before the oracle.
+- **Jaeger pod in CrashLoopBackOff on a LONG-LIVED cluster** → the stock Istio addon keeps badger
+  on an emptyDir (survives container restarts) with a ~30s liveness window and no startupProbe;
+  after days of 100%-sampled traffic, startup outlives the window and the kubelet kills it forever.
+  Deploys made by the current `deploy.sh` are immune (it patches in a 600s startupProbe). On a
+  cluster deployed before the hardening: `kubectl rollout restart deployment/jaeger -n istio-system`
+  (the NEW pod gets an empty store and starts in seconds; traces are demo-scoped, losing them is
+  fine), then re-run `deploy.sh` to pick up the startupProbe. Diagnosis + evidence:
+  `debug/a-rank-fixes/VALIDATION-2026-06-10.md`.
 
 ## 11. License & citation
 - License: see `LICENSE` (**LGPL-3.0**).
