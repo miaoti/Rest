@@ -16,8 +16,10 @@ import java.util.Set;
  * <p>The single-root dedup pass walks the scenario list and removes 1-root
  * scenarios whose root API key has already been "approved" (recorded in the
  * shared {@code approvedApiKeys} set). Scenarios tagged
- * {@code approvedInDedupPass} short-circuit through unchanged so shattered
- * children that inherit the parent's approval tag survive the second pass.
+ * {@code approvedInDedupPass} short-circuit through unchanged: they already
+ * passed an earlier pass and own their key. Shattered children deliberately
+ * arrive UNtagged (ScenarioOptimizer does not propagate the flag) so Phase 3.5
+ * can drop partitions that duplicate an approved standalone scenario.
  *
  * <p>This helper was previously the body of the {@code runSingleRootDedupPass}
  * instance method on {@code MultiServiceTestCaseGenerator}. Lifting it here

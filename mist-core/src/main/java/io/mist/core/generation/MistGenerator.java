@@ -492,6 +492,14 @@ public class MistGenerator {
         // For trainticket's stage set this is observably fine; if a future
         // stage mutates WorkflowScenario fields directly, this needs to
         // become a deep clone.
+        // approvedInDedupPass IS such Phase-A-mutated state: Phase 2.5 tags the
+        // original instances in place. approvedApiKeys was just cleared, so a
+        // stale true tag would make Phase B's dedup passes skip every scenario
+        // AND register zero keys — Phase 4 then re-emits _RT baselines for APIs
+        // that standalone 1-roots already cover. Clear it with the key set.
+        for (WorkflowScenario sc : originalScenarios) {
+            sc.setApprovedInDedupPass(false);
+        }
         this.scenarios = new ArrayList<>(originalScenarios);
     }
 

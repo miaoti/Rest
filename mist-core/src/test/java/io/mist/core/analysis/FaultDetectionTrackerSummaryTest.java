@@ -22,9 +22,14 @@ public class FaultDetectionTrackerSummaryTest {
     @Before public void setUp()    { FaultDetectionTracker.getInstance().reset(); }
     @After  public void tearDown() { FaultDetectionTracker.getInstance().reset(); }
 
+    private int recSeq = 0;
+
     private void rec(String kind, String endpoint, String sig, String detail, String sev) {
+        // Fresh marker per observation, mirroring production where every step
+        // execution carries its own UUID. A constant marker would now be
+        // collapsed by the per-execution dedup in recordOracleAnomaly.
         FaultDetectionTracker.getInstance().recordOracleAnomaly(
-                kind, endpoint, sig, detail, sev, "C", "m", "trace0123456789");
+                kind, endpoint, sig, detail, sev, "C", "m", "trace-" + (recSeq++));
     }
 
     @Test

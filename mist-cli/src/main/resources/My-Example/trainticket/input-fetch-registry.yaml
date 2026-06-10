@@ -55,7 +55,7 @@ parameterMappings:
     - 12
     - 11
     - 89670083
-    successRate: 0.7941088679053511
+    successRate: 0.0
     description: null
     consumerApiKey: null
   loginId:
@@ -72,7 +72,7 @@ parameterMappings:
     - 12
     - 48
     - 185331089
-    successRate: 1.4616292491705863E-176
+    successRate: 0.0
     description: null
     consumerApiKey: null
   orderId:
@@ -89,7 +89,7 @@ parameterMappings:
     - 12
     - 40
     - 118601113
-    successRate: 8.713348587262634E-64
+    successRate: 0.0
     description: null
     consumerApiKey: null
   trainType:
@@ -106,7 +106,7 @@ parameterMappings:
     - 32
     - 58
     - 367402174
-    successRate: 0.46855900000000006
+    successRate: 0.0
     description: null
     consumerApiKey: null
   confortClass:
@@ -123,7 +123,7 @@ parameterMappings:
     - 27
     - 28
     - 629399370
-    successRate: 0.1
+    successRate: 0.0
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -139,7 +139,7 @@ parameterMappings:
     - 13
     - 2
     - 755291128
-    successRate: 0.9004287198903236
+    successRate: 0.0
     description: null
     consumerApiKey: null
   contactsDocumentNumber:
@@ -156,7 +156,7 @@ parameterMappings:
     - 13
     - 24
     - 930111965
-    successRate: 0.5911494960738325
+    successRate: 0.0
     description: null
     consumerApiKey: null
   coachNumber:
@@ -173,7 +173,7 @@ parameterMappings:
     - 13
     - 22
     - 467880626
-    successRate: 0.7941088679053511
+    successRate: 0.0
     description: null
     consumerApiKey: null
   enableBoughtDateQuery:
@@ -206,7 +206,7 @@ parameterMappings:
     - 12
     - 14
     - 329296687
-    successRate: 0.7458134171671
+    successRate: 0.0
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/waitorderservice/orders"
@@ -222,7 +222,7 @@ parameterMappings:
     - 0
     - 22
     - 934493253
-    successRate: 0.16002279000000005
+    successRate: 0.0
     description: null
     consumerApiKey: null
   stayTime:
@@ -255,7 +255,7 @@ parameterMappings:
     - 35
     - 56
     - 765345468
-    successRate: 0.9690968456173673
+    successRate: 0.0
     description: null
     consumerApiKey: null
   price:
@@ -272,7 +272,7 @@ parameterMappings:
     - 4
     - 1
     - 771637862
-    successRate: 0.34390000000000004
+    successRate: 0.0
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/consignpriceservice/consignprice/config"
@@ -288,7 +288,7 @@ parameterMappings:
     - 13
     - 44
     - 290362967
-    successRate: 0.6646013962748695
+    successRate: 0.0
     description: null
     consumerApiKey: null
   economyClass:
@@ -305,7 +305,7 @@ parameterMappings:
     - 46
     - 8
     - 704458669
-    successRate: 0.19
+    successRate: 0.0
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/travelservice/trips"
@@ -337,7 +337,7 @@ parameterMappings:
     - 13
     - 5
     - 426578033
-    successRate: 0.8784233454094308
+    successRate: 0.0
     description: null
     consumerApiKey: null
   terminalStationName:
@@ -354,7 +354,7 @@ parameterMappings:
     - 28
     - 57
     - 577723848
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: null
   handleDate:
@@ -387,7 +387,7 @@ parameterMappings:
     - 8
     - 21
     - 75248937
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/adminorderservice/adminorder"
@@ -403,7 +403,7 @@ parameterMappings:
     - 35
     - 33
     - 154275386
-    successRate: 0.7296553095744259
+    successRate: 0.0
     description: null
     consumerApiKey: null
   from:
@@ -420,7 +420,7 @@ parameterMappings:
     - 13
     - 40
     - 38343456
-    successRate: 0.947665236697264
+    successRate: 0.0
     description: null
     consumerApiKey: null
   startStation:
@@ -437,7 +437,7 @@ parameterMappings:
     - 34
     - 33
     - 746448003
-    successRate: 0.9775087525324759
+    successRate: 0.0
     description: null
     consumerApiKey: null
   state:
@@ -454,7 +454,7 @@ parameterMappings:
     - 12
     - 27
     - 469097718
-    successRate: 0.020589113209464913
+    successRate: 0.0
     description: null
     consumerApiKey: null
   - endpoint: "/api/v1/travel2service/trips"
@@ -486,7 +486,7 @@ parameterMappings:
     - 12
     - 27
     - 5392938
-    successRate: 0.1242536243036277
+    successRate: 0.0
     description: null
     consumerApiKey: null
   id:
@@ -503,7 +503,7 @@ parameterMappings:
     - 13
     - 8
     - 198693268
-    successRate: 0.9999984554616402
+    successRate: 0.0
     description: null
     consumerApiKey: null
   startPlace:
@@ -536,7 +536,7 @@ parameterMappings:
     - 12
     - 55
     - 281017347
-    successRate: 0.9282102012308148
+    successRate: 0.0
     description: null
     consumerApiKey: null
   endStation:
@@ -585,7 +585,7 @@ parameterMappings:
     - 34
     - 34
     - 257701619
-    successRate: 0.9721871610556305
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/adminrouteservice/adminroute"
   travelTime:
@@ -602,7 +602,7 @@ parameterMappings:
     - 14
     - 4
     - 209533002
-    successRate: 0.8103513905483734
+    successRate: 0.0
     description: null
     consumerApiKey: null
   consignee:
@@ -635,7 +635,7 @@ parameterMappings:
     - 35
     - 34
     - 614295558
-    successRate: 0.7712320754503901
+    successRate: 0.0
     description: null
     consumerApiKey: null
   targetDate:
@@ -668,7 +668,7 @@ parameterMappings:
     - 35
     - 34
     - 86510427
-    successRate: 0.814697981114816
+    successRate: 0.0
     description: null
     consumerApiKey: null
   distanceList:
@@ -685,7 +685,7 @@ parameterMappings:
     - 35
     - 7
     - 762033470
-    successRate: 1.8323861423305342E-175
+    successRate: 0.0
     description: null
     consumerApiKey: null
   weight:
@@ -718,7 +718,7 @@ parameterMappings:
     - 35
     - 34
     - 593549840
-    successRate: 0.7941088679053511
+    successRate: 0.0
     description: null
     consumerApiKey: null
   stations:
@@ -735,7 +735,7 @@ parameterMappings:
     - 42
     - 10
     - 278001500
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: null
   differenceMoney:
@@ -752,7 +752,7 @@ parameterMappings:
     - 13
     - 34
     - 271904734
-    successRate: 1.7970102999144343E-4
+    successRate: 0.0
     description: null
     consumerApiKey: null
   accountId:
@@ -769,7 +769,7 @@ parameterMappings:
     - 15
     - 59
     - 241820287
-    successRate: 0.9288996885650276
+    successRate: 0.0
     description: null
     consumerApiKey: null
   boughtDateEnd:
@@ -818,7 +818,7 @@ parameterMappings:
     - 12
     - 9
     - 280022385
-    successRate: 0.814697981114816
+    successRate: 0.0
     description: null
     consumerApiKey: null
   enableStateQuery:
@@ -851,7 +851,7 @@ parameterMappings:
     - 12
     - 17
     - 753646184
-    successRate: 0.8332281830033343
+    successRate: 0.0
     description: null
     consumerApiKey: null
   phone:
@@ -868,7 +868,7 @@ parameterMappings:
     - 35
     - 32
     - 329021376
-    successRate: 0.68618940391
+    successRate: 0.0
     description: null
     consumerApiKey: null
   name:
@@ -918,7 +918,7 @@ parameterMappings:
     - 12
     - 33
     - 425731510
-    successRate: 0.8332281830033343
+    successRate: 0.0
     description: null
     consumerApiKey: null
   trainNumber:
@@ -935,7 +935,7 @@ parameterMappings:
     - 13
     - 57
     - 586123311
-    successRate: 0.7892793228315259
+    successRate: 0.0
     description: null
     consumerApiKey: null
   trainTypeName:
@@ -952,7 +952,7 @@ parameterMappings:
     - 29
     - 4
     - 806126369
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: null
   status:
@@ -969,7 +969,7 @@ parameterMappings:
     - 13
     - 52
     - 419819452
-    successRate: 0.7712320754503901
+    successRate: 0.0
     description: null
     consumerApiKey: null
   departureTime:
@@ -986,7 +986,7 @@ parameterMappings:
     - 12
     - 48
     - 227459855
-    successRate: 0.9282102012308148
+    successRate: 0.0
     description: null
     consumerApiKey: null
   documentType:
@@ -1003,7 +1003,7 @@ parameterMappings:
     - 13
     - 38
     - 593087165
-    successRate: 0.717570463519
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/adminorderservice/adminorder"
   - endpoint: "/api/v1/adminorderservice/adminorder"
@@ -1068,7 +1068,7 @@ parameterMappings:
     - 28
     - 50
     - 729923266
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
   - endpoint: "/api/v1/basicservice/basic/{stationName}"
@@ -1117,7 +1117,7 @@ parameterMappings:
     - 29
     - 10
     - 62673017
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
   - endpoint: "/api/v1/basicservice/basic/{stationName}"
@@ -1149,7 +1149,7 @@ parameterMappings:
     - 17
     - 55
     - 846375423
-    successRate: 0.1
+    successRate: 0.0
     description: null
     consumerApiKey: "DELETE /api/v1/admintravelservice/admintravel/{tripId}"
   - endpoint: "/api/v1/travel2service/trips/{tripId}"
@@ -1165,7 +1165,7 @@ parameterMappings:
     - 36
     - 39
     - 809901477
-    successRate: 0.18100000000000002
+    successRate: 0.0
     description: null
     consumerApiKey: "DELETE /api/v1/admintravelservice/admintravel/{tripId}"
   - endpoint: "/api/v1/orderservice/order/{travelDate}/{trainNumber}"
@@ -1230,7 +1230,7 @@ parameterMappings:
     - 13
     - 30
     - 854288637
-    successRate: 0.7892793228315259
+    successRate: 0.0
     description: null
     consumerApiKey: null
   seatNumber:
@@ -1247,7 +1247,7 @@ parameterMappings:
     - 13
     - 49
     - 835814122
-    successRate: 0.814697981114816
+    successRate: 0.0
     description: null
     consumerApiKey: null
   routeId:
@@ -1264,7 +1264,7 @@ parameterMappings:
     - 32
     - 55
     - 764722950
-    successRate: 0.006523999258555779
+    successRate: 0.0
     description: null
     consumerApiKey: null
   seatClass:
@@ -1281,7 +1281,7 @@ parameterMappings:
     - 13
     - 47
     - 249209503
-    successRate: 0.7429891218022899
+    successRate: 0.0
     description: null
     consumerApiKey: null
   startTime:
@@ -1330,7 +1330,7 @@ parameterMappings:
     - 28
     - 46
     - 484726310
-    successRate: 0.40951000000000004
+    successRate: 0.0
     description: null
     consumerApiKey: null
   startStationName:
@@ -1379,7 +1379,7 @@ parameterMappings:
     - 28
     - 40
     - 416434650
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/admintravelservice/admintravel"
   enableTravelDateQuery:
@@ -1412,7 +1412,7 @@ parameterMappings:
     - 12
     - 19
     - 620972673
-    successRate: 0.7458134171671
+    successRate: 0.0
     description: null
     consumerApiKey: null
   within:
@@ -1445,7 +1445,7 @@ parameterMappings:
     - 35
     - 36
     - 251600659
-    successRate: 0.7712320754503901
+    successRate: 0.0
     description: null
     consumerApiKey: null
   firstClassPriceRate:
@@ -1494,7 +1494,7 @@ parameterMappings:
     - 32
     - 50
     - 804260252
-    successRate: 0.271
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/adminbasicservice/adminbasic/prices"
   travelDateEnd:
@@ -1527,7 +1527,7 @@ parameterMappings:
     - 12
     - 30
     - 126929526
-    successRate: 0.7712320754503901
+    successRate: 0.0
     description: null
     consumerApiKey: null
   averageSpeed:
@@ -1560,7 +1560,7 @@ parameterMappings:
     - 12
     - 59
     - 355089525
-    successRate: 0.911370618803475
+    successRate: 0.0
     description: null
     consumerApiKey: null
   endPlace:
@@ -1577,7 +1577,7 @@ parameterMappings:
     - 12
     - 53
     - 216225678
-    successRate: 0.94185026299696
+    successRate: 0.0
     description: null
     consumerApiKey: null
   basicPriceRate:
@@ -1594,7 +1594,7 @@ parameterMappings:
     - 32
     - 44
     - 606623773
-    successRate: 0.40951000000000004
+    successRate: 0.0
     description: null
     consumerApiKey: null
   travelDate:
@@ -1611,7 +1611,7 @@ parameterMappings:
     - 14
     - 1
     - 248337607
-    successRate: 0.0038523563221846027
+    successRate: 0.0
     description: null
     consumerApiKey: null
   boughtDate:
@@ -1628,7 +1628,7 @@ parameterMappings:
     - 13
     - 20
     - 670920061
-    successRate: 3.0432527221704587E-4
+    successRate: 0.0
     description: null
     consumerApiKey: null
   stationList:
@@ -1645,7 +1645,7 @@ parameterMappings:
     - 34
     - 33
     - 763741945
-    successRate: 0.9749684449500675
+    successRate: 0.0
     description: null
     consumerApiKey: null
   endTime:
@@ -1678,7 +1678,7 @@ parameterMappings:
     - 28
     - 28
     - 438260109
-    successRate: 0.34390000000000004
+    successRate: 0.0
     description: null
     consumerApiKey: null
   to:
@@ -1711,7 +1711,7 @@ parameterMappings:
     - 13
     - 53
     - 774690735
-    successRate: 0.9088823349115276
+    successRate: 0.0
     description: null
     consumerApiKey: null
 servicePatterns:

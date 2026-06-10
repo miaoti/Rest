@@ -9,6 +9,12 @@ commit `87915f42`. MIST **generated AND executed 166 tests in one JVM** (in-proc
 138 hits) — tied to generated test `test_negative_flow_S50_v21_fault_Root1_TYPE_MISMATCH` and
 marker trace `d3a5fa5e…`.
 
+> **Hit-count caveat (2026-06-10).** The binary that produced this report double-recorded a step's
+> verdict when the violation failed a positive variant (success path + catch path, same marker), so
+> the raw `138 hits` figure is inflated by up to 2x. The finding itself is unaffected: 1 distinct
+> anomaly, the swallowed `reviews ──▶ ratings` 503, severity ERROR, red test. Fixed in
+> `FaultDetectionTracker` on 2026-06-10 (per-execution idempotent recording).
+
 **An HTTP-5xx swallow fires at ERROR, which fails the test red** (the caller waited on the call
 and masked a synchronous 5xx). This is the stronger HTTP counterpart to the Online Boutique
 gRPC/WARN case (`../boutique_inprocess_e2e/`).

@@ -329,7 +329,7 @@ parameterMappings:
     - 3
     - 18
     - 956407685
-    successRate: 0.1
+    successRate: 0.0
     description: null
     consumerApiKey: "PUT /api/v1/consignservice/consigns"
   - endpoint: "/api/v1/orderservice/order/{orderId}"
@@ -1509,7 +1509,7 @@ parameterMappings:
     - 35
     - 53
     - 964069724
-    successRate: 0.1
+    successRate: 0.0
     description: null
     consumerApiKey: "PUT /api/v1/adminbasicservice/adminbasic/stations"
   - endpoint: "/api/v1/adminuserservice/users"
@@ -1557,7 +1557,7 @@ parameterMappings:
     - 6
     - 15
     - 274829595
-    successRate: 0.1
+    successRate: 0.0
     description: null
     consumerApiKey: "PUT /api/v1/adminbasicservice/adminbasic/trains"
   - endpoint: "/api/v1/adminuserservice/users"
@@ -1605,7 +1605,7 @@ parameterMappings:
     - 6
     - 30
     - 980946345
-    successRate: 0.1
+    successRate: 0.0
     description: null
     consumerApiKey: "POST /api/v1/adminbasicservice/adminbasic/stations"
   - endpoint: "/api/v1/basicservice/basic/{stationName}"

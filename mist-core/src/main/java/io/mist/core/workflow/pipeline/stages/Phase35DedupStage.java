@@ -13,10 +13,10 @@ import org.apache.logging.log4j.Logger;
  * that never went through the Phase 2.5 dedup filter. This stage re-applies the
  * 1-root dedup against the same {@code approvedApiKeys} set to prevent
  * byte-identical duplicate test classes for the same parameterless endpoint.
- * Phase 3 propagates the {@code approvedInDedupPass} tag to each shattered
- * child so the pass-through guard inside {@link DedupSupport#runPass} keeps
- * Phase-2.5-approved scenarios intact even after they are reconstructed as
- * new instances.
+ * Shattered children arrive UNtagged (ScenarioOptimizer does not propagate
+ * {@code approvedInDedupPass}) so this pass actually evaluates them; scenarios
+ * Phase 3 left untouched are the same tagged instances Phase 2.5 approved and
+ * short-circuit through {@link DedupSupport#runPass} unchanged.
  *
  * <p>This stage is gated by the same {@code mst.scenarioShattering.enabled}
  * flag as {@link Phase3ShatteringStage}. Running it without shattering would

@@ -133,12 +133,15 @@ public class ScenarioOptimizer {
             WorkflowScenario partition = new WorkflowScenario();
             partition.setSourceFileName(original.getSourceFileName());
             partition.setSessionIdentifier(original.getSessionIdentifier());
-            // Propagate the Phase 2.5 / Phase 3.5 dedup approval tag from the parent so the
-            // post-shatter dedup pass treats this child as already-approved and skips the
-            // API-key re-check.  Without this propagation, shattered single-root components
-            // would be evaluated against approvedApiKeys (which already contains their key
-            // from the parent's earlier approval) and silently dropped.
-            partition.setApprovedInDedupPass(original.isApprovedInDedupPass());
+            // Deliberately do NOT propagate approvedInDedupPass: shattered partitions
+            // are NEW scenarios that have not been through a dedup pass in their current
+            // shape, so Phase 3.5 must evaluate them (it drops a 1-root partition only
+            // when approvedApiKeys already holds its key — i.e. a Phase 2.5 standalone
+            // owner or an earlier sibling survives elsewhere in the list). Multi-root
+            // parents never registered their root keys, so a partition with a genuinely
+            // new key is approved and kept. Propagating the tag made every partition
+            // skip Phase 3.5 and duplicate 1-root test classes survived. The unshattered
+            // path (components.size() == 1) returns the SAME instance above, tag intact.
 
             // Map the member's GLOBAL root index → its 1-based LOCAL position inside this
             // partition.  Used below to compute producerRootIndex from actual dependency

@@ -156,6 +156,21 @@ upstream public `codewisdom/*` images. Built-in account `admin`/`222222`. See th
 **Cannot be reviewer-reproduced without the right hardware:** the full live TrainTicket 10/10 run
 (needs a host that can host 40 services). The committed run report + the §5 offline path stand in.
 
+**Binary drift note (2026-06-10).** Four pipeline fixes landed after the committed runs above were
+produced, so a fresh run with a current binary diverges from those artifacts in known ways.
+(1) The post-shatter dedup pass (Phase 3.5) was dead code. Fresh generation runs now drop duplicate
+single-root partitions, so re-running generation can emit fewer test classes than the committed
+reports (15,036 TrainTicket / 166 Bookinfo / 579 Boutique). The committed reports remain faithful
+records of the binaries that produced them. (2) Oracle-anomaly "hits" totals in committed
+fault-detection reports are inflated: a step whose verdict failed a positive variant was recorded
+twice (success path + catch path, same marker). "Distinct" anomaly counts are unaffected, and so
+are the offline OracleCheck numbers (7/7, 24/40, 0/30). (3) Declared query parameters are now
+emitted into requests (previously dropped at the writer), so Sock Shop catalogue re-runs exercise
+their parameters. (4) The shipped TrainTicket input-fetch registries were reset to successRate=0
+(stale pre-fix scores blocked the cold-start producer ranking). None of these change a paper claim:
+the 10/10 TrainTicket confirmations come from the SUT's own fault registry, and the
+hidden-downstream verdicts reproduce offline from committed traces.
+
 ## 8. LLM determinism & variance
 Value synthesis + the soft-error classifier use an LLM, so generated test *values* and the exact
 fault-detection *count* vary run to run (`run22` is a representative **10/10** run). The §5 oracle

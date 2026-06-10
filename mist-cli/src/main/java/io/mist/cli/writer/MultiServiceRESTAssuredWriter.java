@@ -2011,6 +2011,40 @@ public class MultiServiceRESTAssuredWriter {
                                         + escape(faultValueLiteral == null ? "" : faultValueLiteral) + "\");");
                             }
 
+                            // ── Query parameter emission ────────────────────────────────────────
+                            // Mirrors the header/cookie pattern above. Previously query params were
+                            // collected by the generator and captured for telemetry but never
+                            // emitted into the request, so every query-declared operation was
+                            // exercised without its parameters (and a query-located fault target
+                            // never reached the SUT). Values are URL-encoded HERE because the
+                            // request spec runs with urlEncodingEnabled(false) (path params arrive
+                            // pre-encoded from the generator); encoding the fault value too is
+                            // transport-correct — the SUT decodes back the exact invalid value.
+                            // Params wired via paramDependencies are skipped: the dependency loop
+                            // below emits them with the runtime-resolved producer value.
+                            if (step.getQueryParams() != null && !step.getQueryParams().isEmpty()) {
+                                for (Map.Entry<String, String> qp : step.getQueryParams().entrySet()) {
+                                    String qName  = qp.getKey();
+                                    if (step.getParamDependencies().containsKey(qName)) {
+                                        continue;
+                                    }
+                                    String qValue = qp.getValue();
+                                    boolean replaceWithInvalid = isFaultStep
+                                            && "query".equals(faultLoc)
+                                            && qName.equals(faultName);
+                                    String emitted = replaceWithInvalid ? faultValueLiteral : qValue;
+                                    pw.println("                        req = req.queryParam(\""
+                                            + escape(urlEncode(qName)) + "\", \""
+                                            + escape(urlEncode(emitted == null ? "" : emitted)) + "\");");
+                                }
+                            }
+                            if (isFaultStep && "query".equals(faultLoc) && faultName != null
+                                    && (step.getQueryParams() == null || !step.getQueryParams().containsKey(faultName))) {
+                                pw.println("                        req = req.queryParam(\""
+                                        + escape(urlEncode(faultName)) + "\", \""
+                                        + escape(urlEncode(faultValueLiteral == null ? "" : faultValueLiteral)) + "\");");
+                            }
+
                             // Add dependency resolution for parameters (with resilient bypass)
                             // Uses jsonPath extraction from the producer's captured response body
                             for (Map.Entry<String, MultiServiceTestCase.Dependency> dep : step.getParamDependencies().entrySet()) {
@@ -2834,6 +2868,17 @@ public class MultiServiceRESTAssuredWriter {
                 .replace("\n", "\\n")
                 .replace("\r", "\\r")
                 .replace("\t", "\\t");
+    }
+
+    /**
+     * Form-encode a query name/value at generation time. The generated request
+     * spec runs with urlEncodingEnabled(false), so REST Assured appends
+     * queryParam values verbatim — without this, a value containing '&', '=',
+     * '#' or whitespace would corrupt the request line.
+     */
+    private static String urlEncode(String s) {
+        if (s == null) return "";
+        return java.net.URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     /**

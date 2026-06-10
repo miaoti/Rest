@@ -38,7 +38,8 @@ flowchart TD
     I --> I1[Phase 2.5: Deduplicate redundant 1-root scenarios by API key]
     I1 --> I2[Group scenarios by root API and build shared parameter pools]
     I2 --> I3[Phase 3: Scenario Shattering - partition by connected components]
-    I3 --> I4[Phase 4: Trace Decomposition - add missing 1-root baselines]
+    I3 --> I35[Phase 3.5: Post-shatter 1-root dedup - shattered partitions re-enter dedup untagged]
+    I35 --> I4[Phase 4: Trace Decomposition - add missing 1-root baselines]
     I4 --> M[After deduplication and decomposition: scenarios for test generation]
     M[Read MstConfig sub-records - Fix A-6 single source of truth]
     M --> M1[testsperoperation or test variants per scenario]
@@ -103,7 +104,11 @@ The MST flow still registers **all extracted scenarios** in the Root API Registr
    - Why? Parameterless or stateless endpoints can otherwise explode into dozens of identical `Flow_Scenario_N.java` files
    - **Deduplication is applied only to standalone 1-root scenarios**
    - Multi-root workflows are preserved because they may differ in downstream chains
-5. **Phase 4 decomposition reuses the same seen-set** → if a standalone 1-root scenario already covers an API, `_RT` decomposed baselines for that API are skipped
+5. **Phase 3.5: post-shatter 1-root deduplication** → after Phase 3 shattering, partitions re-enter the same dedup pass UNtagged
+   - A shattered 1-root partition whose API key was already approved (a standalone owner survives elsewhere) is dropped
+   - A partition with a genuinely new key is approved and kept
+   - Scenarios Phase 3 left untouched are the same tagged instances Phase 2.5 approved and pass through unchanged
+6. **Phase 4 decomposition reuses the same seen-set** → if a standalone 1-root scenario already covers an API, `_RT` decomposed baselines for that API are skipped
 
 **Example:**
 - 10 traces all contain standalone `GET /api/v1/adminbasicservice/adminbasic/stations`
@@ -408,7 +413,8 @@ flowchart TD
     B --> C[Group scenarios by root API]
     C --> D[Generate shared parameter pools per root API]
     D --> D1[Phase 3: Scenario Shattering]
-    D1 --> D2[Phase 4: Decompose multi-root scenarios into missing 1-root baselines]
+    D1 --> D15[Phase 3.5: Post-shatter 1-root dedup against the same approved-key set]
+    D15 --> D2[Phase 4: Decompose multi-root scenarios into missing 1-root baselines]
     D2 --> E[For each scenario generateScenarioVariants]
     E --> F[get variantCount from MstConfig.instance.core post Fix A-6]
     F --> G[For each v build MultiServiceTestCase]
@@ -430,7 +436,10 @@ flowchart TD
     L00 --> M
     L4 --> M
     K -->|No| N[For each parameter]
-    N --> N1[Check previous output dependency]
+    N --> NSNIPE{Is target faulty param with pre-recorded fault value}
+    NSNIPE -->|Yes - 3-SNIPER replay| NSNIPE2[Replay recorded fault value and lock]
+    NSNIPE2 --> M
+    NSNIPE -->|No| N1[Check previous output dependency]
     N1 -->|found| M
     N1 -->|not found| N2[Check input reuse]
     N2 -->|found| M
@@ -556,7 +565,7 @@ flowchart TD
     N4 --> N5[SEMANTIC_MISMATCH: Ask LLM for meaningless values]
     N5 --> N6[OVERFLOW: Ask LLM for huge values]
     N6 --> N7[EMPTY_INPUT: Add empty string, whitespace]
-    N7 --> N8[NULL_INPUT: Add null, 'null', 'NULL']
+    N7 --> N8[NULL_INPUT: actual null always; string-encoded nulls only for non-string params]
     N8 --> N9[SPECIAL_CHARACTERS: SQL injection, XSS]
     N9 --> N10[BOUNDARY_VIOLATION: Off-by-one errors]
     N10 --> N11[Store InvalidInputPool by rootApiKey, PoolKey paramName, paramLocation - per Fix A-5b]
@@ -710,8 +719,8 @@ flowchart TD
        - Example: Required array gets `[]` (empty array)
     6. **NULL_INPUT**: Null values ( !ONLY for REQUIRED params)
        - Example: Required param gets `null` (actual null)
-       - Example: Required param gets `"null"` (string "null")
-       - Example: Required param gets `"NULL"` (string "NULL")
+       - Example: Required non-string param gets `"null"` / `"nil"` / `"undefined"` / `"None"` (string-encoded null — fails type binding)
+       - Note: string params get ONLY the actual null. `"null"`/`"NULL"` are valid non-empty strings for a string field (secretly-valid negatives) and are no longer emitted
     7. **SPECIAL_CHARACTERS**: Injection attempts
        - Example: SQL injection: `"' OR '1'='1"`
        - Example: XSS attack: `"<script>alert('XSS')</script>"`
@@ -779,9 +788,9 @@ flowchart TD
     B1 --> C1["Wrong data type: String param gets Integer 55"]
     B2 --> C2["Pattern violation: Email without @ symbol"]
     B3 --> C3["Meaningless value: Age = -5, impossible date"]
-    B4 --> C4["Exceeds limits: 10000 char string, MAX_INT"]
+    B4 --> C4["Exceeds limits: 10000 char string, beyond-range numerics (e.g. 2147483648 for int32 — in-range extremes like MAX_INT are secretly valid and no longer emitted)"]
     B5 --> C5["Empty values: Empty string, whitespace, empty array. ONLY for REQUIRED params"]
-    B6 --> C6["Null values: null, 'null', 'NULL'. ONLY for REQUIRED params"]
+    B6 --> C6["Null values: actual null; string-encoded nulls ('null', 'nil', 'undefined', 'None') only for non-string params. ONLY for REQUIRED params"]
     B7 --> C7["Injection attempts: SQL injection, XSS, traversal"]
     B8 --> C8["Boundary errors: Off-by-one, min-1, max+1"]
     
@@ -878,6 +887,7 @@ flowchart TD
 > framing in this section is illustrative.
 
 **Key Design Decisions:**
+- **Cold-start name-affinity ranking**: when no mapping for a parameter carries a positive `successRate`, the candidate ranking adds a token-overlap prior between the parameter name and the endpoint/service tokens (`endStation` → `stationservice` beats the higher-priority `trains`). `successRate` rises only on real SUT feedback (the legacy format-check bump was removed as self-poisoning), and the shipped per-SUT registries carry `successRate: 0.0` everywhere so the prior actually engages on a fresh run.
 - **JSONPath is fully retired**: `fetchFromApiMapping` always calls `extractValueDirectlyFromResponse` regardless of `ApiMapping.extractPath`. The legacy `extractValueFromResponse` (JSONPath) method has zero call sites and is dead code.
 - **Trace endpoints are session-scoped**: Trace-observed `ApiMapping` objects are never added to `registry.addMapping()` and are never persisted to YAML. Only LLM-discovered mappings are saved.
 - **Cache key parity with the LLM generator**: `buildCacheKey` now hashes `name + type + location + format + enum + minimum/maximum + minLength/maxLength + regex`. Two parameters that share a name but differ on any of those constraints get distinct cache entries — the previous coarse `name+type+location` key was leaking values across services and across operations with different constraints.
@@ -1312,6 +1322,13 @@ samples respect the configured seed.
    ```
 
 ### Notes on Data/Status Selection
+
+> **Sniper exception (3-SNIPER, subsequent steps).** For a negative variant whose
+> FaultTarget root sits at step ≥ 2, the target parameter replays the fault value
+> pre-recorded at queue-build time (`tc.getTargetFaultValue()`) before this chain
+> runs, and is locked. Without this replay the first-business-step-only injection
+> never fired for such targets and the variant silently degraded to a positive.
+> All other (non-target) parameters follow the chain below.
 
 **Full parameter resolution priority (subsequent steps, non-negative):**
 

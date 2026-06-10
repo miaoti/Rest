@@ -135,6 +135,18 @@ is the bigger piece; B's name-affinity covers the cold-start first run that A st
 - **A as opt-in follow-on**: the durable self-correcting loop; gated by execution cost.
 - Neither is claimed as a contribution — both are supporting machinery for the value-grounding open problem.
 
+## Registry de-poison completed (2026-06-10)
+The data-side complement to Fix B landed: both shipped TrainTicket registries
+(`mist-cli/src/main/resources/My-Example/trainticket/input-fetch-registry.yaml` and
+`evaluation/suts/trainticket/input-fetch-registry.yaml`) had every `successRate` reset to `0.0`.
+Rationale: A2 (producer-keyed feedback) is still open, so NO current code path can legitimately
+raise a producer's successRate — every non-zero value in the shipped files was poison-era residue
+from the deleted format-check feedback (`endStation→trains` at 0.9721 was the worst case: it kept
+`max(successRate) >= 1e-9`, so the cold-start gate never fired and the name-affinity prior was
+bypassed for exactly the parameter it was built for). With all rates at zero the gate engages,
+`ProducerRankingTest` (4/4) locks stations-over-trains at cold start, and rates will re-learn only
+from real SUT feedback once A2 lands. Endpoints, priorities, and descriptions were left untouched.
+
 ## Sources
 RESTler ICSE'19 (patricegodefroid icse2019.pdf) · DeepREST arXiv 2408.08594 · AutoRestTest arXiv 2411.07098 ·
 ARAT-RL arXiv 2309.04583 · foREST arXiv 2203.02906 · Morest arXiv 2204.12148 · LlamaRestTest arXiv 2501.08598 ·

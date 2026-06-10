@@ -41,6 +41,17 @@ public class FaultDetectionTracker {
     // so same-shape violations across many tests collapse into one entry with
     // its hitCount incremented. See recordOracleAnomaly / recordVerdict.
     private final Map<String, OracleAnomaly> oracleAnomalies = new ConcurrentHashMap<>();
+
+    /**
+     * Per-execution idempotency for anomaly recording. The writer's generated
+     * code calls attachJaegerTrace twice for the same step when a positive
+     * variant throws on an ERROR-severity verdict (success path records, the
+     * AssertionError is caught, the catch path re-fetches and records the same
+     * verdict again with the SAME marker traceId). The marker is a fresh UUID
+     * per step execution, so enhancer-round re-executions produce new keys and
+     * keep counting; only the intra-execution double record collapses.
+     */
+    private final Set<String> recordedAnomalyInstances = ConcurrentHashMap.newKeySet();
     
     // Metadata
     private String experimentName;
@@ -162,8 +173,12 @@ public class FaultDetectionTracker {
      * <p>Independent of {@link #recordDetectedFault}: a single test may both
      * detect an injected fault by name AND fire an oracle violation; the two
      * appear in their respective sections.
+     *
+     * @return {@code true} when the call was counted (new entry or hitCount
+     *         bump); {@code false} when rejected by the guards or deduplicated
+     *         as a repeat of the same (test, traceId, anomaly) instance.
      */
-    public synchronized void recordOracleAnomaly(String oracle,
+    public synchronized boolean recordOracleAnomaly(String oracle,
                                                  String endpointSig,
                                                  String violationSig,
                                                  String violationDetail,
@@ -171,14 +186,28 @@ public class FaultDetectionTracker {
                                                  String testClassName,
                                                  String testMethodName,
                                                  String traceId) {
-        if (oracle == null || oracle.isEmpty()) return;
+        if (oracle == null || oracle.isEmpty()) return false;
         if (endpointSig == null) endpointSig = "";
-        if (violationSig == null || violationSig.isEmpty()) return;
+        if (violationSig == null || violationSig.isEmpty()) return false;
 
         // 0x01 SOH is a control char that can't appear in oracle / endpoint /
         // fingerprint strings, so it's a safer delimiter than "::" (paths or
         // method names could theoretically contain "::").
         String key = oracle + "\u0001" + endpointSig + "\u0001" + violationSig;
+
+        // Per-execution dedup (see recordedAnomalyInstances). Only applied when
+        // a traceId is present — the marker is the per-execution discriminator.
+        // Ad-hoc callers without one keep the legacy count-every-call behaviour.
+        if (traceId != null && !traceId.isEmpty()) {
+            String instanceKey = (testClassName == null ? "" : testClassName)
+                    + "\u0001" + (testMethodName == null ? "" : testMethodName)
+                    + "\u0001" + traceId
+                    + "\u0001" + key;
+            if (!recordedAnomalyInstances.add(instanceKey)) {
+                return false;
+            }
+        }
+
         long now = System.currentTimeMillis();
         OracleAnomaly existing = oracleAnomalies.get(key);
         if (existing == null) {
@@ -197,6 +226,7 @@ public class FaultDetectionTracker {
             existing.hitCount++;
             existing.lastSeenTs = now;
         }
+        return true;
     }
 
     /**
@@ -238,7 +268,7 @@ public class FaultDetectionTracker {
             // bucket key; do not record them as their own anomalies.
             if ("TARGET_ATTRIBUTION".equals(o.kind)) continue;
             String violationSig = fingerprintViolation(o.kind, o.detail);
-            recordOracleAnomaly(
+            boolean counted = recordOracleAnomaly(
                     o.kind,
                     rootApiKey,
                     violationSig,
@@ -247,7 +277,10 @@ public class FaultDetectionTracker {
                     testClassName,
                     testMethodName,
                     traceId);
-            if (attribution != null) {
+            // A deduplicated recording (same step execution recorded twice via
+            // the writer's success-path + catch-path) must not bump the
+            // attribution histogram either, or the roll-up over-counts.
+            if (counted && attribution != null) {
                 String key = o.kind + "\u0001" + (rootApiKey == null ? "" : rootApiKey) + "\u0001" + violationSig;
                 OracleAnomaly anomaly = oracleAnomalies.get(key);
                 if (anomaly != null) {
@@ -557,6 +590,7 @@ public class FaultDetectionTracker {
         detectedFaults.clear();
         allTestCases.clear();
         oracleAnomalies.clear();
+        recordedAnomalyInstances.clear();
         trackingStartTime = System.currentTimeMillis();
         logger.info("FaultDetectionTracker reset for new test run");
     }
