@@ -36,13 +36,28 @@ API, no duplicate single-root classes. With the pre-fix flag leak a fresh run
 re-emitted duplicates for the same key. Logic is additionally locked by
 `DedupFlagLeakRegressionTest` (6/6).
 
-## Fix #3 — tracker idempotency (offline)
+## Fix #3 — tracker idempotency (offline only — honest scope)
 
 Locked by `FaultDetectionTrackerIdempotencyTest` (6/6) and the corrected
-`FaultDetectionTrackerSummaryTest`. The Sock Shop run reported "no oracle
-anomalies across 216 executed test cases" (catalogue tolerates the fuzzed
-inputs), so it exercised the recording path without a positive-fail double
-record to dedup; the unit tests cover that branch directly.
+`FaultDetectionTrackerSummaryTest`.
+
+**The Sock Shop run did NOT exercise this fix.** It ran with `jaeger.enabled=false`
+(see the environment note below), and the generated oracle hook is
+`if (!JAEGER_ENABLED) return;` at the top of `attachJaegerTrace`
+(`MultiServiceRESTAssuredWriter.java:302`). So no Trace Shape Oracle verdict was
+produced, `recordVerdict` was never called, and the "no oracle anomalies across
+216 executed tests" line means "the oracle did not run", NOT "the oracle ran and
+found nothing." The double-count branch this fix targets (a positive variant
+failing on an ERROR verdict, recorded once on the success path and again in the
+catch path) only occurs with the oracle live, so it is covered by the unit tests,
+not by this run.
+
+The oracle itself is unregressed by the writer/tracker changes: the offline
+reproduction path of record (`OracleCheck` on committed traces, no Jaeger) still
+fires — Bookinfo `HIDDEN_DOWNSTREAM_FAILURE` ERROR, Online Boutique gRPC
+`HIDDEN_DOWNSTREAM_FAILURE` WARN, response-level oracle PASS/misses on both. A
+live end-to-end re-confirmation of the double-count fix needs a healthy Jaeger
+(see below) and is the one remaining gap; it does not affect any paper claim.
 
 ## Fix #4 — registry de-poison (TrainTicket, LIVE + offline)
 
@@ -60,13 +75,48 @@ Live TrainTicket reachable at `http://129.62.148.112:32677` (admin login 200,
   trains via `rankingScore`. **2/2 pass.**
 - **`ProducerRankingTest`**: cold-start name-affinity logic. **4/4 pass.**
 
-## Environment notes
+## Jaeger health and reviewer reproducibility
 
+How MIST consumes traces (two independent paths):
+- **Generation input** — `TraceWorkflowExtractor` reads the committed
+  `evaluation/suts/*/traces/*.json` corpus (bookinfo 7, boutique 2, sockshop 4,
+  trainticket 2). No live Jaeger. This is what builds scenarios.
+- **Runtime oracle** — the generated test code queries `JAEGER_BASE_URL/traces/...`
+  at execution time to run the Trace Shape Oracle. This needs a live Jaeger, and
+  is gated by `jaeger.enabled` (default false).
+
+Current state of the shared istio-system Jaeger: **CrashLoopBackOff**, restart
+count 119 over 8 days. Root cause (diagnosed, not a MIST defect):
+- It is the stock Istio demo addon (`samples/addons/jaeger.yaml`): all-in-one
+  Jaeger v2.14.0, badger storage on an **emptyDir**, a liveness probe on
+  `/status:13133` (failureThreshold 3 × periodSeconds 10, timeout 1s), and **no
+  startupProbe**.
+- emptyDir persists across container restarts within the same pod, so badger
+  accumulated **1745 SST tables** over 8 days. Reopening them on boot now takes
+  longer than the ~30s liveness window, so the query service is killed before it
+  reports healthy → restart loop. No panic, exit 2 = liveness kill.
+- Deleting/recreating the pod wipes the emptyDir → empty badger → sub-second
+  startup → healthy. (Not done here: the pod is shared istio-system infra, and a
+  delete was correctly blocked.)
+
+Reviewer impact: **none on a fresh deploy.** `deploy/deploy.sh` installs a clean
+Jaeger with empty badger; a reviewer's session (minutes–hours) never approaches
+the 8-day accumulation that broke this long-lived instance. The committed
+Bookinfo/Boutique in-process evidence was captured 2026-06-02 when this same
+Jaeger was fresh and healthy, before the degradation. And the headline result
+reproduces with **no Jaeger at all** via the offline `OracleCheck` path of record
+(re-run today, still fires — see Fix #3 above).
+
+Other notes:
 - Live TT IP/port `129.62.148.112:32677` confirmed reachable from this host
   (an earlier "timeout" reading was a stale probe; re-checked with `curl -v` and a
   raw TCP open — both succeed, login returns 200).
-- The shared istio-system jaeger pod is in CrashLoopBackOff (8 days, pre-existing,
-  badger storage). Not touched (it is shared infra). Sock Shop validation used
-  `jaeger.enabled=false`; the query-emission fix does not depend on Jaeger.
 - Local-only config copies (`sockshop-demo-local.properties`,
   `sockshop-mst-local.properties`) are gitignored and not committed.
+
+## Remaining gap
+
+A live end-to-end re-confirmation of Fix #3 (tracker double-count) needs a healthy
+Jaeger. Two ways to get one for a follow-up: restart the istio-system jaeger pod
+(wipes emptyDir), or run any SUT with `jaeger.enabled=true` against a fresh deploy.
+This gap is oracle-reporting only and touches no paper claim.
