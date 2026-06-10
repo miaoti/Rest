@@ -171,6 +171,13 @@ their parameters. (4) The shipped TrainTicket input-fetch registries were reset 
 the 10/10 TrainTicket confirmations come from the SUT's own fault registry, and the
 hidden-downstream verdicts reproduce offline from committed traces.
 
+Live validation of (1)/(3)/(4) (2026-06-10, `debug/a-rank-fixes/VALIDATION-2026-06-10.md`): a fresh
+Sock Shop run (216 executed tests, exit 0) sent 301/301 catalogue requests WITH their query strings
+(front-end access log; previously 0), with sniper fault values arriving intact in query position,
+and emitted exactly one test class per root API (no duplicates). On the live TrainTicket,
+`TTEndStationLiveCheck` confirms smart fetch grounds `endStation` to a real station name with the
+de-poisoned registry.
+
 ## 8. LLM determinism & variance
 Value synthesis + the soft-error classifier use an LLM, so generated test *values* and the exact
 fault-detection *count* vary run to run (`run22` is a representative **10/10** run). The §5 oracle

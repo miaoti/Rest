@@ -147,6 +147,13 @@ bypassed for exactly the parameter it was built for). With all rates at zero the
 `ProducerRankingTest` (4/4) locks stations-over-trains at cold start, and rates will re-learn only
 from real SUT feedback once A2 lands. Endpoints, priorities, and descriptions were left untouched.
 
+Verified three ways on 2026-06-10: `ShippedRegistryDepoisonTest` (data lint: all-zero rates + the
+real endStation mappings rank stations over trains through `rankingScore`), `ProducerRankingTest`
+(logic), and `TTEndStationLiveCheck` against the LIVE TrainTicket (gated by `-Dtt.live.base.url`):
+MIST's own `SmartInputFetcher.fetchSmartInput("endStation")` with the shipped registry returned a
+value present in the live `/api/v1/stationservice/stations` name set, i.e. grounded from the station
+producer rather than trains. The pre-fix behaviour (GaoTieOne-style train values that 400) is gone.
+
 ## Sources
 RESTler ICSE'19 (patricegodefroid icse2019.pdf) · DeepREST arXiv 2408.08594 · AutoRestTest arXiv 2411.07098 ·
 ARAT-RL arXiv 2309.04583 · foREST arXiv 2203.02906 · Morest arXiv 2204.12148 · LlamaRestTest arXiv 2501.08598 ·
