@@ -183,6 +183,8 @@ A 3–5 min screencast of the bundled demo: see the URL at the end of the paper 
 - **Bookinfo/Boutique trace fetch empty** → allow a few seconds for Jaeger ingest before the oracle.
 
 ## 11. License & citation
-- License: see `LICENSE` (**LGPL-3.0**). Archive the evaluated commit to Zenodo for the
-  **Available** badge and cite the DOI here.
+- License: see `LICENSE` (**LGPL-3.0**).
+- Archived snapshot (the **Available** badge): the paper cites the reserved DOI
+  <https://doi.org/10.5281/zenodo.20514985>. The deposit must be **published** from the
+  final evaluated commit before submission — a reserved-but-unpublished DOI resolves to 404.
 - Cite the paper (`paper/main_issta.tex`) and the repository.
