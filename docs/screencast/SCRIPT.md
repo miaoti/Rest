@@ -58,7 +58,30 @@ progress bar visible (generation).
 
 ---
 
-## 3. Pre-recording checklist (all BEFORE pressing record)
+## 3. Choosing the recording machine (it does NOT have to be the lab host)
+
+Nothing in the video is tied to one machine. Requirements for the recording
+host:
+
+| Need | Why |
+|---|---|
+| Linux **x86_64**, ~4+ cores, **~16 GB RAM**, Docker | the kind+Istio+Bookinfo cluster (Scenes 2/5 prep); `deploy.sh` auto-installs kubectl/kind/istioctl |
+| JDK 21 + Maven 3.9+ | build + source-launched harnesses (Scenes 1,3,4,6) |
+| Internet + a DeepSeek key | Scene 4's one live LLM call (or swap to Ollama) |
+| ~1 h of setup before the dry run | `deploy.sh` ~8 min + `mvn install` ~5 min + the ~30-min Allure prep run + checklist |
+
+Platform caveats:
+- **macOS / Apple Silicon:** `deploy.sh`'s tool auto-install hardcodes
+  `linux-amd64` binaries — `brew install kind kubectl istioctl` first so the
+  script's `command -v` checks skip the downloads. **Windows:** use WSL2.
+- The TrainTicket 16-core gate does **not** apply to recording: the script
+  never runs TrainTicket live (Scene 3 is the offline noexec profile; the
+  10/10 figure is shown from the committed run22 report).
+- The byte-identical beat (Scene 3) compares run 1 (prep) with run 2
+  (on camera) **on the same machine** — cross-machine byte-identity is
+  neither claimed nor needed.
+
+## 3b. Pre-recording checklist (all BEFORE pressing record)
 
 Each item traces to a failure we actually hit during the audit:
 
