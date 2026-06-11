@@ -35,6 +35,11 @@ lets a reviewer reproduce the paper's headline results. Source:
 | Light SUTs: Bookinfo / Sock Shop / Online Boutique (§6.2) | kind/Docker host, ~8–16 GB RAM |
 | Heavy SUT: TrainTicket (§6.3) | **a host that can run ~40 JVMs** — 16+ cores recommended, ~16 GB RAM; an 8-core box running anything else concurrently will NOT converge |
 ### 2.2 Software
+- **OS:** Linux x86_64 is the verified platform. **macOS:** pre-install
+  `kind`/`kubectl`/`istioctl` via Homebrew (the deploy scripts' auto-install fetches
+  linux-amd64 binaries). **Windows: use WSL2 (Ubuntu)** with Docker Desktop's WSL2
+  integration enabled — the scripts then run unmodified; native PowerShell is not
+  supported (the SUT scripts are bash).
 - **JDK 21** (a JRE is **not** enough — MIST compiles generated tests, and the single-file
   oracle harnesses are source-launched). Set `JAVA_HOME` to the JDK.
 - **Maven 3.9+** (to build the jar). **Docker** + **docker compose v2** (SUTs). **kind** +
@@ -210,6 +215,11 @@ A 3–5 min screencast of the bundled demo: see the URL at the end of the paper 
   can time out at `kubeadm` control-plane bootstrap.
 - **`deploy.sh` times out waiting for a pod** → slow image pulls on a busy host; the script
   is idempotent, just re-run it (already-created resources are skipped).
+- **Windows/WSL2 notes** → enable Docker Desktop's WSL2 integration for the Ubuntu distro
+  (otherwise `docker` is absent inside WSL); the inotify sysctl above applies inside WSL2
+  too; WSL2 auto-forwards `localhost`, so the Windows browser reaches the port-forwards
+  directly; `allure open` cannot launch a Windows browser from WSL — open the URL it
+  prints manually (or use `allure serve`).
 - **LLM step fails** → set `DEEPSEEK_API_KEY` (or switch to Ollama); only the ResponseEnvelope
   check needs it.
 - **Bookinfo/Boutique trace fetch empty** → allow a few seconds for Jaeger ingest before the oracle.

@@ -73,7 +73,26 @@ host:
 Platform caveats:
 - **macOS / Apple Silicon:** `deploy.sh`'s tool auto-install hardcodes
   `linux-amd64` binaries — `brew install kind kubectl istioctl` first so the
-  script's `command -v` checks skip the downloads. **Windows:** use WSL2.
+  script's `command -v` checks skip the downloads.
+- **Windows = WSL2, and that is a first-class option, not a workaround**
+  (Docker Desktop on Windows runs Linux containers through WSL2 anyway).
+  Recording setup that works cleanly:
+  1. Install WSL2 + Ubuntu 24.04; install Docker Desktop and enable its
+     **WSL2 integration** for that distro (Settings → Resources → WSL
+     Integration).
+  2. Inside the Ubuntu shell, follow this script exactly as on Linux —
+     `deploy.sh`'s linux-amd64 auto-install is correct there, and the
+     inotify sysctl from REPRODUCE §10 applies inside WSL2 too.
+  3. WSL2 auto-forwards `localhost` — the Windows browser reaches
+     `http://localhost:8080` / `:16686` / the Allure port directly.
+  4. `allure open` cannot launch a Windows browser from WSL2; run
+     `allure/bin/allure open /tmp/allure-report` and open the URL it prints
+     (`http://<host>:<port>`) in Edge/Chrome manually, or `allure serve`.
+  5. Record with OBS on Windows capturing Windows Terminal (Ubuntu profile)
+     + the browser — visually identical to a Linux recording.
+  Native Windows (PowerShell, no WSL) is **not supported** for the cluster
+  scripts (they are bash and use Linux tooling); the pure-Java offline path
+  would likely run but is unverified — use WSL2 uniformly.
 - The TrainTicket 16-core gate does **not** apply to recording: the script
   never runs TrainTicket live (Scene 3 is the offline noexec profile; the
   10/10 figure is shown from the committed run22 report).
