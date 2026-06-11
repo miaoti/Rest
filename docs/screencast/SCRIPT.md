@@ -181,7 +181,7 @@ Total target **4:35–4:45**.
 > **MIST — Microservice Integration & Scenario Tester**
 > *Trace-driven test generation and a trace-shape oracle for microservice REST APIs*
 > SPLASH/ISSTA 2026 Tool Demonstrations — <paper authors>
-> github.com/miaoti/Rest
+> github.com/miaoti/MIST
 
 **SAY:**
 > "This is MIST, a test generator for microservice REST APIs. MIST turns

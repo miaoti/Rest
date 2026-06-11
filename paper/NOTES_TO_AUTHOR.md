@@ -60,7 +60,7 @@ Entry → spec+traces → 5-phase scenario pipeline (Phase 1 cross-trace data me
 | Q5 | ⚠️ partial | Used real captured trace `032af4e629d9075292977fc74a20f480` from `src/main/resources/My-Example/trainticket/allure-results/00fc19f1-...txt`. It is a real MIST/TrainTicket capture from this repo. **It is not from the most-current 10/10 run** (that run's allure data is on the other machine). The figure caption is honest about this. If a fault-detection trace from the current run is available, swap it in. |
 | Q6 | ✅ | `paper/refs.bib` populated; entries with uncertain DBLP keys carry a `note = {TODO-...}` line. Verify each on DBLP before submission. |
 | Q7 | ✅ | `\author{}` block uses `\todo{AUTHOR NAMES}` and `\todo{AFFILIATION, EMAIL}`. Single-anonymous track (authors visible) — fill before submission. |
-| Q8 | ✅ | `https://github.com/miaoti/Rest/` written in abstract and §6. |
+| Q8 | ✅ | `https://github.com/miaoti/MIST/` written in abstract and §6. |
 | Q9 | ⚠️ pending | Abstract ends `Screencast: \url{\todo{SCREENCAST-URL}}`. Record + replace before submission. |
 | Q10 | ✅ | DOI omitted from this draft (no Zenodo plan). Add for camera-ready if accepted. |
 | Q11 | ✅ | Ablation dropped (paper has no ablation section). |

@@ -28,7 +28,7 @@ were run inside a no-network namespace (`unshare -n`), which is stricter than
 
 | # | Gap | Severity | Disposition |
 |---|---|---|---|
-| G1 | **GitHub default branch is `main`** — 475 commits behind `inject-detection`, lacks `REPRODUCE.md`/`evaluation/`. A reviewer's plain `git clone` lands on dead content. | **CRITICAL** | Needs the **author** to flip the default branch in GitHub settings (one click / `gh api -X PATCH repos/miaoti/Rest -f default_branch=inject-detection`). Interim mitigation committed: REPRODUCE §4 now pins `-b inject-detection`. |
+| G1 | **GitHub default branch was `main`** — 475 commits behind `inject-detection`, lacking `REPRODUCE.md`/`evaluation/`. A reviewer's plain `git clone` landed on dead content. | **CRITICAL** | **RESOLVED 2026-06-11 by repository migration:** the canonical repo is now **github.com/miaoti/MIST** (default branch `main` = this tree); all reviewer-facing URLs updated. The old `miaoti/Rest` stays as the frozen full-history archive. |
 | G2 | README Quick Start D claimed a **bundled** `.mist/llm-call-cache.json` serving all LLM calls offline. The file was never committed (`.gitignore` line 23), and an empirical no-network run with the local 51 MB cache present showed ≥26 cache misses falling through to the network (prompt drift since the cache was written). | HIGH | Quick Start D rewritten: offline claim scoped to the (verified) noexec determinism path; cache documented as *local replay*, with a bless-then-prove-offline acceptance test. Evidence: `evidence/noexec-llm-cache-misses.log`. |
 | G3 | REPRODUCE §6.2 recipe was missing two required steps: the port-forwards and the prior MIST generation run that `run-oracle-e2e.sh` expects under `.runtime/` (it hard-fails without them). | HIGH | §6.2 updated with both steps. |
 | G4 | `deploy.sh` re-run on a host where the cluster already exists skips `kind create cluster` and therefore never gets a kubeconfig in the current account → `istioctl` dials `localhost:8080` and dies. Verified live. | MED | One-line fix in `deploy.sh`: `kind export kubeconfig --name "$CLUSTER"`. Evidence: `evidence/bookinfo-deploy-fail-kubeconfig.log`. |
@@ -46,7 +46,7 @@ were run inside a no-network namespace (`unshare -n`), which is stricter than
 
 ```bash
 # fresh-clone offline path (V1-V5), JDK 21 required
-git clone -b inject-detection https://github.com/miaoti/Rest Rest-fresh && cd Rest-fresh
+git clone https://github.com/miaoti/MIST MIST-fresh && cd MIST-fresh
 export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 JAVA="$JAVA_HOME/bin/java" ./evaluation/run-offline-oracle.sh
 

@@ -4,7 +4,7 @@
 generator that turns OpenTelemetry/Jaeger traces + OpenAPI specs into runnable
 cross-service workflow tests and checks them with a **trace-shape oracle**. This guide
 lets a reviewer reproduce the paper's headline results. Source:
-<https://github.com/miaoti/Rest/>. Screencast: see §9. Paper: `paper/main_issta.tex`.
+<https://github.com/miaoti/MIST/>. Screencast: see §9. Paper: `paper/main_issta.tex`.
 
 ## 0. TL;DR for reviewers (start here)
 - **Zero-infra path (≈10 min, no SUT, no cluster):** the shipped trace oracle reproduces
@@ -63,9 +63,7 @@ debug/negative_test/runs/run22-fault-detection-10of10.txt   # TrainTicket 10/10 
 
 ## 4. Install
 ```bash
-# the artifact lives on the inject-detection branch (pin it explicitly in case
-# the repository default branch differs)
-git clone -b inject-detection https://github.com/miaoti/Rest && cd Rest
+git clone https://github.com/miaoti/MIST && cd MIST
 export JAVA_HOME=/path/to/jdk21          # a JDK, not a JRE
 mvn -q -DskipTests install               # builds mist-cli/target/mist.jar
 ```
